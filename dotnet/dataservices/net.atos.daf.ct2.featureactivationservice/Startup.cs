@@ -12,6 +12,8 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.featureactivationservice.Common;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.translation;
@@ -37,9 +39,14 @@ namespace net.atos.daf.ct2.featureactivationservice
         {
             services.AddControllers();
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
+            });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
             services.AddTransient<IAuditTraillib, AuditTraillib>();
@@ -82,6 +89,10 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IFeatureActivationCdcManager, FeatureActivationCdcManager>();
+            services.AddTransient<IFeatureActivationCdcRepository, FeatureActivationCdcRepository>();
+            services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
             //services.AddMvc(options =>
             //{
             //    options.Filters.Add(new ProducesAttribute("application/json"));

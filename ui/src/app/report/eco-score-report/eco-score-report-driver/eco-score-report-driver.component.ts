@@ -198,7 +198,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption || 'Fuel Consumption'), '', ''];
     //litre/100 km - mpg pending
     let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
-    if(this.prefUnitFormat == 'dunit_Imperial')
+    if(this.prefUnitFormat == 'dunit_Imperial' && fuelConsumption !== '0.0')
       fuelConsumption = (235.215/fuelConsumption).toFixed(3);
     this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
     // Doughnut - Anticipation Score
@@ -434,9 +434,27 @@ export class EcoScoreReportDriverComponent implements OnInit {
       for (var key in vehicle.kpiInfo) {
         if ((vehicle.kpiInfo).hasOwnProperty(key)) {
           let _key = (vehicle.kpiInfo)[key].key;
-          if(this.prefUnitFormat.indexOf("Imperial") !== -1 && (_key.indexOf("30") !== -1 || _key.indexOf("50") !== -1 || _key.indexOf("75") !== -1))
-            _key += '_I';
-          let _name = this.translationData._key || this.translationDataTrendLineLocal.filter(obj=>obj.key === _key);
+          // if(this.prefUnitFormat.indexOf("Imperial") !== -1 && (_key.indexOf("30") !== -1 || _key.indexOf("50") !== -1 || _key.indexOf("75") !== -1))
+          //   _key += '_I';
+          let _name = this.translationData._key || this.translationDataLocal.filter(obj=>obj.key === _key);
+          let name = _name[0].value;
+          if(_key.indexOf('rp_CruiseControlUsage') !== -1 || _key.indexOf('rp_cruisecontroldistance') !== -1){
+            if(this.prefUnitFormat === 'dunit_Imperial'){
+              if(_key.indexOf('30') !== -1)
+                name += ' 15-30 ';
+              else if(_key.indexOf('50') !== -1)
+                name += ' 30-45 ';
+              else if(_key.indexOf('75') !== -1)
+                name += ' >45 ';
+            } else if(this.prefUnitFormat === 'dunit_Metric'){
+              if(_key.indexOf('30') !== -1)
+                name += ' 30-50 ';
+              else if(_key.indexOf('50') !== -1)
+                name += ' 50-75 ';
+              else if(_key.indexOf('75') !== -1)
+                name += ' >75 ';
+            }
+          }
           let unit = (vehicle.kpiInfo)[key].uoM;
           if(unit && unit.indexOf("(%)") <= 0)
             unit = ' (' + unit + ')';
@@ -444,7 +462,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
           let val = 'driver';
           if(key.indexOf("Company") !== -1)
             val = 'company';
-          let seriesName =  _name[0].value + ' ' + unit + ' - '+ val + ' - ' + vehicle.vehicleName;
+          let seriesName =  name + ' ' + unit + ' - '+ val + ' - ' + vehicle.vehicleName;
             dataSeries.push({
               name: seriesName,
               data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
@@ -715,45 +733,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_averagedistanceperday' , value:'Average distance per day' },
       { key:'rp_driverperformance' , value:'Driver Performance' },
       { key:'rp_ecoscore' , value:'Eco Score' },
-      { key:'rp_fuelconsumption' , value:'Fuel Consumption (ltrs/100km)' },
-      { key:'rp_fuelconsumption_I' , value:'Fuel Consumption (mpg)' },
-      { key:'rp_braking' , value:'Braking (%)' },
-      { key:'rp_anticipationscore' , value:'Anticipation Score' },
-      { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
-      { key:'rp_idleduration' , value:'Idle Duration (hh:mm:ss)' },
-      { key:'rp_idling' , value:'Idling (%)' },
-      { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration (hh:mm:ss)' },
-      { key:'rp_heavythrottling' , value:'Heavy Throttling (%)' },
-      { key:'rp_averagespeed' , value:'Average Speed' },
-      { key:'rp_ptoduration' , value:'PTO Duration (hh:mm:ss)' },
-      { key:'rp_ptousage' , value:'PTO Usage (%)' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50 km/h (%)' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage > 75 km/h (%)' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75 km/h (%)' },
-      { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
-      { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >45 mph (%)' },
-      { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
-      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage (%)' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h (%)' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50 km/h (%)' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h (%)' },
-      { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
-      { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
-      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 mph (%)' },
-      { key:'rp_harshbraking' , value:'Harsh Braking (%)' },
-      { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration (hh:mm:ss)' },
-      { key:'rp_brakeduration' , value:'Brake Duration (hh:mm:ss)' },
-      { key:'rp_brakingscore' , value:'Braking Score' }
-     ];
-     this.translationDataTrendLineLocal = [
-      { key:'rp_general' , value:'General' },
-      { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
-      { key:'rp_distance' , value:'Distance' },
-      { key:'rp_numberoftrips' , value:'Number of Trips' },
-      { key:'rp_numberofvehicles' , value:'Number of vehicles' },
-      { key:'rp_averagedistanceperday' , value:'Average distance per day' },
-      { key:'rp_driverperformance' , value:'Driver Performance' },
-      { key:'rp_ecoscore' , value:'Eco Score' },
       { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
       { key:'rp_braking' , value:'Braking' },
       { key:'rp_anticipationscore' , value:'Anticipation Score' },
@@ -765,24 +744,56 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_averagespeed' , value:'Average Speed' },
       { key:'rp_ptoduration' , value:'PTO Duration' },
       { key:'rp_ptousage' , value:'PTO Usage' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage >75' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75' },
-      { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30'},
-      { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45'},
-      { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >75'},
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
       { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage >75' },
-      { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30' },
-      { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45' },
-      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
       { key:'rp_harshbraking' , value:'Harsh Braking' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
       { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
      ];
+    //  this.translationDataTrendLineLocal = [
+    //   { key:'rp_general' , value:'General' },
+    //   { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
+    //   { key:'rp_distance' , value:'Distance' },
+    //   { key:'rp_numberoftrips' , value:'Number of Trips' },
+    //   { key:'rp_numberofvehicles' , value:'Number of vehicles' },
+    //   { key:'rp_averagedistanceperday' , value:'Average distance per day' },
+    //   { key:'rp_driverperformance' , value:'Driver Performance' },
+    //   { key:'rp_ecoscore' , value:'Eco Score' },
+    //   { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
+    //   { key:'rp_braking' , value:'Braking' },
+    //   { key:'rp_anticipationscore' , value:'Anticipation Score' },
+    //   { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
+    //   { key:'rp_idleduration' , value:'Idle Duration' },
+    //   { key:'rp_idling' , value:'Idling' },
+    //   { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
+    //   { key:'rp_heavythrottling' , value:'Heavy Throttling' },
+    //   { key:'rp_averagespeed' , value:'Average Speed' },
+    //   { key:'rp_ptoduration' , value:'PTO Duration' },
+    //   { key:'rp_ptousage' , value:'PTO Usage' },
+    //   { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50' },
+    //   { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage >75' },
+    //   { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75' },
+    //   { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30'},
+    //   { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45'},
+    //   { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >75'},
+    //   { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
+    //   { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75' },
+    //   { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50' },
+    //   { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage >75' },
+    //   { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30' },
+    //   { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45' },
+    //   { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45' },
+    //   { key:'rp_harshbraking' , value:'Harsh Braking' },
+    //   { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
+    //   { key:'rp_brakeduration' , value:'Brake Duration' },
+    //   { key:'rp_brakingscore' , value:'Braking Score' }
+    //  ];
   }
 
   tableColumns(){
@@ -914,11 +925,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
-        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1
-        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1)){
-      value += "_I";
-    }
+    let key=value;
+    // if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
+    //     || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1
+    //     || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1 || value.toLowerCase().indexOf("rp_averagedrivingspeed") !== -1
+    //     || value.toLowerCase().indexOf("rp_averagespeed") !== -1)){
+    //   value += "_I";
+    // }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
@@ -930,6 +943,44 @@ export class EcoScoreReportDriverComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
+
+    if(key.indexOf('rp_heavythrottleduration') !== -1 || key.indexOf('rp_ptoduration') !== -1 
+        || key.indexOf('rp_harshbrakeduration') !== -1 || key.indexOf('rp_brakeduration') !== -1 
+        || key.indexOf('rp_idleduration') !== -1){
+      value += ' (hh:mm:ss)';
+    } else if(key.indexOf('rp_braking') !== -1 || key.indexOf('rp_idling') !== -1 || key.indexOf('rp_heavythrottling') !== -1
+              || key.indexOf('rp_ptousage') !== -1 || key.indexOf('rp_harshbraking') !== -1){
+      value += ' (%)';
+    } else if(this.prefUnitFormat === 'dunit_Imperial'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (mpg)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (mph)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+        if(key.indexOf('30') !== -1)
+          value += ' 15-30 mph ';
+        else if(key.indexOf('50') !== -1)
+          value += ' 30-45 mph ';
+        else if(key.indexOf('75') !== -1)
+          value += ' >45 mph ';
+        value += '(%)';
+      }
+    }  else if(this.prefUnitFormat === 'dunit_Metric'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (ltrs/100km)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (km/h)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+          if(key.indexOf('30') !== -1)
+           value += ' 30-50 km/h ';
+          else if(key.indexOf('50') !== -1)
+           value += ' 50-75 km/h ';
+          else if(key.indexOf('75') !== -1)
+           value += ' >75 km/h ';
+          value += '(%)';
+        }
+    }
+    
     const dataView = grid.getData();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
@@ -966,38 +1017,38 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return '';
   }
 
-  getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 0){
-      // let color = value[0].color === 'Amber'?'Orange':value[0].color;
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 0){
+  //     // let color = value[0].color === 'Amber'?'Orange':value[0].color;
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
+  //   }
+  //   return '';
+  // }
   
-  getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 1){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 1){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
-  getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 2){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 2){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
-  getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 3){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 3){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
   formatValues(dataContext: any, val: any){
     if(val && val !== '0'){
@@ -1006,16 +1057,16 @@ export class EcoScoreReportDriverComponent implements OnInit {
         valTemp = Number.parseInt(valTemp.toString());
         return new Date(valTemp * 1000).toISOString().substr(11, 8);
       } 
-      // else if(this.prefUnitFormat === 'dunit_Imperial'){
-      //     if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
-      //       return (valTemp * 1.10231).toFixed(2);
-      //     } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
-      //               || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
-      //       return (valTemp * 0.621371).toFixed(2);
-      //     } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-      //       return val;
-      //     }
-      //   }
+      else if(this.prefUnitFormat === 'dunit_Imperial'){
+          if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
+            return (valTemp * 1.10231).toFixed(2);
+          } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
+                    || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
+            return (valTemp * 0.621371).toFixed(2);
+          } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
+            return val * 235.215;
+          }
+        }
     }
     return val;
   }

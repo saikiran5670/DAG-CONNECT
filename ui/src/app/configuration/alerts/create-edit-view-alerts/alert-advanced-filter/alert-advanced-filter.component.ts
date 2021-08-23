@@ -24,6 +24,7 @@ import { PeriodSelectionFilterComponent } from '../period-selection-filter/perio
 import { Util } from 'src/app/shared/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
+import { ReportMapService } from '../../../../report/report-map.service';
 
 declare var H: any;
 
@@ -38,6 +39,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   @Input() alert_type_selected : any;
   @Input() selectedRowData : any;
   @Input() actionType :any;
+  @Input() prefUnitFormat: any;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Output() isAdvancedAlertPayload = new EventEmitter<any>();
@@ -106,6 +108,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isOccurenceValidate: boolean= true;
   enteringFlag: boolean = false;
   existingFlag: boolean = false;
+  distanceEnum :any;
+  durationEnum :any = 'S';
+  POIEnum  :any;
+  distanceUnit: any;
+  poiUnit: any;
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -119,14 +126,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialog: MatDialog,
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
-              private el: ElementRef) {
+              private el: ElementRef,
+              private reportMapService: ReportMapService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
    }
 
   ngOnInit(): void {
-    console.log(this.displayedColumnsPOI[0]);
+    console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId= parseInt(localStorage.getItem("accountId"));
@@ -148,6 +156,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
     if(this.actionType == 'create'){
+      this.setUnitsAsPrefData();
     this.alertAdvancedFilterForm.get('poiSite').setValue('E');
     }
     if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
@@ -166,10 +175,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
     else{
       this.enteringFlag =true;
     }
+
+    if(this.alert_category_selected+this.alert_type_selected != 'LS'){
     this.loadMapData();
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
+    }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOn == 'C'){
       this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
@@ -190,7 +202,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
         if(element.filterType == 'T')
         {
           this.isDistanceSelected =true;
-          this.alertAdvancedFilterForm.get('distance').setValue(element.thresholdValue);
+          let threshold = this.convertValues(element.thresholdValue,element.unitType);
+          this.alertAdvancedFilterForm.get('distance').setValue(threshold);
         }
         if(element.filterType == 'D')
         {
@@ -217,6 +230,43 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
         
       });
+  }
+
+  convertValues(threshold, unitType){
+    let val;
+    if(unitType == 'F'){
+      val = this.reportMapService.convertMetersToFt(threshold);
+    }
+    else{
+      val = threshold;
+    }
+    return val;
+  }
+
+  convertLengthToMeter(length){
+    let val;
+    if(this.distanceEnum == 'F'){
+      val = this.reportMapService.convertFtToMeters(length);
+    }
+    else{
+      val = length;
+    }
+    return val;
+  }
+
+  setUnitsAsPrefData(){
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      this.distanceEnum = 'M';
+      this.distanceUnit = this.translationData.lblMeter || 'm';
+      this.POIEnum = 'K';
+      this.poiUnit = this.translationData.lblKilometer || 'Km';
+  }
+    else{
+      this.distanceEnum = 'F';
+      this.distanceUnit = this.translationData.lblFeet || 'ft';
+      this.POIEnum = 'L';
+      this.poiUnit = this.translationData.lblMiles || 'Miles';
+    }
   }
 
   onChangeDistance(event: any){
@@ -1177,7 +1227,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": "N",
         "refId": 0,
         "positionType": this.selectedPoiSite,
@@ -1402,7 +1452,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
         "positionType": this.selectedPoiSite,
@@ -1421,7 +1471,9 @@ else{
 
       if(this.isDistanceSelected){
       this.filterType = 'T';
-      this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let val = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let length = this.convertLengthToMeter(val);
+      this.thresholdVal = length;
       if(this.alertAdvancedFilterForm.controls.distance.value == ""){
         const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'distance' + '"]');
         if (invalidControl) { 
@@ -1445,7 +1497,7 @@ else{
       "alertUrgencyLevelId": 0,
       "filterType": "T",
       "thresholdValue": this.thresholdVal,
-      "unitType": "N",
+      "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
       "positionType": this.selectedPoiSite,
@@ -1664,7 +1716,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
         "positionType": this.selectedPoiSite,
@@ -1683,7 +1735,10 @@ else{
 
     if(this.isDistanceSelected){
       this.filterType = 'T';
-      this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      // this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let val = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let length = this.convertLengthToMeter(val);
+      this.thresholdVal = length;
       if(this.alertAdvancedFilterForm.controls.distance.value == ""){
         const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'distance' + '"]');
         if (invalidControl) { 
@@ -1707,7 +1762,7 @@ else{
       "alertUrgencyLevelId": 0,
       "filterType": "T",
       "thresholdValue": this.thresholdVal,
-      "unitType": "N",
+      "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
       "positionType": this.selectedPoiSite,

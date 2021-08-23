@@ -1218,6 +1218,16 @@ export class ReportMapService {
     return (_data*100).toFixed(2);
   }
 
+  convertFuelConsumptionL100kmToMpg(_data: any){ // as value is sent in L/100Km - convert to mpg
+    let data: any = (282.481 / _data);
+    return (data).toFixed(6); 
+  }
+
+  convertFuelConsumptionMpgToL100km(_data: any){ // convert from mpg to L/100Km
+    let data: any = (282.481 / _data);
+    return (data).toFixed(2); 
+  }
+
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
     return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
@@ -1235,7 +1245,7 @@ export class ReportMapService {
     let _data: any;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _data = tonFlag ? this.convertKgToTonnes(data) : data; //-- kg/ton
+        _data = this.convertKgToTonnes(data); //-- ton
         break;
       }
       case 'dunit_Imperial': {
@@ -1304,25 +1314,39 @@ export class ReportMapService {
   }
 
   meterToKm(_data: any){
-    return (_data/1000).toFixed(2);
+    return parseInt((_data/1000).toFixed(2));
+  }
+
+  kmToMeter(_data: any){
+    return parseInt((_data*1000).toFixed(2));
   }
 
   meterToMile(_data: any){
     let km: any = this.meterToKm(_data);
     let mile = km/1.6;
-    return mile.toFixed(2);
+    return parseInt(mile.toFixed(2));
+  }
+
+  mileToKm(_data: any){
+    let km: any = _data * 1.6;
+    return parseInt(km.toFixed(2));
+  }
+
+  mileToMeter(_data: any){
+    let km: any = this.mileToKm(_data);
+    return this.kmToMeter(km);
   }
 
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedTripTime = this.getHhMmTime(element.tripTime);
+      element.convertedTripTime = Util.getHhMmTimeFromMS(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
     
@@ -1362,7 +1386,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
-      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat);
+      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
@@ -1419,11 +1443,11 @@ export class ReportMapService {
       gridData.driverId = gridData.driverId;
       gridData.startTime = this.getStartTime(gridData.startTime, dateFormat, timeFormat, timeZone);
       gridData.endTime = this.getEndTime(gridData.endTime, dateFormat, timeFormat, timeZone);
-      gridData.driveTime = this.getHhMmTime(gridData.driveTime);
-      gridData.workTime = this.getHhMmTime(gridData.workTime);
-      gridData.serviceTime = this.getHhMmTime(gridData.serviceTime);
-      gridData.restTime = this.getHhMmTime(gridData.restTime);
-      gridData.availableTime = this.getHhMmTime(gridData.availableTime);
+      gridData.driveTime = Util.getHhMmTimeFromMS(gridData.driveTime);
+      gridData.workTime =  Util.getHhMmTimeFromMS(gridData.workTime);
+      gridData.serviceTime =  Util.getHhMmTimeFromMS(gridData.serviceTime);
+      gridData.restTime =  Util.getHhMmTimeFromMS(gridData.restTime);
+      gridData.availableTime =  Util.getHhMmTimeFromMS(gridData.availableTime);
    // });
     return gridData;
   }
@@ -1436,21 +1460,21 @@ export class ReportMapService {
         driverName : element.driverName,
       driverId : element.driverId,
       startTime : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
-      driveTime : this.getHhMmTime(element.driveTime),
-      workTime : this.getHhMmTime(element.workTime),
-      serviceTime : this.getHhMmTime(element.serviceTime),
-      restTime : this.getHhMmTime(element.restTime),
-      availableTime : this.getHhMmTime(element.availableTime),
+      driveTime : Util.getHhMmTimeFromMS(element.driveTime),
+      workTime : Util.getHhMmTimeFromMS(element.workTime),
+      serviceTime : Util.getHhMmTimeFromMS(element.serviceTime),
+      restTime : Util.getHhMmTimeFromMS(element.restTime),
+      availableTime : Util.getHhMmTimeFromMS(element.availableTime),
       })
       
     });
     return _gridData;
   }
 
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime ,onlyTime);
     }
     return sTime;
   }
@@ -1470,11 +1494,11 @@ export class ReportMapService {
     let _fuelConsumed: any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        _fuelConsumed = litreFlag ? (fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
         break;
       }
       case 'dunit_Imperial':{
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionL100kmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
         break;
       }
       default: {
@@ -1604,24 +1628,7 @@ export class ReportMapService {
     return data;
   }
 
-  getTimeInSeconds(timeValue, unit){
-    let seconds: any;
-    switch(unit){
-      //hrs to seconds
-      case 'H':{
-        seconds = timeValue * 3600;
-        break;
-      }
-      //minutes to seconds
-      case 'M':{
-        seconds = timeValue * 60;
-        break;
-      }
-      return seconds; 
-    }
-  }
-
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
@@ -1642,6 +1649,9 @@ export class ReportMapService {
       _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
+    }
+    if(onlyTime){
+      return _time; // returns only time
     }
     switch(dateFormat){
       case 'ddateformat_dd/mm/yyyy': {
@@ -1683,7 +1693,127 @@ export class ReportMapService {
 
       }
     }
-    return _date;
+    return _date; //returns dateTime if addTime is true or date if addTime is false
   }
    
+  getTimeInSeconds(timeValue, unit){
+    let seconds: any;
+    switch(unit){
+      //hrs to seconds
+      case 'H':{
+        seconds = timeValue * 3600;
+        break;
+      }
+      //minutes to seconds
+      case 'T':{
+        seconds = timeValue * 60;
+        break;
+      }
+      default: {
+        seconds = timeValue;
+      }
+    }
+    return seconds; 
+  }
+
+  getConvertedTime(seconds, unit){
+    let timeValue: any;
+    switch(unit){
+      //seconds to hrs 
+      case 'H':{
+        timeValue = seconds / 3600;
+        break;
+      }
+      //seconds to minutes 
+      case 'T':{
+        timeValue = seconds / 60;
+        break;
+      }
+      default: {
+        timeValue = seconds;
+      }
+    }
+    return timeValue; 
+  }
+
+  getConvertedDistanceToMeter(val ,unit){
+    let distance;
+    switch(unit){
+      //Km to meter 
+      case 'K':{
+        distance = val * 1000;
+        break;
+      }
+      //Miles to meter 
+      case 'L':{
+        distance = val * 1609;
+        break;
+      }
+    }
+    return distance; 
+  }
+
+  getConvertedDistance(val ,unit){
+    let distance;
+    switch(unit){
+      //meter to Km
+      case 'K':{
+        distance = val / 1000;
+        break;
+      }
+      //meter to Miles
+      case 'L':{
+        distance = (val / 1609);
+        break;
+      }
+    }
+    return Math.round(distance); 
+  }
+
+  getConvertedSpeedToMeterPerSec(val ,unit){
+    let speed;
+    switch(unit){
+      //Km/h to m/s
+      case 'A':{
+        speed = (val * 5) /18;
+        break;
+      }
+      //miles/h to m/s
+      case 'B':{
+        speed = (val /2.237);
+        break;
+      }
+    }
+    return parseFloat(speed.toFixed(2)); 
+  }
+
+  getConvertedSpeed(val ,unit){
+    let speed;
+    switch(unit){
+      // m/s to Km/h
+      case 'A':{
+        speed = (val * 18) /5;
+        break;
+      }
+      // m/s to miles/h
+      case 'B':{
+        speed = (val * 2.237);
+        break;
+      }
+    }
+    return Math.round(speed); 
+  }
+
+  convertFtToMeters(length){
+    let meter;
+    meter = length / 3.281;
+    return parseFloat(meter.toFixed(2));
+  }
+
+  convertMetersToFt(length){
+    let ft;
+    ft = length * 3.281;
+    return Math.round(ft);
+  }
+
 }

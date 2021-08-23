@@ -157,7 +157,12 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -361,8 +366,16 @@ export class UserManagementComponent implements OnInit {
   }
 
   makeRoleAccountGrpList(initdata: any){
-    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    initdata = initdata.filter(item => item.id != accountId);
+    let _flag: any = true;
+    if(localStorage.getItem('contextOrgId')){
+      if(parseInt(localStorage.getItem('contextOrgId')) !== parseInt(localStorage.getItem('accountOrganizationId'))){
+        _flag = false;
+      }
+    }
+    if(_flag){
+      let accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+      initdata = initdata.filter(item => item.id != accountId);
+    }
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';

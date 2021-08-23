@@ -20,12 +20,12 @@ namespace net.atos.daf.ct2.reports.repository
                 string query = @"Select
                                 trips.vin,
                                 veh.name as VehicleName,
-                                Round(SUM(trips.etl_gps_fuel_consumed),2) as FuelConsumption
+                                 Round(SUM(trips.fuel_consumption),2) as FuelConsumption
                                 From
                                 tripdetail.trip_statistics as trips
                                 Left JOIN master.vehicle as veh
                                 ON trips.vin = veh.vin
-                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
                                 AND trips.VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.reports.repository
                 IEnumerable<Ranking> rankingList = await _dataMartdataAccess.QueryAsync<Ranking>(query, param);
                 return rankingList;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -53,10 +53,10 @@ namespace net.atos.daf.ct2.reports.repository
                                 @totalActiveVehicle as numbersofactivevehicle                                                  		 
                                 , SUM(etl_gps_distance) as totalmileage
                                 , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
-                                , Round(SUM(etl_gps_fuel_consumed)/ @totalActiveVehicle,2) as averagefuelconsumption
+                                , Round(SUM(fuel_consumption)/ @totalActiveVehicle,2) as averagefuelconsumption
                                 From
                                 tripdetail.trip_statistics 
-                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
                                 AND VIN=ANY(@vin)";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);

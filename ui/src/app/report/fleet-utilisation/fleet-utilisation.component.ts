@@ -36,6 +36,8 @@ import * as fs from 'file-saver';
 })
 
 export class FleetUtilisationComponent implements OnInit, OnDestroy {
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -180,25 +182,26 @@ barChartOptions: any = {
   scales: {
     yAxes: [{
       id: "y-axis-1",
-      position: 'left',
+      position: 'right',
       type: 'linear',
       ticks: {
         beginAtZero:true
       },
       scaleLabel: {
         display: true,
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)'
-      }} ,{
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)' 
+        }} ,{
         id: "y-axis-2",
-        position: 'right',
+        position: 'left',
         type: 'linear',
-        ticks: {
+        ticks: {        
+          steps: 10,
+          stepSize: 1,
           beginAtZero:true,
-          labelString: 'Attendace'
         },
         scaleLabel: {
-          display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)' 
+          display: true,       
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)'
         }
       }
     ]
@@ -227,29 +230,31 @@ distanceLineChartOptions = {
   responsive: true,
   legend: {
     position: 'bottom',
-  },
+     },  
   scales: {
     yAxes: [{
       id: "y-axis-1",
-      position: 'left',
-      type: 'linear',
-      ticks: {
+      position: 'right',
+      type: 'linear',     
+       ticks: {
         beginAtZero: true,
       },
       scaleLabel: {
-        display: true,
-        labelString: 'value(number of vehicles)'    
-      }
+        display: true, 
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)'    
+       }
     },{
       id: "y-axis-2",
-      position: 'right',
-      type: 'linear',
+      position: 'left',
+      type: 'linear',          
       ticks: {
+        steps: 10,
+        stepSize: 1,
         beginAtZero:true,
       },
       scaleLabel: {
-        display: true,
-        labelString: 'Attendace'    
+        display: true,    
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)',
       }
     }]
   }
@@ -441,6 +446,15 @@ calendarOptions: CalendarOptions = {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+
       });
     });
   }
@@ -549,9 +563,13 @@ calendarOptions: CalendarOptions = {
     });
   }
 
+  calenderCardView: boolean = true;
   preparePrefData(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
+        if(element.key == 'rp_fu_report_calendarview'){
+          this.calenderCardView = (element.state == 'A') ? true : false;
+        }
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
@@ -582,6 +600,7 @@ calendarOptions: CalendarOptions = {
   avgDistanceStatus: boolean = false;
 
   setDefaultAttributeBaseOnPref(){
+    let prefUnit = (this.prefUnitFormat == 'dunit_Metric') ? 'km' :'miles'
     if(this.detailColumnData.length > 0){ // details section
       let filterPref = this.detailColumnData.filter(i => i.state == 'I');
       if(filterPref.length > 0){
@@ -646,8 +665,8 @@ calendarOptions: CalendarOptions = {
           this.mileageBasedChart.thresholdType = element.thresholdType;
           this.mileagebasedThreshold = parseInt(element.thresholdValue);
           this.mileageDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} km`, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} km`]
-          this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} km`, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} km`]
+          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
+          this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
         }else if(element.key == "rp_fu_report_chart_timebased"){
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;
@@ -962,7 +981,7 @@ calendarOptions: CalendarOptions = {
   assignChartData(){
     this.barChartData = [
       { 
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(mile/day)',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)',
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
@@ -970,7 +989,7 @@ calendarOptions: CalendarOptions = {
         data: this.averageDistanceBarData,	    
         },
         {
-          label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(mile)',
+          label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(miles)',
           type: 'bar',
           backgroundColor: '#4679CC',
           hoverBackgroundColor: '#4679CC',
@@ -978,22 +997,25 @@ calendarOptions: CalendarOptions = {
           data: this.barVarticleData
         },
     ];
+    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
+    
     this.distanceLineChartData = [
       { 
         data: this.averageDistanceBarData,
         yAxesID: "y-axis-1",
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(mile/day)'
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)'
       },
       { 
-        data: this.barVarticleData, 
+        data: this.barVarticleData,        
         yAxesID: "y-axis-2",
-        label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(mile)' 
+        label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(miles)',
+             
+          
       },
     ];
-    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
-    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)';
-    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
-    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)';
+   this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
+    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
     ];
@@ -1035,11 +1057,13 @@ calendarOptions: CalendarOptions = {
         break;
       }
       case "rp_fu_report_calendarview_timebasedutlisation": { // time based utilisation
-        this.calendarOptions.events =[ {title : `${(element.averagedrivingtime/this.timebasedThreshold) * 100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : ((element.averagedrivingtime/this.timebasedThreshold) * 100);
+        this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
-        this.calendarOptions.events =[ {title : `${(element.averagedistanceperday/this.mileagebasedThreshold)*100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistanceperday/this.mileagebasedThreshold)*100);
+        this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
       case "rp_fu_report_calendarview_totaltrips": { // total trip 
@@ -1516,8 +1540,8 @@ getAllSummaryData(){
   const title = 'Trip Fleet Utilisation Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'miles') : (this.translationData.lblmile || 'miles');
+  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'miles/h') : (this.translationData.lblmileh || 'miles/h');
   let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
   
   const header = ['Vehicle Name', 'Vin', 'Registration Number', 'Distance('+ unitValkm + ')', 'Number Of Trips', 'Trip Time(hh:mm)', 'Driving Time(hh:mm)', 'Idle Duration(hh:mm)', 'Stop Time(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Average Distance Per Day('+ unitValkm + ')', 'Odometer('+ unitValkg + ')'];

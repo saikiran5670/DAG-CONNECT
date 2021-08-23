@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.poigeofenceservice.Services;
@@ -56,6 +58,10 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<ILandmarkgroupRepository, LandmarkgroupRepository>();
             services.AddTransient<ICorridorManger, CorridorManger>();
             services.AddTransient<ICorridorRepository, CorridorRepository>();
+            services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
+            services.AddTransient<ILandmarkAlertCdcManager, LandmarkAlertCdcManager>();
+            services.AddTransient<ILandmarkAlertCdcRepository, LandmarkAlertCdcRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

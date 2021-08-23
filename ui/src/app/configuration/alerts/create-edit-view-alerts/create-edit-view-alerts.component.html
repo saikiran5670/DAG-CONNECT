@@ -2,7 +2,7 @@
 <div class='alertsMainDiv'>
    <div *ngIf="actionType == 'create' || actionType == 'edit' || actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'> 
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-    <span>{{ breadcumMsg }}</span>
+    <span style='font-family: Roboto, "Helvetica Neue", sans-serif;'>{{ breadcumMsg }}</span>
   </div>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
@@ -136,7 +136,9 @@
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
                       <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
-                          {{vehicle.vin}}
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehicle.vehicleName}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehicle.vin}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehicle.registrationNo ? vehicle.registrationNo : vehicle.vehicleName}} </span>
                       </mat-option>
                   </mat-select>
               </mat-form-field>
@@ -248,6 +250,7 @@
             [alert_type_selected] = 'alert_type_selected'
             [selectedRowData] = 'selectedRowData'
             [actionType] = 'actionType'
+            [prefUnitFormat] ='prefUnitFormat'
             (isAdvancedAlertPayload) = 'onAdvancedAlertPayload($event)'>
           </app-alert-advanced-filter>
         </mat-card>
@@ -296,7 +299,8 @@
               <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label formControlName="levelType">{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
+                    <input type="hidden" formControlName="levelType">
+                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
                   </div>
                   <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblThreshold || 'Threshold' }} </mat-label>  
@@ -391,7 +395,7 @@
           
 <div class="areawidth" *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
 (alert_category_selected === 'L' && alert_type_selected === 'C')">
-  <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+  <span>{{ translationData.lblWidth|| 'Width' }} ({{ ( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles') }}):
     <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
     <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
 </span>
@@ -607,7 +611,9 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*
+                    <span *ngIf="actionType != 'view' && selectedCorridor.selected.length == 0"> Please select atleast one corridor</span>
+                  </span></span>
                 </mat-panel-title>
                 </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>

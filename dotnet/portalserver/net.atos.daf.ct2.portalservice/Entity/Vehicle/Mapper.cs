@@ -14,6 +14,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             vehicle.LicensePlateNumber = request.License_Plate_Number ?? string.Empty;
             vehicle.OrganizationId = request.Organization_Id;
             return vehicle;
+        }
+
+        public VehicleManagementResponse ToVehicle(VehicleBusinessService.VehicleList response)
+        {
+            var vehicle = new VehicleManagementResponse();
+            if (response == null) return vehicle;
+
+            vehicle.Id = response.Id;
+            vehicle.Name = response.Name;
+            vehicle.Status = response.Status;
+            vehicle.Vin = response.Vin;
+            vehicle.LicensePlateNumber = response.LicensePlateNumber;
+            vehicle.ModelId = response.ModelId;
+            vehicle.Opt_In = response.OptIn;
+            vehicle.RelationShip = response.RelationShip;
+            vehicle.HasOwned = response.HasOwned;
+            return vehicle;
 
         }
 
@@ -89,6 +106,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public List<VehicleResponse> ToVehicles(VehicleBusinessService.VehicleListResponce response)
         {
             var vehicles = new List<VehicleResponse>();
+            if (response == null || response.Vehicles == null) return vehicles;
+            foreach (var vehicle in response.Vehicles)
+            {
+                vehicles.Add(ToVehicle(vehicle));
+            }
+            return vehicles;
+        }
+
+        public List<VehicleManagementResponse> ToVehicles(VehicleBusinessService.VehiclesResponse response)
+        {
+            var vehicles = new List<VehicleManagementResponse>();
             if (response == null || response.Vehicles == null) return vehicles;
             foreach (var vehicle in response.Vehicles)
             {

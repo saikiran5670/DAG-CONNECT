@@ -1,0 +1,355 @@
+{
+	"name": "VehicleFuelTankProperties",
+	"properties": {
+		"activities": [
+			{
+				"name": "VehicleFuelTankProperties_CT1",
+				"description": "Migrate Organization data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureMySqlSource",
+						"query": "select distinct vh.id,\nvh.vehicle_vid,\nvh.extra_chassis_number as chasis_fuel_tank_number,\nvh.extra_volume_fuel_tank as chasis_fuel_tank_volume\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nWHERE vh.extra_chassis_number is not null;",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "vehicle_vid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "vehicle_vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties_CT1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties_Source",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "VehicleFuelTankProperties_CHG",
+				"description": "Compares source and target and find the records for upsert",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "VehicleFuelTankProperties_CT1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT DISTINCT\n\tcoalesce(L.ID,0) AS ID,\n\tvh.ID as VEHICLE_ID                      ,  \nS.CHASIS_FUEL_TANK_NUMBER                              ,\nS.CHASIS_FUEL_TANK_VOLUME                                       ,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMeSTAMP AS LOAD_DT\n\t\nFROM\n       public.VehicleFuelTankProperties S\nJOIN master.vehicle vh\non vh.vid = S.vehicle_vid\nLEFT JOIN \n       master.VehicleFuelTankProperties L\nON vh.id = L.vehicle_id\n\nWHERE (\nS.CHASIS_FUEL_TANK_NUMBER\t<>\tL.CHASIS_FUEL_TANK_NUMBER  OR\n\tS.CHASIS_FUEL_TANK_VOLUME\t<>\tL.CHASIS_FUEL_TANK_VOLUME  OR\n\t    L.ID IS NULL\n);"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLEFUELTANKPROPERTIES_CHG;",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp with time zone"
+								},
+								"sink": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							},
+							{
+								"source": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties_Source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties_CHG",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update_VehicleFuelTankProperties_X",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "VehicleFuelTankProperties_CHG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "UPDATE MASTER.VehicleFuelTankProperties L \nSET\t \nCHASIS_FUEL_TANK_NUMBER\t=\tS.CHASIS_FUEL_TANK_NUMBER  ,\nCHASIS_FUEL_TANK_VOLUME\t=\tS.CHASIS_FUEL_TANK_VOLUME  \nFROM    staging.VehicleFuelTankProperties_CHG S\nWHERE L.vehicle_id = S.vehicle_id \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehiclefueltankproperties_chg;"
+					},
+					"dataset": {
+						"referenceName": "VehicleFuelTankProperties",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "VehicleFuelTankProperties",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Update_VehicleFuelTankProperties_X",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \nE.vehicle_id       ,\nE.CHASIS_FUEL_TANK_NUMBER                  ,\nE.CHASIS_FUEL_TANK_VOLUME\nFROM staging.VehicleFuelTankProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VehicleFuelTankProperties L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tCHASIS_FUEL_TANK_NUMBER;\n"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_number",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_fuel_tank_volume",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties_CHG",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleFuelTankProperties",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-08-18T13:28:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

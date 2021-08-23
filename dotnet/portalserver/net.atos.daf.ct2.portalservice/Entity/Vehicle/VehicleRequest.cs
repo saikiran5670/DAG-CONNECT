@@ -55,4 +55,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public int VehiclePropertiesId { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
+
+    public class VehicleManagementResponse
+    {
+        public bool HasOwned { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Vin { get; set; }
+        public string LicensePlateNumber { get; set; }
+        public string Status { get; set; }
+        public string ModelId { get; set; }
+        public string Opt_In { get; set; }
+        public string RelationShip { get; set; }
+    }
 }

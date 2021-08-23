@@ -422,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
                 var accountRequest = new AccountBusinessService.AccountOrganization();
-                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+                accountRequest.OrganizationId = GetContextOrgId();
                 accountRequest.AccountId = request.AccountId;
                 accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 accountRequest.EndDate = 0;
@@ -1619,7 +1619,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoleRequest roles = new AccountBusinessService.AccountRoleRequest();
 
                 roles = _mapper.ToRole(request);
-                roles.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+                roles.OrganizationId = GetContextOrgId();
 
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(roles);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)

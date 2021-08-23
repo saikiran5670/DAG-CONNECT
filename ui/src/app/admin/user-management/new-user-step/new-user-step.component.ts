@@ -110,11 +110,12 @@ export class NewUserStepComponent implements OnInit {
   }
 
   ngOnInit() {
-    // if(localStorage.getItem('contextOrgId') == localStorage.getItem('accountOrganizationId'))
-    //   this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    // else 
-    //   this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+    this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
@@ -130,14 +131,18 @@ export class NewUserStepComponent implements OnInit {
       dateFormat: ['', []],
       vehDisplay: ['',[]],
       timeFormat: ['',[]],
-      landingPage: ['',[]]
+      landingPage: ['',[]],
+      pageRefreshTime: ['', [Validators.required]]
+
     },
     {
       validator: [
         CustomValidators.specialCharValidationForName('firstName'),
         CustomValidators.numberValidationForName('firstName'),
         CustomValidators.specialCharValidationForName('lastName'), 
-        CustomValidators.numberValidationForName('lastName')
+        CustomValidators.numberValidationForName('lastName'),
+        CustomValidators.numberFieldValidation('pageRefreshTime', 60),
+        CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
       ]
     });
     this.orgName = localStorage.getItem("organizationName");
@@ -174,7 +179,19 @@ export class NewUserStepComponent implements OnInit {
       dateFormat: true,
       vehDisplay: true,
       timeFormat: true,
-      landingPage: true
+      landingPage: true,
+      pageRefreshTime : true
+    }
+  }
+
+  keyPressNumbers(event: any){
+    var charCode = (event.which) ? event.which : event.keyCode;
+    // Only Numbers 0-9
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -188,6 +205,7 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('vehDisplay').setValue(prefObj.vehicleDisplayId);
       this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
       this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
+      this.firstFormGroup.get('pageRefreshTime').setValue(prefObj.pageRefreshTime);
     }
     else{ //-- set org default setting
       this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
@@ -198,6 +216,7 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('vehDisplay').setValue((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id);
       this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);
       this.setDefaultOrgVal();
     }
    }
@@ -212,7 +231,7 @@ export class NewUserStepComponent implements OnInit {
     }
     else{
       let emitObj = {
-        stepFlag :false,
+        stepFlag: false,
         msg: ""
       }
       this.userCreate.emit(emitObj);
@@ -245,7 +264,9 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
+          pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
+          
         }
         let createPrefFlag = false;
         for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
@@ -255,12 +276,12 @@ export class NewUserStepComponent implements OnInit {
           }
         }
 
-        if(createPrefFlag){ //--- pref created
+        if(createPrefFlag || (parseInt(this.firstFormGroup.controls.pageRefreshTime.value) != this.orgPreference.pageRefreshTime)){ //--- pref created
           this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
-            this.goForword(createStatus);
+            this.saveAccountRoles(createStatus);
           });
         }else{ //--- pref not created
-          this.goForword(createStatus);
+          this.saveAccountRoles(createStatus);
         }
 
         if(this.croppedImage != ''){
@@ -291,13 +312,13 @@ export class NewUserStepComponent implements OnInit {
                this.duplicateEmailMsg = ("Email ID already registered with user '$'").replace('$', userName);
             }
         }
-       });
-      
-    //---- Role obj----------//
+      });
+  }
 
+  saveAccountRoles(_createStatus: any){    
+    //---- Role obj----------//
     this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
     let mapRoleData: any = [];
-    
     if(this.mapRoleIds.length > 0){
       mapRoleData = this.mapRoleIds;
     }
@@ -306,15 +327,18 @@ export class NewUserStepComponent implements OnInit {
     }
 
     let roleObj = {
-      accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
+      accountId: this.linkFlag ? this.linkAccountId : this.userData.id,
       organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
       roles: mapRoleData
     }
 
-    if(this.mapRoleIds.length > 0){
-      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
-           this.updateTableData(false);
-      }, (error) => {  });
+    if(this.mapRoleIds.length > 0){ // add roles
+      this.accountService.addAccountRoles(roleObj).subscribe((data: any)=>{
+        //this.updateTableData(false);
+        this.goForword(_createStatus);
+      }, (error) => { 
+        this.goForword(_createStatus);
+       });
     }
   }
 
@@ -383,27 +407,26 @@ export class NewUserStepComponent implements OnInit {
 
   onUpdateUserData(){
     //---- Role obj----------//
-    this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
-    let mapRoleData: any = [];
+    // this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
+    // let mapRoleData: any = [];
     
-    if(this.mapRoleIds.length > 0){
-      mapRoleData = this.mapRoleIds;
-    }
-    else{
-      mapRoleData = [0];
-    }
+    // if(this.mapRoleIds.length > 0){
+    //   mapRoleData = this.mapRoleIds;
+    // }
+    // else{
+    //   mapRoleData = [0];
+    // }
 
-    let roleObj = {
-      accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
-      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
-      roles: mapRoleData
-    }
+    // let roleObj = {
+    //   accountId: this.linkFlag ? this.linkAccountId : this.userData.id,
+    //   organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
+    //   roles: mapRoleData
+    // }
 
     //---- Accnt Grp obj----------//
     let mapGrpData: any = [];
     let mapGrpIds: any = this.selectionForUserGrp.selected.map(resp => resp.groupId);
-    if(mapGrpIds.length > 0)
-    {
+    if(mapGrpIds.length > 0){
       mapGrpIds.forEach(element => {
         mapGrpData.push({
           accountGroupId: element,
@@ -422,19 +445,27 @@ export class NewUserStepComponent implements OnInit {
       accounts: mapGrpData 
     }
 
-    if(this.mapRoleIds.length > 0 && mapGrpIds.length > 0){
-      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
-        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
-          this.updateTableData(false);
-        }, (error) => {  });
-      }, (error) => {  });
-    }else if(this.mapRoleIds.length > 0 && mapGrpIds.length == 0){
-      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
-           this.updateTableData(false);
-      }, (error) => {  });
-    }else if(this.mapRoleIds.length == 0 && mapGrpIds.length > 0){
-        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
-          this.updateTableData(false);
+    // if(this.mapRoleIds.length > 0 && mapGrpIds.length > 0){
+    //   this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+    //     this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+    //       this.updateTableData(false);
+    //     }, (error) => {  });
+    //   }, (error) => {  });
+    // }else if(this.mapRoleIds.length > 0 && mapGrpIds.length == 0){
+    //   this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+    //        this.updateTableData(false);
+    //   }, (error) => {  });
+    // }else if(this.mapRoleIds.length == 0 && mapGrpIds.length > 0){
+    //     this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+    //       this.updateTableData(false);
+    //   }, (error) => {  });
+    // }else{
+    //   this.onCancel(true);
+    // }
+
+    if(mapGrpIds.length > 0){
+      this.accountService.addAccountGroups(grpObj).subscribe((data: any)=>{
+        this.updateTableData(false);
       }, (error) => {  });
     }else{
       this.onCancel(true);
@@ -514,16 +545,23 @@ export class NewUserStepComponent implements OnInit {
 
   getUserCreatedMessage(createStatus: any){
     this.userName = `${this.firstFormGroup.controls.salutation.value} ${this.firstFormGroup.controls.firstName.value} ${this.firstFormGroup.controls.lastName.value}`;  
+    let _txt: any = '';
     if(createStatus){
+      if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+      }
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
-        return this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName);
+        return `${this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
       else
-        return ("New Account '$' Created Successfully").replace('$', this.userName);
+        return `${("New Account '$' Created Successfully").replace('$', this.userName)}. ${_txt}`;
     }else{
+      if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+      }
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+        return `${this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
       else
-        return ("Account '$' Updated Successfully").replace('$', this.userName);
+        return  `${("Account '$' Updated Successfully").replace('$', this.userName)}. ${_txt}`;
     }
   }
 
@@ -691,33 +729,36 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
+          pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
         }
         if(this.prefId != 0){
           this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
-            this.linkStatusStepper(linkStatus);
+            this.saveAccountRoles(linkStatus);
+            //this.linkStatusStepper(linkStatus);
           });
         }
         else{ //if prefId == 0
-          this.linkStatusStepper(linkStatus);
+          this.saveAccountRoles(linkStatus);
+          //this.linkStatusStepper(linkStatus);
         }
       });
     });
   }
 
-  linkStatusStepper(linkStatus: any){
-    if(linkStatus){
-      this.updateTableData(linkStatus);
-    }
-    else{
-      this.userCreatedMsg = this.getUserCreatedMessage(true);
-      this.grpTitleVisible = true;
-      setTimeout(() => {  
-        this.grpTitleVisible = false;
-      }, 5000);
-      this.stepper.next();
-    }
-  }
+  // linkStatusStepper(linkStatus: any){
+  //   if(linkStatus){
+  //     this.updateTableData(linkStatus);
+  //   }
+  //   else{
+  //     this.userCreatedMsg = this.getUserCreatedMessage(true);
+  //     this.grpTitleVisible = true;
+  //     setTimeout(() => {  
+  //       this.grpTitleVisible = false;
+  //     }, 5000);
+  //     this.stepper.next();
+  //   }
+  // }
 
   onDropdownChange(event: any, value: any){
     switch(value){

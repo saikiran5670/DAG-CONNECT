@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.reports.entity
         public long? Lcts_TripEndTime { get; set; }
         public string Lcts_Driver1Id { get; set; }
         public int Lcts_TripDistance { get; set; }
-        public int Lcts_DrivingTime { get; set; }
+        public long Lcts_DrivingTime { get; set; }
         public int Lcts_FuelConsumption { get; set; }
         public string Lcts_VehicleDrivingStatus_type { get; set; }
         public long Lcts_OdometerVal { get; set; }

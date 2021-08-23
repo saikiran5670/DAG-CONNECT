@@ -69,6 +69,7 @@ export class EditViewUserComponent implements OnInit {
   vehicleDisplayData: any;
   landingPageDisplayData: any;
   accountOrganizationId: any;
+  pageRefreshTime: any;
   blobId: number= 0;
   imageError= '';
   profilePicture: any= '';
@@ -89,7 +90,13 @@ export class EditViewUserComponent implements OnInit {
       dateFormat: ['', []],
       vehDisplay: ['',[]],
       timeFormat: ['',[]],
-      landingPage: ['',[]]
+      landingPage: ['',[]],
+      pageRefreshTime: ['', [Validators.required]]
+    },{
+      validator: [
+        CustomValidators.numberFieldValidation('pageRefreshTime', 60),
+        CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
+      ]
     });
 
     this.accountInfoForm = this._formBuilder.group({
@@ -109,7 +116,12 @@ export class EditViewUserComponent implements OnInit {
       ]
     });
     this.accountInfoData.organization = localStorage.getItem("organizationName");
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userTypeList = [
       {
         name: this.translationData.lblPortalUser || 'Portal Account',
@@ -145,6 +157,17 @@ export class EditViewUserComponent implements OnInit {
       vehDisplay: flag,
       timeFormat: flag,
       landingPage: flag
+    }
+  }
+
+  keyPressNumbers(event: any){
+    var charCode = (event.which) ? event.which : event.keyCode;
+    // Only Numbers 0-9
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -236,6 +259,8 @@ export class EditViewUserComponent implements OnInit {
         this.generalSettingForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : this.defaultSetting.timeFormatDropdownData[0].id);
         this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.defaultSetting.vehicleDisplayDropdownData[0].id);
         this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+        this.generalSettingForm.get('pageRefreshTime').setValue(this.pageRefreshTime ? this.pageRefreshTime : 1);
+        
       });
       if(this.accountInfoData.preferenceId > 0){
         this.setDefaultOrgVal(false); //-- normal color
@@ -255,6 +280,7 @@ export class EditViewUserComponent implements OnInit {
     this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === ((accountPreferenceData.timeFormatId && accountPreferenceData.timeFormatId != '') ? accountPreferenceData.timeFormatId : this.defaultSetting.timeFormatDropdownData[0].id));
     this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.vehicleDisplayId && accountPreferenceData.vehicleDisplayId != '') ? accountPreferenceData.vehicleDisplayId : this.defaultSetting.vehicleDisplayDropdownData[0].id));
     this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.landingPageDisplayId && accountPreferenceData.landingPageDisplayId != '') ? accountPreferenceData.landingPageDisplayId : this.defaultSetting.landingPageDisplayDropdownData[0].id));
+    this.pageRefreshTime = accountPreferenceData.pageRefreshTime;
   }
 
   toBack(){
@@ -306,7 +332,9 @@ export class EditViewUserComponent implements OnInit {
       dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
       timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
       vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
-      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
+      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id,
+      pageRefreshTime: this.generalSettingForm.controls.pageRefreshTime.value ? parseInt(this.generalSettingForm.controls.pageRefreshTime.value) : this.pageRefreshTime
+      
     }
 
     if(this.accountInfoData.preferenceId > 0){ //-- update pref
@@ -322,7 +350,7 @@ export class EditViewUserComponent implements OnInit {
           break;
         }
       }
-      if(this.createPrefFlag){ //-- pref created
+      if(this.createPrefFlag || (parseInt(this.generalSettingForm.controls.pageRefreshTime.value) != this.pageRefreshTime)){ //-- pref created
         this.accountService.createPreference(objData).subscribe((prefData: any) => {
           this.selectedPreference = prefData;
           this.accountInfoData.preferenceId = prefData.id;

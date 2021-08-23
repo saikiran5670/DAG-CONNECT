@@ -56,6 +56,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
   FuelData: any;
   graphData: any;
@@ -188,7 +190,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'meter'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
         }
       }]
     }
@@ -214,7 +216,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'ltr'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'    
         }
       }]
     }
@@ -240,12 +242,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'Ton'    
         }
       }]
     }
   };
-
   lineChartOptions5 = {
     responsive: true,
     legend: {
@@ -267,7 +268,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: ''    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
         }
       }]
     }
@@ -284,7 +285,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   lineChartType = 'line';
   barChartOptions= {
     responsive: true,
-    legend: {
+      legend: {
       position: 'bottom',
     },
     scales: {
@@ -299,9 +300,117 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: 'Number of Trips'    
         }}
-      ]}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,         
+        }
+      ]
+    },
   };
-
+  barChartOptions1= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes'       
+        }}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,
+        }
+      ]
+    },
+  };
+  barChartOptions2= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  
+        }}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,
+        }
+      ]
+    },
+  };
+  barChartOptions4= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Ton'    
+        }}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,
+          // gridLines: {
+          //   drawOnChartArea: false
+          // }
+        }
+      ]
+    },
+  };
+  barChartOptions5= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,           
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
+        }}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,
+        }
+      ]
+    },
+  };
   barChartOptions3= {
     responsive: true,
     legend: {
@@ -317,9 +426,18 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Values (ltr)'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon' 
         }}
-      ]}
+      ],
+      xAxes:[
+        {
+          barThickness: 6,
+          // gridLines: {
+          //   drawOnChartArea: false
+          // }
+        }
+      ]
+    }
   };
 
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
@@ -391,17 +509,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
             this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
+            }, (error) => { // failed org API
             let pref: any = {};
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
-
-
   }
-
+  
   setGlobalSearchData(globalSearchFilterData:any) {
     this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
@@ -698,29 +822,50 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     return _date;
   }
 
-
   setChartData(graphData: any){
     graphData.forEach(e => {
       var date = new Date(e.date);
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      let convertedFuelConsumed = e.fuelConsumed / 1000;
-      this.fuelConsumedChart.push(convertedFuelConsumed);
+      //let convertedFuelConsumed = e.fuelConsumed / 1000;
+      // this.co2Chart.push(e.co2Emission);
+      // this.distanceChart.push(e.distance);
+      // this.fuelConsumptionChart.push(e.fuelConsumtion);
+      // let minutes = this.convertTimeToMinutes(e.idleDuration);
+      // // this.idleDuration.push(e.idleDuration);
+      // this.idleDuration.push(minutes);  
+      let convertedFuelConsumed = this.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
+      this.fuelConsumedChart.push(convertedFuelConsumed);      
       this.co2Chart.push(e.co2Emission);
-      this.distanceChart.push(e.distance);
-      this.fuelConsumptionChart.push(e.fuelConsumtion);
+      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
+      this.distanceChart.push(convertedDistance);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
+      this.fuelConsumptionChart.push(convertedFuelConsumption);      
       let minutes = this.convertTimeToMinutes(e.idleDuration);
-      // this.idleDuration.push(e.idleDuration);
-      this.idleDuration.push(minutes);
-    })
+      this.idleDuration.push(minutes);  
+     
+        
+    })   
 
     this.barChartLegend = true;
     this.barChartPlugins = [];
     if(this.ConsumedChartType == 'Bar'){
-    this.barChartData1= [
+      this.barChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+        }
+      }];      
+      this.barChartData1= [
       { data: this.fuelConsumedChart,
-        label: 'Values ()',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon', 
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -734,28 +879,52 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   if(this.Co2ChartType == 'Bar'){
     this.barChartData3= [
       { data: this.co2Chart,
-        label: 'Values ()',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ton' : 'Ton' ,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DistanceChartType == 'Bar'){
+    this.barChartOptions2.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'   
+      }
+    }]; 
     this.barChartData4= [
       { data: this.distanceChart,
-        label: 'Values ()',
+        label:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  ,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DurationChartType == 'Bar'){
+    this.barChartOptions5.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
+      }
+    }]; 
     this.barChartData5= [
       { data: this.fuelConsumptionChart,
-        label: 'Values ()',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  if(this.ConsumedChartType == 'Bar'){
+  if(this.ConsumedChartType == 'Bar'){   
     this.barChartData6= [
       { data: this.idleDuration,
-        label: 'Values ()',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes' ,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -763,7 +932,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon || 'Gallon');
       this.lineChartOptions3.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -773,10 +941,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: data1    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
         }
       }];
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon') },];
   }
     if(this.TripsChartType == 'Line')
     {
@@ -784,7 +952,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
     if(this.Co2ChartType == 'Line')
     {
-      let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+      let data2 = this.prefUnitFormat == 'dunit_Metric' ?  'Ton' : 'Ton';
       
         this.lineChartOptions4.scales.yAxes= [{
         id: "y-axis-1",
@@ -795,16 +963,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: data2    
+          labelString: 'Ton'    
         }
       }];
 
-    this.lineChartData3= [{ data: this.co2Chart, label: data2},];
+    this.lineChartData3= [{ data: this.co2Chart, label: 'Ton'},];
   }
     if(this.DistanceChartType == 'Line')
     {    
-      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-      this.lineChartOptions2.scales.yAxes= [{
+        this.lineChartOptions2.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
@@ -813,15 +980,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: data3    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles'    
         }
       }];
 
-    this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
+    this.lineChartData4= [{ data: this.distanceChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles') }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+   
       this.lineChartOptions5.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -831,10 +998,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: data4   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
         }
       }];
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon') }, ];
   }
     if(this.DurationChartType == 'Line')
     {
@@ -844,7 +1011,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.lineChartLabels = this.barChartLabels; 
     this.lineChartColors= [
       {
-        borderColor:'#7BC5EC'
+        borderColor:'#7BC5EC',
+        backgroundColor: 'rgba(255,255,0,0)',
       },
     ];
   
@@ -1503,12 +1671,46 @@ setVehicleGroupAndVehiclePreSelection() {
   exportAsPDFFile(){
     
     var doc = new jsPDF('p', 'mm', 'a4');
-   let rankingPdfColumns = [this.rankingColumns];
+   //let rankingPdfColumns = [this.rankingColumns];
+   let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+   let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
+   let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
+   let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
+   let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || ' mpg');
+   let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound ||  'pound');
+   
+   let rankingPdfColumns = [];
+   let rankingColumnHeads = [];
+   this.rankingColumns.forEach(element => {
+    switch(element){
+      case 'ranking' :{
+        rankingColumnHeads.push('Ranking');
+        break;
+      }
+      case 'vehicleName' :{
+        rankingColumnHeads.push('Vehicle Name');
+        break;
+      }
+      case 'vin' :{
+        rankingColumnHeads.push('VIN');
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        rankingColumnHeads.push('Vehicle Registration No');
+        break;
+      }
+      case 'fuelConsumption' :{
+        rankingColumnHeads.push('Fuel Consumption('+fuelCons+')');
+        break;
+      }
+    }
+  })
+  rankingPdfColumns.push(rankingColumnHeads);
    let prepareRanking = [];
 
    this.rankingData.forEach(e => {
 
-    var dataObj =[];
+    var dataObj =[];    
      this.rankingColumns.forEach(element => {
     switch(element){
       case 'ranking' :{
@@ -1547,13 +1749,152 @@ setVehicleGroupAndVehiclePreSelection() {
     //  })
 
 
-  let pdfColumns = [this.displayedColumns];
+  //let pdfColumns = [this.displayedColumns]; 
+  let pdfColumns = [];
+  let pdfColumnHeads=[];
+  this.displayedColumns.forEach(element => {
+    switch(element){
+      case 'vehicleName' :{
+        pdfColumnHeads.push('Vehicle Name');
+        break;
+      }
+      case 'vin' :{
+        pdfColumnHeads.push('VIN');
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        pdfColumnHeads.push('Vehicle Registration No');
+        break;
+      }
+      case 'distance' :{
+        pdfColumnHeads.push('Distance('+distance+')');
+        break;
+      }
+      case 'averageDistancePerDay' :{
+        pdfColumnHeads.push('Average Distance Per Day('+distance+')');
+        break;
+      }
+      case 'averageSpeed' :{
+        pdfColumnHeads.push('Average Speed('+speed+')');
+        break;
+      }
+      case 'maxSpeed' :{
+        pdfColumnHeads.push('Max Speed('+speed+')');
+        break;
+      }
+      case 'numberOfTrips' :{
+        pdfColumnHeads.push('Number Of Trips');
+        break;
+      }
+      case 'averageGrossWeightComb' :{
+        pdfColumnHeads.push('Average Gross Weight Comb('+ton+')');
+        break;
+      }
+      case 'fuelConsumed' :{
+        pdfColumnHeads.push('Fuel Consumed('+fuel+')');
+        break;
+      }
+      case 'fuelConsumption' :{
+        pdfColumnHeads.push('Fuel Consumption('+fuelCons+')');
+        break;
+      }
+      case 'cO2Emission' :{
+        pdfColumnHeads.push('CO2 Emission('+ton+')');
+        break;
+      }
+      case 'idleDuration' :{
+        pdfColumnHeads.push('Idle Duration%');
+        break;
+      }
+      case 'ptoDuration' :{
+        pdfColumnHeads.push('PTO Duration%');
+        break;
+      }
+      case 'harshBrakeDuration' :{
+        pdfColumnHeads.push('Harsh Brake Duration%');
+        break;
+      }
+      case 'heavyThrottleDuration' :{
+        pdfColumnHeads.push('Heavy Throttle Duration%');
+        break;
+      }
+      case 'cruiseControlDistance3050' :{
+        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')(%)');
+        break;
+      }
+      case 'cruiseControlDistance5075' :{
+        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')(%)');
+        break;
+      }
+      case 'cruiseControlDistance75' :{
+        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')(%)');
+        break;
+      }
+      case 'averageTrafficClassification' :{
+        pdfColumnHeads.push('Average Traffic Classification');
+        break;
+      }
+      case 'ccFuelConsumption' :{
+        pdfColumnHeads.push('CC Fuel Consumption('+fuelCons+')');
+        break;
+      }
+      case 'fuelconsumptionCCnonactive' :{
+        pdfColumnHeads.push('Fuel Consumption CC non active('+fuelCons+')' );
+        break;
+      }
+      case 'idlingConsumption' :{
+        pdfColumnHeads.push('Idling Consumption');
+        break;
+      }
+      case 'dpaScore' :{
+        pdfColumnHeads.push('DPA Score');
+        break;
+      }
+      case 'dpaAnticipationScore' :{
+        pdfColumnHeads.push('DPA Anticipation Score%');
+        break;
+      }
+      case 'dpaBrakingScore' :{
+        pdfColumnHeads.push('DPA Braking Score%');
+        break;
+      }
+      case 'idlingPTOScore' :{
+        pdfColumnHeads.push('Idling PTO(hh:mm:ss) Score');
+        break;
+      }
+      case 'idlingPTO' :{
+        pdfColumnHeads.push('Idling PTO%');
+        break;
+      }
+      case 'idlingWithoutPTO' :{
+        pdfColumnHeads.push('Idling Without PTO(hh:mm:ss)');
+        break;
+      }
+      case 'idlingWithoutPTOpercent' :{
+        pdfColumnHeads.push('Idling Without PTO %');
+        break;
+      }
+      case 'footBrake' :{
+        pdfColumnHeads.push('Foot Brake');
+        break;
+      }
+      case 'cO2Emmision' :{
+        pdfColumnHeads.push('CO2 Emmision (gr/km)');
+        break;
+      }      
+      case 'idlingConsumptionWithPTO' :{
+        pdfColumnHeads.push('Idling Consumption With PTO('+idlingPTO+')');
+        break;
+      }
+    }
+  })
+  pdfColumns.push(pdfColumnHeads);  
   let prepare = []
     this.displayData.forEach(e=>{
-      var tempObj =[];
+      var tempObj =[];    
       this.displayedColumns.forEach(element => {
         switch(element){
-          case 'vehicleName' :{
+          case 'vehicleName' :{            
             tempObj.push(e.vehicleName);
             break;
           }
@@ -1719,7 +2060,7 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Vehicle Details";
+            var fileTitle = "Fleet Fuel Report by Vehicle";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
   
@@ -1749,7 +2090,7 @@ setVehicleGroupAndVehiclePreSelection() {
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage('a1','p');
+        doc.addPage('a0','p');
 
       (doc as any).autoTable({
       head: pdfColumns,
@@ -1822,14 +2163,14 @@ setVehicleGroupAndVehiclePreSelection() {
       let s = this.displayData.forEach(element => {
         sum += parseFloat(element.idleDuration);
         });
-        sum = this.reportMapService.getHhMmTime(sum);
+        sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
         break;
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.convertedFuelConsumption);
       });
-      sum= sum.toFixed(2)*1;
+      sum= sum.toFixed(6)*1;
       break;
     }
     case 'co2emission': { 

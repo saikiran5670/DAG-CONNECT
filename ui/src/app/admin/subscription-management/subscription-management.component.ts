@@ -14,6 +14,8 @@ import { UserDetailTableComponent } from '../../admin/user-management/new-user-s
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { FormControl } from '@angular/forms';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-subscription-management',
@@ -26,7 +28,8 @@ export class SubscriptionManagementComponent implements OnInit {
   private requestBody: any;
   options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
-  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
+  //displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
+  displayedColumns = ['subscriptionId','packageCode', 'name', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
   vehicleDiaplayColumns = ['name', 'vin', 'licensePlateNumber'];
   openVehicleFlag: boolean = false;
   selectedElementData: any;
@@ -76,6 +79,7 @@ export class SubscriptionManagementComponent implements OnInit {
     }
   ];
   showLoadingIndicator: any = true;
+  filterData: any = [];
 
   constructor(
     private httpClient: HttpClient, 
@@ -187,6 +191,7 @@ export class SubscriptionManagementComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.subscriptionService.getSubscriptions(this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
+      this.filterData = this.initData;
       this.hideloader();
       this.getOrgListData();
       this.updatedTableData(this.initData);
@@ -235,8 +240,8 @@ export class SubscriptionManagementComponent implements OnInit {
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
       if(columnName == "packageCode" || columnName == "name"){
-        if(!(a instanceof Number)) a = a.toString().toUpperCase();
-        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+        if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
+        if(b && !(b instanceof Number)) b = b.toString().toUpperCase();
       }
       return (a<b ? -1 : 1) * (isAsc ? 1 : -1);
 
@@ -341,21 +346,21 @@ export class SubscriptionManagementComponent implements OnInit {
   applyFilterOnOrganization(filterValue: string){
       this.subscriptionService.getSubscriptions(filterValue).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
+      this.filterData = this.initData;
       this.updatedTableData(this.initData);
       this.changedOrgId = filterValue;
     });
    }
   
-   applyFilterOnStatus(data: any, status: any){
-      this.subscriptionService.getSubscriptionByStatus(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, status).subscribe((data : any) => {
-      this.initData = data["subscriptionList"];
-      this.updatedTableData(this.initData);
-    });
+   applyFilterOnStatus(status: any){
+      let newData = this.filterData.filter(element=>element.state == ((status==1) ? "A" : "I"));
+      this.updatedTableData(newData);    
   }
 
   applyFilterOnType(data: any, type: any){
     this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
+      this.filterData = this.initData;
       this.updatedTableData(this.initData);
     });
   }

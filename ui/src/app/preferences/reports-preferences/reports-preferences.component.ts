@@ -3,6 +3,7 @@ import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports-preferences',
@@ -34,28 +35,28 @@ export class ReportsPreferencesComponent implements OnInit {
   editFleetFuelPerferencesFlag: boolean = false;
   generalPreferences: any;
 
-  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService, private router: Router) { }
 
   ngOnInit() {
     this.loadReportData();
-    this.getPreferences();
   }
 
   loadReportData(){
     this.showLoadingIndicator = true;
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      this.hideloader();
+    this.reportService.getReportDetails().subscribe((reportList: any) => {
       this.reportListData = reportList.reportDetails;
+      let languageCode = JSON.parse(localStorage.getItem('language')).code;
+      this.translationService.getPreferences(languageCode).subscribe((res: any) => { 
+        this.hideloader();
+        this.generalPreferences = res;
+      }, (error)=>{
+        this.hideloader();
+      });
     }, (error)=>{
       console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });
-  }
-
-  getPreferences() {
-    let languageCode = JSON.parse(localStorage.getItem('language')).code;
-    this.translationService.getPreferences(languageCode).subscribe((res) => this.generalPreferences = res)
   }
 
   hideloader() {
@@ -146,7 +147,9 @@ export class ReportsPreferencesComponent implements OnInit {
         this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
         setTimeout(() => {
           this.requestSent = false;
+          if((this.router.url).includes("fleetfuelreport")){
           window.location.reload();
+          }
         }, 1000);
       });
     }

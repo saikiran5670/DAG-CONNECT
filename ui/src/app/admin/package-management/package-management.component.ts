@@ -1,8 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
 import { TranslationService } from '../../services/translation.service';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
@@ -10,9 +7,6 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { MatTableExporterDirective } from 'mat-table-exporter';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-package-management',
@@ -20,23 +14,19 @@ import html2canvas from 'html2canvas';
   styleUrls: ['./package-management.component.less']
 })
 export class PackageManagementComponent implements OnInit {
-  
+  columnCodes = ['code','name', 'type', 'state', 'action'];
+  columnLabels = ['PackageCode','PackageName', 'PackageType', 'PackageStatus', 'Action'];
   packageRestData: any = [];
-  displayedColumns = ['code','name', 'type', 'state', 'action'];
   selectedElementData: any;
   features: any = [];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   titleVisible : boolean = false;
   exportFlag = true;
   packageCreatedMsg : any = '';
   selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any;
-  dataSource: any;
+  // dataSource: any;
   actionType: any;
-  actionBtn:any;  
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
@@ -91,12 +81,6 @@ export class PackageManagementComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
-  }
-
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -120,96 +104,17 @@ export class PackageManagementComponent implements OnInit {
     this.packageService.getPackages().subscribe((data : any) => {
       this.initData = data["pacakageList"];
       this.hideloader();
-      this.updatedTableData(this.initData);
+      // this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
-      this.updatedTableData(this.initData);
+      // this.updatedTableData(this.initData);
     });
   }
 
-  updatedTableData(tableData : any) {
-    tableData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort)=>{
-        const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
-        return data.sort((a: any, b: any)=>{
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
-    });
+  
 
-    
-    this.dataSource.filterPredicate = function(data, filter: any){
-      return data.code.toLowerCase().includes(filter) ||
-             data.name.toLowerCase().includes(filter) ||
-             data.type.toLowerCase().includes(filter) ||
-             data.state.toLowerCase().includes(filter)
-    }
-  }
-
-  compare(a: Number | String, b: Number | String, isAsc : boolean, columnName : any){
-    if(columnName == "code" || columnName == "name" ){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
-    }
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-  getNewTagData(data: any){
-    let currentDate = new Date().getTime();
-    if(data.length > 0){
-      data.forEach(row => {
-        let createdDate = parseInt(row.createdAt); 
-        let nextDate = createdDate + 86400000;
-        if(currentDate > createdDate && currentDate < nextDate){
-          row.newTag = true;
-        }
-        else{
-          row.newTag = false;
-        }
-      });
-      let newTrueData = data.filter(item => item.newTag == true);
-      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-      let newFalseData = data.filter(item => item.newTag == false);
-      Array.prototype.push.apply(newTrueData, newFalseData); 
-      return newTrueData;
-    }
-    else{
-      return data;
-    }
-  }
-
-  exportAsCSV(){
-    this.matTableExporter.exportTable('csv', {fileName:'Package_Data', sheet: 'sheet_name'});
-  }
-
-  exportAsPdf() {
-    let DATA = document.getElementById('packageData');
-      
-    html2canvas( DATA , { onclone: (document) => {
-      this.actionBtn = document.getElementsByClassName('action');
-      for (let obj of this.actionBtn) {
-        obj.style.visibility = 'hidden';  }       
-    }})
-    .then(canvas => {  
-        
-        let fileWidth = 100;
-        let fileHeight = canvas.height * fileWidth / canvas.width;
-        
-        const FILEURI = canvas.toDataURL('image/png')
-        let PDF = new jsPDF('p', 'mm', 'a4');
-        let position = 0;
-        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-        
-        PDF.save('package_Data.pdf');
-        PDF.output('dataurlnewwindow');
-    });     
-  }
+  
 
   createNewPackage(){
     this.actionType = 'create';
@@ -305,27 +210,27 @@ export class PackageManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
-  masterToggleForPackage() {
-    this.isAllSelectedForPackege()
-      ? this.selectedPackages.clear()
-      : this.dataSource.data.forEach((row) =>
-        this.selectedPackages.select(row)
-      );
-  }
+  // masterToggleForPackage() {
+  //   this.isAllSelectedForPackege()
+  //     ? this.selectedPackages.clear()
+  //     : this.dataSource.data.forEach((row) =>
+  //       this.selectedPackages.select(row)
+  //     );
+  // }
 
-  isAllSelectedForPackege() {
-    const numSelected = this.selectedPackages.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
+  // isAllSelectedForPackege() {
+  //   const numSelected = this.selectedPackages.selected.length;
+  //   const numRows = this.dataSource.data.length;
+  //   return numSelected === numRows;
+  // }
 
-  checkboxLabelForPackage(row?: any): string {
-    if (row)
-      return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
-    else
-      return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
-        } row`;
-  }
+  // checkboxLabelForPackage(row?: any): string {
+  //   if (row)
+  //     return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
+  //   else
+  //     return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
+  //       } row`;
+  // }
 
   checkCreationForPackage(item: any){
     // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
@@ -336,7 +241,7 @@ export class PackageManagementComponent implements OnInit {
     if(item.tableData) {
       this.initData = item.tableData;
     }
-    this.updatedTableData(this.initData);
+    // this.updatedTableData(this.initData);
   }
 
   hideloader() {
@@ -352,21 +257,15 @@ export class PackageManagementComponent implements OnInit {
     }
     //console.log(_event)
   }
-  getexportedValues(dataSource){
-    this.dataSource = dataSource;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+  // getexportedValues(dataSource){
+  //   this.dataSource = dataSource;
+  //   this.dataSource.paginator = this.paginator;
+  //   this.dataSource.sort = this.sort;
+  // }
   importPackageCSV(){
     this.importClicked = true;
     this.processTranslationForImport();
     //this.route.navigate(["import"]);
-  }
-
-  pageSizeUpdated(_event){
-    setTimeout(() => {
-      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
-    }, 100);
   }
 
   processTranslationForImport(){

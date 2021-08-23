@@ -19,6 +19,8 @@ import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-advanced-filter.component';
 import { ReportMapService } from '../../../report/report-map.service';
+import { TranslationService } from '../../../services/translation.service';
+import { OrganizationService } from '../../../services/organization.service';
 
 declare var H: any;
 
@@ -36,6 +38,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertTypeList: any = [];
   vehicleGroupList: any = [];
   vehicleList: any = [];
+  accountInfo:any = {};
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
@@ -121,6 +125,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
   criticalThreshold: any;
   warningThreshold: any;
   advisoryThreshold: any;
+  localStLanguage: any;
+  accountPrefObj: any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -160,11 +170,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private corridorService: CorridorService,
               private dialogService: ConfirmDialogService,
               private el: ElementRef,
-              private reportMapService: ReportMapService) 
+              private reportMapService: ReportMapService,
+              private translationService: TranslationService,
+              private organizationService: OrganizationService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+    });  
    }
 
   ngOnInit(): void {
@@ -207,8 +219,55 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
     this.selectedApplyOn= 'G';
     this.alertForm.controls.widthInput.setValue(0.1);
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      }else{ // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+          this.proceedStep(prefData, orgPref);
+        }, (error) => { // failed org API
+          let pref: any = {};
+          this.proceedStep(prefData, pref);
+        });
+      }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
+      if(this.actionType == 'create')
+      {
+        this.sliderChanged();
+      }
+    });
 }
   
+proceedStep(prefData: any, preference: any){
+  let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  if(_search.length > 0){
+    this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+  }else{
+    this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+    this.prefTimeZone = prefData.timezone[0].value;
+    this.prefDateFormat = prefData.dateformat[0].name;
+    this.prefUnitFormat = prefData.unit[0].name;
+  }
+  // this.setDefaultStartEndTime();
+  // this.setPrefFormatDate();
+  // this.setDefaultTodayDate();
+  // this.getReportPreferences();
+  console.log(this.prefUnitFormat);
+}
 
   toBack() {
     let emitObj = {
@@ -275,6 +334,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.alertCategoryName = this.translationData[this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_category_selected)[0].key];
         this.alertTypeName = this.translationData[this.alertCategoryTypeMasterData.filter(item => (item.enum == this.selectedRowData.type && item.parentEnum == this.alert_category_selected))[0].key];
         this.onChangeAlertType(this.selectedRowData.type);
+        this.convertValuesToPrefUnit();
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
       }
@@ -366,6 +426,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
           }
           else if(element.urgencyLevelType == 'W'){
             this.isWarningLevelSelected= true;
+            // let threshold;
+            // if(this.alert_category_selected+this.alert_type_selected == 'LU'){
+            //   threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
+            // }
             this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'A'){
@@ -375,26 +439,26 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
       }
         
-      if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
-        this.unitTypes= [
-                          {
-                            enum : 'K', 
-                            value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
-                          },
-                          {
-                            enum : 'M',
-                            value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
-                          }
-                        ];
-      }
-      else if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
+      // if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
+      //   this.unitTypes= [
+      //                     {
+      //                       enum : 'K', 
+      //                       value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
+      //                     },
+      //                     {
+      //                       enum : 'L',
+      //                       value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
+      //                     }
+      //                   ];
+      // }
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
         this.unitTypes= [
           {
             enum : 'H', 
             value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
           },
           {
-            enum : 'I',
+            enum : 'T',
             value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
           },
           {
@@ -420,11 +484,16 @@ export class CreateEditViewAlertsComponent implements OnInit {
         }
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
-          this.unitTypeEnum= "K"
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : this.translationData.lblMiles || 'Miles';
+         // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
+          if(this.prefUnitFormat == 'dunit_Metric'){
+            this.unitTypeEnum= "K";  }
+            else{
+              this.unitTypeEnum= "L";
+            }
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
-            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+            // this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
           else{                
             this.alertForm.get('unitType').setValue(this.unitTypeEnum);
@@ -446,11 +515,16 @@ export class CreateEditViewAlertsComponent implements OnInit {
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
-          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitTypeEnum= "K";
+          // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
+          if(this.prefUnitFormat == 'dunit_Metric'){
+          this.unitTypeEnum= "K";  }
+          else{
+            this.unitTypeEnum= "L";
+          }
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
-            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+            // this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
           else{                
             this.alertForm.get('unitType').setValue(this.unitTypeEnum);
@@ -490,8 +564,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
-          this.unitTypeEnum= "E";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? 'Km/h' : 'Miles/h';
+          // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          // this.unitTypeEnum= "E";
+          if(this.prefUnitFormat == 'dunit_Metric'){
+            this.unitTypeEnum= "A";  }
+            else{
+              this.unitTypeEnum= "B";
+            }
           break;
         }
         case "FF": { //Fuel Consumed
@@ -1001,6 +1081,8 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
+    this.sliderChanged();
     
     if(this.selectedRowData.applyOn == 'G'){
       this.alertForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroupId);
@@ -1014,6 +1096,58 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
     this.onChangeAlertType(this.selectedRowData.type);
+    this.convertValuesToPrefUnit();
+  }
+
+  convertValuesToPrefUnit(){
+    let threshold;
+    this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
+            if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' ||
+            this.alert_category_selected+this.alert_type_selected == 'FI' ){
+              threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(threshold);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
+
+            if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
+              if(this.prefUnitFormat == 'dunit_Metric'){
+                this.unitTypeEnum= "K";  }
+                else{
+                  this.unitTypeEnum= "L";
+                }
+              threshold = this.reportMapService.getConvertedDistance(element.thresholdValue,this.unitTypeEnum);
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(threshold);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
+
+            if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+              threshold = this.reportMapService.getConvertedSpeed(element.thresholdValue,this.unitTypeEnum);
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(threshold);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
+        
+    });
   }
 
   getBreadcum() {
@@ -1453,20 +1587,48 @@ PoiCheckboxClicked(event: any, row: any) {
     this.isExpandedOpen=true;
   }
 
-  onCreateUpdate(){  
+
+  convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
       this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
-      else if(this.isWarningLevelSelected){
+      else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
+        this.criticalThreshold =this.reportMapService.getConvertedDistanceToMeter(this.criticalThreshold, this.unitTypeEnum);
+        }
+        else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+          this.criticalThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.criticalThreshold, this.unitTypeEnum);
+          }
+    }
+    if(this.isWarningLevelSelected){
       this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
-      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
+      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
-      else if(this.isAdvisoryLevelSelected){
+      else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
+        this.warningThreshold =this.reportMapService.getConvertedDistanceToMeter(this.warningThreshold, this.unitTypeEnum);
+        }
+      else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+          this.warningThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.warningThreshold, this.unitTypeEnum);
+      }
+    }
+    if(this.isAdvisoryLevelSelected){
       this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
-      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
+      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
+      else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
+        this.advisoryThreshold =this.reportMapService.getConvertedDistanceToMeter(this.advisoryThreshold, this.unitTypeEnum);
+        }
+      else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+        this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
+      }
+    }
+  }
 
+  onCreateUpdate(){  
+    this.convertThresholdValuesBasedOnUnits();
     this.alertForm.markAllAsTouched();    
     if (!this.alertForm.valid) {      
       this.alertForm.markAllAsTouched();
@@ -1608,7 +1770,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
-                "distance": 100,
+                "distance": this.poiWidth,
                 "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
@@ -1620,7 +1782,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
-                "distance": 100,
+                "distance": this.poiWidth,
                 "unitType": "N",
                 "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
@@ -1636,7 +1798,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
-                "distance": 0,
+                "distance": element.distance,
                 "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
@@ -1724,7 +1886,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+            "thresholdValue": this.criticalThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1740,7 +1902,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'C'); 
           criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+            "thresholdValue": this.criticalThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1761,7 +1923,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+            "thresholdValue": this.warningThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1777,7 +1939,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'W'); 
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+            "thresholdValue": this.warningThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1798,7 +1960,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+            "thresholdValue": this.advisoryThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1814,7 +1976,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'A');
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+            "thresholdValue": this.advisoryThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2201,7 +2363,12 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   sliderChanged(){
+    if(this.prefUnitFormat == 'dunit_Metric'){
      this.poiWidthKm = this.poiWidth / 1000;
+    }
+    else{
+      this.poiWidthKm = this.poiWidth / 1609;
+    }
      this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
      if(this.markerArray.length > 0){
      this.addMarkerOnMap(this.ui);
@@ -2210,7 +2377,12 @@ PoiCheckboxClicked(event: any, row: any) {
 
  changeSliderInput(){
   this.poiWidthKm = this.alertForm.controls.widthInput.value;
+  if(this.prefUnitFormat == 'dunit_Metric'){
   this.poiWidth = this.poiWidthKm * 1000;
+  }
+  else{
+    this.poiWidthKm = this.poiWidth * 1609;
+  }
 }
 
 keyPressNumbers(event) {    

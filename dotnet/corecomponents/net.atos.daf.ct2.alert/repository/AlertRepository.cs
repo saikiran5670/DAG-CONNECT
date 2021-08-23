@@ -964,7 +964,8 @@ namespace net.atos.daf.ct2.alert.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"select id from master.alert where 1=1 ";
+                var query = @"select id from master.alert where 1=1 and state=@state ";
+                parameter.Add("@state", 'A');
                 if (alert != null)
                 {
 

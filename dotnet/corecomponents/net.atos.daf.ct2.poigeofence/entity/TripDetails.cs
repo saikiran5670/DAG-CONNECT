@@ -22,8 +22,8 @@
         public string EndPosition { get; set; }
         public int VehMessageFuelConsumed { get; set; }
         public long EtlGpsFuelConsumed { get; set; }
-        public int VehMessageDrivingTime { get; set; }
-        public int EtlGpsDrivingTime { get; set; }
+        public long VehMessageDrivingTime { get; set; }
+        public long EtlGpsDrivingTime { get; set; }
         public int NoOfAlerts { get; set; }
         public int NoOfEvents { get; set; }
         public long MessageReceivedTimestamp { get; set; }

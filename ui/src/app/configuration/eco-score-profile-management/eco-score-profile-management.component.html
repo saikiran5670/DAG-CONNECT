@@ -161,7 +161,7 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTOUsage.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTODuration.kpiName }}</span>
-                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <app-time-range-slider *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9  [units] = 'units'(createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
@@ -169,11 +169,11 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottling.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottleDuration.kpiName }}</span>
-                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <app-time-range-slider *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idling.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [kpiId] = 13 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idleDuration.kpiName }}</span>
-                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <app-time-range-slider *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
             </div>
     </mat-expansion-panel> 
 </div>
@@ -192,11 +192,11 @@
                 <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16  [units] = 'units'(createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <!-- <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score> -->
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakeDurationKpiData.kpiName }}</span>
-                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <app-time-range-slider *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakeKpiData' [kpiId] = 18 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeDurationKpiData.kpiName }}</span>
-                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <app-time-range-slider *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
             </div>
     </mat-expansion-panel> 
 </div>

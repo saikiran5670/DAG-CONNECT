@@ -47,10 +47,11 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
 import { CommonImportComponent } from './common-import/common-import.component';
 import { CommonMapComponent } from './common-map/common-map.component';
+import { DataTableComponent } from './data-table/data-table.component';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -138,7 +139,8 @@ import { CommonMapComponent } from './common-map/common-map.component';
     RemoveDuplicatesPipe,
     SpinnerComponent,
     CommonImportComponent,
-    CommonMapComponent
+    CommonMapComponent,
+    DataTableComponent
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })

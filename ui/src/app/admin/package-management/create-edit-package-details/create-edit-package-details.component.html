@@ -10,7 +10,7 @@
         </span>
     </div>
 </div>
-<form [formGroup]="packageFormGroup">
+<form *ngIf="!showLoadingIndicator" [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -157,7 +157,32 @@
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures || 'Selected Features'):(translationData.lblSelectFeatures || 'Select Features')}}</span>
                 </div>
             </div>
-           <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+
+            <app-data-table [tableData]="initData" [translationData]="translationData"
+                [columnCodes]="columnCodes" [columnLabels]="columnLabels"
+                [selectColumnHeaderElements]="selectColumnHeaderElements" [selectColumnDataElements]="selectColumnDataElements">
+            
+                <ng-template #selectColumnHeaderElements let-gridData='rowData'>
+                    <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;'
+                        [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                        [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                        [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
+                    </mat-slide-toggle>
+                    <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{
+                        translationData.lblInclude ||
+                        'Include'}}</span>
+                </ng-template>
+                <ng-template #selectColumnDataElements let-gridData='rowData'>
+                    <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'
+                        (change)='$event ? selectionForFeatures.toggle(gridData) : null; onChange($event, gridData)'
+                        [checked]='selectionForFeatures.isSelected(gridData)' [aria-label]='checkboxLabelForFeatures(gridData)'
+                        [disabled]="actionType == 'view'">
+                    </mat-slide-toggle>
+                </ng-template>
+            
+            </app-data-table>
+
+           <!-- <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
                 <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                   <mat-form-field appearance="outline">
                       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -197,7 +222,8 @@
                     </mat-table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
                 </div>
-            </div>
+            </div> -->
         </mat-card-content>
     </mat-card>
 </form>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>

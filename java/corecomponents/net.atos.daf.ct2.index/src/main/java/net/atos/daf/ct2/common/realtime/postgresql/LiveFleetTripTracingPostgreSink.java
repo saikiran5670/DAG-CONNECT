@@ -211,35 +211,34 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			currentPosition.setCo2Emission(0.0); // co2 emission
 			currentPosition.setFuelConsumption(0.0); // fuel_consumption
 		}
-
-		Long[] tachomileageArray = row.getDocument().getTotalTachoMileage();
-		int tachomileagelength = 0;
-		if (tachomileageArray != null)
-			tachomileagelength = tachomileageArray.length;
-		// long[] longtachoMlArray = Arrays.stream(tachomileageArray).mapToLong(i ->
-		// i).toArray();
-		try {
-			if (tachomileagelength > 0) {
-
-				if (tachomileageArray[tachomileagelength - 1] != null
-						&& !"null".equals(tachomileageArray[tachomileagelength - 1])) {
-
-					System.out.println("odometer value--" + tachomileageArray[tachomileagelength - 1]);
-					currentPosition.setLastOdometerValue(tachomileageArray[tachomileagelength - 1].intValue());
-				} else {
-					System.out.println("odometer value inside else--" + tachomileageArray);
-					currentPosition.setLastOdometerValue(0);
-				}
-			} else {
-
-				System.out.println("odometer value when odometer less then 0--" + tachomileageArray);
-				currentPosition.setLastOdometerValue(0);
-			}
-		} catch (Exception e) {
-
+		
+		if(row.getVDist()!=null)
+			currentPosition.setLastOdometerValue(row.getVDist().intValue());
+		else
 			currentPosition.setLastOdometerValue(0);
-			System.out.println();
-		}
+
+		/*
+		 * Long[] tachomileageArray = row.getDocument().getTotalTachoMileage(); int
+		 * tachomileagelength = 0; if (tachomileageArray != null) tachomileagelength =
+		 * tachomileageArray.length; // long[] longtachoMlArray =
+		 * Arrays.stream(tachomileageArray).mapToLong(i -> // i).toArray(); try { if
+		 * (tachomileagelength > 0) {
+		 * 
+		 * if (tachomileageArray[tachomileagelength - 1] != null &&
+		 * !"null".equals(tachomileageArray[tachomileagelength - 1])) {
+		 * 
+		 * System.out.println("odometer value--" + tachomileageArray[tachomileagelength
+		 * - 1]);
+		 * currentPosition.setLastOdometerValue(tachomileageArray[tachomileagelength -
+		 * 1].intValue()); } else { System.out.println("odometer value inside else--" +
+		 * tachomileageArray); currentPosition.setLastOdometerValue(0); } } else {
+		 * 
+		 * System.out.println("odometer value when odometer less then 0--" +
+		 * tachomileageArray); currentPosition.setLastOdometerValue(0); } } catch
+		 * (Exception e) {
+		 * 
+		 * currentPosition.setLastOdometerValue(0); System.out.println(); }
+		 */
 
 		/*
 		 * if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32
