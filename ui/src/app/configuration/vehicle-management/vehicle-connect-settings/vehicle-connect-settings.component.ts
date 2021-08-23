@@ -200,7 +200,9 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.connectedOn=[];
     this.connectedOff=[];
     this.vehicleOptInOut.forEach(element => {
-      connectedData.push(this.getVehicleData(element));
+      if(rowData.hasOwned) {
+        connectedData.push(this.getVehicleData(element));
+      }
     });
     let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + ' will be change the status from the connected On to Off!   ' : '';
     let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + ' will be change the status from the connected Off to On!     ' : '';

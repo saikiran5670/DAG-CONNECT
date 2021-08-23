@@ -197,7 +197,7 @@
       <!-- entering site -->
 
       <div class="areawidth" *ngIf="isPoiSelected && actionType != 'view'">
-        <span>{{ translationData.lblWidth|| 'Width' }} <span>({{ poiUnit }}):</span>
+        <span>{{ translationData.lblWidth|| 'Width' }} ({{ ( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles') }}):
           <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"
             (focusout)="changeSliderInput()">
           <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
