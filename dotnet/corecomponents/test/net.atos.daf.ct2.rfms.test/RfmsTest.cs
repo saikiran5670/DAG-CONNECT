@@ -34,15 +34,15 @@ namespace net.atos.daf.ct2.rfms.test
         [TestMethod]
         public void GetVehicleStatus()
         {
-            RfmsVehicleStatusRequest rfmsVehicleRequest = new RfmsVehicleStatusRequest()
-            {
-                AccountId =,
-                OrgId =,
-                Vin = 'BLRAE75PC0E272200',
-                StartTime= "2021-07-30T01:40:00.000Z",
+            RfmsVehicleStatusRequest rfmsVehicleRequest = new RfmsVehicleStatusRequest();
+            //{
+            //    AccountId =,
+            //    OrgId =,
+            //    Vin = 'BLRAE75PC0E272200',
+            //    StartTime= "2021-07-30T01:40:00.000Z",
 
 
-            };
+            //};
 
             var rfmsVehicleList = _rfmsManager.GetRfmsVehicleStatus(rfmsVehicleRequest).Result;
             Assert.IsNotNull(rfmsVehicleList);
