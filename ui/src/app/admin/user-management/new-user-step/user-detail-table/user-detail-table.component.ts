@@ -49,8 +49,8 @@ export class UserDetailTableComponent implements OnInit {
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
-    if(!(a instanceof Number)) a = a.toUpperCase();
-    if(!(b instanceof Number)) b = b.toUpperCase();
+    if(a && !(a instanceof Number)) a = a.toUpperCase();
+    if(b && !(b instanceof Number)) b = b.toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

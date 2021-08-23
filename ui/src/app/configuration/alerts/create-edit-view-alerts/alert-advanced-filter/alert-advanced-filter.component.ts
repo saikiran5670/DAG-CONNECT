@@ -162,6 +162,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       this.sliderChanged();
     }
     if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
+      this.setUnitsAsPrefData();
       this.setDefaultAdvanceAlert();
     }
   }
@@ -1115,8 +1116,8 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": this.poiDistance,
-            "unitType": this.POIEnum,
+            "thresholdValue": 0,
+            "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -1161,8 +1162,8 @@ else{
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": "N",
-          "thresholdValue": this.poiDistance,
-          "unitType": this.POIEnum,
+          "thresholdValue": 0,
+          "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
           "positionType": this.selectedPoiSite,
@@ -1362,8 +1363,8 @@ else{
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": this.filterType,
-              "thresholdValue": this.poiDistance,
-              "unitType": this.POIEnum,
+              "thresholdValue": 0,
+              "unitType": "N",
               "landmarkType": element.type,
               "refId": element.id,
               "positionType":this.selectedPoiSite,
@@ -1381,8 +1382,9 @@ else{
           })
         }
         if(this.markerArray.length != 0) {
+          let obj;
           this.markerArray.forEach(element => {
-            let obj = {
+            obj = {
               "alertUrgencyLevelId": 0,
               "filterType": this.filterType,
               "thresholdValue": this.poiDistance,
@@ -1400,16 +1402,18 @@ else{
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
               obj["unitType"] = poiLandmarkRefArr[0].unitType;
             }
-            this.advancedAlertPayload.push(obj);
+
+            // this.advancedAlertPayload.push(obj);
           });
+          this.advancedAlertPayload.push(obj);
         }
         if(this.groupArray.length != 0) {
          this.groupArray.forEach(element => {
            let obj = {
              "alertUrgencyLevelId": 0,
              "filterType": this.filterType,
-             "thresholdValue": this.poiDistance,
-             "unitType": this.POIEnum,
+             "thresholdValue": 0,
+             "unitType": "N",
              "landmarkType": "G",
              "refId": element.id,
              "positionType": this.selectedPoiSite,
@@ -1515,7 +1519,7 @@ else{
         "val" : this.thresholdVal
       }
       this.filterTypeArray.push(filterObj);
-      if(!this.isPoiSelected){
+      // if(!this.isPoiSelected){
       obj = {
       "alertUrgencyLevelId": 0,
       "filterType": "T",
@@ -1534,7 +1538,7 @@ else{
       obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
       }
     this.advancedAlertPayload.push(obj);
-  }
+  // }
       }
 
       if (this.geoMarkerArray.length != 0) {
@@ -1543,8 +1547,8 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": 'N',
-            "thresholdValue": this.poiDistance,
-            "unitType": this.POIEnum,
+            "thresholdValue": 0,
+            "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -1648,8 +1652,8 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue":this.poiDistance,
-            "unitType": this.POIEnum,
+            "thresholdValue": 0,
+            "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -1896,8 +1900,8 @@ if(this.actionType == 'edit'){
       let obj = {
         "alertUrgencyLevelId": 0,
         "filterType": 'N',
-        "thresholdValue": this.poiDistance,
-        "unitType": this.POIEnum,
+        "thresholdValue": 0,
+        "unitType": "N",
         "landmarkType": element.type,
         "refId": element.id,
         "positionType": this.selectedPoiSite,
@@ -1944,7 +1948,7 @@ if(this.actionType == 'edit'){
   }
       if(this.markerArray.length != 0) {
         this.markerArray.forEach(element => {
-          if(this.filterTypeArray.length == 0){
+          // if(this.filterTypeArray.length == 0){
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
@@ -1965,16 +1969,16 @@ if(this.actionType == 'edit'){
               obj["unitType"] = poiLandmarkRefArr[0].unitType;
             }
             this.advancedAlertPayload.push(obj);
-          }
+          // }
           if (this.filterTypeArray.length != 0) {
             this.filterTypeArray.forEach(item => {
               this.filterType = item.type;
-              this.thresholdVal = parseInt(item.val);
+              this.thresholdVal = item.val;
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
             "thresholdValue": this.thresholdVal,
-            "unitType": "N",
+            "unitType": this.distanceEnum,
             "landmarkType": "P",
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -2001,8 +2005,8 @@ if(this.actionType == 'edit'){
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": this.poiDistance,
-            "unitType": this.POIEnum,
+            "thresholdValue": 0,
+            "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
             "positionType": this.selectedPoiSite,
