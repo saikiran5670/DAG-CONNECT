@@ -363,11 +363,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         if ((entity.GroupRef != null) && Convert.ToInt16(entity.GroupRef.Count) > 0)
                         {
                             bool vehicleRef = await _groupManager.UpdateRef(entity);
-                        }
-                        ///Trigger Vehicle Group CDC
-                        if (entity.Id > 0 && entity.GroupRef.Count > 0)
-                        {
-                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N", request.OrganizationId);
+                            ///Trigger Vehicle Group CDC
+                            if (vehicleRef)
+                            {
+                                await _alertCdcHelper.TriggerVehicleGroupCdc(request.Id, "N", request.OrganizationId);
+                            }
                         }
                         else
                         {
