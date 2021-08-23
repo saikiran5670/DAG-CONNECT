@@ -267,7 +267,71 @@ namespace net.atos.daf.ct2.rfms
                 }
             }
             RfmsVehicleStatus rfmsVehicleStatus = await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVins, lastVinId);
+            if (rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Count() > rfmsVehicleStatusRequest.ThresholdValue)
+            {
+                if (rfmsVehicleStatusRequest.LatestOnly && string.IsNullOrEmpty(rfmsVehicleStatusRequest.LastVin))
+                {
+                    rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(rfmsVehicleStatusRequest.ThresholdValue).ToList();
+                    string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
+                    string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                    if (rfmsVehicleStatusRequest.LatestOnly)
+                        rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?LatestOnly=true&lastVin=" + lastVin;
+                    else
+                        rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
+                    rfmsVehicleStatus.MoreDataAvailable = true;
+                }
+                else if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StartTime))
+                {
+                    rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(rfmsVehicleStatusRequest.ThresholdValue).ToList();
+                    string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
+                    string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                    rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
+                    rfmsVehicleStatus.MoreDataAvailable = true;
+                }
+                if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                {
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&datetype=" + DateType.Created;
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StopTime))
+                {
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&stoptime=" + rfmsVehicleStatusRequest.StopTime;
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.Vin))
+                {
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&vin=" + rfmsVehicleStatusRequest.Vin;
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.TriggerFilter))
+                {
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&triggerFilter=" + GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusRequest.TriggerFilter, false);
+                }
+            }
 
+            int vehicleCnt = 0;
+
+            foreach (var vehiclePos in rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses)
+            {
+                if (!string.IsNullOrEmpty(vehiclePos.TriggerType.Type))
+                {
+                    string triggerName = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, vehiclePos.TriggerType.Type, false);
+                    vehiclePos.TriggerType.Type = triggerName;
+                }
+                if (!string.IsNullOrEmpty(vehiclePos.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment))
+                {
+                    string driverAuthId = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.DRIVER_AUTH_EQUIPMENT, vehiclePos.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment, false);
+                    vehiclePos.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment = driverAuthId;
+                }
+                if (!string.IsNullOrEmpty(vehiclePos.TriggerType.TellTaleInfo.TellTale))
+                {
+                    string tellTale = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TALE_TELL, vehiclePos.TriggerType.TellTaleInfo.TellTale, false);
+                    vehiclePos.TriggerType.TellTaleInfo.TellTale = tellTale;
+                }
+                if (!string.IsNullOrEmpty(vehiclePos.TriggerType.TellTaleInfo.State))
+                {
+                    string state = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TALE_TELL_STATE, vehiclePos.TriggerType.TellTaleInfo.State, false);
+                    vehiclePos.TriggerType.TellTaleInfo.State = state;
+                }
+                vehicleCnt++;
+            }
             return rfmsVehicleStatus;
         }
     }

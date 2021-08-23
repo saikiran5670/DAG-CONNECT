@@ -516,7 +516,7 @@ proceedStep(prefData: any, preference: any){
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : 'Miles';
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -564,7 +564,7 @@ proceedStep(prefData: any, preference: any){
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? 'Km/h' : 'Miles/h';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour || 'Km/h' : this.translationData.lblMilesPerHour || 'Miles/h';
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
           if(this.prefUnitFormat == 'dunit_Metric'){
@@ -1081,9 +1081,11 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    if(!this.alert_category_selected+this.alert_type_selected == "LS" || !this.alert_category_selected+this.alert_type_selected == "FA" || !this.alert_category_selected+this.alert_type_selected == "FI"
+    || !this.alert_category_selected+this.alert_type_selected == "FP" || !this.alert_category_selected+this.alert_type_selected == "FL" || !this.alert_category_selected+this.alert_type_selected == "FT"){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
-    
+    }
     if(this.selectedRowData.applyOn == 'G'){
       this.alertForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroupId);
       this.onChangeVehicleGroup(this.selectedRowData.vehicleGroupId);

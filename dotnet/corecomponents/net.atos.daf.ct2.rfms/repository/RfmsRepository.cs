@@ -17,11 +17,12 @@ namespace net.atos.daf.ct2.rfms.repository
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-
+        private readonly RfmsVehicleStatusMapper _rfmsVehicleStatusMapper;
         public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
         {
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
+            _rfmsVehicleStatusMapper = new RfmsVehicleStatusMapper();
         }
         public async Task<RfmsVehicles> GetVehicles(string visibleVins, int lastVinId)
         {
@@ -342,6 +343,89 @@ namespace net.atos.daf.ct2.rfms.repository
             return vehiclePosition;
         }
 
+        private VehicleStatus MapVehicleStatus(dynamic record)
+        {
+            VehicleStatus vehicleStatus = new VehicleStatus();
+            //vehicleStatus.RecordId = record.id;
+            vehicleStatus.Vin = record.vin;
+
+            TriggerType triggerType = new TriggerType();
+            triggerType.Context = record.context;
+            triggerType.Type = Convert.ToString(record.triggertype);
+
+            List<string> listTriggerInfo = new List<string>();
+            listTriggerInfo.Add(record.triggerinfo);
+
+            triggerType.TriggerInfo = listTriggerInfo;
+
+            DriverId driverId = new DriverId();
+
+            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
+            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
+            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
+            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
+            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
+            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
+
+            OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
+            oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
+            oemDriverIdentification.IdType = record.oemidtype;
+
+            driverId.TachoDriverIdentification = tachoDriverIdentification;
+            driverId.OemDriverIdentification = oemDriverIdentification;
+
+            triggerType.DriverId = driverId;
+            triggerType.PtoId = record.ptoid;
+
+            TellTaleInfo tellTaleInfo = new TellTaleInfo();
+            tellTaleInfo.OemTellTale = record.oemtelltale;
+            tellTaleInfo.State = Convert.ToString(record.state);
+            tellTaleInfo.TellTale = Convert.ToString(record.telltale);
+
+            triggerType.TellTaleInfo = tellTaleInfo;
+
+            vehicleStatus.TriggerType = triggerType;
+
+            if (record.createddatetime != null)
+            {
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
+                vehicleStatus.CreatedDateTime = createdDateTime;
+            }
+
+            if (record.receiveddatetime != null)
+            {
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
+                vehicleStatus.ReceivedDateTime = receivedDateTime;
+            }
+
+
+            if (record.HrTotalVehicleDistance != null)
+            {
+                vehicleStatus.HrTotalVehicleDistance = Convert.ToString(record.HrTotalVehicleDistance);
+            }
+
+            if (record.totalEngineHours != null)
+            {
+                vehicleStatus.TotalEngineHours = Convert.ToString(record.totalEngineHours);
+            }
+            if (record.totalFuelUsedGaseous != null)
+            {
+                vehicleStatus.TotalFuelUsedGaseous = Convert.ToString(record.totalFuelUsedGaseous);
+            }
+            if (record.grossCombinationVehicleWeight != null)
+            {
+                vehicleStatus.GrossCombinationVehicleWeight = Convert.ToString(record.GrossCombinationVehicleWeight);
+            }
+            if (record.status2OfDoors != null)
+            {
+                vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
+            }
+            vehicleStatus.AccumulatedData = _rfmsVehicleStatusMapper.MapAccumuatedData();
+            vehicleStatus.SnapshotData = _rfmsVehicleStatusMapper.MapSnapShotData();
+            vehicleStatus.UptimeData = _rfmsVehicleStatusMapper.MapUptimeData();
+            return vehicleStatus;
+        }
+
         private Vehicle Map(dynamic record)
         {
             string targetdateformat = "MM/DD/YYYY";
@@ -448,7 +532,10 @@ namespace net.atos.daf.ct2.rfms.repository
                 //var parameter = new DynamicParameters();
                 //parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
                 // To do rfms vehicle status....
-                var queryStatement = @"SELECT Id, 
+                string queryStatement = string.Empty;
+                if (rfmsVehicleStatusRequest.LatestOnly)
+                {
+                    queryStatement = @"SELECT Id, 
                                     vin as vin,
                                     vehicle_msg_trigger_type_id as triggertype,
                                     'RFMS' as context,
@@ -456,17 +543,48 @@ namespace net.atos.daf.ct2.rfms.repository
                                     driver1_id as tachodriveridentification,
                                     created_datetime as createddatetime,
                                     received_datetime as receiveddatetime,                                 
-                                    hr_total_vehicle_distance as hrtotalvehicledistance,
-                                    total_engine_hours as totalenginehours,
-                                    engine_total_fuel_used as engineTotalFuelUsed,
-                                    gross_combination_vehicle_weight as grosscombinationvehicleweight,
-                                    driver1id as driver1Id,
-                                    accumulateddata as accumulateddata,
-                                    snapshotdata as snapshotdata
-                                    uptimedata as uptimedata,
-                                    status2ofdoors as status2ofdoors, 
-                                    doorstatus as doorstatus
-                                    from table one where ";
+                                    'hr_total_vehicle_distance' as hrtotalvehicledistance,
+                                    'total_engine_hours' as totalenginehours,
+                                    'engine_total_fuel_used' as engineTotalFuelUsed,
+                                    'gross_combination_vehicle_weight' as grosscombinationvehicleweight,
+                                    driver1_id as driver1Id,
+                                    'accumulateddata' as accumulateddata,
+                                    'snapshotdata' as snapshotdata,
+                                    'uptimedata' as uptimedata,
+                                    'status2ofdoors' as status2ofdoors, 
+                                    'doorstatus' as doorstatus
+                                     from livefleet.livefleet_position_statistics T1
+										INNER JOIN 
+										(SELECT MAX(Created_DateTime) as lastDate, vin
+										from livefleet.livefleet_position_statistics 
+										Group By Vin) T2
+										on T1.created_datetime = T2.lastDate
+										and T1.Vin = T2.Vin";
+                }
+                else
+                {
+                    queryStatement = @"SELECT Id, 
+                                    vin as vin,
+                                    vehicle_msg_trigger_type_id as triggertype,
+                                    'RFMS' as context,
+                                    vehicle_msg_trigger_additional_info as triggerinfo,
+                                    driver1_id as tachodriveridentification,
+                                    created_datetime as createddatetime,
+                                    received_datetime as receiveddatetime,                                 
+                                    'hr_total_vehicle_distance' as hrtotalvehicledistance,
+                                    'total_engine_hours' as totalenginehours,
+                                    'engine_total_fuel_used' as engineTotalFuelUsed,
+                                    'gross_combination_vehicle_weight' as grosscombinationvehicleweight,
+                                    driver1_id as driver1Id,
+                                    'accumulateddata' as accumulateddata,
+                                    'snapshotdata' as snapshotdata,
+                                    'uptimedata' as uptimedata,
+                                    'status2ofdoors' as status2ofdoors, 
+                                    'doorstatus' as doorstatus
+                                    
+									    from livefleet.livefleet_position_statistics";
+                }
+
 
 
                 var parameter = new DynamicParameters();
@@ -554,7 +672,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(MapVehiclePositions(record)); // mapper need to implement
+                    lstVehicleStatus.Add(MapVehicleStatus(record)); // mapper need to implement
                 }
 
 
