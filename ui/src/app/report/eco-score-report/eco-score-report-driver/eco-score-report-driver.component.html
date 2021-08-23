@@ -28,17 +28,17 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }} </span>
+                  <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicleGroup|| 'Driver ID' }} </span>
+                  <span>{{ translationData.lblDriverId || 'Driver ID' }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicleGroup|| 'Driver Option' }} </span>
+                  <span>{{ translationData.lblDriverOption || 'Driver Option' }} </span>
                 </span>
               </div>
             </div>
@@ -48,7 +48,7 @@
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
-              </div>
+              </div>  
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
               </div>
@@ -117,7 +117,7 @@
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines || 'Trendlines' }}</span>
-                    <span matTooltip="{{ trendLinesInfo }}">
+                    <span matTooltip="{{ translationData.lblTrendLinesInfo || 'The trendlines represent the following results on 1 or more KPI element(s) over a period of time:1. Driver results per vehicle 2. All drivers result per vehicle. 3. Driver results for all vehicles. 4. Company results for all vehicles. Each point on the trendline displays the results per day. By selecting 1 or more element(s) and a time frame, it is possible to see how the driver is performing on 1 or more element(s) in a time frame.' }}">
                       <mat-icon class='margin-right-10'>info</mat-icon>
                     </span>
                   </div>
@@ -278,21 +278,6 @@
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <!-- <div id="chart">
-                <apx-chart
-                  [series]="chartOptionsApex.series"
-                  [chart]="chartOptionsApex.chart"
-                  [xaxis]="chartOptionsApex.xaxis"
-                  [markers]="chartOptionsApex.markers"
-                  [stroke]="chartOptionsApex.stroke"
-                  [yaxis]="chartOptionsApex.yaxis"
-                  [dataLabels]="chartOptionsApex.dataLabels"
-                  [title]="chartOptionsApex.title"
-                  [fill]="chartOptionsApex.fill"
-                  [tooltip]="chartOptionsApex.tooltip"
-                  [legend]="chartOptionsApex.legend"
-                ></apx-chart>
-              </div> -->
               <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px" style="display: inline-block;">
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
                   <div class="chartSelection" [ngClass]="showPerformanceBar ? 'enable' : 'disable'">
