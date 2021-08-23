@@ -682,7 +682,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/VehicleProperties')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -700,195 +700,63 @@
 						"scale": 0
 					},
 					{
-						"name": "manufacture_date",
-						"type": "bigint",
+						"name": "vehicle_id",
+						"type": "integer",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "delivery_date",
-						"type": "bigint",
+						"name": "axle_type",
+						"type": "character",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "make",
+						"name": "position",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "length",
+						"name": "type",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "height",
+						"name": "springs",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "weight",
+						"name": "load",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "engine_id",
+						"name": "ratio",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "engine_type",
+						"name": "size",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "engine_power",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "engine_coolant",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "engine_emission_level",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_rear_overhang",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_axle_configuration",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_wheel_base",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_tire_size",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "transmission_gearbox_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "transmission_gearbox_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "series_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "series_vehicle_range",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "model_year",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_roofspoiler",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "electronic_control_unit_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "electronic_control_unit_name",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "weight_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_side_skirts",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_side_collar",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "width",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type_id",
-						"type": "character varying",
+						"name": "is_wheel_tire_size_replaced",
+						"type": "boolean",
 						"precision": 0,
 						"scale": 0
 					}
 				],
 				"typeProperties": {
 					"schema": "master",
-					"table": "vehicleproperties"
+					"table": "vehicleaxleproperties"
 				}
 			},
 			"dependsOn": [
@@ -896,7 +764,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/VehicleProperties_CHG')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_CHG')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -908,213 +776,45 @@
 				"type": "AzurePostgreSqlTable",
 				"schema": [
 					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "manufacture_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "delivery_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "make",
+						"name": "vehicle_vid",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "length",
+						"name": "frontaxletype",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "height",
+						"name": "rearaxleload",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "weight",
+						"name": "rearaxleratio",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "engine_id",
+						"name": "tyrerearsize",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "engine_type",
+						"name": "tyrefrontsize",
 						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "engine_power",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "engine_coolant",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "engine_emission_level",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_rear_overhang",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_axle_configuration",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_wheel_base",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driveline_tire_size",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "transmission_gearbox_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "transmission_gearbox_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "series_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "series_vehicle_range",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "model_year",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "cabin_roofspoiler",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "electronic_control_unit_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "electronic_control_unit_name",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "weight_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_side_skirts",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_side_collar",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "width",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chg_flg",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "load_dt",
-						"type": "timestamp without time zone",
 						"precision": 0,
 						"scale": 0
 					}
 				],
 				"typeProperties": {
 					"schema": "staging",
-					"table": "vehicleproperties_chg"
+					"table": "vehicleaxleproperties_chg"
 				}
 			},
 			"dependsOn": [
@@ -1122,7 +822,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/VehicleProperties_CT1')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_CT1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1140,7 +840,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/VehicleProperties_Source')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_Source')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1190,7 +890,7 @@
 				],
 				"typeProperties": {
 					"schema": "public",
-					"table": "vehicleproperties"
+					"table": "vehicleaxleproperties"
 				}
 			},
 			"dependsOn": [
@@ -1198,7 +898,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Vehicle_CHG')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1216,151 +916,65 @@
 						"scale": 0
 					},
 					{
-						"name": "organization_id",
+						"name": "vehicle_id",
 						"type": "integer",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "name",
+						"name": "chasis_fuel_tank_number",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "vin",
+						"name": "chasis_fuel_tank_volume",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
-					},
+					}
+				],
+				"typeProperties": {
+					"schema": "master",
+					"table": "vehiclefueltankproperties"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CHG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
 					{
-						"name": "license_plate_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "status",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "status_changed_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "termination_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vid",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_serial_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_brand",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_version",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "is_tcu_register",
-						"type": "boolean",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "reference_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_property_id",
+						"name": "id",
 						"type": "integer",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "created_at",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "model_id",
+						"name": "chasis_fuel_tank_number",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "oem_id",
-						"type": "integer",
+						"name": "chasis_fuel_tank_volume",
+						"type": "character varying",
 						"precision": 0,
 						"scale": 0
 					},
 					{
-						"name": "oem_organisation_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "modified_at",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "is_ota",
-						"type": "boolean",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "modified_by",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "fuel_type",
+						"name": "vehicle_vid",
 						"type": "character varying",
 						"precision": 0,
 						"scale": 0
@@ -1380,7 +994,7 @@
 				],
 				"typeProperties": {
 					"schema": "staging",
-					"table": "vehicle_chg"
+					"table": "vehiclefueltankproperties_chg"
 				}
 			},
 			"dependsOn": [
@@ -1388,7 +1002,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Vehicle_CT1')]",
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CT1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1403,184 +1017,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Vehicle_Source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "organization_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "name",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vin",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "license_plate_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "status",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "status_changed_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "termination_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vid",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_serial_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_brand",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "tcu_version",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "is_tcu_register",
-						"type": "boolean",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "reference_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_property_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "created_at",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "model_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "oem_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "oem_organisation_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "modified_at",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "is_ota",
-						"type": "boolean",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "modified_by",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "fuel_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "public",
-					"table": "vehicle"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
 			]
 		}
 	]

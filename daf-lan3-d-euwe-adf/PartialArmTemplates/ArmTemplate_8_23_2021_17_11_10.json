@@ -1,0 +1,1844 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "daf-lan3-d-euwe-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Vehicle')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Vehicle_CT1",
+						"description": "Migrate Vehicle data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureMySqlSource",
+								"query": "select distinct vh.id,prty.id as organization_id,vh.name as Name,vh.VIN,vh.plate_number as license_plate_number,\nvh.connected_object_status as status,     \nnull as status_changed_date,\nnull as termination_date,\nvh.vehicle_vid as vid,typ.type as type,\neq.supplier_serial_number as tcu_id,\neq.serial_number as tcu_serial_number,\nvh.brand as tcu_brand,\n'1.0' as tcu_version,\nCASE WHEN eq.serial_number is not null then 'True' ELSE 'False' END is_tcu_register,\nNULL as reference_date,\nNULL as vehicle_property_id,\nvh.creation_date as created_at,\nvh.model_name as model_id,\n1 as oem_id,\n2 as oem_organisation_id,\n'H' as opt_in,\nvh.last_modification_date as modified_at,\n'False' as is_ota,\nnull as modified_by,\nREPLACE(JSON_EXTRACT(co.metadata,'$.fuelType'),'\"','') as fuel_type\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nleft join cle_pc_cvp_fap.equipment eq\non eq.vehicle_id = vh.id;\n",
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "organization_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "organization_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "Name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "VIN",
+											"type": "String"
+										},
+										"sink": {
+											"name": "vin",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "license_plate_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "license_plate_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "vid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "vid",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tcu_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_serial_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tcu_serial_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_brand",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tcu_brand",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_version",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tcu_version",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "is_tcu_register",
+											"type": "String"
+										},
+										"sink": {
+											"name": "is_tcu_register",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "String",
+											"physicalType": "text"
+										}
+									},
+									{
+										"source": {
+											"name": "model_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "model_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "oem_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_organisation_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "oem_organisation_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "opt_in",
+											"type": "String"
+										},
+										"sink": {
+											"name": "opt_in",
+											"type": "String",
+											"physicalType": "character"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "String",
+											"physicalType": "text"
+										}
+									},
+									{
+										"source": {
+											"name": "is_ota",
+											"type": "String"
+										},
+										"sink": {
+											"name": "is_ota",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "fuel_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "fuel_type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Vehicle_CT1",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Vehicle_Source",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Vehicle_CHG",
+						"description": "Compares source and target and find the records for upsert",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Vehicle_CT1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT \n\tcoalesce(L.ID,0) AS ID,\nORG.ID  as ORGANIZATION_ID,\nS.NAME,\nS.VIN,\nS.LICENSE_PLATE_NUMBER,\nCASE WHEN  S.STATUS IN ('OPERATING','RESUMING','CREATED','READY','CONNECTED') THEN 'C'\n     WHEN  S.STATUS = 'TERMINATING' THEN 'T'\n     WHEN  S.STATUS = 'SUSPENDED' THEN 'O'\nEND AS STATUS,     \nS.STATUS_CHANGED_DATE,\nS.TERMINATION_DATE,\nS.VID,\nCASE WHEN S.TYPE = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN S.TYPE = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN S.TYPE = 'LCV' THEN 'L'\n     WHEN S.TYPE = 'TRAILER' THEN 'T'\t \n\t WHEN S.TYPE = 'VL'  THEN 'V'\n\t WHEN S.TYPE = 'SEMITRAILER' THEN 'S'\n\t WHEN S.TYPE = 'NONE' THEN 'N'\n\t ELSE 'N' END AS TYPE,\nS.TCU_ID,\nS.TCU_SERIAL_NUMBER,\nS.TCU_BRAND,\nS.TCU_VERSION,\nS.IS_TCU_REGISTER,\nS.REFERENCE_DATE,\nVP.ID AS VEHICLE_PROPERTY_ID,\n(SELECT EXTRACT(EPOCH FROM CAST(S.CREATED_AT AS TIMESTAMP)) * 1000) AS  CREATED_AT, \nS.MODEL_ID,\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.ID\n     ELSE (SELECT ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END AS OEM_ID,\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.OEM_ORGANISATION_ID \n     ELSE (SELECT OEM_ORGANISATION_ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END  AS OEM_ORGANISATION_ID, \nCASE WHEN S.STATUS = 'SUSPENDED' THEN 'U' ELSE 'H' END AS OPT_IN,\n(SELECT EXTRACT(EPOCH FROM CAST(S.MODIFIED_AT AS TIMESTAMP)) * 1000) AS MODIFIED_AT,\nS.IS_OTA,\nS.MODIFIED_BY,\nS.FUEL_TYPE,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMESTAMP AS LOAD_DT\n\t\nFROM\n       public.Vehicle S\nLEFT JOIN PUBLIC.ORGANIZATION ORG_CT1\nON ORG_CT1.ID = S.ORGANIZATION_ID\nLEFT JOIN MASTER.ORGANIZATION ORG\nON ORG.ORG_ID = ORG_CT1.ORG_ID\nLEFT JOIN PUBLIC.VEHICLEPROPERTIES PVP\nON PVP.VEHICLE_VID = S.VID\nLEFT JOIN MASTER.VEHICLEPROPERTIES VP\nON VP.CHASIS_ID = PVP.CHASIS_ID\nLEFT JOIN MASTER.OEM OM\nON OM.VIN_PREFIX = SUBSTRING(S.VIN,1,3) AND OM.VIN_PREFIX IS NOT NULL\t   \nLEFT JOIN \n       master.Vehicle L\nON S.VID = L.VID  AND L.VIN = S.VIN\nWHERE S.VIN IS NOT NULL AND ( ORG.ID <>\tL.ORGANIZATION_ID\tOR\nS.name\t<>\tL.name\tOR\nS.license_plate_number\t<>\tL.license_plate_number\tOR\nCASE WHEN  S.STATUS IN ('OPERATING','RESUMING','CREATED','READY','CONNECTED') THEN 'C'\n     WHEN  S.STATUS = 'TERMINATING' THEN 'T'\n     WHEN  S.STATUS = 'SUSPENDED' THEN 'O'\nEND\t<>\tL.status\tOR\nS.status_changed_date\t<>\tL.status_changed_date\tOR\nS.termination_date\t<>\tL.termination_date\tOR\nCASE WHEN S.TYPE = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN S.TYPE = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN S.TYPE = 'LCV' THEN 'L'\n     WHEN S.TYPE = 'TRAILER' THEN 'T'\t \n\t WHEN S.TYPE = 'VL'  THEN 'V'\n\t WHEN S.TYPE = 'SEMITRAILER' THEN 'S'\n\t WHEN S.TYPE = 'NONE' THEN 'N'\n\t ELSE 'N' END\t<>\tL.TYPE\tOR\nS.TCU_ID\t<>\tL.TCU_ID\tOR\nS.tcu_serial_number\t<>\tL.tcu_serial_number\tOR\nS.tcu_brand\t<>\tL.tcu_brand\tOR\nS.tcu_version\t<>\tL.tcu_version  OR\nS.is_tcu_register\t<>\tL.is_tcu_register  OR\nS.reference_date\t<>\tL.reference_date  OR\nVP.ID     \t<>\tL.vehicle_property_id  OR\n(SELECT EXTRACT(EPOCH FROM CAST(S.CREATED_AT AS TIMESTAMP)) * 1000)\t<>\tL.CREATED_AT  OR\nS.model_id\t<>\tL.model_id  OR\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.ID\n     ELSE (SELECT ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END\t<>\tL.OEM_ID  OR\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.OEM_ORGANISATION_ID \n     ELSE (SELECT OEM_ORGANISATION_ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END\t<>\tL.OEM_ORGANISATION_ID  OR\nCASE WHEN S.STATUS = 'SUSPENDED' THEN 'U' ELSE 'H' END\t<>\tL.OPT_IN  OR\n(SELECT EXTRACT(EPOCH FROM CAST(S.MODIFIED_AT AS TIMESTAMP)) * 1000)\t<>\tL.MODIFIED_AT  OR\nS.IS_OTA\t<>\tL.IS_OTA  OR\nS.MODIFIED_BY\t<>\tL.MODIFIED_BY  OR\nS.FUEL_TYPE\t<>\tL.FUEL_TYPE  OR\n  L.ID IS NULL\n);"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLE_CHG;",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "organization_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "organization_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "vin",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "vin",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "license_plate_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "license_plate_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "text"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "status_changed_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "status_changed_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "termination_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "termination_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "vid",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "vid",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "text"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_id",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_serial_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_serial_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_brand",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_brand",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_version",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_version",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "is_tcu_register",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										},
+										"sink": {
+											"name": "is_tcu_register",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "reference_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "reference_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "vehicle_property_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "vehicle_property_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "Double",
+											"physicalType": "double precision"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "model_id",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "model_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "oem_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_organisation_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "oem_organisation_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "opt_in",
+											"type": "String",
+											"physicalType": "text"
+										},
+										"sink": {
+											"name": "opt_in",
+											"type": "String",
+											"physicalType": "character"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "Double",
+											"physicalType": "double precision"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "is_ota",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										},
+										"sink": {
+											"name": "is_ota",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_by",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "modified_by",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "fuel_type",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "fuel_type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "chg_flg",
+											"type": "String",
+											"physicalType": "text"
+										},
+										"sink": {
+											"name": "chg_flg",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "load_dt",
+											"type": "DateTime",
+											"physicalType": "timestamp with time zone"
+										},
+										"sink": {
+											"name": "load_dt",
+											"type": "DateTime",
+											"physicalType": "timestamp without time zone"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Vehicle_Source",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Vehicle_CHG",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Update_Vehicle_X",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Vehicle_CHG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "UPDATE MASTER.VEHICLE L \nSET\t \nORGANIZATION_ID\t=\tS.ORGANIZATION_ID\t,\nNAME\t=\tS.NAME\t,\nVIN\t=\tS.VIN\t,\nLICENSE_PLATE_NUMBER\t=\tS.LICENSE_PLATE_NUMBER\t,\nSTATUS\t=\tS.STATUS\t,\nSTATUS_CHANGED_DATE\t=\tS.STATUS_CHANGED_DATE\t,\nTERMINATION_DATE\t=\tS.TERMINATION_DATE\t,\nTYPE\t\t=\tS.TYPE\t,\nTCU_ID\t=\tS.TCU_ID\t,\nTCU_SERIAL_NUMBER\t=\tS.TCU_SERIAL_NUMBER\t,\nTCU_BRAND\t=\tS.TCU_BRAND\t,\nTCU_VERSION\t=\tS.TCU_VERSION\t,\nIS_TCU_REGISTER\t=\tS.IS_TCU_REGISTER  ,\nREFERENCE_DATE\t=\tS.REFERENCE_DATE  ,\nVEHICLE_PROPERTY_ID\t=\tS.VEHICLE_PROPERTY_ID  ,\nCREATED_AT\t=\tS.CREATED_AT  ,\nMODEL_ID\t=\tS.MODEL_ID  ,\nOEM_ID\t=\tS.OEM_ID  ,\nOEM_ORGANISATION_ID\t=\tS.OEM_ORGANISATION_ID  ,\nOPT_IN\t=\tS.OPT_IN  ,\nMODIFIED_AT\t=\tS.MODIFIED_AT  ,\nIS_OTA\t=\tS.IS_OTA  ,\nMODIFIED_BY\t=\tS.MODIFIED_BY  ,\nFUEL_TYPE\t=\tS.FUEL_TYPE  \nFROM    staging.Vehicle_CHG S\nWHERE L.VID = S.VID \nAND L.VIN = S.VIN\n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
+							},
+							"dataset": {
+								"referenceName": "Vehicle",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
+						"name": "Vehicle",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Update_Vehicle_X",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT \nE.ORGANIZATION_ID       ,\nE.NAME                  ,\nE.VIN                   ,\nE.LICENSE_PLATE_NUMBER  ,\nE.STATUS                ,\nE.STATUS_CHANGED_DATE   ,\nE.TERMINATION_DATE      ,\nE.VID                   ,\nE.TYPE                  ,\nE.TCU_ID                ,\nE.TCU_SERIAL_NUMBER     ,\nE.TCU_BRAND             ,\nE.TCU_VERSION           ,\nE.IS_TCU_REGISTER       ,\nE.REFERENCE_DATE        ,\nE.VEHICLE_PROPERTY_ID   ,\nE.CREATED_AT            ,\nE.MODEL_ID              ,\nE.OEM_ID                ,\nE.OEM_ORGANISATION_ID   ,\nE.OPT_IN                ,\nE.MODIFIED_AT           ,\nE.IS_OTA                ,\nE.MODIFIED_BY           ,\nE.FUEL_TYPE             \nFROM staging.Vehicle_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VEHICLE L\n             WHERE   L.VIN = E.VIN) \nORDER BY \n    \tE.VIN;\n"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "organization_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "organization_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "vin",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "vin",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "license_plate_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "license_plate_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "character"
+										}
+									},
+									{
+										"source": {
+											"name": "status_changed_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "status_changed_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "termination_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "termination_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "vid",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "vid",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_id",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_serial_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_serial_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_brand",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_brand",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "tcu_version",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "tcu_version",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "is_tcu_register",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										},
+										"sink": {
+											"name": "is_tcu_register",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "reference_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "reference_date",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "vehicle_property_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "vehicle_property_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "model_id",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "model_id",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "oem_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "oem_organisation_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "oem_organisation_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "opt_in",
+											"type": "String",
+											"physicalType": "character"
+										},
+										"sink": {
+											"name": "opt_in",
+											"type": "String",
+											"physicalType": "character"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "is_ota",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										},
+										"sink": {
+											"name": "is_ota",
+											"type": "Boolean",
+											"physicalType": "boolean"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_by",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "modified_by",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "fuel_type",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "fuel_type",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Vehicle_CHG",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Vehicle",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-08-18T13:28:56Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "VehicleAxleProperties_CT1",
+						"description": "Migrate VehicleAxleProperties data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureMySqlSource",
+								"query": "SELECT distinct\nvh.vehicle_vid,\nReplace(JSON_EXTRACT(co.metadata,'$.frontAxleType'),'\"','') as frontaxletype,\nReplace(JSON_EXTRACT(co.metadata,'$.rearAxleLoad'),'\"','') as rearaxleload,\nReplace(JSON_EXTRACT(co.metadata,'$.rearAxleRatio'),'\"','') as rearaxleratio,\nReplace(JSON_EXTRACT(co.metadata,'$.tyreSizeRear1'),'\"','') as TyreRearsize,\nReplace(JSON_EXTRACT(co.metadata,'$.tyreSizeFrontAxle1'),'\"','') as TyreFrontsize\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nwhere (Replace(JSON_EXTRACT(co.metadata,'$.frontAxleType'),'\"','') is not null OR \nReplace(JSON_EXTRACT(co.metadata,'$.rearAxleLoad'),'\"','') IS NOT NULL or\nReplace(JSON_EXTRACT(co.metadata,'$.rearAxleRatio'),'\"','') IS NOT NULL OR\nReplace(JSON_EXTRACT(co.metadata,'$.tyreSizeRear1'),'\"','')  IS NOT NULL OR\nReplace(JSON_EXTRACT(co.metadata,'$.tyreSizeFrontAxle1'),'\"','') IS NOT NULL);",
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "vehicle_vid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "vehicle_vid",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "frontaxletype",
+											"type": "String"
+										},
+										"sink": {
+											"name": "frontaxletype",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "rearaxleload",
+											"type": "String"
+										},
+										"sink": {
+											"name": "rearaxleload",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "rearaxleratio",
+											"type": "String"
+										},
+										"sink": {
+											"name": "rearaxleratio",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "TyreRearsize",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tyrerearsize",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "TyreFrontsize",
+											"type": "String"
+										},
+										"sink": {
+											"name": "tyrefrontsize",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "VehicleAxleProperties_CT1",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "VehicleAxleProperties_Source",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Insert_VehicleAxleProperties_CHG_F",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "VehicleAxleProperties_CT1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_chg\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nsize,\nchg_flg,\nload_dt\n)\nSELECT distinct\n      vh.id as vehicle_id,\n\t\t\t'F', 1, f.frontaxletype, null,null, null,f.TyreFrontsize,\nCASE WHEN L.vehicle_id IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\nCURRENT_TIMeSTAMP AS LOAD_DT\nFROM MASTER.VEHICLE vh\nLEFT JOIN master.vehicleaxleproperties L\nON L.vehicle_id = vh.id \nWHERE vh.vid = f.vehicle_vid and ('1'  <> L.position  OR\n\t   f.frontaxletype  <> L.type OR\n\t   f.TyreFrontsize <> L.size OR\n\t   L.vehicle_ID is null)  AND L.axle_type = 'F';\n\n\t   end loop;\nend;\n$$;\n\nselect * from staging.vehicleaxleproperties_chg;"
+							},
+							"dataset": {
+								"referenceName": "VehicleAxleProperties_CHG",
+								"type": "DatasetReference"
+							}
+						}
+					},
+					{
+						"name": "Insert_VehicleAxleProperties_CHG_R",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Insert_VehicleAxleProperties_CHG_F",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_chg\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nsize,\nchg_flg,\nload_dt\n)\nSELECT distinct\n      vh.id as vehicle_id,\n\t\t\t'R',1, NULL,NULL, f.rearaxleload, f.rearaxleratio,f.TyreRearsize,\nCASE WHEN L.vehicle_id IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\nCURRENT_TIMeSTAMP AS LOAD_DT\nFROM MASTER.VEHICLE vh\nLEFT JOIN master.vehicleaxleproperties L\nON L.vehicle_id = vh.id \nWHERE vh.vid = f.vehicle_vid and ('1'  <> L.position  OR\n\t   f.rearaxleload  <> L.load OR\n\t   f.rearaxleratio <> L.ratio OR\n\t   f.TyreRearsize <> L.size OR\n\t   L.vehicle_ID is null)  AND L.axle_type = 'R';\n\n\t   end loop;\nend;\n$$;\n\nselect * from staging.vehicleaxleproperties_chg;"
+							},
+							"dataset": {
+								"referenceName": "VehicleAxleProperties_CHG",
+								"type": "DatasetReference"
+							}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-08-18T13:28:56Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/VehicleAxleProperties_CT1')]",
+				"[concat(variables('factoryId'), '/datasets/VehicleAxleProperties_Source')]",
+				"[concat(variables('factoryId'), '/datasets/VehicleAxleProperties_CHG')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "VehicleFuelTankProperties_CT1",
+						"description": "Migrate Organization data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureMySqlSource",
+								"query": "select distinct vh.id,\nvh.vehicle_vid,\nvh.extra_chassis_number as chasis_fuel_tank_number,\nvh.extra_volume_fuel_tank as chasis_fuel_tank_volume\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nWHERE vh.extra_chassis_number is not null;",
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "vehicle_vid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "vehicle_vid",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties_CT1",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties_Source",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "VehicleFuelTankProperties_CHG",
+						"description": "Compares source and target and find the records for upsert",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "VehicleFuelTankProperties_CT1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT DISTINCT\n\tcoalesce(L.ID,0) AS ID,\n\tvh.ID as VEHICLE_ID                      ,  \nS.CHASIS_FUEL_TANK_NUMBER                              ,\nS.CHASIS_FUEL_TANK_VOLUME                                       ,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMeSTAMP AS LOAD_DT\n\t\nFROM\n       public.VehicleFuelTankProperties S\nJOIN master.vehicle vh\non vh.vid = S.vehicle_vid\nLEFT JOIN \n       master.VehicleFuelTankProperties L\nON vh.id = L.vehicle_id\n\nWHERE (\nS.CHASIS_FUEL_TANK_NUMBER\t<>\tL.CHASIS_FUEL_TANK_NUMBER  OR\n\tS.CHASIS_FUEL_TANK_VOLUME\t<>\tL.CHASIS_FUEL_TANK_VOLUME  OR\n\t    L.ID IS NULL\n);"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLEFUELTANKPROPERTIES_CHG;",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "chg_flg",
+											"type": "String",
+											"physicalType": "text"
+										},
+										"sink": {
+											"name": "chg_flg",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "load_dt",
+											"type": "DateTime",
+											"physicalType": "timestamp with time zone"
+										},
+										"sink": {
+											"name": "load_dt",
+											"type": "DateTime",
+											"physicalType": "timestamp without time zone"
+										}
+									},
+									{
+										"source": {
+											"name": "vehicle_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "vehicle_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties_Source",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties_CHG",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Update_VehicleFuelTankProperties_X",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "VehicleFuelTankProperties_CHG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "UPDATE MASTER.VehicleFuelTankProperties L \nSET\t \nCHASIS_FUEL_TANK_NUMBER\t=\tS.CHASIS_FUEL_TANK_NUMBER  ,\nCHASIS_FUEL_TANK_VOLUME\t=\tS.CHASIS_FUEL_TANK_VOLUME  \nFROM    staging.VehicleFuelTankProperties_CHG S\nWHERE L.vehicle_id = S.vehicle_id \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehiclefueltankproperties_chg;"
+							},
+							"dataset": {
+								"referenceName": "VehicleFuelTankProperties",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
+						"name": "VehicleFuelTankProperties",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Update_VehicleFuelTankProperties_X",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT \nE.vehicle_id       ,\nE.CHASIS_FUEL_TANK_NUMBER                  ,\nE.CHASIS_FUEL_TANK_VOLUME\nFROM staging.VehicleFuelTankProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VehicleFuelTankProperties L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tCHASIS_FUEL_TANK_NUMBER;\n"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "BulkInsert"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "vehicle_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										},
+										"sink": {
+											"name": "vehicle_id",
+											"type": "Int32",
+											"physicalType": "integer"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_number",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									},
+									{
+										"source": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "String",
+											"physicalType": "character varying"
+										},
+										"sink": {
+											"name": "chasis_fuel_tank_volume",
+											"type": "String",
+											"physicalType": "character varying"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties_CHG",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "VehicleFuelTankProperties",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-08-18T13:28:56Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "vehicle_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "axle_type",
+						"type": "character",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "position",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "springs",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "load",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "ratio",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "size",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "is_wheel_tire_size_replaced",
+						"type": "boolean",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "master",
+					"table": "vehicleaxleproperties"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_CHG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "vehicle_vid",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "frontaxletype",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rearaxleload",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rearaxleratio",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tyrerearsize",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tyrefrontsize",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "staging",
+					"table": "vehicleaxleproperties_chg"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_CT1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleAxleProperties_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "vehicle_vid",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "frontaxletype",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rearaxleload",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rearaxleratio",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tyrerearsize",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tyrefrontsize",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "public",
+					"table": "vehicleaxleproperties"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
