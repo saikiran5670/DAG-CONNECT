@@ -1,0 +1,322 @@
+{
+	"name": "OrgRelationshipMapping",
+	"properties": {
+		"activities": [
+			{
+				"name": "OrgRelationshipMapping_Chg",
+				"description": "",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT distinct\n(select id from master.ORGRELATIONSHIP  where code = 'OWNER') as relationship_id,\nS.id as vehicle_id,\nS.organization_id as owner_org_id             ,\nS.organization_id as  created_org_id           ,\nS.organization_id as target_org_id            ,\n(select extract(epoch from now()) * 1000) as start_date               ,\n(select extract(epoch from now()) * 1000) as created_at,\nCASE WHEN L.vehicle_id IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\nCURRENT_TIMeSTAMP AS LOAD_DT\nfrom master.vehicle S\nleft join master.ORGRELATIONSHIPMAPPING L\nON S.id = L.vehicle_id\nwhere (S.organization_id <> L.owner_org_id OR\n     S.organization_id <> L.created_org_id OR\nS.organization_id <> L.target_org_id  OR\n  L.vehicle_id IS NULL);"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "relationship_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "relationship_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "owner_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "owner_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "created_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "created_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "target_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "target_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Double",
+									"physicalType": "double precision"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp with time zone"
+								},
+								"sink": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Vehicle",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "OrgRelationshipMapping_CHG",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "OrgRelationshipMapping",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Update_OrgRelationshipMapping_X",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \nE.relationship_id       ,\nE.vehicle_id                  ,\nE.owner_org_id,\nE.created_org_id,\nE.target_org_id,\nE.start_date,\nE.created_at\nFROM staging.ORGRELATIONSHIPMAPPING_chg E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGRELATIONSHIPMAPPING L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tE.vehicle_id;\n"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "relationship_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "relationship_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "owner_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "owner_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "created_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "created_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "target_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "target_org_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "start_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "start_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "OrgRelationshipMapping_CHG",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "OrgRelationshipMapping",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update_OrgRelationshipMapping_X",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "OrgRelationshipMapping_Chg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "UPDATE MASTER.ORGRELATIONSHIPMAPPING L \nSET\t \nrelationship_id\t=\tS.relationship_id  ,\nowner_org_id\t=\tS.owner_org_id,  \ncreated_org_id\t=\tS.created_org_id  ,\ntarget_org_id\t=\tS.target_org_id\nFROM    staging.ORGRELATIONSHIPMAPPING_chg S\nWHERE L.vehicle_id = S.vehicle_id \n  AND  S.CHG_FLG     = 'X';\n\nSELECT * FROM STAGING.ORGRELATIONSHIPMAPPING_CHG;"
+					},
+					"dataset": {
+						"referenceName": "OrgRelationshipMapping",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
