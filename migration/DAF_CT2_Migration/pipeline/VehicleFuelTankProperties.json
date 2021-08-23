@@ -125,7 +125,7 @@
 						"type": "AzurePostgreSQLSink",
 						"writeBatchSize": 1000000,
 						"writeBatchTimeout": "00:30:00",
-						"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLEPROPERTIES_CHG;",
+						"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLEFUELTANKPROPERTIES_CHG;",
 						"writeMethod": "BulkInsert"
 					},
 					"enableStaging": false,
