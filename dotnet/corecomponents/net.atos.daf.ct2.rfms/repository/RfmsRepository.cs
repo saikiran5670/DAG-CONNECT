@@ -420,6 +420,10 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
             }
+            if (record.doorStatus != null)
+            {
+                vehicleStatus.DoorStatus = Convert.ToString(record.doorStatus);
+            }
             vehicleStatus.AccumulatedData = _rfmsVehicleStatusMapper.MapAccumuatedData();
             vehicleStatus.SnapshotData = _rfmsVehicleStatusMapper.MapSnapShotData();
             vehicleStatus.UptimeData = _rfmsVehicleStatusMapper.MapUptimeData();
