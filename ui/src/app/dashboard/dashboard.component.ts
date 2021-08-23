@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   finalVinList : any =[];
   prefData : any;
   preference : any;
+  noDataFound: boolean = false;
   dashboardPrefData: any;
   //--------- Pie chart ------------------//
   // doughnutChartData: MultiDataSet = [[55, 25, 20]];
@@ -179,7 +180,6 @@ export class DashboardComponent implements OnInit {
     let reportListData;
     this.showLoadingIndicator = true;
     this.reportService.getReportDetails().subscribe((reportList: any) => {
-
       reportListData = reportList.reportDetails;
       let repoId: any= reportListData.filter(i => i.name == 'Dashboard');
       let reportId;
@@ -221,10 +221,13 @@ export class DashboardComponent implements OnInit {
 
   getVinsForDashboard(){
     this.dashboardService.getVinsForDashboard(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-
       this.hideloader();
+      this.noDataFound = false;
       this.processVins(tripData);
-
+    }, (error) => {
+      this.hideloader();
+      this.noDataFound = true;
+      console.log('No data found for this organisation dashboard...');
     });
   }
 
@@ -234,6 +237,7 @@ export class DashboardComponent implements OnInit {
       this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
     }
   }
+
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
