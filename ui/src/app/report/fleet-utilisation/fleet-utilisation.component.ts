@@ -600,7 +600,7 @@ calendarOptions: CalendarOptions = {
   avgDistanceStatus: boolean = false;
 
   setDefaultAttributeBaseOnPref(){
-    let prefUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' :'miles'
+    let prefUnit = (this.prefUnitFormat == 'dunit_Metric') ? 'km' :'miles'
     if(this.detailColumnData.length > 0){ // details section
       let filterPref = this.detailColumnData.filter(i => i.state == 'I');
       if(filterPref.length > 0){
@@ -665,8 +665,8 @@ calendarOptions: CalendarOptions = {
           this.mileageBasedChart.thresholdType = element.thresholdType;
           this.mileagebasedThreshold = parseInt(element.thresholdValue);
           this.mileageDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} `+ prefUnit]
-          this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} `+ prefUnit]
+          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
+          this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
         }else if(element.key == "rp_fu_report_chart_timebased"){
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;

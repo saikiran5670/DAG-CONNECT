@@ -13,6 +13,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
+  @Input() generalPreferences: any;
   @Output() setFuelDeviationReportFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];
@@ -43,9 +44,13 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     name: 'Pie Chart'
   }];
 
+  accountPreference: any;
+  prefUnitFormat: any = 'dunit_Metric';
+
   constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.accountPreference = JSON.parse(localStorage.getItem('accountInfo'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fuel Deviation Report');
     this.fuelDeviationReportForm = this._formBuilder.group({
       increaseEventChart: [],
@@ -59,7 +64,16 @@ export class FuelDeviationPreferencesComponent implements OnInit {
       this.reportId = 7; //- hard coded for Fuel Deviation Report
     }
     this.translationUpdate();
+    this.getUnitFormat(this.accountPreference);
     this.loadFuelDeviationReportPreferences();
+  }
+
+  getUnitFormat(accPref: any){
+    if(accPref && accPref.accountPreference){
+      if(this.generalPreferences && this.generalPreferences.unit && this.generalPreferences.unit.length > 0){
+        this.prefUnitFormat = this.generalPreferences.unit.filter(i => i.id == accPref.accountPreference.unitId)[0].name;
+      }
+    }
   }
 
   translationUpdate(){
@@ -117,6 +131,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
+            let txt: any;
             if(item.key.includes('rp_fd_summary_')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
@@ -147,10 +162,26 @@ export class FuelDeviationPreferencesComponent implements OnInit {
               }
               this.chartsData[index] = _data;
             }else if(item.key.includes('rp_fd_details_')){
-              if(this.translationData[item.key]){
-                _data.translatedName = this.translationData[item.key];  
+              if(item.key == 'rp_fd_details_distance' || item.key == 'rp_fd_details_odometer'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fd_details_drivingtime' || item.key == 'rp_fd_details_idleduration'){
+                txt = this.translationData.lblhhmm || 'hh:mm';
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fd_details_averageweight'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fd_details_averagespeed'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fd_details_fuelconsumed'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fd_details_difference'){
+                txt = '%';
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else{
-                _data.translatedName = this.getName(item.name, 15);   
+                _data.translatedName = this.getTranslatedValues(item, 15);
               }
               this.detailsData.push(_data);
             }
@@ -159,6 +190,16 @@ export class FuelDeviationPreferencesComponent implements OnInit {
       });
       this.setColumnCheckbox();
     }
+  }
+
+  getTranslatedValues(item: any, number: any, text?: any){
+    let _retVal: any;
+    if(this.translationData[item.key]){
+      _retVal = (text && text != '') ? `${this.translationData[item.key]} (${text})` : `${this.translationData[item.key]}`;  
+    }else{
+      _retVal = (text && text != '') ? `${this.getName(item.name, number)} (${text})` : `${this.getName(item.name, number)}`;   
+    }
+    return _retVal;
   }
 
   getName(name: any, index: any) {
