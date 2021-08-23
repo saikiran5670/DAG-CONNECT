@@ -34,8 +34,9 @@ create index if not exists  idx_vehicleaxleproperties_vehid on master.vehicleaxl
 create index if not exists  idx_vehiclefueltankproperties_vehid on master.vehiclefueltankproperties(vehicle_id);
 create index if not exists idx_vehicle_idregpltno on master.vehicle(id,license_plate_number)  ;
 create index if not exists idx_vehicle_idnm on master.vehicle(id,name)  ;
+create index if not exists  idx_resetpasswordtoken_tknststatus on master.ResetPasswordToken(token_secret,status);								
 
-create index if not exists idx_alerturgencylevelref on master.alerturgencylevelref (alert_id,urgency_level_type,state)  								 
+create index if not exists idx_alerturgencylevelref on master.alerturgencylevelref (alert_id,urgency_level_type,state);  								 
 create index if not exists idx_ecoscoreprofilekpi_espid on master.ecoscoreprofilekpi (ecoscore_profile_id);								 
 create index if not exists idx_reportpreference_orgidaccidrepid on master.reportpreference (organization_id,account_id,report_id);											
 create index if not exists idx_reportattribure_repid on master.reportattribute (report_id);											
