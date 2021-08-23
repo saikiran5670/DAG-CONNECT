@@ -292,372 +292,36 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "manufacture_date",
-									"type": "Int64",
-									"physicalType": "bigint"
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "manufacture_date",
-									"type": "Int64",
-									"physicalType": "bigint"
+									"name": "vehicle_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								}
 							},
 							{
 								"source": {
-									"name": "delivery_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								},
-								"sink": {
-									"name": "delivery_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "make",
+									"name": "chasis_fuel_tank_number",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "make",
+									"name": "chasis_fuel_tank_number",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "length",
+									"name": "chasis_fuel_tank_volume",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "length",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "height",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "height",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "weight",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "weight",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "engine_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "engine_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_power",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "engine_power",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_coolant",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "engine_coolant",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_emission_level",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "engine_emission_level",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "chasis_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_rear_overhang",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "chasis_rear_overhang",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_axle_configuration",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "driveline_axle_configuration",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_wheel_base",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "driveline_wheel_base",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_tire_size",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "driveline_tire_size",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "transmission_gearbox_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "transmission_gearbox_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "transmission_gearbox_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "transmission_gearbox_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "cabin_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "series_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "series_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "series_vehicle_range",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "series_vehicle_range",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "model_year",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "model_year",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "cabin_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_roofspoiler",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "cabin_roofspoiler",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "electronic_control_unit_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "electronic_control_unit_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "electronic_control_unit_name",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "electronic_control_unit_name",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "weight_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "weight_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_side_skirts",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "chasis_side_skirts",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_side_collar",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "chasis_side_collar",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "width",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "width",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "type_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "type_id",
+									"name": "chasis_fuel_tank_volume",
 									"type": "String",
 									"physicalType": "character varying"
 								}
@@ -678,7 +342,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "VehicleProperties",
+						"referenceName": "VehicleFuelTankProperties",
 						"type": "DatasetReference"
 					}
 				]
