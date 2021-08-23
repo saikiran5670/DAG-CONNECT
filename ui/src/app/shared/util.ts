@@ -146,9 +146,25 @@ export class Util {
   }
 
   public static getHhMmTimeFromMS(totalMilliSeconds: any){
-    let seconds = totalMilliSeconds/ 1000;
-    let time = this.getHhMmTime(seconds);
-    return time;
+    if(totalMilliSeconds < 0){
+        return '00:00';
+    }
+    else{
+        let seconds = totalMilliSeconds/ 1000;
+        let time = this.getHhMmTime(seconds);
+        return time;
+    }
+  }
+
+  public static getHhMmSsTimeFromMS(totalMilliSeconds: any){
+    let totalSeconds = totalMilliSeconds/ 1000;
+    let data: any = "00:00";
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}:${(seconds >= 10) ? seconds : ('0'+seconds)}`;
+    return data;
   }
 
 }

@@ -8,6 +8,7 @@ import { Label, MultiDataSet } from 'ng2-charts';
 import {ProgressBarMode} from '@angular/material/progress-bar';
 import { ThemePalette } from '@angular/material/core';
 import { ReportService } from 'src/app/services/report.service';
+import { ReportMapService } from '../../../report-map.service';
 
 
 @Component({
@@ -52,7 +53,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   accountOrganizationId;
   accountId;
 
-  constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService , private reportMapService : ReportMapService) { }
 
   ngOnInit(): void {
     this.dataSource = [{
@@ -117,7 +118,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         if(this.firstColumn[colIndx] == 'ranking') {
           let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));
           for(let row of rakingSortedData) {
-            row["ltrVal"] = (row.fuelConsumption/1000).toFixed(2);
+            row["ltrVal"] = this.reportMapService.convertFuelConsumptionMlmToLtr100km(row.fuelConsumption); // no UOM applicable
           }
           this.dataSource[colIndx][column] = rakingSortedData;
         } else if(this.firstColumn[colIndx] == 'fuelConsumption') {

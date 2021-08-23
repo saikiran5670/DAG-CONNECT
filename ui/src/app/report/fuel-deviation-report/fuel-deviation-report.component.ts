@@ -34,6 +34,7 @@ declare var H: any;
 })
 
 export class FuelDeviationReportComponent implements OnInit {
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   dataService: any;
   searchMarker: any = {};
   eventIconMarker: any;
@@ -476,6 +477,14 @@ export class FuelDeviationReportComponent implements OnInit {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
   }
@@ -1340,7 +1349,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     const summary = this.translationData.lblSummarySection || 'Summary Section';
     const detail = this.translationData.lblDetailSection || 'Detail Section';
     const header = this.getPDFExcelHeader();
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
+    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , `${this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events'}`, `${this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events'}`, `${this.translationData.lblVehiclesWithFuelEvents || 'Vehicles With Fuel Events'}`];
     const summaryData = this.excelSummaryData;
     
     //Create workbook and worksheet

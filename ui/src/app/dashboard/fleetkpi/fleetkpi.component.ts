@@ -1963,10 +1963,11 @@ export class FleetkpiComponent implements OnInit {
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption']; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
+    let convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
     this.fuelConsumptionThreshold = _thresholdValue;
-    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.activeVehicles,_thresholdValue,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
-    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
+    let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,convertedThreshold,this.totalDays);
+    let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
+    this.cutOffFuelConsumption = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
     let currentPercent = calculationValue['kpiPercent'];
     
      

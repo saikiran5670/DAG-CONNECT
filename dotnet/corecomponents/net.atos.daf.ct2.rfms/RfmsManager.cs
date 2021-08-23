@@ -227,7 +227,48 @@ namespace net.atos.daf.ct2.rfms
 
         public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
         {
-            return await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
+            int lastVinId = 0;
+            string visibleVins = string.Empty;
+
+            //CHECK VISIBLE VEHICLES FOR USER
+            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(rfmsVehicleStatusRequest.AccountId, rfmsVehicleStatusRequest.OrgId);
+
+            //ADD MASTER DATA TO CACHE
+            AddMasterDataToCache();
+            if (visibleVehicles.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.TriggerFilter))
+                {
+                    var triggerFilterId = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusRequest.TriggerFilter.ToLower(), true);
+                    if (triggerFilterId != null)
+                    {
+                        rfmsVehicleStatusRequest.TriggerFilter = triggerFilterId;
+                    }
+                    else
+                    {
+                        rfmsVehicleStatusRequest.TriggerFilter = CommonConstants.NOT_APPLICABLE;
+                    }
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.LastVin))
+                {
+                    //Get Id for the last vin
+                    var id = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusRequest.LastVin).Select(p => p.Id);
+                    if (id != null)
+                        lastVinId = Convert.ToInt32(id.FirstOrDefault());
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.Vin))
+                {
+                    var validVin = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusRequest.Vin).Select(p => p.VIN).FirstOrDefault();
+                    visibleVins = validVin;
+                }
+                else
+                {
+                    visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
+                }
+            }
+            RfmsVehicleStatus rfmsVehicleStatus = await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVins, lastVinId);
+
+            return rfmsVehicleStatus;
         }
     }
 }

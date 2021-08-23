@@ -39,8 +39,8 @@ spec:
         image: #{acrurl}#/testservice-auto
         livenessProbe:
           httpGet:
-            path: /account
-            port: 8080
+            path: /health-check
+            port: 80
           initialDelaySeconds: 60
           periodSeconds: 60
           timeoutSeconds: 1
@@ -69,6 +69,7 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+          - containerPort: 80
       - name: filebeatservice-container
         image: #{acrurl}#/filebeat
         imagePullPolicy: "Always"

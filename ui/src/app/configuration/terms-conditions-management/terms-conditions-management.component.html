@@ -17,7 +17,11 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
-                <div style='width: 60%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="center">
+                <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ translationData.lblFileNamingConvensionMsg || 'Please follow the file name convension as : TermsConditions_(version)_(language code).pdf (Ex. TermsConditions_v2.1_EN.pdf)' }}</span>
+                </div>
+                <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                <!-- <div style='width: 60%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="center"> -->
                     <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
@@ -52,11 +56,11 @@
                             </div>
                         </div>
                     </div>
-                    <div fxLayout="row" style='padding: 10px;' >
+                    <!-- <div fxLayout="row" style='padding: 10px;' >
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                             <span [ngStyle]="{'color': uploadFileErrorCode == 400 ? 'red' : 'black' }">{{ translationData.lblFileNamingConvensionMsg || 'Please follow the file name convension as : TermsConditions_(version)_(language code).pdf (Ex. TermsConditions_v2.1_EN.pdf)' }}</span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </form>

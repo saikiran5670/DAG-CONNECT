@@ -440,15 +440,128 @@ namespace net.atos.daf.ct2.rfms.repository
             }
         }
 
-        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
+        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest, string visibleVins, int lastVinId)
         {
 
             try
             {
-                var parameter = new DynamicParameters();
-                parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
+                //var parameter = new DynamicParameters();
+                //parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
                 // To do rfms vehicle status....
-                return new RfmsVehicleStatus();
+                var queryStatement = @"SELECT Id, 
+                                    vin as vin,
+                                    vehicle_msg_trigger_type_id as triggertype,
+                                    'RFMS' as context,
+                                    vehicle_msg_trigger_additional_info as triggerinfo,
+                                    driver1_id as tachodriveridentification,
+                                    created_datetime as createddatetime,
+                                    received_datetime as receiveddatetime,                                 
+                                    hr_total_vehicle_distance as hrtotalvehicledistance,
+                                    total_engine_hours as totalenginehours,
+                                    engine_total_fuel_used as engineTotalFuelUsed,
+                                    gross_combination_vehicle_weight as grosscombinationvehicleweight,
+                                    driver1id as driver1Id,
+                                    accumulateddata as accumulateddata,
+                                    snapshotdata as snapshotdata
+                                    uptimedata as uptimedata,
+                                    status2ofdoors as status2ofdoors, 
+                                    doorstatus as doorstatus
+                                    from table one where ";
+
+
+                var parameter = new DynamicParameters();
+
+                if (!string.IsNullOrEmpty(visibleVins))
+                {
+                    List<string> lstVisibleVins = visibleVins.Split(',').ToList();
+                    parameter.Add("@visibleVins", lstVisibleVins);
+                    if (rfmsVehicleStatusRequest.LatestOnly)
+                        queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
+                    else
+                        queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
+                }
+
+                //If Not Latest Only Check
+                if (!rfmsVehicleStatusRequest.LatestOnly)
+                {
+                    //Parameter add for starttime
+                    if (rfmsVehicleStatusRequest.StartTime != null)
+                    {
+                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StartTime));
+
+                        if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                        {
+                            queryStatement = queryStatement + " and created_datetime > @start_time";
+                        }
+                        else
+                        {
+                            queryStatement = queryStatement + " and received_datetime > @start_time";
+                        }
+                    }
+
+                    //Parameter add for starttime
+                    if (rfmsVehicleStatusRequest.StopTime != null)
+                    {
+                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StopTime));
+
+                        if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                        {
+                            queryStatement = queryStatement + " and created_datetime < @stop_time";
+                        }
+                        else
+                        {
+                            queryStatement = queryStatement + " and received_datetime < @stop_time";
+                        }
+                    }
+                }
+                // Parameter add for content filter
+
+                //if (rfmsVehicleStatusRequest.ContentFilter == ContentType.ACCUMULATED)
+                //{
+
+                //    queryStatement += "@select";
+                //}
+
+                //Parameter add for TriggerFilter
+                if (Int32.TryParse(rfmsVehicleStatusRequest.TriggerFilter, out int triggerFilter))
+                {
+                    parameter.Add("@triggerFilter", triggerFilter);
+                    queryStatement += " AND vehicle_msg_trigger_type_id = @triggerFilter";
+                }
+
+                if (lastVinId > 0)
+                {
+                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StartTime));
+                    if (!rfmsVehicleStatusRequest.LatestOnly)
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                }
+                if (rfmsVehicleStatusRequest.LatestOnly)
+                {
+                    queryStatement += " ORDER BY T1.received_datetime";
+                }
+                else
+                {
+                    queryStatement += " ORDER BY received_datetime";
+                }
+
+                var rfmsVehicleStatus = new RfmsVehicleStatus();
+
+                dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+
+
+                VehicleStatusResponse vehicleStatusResponse = new VehicleStatusResponse();
+
+                List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
+                foreach (dynamic record in result)
+                {
+                    lstVehicleStatus.Add(MapVehiclePositions(record)); // mapper need to implement
+                }
+
+
+                vehicleStatusResponse.VehicleStatuses = lstVehicleStatus;
+                rfmsVehicleStatus.VehicleStatusResponse = vehicleStatusResponse;
+                return rfmsVehicleStatus;
+                //return new RfmsVehicleStatus();
             }
             catch (Exception ex)
             {

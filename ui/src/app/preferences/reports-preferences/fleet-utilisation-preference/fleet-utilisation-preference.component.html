@@ -155,8 +155,14 @@
             <mat-form-field appearance="outline" style='width: 80%'>
                 <input [readonly]='!editFlag' matInput type="text"
                     placeholder="{{ translationData.lblSetTarget || 'Set Target' }}" (keypress)="keyPressNumbers($event)" formControlName="mileageTarget">
-                <span matSuffix>km</span>
+                <span matSuffix>{{ prefUnitFormat == 'dunit_Metric' ? 'km' : 'mi' }}</span>
             </mat-form-field>
+            <mat-error *ngIf="fleetUtilForm.get('mileageTarget').hasError('cannotExceedMaxValue')">
+                {{ translationData.lblMileageTargetvaluecannotbegreaterthan60 || 'Mileage Target value cannot be greater than 1000' }}
+            </mat-error>
+            <mat-error *ngIf="fleetUtilForm.get('mileageTarget').hasError('cannotExceedMinValue')">
+                {{ translationData.lblMileageTargetvaluecannotbelessthan0 || 'Mileage Target value cannot be less than 0' }}
+            </mat-error>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-form-field appearance="outline" style='width: 80%'>
@@ -222,7 +228,10 @@
     <div *ngIf='calenderColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForCalenderColumns.toggle(calenderHeader[0]) : null;'
+                [checked]="selectionForCalenderColumns.isSelected(calenderHeader[0])"
+                [aria-label]='checkboxLabelForDetailsColumns(calenderHeader[0])' class='custom-checkbox'>
                 <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
             </mat-checkbox>
         </div>
@@ -394,7 +403,7 @@
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
         <button
-            [disabled]='reqField || (selectionForSummaryColumns.selected.length == 0 && summaryColumnData.length > 0) || (selectionForDetailsColumns.selected.length == 0 && detailColumnData.length > 0) || (selectionForChartsColumns.selected.length == 0 && chartsColumnData.length > 0)'
+            [disabled]='!fleetUtilForm.valid || reqField || (selectionForSummaryColumns.selected.length == 0 && summaryColumnData.length > 0) || (selectionForDetailsColumns.selected.length == 0 && detailColumnData.length > 0) || (selectionForChartsColumns.selected.length == 0 && chartsColumnData.length > 0)'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>

@@ -41,14 +41,14 @@ namespace net.atos.daf.ct2.vehicleservice
  }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
 
             services.AddTransient<IVehicleManager, VehicleManager>();
@@ -64,7 +64,11 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<ITranslationManager, TranslationManager>();
             services.AddTransient<IVehicleCdcManager, VehicleCdcManager>();
             services.AddTransient<IVehicleCdcRepository, VehicleCdcRepository>();
-
+            services.AddTransient<IVehicleManagementAlertCDCManager, VehicleManagementAlertCDCManager>();
+            services.AddTransient<IVehicleManagementAlertCDCRepository, VehicleManagementAlertCDCRepository>();
+            services.AddTransient<IVehicleGroupAlertCdcManager, VehicleGroupAlertCdcManager>();
+            services.AddTransient<IVehicleGroupAlertCdcRepository, VehicleGroupAlertCdcRepository>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

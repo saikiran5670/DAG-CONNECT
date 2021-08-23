@@ -122,37 +122,41 @@ namespace net.atos.daf.ct2.dashboard.repository
 					    lcts.vin,
                         (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by lps.vehicle_msg_trigger_type_id asc))) as last_odometer_val,
                         lcts.driving_time,
-                        ta.urgency_level_type
+                        ta.urgency_level_type,
+					    lps.vehicle_msg_trigger_type_id
                         FROM livefleet.livefleet_current_trip_statistics lcts
 					    LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-                        WHERE lps.message_time_stamp >= 1628812800000  --(today 00hr)
-			                        AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
+                        WHERE lps.message_time_stamp >= @todaydatetime  --(today 00hr)
+			                        AND lcts.vin = Any(@Vins)
 							        AND lps.vehicle_msg_trigger_type_id in  (4,5)        
 							        AND lps.Veh_Message_Type = 'I' 
                         ), cte_filterTripEndedToday as
                         (
-                        SELECT --lps.trip_id,
+                        SELECT --lcts.trip_id,
                         lps.vin ,
-					    (last_odometer_val - (lag(last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val, 
+					    (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val, 
                         lps.driving_time,
-                        ta.urgency_level_type
+                        ta.urgency_level_type,
+						lps.vehicle_msg_trigger_type_id	
                         FROM livefleet.livefleet_position_statistics lps
                         LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-                        WHERE lps.message_time_stamp > 1628726400000 --(yesterday 00hr)
-   							  AND lps.message_time_stamp > 1628899200000 --(Tomorrow 00hr) 
-							AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
-							 AND lps.Veh_Message_Type = 'I' 
-							AND vehicle_msg_trigger_type_id in (4,5)
+                        WHERE lps.message_time_stamp > @yesterdaydatetime --(yesterday 00hr)
+   							  AND lps.message_time_stamp > @tomorrowdatetime --(Tomorrow 00hr) 
+							AND lcts.vin = Any(@Vins)
+							AND lps.Veh_Message_Type = 'I' 
+							AND lps.vehicle_msg_trigger_type_id in (4,5)
                         --GROUP BY TodayVin--,position.trip_id                                           	
                         ), cte_union as (
-           select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount from cte_filterToday 
-                --WHERE last_odometer_val IS NOT NULL			
+           select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
+				   ,vehicle_msg_trigger_type_id from cte_filterToday 
+                   WHERE vehicle_msg_trigger_type_id = 5			
 				--GROUP BY vin			
 			UNION 
-		   select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime, urgency_level_type As todayalertcount from cte_filterTripEndedToday
-			    --WHERE last_odometer_val IS NOT NULL
+		   select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
+					,vehicle_msg_trigger_type_id from cte_filterTripEndedToday
+			        WHERE vehicle_msg_trigger_type_id = 5
 				--GROUP BY vin		
 						)
                         SELECT
@@ -191,7 +195,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                         SELECT --lcts.trip_id,
                         lcts.vin ,
                         (last_odometer_val - (lag(last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val,  
-                        lcts.driving_time
+                        lcts.driving_time,
+					    lps.vehicle_msg_trigger_type_id
                        FROM livefleet.livefleet_current_trip_statistics lcts
 					   LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
                         WHERE (lps.message_time_stamp >= @yesterdaydatetime   --(yesterday 00hr) 
@@ -203,7 +208,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                         SELECT --position.trip_id,
                         lps.vin ,
                         lcts.driving_time , 
-                        (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val
+                        (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val,
+						lps.vehicle_msg_trigger_type_id	
                         FROM livefleet.livefleet_position_statistics lps
                         LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
                         WHERE (lps.message_time_stamp > @dayBeforeYesterdaydatetime   --(DaybeforeYESTERDAY 00hr)
@@ -213,9 +219,11 @@ namespace net.atos.daf.ct2.dashboard.repository
 	                          AND lps.Veh_Message_Type = 'I'
                         ),
 						cte_union as(
-						select vin, driving_time, last_odometer_val from cte_filterYesterday --where last_odometer_val is not null
+						select vin, driving_time, last_odometer_val,vehicle_msg_trigger_type_id from cte_filterYesterday 
+							WHERE vehicle_msg_trigger_type_id = 5
 							UNION
-						select vin , driving_time , last_odometer_val from cte_filtertripendedyesterday --where last_odometer_val is not null
+						select vin , driving_time , last_odometer_val,vehicle_msg_trigger_type_id from cte_filtertripendedyesterday 
+							WHERE vehicle_msg_trigger_type_id = 5
 						)
                         SELECT 
 						--* from cte_union
@@ -249,8 +257,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                 //parameter.Add("@vins", vin);
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct vin) as vehiclecount,
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
@@ -266,7 +274,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         FROM tripdetail.trip_statistics
                         where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,

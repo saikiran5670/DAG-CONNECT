@@ -269,23 +269,11 @@ doughnutDistanceColors: Color[] = [
         
       // ]
     }
-    this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-       // console.log(vehicleData);
-       if(vehicleData){
+   this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
+       //console.log(vehicleData);
+      if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  this.finalVinList.length;
-            // this.liveVehicleData ={
-            //     "distance": 0,
-            //     "drivingTime": 0,
-            //     "vehicleCount": 2,
-            //     "driverCount": 0,
-            //     "criticleAlertCount": 0,
-            //     "activeVehicles": 2,
-            //     "timeBaseUtilization": 3600000,
-            //     "distanceBaseUtilization": 20,
-            //     "code": 200,
-            //     "message": "No data found for Today live vehicle details."
-            // }
           this.setValues();
           this.updateCharts();
 
@@ -791,7 +779,7 @@ doughnutDistanceColors: Color[] = [
       nextPercent = 0;
     }
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(nextPercent)]]
-    let distanceTarget = this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
+    let distanceTarget = this.reportMapService.getDistance(distancecutOff, this.prefUnitFormat);// this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
    
     let activeVehicleCaretColor = 'caretGreen';

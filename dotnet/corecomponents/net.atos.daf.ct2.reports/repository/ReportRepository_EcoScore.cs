@@ -920,7 +920,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) )*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) )
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -955,7 +955,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.driver1_id,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -975,7 +975,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.driver1_id,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration) AS DOUBLE PRECISION)) * 100 
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
@@ -1229,7 +1229,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (  
                                    SELECT eco.driver1_id,  
                                    CASE WHEN ((( (SUM (eco.end_time)) - (SUM (eco.start_time)) )/1000)- (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))  ) <> 0  THEN
-                                     (CAST(SUM(eco.trip_distance)AS DOUBLE PRECISION) )  /((( (SUM (eco.end_time)) - (SUM (eco.start_time))  )/1000)-   (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))    )  
+                                     (CAST(SUM(eco.trip_distance)AS DOUBLE PRECISION) ) /((( (SUM (eco.end_time)) - (SUM (eco.start_time)))/1000)-(CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))    )  
                                    ELSE null END as AverageDrivingSpeed
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
@@ -1247,7 +1247,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)) 
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -1282,7 +1282,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.driver1_id, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1302,7 +1302,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.driver1_id,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))*100 
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
@@ -1539,7 +1539,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1574,7 +1574,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.organization_id , (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.organization_id , (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -1594,7 +1594,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.organization_id ,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))*100
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
@@ -1833,7 +1833,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
@@ -1869,7 +1869,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.vin,  (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.vin,  (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
                                 ),
@@ -1889,7 +1889,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.vin, 
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))*100
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
@@ -2130,7 +2130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2165,7 +2165,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.organization_id , eco.vin, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.organization_id , eco.vin, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2185,7 +2185,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.organization_id ,eco.vin,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                  ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))*100
+                                  ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
@@ -2621,7 +2621,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,eco.Day,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id,eco.Day
@@ -2656,7 +2656,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id,eco.Day,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.driver1_id,eco.Day,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -2676,7 +2676,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.driver1_id,eco.Day,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000))*100 
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
@@ -3028,7 +3028,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin,eco.Day, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
@@ -3064,7 +3064,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.vin,eco.Day, ( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
+                                   SELECT eco.vin,eco.Day, ( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0)) as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day
                                 ),
@@ -3084,7 +3084,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                    SELECT eco.vin,eco.Day,
 	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
-                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000))*100 
+                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day

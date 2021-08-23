@@ -1,15 +1,18 @@
 <div class='bgtrans'>
-  <mat-card class='mat-elevation-z'>   
+  <mat-card class='mat-elevation-z' *ngIf="!showLoadingIndicator">   
       <mat-tab-group [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
           <mat-tab label="{{ translationData.lblVehicleDetails || 'Vehicle Details' }}"> 
-              <app-vehicle-details *ngIf="selectedIndex == 0" [translationData]='translationData'></app-vehicle-details>
+              <app-vehicle-details *ngIf="selectedIndex == 0" [translationData]='translationData' [relationshipVehiclesData]="relationshipVehiclesData" (updateRelationshipVehiclesData)="loadVehicleData()"></app-vehicle-details>
           </mat-tab>
+          <!--  -->
           <div *ngIf="isShow">
           <mat-tab label="{{ translationData.lblVehicleConnectSettings || 'Vehicle Connect Settings' }}">
-            <app-vehicle-connect-settings *ngIf="selectedIndex == 1" ></app-vehicle-connect-settings>
+            <app-vehicle-connect-settings *ngIf="selectedIndex == 1" [translationData]='translationData' [relationshipVehiclesData]="relationshipVehiclesData" (updateRelationshipVehiclesData)="loadVehicleData()"></app-vehicle-connect-settings>
           </mat-tab>   
         </div>     
       </mat-tab-group>  
 </mat-card>
+
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </div>
 

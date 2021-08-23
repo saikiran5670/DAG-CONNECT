@@ -137,7 +137,9 @@
   
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
   
-                    {{ rer.vehicleName }}
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
   
                   </mat-option>
   
@@ -536,7 +538,7 @@
   
         <div *ngIf='displayData.length == 0'>
   
-          <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}
+          <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
   
           </div>
   
@@ -881,10 +883,9 @@
   
             <ng-container matColumnDef="cruiseControlDistance3050">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50 km/h(%)' }}
   
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})(%)</span>
+                <span style="font-weight: normal;"></span>
   
               </mat-header-cell>
   
@@ -898,10 +899,9 @@
   
             <ng-container matColumnDef="cruiseControlDistance5075">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75 km/h(%)' }}
   
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})(%)</span>
+                <span style="font-weight: normal;"></span>
   
               </mat-header-cell>
   
@@ -915,10 +915,9 @@
   
             <ng-container matColumnDef="cruiseControlDistance75">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75 km/h(%)' }}
   
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})(%)</span>
+                <span style="font-weight: normal;"></span>
   
               </mat-header-cell>
   

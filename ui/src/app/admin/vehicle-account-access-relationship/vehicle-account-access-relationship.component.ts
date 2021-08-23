@@ -99,6 +99,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
         this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
       }
     }, (error)=>{
+      this.hideloader();
       console.log("error:: ", error);
       this.hideloader();
     });
@@ -147,13 +148,16 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   getAccountVehicleDetails(){
+    this.showLoadingIndicator = true;
     let accountStatus: any = this.isViewListDisabled ? true : false; 
     this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
+      this.hideloader();
       this.accountGrpAccountDetails = data.account;
       this.vehicleGrpVehicleDetails = data.vehicle;
       this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
       this.createVehicleAccountAccessRelation = true;
     }, (error) => {
+      this.hideloader();
       console.log("error:: ", error)
     });
   }

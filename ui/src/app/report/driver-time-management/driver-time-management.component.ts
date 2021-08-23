@@ -26,6 +26,8 @@ import * as fs from 'file-saver';
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   selectionTab: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -280,6 +282,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
   }
@@ -882,7 +892,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleGroupListData = finalVehicleList;
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        //this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
 
       }
           if(this.driverListData.length>1){
@@ -892,8 +902,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.driverDD = this.driverListData;
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
-          this.driverTimeForm.get('vehicle').setValue(0);
-          this.driverTimeForm.get('driver').setValue(0);
+          //this.driverTimeForm.get('vehicle').setValue(0);
+          //this.driverTimeForm.get('driver').setValue(0);
 
 
     }
@@ -918,10 +928,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.totalAvailableTime += element.availableTime
     });
       this.tableInfoObj= {
-        driveTime: Util.getHhMmTime(this.totalDriveTime),
-        workTime: Util.getHhMmTime(this.totalWorkTime),
-        restTime: Util.getHhMmTime(this.totalRestTime),
-        availableTime: Util.getHhMmTime(this.totalAvailableTime),
+        driveTime: Util.getHhMmTimeFromMS(this.totalDriveTime),
+        workTime: Util.getHhMmTimeFromMS(this.totalWorkTime),
+        restTime: Util.getHhMmTimeFromMS(this.totalRestTime),
+        availableTime: Util.getHhMmTimeFromMS(this.totalAvailableTime)
       }
   }
 

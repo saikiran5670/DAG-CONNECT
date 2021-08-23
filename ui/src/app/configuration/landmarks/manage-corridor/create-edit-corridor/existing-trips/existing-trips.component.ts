@@ -927,6 +927,7 @@ export class ExistingTripsComponent implements OnInit {
           booleanFlag: false,
           successMsg: "create",
           fromCreate: true,
+          CreateCorridorName:this.existingTripForm.controls.label.value
         }
         this.backToCreate.emit(emitObj);
       }
@@ -936,6 +937,7 @@ export class ExistingTripsComponent implements OnInit {
           booleanFlag: false,
           successMsg: "duplicate",
           fromCreate: true,
+          CreateCorridorName:this.existingTripForm.controls.label.value
         }
         this.backToReject.emit(emitObj);
       }

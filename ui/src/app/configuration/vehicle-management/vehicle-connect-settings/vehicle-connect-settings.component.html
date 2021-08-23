@@ -123,8 +123,8 @@
           <ng-container matColumnDef="connected">
             <mat-header-cell *matHeaderCellDef mat-sort-header  style="min-width: 16%;">{{ translationData.lblConnected || 'Connected(On/Off)'}}</mat-header-cell>
             <mat-cell *matCellDef="let row"  style="min-width: 16%;">            
-              <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.optIn == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
-              <mat-slide-toggle color="primary" [checked]='(row.optIn == "I" ? true : false) || ((row.status == "C" && row.optIn == "H") ? true : false) || ((row.status == "N" && row.optIn == "H") ? true : false) ' >
+              <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.opt_In == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
+              <mat-slide-toggle color="primary" [checked]='(row.opt_In == "I" ? true : false) || ((row.status == "C" && row.opt_In == "H") ? true : false) || ((row.status == "N" && row.opt_In == "H") ? true : false) ' >
              </mat-slide-toggle>&nbsp;        
             </button>
           </mat-cell>            

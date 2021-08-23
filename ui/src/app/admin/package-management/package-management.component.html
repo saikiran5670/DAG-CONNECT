@@ -14,7 +14,38 @@
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPackageDetails || 'Package Details' }}</span>
     </div>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  
+  <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
+    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [topRightElements]="topRightElements" [actionColumnElements]="actionColumnElements" showExport="true">
+  
+    <ng-template #topRightElements>
+      <div>
+        <button mat-flat-button (click)="importPackageCSV()">
+          <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
+        </button>
+      </div>
+      <div *ngIf="!adminAccessType.adminReadOnlyAccess">
+        <button mat-flat-button color="primary" (click)="createNewPackage()">
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
+        </button>
+      </div>
+    </ng-template>
+
+    <ng-template #actionColumnElements let-gridData='rowData'>
+      <button class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="gridData.state == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+        <mat-icon [disabled]="gridData.state == 'Inactive'">create</mat-icon>
+      </button>
+      <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deletePackage(gridData)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+        <mat-icon class="deleteIcon">delete_outline</mat-icon>
+      </button>
+    </ng-template>
+  
+  </app-data-table>
+
+  <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -46,24 +77,6 @@
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
 <div *ngIf='initData.length > 0' id="packageData">
   <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[4]">
-    <!-- <ng-container matColumnDef="select">
-      <mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)='$event ? masterToggleForPackage() : null'
-          [checked]='selectedPackages.hasValue() && isAllSelectedForPackege()'
-          [indeterminate]='selectedPackages.hasValue() && !isAllSelectedForPackege()'
-          [aria-label]='checkboxLabelForPackage()'>
-        </mat-checkbox>
-        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-        <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-        <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
-        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPackages.toggle(row) : null'
-          [checked]='selectedPackages.isSelected(row)' [aria-label]='checkboxLabelForPackage(row)'>
-        </mat-checkbox>
-      </mat-cell>
-    </ng-container> -->
     <ng-container matColumnDef="code">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">
@@ -83,14 +96,6 @@
   <ng-container matColumnDef="state">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">{{ row.state == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</mat-cell>
-    <!--<mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.state == 'Active' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
-        <mat-slide-toggle color="primary" [checked]='row.state == "Active" ? true : false' >
-      </mat-slide-toggle>&nbsp;
-      <span>{{ row.state == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
-      </button>
-    </mat-cell>-->
   </ng-container>
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Actions' }} </mat-header-cell>
@@ -111,7 +116,7 @@
   </mat-row>
   </mat-table>
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-</div>
+</div> -->
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>
 <app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>

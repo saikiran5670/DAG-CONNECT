@@ -175,6 +175,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(DashboardConstant.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(DashboardConstant.ORGANIZATION_REQUIRED_MSG);
                 var response = await _dashboardServiceClient.GetVisibleVinsAsync(

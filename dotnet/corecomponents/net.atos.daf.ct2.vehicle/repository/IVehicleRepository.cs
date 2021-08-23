@@ -34,13 +34,15 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<bool> VehicleOptInOptOutHistory(int VehicleId);
         Task<Vehicle> GetVehicle(int Vehicle_Id);
         Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
-        Task<int> IsVINExists(string VIN);
+        Task<int> IsVINExists(string vin);
+        Task<VehicleDetails> GetVehicleDetails(string vin);
         Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state);
         Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicOEMVehicles(int vehicleGroupId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
+        Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int organizationId);
         Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
         Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
@@ -76,5 +78,6 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         Task<ProvisioningVehicle> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
         Task<IEnumerable<ProvisioningVehicle>> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
+        Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
     }
 }

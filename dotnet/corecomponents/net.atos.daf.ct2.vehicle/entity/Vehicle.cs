@@ -49,4 +49,23 @@ namespace net.atos.daf.ct2.vehicle.entity
         public bool VehicleLicensePlateNumberExists { get; set; }
         public bool IPPS { get; set; } = false;
     }
+
+    public class VehicleDetails
+    {
+        public int Id { get; set; }
+        public int? OrganizationId { get; set; }
+    }
+
+    public class VehicleManagementDto
+    {
+        public bool HasOwned { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string VIN { get; set; }
+        public string License_Plate_Number { get; set; }
+        public string Status { get; set; }
+        public string Model_Id { get; set; }
+        public string Relationship { get; set; }
+        public string Opt_In { get; set; }
+    }
 }

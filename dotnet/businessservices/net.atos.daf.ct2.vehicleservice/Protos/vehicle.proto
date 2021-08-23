@@ -32,11 +32,22 @@ service VehicleService {
   rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
-  rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
+  rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehiclesResponse);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
   rpc UpdateVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
   rpc GetVehicleAssociatedGroupCount (VehicleCountFilterRequest) returns (VehicleCountFilterResponse);
+  rpc GetVehicleAssociatedGroups (GetVehicleAssociatedGroupRequest) returns (GetVehicleAssociatedGroupResponse);  
+}
+
+message GetVehicleAssociatedGroupRequest{
+    int32 VehicleId = 1;
+}
+
+message GetVehicleAssociatedGroupResponse{
+    string Groups = 1;
+    Responcecode Code=2;
+    string Message = 3;
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -107,6 +118,7 @@ message VehicleRequest {
   string Name = 2;
   string LicensePlateNumber=3;
   int32 Organization_Id=4;
+  int32 User_Org_Id=5; 
 }
 
 // The response message containing the greetings.
@@ -158,10 +170,28 @@ google.protobuf.StringValue RelationShip=22;
 google.protobuf.StringValue AssociatedGroups=23;
 }
 
+message VehicleList {
+    int32 Id=1;
+    string Name = 2;
+    string Vin=3;
+    string LicensePlateNumber=4;
+    string Opt_In=5;
+    string ModelId=6;
+    string Status=7;
+    string RelationShip=8;
+    bool HasOwned=9;
+}
+
 message VehicleListResponce {
   Responcecode code=1;
   string message = 2;
   repeated VehicleDetails vehicles = 3;
+}
+
+message VehiclesResponse {
+  Responcecode code=1;
+  string message = 2;
+  repeated VehicleList vehicles = 3;
 }
 
 message VehicleOptInOptOutRequest{
@@ -199,6 +229,7 @@ message VehicleGroupRef{
 
 message VehicleGroupIdRequest{
   int32 Group_Id = 1;
+  int32 OrganizationId=2;
 }
 
 message VehicleGroupResponce{
@@ -289,18 +320,24 @@ message VehicleOtaRequest{
   bool Is_Ota=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleTerminateRequest{
   bool Is_Terminate=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleOptInRequest{
   string Is_OptIn=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleIdRequest {
@@ -364,12 +401,13 @@ message VehicleGroupListRequest {
 message VehicleConnection {
   int32 VehicleId = 1;
   string Opt_In = 2;
-  int32 ModifiedBy = 3;
-  
+  int32 ModifiedBy = 3;  
 }
 
 message VehicleConnectRequest{
     repeated VehicleConnection Vehicles = 1;
+    int32 Organization_Id=2;
+    int32 Org_Context_Id=3;
 }
 
 message VehicleConnectResponse {

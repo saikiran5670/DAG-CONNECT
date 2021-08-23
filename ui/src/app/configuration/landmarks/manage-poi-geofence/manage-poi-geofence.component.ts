@@ -66,11 +66,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
-    'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
+  templateTitle = ['Name', 'Latitude', 'Longitude', 'Category', 'SubCategory', 'Address','Zipcode', 'City', 'Country'];
+  //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
+  //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
-    [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
-      'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
+    ['GeoFence','51.07','57.07','Category','SubCategory','Banglore','612304','Banglore','India']];
+  // [
+  //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
+  //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
   tableColumnList = ['organizationId', 'categoryId',  'subCategoryId', 
     'poiName', 'latitude', 'longitude', 'returnMessage'];
   tableColumnName = ['OrganizationId', 'CategoryId',  'SubCategoryId',
@@ -142,7 +145,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      // //console.log("poiData=" +this.poiInitData);
+      console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -947,7 +950,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData) => {
-      const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
+      const result = poiData.map(({ Name, Latitude, Longitude, Category, SubCategory, Address,Zipcode, City, Country, ...rest})=>({...rest}))
+     //const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
       const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
       const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
       const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
@@ -965,8 +969,70 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   exportGeofenceAsExcelFile() {
-    this.matTableExporter.exportTable('xlsx', { fileName: 'GeofenceData', sheet: 'sheet_name' });
-
+    //this.matTableExporter.exportTable('xlsx', { fileName: 'GeofenceData', sheet: 'sheet_name' });
+    let geofenceData = `<?xml version="1.0" encoding="UTF-8"?>
+    <gpx version="1.1">`;
+    let _tempStr = '';
+    this.geoInitData.forEach(element => {
+      if (element.type === 'C') {
+        geofenceData += `
+        <metadata>
+        <id>${element.id}</id>
+        <categoryId>${element.categoryId}</categoryId>
+        <subCategoryId>${element.subCategoryId}</subCategoryId>
+        <geofencename>${element.name}</geofencename>
+        <type>${element.type}</type>
+        <address>${element.address}</address>
+        <city>${element.city}</city>
+        <country>${element.country}</country>
+        <zipcode>${element.zipcode}</zipcode>
+        <latitude>${element.latitude}</latitude>
+        <longitude>${element.longitude}</longitude>
+        <distance>${element.distance}</distance>
+		    <width>${element.width}</width>
+        <createdBy>${element.createdBy}</createdBy>
+      </metadata>`
+      }
+      else {
+        geofenceData += `
+        <metadata>
+        <id>${element.id}</id>
+        <categoryId>${element.categoryId}</categoryId>
+        <subCategoryId>${element.subCategoryId}</subCategoryId>
+        <geofencename>${element.name}</geofencename>
+        <type>${element.type}</type>
+        <address>${element.address}</address>
+        <city>${element.city}</city>
+        <country>${element.country}</country>
+        <zipcode>${element.zipcode}</zipcode>
+        <latitude>${element.latitude}</latitude>
+        <longitude>${element.longitude}</longitude>
+        <distance>${element.distance}</distance>
+		    <width>${element.width}</width>
+        <createdBy>${element.createdBy}</createdBy>`;
+        if(element.nodes && element.nodes.length>0){
+          element.nodes.forEach(node => {
+            geofenceData+=`
+            <nodes>
+            <id>${node.id}</id>
+            <landmarkId>${node.landmarkId}</landmarkId>
+            <seqNo>${node.seqNo}</seqNo>
+            <latitude>${node.latitude}</latitude>
+            <longitude>${node.longitude}</longitude>
+            <createdBy>${node.createdBy}</createdBy>
+            <address>${node.address}</address>
+            <tripId>${node.tripId}</tripId>
+            </nodes>`
+          });
+        }
+        geofenceData += `
+        </metadata>`;
+      }
+    });
+    geofenceData += `
+    </gpx>`;
+    let blob = new Blob([geofenceData], { type: 'xml;charset=utf-8;' });
+    FileSaver.saveAs(blob, 'geofenceExport.gpx');
   }
 
   updateImportView(_event) {
