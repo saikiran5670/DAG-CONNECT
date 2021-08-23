@@ -119,7 +119,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT DISTINCT\n\tcoalesce(L.ID,0) AS ID,\n\tvh.ID as VEHICLE_ID                      ,  \nS.CHASIS_FUEL_TANK_NUMBER                              ,\nS.CHASIS_FUEL_TANK_VOLUME                                       ,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMeSTAMP AS LOAD_DT\n\t\nFROM\n       public.VehicleFuelTankProperties S\nLEFT JOIN master.vehicle vh\non vh.vid = S.vehicle_vid\nLEFT JOIN \n       master.VehicleFuelTankProperties L\nON vh.id = L.vehicle_id\n\nWHERE (\nS.CHASIS_FUEL_TANK_NUMBER\t<>\tL.CHASIS_FUEL_TANK_NUMBER  OR\n\tS.CHASIS_FUEL_TANK_VOLUME\t<>\tL.CHASIS_FUEL_TANK_VOLUME  OR\n\t    L.ID IS NULL\n);"
+						"query": "SELECT DISTINCT\n\tcoalesce(L.ID,0) AS ID,\n\tvh.ID as VEHICLE_ID                      ,  \nS.CHASIS_FUEL_TANK_NUMBER                              ,\nS.CHASIS_FUEL_TANK_VOLUME                                       ,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMeSTAMP AS LOAD_DT\n\t\nFROM\n       public.VehicleFuelTankProperties S\nJOIN master.vehicle vh\non vh.vid = S.vehicle_vid\nLEFT JOIN \n       master.VehicleFuelTankProperties L\nON vh.id = L.vehicle_id\n\nWHERE (\nS.CHASIS_FUEL_TANK_NUMBER\t<>\tL.CHASIS_FUEL_TANK_NUMBER  OR\n\tS.CHASIS_FUEL_TANK_VOLUME\t<>\tL.CHASIS_FUEL_TANK_VOLUME  OR\n\t    L.ID IS NULL\n);"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
