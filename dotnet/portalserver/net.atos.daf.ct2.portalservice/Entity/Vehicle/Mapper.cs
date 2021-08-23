@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             vehicle.ModelId = response.ModelId;
             vehicle.Opt_In = response.OptIn;
             vehicle.RelationShip = response.RelationShip;
+            vehicle.HasOwned = response.HasOwned;
             return vehicle;
 
         }
