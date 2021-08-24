@@ -1,0 +1,10 @@
+update master.performancekpiranges  set lower_val=null,upper_val=null where vehicle_performance_type='B' and index=0;
+update master.performancekpiranges  set lower_val=-0.5,upper_val=0 where vehicle_performance_type='B' and index=1;
+update master.performancekpiranges  set lower_val=-1.0,upper_val=-0.5 where vehicle_performance_type='B' and index=2;
+update master.performancekpiranges  set lower_val=-1.5,upper_val=-1.0 where vehicle_performance_type='B' and index=3;
+update master.performancekpiranges  set lower_val=-2.5,upper_val=-1.5 where vehicle_performance_type='B' and index=4;
+update master.performancekpiranges  set lower_val=-3.0,upper_val=-2.5 where vehicle_performance_type='B' and index=5;
+update master.performancekpiranges  set lower_val=null,upper_val=null where vehicle_performance_type='B' and index=6;
+update master.performancekpiranges  set lower_val=null,upper_val=null where vehicle_performance_type='B' and index=7;
+update master.performancekpiranges  set lower_val=null,upper_val=null where vehicle_performance_type='B' and index=8;
+update master.performancekpiranges  set lower_val=null,upper_val=null where vehicle_performance_type='B' and index=9;
