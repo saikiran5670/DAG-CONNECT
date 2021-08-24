@@ -121,7 +121,14 @@
 			{
 				"name": "Insert_VehicleAxleProperties_CHG",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "VehicleAxleProperties_CT1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
