@@ -2,9 +2,9 @@
 {
     public enum RelationshipLevel
     {
-        PlatformAdmin = 10,
-        GlobalAdmin = 20,
-        OrgAdmin = 30,
+        Platform = 10,
+        Global = 20,
+        Organisation = 30,
         Account = 40
     }
 }
