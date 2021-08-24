@@ -37,32 +37,103 @@
                         </a>
                         <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
                         <a class="navIcon">
-                            <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">
+                            <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
+                                [matMenuTriggerFor]="menu">
                                 notifications_none</mat-icon>
                             <span class="badge">0</span>
                         </a>
 
-                         <mat-select formControlName="languageSelection" class="matSelect"
-                            (selectionChange)="onLanguageChange($event.value)">
+                        <mat-menu #menu="matMenu" class="notificationList" yPosition="below">
                             
+                            <button mat-menu-item class="line">
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <div fxLayout="column" class="areaWidth min-width-10-per">
+                                        <mat-icon>unarchive</mat-icon>
+                                    </div>
+                                    <div fxLayout="column" class="areaWidth min-width-50-per">
+                                        <span>Entering Geofence</span>
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+                                        <span class="demo1">04/08/2021</span>
+                                        <span class="demo2">01:30 pm</span>
+                                    </div>
+                                </div>
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <span class="line2">XLRTEM4100G041999858</span>
+                                </div>
+                            </button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item class="line">
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <div fxLayout="column" class="areaWidth min-width-10-per">
+                                        <mat-icon>unarchive</mat-icon>
+                                    </div>
+                                    <div fxLayout="column" class="areaWidth min-width-50-per">
+                                        <span>Fuel Driver Performance</span>
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+                                        <span class="demo1">04/08/2021</span>
+                                        <span class="demo2">11:30 am</span>
+                                    </div>
+                                </div>
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <span class="line2">XLRTEM4100G041999</span>
+                                </div>
+                            </button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item class="line">
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <div fxLayout="column" class="areaWidth min-width-10-per">
+                                        <mat-icon>unarchive</mat-icon>
+                                    </div>
+                                    <div fxLayout="column" class="areaWidth min-width-50-per">
+                                        <span>Time & Move</span>
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+                                        <span class="demo1">03/08/2021</span>
+                                        <span class="demo2">07:30 pm</span>
+                                    </div>
+                                </div>
+                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                    fxLayoutGap="1px">
+                                    <span class="line2">XLRTEM4100G041999</span>
+                                </div>
+                            </button>
+                            <mat-divider></mat-divider>
+                        </mat-menu>
+
+                        <mat-select formControlName="languageSelection" class="matSelect"
+                            (selectionChange)="onLanguageChange($event.value)">
+
                             <mat-option>
-                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search> <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search>
+                                    <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                </ngx-mat-select-search>
                             </mat-option>
-                            <mat-option *ngFor="let lang of filteredLanguages | async" [value]="lang.id" matTooltip="{{lang.name}}">
+                            <mat-option *ngFor="let lang of filteredLanguages | async" [value]="lang.id"
+                                matTooltip="{{lang.name}}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>
 
-                        
+
                         <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
                             <div class="logoutButton" fxLayout="column">
-                                <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center padding-item">
-                                    <mat-icon matTooltip="Logout" class='logoutIcon' style="color: #e90606;font-weight: 600;font-size: 22px;">power_settings_new</mat-icon>
+                                <button mat-icon-button (click)="logOut()"
+                                    class="menuToggler display-flex align-items-center padding-item">
+                                    <mat-icon matTooltip="Logout" class='logoutIcon'
+                                        style="color: #e90606;font-weight: 600;font-size: 22px;">power_settings_new
+                                    </mat-icon>
                                 </button>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
-                </form>                
+                </form>
             </div>
         </mat-toolbar-row>
     </mat-toolbar>
@@ -70,7 +141,8 @@
         <div class='userBgImg'>
             <div class="userImageContainer" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
                 <div fxLayout="column">
-                    <img class="userIcon" mat-card-avatar [src]="fileUploadedPath ? fileUploadedPath : 'assets/images/john.png'">
+                    <img class="userIcon" mat-card-avatar
+                        [src]="fileUploadedPath ? fileUploadedPath : 'assets/images/john.png'">
                 </div>
                 <div *ngIf="!menuCollapsed" style='width: 75%;' fxLayoutAlign="center" fxLayout="column"
                     class='font-size-0-9'>
@@ -96,7 +168,7 @@
                 <div *ngIf="menuCollapsed" class='text-truncate' style='font-size: 11px;'>
                     <span matTooltip='{{ userFullName }}'>{{ userFullName }}</span>
                 </div>
-            </div>        
+            </div>
             <div *ngIf="openUserRoleDialog" class="userRoleDialogContainer">
                 <form [formGroup]="landingPageForm">
                     <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
@@ -123,8 +195,8 @@
                                     fxLayoutAlign="left">
                                     <mat-label>Select Role</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select [disabled]='selectedRoles.length == 0' (selectionChange)="onRoleChange($event.value)"
-                                            formControlName="role">
+                                        <mat-select [disabled]='selectedRoles.length == 0'
+                                            (selectionChange)="onRoleChange($event.value)" formControlName="role">
                                             <mat-option *ngFor="let role of selectedRoles" [value]="role.id">
                                                 {{ role.name }}
                                             </mat-option>
@@ -138,28 +210,25 @@
             </div>
         </div>
         <div style="clear: both"></div>
-        <ul *ngIf="menuPages">           
+        <ul *ngIf="menuPages">
             <li #menuName *ngFor='let menu of menuPages.menus; index as i' class="menuItem"
                 [ngClass]="{'active': pageName === menu.url}" [attr.menuName]="menu.url">
                 <span *ngIf="menu.subMenus.length == 0; else elseBlock">
-                    <a class='selectedManu'
-                        *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
+                    <a class='selectedManu' *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
                         (click)='navigateToPage(menu.url)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">
                             {{ translationData[menu.key] || menu.name | titlecase}}</span>
                     </a>
-                    <a target="_blank" href="{{menu.link}}" 
-                        class='selectedManu' *ngIf="menu.externalLink"
+                    <a target="_blank" href="{{menu.link}}" class='selectedManu' *ngIf="menu.externalLink"
                         (click)='navigateToPage(menu.url)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">
                             {{ translationData[menu.key] || menu.name | titlecase}}</span>
-                    </a>                   
+                    </a>
                 </span>
                 <ng-template #elseBlock>
-                    <a class='selectedManu'
-                        (click)="menuSelected(menu.url)">
+                    <a class='selectedManu' (click)="menuSelected(menu.url)">
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{ translationData[menu.key] ||menu.name | titlecase}}</span>
                         <!-- <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
@@ -172,11 +241,11 @@
                         <!-- <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'active': subpage === subMenuItem.subRoute}"> -->
                         <li *ngFor='let subMenuItems of menu.subMenus; index as j'
                             [ngClass]="{'linkActive': subpage === subMenuItems.url}">
-                            <a 
-                                [routerLink]="[ '/'+menu.url+'/'+subMenuItems.url ]"
+                            <a [routerLink]="[ '/'+menu.url+'/'+subMenuItems.url ]"
                                 (click)="navigateToPage(subMenuItems.url)">
                                 <mat-icon class='box-svg-css' style='margin-right: 0px;'>circle</mat-icon>
-                                <span class='font-size-0-9'>{{ translationData[subMenuItems.key] || subMenuItems.name }}</span>
+                                <span class='font-size-0-9'>{{ translationData[subMenuItems.key] || subMenuItems.name
+                                    }}</span>
                             </a>
                         </li>
                     </ul>
@@ -190,12 +259,14 @@
             <mat-icon matTooltip="Preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
-        <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag"></app-preferences>
-    </div>   
+        <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag">
+        </app-preferences>
+    </div>
     <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer'
         [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
         <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">
-            <mat-icon  matTooltip="{{menuCollapsed ? 'Expand' : 'Collapse'}}">{{menuCollapsed ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</mat-icon>
+            <mat-icon matTooltip="{{menuCollapsed ? 'Expand' : 'Collapse'}}">{{menuCollapsed ? 'keyboard_arrow_right' :
+                'keyboard_arrow_left'}}</mat-icon>
         </button>
     </div>
     <mat-sidenav-container fxFlexFill [ngClass]="{'rightContainer': isLogedIn, 'menuCollapsed' : menuCollapsed }">

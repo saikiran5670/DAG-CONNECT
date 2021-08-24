@@ -64,6 +64,10 @@ export class AppComponent {
   appForm: FormGroup;
   selectedRoles: any = [];
   orgContextType: any = false;
+  notificationIcons: any=['unarchive'];
+  notificationNames: any=['Entering Geofence','Fuel Driver Performance','Time & Move'];
+  notificationDates: any = ['04/08/2021','04/08/2021','03/08/2021'];
+  notificationTimes: any=['01:30 pm','11:30 am','07:30 pm'];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
