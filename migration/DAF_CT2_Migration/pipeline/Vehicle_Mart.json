@@ -353,7 +353,7 @@
 				]
 			},
 			{
-				"name": "Update_Vehicle_X",
+				"name": "Update_VehicleMart_X",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -374,7 +374,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "UPDATE MASTER.VEHICLE L \nSET\t \nORGANIZATION_ID\t=\tS.ORGANIZATION_ID\t,\nNAME\t=\tS.NAME\t,\nVIN\t=\tS.VIN\t,\nLICENSE_PLATE_NUMBER\t=\tS.LICENSE_PLATE_NUMBER\t,\nSTATUS\t=\tS.STATUS\t,\nSTATUS_CHANGED_DATE\t=\tS.STATUS_CHANGED_DATE\t,\nTERMINATION_DATE\t=\tS.TERMINATION_DATE\t,\nTYPE\t\t=\tS.TYPE\t,\nTCU_ID\t=\tS.TCU_ID\t,\nTCU_SERIAL_NUMBER\t=\tS.TCU_SERIAL_NUMBER\t,\nTCU_BRAND\t=\tS.TCU_BRAND\t,\nTCU_VERSION\t=\tS.TCU_VERSION\t,\nIS_TCU_REGISTER\t=\tS.IS_TCU_REGISTER  ,\nREFERENCE_DATE\t=\tS.REFERENCE_DATE  ,\nVEHICLE_PROPERTY_ID\t=\tS.VEHICLE_PROPERTY_ID  ,\nCREATED_AT\t=\tS.CREATED_AT  ,\nMODEL_ID\t=\tS.MODEL_ID  ,\nOEM_ID\t=\tS.OEM_ID  ,\nOEM_ORGANISATION_ID\t=\tS.OEM_ORGANISATION_ID  ,\nOPT_IN\t=\tS.OPT_IN  ,\nMODIFIED_AT\t=\tS.MODIFIED_AT  ,\nIS_OTA\t=\tS.IS_OTA  ,\nMODIFIED_BY\t=\tS.MODIFIED_BY  ,\nFUEL_TYPE\t=\tS.FUEL_TYPE  \nFROM    staging.Vehicle_CHG S\nWHERE L.VID = S.VID \nAND L.VIN = S.VIN\n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
+						"query": "\nUPDATE MASTER.VEHICLE L \nSET\t \nvid\t=\tS.vid\t,\nregistration_no\t=\tS.registration_no\t,\ntype\t=\tS.type\t,\nengine_type\t=\tS.engine_type\t,\nmodel_type\t=\tS.model_type\t,\nname\t=\tS.name\nFROM    staging.Vehicle_CHG S\nWHERE L.VIN = S.VIN \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
 					},
 					"dataset": {
 						"referenceName": "Vehicle",
@@ -388,7 +388,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Update_Vehicle_X",
+						"activity": "Update_VehicleMart_X",
 						"dependencyConditions": [
 							"Succeeded"
 						]
