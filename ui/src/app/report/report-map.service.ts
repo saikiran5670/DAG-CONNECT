@@ -1135,8 +1135,10 @@ export class ReportMapService {
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
-      element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
-      element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
+      // element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
+      // element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
+      element.convertedFuelConsumed = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
+      element.convertedFuelConsumed = Number(element.convertedFuelConsumed).toFixed(2);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
