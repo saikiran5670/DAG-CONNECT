@@ -263,7 +263,7 @@ public doughnut_barOptions: ChartOptions = {
   legend: {
     position: 'bottom',
   },
-  cutoutPercentage: 50,
+  cutoutPercentage: 70,
 };
 //pie chart
 public pieChartOptions: ChartOptions = {
