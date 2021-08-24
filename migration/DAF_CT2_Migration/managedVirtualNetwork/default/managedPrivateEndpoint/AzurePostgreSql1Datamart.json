@@ -1,0 +1,7 @@
+{
+	"name": "AzurePostgreSql1Datamart",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrdm/providers/Microsoft.DBforPostgreSQL/servers/dafct-lan3-d-euwe-cdp-pgsql-datamart",
+		"groupId": "postgresqlServer"
+	}
+}
