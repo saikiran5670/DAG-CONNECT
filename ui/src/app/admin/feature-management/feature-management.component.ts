@@ -21,6 +21,8 @@ export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
   displayedColumns = ['name','isExclusive','state', 'action'];
+  columnCodes = ['name','isExclusive','state', 'action'];
+  columnLabels = ['Data Attribute Set Name', 'Data Attribute Set Type', 'Status', 'Action'];
   selectedElementData: any;
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';

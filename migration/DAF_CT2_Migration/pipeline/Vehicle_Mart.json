@@ -1,0 +1,554 @@
+{
+	"name": "Vehicle_Mart",
+	"properties": {
+		"activities": [
+			{
+				"name": "VehicleMart_CT1",
+				"description": "Migrate Vehicle data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureMySqlSource",
+						"query": "select distinct CASE WHEN vh.VIN IS NULL THEN co.external_id ELSE vh.VIN END as VIN,\nvh.vehicle_vid as vid,\nvh.plate_number as registration_no,\nCASE WHEN typ.type = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN typ.type = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN typ.type = 'LCV' THEN 'L'\n     WHEN typ.type = 'TRAILER' THEN 'T'\t \n\t WHEN typ.type = 'Vl'  THEN 'V'\n\t WHEN typ.type = 'SEMITRAILER' THEN 'S'\n\t WHEN typ.type = 'None' THEN 'N'\n\t ELSE 'N' END as type,\nvh.extra_engine_type as engine_type,\nvh.model_name as model_type,\nvh.name as name,\nvh.creation_date,\nvh.last_modification_date\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nleft join cle_pc_cvp_fap.equipment eq\non eq.vehicle_id = vh.id\nwhere length(CASE WHEN vh.VIN IS NULL THEN co.external_id ELSE vh.VIN END) =17;",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "VIN",
+									"type": "String"
+								},
+								"sink": {
+									"name": "vin",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "registration_no",
+									"type": "String"
+								},
+								"sink": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "model_type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "model_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "creation_date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							},
+							{
+								"source": {
+									"name": "last_modification_date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "modified_at",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Vehicle_CT1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleMart_Source",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "VehicleMart_CHG",
+				"description": "Compares source and target and find the records for upsert",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "VehicleMart_CT1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \n\tcoalesce(L.ID,0) AS ID,\nS.VIN,\nS.vid,\nS.registration_no,\nS.type,\nS.engine_type,\nS.model_type,\nS.name,\n(select extract(epoch from cast(S.created_at as timestamp)) * 1000) as created_at,\n(select extract(epoch from cast(S.modified_at as timestamp)) * 1000) modified_at,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMESTAMP AS LOAD_DT\n\t\nFROM\n       public.Vehicle S\nLEFT JOIN \n       master.Vehicle L\nON  L.VIN = S.VIN\nWHERE ( \nS.vid\t<>\tL.vid\tOR\nS.registration_no\t<>\tL.registration_no\tOR\nS.type\t<>\tL.type\tOR\nS.engine_type\t<>\tL.engine_type\tOR\nS.model_type\t<>\tL.model_type\tOR\nS.name\t<>\tL.name\tOR\n  L.ID IS NULL\n);"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"preCopyScript": "TRUNCATE TABLE STAGING.VEHICLE_CHG;",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "vin",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "vin",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "model_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "model_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Double",
+									"physicalType": "double precision"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "modified_at",
+									"type": "Double",
+									"physicalType": "double precision"
+								},
+								"sink": {
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp with time zone"
+								},
+								"sink": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VehicleMart_Source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleMart_CHG",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update_VehicleMart_X",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "VehicleMart_CHG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "\nUPDATE MASTER.VEHICLE L \nSET\t \nvid\t=\tS.vid\t,\nregistration_no\t=\tS.registration_no\t,\ntype\t=\tS.type\t,\nengine_type\t=\tS.engine_type\t,\nmodel_type\t=\tS.model_type\t,\nname\t=\tS.name\nFROM    staging.Vehicle_CHG S\nWHERE L.VIN = S.VIN \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
+					},
+					"dataset": {
+						"referenceName": "Vehicle",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "VehicleMart",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Update_VehicleMart_X",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \nE.VIN,\nE.VID,\nE.REGISTRATION_NO,\nE.TYPE,\nE.ENGINE_TYPE,\nE.MODEL_TYPE,\nE.NAME,\nE.CREATED_AT,\nE.MODIFIED_AT\nFROM staging.Vehicle_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VEHICLE L\n             WHERE    L.VIN = E.VIN)\nORDER BY \n    \tVIN;"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "vin",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "vin",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "model_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "model_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VehicleMart_CHG",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "VehicleMart",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-08-18T13:28:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
