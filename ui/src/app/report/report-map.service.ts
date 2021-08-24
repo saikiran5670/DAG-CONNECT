@@ -1136,6 +1136,7 @@ export class ReportMapService {
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
+      element.convertedFuelConsumed100Km = element.convertedFuelConsumed100Km.toFixed(2);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
@@ -1314,22 +1315,22 @@ export class ReportMapService {
   }
 
   meterToKm(_data: any){
-    return parseInt((_data/1000).toFixed(2));
+    return (_data/1000).toFixed(2);
   }
 
   kmToMeter(_data: any){
-    return parseInt((_data*1000).toFixed(2));
+    return (_data*1000).toFixed(2);
   }
 
   meterToMile(_data: any){
     let km: any = this.meterToKm(_data);
     let mile = km/1.6;
-    return parseInt(mile.toFixed(2));
+    return mile.toFixed(2);
   }
 
   mileToKm(_data: any){
     let km: any = _data * 1.6;
-    return parseInt(km.toFixed(2));
+    return km.toFixed(2);
   }
 
   mileToMeter(_data: any){

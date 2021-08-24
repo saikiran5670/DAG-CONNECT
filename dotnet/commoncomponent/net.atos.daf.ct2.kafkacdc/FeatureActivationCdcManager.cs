@@ -39,11 +39,12 @@ namespace net.atos.daf.ct2.kafkacdc
             List<VehicleAlertRef> insertionMapping = new List<VehicleAlertRef>();
             List<VehicleAlertRef> deletionMapping = new List<VehicleAlertRef>();
             List<VehicleAlertRef> finalmapping = new List<VehicleAlertRef>();
+            operation = "N";
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
                 List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertSubscriptionRepository.GetVehiclesAndAlertFromSubscriptionConfiguration(subscriptionId);
-                alertIds = masterDBPackageVehicleAlerts.Select(x => x.AlertId).ToList();
+                alertIds = masterDBPackageVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
                 List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertSubscriptionRepository.GetVehicleAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
                 unmodifiedMapping = datamartVehicleAlerts.Where(datamart => masterDBPackageVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
@@ -87,10 +88,11 @@ namespace net.atos.daf.ct2.kafkacdc
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
                 //sending only states I & D with combined mapping of vehicle and alertid
-                foreach (var item in alertIds)
-                {
-                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, item, operation, _kafkaConfig);
-                }
+                if (finalmapping.Count() > 0)
+                    foreach (var item in alertIds)
+                    {
+                        await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, item, operation, _kafkaConfig);
+                    }
                 result = true;
             }
             catch (Exception ex)

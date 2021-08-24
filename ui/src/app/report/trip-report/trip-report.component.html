@@ -211,7 +211,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngIf='initData.length == 0'>
-        <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
+        <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -372,12 +372,12 @@
             <ng-container matColumnDef="alert">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : 0 }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="events">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : 0 }}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">

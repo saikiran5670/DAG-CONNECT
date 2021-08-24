@@ -21,12 +21,12 @@ export class VehicleManagementComponent implements OnInit {
   showLoadingIndicator: boolean = false;
 
   constructor(private vehicleService: VehicleService, private translationService: TranslationService, private route: Router,) {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.loadVehicleData()
   }
 
      
   ngOnInit() {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let translationObj = {
       id: 0,
@@ -61,7 +61,9 @@ export class VehicleManagementComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
       // this.updateDataSource(vehData);
-      this.relationshipVehiclesData = vehData;
+      // vehData[0].hasOwned = false;
+      // vehData[2].hasOwned = false;
+      this.relationshipVehiclesData = vehData.sort((a, b) => b.hasOwned - a.hasOwned); 
       this.showLoadingIndicator = false;
     }, (error) => {
         // this.updateDataSource([]);

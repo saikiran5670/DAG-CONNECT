@@ -219,6 +219,7 @@ namespace net.atos.daf.ct2.rfms.response
 
     public class VehicleStatus
     {
+        public int RecordId { get; set; }
         public string Vin { get; set; }
         public TriggerType TriggerType { get; set; }
         public DateTime CreatedDateTime { get; set; }

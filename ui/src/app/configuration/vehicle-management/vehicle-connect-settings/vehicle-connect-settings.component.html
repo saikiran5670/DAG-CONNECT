@@ -122,20 +122,27 @@
           </ng-container>
           <ng-container matColumnDef="connected">
             <mat-header-cell *matHeaderCellDef mat-sort-header  style="min-width: 16%;">{{ translationData.lblConnected || 'Connected(On/Off)'}}</mat-header-cell>
-            <mat-cell *matCellDef="let row"  style="min-width: 16%;">            
-              <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.opt_In == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
-              <mat-slide-toggle color="primary" [checked]='(row.opt_In == "I" ? true : false) || ((row.status == "C" && row.opt_In == "H") ? true : false) || ((row.status == "N" && row.opt_In == "H") ? true : false) ' >
-             </mat-slide-toggle>&nbsp;        
-            </button>
-          </mat-cell>            
+            
+            <mat-cell *matCellDef="let row" style="min-width: 16%;">
+              <ng-container *ngIf="row.hasOwned">
+                <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)"
+                  matTooltip="{{ row.opt_In == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
+                  <mat-slide-toggle color="primary"
+                    [checked]='(row.opt_In == "I" ? true : false) || ((row.status == "C" && row.opt_In == "H") ? true : false) || ((row.status == "N" && row.opt_In == "H") ? true : false) '>
+                  </mat-slide-toggle>&nbsp;
+                </button>
+              </ng-container>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="terminated">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTerminated || 'Terminated'}}</mat-header-cell>
             <mat-cell *matCellDef="let row">
-            <button class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(row)" matTooltip="{{ row.status == 'T' ? (translationData.lblClicktodeactivate || '') : translationData.lblClicktoactivate || 'Click to terminate' }}">
-              <mat-slide-toggle [disabled]='row.status == "T"' color="primary" [checked]='row.status == "T" ? true : false' >
-            </mat-slide-toggle>&nbsp;        
-            </button>
+              <ng-container *ngIf="row.hasOwned">
+                <button class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(row)" matTooltip="{{ row.status == 'T' ? (translationData.lblClicktodeactivate || '') : translationData.lblClicktoactivate || 'Click to terminate' }}">
+                  <mat-slide-toggle [disabled]='row.status == "T"' color="primary" [checked]='row.status == "T" ? true : false' >
+                </mat-slide-toggle>&nbsp;        
+                </button>
+              </ng-container>
           </mat-cell>            
           </ng-container>
          

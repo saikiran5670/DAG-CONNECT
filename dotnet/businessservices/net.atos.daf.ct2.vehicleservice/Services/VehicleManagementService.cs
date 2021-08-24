@@ -266,18 +266,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
 
                 }
-                //TODO : It is not called from Controller
-                //if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
-                //{
-                //    //Triggering alert cdc 
-                //    await _alertCdcHelper.TriggerAlertCdc(new List<int> { ObjvehicleOptInOptOutResponce.RefId });
-                //}
-                //else if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
-                //{
-                //    var vehicleList = await _vehicleManager.GetVehicleIdsByOrgId(ObjvehicleOptInOptOutResponce.RefId);
-                //    if (vehicleList.Count() > 0)
-                //        await _alertCdcHelper.TriggerAlertCdc(vehicleList);
-                //}
+
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,

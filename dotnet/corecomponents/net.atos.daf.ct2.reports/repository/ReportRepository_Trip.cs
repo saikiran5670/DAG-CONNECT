@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 List<TripDetails> lstTripEntityResponce = new List<TripDetails>();
                 string query = string.Empty;
-                query = @"SELECT TS.id
+                query = @"SELECT distinct TS.id
 	                        ,trip_id AS tripId
 	                        ,TS.vin AS VIN
 	                        ,start_time_stamp AS StartTimeStamp
