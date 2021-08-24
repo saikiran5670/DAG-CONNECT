@@ -257,6 +257,12 @@
               <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('specialCharsNotAllowed')">
                   {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
               </mat-error>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('cannotExceedMaxValue')">
+                  {{ translationData.lblRadiusMaxLimitError || 'Radius cannot be greater than 100000 meter' }}
+              </mat-error>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('cannotExceedMinValue')">
+                  {{ translationData.lblRadiusMinLimitError || 'Radius cannot be less than 1 meter' }}
+              </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
               <span style='font-weight: 500!important;'>{{ selectedElementData.distance ? selectedElementData.distance : '--' }}</span>

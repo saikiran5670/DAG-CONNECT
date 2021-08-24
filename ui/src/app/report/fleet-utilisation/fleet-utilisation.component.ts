@@ -967,9 +967,9 @@ calendarOptions: CalendarOptions = {
   setChartData(chartData: any){
     this.calendarValue = [];
     chartData.forEach(e => {
-      var date = new Date(e.calenderDate);
-      let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      this.chartsLabelsdefined.push(resultDate);
+      var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
+      //let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
+      this.chartsLabelsdefined.push(date);
       this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
       this.averageDistanceBarData.push((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
       this.lineChartVehicleCount.push(e.vehiclecount);  

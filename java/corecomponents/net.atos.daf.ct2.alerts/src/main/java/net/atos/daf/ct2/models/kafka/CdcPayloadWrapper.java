@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.models.kafka;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,24 +17,25 @@ import lombok.ToString;
 @JsonPropertyOrder({
         "schema",
         "payload",
-        "operation",
+        "opration",
         "namespace",
         "timeStamp"
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class CdcPayloadWrapper {
+public class CdcPayloadWrapper implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("schema")
     private String schema;
     @JsonProperty("payload")
     private String payload;
-    @JsonProperty("operation")
+    @JsonProperty("opration")
     private String operation;
     @JsonProperty("namespace")
     private String namespace;
     @JsonProperty("timeStamp")
-    private Integer timeStamp;
+    private Long timeStamp;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -78,12 +80,12 @@ public class CdcPayloadWrapper {
     }
 
     @JsonProperty("timeStamp")
-    public Integer getTimeStamp() {
+    public Long getTimeStamp() {
         return timeStamp;
     }
 
     @JsonProperty("timeStamp")
-    public void setTimeStamp(Integer timeStamp) {
+    public void setTimeStamp(Long timeStamp) {
         this.timeStamp = timeStamp;
     }
 

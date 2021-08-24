@@ -181,11 +181,11 @@ namespace net.atos.daf.ct2.vehicle
         }
 
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int organizationId)
         {
             try
             {
-                return await _vehicleRepository.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                return await _vehicleRepository.GetDynamicVisibleVehicle(organizationId);
             }
             catch (Exception)
             {
@@ -193,11 +193,11 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int organizationId)
         {
             try
             {
-                return await _vehicleRepository.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                return await _vehicleRepository.GetDynamicOwnedVehicle(organizationId);
             }
             catch (Exception)
             {
@@ -205,11 +205,11 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int organizationId)
         {
             try
             {
-                return await _vehicleRepository.GetDynamicAllVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                return await _vehicleRepository.GetDynamicAllVehicle(organizationId);
             }
             catch (Exception)
             {

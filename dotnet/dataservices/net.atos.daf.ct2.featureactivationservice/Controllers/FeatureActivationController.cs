@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
     [Route("subscription")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FeatureActivationController : ControllerBase
     {
         private readonly ILogger<FeatureActivationController> _logger;
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
-                    else if (order.Item2.Response.OrderId != "0")
+                    else if (!string.IsNullOrEmpty(order.Item2.Response.OrderId) && order.Item2.Response.OrderId != "0")
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(order.Item2.Response.OrderId);
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
-                    else if (objUnsubs.OrderID != "0")
+                    else if (!string.IsNullOrEmpty(objUnsubs.OrderID) && objUnsubs.OrderID != "0")
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(objUnsubs.OrderID);

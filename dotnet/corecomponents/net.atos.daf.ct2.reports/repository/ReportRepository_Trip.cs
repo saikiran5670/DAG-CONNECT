@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,end_position_lattitude AS EndPositionLattitude
 	                        ,end_position_longitude AS EndPositionLongitude
 	                        ,etl_gps_fuel_consumed AS FuelConsumed
-	                        ,veh_message_driving_time AS DrivingTime
+	                        ,etl_gps_driving_time AS DrivingTime
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events
 	                        ,fuel_consumption  AS FuelConsumed100km

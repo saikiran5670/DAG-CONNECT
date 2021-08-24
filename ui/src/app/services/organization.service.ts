@@ -98,6 +98,15 @@ export class OrganizationService {
     ).pipe(catchError(this.handleError));
   }
 
+  createPreferences(data: any): Observable<any> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    return this.httpClient.post<any[]>(
+      `${this.organizationServiceUrl}/preference/create`, 
+       data , 
+      { headers}
+    ).pipe(catchError(this.handleError));
+  }
+
   getRelationship(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

@@ -27,9 +27,6 @@ namespace net.atos.daf.ct2.group
         }
         public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
         {
-            // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.GET,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
-            // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
-            //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
             return await _gropRepository.Get(groupFilter);
         }
         public async Task<bool> UpdateRef(Group group)
@@ -58,5 +55,9 @@ namespace net.atos.daf.ct2.group
             return await _gropRepository.GetVehicleGroupWithVehCount(groupFilter);
         }
 
+        public async Task<int> GetVehicleCount(int[] groupIds, int organizationId, FunctionEnum functionEnum = FunctionEnum.All)
+        {
+            return await _gropRepository.GetVehicleCount(groupIds, organizationId, functionEnum);
+        }
     }
 }

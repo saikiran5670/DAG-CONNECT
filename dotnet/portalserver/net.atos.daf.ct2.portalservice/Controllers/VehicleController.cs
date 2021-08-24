@@ -742,18 +742,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]
         [Route("group/getvehiclegrouplist")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
-        public async Task<IActionResult> GetGroupDetailsWithVehicleCount([FromQuery] int OrganizationId)
+        public async Task<IActionResult> GetGroupDetailsWithVehicleCount([FromQuery] int organizationId)
         {
             try
             {
                 _logger.Info("Get Group detais method in vehicle API called.");
 
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                organizationId = GetContextOrgId();
 
-                VehicleBusinessService.VehicleGroupLandingRequest VehicleGroupRequest = new VehicleBusinessService.VehicleGroupLandingRequest();
-                VehicleGroupRequest = _mapper.ToVehicleGroupLandingFilter(OrganizationId);
-                VehicleBusinessService.VehicleGroupLandingResponse response = await _vehicleClient.GetVehicleGroupWithVehCountAsync(VehicleGroupRequest);
+                VehicleBusinessService.VehicleGroupLandingRequest vehicleGroupRequest = new VehicleBusinessService.VehicleGroupLandingRequest();
+                vehicleGroupRequest = _mapper.ToVehicleGroupLandingFilter(organizationId);
+                VehicleBusinessService.VehicleGroupLandingResponse response = await _vehicleClient.GetVehicleGroupWithVehCountAsync(vehicleGroupRequest);
 
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
@@ -803,9 +803,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'g')
                         {
 
-                            VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
-                            VehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
-                            VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
+                            VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
+                            vehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
+                            VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
                             if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                             {
@@ -847,30 +847,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd' && Convert.ToChar(dynamicVehicleGroupRequest.FunctionEnum.ToLower().Trim()) == 'v')
                             {
-                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
-                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
-                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
-                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+                                VehicleBusinessService.DynamicGroupFilterRequest dynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                dynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                dynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                dynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
 
-                                response = await _vehicleClient.GetDynamicVisibleVehicleAsync(DynamicVehicleGroupIdRequest);
+                                response = await _vehicleClient.GetDynamicVisibleVehicleAsync(dynamicVehicleGroupIdRequest);
                             }
                             else if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd' && Convert.ToChar(dynamicVehicleGroupRequest.FunctionEnum.ToLower().Trim()) == 'o')
                             {
-                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
-                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
-                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
-                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+                                VehicleBusinessService.DynamicGroupFilterRequest dynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                dynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                dynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                dynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
 
-                                response = await _vehicleClient.GetDynamicOwnedVehicleAsync(DynamicVehicleGroupIdRequest);
+                                response = await _vehicleClient.GetDynamicOwnedVehicleAsync(dynamicVehicleGroupIdRequest);
                             }
                             else
                             {
-                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
-                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
-                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
-                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+                                VehicleBusinessService.DynamicGroupFilterRequest dynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                dynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                dynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                dynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
 
-                                response = await _vehicleClient.GetDynamicAllVehicleAsync(DynamicVehicleGroupIdRequest);
+                                response = await _vehicleClient.GetDynamicAllVehicleAsync(dynamicVehicleGroupIdRequest);
                             }
 
                             if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)

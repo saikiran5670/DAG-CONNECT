@@ -167,6 +167,7 @@ export class ManageCorridorComponent implements OnInit {
   }
   
   editViewCorridor(rowData: any, type: any){
+    this.tabVisibility.emit(false);
     this.actionType = type;
     this.selectedElementData = rowData;
     if(this.selectedElementData.corridorType === 'R'){
