@@ -412,7 +412,7 @@
         </div>
                             
         <!-- POI table -->
-        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedPOIList.length > 0)">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -480,7 +480,7 @@
           </div>
          
           <!-- Geofence table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedGeofenceList.length > 0)">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -542,7 +542,7 @@
           </div>
 
           <!-- Group table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedGroupList.length > 0)">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>

@@ -1221,7 +1221,7 @@ export class ReportMapService {
 
   convertFuelConsumptionL100kmToMpg(_data: any){ // as value is sent in L/100Km - convert to mpg
     let data: any = (282.481 / _data);
-    return (data).toFixed(6); 
+    return (data).toFixed(2); 
   }
 
   convertFuelConsumptionMpgToL100km(_data: any){ // convert from mpg to L/100Km
@@ -1231,7 +1231,7 @@ export class ReportMapService {
 
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
-    return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
+    return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
   convertKgToPound(_data: any){
