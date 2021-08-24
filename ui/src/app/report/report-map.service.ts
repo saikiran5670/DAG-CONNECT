@@ -1284,7 +1284,7 @@ export class ReportMapService {
 
   convertSpeedMmsToMph(_data: any){
     let kmph: any = this.convertSpeedMmsToKmph(_data);
-    let mph: any = kmph/1.6;
+    let mph: any = kmph/1.609;
     return mph.toFixed(2);
   }
 
