@@ -217,7 +217,7 @@ export class DashboardPreferencesComponent implements OnInit {
           this.fleetKPIColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('fleetkpi_drivingtime') || element.key.includes('fleetkpi_idlingtime')) {
-            let secondscalc = (element.thresholdValue)/1000;
+            let secondscalc = (element.thresholdValue); // removed as time is in seconds
             let hms = this.secondsToHms(secondscalc);
             let hrs = '';
             let mins = '';
@@ -368,13 +368,18 @@ export class DashboardPreferencesComponent implements OnInit {
       let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType'])?.value || '';
       let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType'])?.value || '';
       let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue'])?.value || 0;
-      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')) {
+      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') ) { // separated as time is in seconds
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000 });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs });
       }
-
+      else if(element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')){
+        let thresholdValuehrs = thresholdValue * 3600;
+        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
+        let totalsecs: number = thresholdValuehrs + thresholdValuemin;
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000});
+      }
       else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
         
         let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609.344 : thresholdValue * 1000;
