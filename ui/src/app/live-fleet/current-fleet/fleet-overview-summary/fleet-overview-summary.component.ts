@@ -157,7 +157,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     legend: {
       display: false
     },
-    cutoutPercentage: 65,
+    cutoutPercentage: 70,
     tooltips: {
       filter: function(item, data) {
         var label = data.labels[item.index];
@@ -176,7 +176,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
    legend: {
      display: false
    },
-   cutoutPercentage: 65,
+   cutoutPercentage: 70,
    tooltips: {
      filter: function(item, data) {
        var label = data.labels[item.index];
