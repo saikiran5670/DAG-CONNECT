@@ -227,8 +227,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 if (latestOnly && (!string.IsNullOrEmpty(starttime) || !string.IsNullOrEmpty(stoptime)))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(latestOnly), "INVALID_SUPPLIED_PARAMETERS, LatestOnly cannot be combined with StartTime and/or StopTime");
 
-                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                    selectedType = RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON;
+                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON, StringComparison.CurrentCultureIgnoreCase)))
+                    selectedType = RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON;
                 else
                     return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
 
@@ -261,7 +261,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 {
                     var response = new RfmsVehicleStatus();
                     response = await _rfmsManager.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
-                    return Ok(MapVehicleStatusResponse(response));// need to add mapper
+                    return Ok(response);// need to add mapper
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, field, "INVALID_PARAMETER");
             }

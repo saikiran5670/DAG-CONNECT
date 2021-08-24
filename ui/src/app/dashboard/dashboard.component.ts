@@ -20,7 +20,7 @@ import { DashboardService } from '../services/dashboard.service';
 })
 export class DashboardComponent implements OnInit {
   localStLanguage: any;
-  accountOrganizationId: any;
+  accountOrganizationId: any = 0;
   globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
   accountId: any;
   accountPrefObj : any;
@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   finalVinList : any =[];
   prefData : any;
   preference : any;
+  noDataFound: boolean = false;
   dashboardPrefData: any;
   //--------- Pie chart ------------------//
   // doughnutChartData: MultiDataSet = [[55, 25, 20]];
@@ -140,7 +141,11 @@ export class DashboardComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
     let translationObj = {
       id: 0,
       code:_langCode,
@@ -153,7 +158,6 @@ export class DashboardComponent implements OnInit {
    
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
    // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.showLoadingIndicator = true;
@@ -179,7 +183,6 @@ export class DashboardComponent implements OnInit {
     let reportListData;
     this.showLoadingIndicator = true;
     this.reportService.getReportDetails().subscribe((reportList: any) => {
-
       reportListData = reportList.reportDetails;
       let repoId: any= reportListData.filter(i => i.name == 'Dashboard');
       let reportId;
@@ -221,10 +224,13 @@ export class DashboardComponent implements OnInit {
 
   getVinsForDashboard(){
     this.dashboardService.getVinsForDashboard(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-
       this.hideloader();
+      this.noDataFound = false;
       this.processVins(tripData);
-
+    }, (error) => {
+      this.hideloader();
+      this.noDataFound = true;
+      console.log('No data found for this organisation dashboard...');
     });
   }
 
@@ -234,6 +240,7 @@ export class DashboardComponent implements OnInit {
       this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
     }
   }
+
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;

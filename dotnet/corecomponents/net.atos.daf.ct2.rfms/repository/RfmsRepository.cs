@@ -17,11 +17,12 @@ namespace net.atos.daf.ct2.rfms.repository
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-
+        private readonly RfmsVehicleStatusMapper _rfmsVehicleStatusMapper;
         public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
         {
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
+            _rfmsVehicleStatusMapper = new RfmsVehicleStatusMapper();
         }
         public async Task<RfmsVehicles> GetVehicles(string visibleVins, int lastVinId)
         {
@@ -419,7 +420,13 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
             }
-
+            if (record.doorStatus != null)
+            {
+                vehicleStatus.DoorStatus = Convert.ToString(record.doorStatus);
+            }
+            vehicleStatus.AccumulatedData = _rfmsVehicleStatusMapper.MapAccumuatedData();
+            vehicleStatus.SnapshotData = _rfmsVehicleStatusMapper.MapSnapShotData();
+            vehicleStatus.UptimeData = _rfmsVehicleStatusMapper.MapUptimeData();
             return vehicleStatus;
         }
 
@@ -578,7 +585,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                     'uptimedata' as uptimedata,
                                     'status2ofdoors' as status2ofdoors, 
                                     'doorstatus' as doorstatus
-                                     from livefleet.livefleet_position_statistics
+                                    
 									    from livefleet.livefleet_position_statistics";
                 }
 
@@ -669,7 +676,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(MapVehiclePositions(record)); // mapper need to implement
+                    lstVehicleStatus.Add(MapVehicleStatus(record)); // mapper need to implement
                 }
 
 

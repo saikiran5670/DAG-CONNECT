@@ -93,6 +93,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         validator: [
           CustomValidators.specialCharValidationForName('circularName'),
           CustomValidators.specialCharValidationForName('radius'),
+          CustomValidators.numberFieldValidation('radius', 100000),
+          CustomValidators.numberMinFieldValidation('radius', 1)
         ]
       });
 
@@ -586,7 +588,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         //thisRef.uiElem.removeBubble(bubble); //- remove bubble
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
                 evt.currentPointer.viewportY);
-        if(!thisRef.isPolyCreated && pointsArray.length <= 21){ //-- Min-3 & Max-5 //changing to max to 8
+        if(!thisRef.isPolyCreated && pointsArray.length <= 30000){ //-- Min-3 & Max-10000
           nodeNo++;
           let x = Math.abs(coord.lat.toFixed(4));
           let y = Math.abs(coord.lng.toFixed(4));

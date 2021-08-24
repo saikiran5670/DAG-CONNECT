@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.customerdataservice.Common;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.entity;
 
@@ -19,11 +21,15 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         private readonly ILogger<CustomerDataController> _logger;
         private readonly IOrganizationManager _organizationManager;
         private readonly IConfiguration _configuration;
-        public CustomerDataController(ILogger<CustomerDataController> logger, IOrganizationManager organizationmanager, IConfiguration configuration)
+        private readonly CustomerDataCdcHelper _customerDataCdcHelper;
+        private readonly ICustomerDataCdcManager _customerDataCdcManager;
+        public CustomerDataController(ILogger<CustomerDataController> logger, IOrganizationManager organizationmanager, IConfiguration configuration, ICustomerDataCdcManager customerDataCdcManager)
         {
             this._logger = logger;
             _organizationManager = organizationmanager;
             _configuration = configuration;
+            _customerDataCdcManager = customerDataCdcManager;
+            _customerDataCdcHelper = new CustomerDataCdcHelper(_customerDataCdcManager);
         }
 
         [HttpPost]
@@ -59,6 +65,12 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 };
 
                 await _organizationManager.UpdateCustomer(customerRequest);
+                if (!string.IsNullOrEmpty(customerRequest.SubscriptionId) && customerRequest.SubscriptionId != "0")
+                {
+                    //Triggering subscription cdc 
+                    int subscriptionId = Convert.ToInt32(customerRequest.SubscriptionId);
+                    await _customerDataCdcManager.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId, "I");
+                }
                 _logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
                 return Ok();
             }

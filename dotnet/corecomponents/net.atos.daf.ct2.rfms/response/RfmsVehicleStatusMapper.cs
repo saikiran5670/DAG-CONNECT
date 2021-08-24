@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using net.atos.daf.ct2.rfms.entity;
 
 namespace net.atos.daf.ct2.rfms.response
 {
-    public class RfmsMapper
+    public class RfmsVehicleStatusMapper
     {
         public AccumulatedData MapAccumuatedData()
         {
@@ -136,8 +137,88 @@ namespace net.atos.daf.ct2.rfms.response
             };
 
             return accumulatedData;
+        }
+
+
+        public SnapshotData MapSnapShotData()
+        {
+            var snapshotData = new SnapshotData()
+            {
+                GnssPosition = new GnssPosition()
+                {
+                    Latitude = 57.71727,
+                    Longitude = 11.921161,
+                    Heading = 30,
+                    Altitude = 32,
+                    Speed = 54.5,
+                    PositionDateTime = DateTime.UtcNow//2021-08-23T08=07=40.446Z
+                },
+                WheelBasedSpeed = 54.3,
+                TachographSpeed = 54.4,
+                EngineSpeed = 1234,
+                FuelType = "1A",
+                FuelLevel1 = 86,
+                FuelLevel2 = 45,
+                CatalystFuelLevel = 43,
+                Driver1WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
+                Driver2Id = new Driver2Id()
+                {
+                    TachoDriverIdentification = new TachoDriverIdentification()
+                    {
+                        DriverIdentification = "12345678901234",
+                        CardIssuingMemberState = "S",
+                        DriverAuthenticationEquipment = MasterMemoryObjectCacheConstants.DRIVER_CARD,
+                        CardReplacementIndex = "0",
+                        CardRenewalIndex = "0"
+                    },
+                    OemDriverIdentification = new OemDriverIdentification()
+                    {
+                        IdType = "USB",
+                        DriverIdentification = "ABC-123-DEF"
+                    }
+                },
+                Driver2WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
+                AmbientAirTemperature = 23.7,
+                ParkingBrakeSwitch = false,
+                HybridBatteryPackRemainingCharge = 76
+            };
+            return snapshotData;
+
+        }
+
+        public UptimeData MapUptimeData()
+        {
+
+            var uptimeData = new UptimeData()
+            {
+
+                TellTaleInfo = new List<TellTaleInfo>(){ new TellTaleInfo()
+                {
+                    TellTale = MasterMemoryObjectCacheConstants.FUEL_LEVEL,
+                    OemTellTale = MasterMemoryObjectCacheConstants.NO_GPS_SIGNAL,
+                    State = MasterMemoryObjectCacheConstants.YELLOW
+                }
+                },
+                ServiceDistance = 100000,
+                EngineCoolantTemperature = 90,
+                ServiceBrakeAirPressureCircuit1 = 512000,
+                ServiceBrakeAirPressureCircuit2 = 534000,
+                DurationAtLeastOneDoorOpen = 0,
+                AlternatorInfo = new AlternatorInfo()
+                {
+                    AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
+                    AlternatorNumber = 1
+                },
+                BellowPressureFrontAxleLeft = 234000,
+                BellowPressureFrontAxleRight = 234000,
+                BellowPressureRearAxleLeft = 234000,
+                BellowPressureRearAxleRight = 234000
+            };
+            return uptimeData;
 
 
         }
+
+
     }
 }

@@ -1,36 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
-using System.Linq;
+
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public class PackageAlertCdcManager : IPackageAlertCdcManager
+    public class CustomerDataCdcManager : ICustomerDataCdcManager
     {
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IPackageAlertCdcRepository _vehicleAlertPackageRepository;
+        private readonly ICustomerDataCdcRepository _vehicleAlertCustomerDataRepository;
         private readonly KafkaCdcHelper _kafkaCdcHelper;
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
 
-        public PackageAlertCdcManager(IPackageAlertCdcRepository vehicleAlertPackageRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository)
+        public CustomerDataCdcManager(ICustomerDataCdcRepository vehicleAlertCustomerDataRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository)
         {
 
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
 
-            _vehicleAlertPackageRepository = vehicleAlertPackageRepository;
+            _vehicleAlertCustomerDataRepository = vehicleAlertCustomerDataRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehiclesAndAlertFromPackageConfiguration(int packageId, string operation) => ExtractAndSyncVehicleAlertRefByPackageIds(packageId, operation);
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefByPackageIds(int packageId, string operation)
+
+        public Task<bool> GetVehiclesAndAlertFromCustomerDataConfiguration(int subscriptionId, string operation) => ExtractAndSyncVehicleAlertRefBySubscriptionId(subscriptionId, operation);
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefBySubscriptionId(int subscriptionId, string operation)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -42,9 +44,9 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertPackageRepository.GetVehiclesAndAlertFromPackageConfiguration(packageId);
+                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertCustomerDataRepository.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId);
                 alertIds = masterDBPackageVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
-                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertPackageRepository.GetVehicleAlertRefByAlertIds(alertIds);
+                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertCustomerDataRepository.GetVehicleAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
                 unmodifiedMapping = datamartVehicleAlerts.Where(datamart => masterDBPackageVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
 
@@ -96,12 +98,12 @@ namespace net.atos.daf.ct2.kafkacdc
             }
             catch (Exception ex)
             {
-                _log.Info("Package CDC has failed for Package Id :" + packageId.ToString() + " and operation " + operation);
+                _log.Info("Subscription CDC has failed for Subscription Id :" + subscriptionId.ToString() + " and operation " + operation);
                 _log.Error(ex.ToString());
                 result = false;
             }
             return result;
         }
-    }
 
+    }
 }
