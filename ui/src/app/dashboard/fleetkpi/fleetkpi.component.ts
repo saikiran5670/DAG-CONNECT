@@ -2289,7 +2289,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   getTimeDisplay(_timeValue){
-    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTime = Util.getHhMmTime(_timeValue); // updated as time is in seconds
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){
