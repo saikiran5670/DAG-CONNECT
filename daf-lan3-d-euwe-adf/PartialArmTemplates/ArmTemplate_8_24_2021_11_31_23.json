@@ -1,0 +1,26 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "daf-lan3-d-euwe-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/default/AzurePostgreSql1Datamart')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrdm/providers/Microsoft.DBforPostgreSQL/servers/dafct-lan3-d-euwe-cdp-pgsql-datamart",
+				"groupId": "postgresqlServer"
+			},
+			"dependsOn": []
+		}
+	]
+}
