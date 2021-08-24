@@ -2170,7 +2170,7 @@ setVehicleGroupAndVehiclePreSelection() {
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.convertedFuelConsumption);
       });
-      sum= sum.toFixed(6)*1;
+      sum= sum.toFixed(2)*1;
       break;
     }
     case 'co2emission': { 

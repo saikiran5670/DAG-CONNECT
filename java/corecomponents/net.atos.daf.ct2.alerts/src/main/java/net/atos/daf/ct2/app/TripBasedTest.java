@@ -2,6 +2,7 @@ package net.atos.daf.ct2.app;
 
 import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.pojo.standard.Status;
+import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -39,102 +40,21 @@ public class TripBasedTest implements Serializable {
         env.getConfig().setGlobalJobParameters(propertiesParamTool);
         logger.info("PropertiesParamTool :: {}", parameterTool.getProperties());
 
-//        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
-        Properties kafkaTopicProp = new Properties();
-        kafkaTopicProp.put("bootstrap.servers", "localhost:9092");
-        kafkaTopicProp.put("client.id", "alertsprocessing_client");
-        kafkaTopicProp.put("group.id", "alertsprocessing_grp");
-        kafkaTopicProp.put("group.id", "alertsprocessing_grp");
-        kafkaTopicProp.put("auto.offset.reset", "earliest");
+        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
 
-        Alert alert = Alert.builder()
-                .tripid("s03bf625a-cce7-42b8-a712-7a5a161b1d003")
-                .vin("XLR0998HGFFT76657")
-                .categoryType("L")
-                .type("G")
-                .alertid("367")
-                .alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
-                .thresholdValue("2000")
-                .thresholdValueUnitType("M")
-                .valueAtAlertTime("25433")
-                .urgencyLevelType("A")
-                .build();
+        logger.info("kafkaTopicProp :: {}" , kafkaTopicProp.entrySet());
 
-        FlinkKafkaConsumer<String> kafkaContiMessageConsumer = new FlinkKafkaConsumer<>(propertiesParamTool.get(KAFKA_DAF_STATUS_MSG_TOPIC), new SimpleStringSchema(), kafkaTopicProp);
-
-        SingleOutputStreamOperator<Alert> alertKafkaStream = env.addSource(kafkaContiMessageConsumer)
-                .map(json -> alert)
-                .returns(Alert.class);
-
-
-
-
-
-        String jdbcInsertUrl = new StringBuilder("jdbc:postgresql://")
-                .append("localhost")
-                .append(":" + "5432" + "/")
-                .append("postgres")
-                .append("?user=" + "postgres")
-                .append("&password=" + "root")
-                .toString();
-
-        String query = "INSERT INTO public.tripalert(trip_id, vin, category_type, type, alert_id, alert_generated_time, created_at, urgency_level_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-//        env
-//                .fromElements(alert)
-
-
-//        JDBCOutputFormat jdbcOutput = JDBCOutputFormat.buildJDBCOutputFormat()
-//                .setDrivername("org.postgresql.Driver")
-//                .setDBUrl(jdbcInsertUrl)
-//                .setQuery(query)
-//                .finish();
-//
-//        DataStream<Row> rows = alertKafkaStream.map((MapFunction<Alert, Row>) a -> {
-//            Row row = new Row(8);
-//            /*row.setField(0, aCase.getId());
-//            row.setField(1, aCase.getTraceHash());*/
-//            row.setField(0, a.getTripid());
-//            row.setField(1, a.getVin());
-//            row.setField(2, a.getCategoryType());
-//            row.setField(3, a.getType());
-//            row.setField(4, Long.valueOf(a.getAlertid()));
-//            row.setField(5, Long.valueOf(a.getAlertGeneratedTime()));
-//            row.setField(6, Long.valueOf(a.getAlertGeneratedTime()));
-//            row.setField(7, a.getUrgencyLevelType());
-//            return row;
-//        });
-
-        alertKafkaStream.print();
-
-//        rows.writeUsingOutputFormat(jdbcOutput);
-
-
-        alertKafkaStream
-                .addSink(JdbcSink.sink(
-                        query,
-                        (ps, a) -> {
-                            ps.setString(1, a.getTripid());
-                            ps.setString(2, a.getVin());
-                            ps.setString(3, a.getCategoryType());
-                            ps.setString(4, a.getType());
-                            ps.setLong(5, Long.valueOf(a.getAlertid()));
-                            ps.setLong(6, Long.valueOf(a.getAlertGeneratedTime()));
-                            ps.setLong(7, Long.valueOf(a.getAlertGeneratedTime()));
-                            ps.setString(8, a.getUrgencyLevelType());
-                        },
-                        JdbcExecutionOptions.builder()
-                                .withMaxRetries(0)
-                                .withBatchSize(1)
-                                .build(),
-                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                                .withUrl(jdbcInsertUrl)
-                                .withDriverName(propertiesParamTool.get("driver.class.name"))
-                                .build())
-                );
-
+         KafkaConnectionService.connectStatusObjectTopic(
+                        propertiesParamTool.get(KAFKA_DAF_STATUS_MSG_TOPIC),
+                        propertiesParamTool,
+                        env)
+                .map(statusKafkaRecord -> statusKafkaRecord.getValue())
+                .returns(net.atos.daf.ct2.pojo.standard.Status.class)
+                .keyBy(status -> status.getVin() !=null ? status.getVin() : status.getVid())
+                 .print();
 
         env.execute("TripBasedTest");
+
 
     }
 }

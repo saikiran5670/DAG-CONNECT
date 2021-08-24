@@ -795,7 +795,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">
   
-                <span>{{row.convertedFuelConsumption}}</span>
+                <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>
   
               </mat-cell>
   
