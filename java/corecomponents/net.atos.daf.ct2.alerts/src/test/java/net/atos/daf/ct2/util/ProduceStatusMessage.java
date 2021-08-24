@@ -11,6 +11,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class ProduceStatusMessage {
 
     private static final Logger logger = LoggerFactory.getLogger(ProduceStatusMessage.class);
 
+    @Ignore
     @Test
     public void produceStatusMessge() throws Exception {
 //        String propertyPath = "src/test/resources/application-local-test.properties";
