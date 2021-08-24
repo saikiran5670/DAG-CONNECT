@@ -32,86 +32,38 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "relationship_id",
+									"name": "access_type",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "access_type",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "account_group_id",
 									"type": "Int32",
 									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "relationship_id",
+									"name": "account_group_id",
 									"type": "Int32",
 									"physicalType": "integer"
 								}
 							},
 							{
 								"source": {
-									"name": "vehicle_id",
+									"name": "vehicle_group_id",
 									"type": "Int32",
 									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "vehicle_id",
+									"name": "vehicle_group_id",
 									"type": "Int32",
 									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "owner_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "owner_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "created_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "created_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "target_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "target_org_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "start_date",
-									"type": "Double",
-									"physicalType": "double precision"
-								},
-								"sink": {
-									"name": "start_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "created_at",
-									"type": "Double",
-									"physicalType": "double precision"
-								},
-								"sink": {
-									"name": "created_at",
-									"type": "Int64",
-									"physicalType": "bigint"
 								}
 							},
 							{
@@ -154,7 +106,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "OrgRelationshipMapping_CHG",
+						"referenceName": "AccessRelationship_CHG",
 						"type": "DatasetReference"
 					}
 				]
