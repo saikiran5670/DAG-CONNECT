@@ -64,10 +64,29 @@ export class AppComponent {
   appForm: FormGroup;
   selectedRoles: any = [];
   orgContextType: any = false;
-  notificationIcons: any=['unarchive'];
-  notificationNames: any=['Entering Geofence','Fuel Driver Performance','Time & Move'];
-  notificationDates: any = ['04/08/2021','04/08/2021','03/08/2021'];
-  notificationTimes: any=['01:30 pm','11:30 am','07:30 pm'];
+  notificationData: any = [
+    {
+      icons:'unarchive',
+      name: 'Entering Geofence',
+      date: '04/08/2021',
+      time: '01:30 pm',
+      regNo: 'XLRTEM4100G041999858'
+    },
+    {
+      icons:'unarchive',
+      name: 'Fuel Driver Performance',
+      date: '04/08/2021',
+      time: '11:30 pm',
+      regNo: 'XLRTEM4100G041999'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move',
+      date: '03/08/2021',
+      time: '07:30 pm',
+      regNo: 'XLRTEM4100G041999'
+    }
+  ];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
