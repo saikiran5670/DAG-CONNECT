@@ -140,7 +140,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_CHG\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nis_wheel_tire_size_replaced,\nsize\n)\n\tVALUES ((select id from master.vehicle where vid =f.vehicle_vid),\n\t\t\t'F', 1, f.frontaxletype, null,null, null, 'N',f.TyreFrontsize) ;\t \n\t   end loop;\nend;\n$$;\n\nSelect * from staging.vehicleaxleproperties;"
+						"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_CHG\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nis_wheel_tire_size_replaced,\nsize\n)\n\tVALUES ((select id from master.vehicle where vid =f.vehicle_vid),\n\t\t\t'F', 1, f.frontaxletype, null,null, null, 'N',f.TyreFrontsize) ;\t \n\t   end loop;\nend;\n$$;\n\nSelect * from staging.vehicleaxleproperties_chg;"
 					},
 					"dataset": {
 						"referenceName": "VehicleAxleProperties_CHG",
@@ -170,7 +170,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_CHG\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nis_wheel_tire_size_replaced,\nsize\n)\n\tVALUES ((select id from master.vehicle where vid =f.vehicle_vid),\n\t\t\t'R', 1, null, null,f.rearaxleload, f.rearaxleratio, 'N',f.TyreRearsize) ;\t \n\t   end loop;\nend;\n$$;\n\nselect * from staging.vehicleaxleproperties;"
+						"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_CHG\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nis_wheel_tire_size_replaced,\nsize\n)\n\tVALUES ((select id from master.vehicle where vid =f.vehicle_vid),\n\t\t\t'R', 1, null, null,f.rearaxleload, f.rearaxleratio, 'N',f.TyreRearsize) ;\t \n\t   end loop;\nend;\n$$;\n\nselect * from staging.vehicleaxleproperties_chg;"
 					},
 					"dataset": {
 						"referenceName": "VehicleAxleProperties_CHG",
