@@ -1475,7 +1475,7 @@ export class ReportMapService {
   getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime ,onlyTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
     }
     return sTime;
   }
