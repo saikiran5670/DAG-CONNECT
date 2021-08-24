@@ -254,7 +254,61 @@
                                     </mat-form-field>
                                 </div>
                             </div>
+                            <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+                                <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+                                  <div class="areaWidth min-width-15-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
+                                    <button *ngIf="this.uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                                      <mat-icon>cancel</mat-icon>
+                                    </button>
+                                    <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
+                                  </div>
+                                  <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-form-field appearance="outline">
+                                      <!-- <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input> -->
+                                      <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
+                                    </mat-form-field>
+                                    <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
+                                      <mat-form-field appearance="outline">
+                                          <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
+                                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
+                                      </mat-form-field>
+                                    </div> -->
+                                  </div>
+                                </div>
+                                <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
+                                <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                                    The total size must not exceed {{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
+                                    | byteFormat}}).
+                                </mat-error>
+                                <mat-error *ngIf="imageEmptyMsg">
+                                    {{ translationData.lblEmptyFile || 'Empty File' }}
+                                </mat-error>
+                              </div>
                         </div>
+                        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+                            <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
+                              <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
+                                <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+                              </div>
+                              <div fxLayout="row" fxLayoutAlign="left center">
+                                <mat-form-field appearance="outline" style='width: 35%'>
+                                  <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                                  <span matSuffix>min</span>   
+                                </mat-form-field>
+                                <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
+                              </div>
+                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')">
+                                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+                              </mat-error>
+                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                                  {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+                              </mat-error>
+                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                                  {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+                              </mat-error>
+                            </div>
+                          </div>
                     </div>
                     <mat-card-actions class='no-margin no-padding'>
                            
