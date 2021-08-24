@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Vehicle_CT1",
+				"name": "VehicleMart_CT1",
 				"description": "Migrate Vehicle data",
 				"type": "Copy",
 				"dependsOn": [],
@@ -18,7 +18,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureMySqlSource",
-						"query": "select distinct vh.id,prty.id as organization_id,vh.name as Name,vh.VIN,vh.plate_number as license_plate_number,\nvh.connected_object_status as status,     \nnull as status_changed_date,\nnull as termination_date,\nvh.vehicle_vid as vid,typ.type as type,\neq.supplier_serial_number as tcu_id,\neq.serial_number as tcu_serial_number,\nvh.brand as tcu_brand,\n'1.0' as tcu_version,\nCASE WHEN eq.serial_number is not null then 'True' ELSE 'False' END is_tcu_register,\nNULL as reference_date,\nNULL as vehicle_property_id,\nvh.creation_date as created_at,\nvh.model_name as model_id,\n1 as oem_id,\n2 as oem_organisation_id,\n'H' as opt_in,\nvh.last_modification_date as modified_at,\n'False' as is_ota,\nnull as modified_by,\nREPLACE(JSON_EXTRACT(co.metadata,'$.fuelType'),'\"','') as fuel_type\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nleft join cle_pc_cvp_fap.equipment eq\non eq.vehicle_id = vh.id;\n",
+						"query": "select distinct CASE WHEN vh.VIN IS NULL THEN co.external_id ELSE vh.VIN END as VIN,\nvh.vehicle_vid as vid,\nvh.plate_number as registration_no,\nCASE WHEN typ.type = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN typ.type = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN typ.type = 'LCV' THEN 'L'\n     WHEN typ.type = 'TRAILER' THEN 'T'\t \n\t WHEN typ.type = 'Vl'  THEN 'V'\n\t WHEN typ.type = 'SEMITRAILER' THEN 'S'\n\t WHEN typ.type = 'None' THEN 'N'\n\t ELSE 'N' END as type,\nvh.extra_engine_type as engine_type,\nvh.model_name as model_type,\nvh.name as name,\nvh.creation_date,\nvh.last_modification_date\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nleft join cle_pc_cvp_fap.equipment eq\non eq.vehicle_id = vh.id;",
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
@@ -33,39 +33,6 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "id",
-									"type": "Int64"
-								},
-								"sink": {
-									"name": "id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "organization_id",
-									"type": "Int64"
-								},
-								"sink": {
-									"name": "organization_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "Name",
-									"type": "String"
-								},
-								"sink": {
-									"name": "name",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
 									"name": "VIN",
 									"type": "String"
 								},
@@ -77,33 +44,22 @@
 							},
 							{
 								"source": {
-									"name": "license_plate_number",
+									"name": "vid",
 									"type": "String"
 								},
 								"sink": {
-									"name": "license_plate_number",
+									"name": "vid",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "status",
+									"name": "registration_no",
 									"type": "String"
 								},
 								"sink": {
-									"name": "status",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "vid",
-									"type": "String"
-								},
-								"sink": {
-									"name": "vid",
+									"name": "registration_no",
 									"type": "String",
 									"physicalType": "character varying"
 								}
@@ -121,145 +77,57 @@
 							},
 							{
 								"source": {
-									"name": "tcu_id",
+									"name": "engine_type",
 									"type": "String"
 								},
 								"sink": {
-									"name": "tcu_id",
+									"name": "engine_type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "tcu_serial_number",
+									"name": "model_type",
 									"type": "String"
 								},
 								"sink": {
-									"name": "tcu_serial_number",
+									"name": "model_type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "tcu_brand",
+									"name": "name",
 									"type": "String"
 								},
 								"sink": {
-									"name": "tcu_brand",
+									"name": "name",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "tcu_version",
-									"type": "String"
-								},
-								"sink": {
-									"name": "tcu_version",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "is_tcu_register",
-									"type": "String"
-								},
-								"sink": {
-									"name": "is_tcu_register",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								}
-							},
-							{
-								"source": {
-									"name": "created_at",
+									"name": "creation_date",
 									"type": "DateTime"
 								},
 								"sink": {
 									"name": "created_at",
-									"type": "String",
-									"physicalType": "text"
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
 								}
 							},
 							{
 								"source": {
-									"name": "model_id",
-									"type": "String"
-								},
-								"sink": {
-									"name": "model_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "oem_id",
-									"type": "Int64"
-								},
-								"sink": {
-									"name": "oem_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "oem_organisation_id",
-									"type": "Int64"
-								},
-								"sink": {
-									"name": "oem_organisation_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "opt_in",
-									"type": "String"
-								},
-								"sink": {
-									"name": "opt_in",
-									"type": "String",
-									"physicalType": "character"
-								}
-							},
-							{
-								"source": {
-									"name": "modified_at",
+									"name": "last_modification_date",
 									"type": "DateTime"
 								},
 								"sink": {
 									"name": "modified_at",
-									"type": "String",
-									"physicalType": "text"
-								}
-							},
-							{
-								"source": {
-									"name": "is_ota",
-									"type": "String"
-								},
-								"sink": {
-									"name": "is_ota",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								}
-							},
-							{
-								"source": {
-									"name": "fuel_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "fuel_type",
-									"type": "String",
-									"physicalType": "character varying"
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
 								}
 							}
 						],
@@ -278,18 +146,18 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Vehicle_Source",
+						"referenceName": "VehicleMart_Source",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "Vehicle_CHG",
+				"name": "VehicleMart_CHG",
 				"description": "Compares source and target and find the records for upsert",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Vehicle_CT1",
+						"activity": "VehicleMart_CT1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -306,7 +174,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \n\tcoalesce(L.ID,0) AS ID,\nORG.ID  as ORGANIZATION_ID,\nS.NAME,\nS.VIN,\nS.LICENSE_PLATE_NUMBER,\nCASE WHEN  S.STATUS IN ('OPERATING','RESUMING','CREATED','READY','CONNECTED') THEN 'C'\n     WHEN  S.STATUS = 'TERMINATING' THEN 'T'\n     WHEN  S.STATUS = 'SUSPENDED' THEN 'O'\nEND AS STATUS,     \nS.STATUS_CHANGED_DATE,\nS.TERMINATION_DATE,\nS.VID,\nCASE WHEN S.TYPE = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN S.TYPE = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN S.TYPE = 'LCV' THEN 'L'\n     WHEN S.TYPE = 'TRAILER' THEN 'T'\t \n\t WHEN S.TYPE = 'VL'  THEN 'V'\n\t WHEN S.TYPE = 'SEMITRAILER' THEN 'S'\n\t WHEN S.TYPE = 'NONE' THEN 'N'\n\t ELSE 'N' END AS TYPE,\nS.TCU_ID,\nS.TCU_SERIAL_NUMBER,\nS.TCU_BRAND,\nS.TCU_VERSION,\nS.IS_TCU_REGISTER,\nS.REFERENCE_DATE,\nVP.ID AS VEHICLE_PROPERTY_ID,\n(SELECT EXTRACT(EPOCH FROM CAST(S.CREATED_AT AS TIMESTAMP)) * 1000) AS  CREATED_AT, \nS.MODEL_ID,\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.ID\n     ELSE (SELECT ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END AS OEM_ID,\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.OEM_ORGANISATION_ID \n     ELSE (SELECT OEM_ORGANISATION_ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END  AS OEM_ORGANISATION_ID, \nCASE WHEN S.STATUS = 'SUSPENDED' THEN 'U' ELSE 'H' END AS OPT_IN,\n(SELECT EXTRACT(EPOCH FROM CAST(S.MODIFIED_AT AS TIMESTAMP)) * 1000) AS MODIFIED_AT,\nS.IS_OTA,\nS.MODIFIED_BY,\nS.FUEL_TYPE,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMESTAMP AS LOAD_DT\n\t\nFROM\n       public.Vehicle S\nLEFT JOIN PUBLIC.ORGANIZATION ORG_CT1\nON ORG_CT1.ID = S.ORGANIZATION_ID\nLEFT JOIN MASTER.ORGANIZATION ORG\nON ORG.ORG_ID = ORG_CT1.ORG_ID\nLEFT JOIN PUBLIC.VEHICLEPROPERTIES PVP\nON PVP.VEHICLE_VID = S.VID\nLEFT JOIN MASTER.VEHICLEPROPERTIES VP\nON VP.CHASIS_ID = PVP.CHASIS_ID\nLEFT JOIN MASTER.OEM OM\nON OM.VIN_PREFIX = SUBSTRING(S.VIN,1,3) AND OM.VIN_PREFIX IS NOT NULL\t   \nLEFT JOIN \n       master.Vehicle L\nON S.VID = L.VID  AND L.VIN = S.VIN\nWHERE S.VIN IS NOT NULL AND ( ORG.ID <>\tL.ORGANIZATION_ID\tOR\nS.name\t<>\tL.name\tOR\nS.license_plate_number\t<>\tL.license_plate_number\tOR\nCASE WHEN  S.STATUS IN ('OPERATING','RESUMING','CREATED','READY','CONNECTED') THEN 'C'\n     WHEN  S.STATUS = 'TERMINATING' THEN 'T'\n     WHEN  S.STATUS = 'SUSPENDED' THEN 'O'\nEND\t<>\tL.status\tOR\nS.status_changed_date\t<>\tL.status_changed_date\tOR\nS.termination_date\t<>\tL.termination_date\tOR\nCASE WHEN S.TYPE = 'RIGID_HEAVY_TRUCK' THEN 'R'\n     WHEN S.TYPE = 'ARTICULATED_TRUCK' THEN 'A'\n\t WHEN S.TYPE = 'LCV' THEN 'L'\n     WHEN S.TYPE = 'TRAILER' THEN 'T'\t \n\t WHEN S.TYPE = 'VL'  THEN 'V'\n\t WHEN S.TYPE = 'SEMITRAILER' THEN 'S'\n\t WHEN S.TYPE = 'NONE' THEN 'N'\n\t ELSE 'N' END\t<>\tL.TYPE\tOR\nS.TCU_ID\t<>\tL.TCU_ID\tOR\nS.tcu_serial_number\t<>\tL.tcu_serial_number\tOR\nS.tcu_brand\t<>\tL.tcu_brand\tOR\nS.tcu_version\t<>\tL.tcu_version  OR\nS.is_tcu_register\t<>\tL.is_tcu_register  OR\nS.reference_date\t<>\tL.reference_date  OR\nVP.ID     \t<>\tL.vehicle_property_id  OR\n(SELECT EXTRACT(EPOCH FROM CAST(S.CREATED_AT AS TIMESTAMP)) * 1000)\t<>\tL.CREATED_AT  OR\nS.model_id\t<>\tL.model_id  OR\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.ID\n     ELSE (SELECT ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END\t<>\tL.OEM_ID  OR\nCASE WHEN SUBSTRING(S.VIN,1,3) IS NOT NULL AND SUBSTRING(S.VIN,1,3) = TRIM(OM.VIN_PREFIX)\n     THEN OM.OEM_ORGANISATION_ID \n     ELSE (SELECT OEM_ORGANISATION_ID FROM MASTER.OEM WHERE TRIM(VIN_PREFIX) ISNULL)  END\t<>\tL.OEM_ORGANISATION_ID  OR\nCASE WHEN S.STATUS = 'SUSPENDED' THEN 'U' ELSE 'H' END\t<>\tL.OPT_IN  OR\n(SELECT EXTRACT(EPOCH FROM CAST(S.MODIFIED_AT AS TIMESTAMP)) * 1000)\t<>\tL.MODIFIED_AT  OR\nS.IS_OTA\t<>\tL.IS_OTA  OR\nS.MODIFIED_BY\t<>\tL.MODIFIED_BY  OR\nS.FUEL_TYPE\t<>\tL.FUEL_TYPE  OR\n  L.ID IS NULL\n);"
+						"query": "SELECT \n\tcoalesce(L.ID,0) AS ID,\nS.VIN,\nS.vid,\nS.registration_no,\nS.type,\nS.engine_type,\nS.model_type,\nS.name,\n(select extract(epoch from cast(S.created_at as timestamp)) * 1000) as created_at,\n(select extract(epoch from cast(S.modified_at as timestamp)) * 1000) modified_at,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMESTAMP AS LOAD_DT\n\t\nFROM\n       public.Vehicle S\nLEFT JOIN \n       master.Vehicle L\nON  L.VIN = S.VIN\nWHERE ( \nS.vid\t<>\tL.vid\tOR\nS.registration_no\t<>\tL.registration_no\tOR\nS.type\t<>\tL.type\tOR\nS.engine_type\t<>\tL.engine_type\tOR\nS.model_type\t<>\tL.model_type\tOR\nS.name\t<>\tL.name\tOR\n  L.ID IS NULL\n);"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
@@ -665,7 +533,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Vehicle_Source",
+						"referenceName": "VehicleMart_Source",
 						"type": "DatasetReference"
 					}
 				],
@@ -681,7 +549,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Vehicle_CHG",
+						"activity": "VehicleMart_CHG",
 						"dependencyConditions": [
 							"Succeeded"
 						]
