@@ -2,7 +2,7 @@
 	"name": "VehicleAxleProperties_Source",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzurePostgreSql1master2",
+			"referenceName": "AzurePostgreSql1master",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
