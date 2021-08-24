@@ -201,30 +201,6 @@
 							},
 							{
 								"source": {
-									"name": "organization_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "organization_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "name",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "name",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
 									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
@@ -233,54 +209,6 @@
 									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "license_plate_number",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "license_plate_number",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "status",
-									"type": "String",
-									"physicalType": "text"
-								},
-								"sink": {
-									"name": "status",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "status_changed_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								},
-								"sink": {
-									"name": "status_changed_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "termination_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								},
-								"sink": {
-									"name": "termination_date",
-									"type": "Int64",
-									"physicalType": "bigint"
 								}
 							},
 							{
@@ -297,9 +225,21 @@
 							},
 							{
 								"source": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "registration_no",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
 									"name": "type",
 									"type": "String",
-									"physicalType": "text"
+									"physicalType": "character varying"
 								},
 								"sink": {
 									"name": "type",
@@ -309,86 +249,38 @@
 							},
 							{
 								"source": {
-									"name": "tcu_id",
+									"name": "engine_type",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "tcu_id",
+									"name": "engine_type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "tcu_serial_number",
+									"name": "model_type",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "tcu_serial_number",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "tcu_brand",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "tcu_brand",
+									"name": "model_type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "tcu_version",
+									"name": "name",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "tcu_version",
+									"name": "name",
 									"type": "String",
 									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "is_tcu_register",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								},
-								"sink": {
-									"name": "is_tcu_register",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								}
-							},
-							{
-								"source": {
-									"name": "reference_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								},
-								"sink": {
-									"name": "reference_date",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "vehicle_property_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "vehicle_property_id",
-									"type": "Int32",
-									"physicalType": "integer"
 								}
 							},
 							{
@@ -405,54 +297,6 @@
 							},
 							{
 								"source": {
-									"name": "model_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "model_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "oem_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "oem_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "oem_organisation_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								},
-								"sink": {
-									"name": "oem_organisation_id",
-									"type": "Int32",
-									"physicalType": "integer"
-								}
-							},
-							{
-								"source": {
-									"name": "opt_in",
-									"type": "String",
-									"physicalType": "text"
-								},
-								"sink": {
-									"name": "opt_in",
-									"type": "String",
-									"physicalType": "character"
-								}
-							},
-							{
-								"source": {
 									"name": "modified_at",
 									"type": "Double",
 									"physicalType": "double precision"
@@ -461,42 +305,6 @@
 									"name": "modified_at",
 									"type": "Int64",
 									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "is_ota",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								},
-								"sink": {
-									"name": "is_ota",
-									"type": "Boolean",
-									"physicalType": "boolean"
-								}
-							},
-							{
-								"source": {
-									"name": "modified_by",
-									"type": "Int64",
-									"physicalType": "bigint"
-								},
-								"sink": {
-									"name": "modified_by",
-									"type": "Int64",
-									"physicalType": "bigint"
-								}
-							},
-							{
-								"source": {
-									"name": "fuel_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "fuel_type",
-									"type": "String",
-									"physicalType": "character varying"
 								}
 							},
 							{
@@ -539,7 +347,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Vehicle_CHG",
+						"referenceName": "VehicleMart_CHG",
 						"type": "DatasetReference"
 					}
 				]
