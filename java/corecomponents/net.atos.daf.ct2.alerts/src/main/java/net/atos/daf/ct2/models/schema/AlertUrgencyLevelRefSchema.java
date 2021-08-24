@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlertUrgencyLevelRefSchema implements Serializable{
+public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelRefSchema>, Serializable{
 
     private Long alertId;
     private String urgencyLevelType;
@@ -34,11 +34,16 @@ public class AlertUrgencyLevelRefSchema implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlertUrgencyLevelRefSchema that = (AlertUrgencyLevelRefSchema) o;
-        return alertId.equals(that.alertId);
+        return Objects.equals(alertId, that.alertId) && Objects.equals(urgencyLevelType, that.urgencyLevelType) && Objects.equals(thresholdValue, that.thresholdValue) && Objects.equals(unitType, that.unitType) && Objects.equals(alertCategory, that.alertCategory) && Objects.equals(alertType, that.alertType) && Objects.equals(alertState, that.alertState);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alertId);
+        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState);
+    }
+
+    @Override
+    public int compareTo(AlertUrgencyLevelRefSchema o) {
+        return this.getUrgencyLevelType().compareTo(o.getUrgencyLevelType());
     }
 }

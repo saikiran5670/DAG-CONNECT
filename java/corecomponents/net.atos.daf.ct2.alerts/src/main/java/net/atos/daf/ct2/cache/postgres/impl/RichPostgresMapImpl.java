@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 
-public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload> implements Serializable {
+public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload<Object>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload> imple
     }
 
     @Override
-    public Payload map(AlertCdc alertCdc) throws Exception {
+    public Payload<Object> map(AlertCdc alertCdc) throws Exception {
         ResultSet row = connection.createStatement()
                 .executeQuery(parameterTool.get(ALERT_THRESHOLD_FETCH_SINGLE_QUERY) + "" + alertCdc.getAlertId());
         AlertUrgencyLevelRefSchema refSchema=null;

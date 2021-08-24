@@ -9,6 +9,7 @@ import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.process.config.AlertConfig;
 import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.logistic.ProcessTripBasedService;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
@@ -82,18 +83,18 @@ public class TripBasedAlertProcessing implements Serializable {
          * Consume status message
          */
 
-       /* KeyedStream<Status, String> statusKeyedStream = env.addSource(kafkaContiMessageConsumer)
+        KeyedStream<Status, String> statusKeyedStream = env.addSource(kafkaContiMessageConsumer)
                 .map(json -> (Status) Utils.readValueAsObject(json, Status.class))
                 .returns(Status.class)
-                .keyBy(status -> status.getVin());*/
+                .keyBy(status -> status.getVin());
 
-        KeyedStream<net.atos.daf.ct2.pojo.standard.Status, String> statusKeyedStream = KafkaConnectionService.connectStatusObjectTopic(
+        /*KeyedStream<net.atos.daf.ct2.pojo.standard.Status, String> statusKeyedStream = KafkaConnectionService.connectStatusObjectTopic(
                 propertiesParamTool.get(KAFKA_DAF_STATUS_MSG_TOPIC),
                 propertiesParamTool,
                 env)
                 .map(statusKafkaRecord -> statusKafkaRecord.getValue())
                 .returns(net.atos.daf.ct2.pojo.standard.Status.class)
-                .keyBy(status -> status.getVin());
+                .keyBy(status -> status.getVin());*/
 
         /**
          * Process Conti status message for alert generation
@@ -101,51 +102,7 @@ public class TripBasedAlertProcessing implements Serializable {
 
         SingleOutputStreamOperator<Status> alertProcessStream = statusKeyedStream
                 .connect(cdcBroadcastStream)
-                .process(new KeyedBroadcastProcessFunction<Object, Status, Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>, Status>() {
-                    @Override
-                    public void processElement(Status status, ReadOnlyContext readOnlyContext, Collector<Status> collector) throws Exception {
-
-                        logger.info("Alert process for status message : {}", status);
-                        ReadOnlyBroadcastState<String, Payload> broadcastState = readOnlyContext.getBroadcastState(vinAlertMapStateDescriptor);
-                        if (broadcastState.contains(status.getVin())) {
-                            Payload payload = broadcastState.get(status.getVin());
-                            Set<AlertUrgencyLevelRefSchema> vinAlertList = (Set<AlertUrgencyLevelRefSchema>) payload.getData().get();
-
-                            Set<AlertUrgencyLevelRefSchema> refSchemas = vinAlertList.stream()
-                                    .filter(schema -> schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("G"))
-                                    .collect(Collectors.toSet());
-                            Set<AlertUrgencyLevelRefSchema> distanceDoneSchemas = vinAlertList.stream()
-                                    .filter(schema -> schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("D"))
-                                    .collect(Collectors.toSet());
-
-                            Map<String, Object> functionThresh = new HashMap<>();
-                            functionThresh.put("excessiveGlobalMileage", refSchemas);
-                            functionThresh.put("excessiveDistanceDone", distanceDoneSchemas);
-
-                            AlertConfig
-                                    .buildMessage(status, configMap, functionThresh)
-                                    .process()
-                                    .getAlert()
-                                    .ifPresent(
-                                            alerts -> {
-                                                alerts.stream()
-                                                        .forEach(alert -> readOnlyContext.output(OUTPUT_TAG, alert));
-                                            }
-                                    );
-                            logger.info("Alert process for  {} check those alerts {}", status, refSchemas);
-
-
-                        } else {
-                            logger.info("Alert not subscribed to vehicle: {}", status);
-                        }
-                        collector.collect(status);
-                    }
-
-                    @Override
-                    public void processBroadcastElement(Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>> tuple2Payload, Context context, Collector<Status> collector) throws Exception {
-                        CacheService.updateVinAlertMappingCache(tuple2Payload,context);
-                    }
-                });
+                .process(new ProcessTripBasedService());
 
         /**
          * Publish alert on kafka topic

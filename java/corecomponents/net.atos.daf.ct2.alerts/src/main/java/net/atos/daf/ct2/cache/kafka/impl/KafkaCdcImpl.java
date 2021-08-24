@@ -35,7 +35,7 @@ import java.util.Properties;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_BOOTSTRAP_SERVER;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_DAF_ALERT_CDC_TOPIC;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_GRP_ID;
-
+@Deprecated
 public class KafkaCdcImpl extends KafkaCdcStream implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(KafkaCdcImpl.class);
@@ -43,6 +43,7 @@ public class KafkaCdcImpl extends KafkaCdcStream implements Serializable {
     public KafkaCdcImpl(StreamExecutionEnvironment env, ParameterTool parameterTool){
         super(env, parameterTool);
     }
+
 
     @Override
     protected KeyedStream<AlertCdc, String> init(){
@@ -76,9 +77,8 @@ public class KafkaCdcImpl extends KafkaCdcStream implements Serializable {
     protected SingleOutputStreamOperator<List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>> processCdcPayload(KeyedStream<AlertCdc, String> alertCdcStream){
         return alertCdcStream
                 .map(new RichPostgresMapImpl(parameterTool))
-                .returns(Payload.class)
                 .flatMap(
-                        (FlatMapFunction<Payload, List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>>) (payload, collector) -> {
+                        (FlatMapFunction<Payload<Object>, List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>>) (payload, collector) -> {
                             logger.info("CDC record convert to tuple ");
                             Tuple2<AlertCdc, AlertUrgencyLevelRefSchema> p1 = (Tuple2<AlertCdc, AlertUrgencyLevelRefSchema>) payload.getData().get();
                             AlertUrgencyLevelRefSchema f1 = p1.f1;
@@ -119,5 +119,8 @@ public class KafkaCdcImpl extends KafkaCdcStream implements Serializable {
                          }
                  );
     }
+
+
+
 
 }
