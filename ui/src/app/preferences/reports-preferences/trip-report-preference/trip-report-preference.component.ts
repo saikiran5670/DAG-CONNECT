@@ -109,7 +109,8 @@ export class TripReportPreferenceComponent implements OnInit {
                 txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_fuelconsumed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
+                //txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgal || 'gal');
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averagespeed'){
                 txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
@@ -117,7 +118,10 @@ export class TripReportPreferenceComponent implements OnInit {
               }else{
                 _data.translatedName = this.getTranslatedValues(item);
               }
-              this.tripPrefData.push(_data);
+
+              if(item.key !== 'rp_tr_report_tripreportdetails_events'){
+                this.tripPrefData.push(_data);
+              }
             }
           });
         }

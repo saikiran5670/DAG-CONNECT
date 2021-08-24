@@ -304,7 +304,7 @@ public doughnut_barOptions: ChartOptions = {
     //   usePointStyle: true,
     // },
   },
-  cutoutPercentage: 50,
+  cutoutPercentage: 70,
 };
 
 public timePieChartLabels: Label[] = [];

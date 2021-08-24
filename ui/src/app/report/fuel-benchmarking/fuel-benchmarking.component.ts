@@ -193,7 +193,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       //   usePointStyle: true,
       // },
     },
-    cutoutPercentage: 50,
+    cutoutPercentage: 70,
   };
 
   vinList: any = [];

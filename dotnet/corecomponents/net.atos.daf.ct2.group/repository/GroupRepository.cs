@@ -249,7 +249,13 @@ namespace net.atos.daf.ct2.group
                 string queryOwned = string.Empty, queryVisible = string.Empty, queryUnion = "UNION";
                 string selectStatement = string.Empty;
 
-                queryOwned = @"SELECT DISTINCT v.id, v.vin
+                queryOwned = @"
+                        SELECT v.id, v.vin
+                        FROM master.vehicle v
+                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
+                        UNION
+                        SELECT v.id, v.vin
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
@@ -263,7 +269,7 @@ namespace net.atos.daf.ct2.group
                         @"SELECT v.id, v.vin
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V' --AND grp.id = ANY(@GroupIds)
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@OrganizationId
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         WHERE 
@@ -275,7 +281,7 @@ namespace net.atos.daf.ct2.group
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
                                     AND orm.owner_org_id=grp.organization_id 
                                     AND orm.target_org_id=@OrganizationId
-                                    AND grp.group_type='D' AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
+                                    AND grp.group_type='D' AND grp.object_type='V' --AND grp.id = ANY(@GroupIds)
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 

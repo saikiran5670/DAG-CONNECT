@@ -1135,8 +1135,10 @@ export class ReportMapService {
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
-      element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
-      element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
+      // element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
+      // element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
+      element.convertedFuelConsumed = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
+      element.convertedFuelConsumed = Number(element.convertedFuelConsumed).toFixed(2);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
@@ -1324,12 +1326,12 @@ export class ReportMapService {
 
   meterToMile(_data: any){
     let km: any = this.meterToKm(_data);
-    let mile = km/1.6;
+    let mile = km/1.609;
     return mile.toFixed(2);
   }
 
   mileToKm(_data: any){
-    let km: any = _data * 1.6;
+    let km: any = _data * 1.609;
     return km.toFixed(2);
   }
 
@@ -1591,28 +1593,6 @@ export class ReportMapService {
       }
     }
     return _avgSpeed;    
-  }
-
-  getFuelConsumed(fuelConsumed: any, unitFormat: any){
-    let _fuelConsumed: any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _fuelConsumed = (fuelConsumed / 100).toFixed(2); //-- ltr/km(converted from ml/m)
-        break;
-      }
-      case 'dunit_Imperial':{
-        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(2); //gallons/miles
-        break;
-      }
-      case 'dunit_USImperial': {
-        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(2); //-- imperial * 1.2
-        break;
-      }
-      default: {
-        _fuelConsumed = fuelConsumed.toFixed(2);
-      }
-    }
-    return _fuelConsumed; 
   }
 
   convertMsToSeconds(ms: any){
