@@ -450,14 +450,14 @@
                         </mat-cell>
                       </ng-container>              
                       <ng-container matColumnDef="fuelConsumption">              
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption'}}             
                           <span style="font-weight: normal;">({{
                             (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                             'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
                             || ' mpg') }})</span>              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
-                          <span>{{row.convertedFuelConsumption}}</span>              
+                          <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cO2Emission">              
