@@ -140,6 +140,36 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "Insert_VehicleAxleProperties_CHG_R",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Insert_VehicleAxleProperties_CHG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "do\n$$\ndeclare\n    f record;\nbegin\n    for f in SELECT vehicle_vid,frontaxletype,rearaxleload,rearaxleratio,TyreRearsize,TyreFrontsize\n\tfrom public.vehicleaxleproperties\n    loop\t    \n\t INSERT INTO staging.Vehicleaxleproperties_CHG\n\t (\n\t\t vehicle_id,\naxle_type,\nposition,\ntype,\nsprings,\nload,\nratio,\nis_wheel_tire_size_replaced,\nsize\n)\n\tVALUES ((select id from master.vehicle where vid =f.vehicle_vid),\n\t\t\t'R', 1, null, null,f.rearaxleload, f.rearaxleratio, 'N',f.TyreRearsize) ;\t \n\t   end loop;\nend;\n$$;\n\nselect * from staging.vehicleaxleproperties;"
+					},
+					"dataset": {
+						"referenceName": "VehicleAxleProperties_CHG",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"annotations": [],
