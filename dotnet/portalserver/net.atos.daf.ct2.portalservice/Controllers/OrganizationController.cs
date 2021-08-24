@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly AccountPrivilegeChecker _privilegeChecker;
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
@@ -44,7 +45,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
-                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor,
+                                      SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._organizationClient = organizationClient;
@@ -231,16 +233,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
-
+                var level = await GetUserPrivilegeLevel();
                 var levelCode = new RelationshipLevelCode();
-                levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
+                var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
                      .Select(t => new Level
                      {
                          Id = ((int)t),
                          Name = t.ToString()
                      }).ToList();
+
+                levelCode.Levels = relationshipLevels.Where(x => x.Id >= level).ToList();
 
                 levelCode.Codes = Enum.GetValues(typeof(RelationshipCode))
                      .Cast<RelationshipCode>()
