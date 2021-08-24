@@ -361,9 +361,11 @@ export class DriverTimeDetailComponent implements OnInit {
 
     let restData = [];
     restArray.forEach(element => {
+      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.startTime,element.endTime],
+        y : [_startTime,_endTime],
         fillColor: '#8ac543',
       }
       restData.push(restObj)
@@ -371,9 +373,11 @@ export class DriverTimeDetailComponent implements OnInit {
   
     let availableData = [];
     availableArray.forEach(element => {
+      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.startTime,element.endTime],
+        y : [_startTime,_endTime],
         fillColor : '#dddee2'
       }
       availableData.push(restObj)
@@ -381,9 +385,11 @@ export class DriverTimeDetailComponent implements OnInit {
 
     let workData = [];
     workArray.forEach(element => {
+      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.startTime,element.endTime],
+        y : [_startTime,_endTime],
         fillColor : '#e85c2a'
       }
       workData.push(restObj)
@@ -391,24 +397,27 @@ export class DriverTimeDetailComponent implements OnInit {
 
     let driveData = [];
     driveArray.forEach(element => {
+      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.startTime,element.endTime],
+        y : [_startTime,_endTime],
         fillColor : '#29539b'
       }
       driveData.push(restObj)
     });
     
+    
+    if(driveData.length>0)
+    _series.push({
+      'name': 'Drive',
+      'data': driveData,
+    })
       if(workData.length>0)
       _series.push({
         'name': 'Work',
         'data': workData,
       });
-      if(driveData.length>0)
-      _series.push({
-        'name': 'Drive',
-        'data': driveData,
-      })
       
       if(restData.length>0)
       _series.push({
@@ -447,16 +456,16 @@ export class DriverTimeDetailComponent implements OnInit {
           let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff)// 24- default time format to be changed to prefTimeFormat
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
+          let fromDisplay  = Util.convertToDateTZ(fromTime,this.prefDateFormat);
           let toTime = (values.end);
-          let toDisplay  = this.reportMapService.getStartTime(toTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
+          let toDisplay  = Util.convertToDateTZ(toTime,this.prefDateFormat);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (
             `<div class='chartTT'> 
               <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
-              <div>From:${fromDisplay}</div>
-              <div>To:${toDisplay} </div>
+              <div>From: ${fromDisplay}</div>
+              <div>To: ${toDisplay} </div>
               <div>Duration: ${diffDisplay}</div>
             </div>`
           )
