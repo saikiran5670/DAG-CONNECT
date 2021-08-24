@@ -134,7 +134,7 @@
                 <button *ngIf="row.hasPrivilege" class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
                   <mat-icon>content_copy</mat-icon>
               </button>
-                <button *ngIf="adminAccessType.adminFullAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>
               </mat-cell>

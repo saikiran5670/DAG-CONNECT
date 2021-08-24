@@ -78,6 +78,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   geofenceGridData = [];
   groupGridData = [];
   corridorGridData = [];
+  selectedPOIList: any = [];
+  selectedGeofenceList: any = [];
+  selectedGroupList: any = [];
+  selectedCorridorList: any = [];
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
@@ -1187,18 +1191,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadPOISelectedData(tableData: any){
-    let selectedPOIList: any = [];
+    this.selectedPOIList = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
         if (search.length > 0) {
-          selectedPOIList.push(row);
+          this.selectedPOIList.push(row);
           setTimeout(() => {
             this.PoiCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedPOIList;
+      tableData = this.selectedPOIList;
       this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
       this.updatePOIDataSource(tableData);
     }
@@ -1246,18 +1250,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadGeofenceSelectedData(tableData: any){
-    let selectedGeofenceList: any = [];
+    this.selectedGeofenceList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
         if (search.length > 0) {
-          selectedGeofenceList.push(row);
+          this.selectedGeofenceList.push(row);
           setTimeout(() => {
             this.geofenceCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedGeofenceList;
+      tableData = this.selectedGeofenceList;
       this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName', 'address'];
       this.updateGeofenceDataSource(tableData);
     }
@@ -1311,15 +1315,15 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadGroupSelectedData(tableData: any){
-    let selectedGroupList: any = [];
+    this.selectedGroupList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
         if (search.length > 0) {
-          selectedGroupList.push(row);
+          this.selectedGroupList.push(row);
         }
       });
-      tableData = selectedGroupList;
+      tableData = this.selectedGroupList;
       this.displayedColumnsGroup= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
@@ -1347,18 +1351,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadCorridorSelectedData(tableData: any){
-    let selectedGroupList: any = [];
+    this.selectedCorridorList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "R" || item.landmarkType == "E"));
         if (search.length > 0) {
-          selectedGroupList.push(row);
+          this.selectedCorridorList.push(row);
           setTimeout(() => {
             this.corridorCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedGroupList;
+      tableData = this.selectedCorridorList;
       this.displayedColumnsCorridor= ['corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
       this.updateCorridorDatasource(tableData);
     }
