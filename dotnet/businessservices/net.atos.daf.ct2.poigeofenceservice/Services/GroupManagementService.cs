@@ -9,6 +9,8 @@ using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.poigeofenceservice.common;
 
 
 namespace net.atos.daf.ct2.poigeofenceservice.Services
@@ -18,12 +20,16 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
         private readonly ILog _logger;
         private readonly ILandmarkGroupManager _landmarkGroupManager;
         private readonly Mapper _mapper;
+        private readonly LandmarkAlertCdcHelper _landmarkAlertCdcHelper;
+        private readonly ILandmarkAlertCdcManager _landmarkMgmAlertCdcManager;
 
-        public GroupManagementService(ILandmarkGroupManager landmarkGroupManager)
+        public GroupManagementService(ILandmarkGroupManager landmarkGroupManager, ILandmarkAlertCdcManager landmarkAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _landmarkGroupManager = landmarkGroupManager;
             _mapper = new Mapper();
+            _landmarkMgmAlertCdcManager = landmarkAlertCdcManager;
+            _landmarkAlertCdcHelper = new LandmarkAlertCdcHelper(_landmarkMgmAlertCdcManager);
         }
 
         public override async Task<GroupAddResponse> Create(GroupAddRequest request, ServerCallContext context)
@@ -114,6 +120,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     var result = await _landmarkGroupManager.UpdateGroup(obj);
                     if (result != null)
                     {
+                        //Trigger for alert cdc
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                         response.Message = "Updated successfully : " + result.Id.ToString();
                         response.Code = Responcecodes.Success;
                     }
@@ -146,6 +154,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.DeleteGroup(request.Id, request.Modifiedby);
                 if (result > 0)
                 {
+                    //Trigger for alert cdc
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                     response.Message = "Deleted successfully : " + result.ToString();
                     response.Code = Responcecodes.Success;
                 }
