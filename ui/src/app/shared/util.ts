@@ -211,5 +211,26 @@ export class Util {
     data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}:${(seconds >= 10) ? seconds : ('0'+seconds)}`;
     return data;
   }
+      
+  public static getMillisecondsToUTCDate(_utc: any, prefTimezone: any){​​​​​​​
+   let _t = prefTimezone.split(') ');
+    let _timezone: any;
+    if(_t.length > 0){​​​​​​​
+        _timezone = _t[1].trim();
+    }​​​​​​​    
+    let date = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone);
+     return date;
+  }​​​​​​​
 
+//   public static utcToDateConversionTimeZone(_utc: any, prefTimezone: any){
+//     let _t = prefTimezone.split(') ');
+//     let _timezone: any;
+//     if(_t.length > 0){​​​​​​​
+//         _timezone = _t[1].trim();
+//     }​​​​​​​
+//     let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone).format("DD-MM-YYYY h:mm:ss A");
+//     return _date;
+// }
 }
+
+

@@ -837,9 +837,14 @@ calendarOptions: CalendarOptions = {
   onSearch(){
     //this.internalSelection = true;
     this.resetChartData(); // reset chart data
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue.getTime(), this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue.getTime(), this.prefTimeZone); 
+  
+    //  console.log('start:'+ _startTime, 'end:'+_endTime);
+    //  console.log('start:'+Util.utcToDateConversionTimeZone(this.startDateValue.getTime(), this.prefTimeZone), 'end:'+Util.utcToDateConversionTimeZone(this.endDateValue.getTime(), this.prefTimeZone));
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
          _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);

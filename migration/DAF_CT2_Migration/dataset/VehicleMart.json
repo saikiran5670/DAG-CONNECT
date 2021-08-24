@@ -1,8 +1,8 @@
 {
-	"name": "VehicleAxleProperties",
+	"name": "VehicleMart",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzurePostgreSql1master",
+			"referenceName": "AzurePostgreSql1Datamart",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -15,19 +15,19 @@
 				"scale": 0
 			},
 			{
-				"name": "vehicle_id",
-				"type": "integer",
+				"name": "vin",
+				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "axle_type",
-				"type": "character",
+				"name": "vid",
+				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "position",
+				"name": "registration_no",
 				"type": "character varying",
 				"precision": 0,
 				"scale": 0
@@ -39,39 +39,39 @@
 				"scale": 0
 			},
 			{
-				"name": "springs",
+				"name": "engine_type",
 				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "load",
+				"name": "model_type",
 				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "ratio",
+				"name": "name",
 				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "size",
-				"type": "character varying",
+				"name": "created_at",
+				"type": "bigint",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "is_wheel_tire_size_replaced",
-				"type": "boolean",
+				"name": "modified_at",
+				"type": "bigint",
 				"precision": 0,
 				"scale": 0
 			}
 		],
 		"typeProperties": {
 			"schema": "master",
-			"table": "vehicleaxleproperties"
+			"table": "vehicle"
 		}
 	}
 }
