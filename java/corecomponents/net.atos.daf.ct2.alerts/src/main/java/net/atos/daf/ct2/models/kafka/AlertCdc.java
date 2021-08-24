@@ -1,4 +1,5 @@
 package net.atos.daf.ct2.models.kafka;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,13 @@ import lombok.ToString;
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class AlertCdc {
+public class AlertCdc implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("alertId")
     private String alertId;
+    @JsonProperty("opration")
+    private String operation;
     @JsonProperty("vinOps")
     private List<VinOp> vinOps = null;
     @JsonIgnore
@@ -36,6 +40,14 @@ public class AlertCdc {
     @JsonProperty("alertId")
     public void setAlertId(String alertId) {
         this.alertId = alertId;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     @JsonProperty("vinOps")

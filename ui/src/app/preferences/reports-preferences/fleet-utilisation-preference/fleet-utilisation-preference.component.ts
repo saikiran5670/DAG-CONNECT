@@ -81,6 +81,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Utilisation Report');
     
+    this.getUnitFormat(this.accountPreference);
+    
     this.fleetUtilForm = this._formBuilder.group({
       distanceChart: [],
       vehicleChart: [],
@@ -94,7 +96,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       calenderViewMode: []
     },{
       validator: [
-        CustomValidators.numberFieldValidation('mileageTarget', 1000),
+        CustomValidators.numberFieldValidation('mileageTarget', (this.prefUnitFormat == 'dunit_Metric') ? 1000 : 625),
         CustomValidators.numberMinFieldValidation('mileageTarget', 0)
       ]
     });
@@ -105,7 +107,6 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       this.reportId = 5; //- hard coded for fleet utilisation report
     }
     this.translationUpdate();
-    this.getUnitFormat(this.accountPreference);
     this.loadFleetUtilisationPreferences();
   }
 

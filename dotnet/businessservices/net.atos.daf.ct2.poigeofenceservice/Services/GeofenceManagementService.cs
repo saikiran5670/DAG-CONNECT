@@ -8,7 +8,8 @@ using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
-
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.poigeofenceservice.common;
 
 namespace net.atos.daf.ct2.geofenceservice
 {
@@ -17,11 +18,15 @@ namespace net.atos.daf.ct2.geofenceservice
         private readonly ILog _logger;
         private readonly IGeofenceManager _geofenceManager;
         private readonly Mapper _mapper;
-        public GeofenceManagementService(IGeofenceManager geofenceManager)
+        private readonly LandmarkAlertCdcHelper _landmarkAlertCdcHelper;
+        private readonly ILandmarkAlertCdcManager _landmarkMgmAlertCdcManager;
+        public GeofenceManagementService(IGeofenceManager geofenceManager, ILandmarkAlertCdcManager landmarkAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _geofenceManager = geofenceManager;
             _mapper = new Mapper();
+            _landmarkMgmAlertCdcManager = landmarkAlertCdcManager;
+            _landmarkAlertCdcHelper = new LandmarkAlertCdcHelper(_landmarkMgmAlertCdcManager);
         }
 
         #region Geofence
@@ -43,6 +48,11 @@ namespace net.atos.daf.ct2.geofenceservice
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
+                    //Trigger for alert cdc
+                    foreach (var item in request.GeofenceId)
+                    {
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(item, "");
+                    }
                     response.Message = "Deleted";
                     response.Code = Responsecode.Success;
                 }
@@ -238,6 +248,13 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Code = Responsecode.NotFound;
                     return response;
                 }
+                if (geofence != null)
+                {
+                    //Trigger for alert cdc
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "O");
+                    response.Message = "Geofence updated for id ";
+                    response.Code = Responsecode.Success;
+                }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
                     Message = "Geofence updated with id:- " + geofence.Id,
@@ -316,6 +333,13 @@ namespace net.atos.daf.ct2.geofenceservice
                 if (geofence == null)
                 {
                     response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
+                if (geofence != null)
+                {
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "C");
+                    response.Message = "Geofence is updated ";
                     response.Code = Responsecode.NotFound;
                     return response;
                 }

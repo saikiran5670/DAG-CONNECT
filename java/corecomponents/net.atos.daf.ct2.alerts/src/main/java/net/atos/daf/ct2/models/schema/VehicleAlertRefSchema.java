@@ -2,14 +2,16 @@ package net.atos.daf.ct2.models.schema;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.ToString;
+import org.apache.flink.api.common.state.State;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
-public class VehicleAlertRefSchema implements Serializable{
+public class VehicleAlertRefSchema implements Serializable {
 
     @JsonProperty("id")
     private Long id;
@@ -115,5 +117,18 @@ public class VehicleAlertRefSchema implements Serializable{
     public VehicleAlertRefSchema withAdditionalProperty(String name, String value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VehicleAlertRefSchema schema = (VehicleAlertRefSchema) o;
+        return alertId.equals(schema.alertId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(alertId);
     }
 }

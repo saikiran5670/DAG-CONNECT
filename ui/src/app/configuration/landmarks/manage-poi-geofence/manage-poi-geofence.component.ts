@@ -207,10 +207,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<div>
-          <b>POI Name: ${element.name}</b><br>
-          <b>Category: ${element.categoryName}</b><br>
-          <b>Sub-Category: ${element.subCategoryName}</b><br>
-          <b>Address: ${element.address}</b>
+            POI Name: <b>${element.name}</b><br>
+            Category: <b>${element.categoryName}</b><br>
+            Sub-Category: <b>${element.subCategoryName}</b><br>
+            Address: <b>${element.address}</b>
           </div>`
         });
         // show info bubble
@@ -291,9 +291,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
         content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-        <b>Category: ${rowData.categoryName}</b><br>
-        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+          Geofence Name: <b>${rowData.name}</b><br>
+          Category: <b>${rowData.categoryName}</b><br>
+          Sub-Category: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -354,9 +354,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
       bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
         // read custom data
         content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-          <b>Category: ${rowData.categoryName}</b><br>
-          <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+          Geofence Name: <b>${rowData.name}</b><br>
+          Category: <b>${rowData.categoryName}</b><br>
+          Sub-Category: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -367,7 +367,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     // the vertice markers are hidden on touch devices after specific timeout
     mainGroup.addEventListener('pointerleave', function(evt) {
       var timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
-
+      bubble.close();
       // hide vertice markers
       polygonTimeout = setTimeout(function() {
         verticeGroup.setVisibility(false);

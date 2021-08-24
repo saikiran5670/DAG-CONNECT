@@ -1136,7 +1136,7 @@ export class ReportMapService {
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
-      element.convertedFuelConsumed100Km = element.convertedFuelConsumed100Km.toFixed(2);
+      element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
@@ -1284,7 +1284,7 @@ export class ReportMapService {
 
   convertSpeedMmsToMph(_data: any){
     let kmph: any = this.convertSpeedMmsToKmph(_data);
-    let mph: any = kmph/1.6;
+    let mph: any = kmph/1.609;
     return mph.toFixed(2);
   }
 
@@ -1475,7 +1475,7 @@ export class ReportMapService {
   getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime ,onlyTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
     }
     return sTime;
   }

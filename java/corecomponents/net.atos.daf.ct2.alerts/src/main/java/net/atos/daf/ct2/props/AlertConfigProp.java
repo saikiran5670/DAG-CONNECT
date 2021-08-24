@@ -3,6 +3,8 @@ package net.atos.daf.ct2.props;
 
 import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.Payload;
+import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
+import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -69,7 +71,11 @@ public class AlertConfigProp {
             BasicTypeInfo.STRING_TYPE_INFO
     };
 
-    public  static final MapStateDescriptor<Long, Payload> thresholdMapStateDescriptor = new MapStateDescriptor("thresholdMapStateDescriptor", Long.class,Payload.class);
+
+
+
+    public  static final MapStateDescriptor<Long, Payload> THRESHOLD_CONFIG_DESCRIPTOR = new MapStateDescriptor("thresholdMapStateDescriptor", Long.class,Payload.class);
     public  static final MapStateDescriptor<String, Payload> vinAlertMapStateDescriptor = new MapStateDescriptor("vinAlertMapStateDescriptor", String.class,Payload.class);
-    public static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
+    public  static final MapStateDescriptor<String, Payload> VIN_ALERT_MAP_STATE = new MapStateDescriptor("vinAlertMappingState",String.class,Payload.class);
+    public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
 }
