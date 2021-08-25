@@ -601,8 +601,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.advanceFilterOpen = false;
     this.searchMarker = {};
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue.getTime(), this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue.getTime(), this.prefTimeZone); 
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
   
     //this.internalSelection = true;
     // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();

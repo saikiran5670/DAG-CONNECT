@@ -750,7 +750,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -791,7 +791,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -978,7 +978,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -1019,7 +1019,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -1206,7 +1206,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -1247,7 +1247,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -1432,7 +1432,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -1473,7 +1473,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -1659,7 +1659,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -1700,7 +1700,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -1884,7 +1884,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -1925,7 +1925,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -2109,7 +2109,7 @@ export class FleetkpiComponent implements OnInit {
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -2150,7 +2150,7 @@ export class FleetkpiComponent implements OnInit {
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7

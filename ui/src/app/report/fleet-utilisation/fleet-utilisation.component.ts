@@ -837,12 +837,13 @@ calendarOptions: CalendarOptions = {
   onSearch(){
     //this.internalSelection = true;
     this.resetChartData(); // reset chart data
-    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue.getTime(), this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue.getTime(), this.prefTimeZone); 
-  
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+
+    // _startTime = Util.getMillisecondsToUTCDate(_startTime, this.prefTimeZone); 
+    //_endTime = Util.getMillisecondsToUTCDate(_endTime, this.prefTimeZone); 
+
+
     //  console.log('start:'+ _startTime, 'end:'+_endTime);
     //  console.log('start:'+Util.utcToDateConversionTimeZone(this.startDateValue.getTime(), this.prefTimeZone), 'end:'+Util.utcToDateConversionTimeZone(this.endDateValue.getTime(), this.prefTimeZone));
     let _vinData: any = [];
@@ -861,6 +862,7 @@ calendarOptions: CalendarOptions = {
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
+      
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
