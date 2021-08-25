@@ -35,6 +35,9 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
                 case "R":
                     valid = true;
                     break;
+                case "G":
+                    valid = true;
+                    break;
             }
 
             if (valid)

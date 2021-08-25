@@ -377,7 +377,7 @@
 						"query": "\nUPDATE MASTER.VEHICLE L \nSET\t \nvid\t=\tS.vid\t,\nregistration_no\t=\tS.registration_no\t,\ntype\t=\tS.type\t,\nengine_type\t=\tS.engine_type\t,\nmodel_type\t=\tS.model_type\t,\nname\t=\tS.name\nFROM    staging.Vehicle_CHG S\nWHERE L.VIN = S.VIN \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
 					},
 					"dataset": {
-						"referenceName": "Vehicle",
+						"referenceName": "VehicleMart",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": true
