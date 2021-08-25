@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                   		  , SUM(etl_gps_distance)                                              as veh_message_distance
-                                                  		  , SUM(average_speed)                                                     as average_speed
+                                                  		  , AVG(average_speed)                                                     as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -203,7 +203,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                		  , SUM(etl_gps_distance)                                              as veh_message_distance
-                                               		  , SUM(average_speed)                                                     as average_speed
+                                               		  , AVG(average_speed)                                                     as average_speed
                                                		  , MAX(max_speed)                                                         as max_speed
                                                		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
