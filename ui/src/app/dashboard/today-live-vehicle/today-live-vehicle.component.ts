@@ -457,7 +457,7 @@ doughnutDistanceColors: Color[] = [
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -498,7 +498,7 @@ doughnutDistanceColors: Color[] = [
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -687,7 +687,7 @@ doughnutDistanceColors: Color[] = [
                 "#cecece"
               ],
               hoverBorderColor: [
-                "#ff0000",
+                "#ead6d7",
                 "#ffffff"
               ],
               hoverBorderWidth: 7
@@ -728,7 +728,7 @@ doughnutDistanceColors: Color[] = [
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -900,7 +900,7 @@ doughnutDistanceColors: Color[] = [
                   "#cecece"
                 ],
                 hoverBorderColor: [
-                  "#ff0000",
+                  "#ead6d7",
                   "#ffffff"
                 ],
                 hoverBorderWidth: 7
@@ -941,7 +941,7 @@ doughnutDistanceColors: Color[] = [
                     "#cecece"
                   ],
                   hoverBorderColor: [
-                    "#ff0000",
+                    "#ead6d7",
                     "#ffffff"
                   ],
                   hoverBorderWidth: 7
