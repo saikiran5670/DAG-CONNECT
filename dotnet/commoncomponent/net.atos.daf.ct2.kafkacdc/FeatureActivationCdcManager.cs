@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.kafkacdc
                     deletionMapping = datamartVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" }).ToList();
                 }
                 //removing duplicate records if any 
-                deletionMapping = deletionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+                deletionMapping = deletionMapping.GroupBy(c => new { c.VIN, c.AlertId }, (key, c) => c.FirstOrDefault()).ToList();
 
                 if (datamartVehicleAlerts.Count > 0)
                 {
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.kafkacdc
                     insertionMapping = masterDBPackageVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" }).ToList();
                 }
                 //removing duplicate records if any 
-                insertionMapping = insertionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+                insertionMapping = insertionMapping.GroupBy(c => new { c.VIN, c.AlertId }, (key, c) => c.FirstOrDefault()).ToList();
 
                 //Update datamart with lastest mapping 
                 //set alert operation for state column into datamart

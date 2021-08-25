@@ -64,6 +64,29 @@ export class AppComponent {
   appForm: FormGroup;
   selectedRoles: any = [];
   orgContextType: any = false;
+  notificationData: any = [
+    {
+      icons:'unarchive',
+      name: 'Entering Geofence',
+      date: '04/08/2021',
+      time: '01:30 pm',
+      regNo: 'XLRTEM4100G041999858'
+    },
+    {
+      icons:'unarchive',
+      name: 'Fuel Driver Performance',
+      date: '04/08/2021',
+      time: '11:30 pm',
+      regNo: 'XLRTEM4100G041999'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move',
+      date: '03/08/2021',
+      time: '07:30 pm',
+      regNo: 'XLRTEM4100G041999'
+    }
+  ];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',

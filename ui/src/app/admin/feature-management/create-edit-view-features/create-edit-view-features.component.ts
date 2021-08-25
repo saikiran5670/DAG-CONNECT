@@ -354,5 +354,42 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.featureFormGroup.valid;
   }
 
+  onChange(event: any, row: any){    
+    var selectName = row.name;
+    var selectId = row.id;
+    var splitName =selectName.slice(0, selectName.indexOf('.'));
+      if(!selectName.includes('.')){
+      this.initData.forEach( row => {
+        if(row.name.startsWith(selectName)){
+          if(event.checked)
+            this.selectionForDataAttribute.select(row);
+          else if(!event.checked)
+            this.selectionForDataAttribute.deselect(row);
+        }
+      });
+    }
+    else{
+    this.initData.forEach( row => {
+      if(event.checked){
+      if(row.name == splitName)    
+        this.selectionForDataAttribute.select(row);           }
+      else if(!event.checked)
+      {
+        if(row.name == splitName)
+        { 
+        let searchElement = this.selectionForDataAttribute.selected.filter(element => element.name.startsWith(splitName + '.'));
+       
+          if(searchElement.length){      
+            this.selectionForDataAttribute.select(row);  
+          }         
+          else{
+            this.selectionForDataAttribute.deselect(row);
+          }   
+        }
+      }
+    });
+    }
+  }
+
 
 }
