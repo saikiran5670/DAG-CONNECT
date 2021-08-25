@@ -17,6 +17,7 @@ import { MessageService } from './services/message.service';
 import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { ReportService } from './services/report.service';
 import { takeUntil } from 'rxjs/operators';
+import { NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -1161,5 +1162,22 @@ export class AppComponent {
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
+   gotoLogBook(){
+  const navigationExtras: NavigationExtras = {
+    state: {
+      fromAlertsNotifications: true
+    }
+  };
+  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+}
+
+gotoLogBookForMoreAlerts(){
+  const navigationExtras: NavigationExtras = {
+    state: {
+      fromMoreAlerts: true
+    }
+  };
+  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+}
 
 }

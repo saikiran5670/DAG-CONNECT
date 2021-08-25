@@ -280,7 +280,13 @@ ngOnDestroy(){
         if(this.showBack){
           if(this._state.fromDashboard == true){
           this.selectionTimeRange('today');}
-          }
+                   
+          if(this._state.fromAlertsNotifications == true){
+            this.selectionTimeRange('today');}
+            
+          if(this._state.fromMoreAlerts == true){
+            this.selectionTimeRange('last3month');}
+            }
       });
     });
     // if(this._state.fromDashboard == true){
