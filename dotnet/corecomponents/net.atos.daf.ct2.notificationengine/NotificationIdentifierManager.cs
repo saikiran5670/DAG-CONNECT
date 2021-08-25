@@ -135,8 +135,8 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.AlertCategoryEnum = generatedAlertForVehicle.Select(c => c.CategoryType).FirstOrDefault();
                         notificationHistory.AlertTypeKey = generatedAlertForVehicle.Select(c => c.AlertTypeKey).FirstOrDefault();
                         notificationHistory.AlertTypeEnum = generatedAlertForVehicle.Select(c => c.Type).FirstOrDefault();
-                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Select(c => c.UrgencyTypeKey).FirstOrDefault();
-                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Select(c => c.UrgencyLevelType).FirstOrDefault();
+                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyTypeKey).FirstOrDefault();
+                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyLevelType).FirstOrDefault();
                         string unitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
                         notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, unitEnum);
                         notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(unitEnum);
