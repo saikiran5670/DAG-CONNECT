@@ -189,6 +189,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         //console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
+          this.createButtonClicked = false;
         }
       });
     }
@@ -225,13 +226,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj);        
         });      
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateEmailMsg = true;
+          this.createButtonClicked = false;
+        }
       }
-      // , (err) => {
-      //   //console.log(err);
-      //   if (err.status == 409) {
-      //     this.duplicateEmailMsg = true;
-      //   }
-      // }
       );
     }
   }
