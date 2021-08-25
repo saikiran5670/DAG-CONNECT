@@ -668,9 +668,17 @@ export class DriverManagementComponent implements OnInit {
         this.initData = res.tableData;
         this.updateGridData(this.initData);
       }
-      if(res.consentMsg && res.consentMsg != ''){
-        this.successMsgBlink(res.consentMsg);
+      if(res.consentMsg) { 
+        if(dialogConfig.data.consentType=='H' || dialogConfig.data.consentType=='I') {
+          var msg = res.tableData.length + " drivers were successfully Opted-In.";
+        } else if(dialogConfig.data.consentType=='U') {
+          var msg = res.tableData.length + " drivers were successfully Opted-Out.";
+        }
       }
+      this.successMsgBlink(msg);
+      // if(res.consentMsg && res.consentMsg != ''){
+      //   this.successMsgBlink(res.consentMsg);
+      // }
     });
   }
 

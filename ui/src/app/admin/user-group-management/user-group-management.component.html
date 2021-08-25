@@ -53,7 +53,9 @@
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
             <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
             <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.accountGroupName}}</span>
-            
+            <span>
+              <img *ngIf="row.type == 'D'" src='assets/images/icons/vehicleStatus/Dynamic_Group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            </span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="vehicleCount">
