@@ -59,12 +59,35 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@DriverId", driverId);
                 parameter.Add("@Email", email);
 
-                var queryStatement = @"SELECT first_name FirstName, last_name LastName, organization_id as OrganizationId, org.name as OrganizationName
-                                    from master.driver drv inner join master.organization org on org.id=drv.organization_id
-                                    where driver_id_ext = @DriverId and email = @Email";
+                var queryStatement =
+                        @"SELECT first_name FirstName, last_name LastName, organization_id as OrganizationId, org.name as OrganizationName
+                            FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
+                            WHERE driver_id_ext = @DriverId and email = @Email";
 
                 response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
                 return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@DriverId", driverId);
+                parameter.Add("@Email", email);
+                parameter.Add("@OrganisationId", organisationId);
+
+                var queryStatement =
+                        @"SELECT EXISTS (SELECT 1
+                            FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
+                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId)";
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
             }
             catch (Exception)
             {

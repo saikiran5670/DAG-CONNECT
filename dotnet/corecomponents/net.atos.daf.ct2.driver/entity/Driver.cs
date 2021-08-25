@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.driver.entity
@@ -67,5 +68,30 @@ namespace net.atos.daf.ct2.driver.entity
         public string LastName { get; set; }
         public string OrganizationId { get; set; }
         public string OrganizationName { get; set; }
+    }
+
+    public class RegisterDriverResponse
+    {
+        public string Message { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+    }
+
+    public class ValidateDriverResponse
+    {
+        public string AccountID { get; set; }
+        public string AccountName { get; set; }
+        public string RoleID { get; set; } = "DRIVER";
+        public string TimeZone { get; set; }
+        public string DateFormat { get; set; }
+        public string TimeFormat { get; set; }
+        public string UnitDisplay { get; set; }
+        public string VehicleDisplay { get; set; }
+        public List<ValidateDriverOrganisation> Organisations { get; set; }
+    }
+
+    public class ValidateDriverOrganisation
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

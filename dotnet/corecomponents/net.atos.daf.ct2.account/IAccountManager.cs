@@ -44,5 +44,7 @@ namespace net.atos.daf.ct2.account
         Task<Response> GetResetPasswordTokenStatus(Guid processToken);
         Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays);
         Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account);
+        Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, string driverId);
+        Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request);
     }
 }
