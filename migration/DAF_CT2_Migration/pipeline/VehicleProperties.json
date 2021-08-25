@@ -806,10 +806,14 @@
 							},
 							{
 								"source": {
-									"name": "vehicle_vid"
+									"name": "vehicle_vid",
+									"type": "String",
+									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "vehicle_vid"
+									"name": "vehicle_vid",
+									"type": "String",
+									"physicalType": "character varying"
 								}
 							}
 						],
@@ -1272,10 +1276,14 @@
 							},
 							{
 								"source": {
-									"name": "vehicle_vid"
+									"name": "migration_vid",
+									"type": "String",
+									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "migration_vid"
+									"name": "migration_vid",
+									"type": "String",
+									"physicalType": "character varying"
 								}
 							}
 						],
