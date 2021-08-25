@@ -52,6 +52,51 @@ export class Util {
         return (_date);
     }
 
+
+    public static convertUtcToDateTZ(_utc: any, timeZone: any){ // with current TZ
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format();
+        let _time = moment(date).valueOf();
+        let _addTz = (moment(date)['_tzm'])* 60000;
+        let cTime = _time + _addTz;
+        return cTime;
+    }
+
+    public static convertToDateTZ(cTime: any, dateFormat: any){ // with current TZ get date time
+        let dFormat = 'dd/mm/yyyy';
+        switch(dateFormat){
+            case 'ddateformat_dd/mm/yyyy': {
+                dFormat = 'DD/MM/YYYY';
+              break;
+            }
+            case 'ddateformat_mm/dd/yyyy': {
+                dFormat = 'MM/DD/YYYY';
+              break;
+            }
+            case 'ddateformat_dd-mm-yyyy': {
+                dFormat = 'DD-MM-YYYY';
+      
+              break;
+            }
+            case 'ddateformat_mm-dd-yyyy': {
+                dFormat = 'MM-DD-YYYY';
+      
+              break;
+            }
+            default:{
+                dFormat = 'DD/MM/YYYY';
+      
+            }
+          }
+        let _format =  dFormat ? dFormat + ' HH:mm:ss' : 'DD/MM/YYYY HH:mm:ss';
+        let cDate = moment.utc(cTime).format(_format);
+        return cDate;
+    }
+    
     public static convertUtcToDateNoFormat(_utc: any, timeZone: any){
         let _t = timeZone.split(')');
         let _timezone: any;
@@ -166,5 +211,26 @@ export class Util {
     data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}:${(seconds >= 10) ? seconds : ('0'+seconds)}`;
     return data;
   }
+      
+  public static getMillisecondsToUTCDate(_utc: any, prefTimezone: any){​​​​​​​
+   let _t = prefTimezone.split(') ');
+    let _timezone: any;
+    if(_t.length > 0){​​​​​​​
+        _timezone = _t[1].trim();
+    }​​​​​​​    
+    let date = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone);
+     return date;
+  }​​​​​​​
 
+//   public static utcToDateConversionTimeZone(_utc: any, prefTimezone: any){
+//     let _t = prefTimezone.split(') ');
+//     let _timezone: any;
+//     if(_t.length > 0){​​​​​​​
+//         _timezone = _t[1].trim();
+//     }​​​​​​​
+//     let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone).format("DD-MM-YYYY h:mm:ss A");
+//     return _date;
+// }
 }
+
+

@@ -343,10 +343,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
-  onChange(event: any, row: any){
+  onChange(event: any, row: any){    
     var selectName = row.name;
     var selectId = row.id;
-    if(!selectName.includes('.')){
+    var splitName =selectName.slice(0, selectName.indexOf('.'));
+      if(!selectName.includes('.')){
       this.initData.forEach( row => {
         if(row.name.startsWith(selectName)){
           if(event.checked)
@@ -356,7 +357,27 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         }
       });
     }
+    else{
+    this.initData.forEach( row => {
+      if(event.checked){
+      if(row.name == splitName)    
+        this.selectionForFeatures.select(row);           }
+      else if(!event.checked)
+      {
+        if(row.name == splitName)
+        { 
+        let searchElement = this.selectionForFeatures.selected.filter(element => element.name.startsWith(splitName + '.'));
+       
+          if(searchElement.length){      
+            this.selectionForFeatures.select(row);  
+          }         
+          else{
+            this.selectionForFeatures.deselect(row);
+          }   
+        }
+      }
+    });
+    }
   }
-  
 }
   
