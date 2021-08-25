@@ -63,7 +63,10 @@
                                 <div class="line">
                                     <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
-                                    <span class="line2">{{item.regNo}}</span>
+                                    <!-- <span class="line2">{{item.regNo}}</span> -->
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
                                 </div>
                             </div>
                         <!-- <mat-divider style="margin: 5px,5px!important;"></mat-divider> -->
