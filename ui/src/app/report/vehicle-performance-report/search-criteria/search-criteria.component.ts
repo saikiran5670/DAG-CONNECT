@@ -542,8 +542,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         vin = vehCount[0].vin;
         registrationNo = vehCount[0].registrationNo;
       }
-      let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
-      let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
+      
+      // let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
+      // let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
+     
+      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
+      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
+    
       let searchData = {
         utcStartDateTime: utcStartDateTime,
         utcEndDateTime: utcEndDateTime,
