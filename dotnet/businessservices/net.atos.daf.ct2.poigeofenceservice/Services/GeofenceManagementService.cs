@@ -340,7 +340,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "C");
                     response.Message = "Geofence is updated ";
-                    response.Code = Responsecode.NotFound;
+                    response.Code = Responsecode.Success;
                     return response;
                 }
                 return await Task.FromResult(new GeofenceCircularUpdateResponce

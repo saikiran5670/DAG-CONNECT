@@ -43,70 +43,33 @@
                             <span class="badge">0</span>
                         </a>
 
-                        <mat-menu #menu="matMenu" class="notificationList" yPosition="below">
-                            
+                        <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
+                            <mat-card >
+                                <div  *ngFor="let item of notificationData">
                             <button mat-menu-item class="line">
                                 <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
                                     <div fxLayout="column" class="areaWidth min-width-10-per">
-                                        <mat-icon>unarchive</mat-icon>
+                                        <mat-icon>{{item.icons}}</mat-icon>
                                     </div>
                                     <div fxLayout="column" class="areaWidth min-width-50-per">
-                                        <span>Entering Geofence</span>
+                                        <span>{{item.name}}</span>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
-                                        <span class="demo1">04/08/2021</span>
-                                        <span class="demo2">01:30 pm</span>
+                                        <span class="demo1">{{item.date}}</span>
+                                        <span class="demo2">{{item.time}}</span>
                                     </div>
                                 </div>
                                 <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
-                                    <span class="line2">XLRTEM4100G041999858</span>
+                                    <span class="line2">{{item.regNo}}</span>
                                 </div>
                             </button>
                             <mat-divider></mat-divider>
-                            <button mat-menu-item class="line">
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <div fxLayout="column" class="areaWidth min-width-10-per">
-                                        <mat-icon>unarchive</mat-icon>
-                                    </div>
-                                    <div fxLayout="column" class="areaWidth min-width-50-per">
-                                        <span>Fuel Driver Performance</span>
-                                    </div>
-                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
-                                        <span class="demo1">04/08/2021</span>
-                                        <span class="demo2">11:30 am</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <span class="line2">XLRTEM4100G041999</span>
-                                </div>
-                            </button>
-                            <mat-divider></mat-divider>
-                            <button mat-menu-item class="line">
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <div fxLayout="column" class="areaWidth min-width-10-per">
-                                        <mat-icon>unarchive</mat-icon>
-                                    </div>
-                                    <div fxLayout="column" class="areaWidth min-width-50-per">
-                                        <span>Time & Move</span>
-                                    </div>
-                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
-                                        <span class="demo1">03/08/2021</span>
-                                        <span class="demo2">07:30 pm</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <span class="line2">XLRTEM4100G041999</span>
-                                </div>
-                            </button>
-                            <mat-divider></mat-divider>
+                        </div>
+                        </mat-card>
+                        <a class="more">more ></a>
                         </mat-menu>
-
                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
 

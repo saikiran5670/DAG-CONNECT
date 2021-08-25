@@ -64,8 +64,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CountryCode = customer.CompanyUpdatedEvent.Company.Address?.CountryCode?.Trim()
                 };
 
-                await _organizationManager.UpdateCustomer(customerRequest);
-                if (!string.IsNullOrEmpty(customerRequest.SubscriptionId) && customerRequest.SubscriptionId != "0")
+                var customerData = await _organizationManager.UpdateCustomer(customerRequest);
+                if (!string.IsNullOrEmpty(customerData.SubscriptionId) && customerData.SubscriptionId != "0")
                 {
                     //Triggering subscription cdc 
                     int subscriptionId = Convert.ToInt32(customerRequest.SubscriptionId);
