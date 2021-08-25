@@ -219,7 +219,7 @@ export class Util {
         _timezone = _t[1].trim();
     }​​​​​​​    
     let date = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone);
-     return date;
+     return (date['_i']);
   }​​​​​​​
 
 //   public static utcToDateConversionTimeZone(_utc: any, prefTimezone: any){
