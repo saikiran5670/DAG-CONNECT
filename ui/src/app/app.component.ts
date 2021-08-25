@@ -18,6 +18,9 @@ import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { ReportService } from './services/report.service';
 import { takeUntil } from 'rxjs/operators';
 import { NavigationExtras } from '@angular/router';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { Util } from '../app/shared/util';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-root',
@@ -65,26 +68,39 @@ export class AppComponent {
   appForm: FormGroup;
   selectedRoles: any = [];
   orgContextType: any = false;
+  accountPrefObj: any;
+  prefData : any;
+  preference : any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  alertDateFormat: any;
+  startDateValue: any;
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   notificationData: any = [
     {
       icons:'unarchive',
       name: 'Entering Geofence',
-      date: '04/08/2021',
-      time: '01:30 pm',
+      data: 1628072950000,
+      vehName: 'Veh data',
+      vin: 'test 01',
       regNo: 'XLRTEM4100G041999858'
     },
     {
       icons:'unarchive',
       name: 'Fuel Driver Performance',
-      date: '04/08/2021',
-      time: '11:30 pm',
+      data: 1628072950000,
+      vehName: 'Veh 2 data',
+      vin: 'test 02',
       regNo: 'XLRTEM4100G041999'
     },
     {
       icons:'unarchive',
       name: 'Time & Move',
-      date: '03/08/2021',
-      time: '07:30 pm',
+      data: 1627986550000,
+      vehName: 'Veh 3 data',
+      vin: 'test 03',
       regNo: 'XLRTEM4100G041999'
     }
   ];
@@ -294,7 +310,7 @@ export class AppComponent {
     protected _onDestroy = new Subject<void>();
 
 
-  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService) {
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -879,7 +895,31 @@ export class AppComponent {
     this.accountID = parseInt(localStorage.getItem("accountId"));
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId = JSON.parse(localStorage.getItem("language"));
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
 
+      this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+        this.setInitialPref(this.prefData,this.preference);
+        this.getDateAndTime();
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+
+      });
 
     //this.getOrgListData();
     if (this.router.url) {
@@ -898,6 +938,40 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
+    
+  }
+
+  getDateAndTime(){
+    this.notificationData.forEach(element => {
+    this.startDateValue = element.data;
+    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
+    element.date = dateTimeObj[0];
+    element.time = dateTimeObj[1];
+  });
+  console.log(this.notificationData);
+  }
+
+  proceedStep(prefData: any, preference: any){
+    this.prefData = prefData;
+    this.preference = preference;
+    // this.loadReportData();
+  }
+
+  setInitialPref(prefData,preference){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.setPrefFormatDate();
+    // this.selectionTimeRange('lastweek');
   }
 
   private setPageTitle() {
@@ -1179,5 +1253,35 @@ gotoLogBookForMoreAlerts(){
   };
   this.router.navigate(['fleetoverview/logbook'], navigationExtras);
 }
+
+   //********************************** Date Time Functions *******************************************//
+   setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";      
+        this.alertDateFormat='DD/MM/YYYY';
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.alertDateFormat='MM/DD/YYYY';
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";       
+        this.alertDateFormat='DD-MM-YYYY';
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.alertDateFormat='MM-DD-YYYY';
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.alertDateFormat='MM/DD/YYYY';
+      }
+    }
+  }
 
 }
