@@ -100,7 +100,16 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             left join master.groupref vgrpref
                             on  grp.id=vgrpref.group_id
                             left join master.vehicle veh
-                            on vgrpref.ref_id=veh.id
+                            on vgrpref.ref_id=veh.id AND case when veh.opt_in='H' 
+							THEN 
+							Case when (select count(vehicle_default_opt_in) as vehcount
+											from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+											then
+											veh.opt_in='H'
+											ELSE
+											veh.opt_in='I'
+											END	
+							ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_alert_vehicle_groupanddynamic
 							 ,cte_account_visibility_for_vehicle_group
@@ -140,7 +149,17 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             on cte.vehiclegroupid=grp.id --and grp.object_type='V' --and grp.group_type='S'
                             inner join master.vehicle veh
                             on grp.ref_id=veh.id and grp.group_type='S'
-                            where grp.organization_id=cte.organization_id
+                            where grp.organization_id=cte.organization_id AND
+								CASE WHEN veh.opt_in='H' 
+								THEN 
+								CASE WHEN (select count(vehicle_default_opt_in) as vehcount
+												from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+												THEN
+												veh.opt_in='H'
+												ELSE
+												veh.opt_in='I'
+												END	
+								ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_account_visibility_for_vehicle_single
 							,cte_account_visibility_for_vehicle_dynamic_unique
@@ -192,7 +211,18 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            --on orm.target_org_id=du2.Organization_Id and ors.code NOT IN ('Owner','OEM') and du2.function_enum='A'
 	                            where ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-	                            else COALESCE(end_date,0) =0 end  
+	                            else COALESCE(end_date,0) =0 end
+								AND
+								CASE WHEN veh.opt_in='H' 
+								THEN 
+								CASE WHEN (select count(vehicle_default_opt_in) as vehcount
+												from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+												THEN
+												veh.opt_in='H'
+												ELSE
+												veh.opt_in='I'
+												END	
+								ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_account_vehicle_DynamicAll
 							, 
@@ -219,7 +249,18 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
 	                            where ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-	                            else COALESCE(end_date,0) =0 end  
+	                            else COALESCE(end_date,0) =0 end 
+								AND
+								CASE WHEN veh.opt_in='H' 
+								THEN 
+								CASE WHEN (select count(vehicle_default_opt_in) as vehcount
+												from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+												THEN
+												veh.opt_in='H'
+												ELSE
+												veh.opt_in='I'
+												END	
+								ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_account_vehicle_DynamicOwned
                             ,
@@ -248,6 +289,17 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
 	                            and ors.code NOT IN ('Owner','OEM')
+								AND
+								CASE WHEN veh.opt_in='H' 
+								THEN 
+								CASE WHEN (select count(vehicle_default_opt_in) as vehcount
+												from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+												THEN
+												veh.opt_in='H'
+												ELSE
+												veh.opt_in='I'
+												END	
+								ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_account_vehicle_DynamicVisible
                             ,
@@ -268,6 +320,17 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            from master.vehicle veh
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 	                            on veh.organization_id=du1.organization_id and du1.function_enum='M'
+								AND
+								CASE WHEN veh.opt_in='H' 
+								THEN 
+								CASE WHEN (select count(vehicle_default_opt_in) as vehcount
+												from master.organization where vehicle_default_opt_in='I' AND id =veh.organization_id)>0 
+												THEN
+												veh.opt_in='H'
+												ELSE
+												veh.opt_in='I'
+												END	
+								ELSE veh.opt_in='I' END 
                             )
                             --select * from cte_account_vehicle_DynamicOEM
                             ,
