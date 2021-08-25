@@ -219,7 +219,7 @@
     <div class="user-preferences">
         <div *ngIf="isLogedIn" class="preferences-sidenav-content"
             [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " (click)='userPreferencesSetting($event)'>
-            <mat-icon matTooltip="Preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
+            <mat-icon matTooltip="Click to view user preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
         <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag">
