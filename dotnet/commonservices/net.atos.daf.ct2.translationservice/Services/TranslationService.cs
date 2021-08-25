@@ -1051,19 +1051,19 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("CheckUserAcceptedTermCondition method ");
                 var result = await _termsAndConditionsManager.CheckUserAcceptedTermCondition(request.AccountId, request.OrganizationId);
                 _logger.LogInformation("CheckUserAcceptedTermCondition service called.");
-                UserAcceptedTermConditionResponse Response = new UserAcceptedTermConditionResponse();
-                Response.IsUserAcceptedTC = result;
-                Response.Code = Responcecode.Success;
-                Response.Message = "Terms and condition details retrived for version no.";
-                return await Task.FromResult(Response);
+                UserAcceptedTermConditionResponse response = new UserAcceptedTermConditionResponse();
+                response.IsUserAcceptedTC = result;
+                response.Code = Responcecode.Success;
+                response.Message = "Terms and condition details retrived for version no.";
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Translation Service:GetLatestTermCondition : " + ex.Message + " " + ex.StackTrace);
+                _logger.LogError($"Translation Service:GetLatestTermCondition : {ex.Message} {ex.StackTrace}");
                 return await Task.FromResult(new UserAcceptedTermConditionResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetLatestTermCondition Failed due to - " + ex.Message
+                    Message = $"GetLatestTermCondition Failed due to - {ex.Message}"
                 });
             }
         }

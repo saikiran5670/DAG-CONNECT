@@ -825,20 +825,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("tac/checkuseracceptedtac")]
-        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int AccountId, int OrganizationId)
+        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int accountId, int organizationId)
         {
             try
             {
 
-                if (OrganizationId <= 0 || AccountId <= 0)
+                if (organizationId <= 0 || accountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
                 }
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                organizationId = GetContextOrgId();
+                if (organizationId <= 0)
+                {
+                    return StatusCode(400, "Organization Id is Zero for GetContextOrgId.");
+                }
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
-                request.AccountId = AccountId;
-                request.OrganizationId = OrganizationId;
+                request.AccountId = accountId;
+                request.OrganizationId = organizationId;
                 UserAcceptedTermConditionResponse response = await _translationServiceClient.CheckUserAcceptedTermConditionAsync(request);
                 if (response != null && response.Code == translationservice.Responcecode.Failed)
                 {
@@ -856,7 +860,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
 
