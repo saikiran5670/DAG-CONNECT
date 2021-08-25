@@ -222,6 +222,20 @@ export class Util {
      return (date['_i']);
   }​​​​​​​
 
+  public static convertUtcToDateAndTimeFormat(_utc: any, timeZone: any, timeFormat? :any){
+    let _t = timeZone.split(')');
+    let _timezone: any;
+    if(_t.length > 0){
+        _timezone = _t[1].trim();
+    }
+    let _format =  timeFormat ? timeFormat : 'DD/MM/YYYY';
+    let _tFormat =  'HH:mm';
+    let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format(_format);
+    let _time: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format(_tFormat);
+
+    return ([_date,_time]);
+}
+
 //   public static utcToDateConversionTimeZone(_utc: any, prefTimezone: any){
 //     let _t = prefTimezone.split(') ');
 //     let _timezone: any;

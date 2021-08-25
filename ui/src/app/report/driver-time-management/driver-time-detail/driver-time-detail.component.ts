@@ -177,7 +177,7 @@ export class DriverTimeDetailComponent implements OnInit {
       ],
       colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
       chart: {
-        height: 350,
+        height: 'auto',
         type: 'rangeBar'
       },
       stroke: {
@@ -187,8 +187,8 @@ export class DriverTimeDetailComponent implements OnInit {
       plotOptions: {
         bar: {
           horizontal: true,
-          barHeight: '10%',
-          rangeBarGroupRows: true
+          barHeight: '30%',
+          rangeBarGroupRows: true // should be false but due to inappropriate data kept true
         }
       },
       fill: {
