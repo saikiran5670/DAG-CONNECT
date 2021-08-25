@@ -44,32 +44,34 @@
                         </a>
 
                         <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
-                            <mat-card >
-                                <div  *ngFor="let item of notificationData">
-                            <button mat-menu-item class="line">
+                            <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;"> 
+                                <mat-card class="card1">
                                 <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <div fxLayout="column" class="areaWidth min-width-10-per">
-                                        <mat-icon>{{item.icons}}</mat-icon>
-                                    </div>
-                                    <div fxLayout="column" class="areaWidth min-width-50-per">
-                                        <span>{{item.name}}</span>
-                                    </div>
-                                    <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
-                                        <span class="demo1">{{item.date}}</span>
-                                        <span class="demo2">{{item.time}}</span>
-                                    </div>
+                                fxLayoutGap="1px">
+                                <div fxLayout="column" class="areaWidth min-width-10-per">
+                                    <mat-icon class="line3">{{item.icons}}</mat-icon>
                                 </div>
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+                                <div fxLayout="column" class="areaWidth min-width-50-per line3">
+                                    <span>{{item.name}}</span>
+                                </div>
+                                <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+                                    <span class="demo1">{{item.date}}</span>
+                                    <span class="demo2">{{item.time}}</span>
+                                </div>
+                            </div>
+
+                                <button mat-menu-item class="line">
+                                    <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
                                     <span class="line2">{{item.regNo}}</span>
                                 </div>
-                            </button>
-                            <mat-divider></mat-divider>
-                        </div>
-                        </mat-card>
-                        <a class="more">more ></a>
-                        </mat-menu>
+                        </button>
+                        <!-- <mat-divider style="margin: 5px,5px!important;"></mat-divider> -->
+                    </mat-card>
+                    </div>
+
+                    <a class="more">more ></a>
+                    </mat-menu>
                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
 
@@ -219,7 +221,7 @@
     <div class="user-preferences">
         <div *ngIf="isLogedIn" class="preferences-sidenav-content"
             [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " (click)='userPreferencesSetting($event)'>
-            <mat-icon matTooltip="Preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
+            <mat-icon matTooltip="Click to view user preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
         <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag">
