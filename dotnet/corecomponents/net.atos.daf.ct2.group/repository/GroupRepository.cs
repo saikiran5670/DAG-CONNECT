@@ -249,16 +249,11 @@ namespace net.atos.daf.ct2.group
                 string queryOwned = string.Empty, queryVisible = string.Empty, queryUnion = "UNION";
                 string selectStatement = string.Empty;
 
-                queryOwned = @"
-                        SELECT v.id, v.vin
-                        FROM master.vehicle v
-                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
-                        UNION
+                queryOwned = @"                        
                         SELECT v.id, v.vin
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
                         WHERE 
