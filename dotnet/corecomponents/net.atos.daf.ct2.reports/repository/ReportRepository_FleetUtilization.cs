@@ -33,8 +33,8 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(etl_gps_distance)         as etl_gps_distance
                                             		  , SUM(etl_gps_driving_time)     as etl_gps_driving_time
                                             		  , SUM(idle_duration)            as idle_duration
-                                            		  , SUM(veh_message_distance)     as veh_message_distance
-                                            		  , SUM(average_speed)            as average_speed
+                                            		  , SUM(etl_gps_distance)     as veh_message_distance
+                                            		  , AVG(average_speed)            as average_speed
                                             		  , SUM(average_weight)           as average_weight
                                             		  , SUM(start_odometer)           as start_odometer
                                             		FROM
@@ -115,7 +115,7 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
-                        sum(average_speed) as totalaverageSpeed,
+                        AVG(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
-                        sum(average_speed) as totalaverageSpeed,
+                        AVG(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics

@@ -92,8 +92,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , count(trip_id)                                                         as numberoftrips
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                                  		  , SUM(veh_message_distance)                                              as veh_message_distance
-                                                  		  , SUM(average_speed)                                                     as average_speed
+                                                  		  , SUM(etl_gps_distance)                                              as veh_message_distance
+                                                  		  , AVG(average_speed)                                                     as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -202,8 +202,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , count(trip_id)                                                         as numberoftrips
                                                		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                               		  , SUM(veh_message_distance)                                              as veh_message_distance
-                                               		  , SUM(average_speed)                                                     as average_speed
+                                               		  , SUM(etl_gps_distance)                                              as veh_message_distance
+                                               		  , AVG(average_speed)                                                     as average_speed
                                                		  , MAX(max_speed)                                                         as max_speed
                                                		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -417,7 +417,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , 1 as numberoftrips 
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
-				  , (veh_message_distance)                                              as veh_message_distance
+				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
@@ -558,7 +558,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , 1                                                         as numberoftrips
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
-				  , (veh_message_distance)                                              as veh_message_distance
+				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
