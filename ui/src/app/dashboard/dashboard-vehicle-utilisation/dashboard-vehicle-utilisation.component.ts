@@ -363,7 +363,7 @@ displayPiechart: boolean = true;
 
                 this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
                   if(data){
-                    this.totalActiveVehicles = data['fleetKpis']['vehicleCount'];
+                    this.totalActiveVehicles = data['fleetKpis']?.vehicleCount;
                   }
                 })
                }

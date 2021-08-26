@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.service.kafka;
 
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
 import net.atos.daf.ct2.util.Utils;
@@ -14,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Properties;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_INDEX_BOOTSTRAP_SERVER;
+import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_INDEX_SASL_JAAS_CONFIG;
+
 public class KafkaConnectionService implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaConnectionService.class);
@@ -26,6 +30,19 @@ public class KafkaConnectionService implements Serializable {
         kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get("status.object.sasl.jaas.config"));
         kafkaConnectProperties.put("bootstrap.servers",parameterTool.get("status.object.bootstrap.servers"));
 
+        return  kafkaService.connectKafkaTopic(
+                topicName,
+                kafkaConnectProperties,
+                deserializationSchema,
+                env);
+    }
+
+    public static DataStream<KafkaRecord<Index>> connectIndexObjectTopic(String topicName, ParameterTool parameterTool, StreamExecutionEnvironment env){
+        KafkaService<KafkaRecord<Index>> kafkaService = new KafkaService<>();
+        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Status>();
+        Properties kafkaConnectProperties = Utils.getKafkaConnectProperties(parameterTool);
+        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get(KAFKA_INDEX_SASL_JAAS_CONFIG));
+        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get(KAFKA_INDEX_BOOTSTRAP_SERVER));
         return  kafkaService.connectKafkaTopic(
                 topicName,
                 kafkaConnectProperties,

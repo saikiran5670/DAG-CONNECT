@@ -13,14 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 
+import static java.time.DayOfWeek.TUESDAY;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static org.junit.Assert.*;
 
@@ -96,12 +95,45 @@ public class UtilsTest {
     public void drivingTimeTest() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        String gpsEndDateTime = "2021-04-28T02:49:47.000Z";
-        String gpsStartDateTime = "2021-03-28T02:38:15.000Z";
+
+        String gpsStartDateTime = "2021-03-28T01:38:15.000Z";
+        String gpsEndDateTime   = "2021-03-29T12:49:47.000Z";
 
         LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
         LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
         Duration duration = Duration.between(startTime, endTime);
         System.out.println(duration.getSeconds());
+    }
+
+    @Test
+    public void setTimeFormat(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.getDefault());
+        Date date = new Date();
+        String format1 = format.format(date);
+        System.out.println(format1);
+
+        //Returns: The day-of-week, from 1 (Monday) to 7 (Sunday)
+        String value = LocalDate.now().getDayOfWeek().name();
+        System.out.println("current day of week :: "+value);
+        String weekArr = "0001000";
+        String dbWeekArr[] = new String[]{"SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"};
+        String dayWeek="";
+        for(int i=0;i < weekArr.length();i++){
+            if(weekArr.charAt(i)=='1'){
+                dayWeek = dbWeekArr[i];
+                break;
+            }
+        }
+        System.out.println(" "+dayWeek);
+        long second = System.currentTimeMillis()/1000;
+        System.out.println(" current time in seconds "+second);
+
+       // DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime localTime = LocalTime.now();
+      //  System.out.println(dtf.format(localTime));
+        System.out.println(localTime.toSecondOfDay());
+
     }
 }

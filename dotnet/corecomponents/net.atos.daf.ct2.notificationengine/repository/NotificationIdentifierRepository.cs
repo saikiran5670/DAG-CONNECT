@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                     @"select unit_type from master.alerturgencylevelref 
                           where urgency_level_type=@urgency_level_type and alert_id=@alert_id and state=@state";
 
-                string unitType = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+                string unitType = await _dataAccess.QueryFirstOrDefaultAsync<string>(query, parameter);
 
                 return unitType;
             }

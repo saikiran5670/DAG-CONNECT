@@ -28,11 +28,13 @@ import { OrganizationService } from '../../services/organization.service';
 import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-fleet-utilisation',
   templateUrl: './fleet-utilisation.component.html',
-  styleUrls: ['./fleet-utilisation.component.less']
+  styleUrls: ['./fleet-utilisation.component.less'],
+  providers: [DatePipe]
 })
 
 export class FleetUtilisationComponent implements OnInit, OnDestroy {
@@ -103,6 +105,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   activeVehicleChartType : boolean = true;
   distanceChartType : boolean = false;
   fleetUtilReportId: any = 5;
+  chartLabelDateFormat:any ='';
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -174,7 +177,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
  
 // Bar chart implementation
 
-barChartOptions: any = {
+barChartOptions: any = {  
   responsive: true,
   legend: {
     position: 'bottom',
@@ -204,7 +207,23 @@ barChartOptions: any = {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)'
         }
       }
-    ]
+    ],
+    xAxes: [{
+      type:'time',       
+      time:
+      {
+        tooltipFormat: this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },          
+    scaleLabel: {
+      display: true,
+      labelString: 'Dates'   
+    }      
+  }]
   }
 };
 barChartLabels: Label[] =this.chartsLabelsdefined;
@@ -256,7 +275,23 @@ distanceLineChartOptions = {
         display: true,    
         labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)',
       }
-    }]
+    }],    
+    xAxes: [{
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: 'Dates'   
+    }      
+  }]
   }
 };
 
@@ -338,7 +373,24 @@ lineChartOptions = {
         display: true,
         labelString: 'value(number of vehicles)'    
       }
-    }]
+    }],
+    
+    xAxes: [{
+      type:'time',
+      time:
+      {
+        tooltipFormat: this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },           
+    scaleLabel: {
+      display: true,
+      labelString: 'Dates'   
+    }      
+  }]
   }
 };
 
@@ -370,7 +422,24 @@ VehicleBarChartOptions: any = {
       scaleLabel: {
         display: true,
         labelString:  'value(number of vehicles)' 
-      }}]
+      }}],
+      
+    xAxes: [{    
+      type:'time',
+      time:
+      {
+        tooltipFormat: this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },                
+    scaleLabel: {
+      display: true,
+      labelString: 'Dates'   
+    }      
+  }]
   }
 };
 fromTripPageBack: boolean = false;
@@ -389,7 +458,7 @@ calendarOptions: CalendarOptions = {
   events: [ ],
 };
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
@@ -970,22 +1039,30 @@ calendarOptions: CalendarOptions = {
     }
     return sum; 
   }
-
+ 
   setChartData(chartData: any){
     this.calendarValue = [];
     chartData.forEach(e => {
       var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
-      //let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      this.chartsLabelsdefined.push(date);
+     var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
+      this.chartsLabelsdefined.push(resultDate);
+    
       this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
-      this.averageDistanceBarData.push((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
-      this.lineChartVehicleCount.push(e.vehiclecount);  
+      let avgDistBarData= ((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
+      this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData });
+
+      this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
       this.calendarSelectedValues(e);   
     });
     this.assignChartData();
   }
 
   assignChartData(){
+    this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    let startDate =this.startDateValue;
+    let endDate = this.endDateValue;        
+    this.chartsLabelsdefined=[ startDate, endDate ]
     this.barChartData = [
       { 
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)',
@@ -1006,6 +1083,8 @@ calendarOptions: CalendarOptions = {
     ];
     this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
     this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
+    this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     
     this.distanceLineChartData = [
       { 
@@ -1021,11 +1100,17 @@ calendarOptions: CalendarOptions = {
           
       },
     ];
-   this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
+    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
     this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
+    this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+  
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
     ];
+    this.lineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    this.lineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+ 
     this.VehicleBarChartData = [
       { 
         label: 'Number of Vehicles',
@@ -1037,7 +1122,7 @@ calendarOptions: CalendarOptions = {
         },
     ];
     this.barChartLabels = this.chartsLabelsdefined;
-    this.lineChartLabels = this.chartsLabelsdefined;
+    this.lineChartLabels = this.chartsLabelsdefined;   
   }
 
   calendarSelectedValues(element: any){
@@ -1306,7 +1391,7 @@ calendarOptions: CalendarOptions = {
           this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
           this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
           this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
-        }else{ // 24
+          }else{ // 24
           this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
           this.startTimeDisplay = `${this.selectedStartTime}:00`; 
@@ -1328,27 +1413,32 @@ calendarOptions: CalendarOptions = {
     }
   
   }
-
+  
   setPrefFormatDate(){
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.chartLabelDateFormat='DD/MM/YYYY';
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.chartLabelDateFormat='MM/DD/YYYY';
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.chartLabelDateFormat='DD-MM-YYYY';
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.chartLabelDateFormat='MM-DD-YYYY';
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.chartLabelDateFormat='MM/DD/YYYY';
       }
     }
   }

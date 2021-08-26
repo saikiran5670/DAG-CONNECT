@@ -15,6 +15,7 @@ namespace net.atos.daf.ct2.rfms
         readonly IRfmsRepository _rfmsRepository;
         readonly IVehicleManager _vehicleManager;
         readonly IMemoryCache _cache;
+        internal int LastVinId { get; set; }
 
 
         public RfmsManager(IRfmsRepository rfmsRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache)
@@ -22,6 +23,7 @@ namespace net.atos.daf.ct2.rfms
             _rfmsRepository = rfmsRepository;
             _vehicleManager = vehicleManager;
             _cache = memoryCache;
+            AddMasterDataToCache();
         }
 
         public async Task<RfmsVehicles> GetVehicles(string lastVin, int thresholdValue, int accountId, int orgId)
@@ -58,84 +60,22 @@ namespace net.atos.daf.ct2.rfms
         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
             int lastVinId = 0;
-            string visibleVins = string.Empty;
-
-            //CHECK VISIBLE VEHICLES FOR USER
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(rfmsVehiclePositionRequest.AccountId, rfmsVehiclePositionRequest.OrgId);
-
-            //ADD MASTER DATA TO CACHE
-            AddMasterDataToCache();
-
-            if (visibleVehicles.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.TriggerFilter))
-                {
-                    var triggerFilterId = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehiclePositionRequest.TriggerFilter.ToLower(), true);
-                    if (triggerFilterId != null)
-                    {
-                        rfmsVehiclePositionRequest.TriggerFilter = triggerFilterId;
-                    }
-                    else
-                    {
-                        rfmsVehiclePositionRequest.TriggerFilter = CommonConstants.NOT_APPLICABLE;
-                    }
-                }
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.LastVin))
-                {
-                    //Get Id for the last vin
-                    var id = visibleVehicles.Where(x => x.VIN == rfmsVehiclePositionRequest.LastVin).Select(p => p.Id);
-                    if (id != null)
-                        lastVinId = Convert.ToInt32(id.FirstOrDefault());
-                }
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.Vin))
-                {
-                    var validVin = visibleVehicles.Where(x => x.VIN == rfmsVehiclePositionRequest.Vin).Select(p => p.VIN).FirstOrDefault();
-                    visibleVins = validVin;
-                }
-                else
-                {
-                    visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
-                }
-            }
-
+            var visibleVins = await GetVisibleVins(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter, rfmsVehiclePositionRequest.AccountId, rfmsVehiclePositionRequest.OrgId) ?? string.Empty;
             RfmsVehiclePosition rfmsVehiclePosition = await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest, visibleVins, lastVinId);
 
             if (rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Count() > rfmsVehiclePositionRequest.ThresholdValue)
             {
-                if (rfmsVehiclePositionRequest.LatestOnly && string.IsNullOrEmpty(rfmsVehiclePositionRequest.LastVin))
+                if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly && string.IsNullOrEmpty(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LastVin))
                 {
-                    rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(rfmsVehiclePositionRequest.ThresholdValue).ToList();
-                    string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
-                    string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
-                    if (rfmsVehiclePositionRequest.LatestOnly)
-                        rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?LatestOnly=true&lastVin=" + lastVin;
-                    else
-                        rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
-                    rfmsVehiclePosition.MoreDataAvailable = true;
+                    GetLatestOnlyVehiclePostion(rfmsVehiclePosition, rfmsVehiclePositionRequest.ThresholdValue);
                 }
-                else if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.StartTime))
+                else if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime))
                 {
-                    rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(rfmsVehiclePositionRequest.ThresholdValue).ToList();
-                    string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
-                    string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
-                    rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
-                    rfmsVehiclePosition.MoreDataAvailable = true;
+                    GetStartDateTimeVehiclePostion(rfmsVehiclePosition, rfmsVehiclePositionRequest.ThresholdValue);
                 }
-                if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                if (!string.IsNullOrEmpty(rfmsVehiclePosition.MoreDataAvailableLink))
                 {
-                    rfmsVehiclePosition.MoreDataAvailableLink += "&datetype=" + DateType.Created;
-                }
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.StopTime))
-                {
-                    rfmsVehiclePosition.MoreDataAvailableLink += "&stoptime=" + rfmsVehiclePositionRequest.StopTime;
-                }
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.Vin))
-                {
-                    rfmsVehiclePosition.MoreDataAvailableLink += "&vin=" + rfmsVehiclePositionRequest.Vin;
-                }
-                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.TriggerFilter))
-                {
-                    rfmsVehiclePosition.MoreDataAvailableLink += "&triggerFilter=" + GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehiclePositionRequest.TriggerFilter, false);
+                    SetPostionMoreDataAvailableLink(rfmsVehiclePositionRequest, rfmsVehiclePosition);
                 }
             }
 
@@ -168,6 +108,54 @@ namespace net.atos.daf.ct2.rfms
             return rfmsVehiclePosition;
         }
 
+        private void SetPostionMoreDataAvailableLink(RfmsVehiclePositionRequest rfmsVehiclePositionRequest, RfmsVehiclePosition rfmsVehiclePosition)
+        {
+
+            if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Type == DateType.Created.ToString())
+            {
+                rfmsVehiclePosition.MoreDataAvailableLink += "&datetype=" + DateType.Created;
+            }
+            if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StopTime))
+            {
+                rfmsVehiclePosition.MoreDataAvailableLink += "&stoptime=" + rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StopTime;
+            }
+            if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Vin))
+            {
+                rfmsVehiclePosition.MoreDataAvailableLink += "&vin=" + rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Vin;
+            }
+            if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.TriggerFilter))
+            {
+                rfmsVehiclePosition.MoreDataAvailableLink += "&triggerFilter=" + GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.TriggerFilter, false);
+            }
+        }
+
+        private void GetLatestOnlyVehiclePostion(RfmsVehiclePosition rfmsVehiclePosition, int thresholdValue)
+        {
+            rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(thresholdValue).ToList();
+            string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
+            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            if (!rfmsVehiclePosition.MoreDataAvailable)
+            {
+                rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?LatestOnly=true&lastVin=" + lastVin;
+                rfmsVehiclePosition.MoreDataAvailable = true;
+            }
+            else
+            {
+                rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Skip(thresholdValue).ToList();
+                rfmsVehiclePosition.MoreDataAvailable = false;
+                rfmsVehiclePosition.MoreDataAvailableLink = string.Empty;
+
+            }
+            // return rfmsVehiclePosition;
+        }
+        private void GetStartDateTimeVehiclePostion(RfmsVehiclePosition rfmsVehiclePosition, int thresholdValue)
+        {
+            rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(thresholdValue).ToList();
+            string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
+            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
+            rfmsVehiclePosition.MoreDataAvailable = true;
+        }
         public async Task<string> GetRFMSFeatureRate(string emailId, string featureName)
         {
             return await _rfmsRepository.GetRFMSFeatureRate(emailId, featureName);
@@ -227,60 +215,24 @@ namespace net.atos.daf.ct2.rfms
 
         public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
         {
-            int lastVinId = 0;
-            string visibleVins = string.Empty;
+            LastVinId = 0;
+            DateTime currentdatetime = DateTime.Now;
+            var visibleVins = await GetVisibleVins(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter, rfmsVehicleStatusRequest.AccountId, rfmsVehicleStatusRequest.OrgId) ?? string.Empty;
 
-            //CHECK VISIBLE VEHICLES FOR USER
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(rfmsVehicleStatusRequest.AccountId, rfmsVehicleStatusRequest.OrgId);
-
-            //ADD MASTER DATA TO CACHE
-            AddMasterDataToCache();
-            if (visibleVehicles.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.TriggerFilter))
-                {
-                    var triggerFilterId = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusRequest.TriggerFilter.ToLower(), true);
-                    if (triggerFilterId != null)
-                    {
-                        rfmsVehicleStatusRequest.TriggerFilter = triggerFilterId;
-                    }
-                    else
-                    {
-                        rfmsVehicleStatusRequest.TriggerFilter = CommonConstants.NOT_APPLICABLE;
-                    }
-                }
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.LastVin))
-                {
-                    //Get Id for the last vin
-                    var id = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusRequest.LastVin).Select(p => p.Id);
-                    if (id != null)
-                        lastVinId = Convert.ToInt32(id.FirstOrDefault());
-                }
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.Vin))
-                {
-                    var validVin = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusRequest.Vin).Select(p => p.VIN).FirstOrDefault();
-                    visibleVins = validVin;
-                }
-                else
-                {
-                    visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
-                }
-            }
-            RfmsVehicleStatus rfmsVehicleStatus = await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVins, lastVinId);
+            RfmsVehicleStatus rfmsVehicleStatus = await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVins, LastVinId);
             if (rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Count() > rfmsVehicleStatusRequest.ThresholdValue)
             {
-                if (rfmsVehicleStatusRequest.LatestOnly && string.IsNullOrEmpty(rfmsVehicleStatusRequest.LastVin))
+                if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly && string.IsNullOrEmpty(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LastVin))
                 {
                     rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(rfmsVehicleStatusRequest.ThresholdValue).ToList();
                     string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
                     string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
-                    if (rfmsVehicleStatusRequest.LatestOnly)
-                        rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?LatestOnly=true&lastVin=" + lastVin;
-                    else
-                        rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
+                    rfmsVehicleStatus.MoreDataAvailableLink = rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly
+                        ? "//vehiclestatuses?LatestOnly=true&lastVin=" + lastVin
+                        : "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                     rfmsVehicleStatus.MoreDataAvailable = true;
                 }
-                else if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StartTime))
+                else if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime))
                 {
                     rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(rfmsVehicleStatusRequest.ThresholdValue).ToList();
                     string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
@@ -288,21 +240,21 @@ namespace net.atos.daf.ct2.rfms
                     rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                     rfmsVehicleStatus.MoreDataAvailable = true;
                 }
-                if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Type == DateType.Created.ToString())
                 {
                     rfmsVehicleStatus.MoreDataAvailableLink += "&datetype=" + DateType.Created;
                 }
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StopTime))
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StopTime))
                 {
-                    rfmsVehicleStatus.MoreDataAvailableLink += "&stoptime=" + rfmsVehicleStatusRequest.StopTime;
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&stoptime=" + rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StopTime;
                 }
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.Vin))
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Vin))
                 {
-                    rfmsVehicleStatus.MoreDataAvailableLink += "&vin=" + rfmsVehicleStatusRequest.Vin;
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&vin=" + rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Vin;
                 }
-                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.TriggerFilter))
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.TriggerFilter))
                 {
-                    rfmsVehicleStatus.MoreDataAvailableLink += "&triggerFilter=" + GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusRequest.TriggerFilter, false);
+                    rfmsVehicleStatus.MoreDataAvailableLink += "&triggerFilter=" + GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.TriggerFilter, false);
                 }
             }
 
@@ -332,7 +284,58 @@ namespace net.atos.daf.ct2.rfms
                 }
                 vehicleCnt++;
             }
+            rfmsVehicleStatus.RequestServerDateTime = currentdatetime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+
             return rfmsVehicleStatus;
         }
+
+
+        private async Task<string> GetVisibleVins(RfmsVehiclePositionStatusFilter rfmsVehicleStatusFilter, int accountId, int OrgId)
+        {
+            string visibleVins = string.Empty;
+
+            //CHECK VISIBLE VEHICLES FOR USER
+            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(accountId, OrgId);
+
+            //ADD MASTER DATA TO CACHE
+            //AddMasterDataToCache();
+            if (visibleVehicles.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusFilter.TriggerFilter))
+                {
+                    var triggerFilterId = GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TRIGGER_TYPE, rfmsVehicleStatusFilter.TriggerFilter.ToLower(), true);
+                    if (triggerFilterId != null)
+                    {
+                        rfmsVehicleStatusFilter.TriggerFilter = triggerFilterId;
+                    }
+                    else
+                    {
+                        rfmsVehicleStatusFilter.TriggerFilter = CommonConstants.NOT_APPLICABLE;
+                    }
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusFilter.LastVin))
+                {
+                    //Get Id for the last vin
+                    var id = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusFilter.LastVin).Select(p => p.Id);
+                    if (id != null)
+                    {
+                        LastVinId = Convert.ToInt32(id.FirstOrDefault());
+                    }
+                }
+                if (!string.IsNullOrEmpty(rfmsVehicleStatusFilter.Vin))
+                {
+                    var validVin = visibleVehicles.Where(x => x.VIN == rfmsVehicleStatusFilter.Vin).Select(p => p.VIN).FirstOrDefault();
+                    visibleVins = validVin;
+                }
+                else
+                {
+                    visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
+                }
+            }
+
+            return visibleVins;
+        }
+
+
     }
 }

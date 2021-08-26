@@ -75,6 +75,7 @@ public class TripAggregations implements Serializable{
 		indxClmns.add(ETLConstants.INDEX_MSG_INCREMENT);
 		indxClmns.add(ETLConstants.INDEX_MSG_VDIST);
 		indxClmns.add(ETLConstants.INDEX_MSG_EVT_DATETIME);
+		indxClmns.add(ETLConstants.INDEX_MSG_VEVT_ID);
 		tripIndxClmns.put(ETLConstants.INDEX_MSG_COLUMNFAMILY_T, indxClmns);
 
 		return tripIndxClmns;
@@ -167,11 +168,16 @@ public class TripAggregations implements Serializable{
 						private static final long serialVersionUID = 1L;
 						private transient ValueState<Tuple2<String, Long>> prevVDistState ;
 
+						long vDistDiff = 0;
+						long prevVDist = 0;
+						String prevTrip = "";
 						
 						@Override
 						public Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> map(
 								Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String> row)
 								throws Exception {
+							
+							/*
 							Tuple2<String, Long> currentTripVDist = prevVDistState.value();
 							long vDistDiff = 0;
 							long prevVDist = 0;
@@ -207,6 +213,53 @@ public class TripAggregations implements Serializable{
 									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
 									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
 									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);
+						*/
+												
+							/*if(prevVDist == 0){
+								prevVDist = (Long) (row.getField(6));
+								logger.info("prevVDist is 0 so setting data "+ prevVDist);
+							}else{
+								vDistDiff = (Long) (row.getField(6)) - prevVDist ;
+								prevVDist = (Long) (row.getField(6));
+							}*/
+							
+							if(!prevTrip.equals((String) (row.getField(0)))){
+								prevVDist = 0 ;
+								vDistDiff = 0 ;
+								logger.info(" reseting prevDist as prevTrip :: "+prevTrip +" current trip :: "+(String) (row.getField(0)));
+								prevTrip = (String) (row.getField(0));
+							}
+							
+							if(prevVDist != 0)
+								vDistDiff = (Long) (row.getField(6)) - prevVDist ;
+							
+							if(vDistDiff == 0)
+								vDistDiff = 1;
+								
+							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
+							Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> grossObj = new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
+									(String) (row.getField(0)), (String) (row.getField(1)),
+									(String) (row.getField(2)), (Integer) (row.getField(3)),
+									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
+									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);
+
+							logger.info(" GrossWt Info :: "+grossObj);
+							
+							prevVDist = (Long) (row.getField(6));
+							
+							logger.info(" vDistDiff :"+vDistDiff +" row.getField(4): "+((Double) (row.getField(4))) );
+							
+							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
+							/*return new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
+									(String) (row.getField(0)), (String) (row.getField(1)),
+									(String) (row.getField(2)), (Integer) (row.getField(3)),
+									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
+									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);*/
+							
+							return grossObj;
+						
 						}
 						
 						@Override
@@ -229,6 +282,11 @@ public class TripAggregations implements Serializable{
 		public Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long> map(Tuple2<Boolean, Row> tuple2) throws Exception {
 
 			Row row = tuple2.f1;
+			
+			logger.info("final look up data for trip :: "+new Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>((String) (row.getField(0)),
+					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
+					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)), (String) (row.getField(8)), (Long) (row.getField(9))));
+			
 			return new Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>((String) (row.getField(0)),
 					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
 					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)), (String) (row.getField(8)), (Long) (row.getField(9)));

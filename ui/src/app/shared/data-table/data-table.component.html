@@ -1,5 +1,6 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-    <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+<!-- fxLayoutAlign="space-between" class='margin-bottom-sm' -->
+<div fxLayout="row" fxLayoutGap="20px">
+    <div class='areaWidth' fxLayoutAlign="center center">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)"
                 placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -8,23 +9,26 @@
             </span>
         </mat-form-field>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <div fxLayout="row" class='areaWidth'>
-            <div *ngIf="showExport" class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                <button *ngIf='tableData.length > 0' mat-button [matMenuTriggerFor]="menu">
-                    <mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-                    <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
-                </mat-menu>
-            </div>
-            <!-- Top right template elements will be printed here -->
-            <ng-container *ngIf="topRightElements">
-                <ng-container *ngTemplateOutlet='topRightElements'></ng-container>
-            </ng-container>
-        </div>
+
+    <ng-container *ngIf="topLeftElements">
+        <ng-container *ngTemplateOutlet='topLeftElements'></ng-container>
+    </ng-container>
+
+    <div fxFlex="2 1 auto" fxLayoutAlign="center center"></div>
+
+    <div class='areaWidth' *ngIf="showExport" fxLayoutAlign="center center">
+        <button *ngIf='tableData.length > 0' mat-button [matMenuTriggerFor]="menu">
+            <mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+            <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+        </mat-menu>
     </div>
+
+    <ng-container *ngIf="topRightElements">
+        <ng-container *ngTemplateOutlet='topRightElements'></ng-container>
+    </ng-container>
 </div>
 
 <div *ngIf='tableData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
@@ -34,13 +38,23 @@
 
         <ng-container [matColumnDef]="column" *ngFor="let column of columnCodes; let i=index;">
 
-            <ng-container *ngIf="column != 'action' && column != 'select' && column != 'state' && column != 'isExclusive'">
+            <ng-container
+                *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'state' && column != 'isExclusive'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
                     <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                     <span [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container *ngIf="column == 'viewstatus'">
+                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                    columnLabels[i] }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <!-- Action Column template elements will be printed here -->
+                    <ng-container *ngTemplateOutlet='viewStatusColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
 
@@ -53,9 +67,19 @@
                 </mat-cell>
             </ng-container>
 
+            <ng-container *ngIf="column == 'action2'">
+                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                    columnLabels[i] }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <!-- Action Column template elements will be printed here -->
+                    <ng-container *ngTemplateOutlet='action2ColumnElements; context: {rowData: row}'></ng-container>
+                </mat-cell>
+            </ng-container>
+
             <ng-container *ngIf="column == 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] || columnLabels[i] }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
+                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] || columnLabels[i] }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'select' || column == 'state'">

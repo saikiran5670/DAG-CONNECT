@@ -172,18 +172,20 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 25 //-- for account mgnt
     }
-    if(this.userDetailsType != undefined){       
-      console.log(localStorage.getItem('selectedRowItems'));
-      let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
-      this.editViewUser(sessionVal, this.userDetailsType)      
-    }
-    else{
-      this.router.navigate([]);        
-    }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      
       this.processTranslation(data); 
       this.loadUsersData();
       this.getUserSettingsDropdownValues(); 
+      if(this.userDetailsType != undefined){       
+        console.log(localStorage.getItem('selectedRowItems'));
+        let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
+        this.editViewUser(sessionVal, this.userDetailsType)      
+      }
+      else{
+        this.router.navigate([]);   //16422 - page reloads and api was called multiple times 
+      }
+    
     });
   }
 
