@@ -140,7 +140,15 @@ namespace net.atos.daf.ct2.notificationengine
                         string unitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
                         notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, unitEnum);
                         notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(unitEnum);
-                        notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, unitEnum);
+                        if (notificationHistory.AlertTypeEnum == "S" && notificationHistory.AlertCategoryEnum == "L")
+                        {
+                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime) * 1000;
+                            notificationHistory.ValueAtAlertTimeForHoursofServices = UTCHandling.GetConvertedDateTimeFromUTC(valueAtTimemilisecond, "UTC", "yyyy-MM-ddTHH:mm:ss.fffz");
+                        }
+                        else
+                        {
+                            notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, unitEnum);
+                        }
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;
                         notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
