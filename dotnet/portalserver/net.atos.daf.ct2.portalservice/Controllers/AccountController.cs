@@ -478,7 +478,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return Ok();
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return Ok();
+                    return Ok();    //Ok response is sent to avoid user guessing attacks
                 else
                     return StatusCode(500, "Password reset process failed to initiate or Error while sending email.");
             }

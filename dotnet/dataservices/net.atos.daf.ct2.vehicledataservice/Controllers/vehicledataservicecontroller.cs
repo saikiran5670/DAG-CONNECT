@@ -69,14 +69,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series != null)
                     {
                         vehicleProperties.Classification_Series_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID?.Trim();
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "CF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != null)
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        else
-                        {
-                            vehicleProperties.Classification_Series_VehicleRange = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange?.Trim();
-                        }
+                        vehicleProperties.Classification_Series_VehicleRange = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange?.Trim();
                     }
 
                     vehicleProperties.Classification_Model_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Model?.ID?.Trim();
