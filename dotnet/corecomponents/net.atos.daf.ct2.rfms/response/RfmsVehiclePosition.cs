@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.rfms.response
     public class RfmsVehiclePosition
     {
         public VehiclePositionResponse VehiclePositionResponse { get; set; }
-        public bool MoreDataAvailable { get; set; }
+        public bool MoreDataAvailable { get; set; } = false;
         public string MoreDataAvailableLink { get; set; }
         public DateTime RequestServerDateTime { get; set; }
     }
