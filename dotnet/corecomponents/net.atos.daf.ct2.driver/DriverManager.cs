@@ -1,6 +1,7 @@
 //using net.atos.daf.ct2.driver.repository;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.driver.entity;
@@ -63,9 +64,24 @@ namespace net.atos.daf.ct2.driver
 
         #endregion
 
-        public Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
         {
-            return Task.FromResult(true);
+            return await _driverRepository.CheckIfDriverExists(driverId, organisationId, email);
+        }
+
+        public async Task<RegisterDriverResponse> RegisterDriver(RegisterDriverDataServiceRequest request)
+        {
+            //Create new portal account in CT2.0 + KeyCloak
+            // Set the password for the account
+            //Set the driverId to the account
+            //Assign driver role to the account
+
+            return await Task.FromResult(new RegisterDriverResponse { Message = "OK", StatusCode = HttpStatusCode.OK });
+        }
+
+        public async Task<ValidateDriverResponse> ValidateDriver(RegisterDriverDataServiceRequest request)
+        {
+            return await Task.FromResult(new ValidateDriverResponse());
         }
     }
 }

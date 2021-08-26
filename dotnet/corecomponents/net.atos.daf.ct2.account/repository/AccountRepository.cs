@@ -1629,9 +1629,49 @@ namespace net.atos.daf.ct2.account
                 throw;
             }
         }
+
         #endregion
 
+        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, string driverId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@AccountEmail", accountEmail);
+                parameter.Add("@DriverId", driverId);
+                query = @"";
+                return await _dataAccess.QueryFirstOrDefaultAsync<AccountPreferenceResponse>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
+        public async Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@AccountEmail", request.AccountEmail);
+                parameter.Add("@DriverId", request.DriverId);
+                parameter.Add("@TimeZone", request.TimeZone);
+                parameter.Add("@TimeFormat", request.TimeFormat);
+                parameter.Add("@UnitDisplay", request.UnitDisplay);
+                parameter.Add("@VehicleDisplay", request.VehicleDisplay);
+                parameter.Add("@DateFormat", request.DateFormat);
+                query = @"";
+                await _dataAccess.ExecuteAsync(query, parameter);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
 }

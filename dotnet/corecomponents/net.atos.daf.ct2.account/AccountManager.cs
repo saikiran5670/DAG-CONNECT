@@ -670,6 +670,16 @@ namespace net.atos.daf.ct2.account
             return responses.FirstOrDefault();
         }
 
+        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, string driverId)
+        {
+            return await _repository.GetAccountPreferences(accountEmail, driverId);
+        }
+
+        public async Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request)
+        {
+            return await _repository.UpdateAccountPreferences(request);
+        }
+
         #endregion
     }
 }

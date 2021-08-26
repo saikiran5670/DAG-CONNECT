@@ -14,5 +14,6 @@ namespace net.atos.daf.ct2.driver
         Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus);
         Task<ProvisioningDriver> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
         Task<IEnumerable<ProvisioningDriver>> GetDriverList(ProvisioningDriverDataServiceRequest request);
+        Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email);
     }
 }
