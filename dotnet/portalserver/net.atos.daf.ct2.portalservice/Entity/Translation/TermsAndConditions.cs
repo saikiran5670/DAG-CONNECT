@@ -35,8 +35,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
     /// </summary>
     public class TermsandConFileDataList
     {
-        public string Start_date { get; set; }
-        public string End_date { get; set; }
         public int Created_by { get; set; }
         public List<TermsandConFileData> Data { get; set; }
     }
