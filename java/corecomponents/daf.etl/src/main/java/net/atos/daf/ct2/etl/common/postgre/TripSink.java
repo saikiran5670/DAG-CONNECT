@@ -14,8 +14,13 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
 import net.atos.daf.postgre.bo.Trip;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+//import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.TripSinkDao;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
 
 public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 
@@ -66,12 +71,21 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		synchronizedCopy = new ArrayList<Trip>();
 		
 		try {
-			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
-					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));*/
+			
+			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
+			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
+						Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
+						envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
+						envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
+						envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+			connection = DriverManager.getConnection(dbUrl);
+			
 			logger.info("In trip sink connection done" + connection);
 			tripDao.setConnection(connection);
 			tripStatisticQry = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
@@ -97,6 +111,26 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		if (connection != null) {
 			logger.info("Releasing connection from Trip Job");
 			connection.close();
+		}
+	}
+	
+	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+			String password) throws Exception {
+
+		String encodedPassword = encodeValue(password);
+		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
+				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
+
+		System.out.println("Valid Url = " + url);
+
+		return url;
+	}
+	
+	private String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
 		}
 	}
 
