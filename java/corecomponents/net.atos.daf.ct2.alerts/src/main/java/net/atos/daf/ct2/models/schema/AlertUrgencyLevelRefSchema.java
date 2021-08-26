@@ -24,6 +24,10 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
     private String alertCategory;
     private String alertType;
     private String alertState;
+    private String periodType;
+    private String dayTypeArray;
+    private Long   startTime;
+    private Long   endTime;
 
     private Long timestamp = System.currentTimeMillis();
 

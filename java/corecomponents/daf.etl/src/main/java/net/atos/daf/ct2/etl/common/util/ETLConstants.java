@@ -118,6 +118,7 @@ public class ETLConstants {
 	public static final String INDEX_MSG_INCREMENT = "Increment";
 	public static final String INDEX_MSG_VDIST = "VDist";
 	public static final String INDEX_MSG_EVT_DATETIME = "EvtDateTime";
+	public static final String INDEX_MSG_VEVT_ID = "VEvtID";
 	
 	
 	//HBase table details

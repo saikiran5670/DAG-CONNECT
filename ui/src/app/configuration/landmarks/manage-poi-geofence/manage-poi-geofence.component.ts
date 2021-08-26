@@ -66,7 +66,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['name', 'latitude', 'longitude', 'categoryName', 'subCategoryName', 'address','zipcode', 'city', 'country'];
+  templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -950,6 +950,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData) => {
+     
       const result = poiData.map(({ name, latitude, longitude, categoryName, subCategoryName, address,zipcode, city, country})=> ({name, latitude, longitude, categoryName, subCategoryName, address,zipcode, city, country }));
      //const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
       const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);

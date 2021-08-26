@@ -13,7 +13,9 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -26,6 +28,8 @@ public class Utils implements Serializable {
     private static ObjectMapper mapper;
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+    public static final String DB_WEEK_ARR [] = new String[]{"SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"};
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     static {
         mapper = new ObjectMapper();
     }
@@ -92,6 +96,35 @@ public class Utils implements Serializable {
         return seconds_difference;
     }
 
+    /***
+     * Return name of day in week
+     * From MONDAY to SUNDAY
+     */
+    public static String getCurrentDayOfWeek(){
+        return LocalDate.now().getDayOfWeek().name();
+    }
 
+    /**
+     * Convert db week array to day in week
+     * return name of day in week
+     */
+    public static String getDayOfWeekFromDbArr(String dbWeekArray){
+        String dayWeek="";
+        for(int i=0; i < dbWeekArray.length(); i++){
+            if(dbWeekArray.charAt(i)=='1'){
+                dayWeek = DB_WEEK_ARR[i];
+                break;
+            }
+        }
+        return dayWeek;
+    }
 
+    /**
+     *  Extracts the time as seconds of day, from 0 to 24 * 60 * 60 - 1.
+     *  Returns: the second-of-day equivalent to this time
+     */
+    public static int getCurrentTimeInSecond(){
+        LocalTime localTime = LocalTime.now();
+        return localTime.toSecondOfDay();
+    }
 }

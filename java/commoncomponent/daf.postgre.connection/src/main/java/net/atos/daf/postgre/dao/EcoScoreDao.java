@@ -28,8 +28,9 @@ public class EcoScoreDao implements Serializable {
 			if (null != ecoScoreData && null != (connection = getConnection())) {
 
 				ecoScoreInsertQry = fillStatement(ecoScoreInsertQry, ecoScoreData);
-				ecoScoreInsertQry.addBatch();
-				ecoScoreInsertQry.executeBatch();
+//				ecoScoreInsertQry.addBatch();
+//				ecoScoreInsertQry.executeBatch();
+				ecoScoreInsertQry.execute();
 				
 				logger.info("EcoScore records inserted to ecoscore table :: "+ecoScoreData.getTripId());
 				
