@@ -41,6 +41,7 @@ import java.math.BigInteger;
 import java.util.Properties;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.Utils.*;
 
 public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
@@ -53,18 +54,27 @@ public class TripBasedTest implements Serializable {
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
-        env.addSource(new IndexGenerator())
-                .returns(Index.class)
+        SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                        propertiesParamTool, env)
+                .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .returns(Index.class);
+
+        indexStringStream.print();
+
+        /*env.addSource(new IndexGenerator())
+                .returns(Index.class)*/
+        indexStringStream
                 .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.minutes(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
-                                return index.getReceivedTimestamp();
+                                return convertDateToMillis(index.getEvtDateTime());
                             }
                         }
                 )
                 .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.seconds(5)))
+                .window(TumblingEventTimeWindows.of(Time.minutes(5L)))
                 .reduce(new ReduceFunction<Index>() {
                     @Override
                     public Index reduce(Index index, Index t1) throws Exception {
