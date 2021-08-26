@@ -1304,8 +1304,8 @@ calendarOptions: CalendarOptions = {
         if(this.prefTimeFormat == 12){ // 12
           this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
-          this.startTimeDisplay = this.selectedStartTime; 
-          this.endTimeDisplay = this.selectedEndTime;
+          this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
+          this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
         }else{ // 24
           this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
@@ -1320,8 +1320,8 @@ calendarOptions: CalendarOptions = {
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       } else{
-        this.startTimeDisplay = '12:00 AM';
-        this.endTimeDisplay = '11:59 PM';
+        this.startTimeDisplay = '12:00:00 AM';
+        this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       }
