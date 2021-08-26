@@ -164,7 +164,7 @@ export class VehicleDetailsComponent implements OnInit {
 exportAsCSV(){  
   const title = 'Vehicle Details';
   
-  const header = ['VIN', 'Registration Number', 'Model', 'Relationship','Status'];
+  const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
   
   //Create workbook and worksheet
   let workbook = new Workbook();
@@ -198,7 +198,7 @@ exportAsCSV(){
     }  else if(item.status == 'O'){
       status1 = 'Opt-Out'
     }  
-    worksheet.addRow([item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
+    worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
   }); 
   worksheet.mergeCells('A1:D2'); 
   for (var i = 0; i < header.length; i++) {    
