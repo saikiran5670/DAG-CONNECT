@@ -873,26 +873,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger.Info("UploadTermsAndCondition Method post");
 
             UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
-            try
-            {
-                long startdatetime = 0; long enddatetime = 0;
-                if (request.Start_date != string.Empty)
-                {
-                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.Start_date));
-                }
-
-                if (request.End_date != string.Empty)
-                {//Assign only if enddate is passed
-                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.End_date));
-                }
-                objUploadTermandConditionRequestList.StartDate = startdatetime;
-                objUploadTermandConditionRequestList.EndDate = enddatetime;
-            }
-            catch (Exception)
-            {
-                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.Start_date)}");
-                return StatusCode(400, string.Empty); ;
-            }
+            objUploadTermandConditionRequestList.StartDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(DateTime.Now));
+            objUploadTermandConditionRequestList.EndDate = 0;
             objUploadTermandConditionRequestList.CreatedBy = request.Created_by;
             foreach (var item in request.Data)
             {
@@ -900,7 +882,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
-
                     objUploadTermandConditionRequest.Code = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Versionno = aryFileNameContent[1].ToUpper();
                     objUploadTermandConditionRequest.FileName = item.FileName;
@@ -911,7 +892,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, string.Empty);
                 }
-
             }
             var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
             _logger.Info("UploadTermsAndCondition Service called");
