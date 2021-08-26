@@ -930,7 +930,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                             (select distinct grp.name
                                             from master.vehicle veh 
                                             left join master.groupref gref on veh.id= gref.ref_id 
-                                            inner join master.group grp on (gref.group_id=grp.id OR grp.ref_id=veh.id OR (grp.group_type='D' and grp.organization_id=veh.organization_id)) 
+                                            inner join master.group grp on (gref.group_id=grp.id OR (grp.group_type='D' and grp.organization_id=veh.organization_id)) 
                                             and grp.object_type='V'";
                 var parameter = new DynamicParameters();
 

@@ -61,8 +61,13 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload<Object
                     .alertType(String.valueOf(row.getObject(3)))
                     .alertState(String.valueOf(row.getObject(4)))
                     .urgencyLevelType(String.valueOf(row.getObject(5)))
-                    .thresholdValue(row.getObject(6) == null ? -1L : Long.valueOf(String.valueOf(row.getObject(6))))
+                    .thresholdValue(row.getObject(6) == null ? -1L : Double.valueOf(String.valueOf(row.getObject(6))).longValue())
                     .unitType(String.valueOf(row.getObject(7)))
+                    .periodType(String.valueOf(row.getObject(8)))
+                    .dayTypeArray(String.valueOf(row.getObject(9)))
+                    .startTime(row.getObject(10) == null ? 0L : Long.valueOf(String.valueOf(row.getObject(10))))
+                    .endTime(row.getObject(11) == null ? 0L :   Long.valueOf(String.valueOf(row.getObject(11))))
+                    .timestamp(System.currentTimeMillis())
                     .build();
         }
         logger.info("Record fetch from database :: {} ",refSchema);

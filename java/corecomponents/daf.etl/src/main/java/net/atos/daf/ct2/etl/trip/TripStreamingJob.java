@@ -147,7 +147,7 @@ public class TripStreamingJob {
 							Map<String, Trip> tripMap = new ConcurrentHashMap<>();
 							for (Trip in : values) {
 								//in.setHbaseInsertionTS(TimeFormatter.getInstance().getCurrentUTCTime());
-								logger.info("Trip processing Time :: "+in.getTripProcessingTS());
+								//logger.info("Trip processing Time :: "+in.getTripProcessingTS());
 								tripMap.put(in.getTripId(), in);								
 							}
 
