@@ -504,11 +504,11 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             return data;
         }
 
-        public async Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
+        public async Task<bool> CheckUserAcceptedTermCondition(int accountId, int organizationId)
         {
             try
             {
-                var QueryStatement = @"select coalesce((select distinct termc.id
+                string queryStatement = @"select coalesce((select COUNT(distinct termc.id)
                                             from master.termsandcondition termc
                                             inner join master.accounttermsacondition acctermc
                                             on termc.id=acctermc.terms_and_condition_id
@@ -517,10 +517,10 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                             and termc.state=@state), 0)";
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@account_id", AccountId);
-                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", organizationId);
                 parameter.Add("@state", Convert.ToChar(State.Active));
-                int result = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int result = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 return result > 0;
             }

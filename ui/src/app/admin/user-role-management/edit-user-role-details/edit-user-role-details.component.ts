@@ -303,83 +303,121 @@ export class EditUserRoleDetailsComponent implements OnInit {
     //   console.log("--remainingChar--",this.remainingChar)
     // }
   }
-  onCheckboxChange(event: any, row: any) {
-    // this.selectionForFeatures.selected.forEach(feature => {
-    //   this.preSelectedValues.push(feature.id);
-    // })
-  
-    // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
-    // let AllSelectedChilds=[];
-    var selectedName = row.name;
-    let selectedParentId = row.id;
-    const isChecked = this.selectionForFeatures.isSelected(row) ? true : false;
-    //console.log('isChecked- ', isChecked);
-    if (selectedName.includes('.')) {
-      //*****when the selected element is a child****
 
-      var splitString = selectedName.split('.');
-      let selectedElementParent = splitString[0];
-      this.selectedChildrens = [...this.preSelectedValues];
-      if (isChecked) {
-        if(!(this.selectedChildrens.includes(row.id))){
-          this.selectedChildrens.push(row.id);
-          // AllSelectedChilds = [...selectedChildrens, row.id]
-        }
+  // onCheckboxChange(event: any, row: any) {
+  //   // this.selectionForFeatures.selected.forEach(feature => {
+  //   //   this.preSelectedValues.push(feature.id);
+  //   // })
+  
+  //   // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
+  //   // let AllSelectedChilds=[];
+  //   var selectedName = row.name;
+  //   let selectedParentId = row.id;
+  //   const isChecked = this.selectionForFeatures.isSelected(row) ? true : false;
+  //   //console.log('isChecked- ', isChecked);
+  //   if (selectedName.includes('.')) {
+  //     //*****when the selected element is a child****
+
+  //     var splitString = selectedName.split('.');
+  //     let selectedElementParent = splitString[0];
+  //     this.selectedChildrens = [...this.preSelectedValues];
+  //     if (isChecked) {
+  //       if(!(this.selectedChildrens.includes(row.id))){
+  //         this.selectedChildrens.push(row.id);
+  //         // AllSelectedChilds = [...selectedChildrens, row.id]
+  //       }
         
         
-        this.dataSource.data.forEach((row) => {
-          if (selectedElementParent) {
-            if (selectedElementParent == row.name) {
-              selectedParentId = row.id;
-              this.selectionForFeatures.select(row);
-            }
-          }
-        });
-        //adding parent ID's in selectedList
-        if(!(this.selectedChildrens.includes(selectedParentId))){
-          this.selectedChildrens.push(selectedParentId);
-        }
-        console.log('parent Id is:- ', selectedParentId);
-        console.log("---selectedChildrens---",this.selectedChildrens)
-      } 
-      //when unchecking(OFF)child toggle
-        else if(!isChecked) {
-          const index = this.selectedChildrens.indexOf(row.id);
-            if (index > -1) {
-             let removedValue =  this.selectedChildrens.splice(index, 1);
-              // console.log("--removing from array--",removedValue )
-            }
-            console.log("---selectedChildrens---",this.selectedChildrens)
-      }
-    } else {
-      //***when the selected element is a parent****
-      let childOfSelectedElement = [];
-      this.featuresData.map((getData) => {
-        if (getData.name.startsWith(selectedName)) {
-          childOfSelectedElement.push(getData);
-        }
-      });
-      if (isChecked) {
-        this.dataSource.data.forEach((row) => {
-          if (childOfSelectedElement.length > 0) {
-            if (childOfSelectedElement.find((x) => x.id == row.id)) {
-              this.allChildrenIds.push(row.id);
-              this.selectionForFeatures.select(row);
-            }
-          }
-        });
-        console.log("--allChildrenElements Id's--",this.allChildrenIds)
-      }
-    }
+  //       this.dataSource.data.forEach((row) => {
+  //         if (selectedElementParent) {
+  //           if (selectedElementParent == row.name) {
+  //             selectedParentId = row.id;
+  //             this.selectionForFeatures.select(row);
+  //           }
+  //         }
+  //       });
+  //       //adding parent ID's in selectedList
+  //       if(!(this.selectedChildrens.includes(selectedParentId))){
+  //         this.selectedChildrens.push(selectedParentId);
+  //       }
+  //       console.log('parent Id is:- ', selectedParentId);
+  //       console.log("---selectedChildrens---",this.selectedChildrens)
+  //     } 
+  //     //when unchecking(OFF)child toggle
+  //       else if(!isChecked) {
+  //         const index = this.selectedChildrens.indexOf(row.id);
+  //           if (index > -1) {
+  //            let removedValue =  this.selectedChildrens.splice(index, 1);
+  //             // console.log("--removing from array--",removedValue )
+  //           }
+  //           console.log("---selectedChildrens---",this.selectedChildrens)
+  //     }
+  //   } else {
+  //     //***when the selected element is a parent****
+  //     let childOfSelectedElement = [];
+  //     this.featuresData.map((getData) => {
+  //       if (getData.name.startsWith(selectedName)) {
+  //         childOfSelectedElement.push(getData);
+  //       }
+  //     });
+  //     if (isChecked) {
+  //       this.dataSource.data.forEach((row) => {
+  //         if (childOfSelectedElement.length > 0) {
+  //           if (childOfSelectedElement.find((x) => x.id == row.id)) {
+  //             this.allChildrenIds.push(row.id);
+  //             this.selectionForFeatures.select(row);
+  //           }
+  //         }
+  //       });
+  //       console.log("--allChildrenElements Id's--",this.allChildrenIds)
+  //     }
+  //   }
+  //   var selectName = row.name;
+  //   var selectId = row.id;
+  //   if(!selectName.includes('.')){
+  //     this.dataSource.data.forEach( row => {
+  //       if(row.name.startsWith(selectName)){
+  //         if(!event.checked)
+  //           this.selectionForFeatures.deselect(row);
+  //       }
+  //     });
+  //   }
+  // }
+
+  onChange(event: any, row: any){    
     var selectName = row.name;
     var selectId = row.id;
-    if(!selectName.includes('.')){
-      this.dataSource.data.forEach( row => {
+    var splitName =selectName.slice(0, selectName.indexOf('.'));
+      if(!selectName.includes('.')){
+        this.dataSource.data.forEach( row => {
         if(row.name.startsWith(selectName)){
-          if(!event.checked)
+          if(event.checked)
+            this.selectionForFeatures.select(row);
+          else if(!event.checked)
             this.selectionForFeatures.deselect(row);
         }
       });
+    }
+    else{
+    this.dataSource.data.forEach( row => {
+      if(event.checked){
+      if(row.name == splitName)    
+        this.selectionForFeatures.select(row);           }
+      else if(!event.checked)
+      {
+        if(row.name == splitName)
+        { 
+        let searchElement = this.selectionForFeatures.selected.filter(element => element.name.startsWith(splitName + '.'));
+       
+          if(searchElement.length){      
+            this.selectionForFeatures.select(row);  
+          }         
+          else{
+            this.selectionForFeatures.deselect(row);
+          }   
+        }
+      }
+    });
     }
   }
 

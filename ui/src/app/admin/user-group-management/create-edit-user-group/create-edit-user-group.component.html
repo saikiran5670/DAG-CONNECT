@@ -117,7 +117,26 @@
             <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser || 'Selected Account') : (translationData.lblSelectUser || 'Select Account') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
         </div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+      
+      <app-data-table *ngIf="!showLoadingIndicator" [tableData]="tableDataList" [translationData]="translationData" [columnCodes]="columnCodes" 
+      [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [selectColumnDataElements]="selectColumnDataElements"
+      [selectColumnHeaderElements]="selectColumnHeaderElements"
+      >
+      <ng-template #selectColumnHeaderElements let-gridData='rowData'>
+        <mat-checkbox (change)='$event ? masterToggleForAccount() : null'
+                  [checked]='selectedAccounts.hasValue() && isAllSelectedForAccount()'
+                  [indeterminate]='selectedAccounts.hasValue() && !isAllSelectedForAccount()'
+                  [aria-label]='checkboxLabelForAccount()'>
+        </mat-checkbox>
+        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+      </ng-template>
+      <ng-template #selectColumnDataElements let-gridData='rowData'>
+        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedAccounts.toggle(gridData) : null'
+        [checked]='selectedAccounts.isSelected(gridData)' [aria-label]='checkboxLabelForAccount(gridData)'>
+        </mat-checkbox>
+      </ng-template>
+      </app-data-table>
+      <!-- <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
         <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <mat-form-field appearance="outline">
               <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -169,7 +188,7 @@
           </mat-row>
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-      </div>
+      </div> -->
     </div>
   </mat-card>
 </form>

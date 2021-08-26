@@ -225,7 +225,8 @@
     || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <a class="linkBtn" (click)="onClickAdvancedFilter()"  style="margin-top: 20px;"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+            <a *ngIf="actionType !=  'view'"class="linkBtn" (click)="onClickAdvancedFilter()"  style="margin-top: 20px;"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+            <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter || 'Advanced Filter' }}</span>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -412,7 +413,7 @@
         </div>
                             
         <!-- POI table -->
-        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedPOIList.length > 0)">
+        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedPOIList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -480,7 +481,7 @@
           </div>
          
           <!-- Geofence table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedGeofenceList.length > 0)">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedGeofenceList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -542,7 +543,7 @@
           </div>
 
           <!-- Group table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (actionType == 'view' && selectedGroupList.length > 0)">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedGroupList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>

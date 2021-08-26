@@ -445,8 +445,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         if (this.prefTimeFormat == 12) { // 12
           this.selectedStartTime = this._get12Time(this.globalSearchFilterData.startTimeStamp);
           this.selectedEndTime = this._get12Time(this.globalSearchFilterData.endTimeStamp);
-          this.startTimeDisplay = this.selectedStartTime;
-          this.endTimeDisplay = this.selectedEndTime;
+          this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
+          this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
         } else { // 24
           this.selectedStartTime = this.get24Time(this.globalSearchFilterData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.globalSearchFilterData.endTimeStamp);
@@ -461,8 +461,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       } else {
-        this.startTimeDisplay = '12:00 AM';
-        this.endTimeDisplay = '11:59 PM';
+        this.startTimeDisplay = '12:00:00 AM';
+        this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       }
@@ -601,8 +601,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.advanceFilterOpen = false;
     this.searchMarker = {};
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue.getTime(), this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue.getTime(), this.prefTimeZone); 
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
   
     //this.internalSelection = true;
     // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
@@ -662,7 +662,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _date: any;
     let _time: any;
     if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
     } else {
       _time = `${h}:${m}:${s}`;
     }

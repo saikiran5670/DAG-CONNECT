@@ -837,12 +837,13 @@ calendarOptions: CalendarOptions = {
   onSearch(){
     //this.internalSelection = true;
     this.resetChartData(); // reset chart data
-    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue.getTime(), this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue.getTime(), this.prefTimeZone); 
-  
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+
+    // _startTime = Util.getMillisecondsToUTCDate(_startTime, this.prefTimeZone); 
+    //_endTime = Util.getMillisecondsToUTCDate(_endTime, this.prefTimeZone); 
+
+
     //  console.log('start:'+ _startTime, 'end:'+_endTime);
     //  console.log('start:'+Util.utcToDateConversionTimeZone(this.startDateValue.getTime(), this.prefTimeZone), 'end:'+Util.utcToDateConversionTimeZone(this.endDateValue.getTime(), this.prefTimeZone));
     let _vinData: any = [];
@@ -861,6 +862,7 @@ calendarOptions: CalendarOptions = {
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
+      
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -1213,7 +1215,7 @@ calendarOptions: CalendarOptions = {
     let _date: any;
     let _time: any;
     if(this.prefTimeFormat == 12){
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
     }
@@ -1302,8 +1304,8 @@ calendarOptions: CalendarOptions = {
         if(this.prefTimeFormat == 12){ // 12
           this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
-          this.startTimeDisplay = this.selectedStartTime; 
-          this.endTimeDisplay = this.selectedEndTime;
+          this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
+          this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
         }else{ // 24
           this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
@@ -1318,8 +1320,8 @@ calendarOptions: CalendarOptions = {
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       } else{
-        this.startTimeDisplay = '12:00 AM';
-        this.endTimeDisplay = '11:59 PM';
+        this.startTimeDisplay = '12:00:00 AM';
+        this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       }

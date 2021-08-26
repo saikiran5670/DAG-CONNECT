@@ -232,11 +232,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
         if(this.actionType == 'view'){
           let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != 0));
-          this.occurenceVal.push(arr1);
+          if(arr1.length > 0)
+            this.occurenceVal.push(arr1);
           let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
-          this.distanceVal.push(arr2);
+          if(arr2.length > 0)
+            this.distanceVal.push(arr2);
           let arr3 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D');
-          this.durationVal.push(arr3);
+          if(arr3.length > 0)
+            this.durationVal.push(arr3);
         }
         
       });

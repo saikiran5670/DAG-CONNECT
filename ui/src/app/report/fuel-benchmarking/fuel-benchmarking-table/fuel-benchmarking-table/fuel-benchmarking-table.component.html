@@ -45,8 +45,11 @@
               !== 0? row[column] : i==3 && index !== 0? row[column] : row[column] }}</div>
 
             <div *ngIf="index !== 0 && i == 4">
-              {{ translationData.lblConsumption || 'Consumption (Ltrs/100km)' }}
-
+              {{ translationData.lblConsumption || 'Consumption ' }}
+              <span
+                style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
+                'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                || ' mpg') }})</span>
               <div style="margin-top: 10px;" *ngFor="let ranking of row[column]; let index=index">
                 <div>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}}
                   <span>

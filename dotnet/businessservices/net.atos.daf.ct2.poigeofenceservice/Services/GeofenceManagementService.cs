@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 if (geofence != null)
                 {
                     //Trigger for alert cdc
-                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "O");
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "");
                     response.Message = "Geofence updated for id ";
                     response.Code = Responsecode.Success;
                 }
@@ -338,9 +338,9 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 if (geofence != null)
                 {
-                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "C");
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(geofence.Id, "");
                     response.Message = "Geofence is updated ";
-                    response.Code = Responsecode.NotFound;
+                    response.Code = Responsecode.Success;
                     return response;
                 }
                 return await Task.FromResult(new GeofenceCircularUpdateResponce

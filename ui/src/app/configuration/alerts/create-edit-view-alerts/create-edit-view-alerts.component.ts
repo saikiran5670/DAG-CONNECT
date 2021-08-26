@@ -251,6 +251,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.sliderChanged();
       }
     });
+
+    if (this.actionType == 'view') {
+      this.openAdvancedFilter = true;
+    }
 }
   
 proceedStep(prefData: any, preference: any){

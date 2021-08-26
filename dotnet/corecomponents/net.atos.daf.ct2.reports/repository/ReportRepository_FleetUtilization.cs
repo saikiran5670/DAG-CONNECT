@@ -31,10 +31,10 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(etl_gps_trip_time)        as etl_gps_trip_time
                                             		  , SUM(end_time_stamp)           as end_time_stamp
                                             		  , SUM(etl_gps_distance)         as etl_gps_distance
-                                            		  , SUM(veh_message_driving_time) as veh_message_driving_time
+                                            		  , SUM(etl_gps_driving_time)     as etl_gps_driving_time
                                             		  , SUM(idle_duration)            as idle_duration
-                                            		  , SUM(veh_message_distance)     as veh_message_distance
-                                            		  , SUM(average_speed)            as average_speed
+                                            		  , SUM(etl_gps_distance)     as veh_message_distance
+                                            		  , AVG(average_speed)            as average_speed
                                             		  , SUM(average_weight)           as average_weight
                                             		  , SUM(start_odometer)           as start_odometer
                                             		FROM
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , fd.etl_gps_trip_time           as TripTime
                                             		  , fd.end_time_stamp              as StopTime
                                             		  , round ( fd.etl_gps_distance,2) as Distance
-                                            		  , fd.veh_message_driving_time    as DrivingTime
+                                            		  , fd.etl_gps_driving_time    as DrivingTime
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round (fd.average_speed,2)     as AverageSpeed
@@ -112,10 +112,10 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
-                        sum(veh_message_driving_time) as totaldrivingtime,
+                        sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
-                        sum(average_speed) as totalaverageSpeed,
+                        AVG(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
@@ -150,10 +150,10 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
-                        sum(veh_message_driving_time) as totaldrivingtime,
+                        sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
-                        sum(average_speed) as totalaverageSpeed,
+                        AVG(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics

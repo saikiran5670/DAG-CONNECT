@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.cache.postgres;
 
 
+import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.Payload;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -20,7 +21,11 @@ public abstract class TableStream<T> implements Serializable {
 
     public abstract  DataStreamSource<T> scanTable(String fetchQuery, TypeInformation<?>[] typeInfo,String jdbcUrl);
 
+    public abstract void saveAlertIntoDB(DataStream<Alert> alertFoundStream);
+
     public abstract DataStream<Payload> joinTable(DataStreamSource<T> first, DataStreamSource<T> second);
+
+
 
     public TableStream(){
 
