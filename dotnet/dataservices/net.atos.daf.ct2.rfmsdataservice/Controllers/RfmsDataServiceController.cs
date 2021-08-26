@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Mapper _mapper;
 
 
         public RfmsDataServiceController(IAccountManager accountManager,
@@ -54,6 +55,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             this._vehicleManager = vehicleManager;
             this._configuration = configuration;
             this._httpContextAccessor = httpContextAccessor;
+            _mapper = new Mapper(this._httpContextAccessor, _vehicleManager);
         }
 
         #endregion
@@ -86,7 +88,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 else
                     return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
 
-                var isValid = ValidateParameter(ref lastVin, out bool moreData);
+                var isValid = _mapper.ValidateParameter(ref lastVin, out bool moreData);
 
                 if (isValid)
                 {
@@ -103,7 +105,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
                     rfmsVehicles = await _rfmsManager.GetVehicles(lastVin, thresholdValue, account.Id, orgs.First().Id);
 
-                    VehicleResponseObject responseObject = MapVehiclesRecord(rfmsVehicles);
+                    VehicleResponseObject responseObject = _mapper.MapVehiclesRecord(rfmsVehicles);
 
 
                     return Ok(responseObject);
@@ -133,28 +135,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         {
             try
             {
-                var selectedType = string.Empty;
+                var requestFilter = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
+                var selectedType = ValidateHeaderRequest(requestFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON);
 
-                #region Request Header & Querystring Parameters checks
-                this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
 
-                if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
-
-                //Check if no mandatory parameters are supplied at all & raise error
-                if (!latestOnly && string.IsNullOrEmpty(starttime))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "latestOnly or StartTime", "INVALID_SUPPLIED_PARAMETERS, LatestOnly or StartTime parameters are mandatory to get result");
-
-                //If latestOnly and starttime and/or stoptime are set, a HTTP 400 error will be returned indicating that the parameters supplied are invalid.
-                if (latestOnly && (!string.IsNullOrEmpty(starttime) || !string.IsNullOrEmpty(stoptime)))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(latestOnly), "INVALID_SUPPLIED_PARAMETERS, LatestOnly cannot be combined with StartTime and/or StopTime");
-
-                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                    selectedType = RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON;
-                else
-                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
-
-                #endregion
 
                 var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
                 var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
@@ -164,13 +148,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 var thresholdRate = _configuration.GetSection("rfms3.vehiclepositions").GetSection("DataThresholdValue").Value;
                 int thresholdValue = Convert.ToInt32(thresholdRate);
 
-                RfmsVehiclePositionRequest vehiclePositionRequest = MapVehiclePositionRequest(datetype,
-                                                                             starttime,
-                                                                             stoptime,
-                                                                             vin,
-                                                                             latestOnly,
-                                                                             triggerFilter,
-                                                                             lastVin);
+                RfmsVehiclePositionRequest vehiclePositionRequest = _mapper.MapVehiclePositionRequest(requestFilter);
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Rfms Vehicle Position Service", "Rfms Vehicle Position Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get vehicle position method vehicle position service", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
 
@@ -178,12 +156,12 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 vehiclePositionRequest.AccountId = account.Id;
                 vehiclePositionRequest.ThresholdValue = thresholdValue;
 
-                var isValid = ValidateVehiclePositionParameters(ref vehiclePositionRequest, out string field);
+                var isValid = _mapper.ValidateVehicleStatusParameters(requestFilter, out string field);
                 if (isValid)
                 {
                     var response = new RfmsVehiclePosition();
                     response = await _rfmsManager.GetVehiclePosition(vehiclePositionRequest);
-                    return Ok(MapVehiclePositionResponse(response));
+                    return Ok(_mapper.MapVehiclePositionResponse(response));
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, field, "INVALID_PARAMETER");
             }
@@ -207,32 +185,15 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                                                             [FromQuery] string vin,
                                                             [FromQuery] bool latestOnly,
                                                             [FromQuery] string triggerFilter,
-                                                            [FromQuery] string lastVin)
+                                                            [FromQuery] string lastVin,
+                                                            [FromQuery] string contentFilter)
         {
             try
             {
-                var selectedType = string.Empty;
+                var request = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
 
-                #region Request Header & Querystring Parameters checks
-                this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
-
-                if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
-
-                //Check if no mandatory parameters are supplied at all & raise error
-                if (!latestOnly && string.IsNullOrEmpty(starttime))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "latestOnly or StartTime", "INVALID_SUPPLIED_PARAMETERS, LatestOnly or StartTime parameters are mandatory to get result");
-
-                //If latestOnly and starttime and/or stoptime are set, a HTTP 400 error will be returned indicating that the parameters supplied are invalid.
-                if (latestOnly && (!string.IsNullOrEmpty(starttime) || !string.IsNullOrEmpty(stoptime)))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(latestOnly), "INVALID_SUPPLIED_PARAMETERS, LatestOnly cannot be combined with StartTime and/or StopTime");
-
-                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                    selectedType = RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON;
-                else
-                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
-
-                #endregion
+                var requestFilter = new RfmsVehicleStatusRequest() { RfmsVehicleStatusFilter = request, ContentFilter = contentFilter };
+                var selectedType = ValidateHeaderRequest(requestFilter.RfmsVehicleStatusFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON);
 
                 var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
                 var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
@@ -242,13 +203,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 var thresholdRate = _configuration.GetSection("rfms3.vehiclestatus").GetSection("DataThresholdValue").Value;
                 int thresholdValue = Convert.ToInt32(thresholdRate);
 
-                RfmsVehicleStatusRequest rfmsVehicleStatusRequest = MapVehicleStatusRequest(datetype,
-                                                                             starttime,
-                                                                             stoptime,
-                                                                             vin,
-                                                                             latestOnly,
-                                                                             triggerFilter,
-                                                                             lastVin);
+                RfmsVehicleStatusRequest rfmsVehicleStatusRequest = _mapper.MapVehicleStatusRequest(requestFilter.RfmsVehicleStatusFilter);
+                rfmsVehicleStatusRequest.ContentFilter = requestFilter.ContentFilter;
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Rfms Vehicle Position Service", "Rfms Vehicle Position Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get vehicle position method vehicle position service", 0, 0, JsonConvert.SerializeObject(rfmsVehicleStatusRequest), 0, 0);
 
@@ -256,7 +212,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 rfmsVehicleStatusRequest.AccountId = account.Id;
                 rfmsVehicleStatusRequest.ThresholdValue = thresholdValue;
 
-                var isValid = ValidateVehicleStatusParameters(ref rfmsVehicleStatusRequest, out string field);
+                var isValid = _mapper.ValidateVehicleStatusParameters(requestFilter.RfmsVehicleStatusFilter, out string field);
                 if (isValid)
                 {
                     var response = new RfmsVehicleStatus();
@@ -273,398 +229,36 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        #endregion
-        #region Mappers
-        private VehiclePositionResponseObject MapVehiclePositionResponse(RfmsVehiclePosition rfmsVehiclePosition)
-        {
-            DateTime currentdatetime = DateTime.Now;
-
-            List<VehiclePositions> vehiclePositions = new List<VehiclePositions>();
-
-            foreach (var vehicle in rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions)
-            {
-                Entity.TachoDriverIdentification tachoDriverIdentification = new Entity.TachoDriverIdentification()
-                {
-                    DriverIdentification = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverIdentification,
-                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState,
-                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex,
-                    CardReplacementIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardReplacementIndex,
-                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment
-                };
-
-                Entity.OemDriverIdentification oemDriverIdentification = new Entity.OemDriverIdentification()
-                {
-                    IdType = vehicle.TriggerType.DriverId.OemDriverIdentification.IdType,
-                    OemDriverId = vehicle.TriggerType.DriverId.OemDriverIdentification.DriverIdentification
-                };
-
-                DriverIdObject driverIdObject = new DriverIdObject()
-                {
-                    TachoDriverIdentification = tachoDriverIdentification,
-                    OemDriverIdentification = oemDriverIdentification
-                };
-
-                TellTaleObject tellTaleObject = new TellTaleObject()
-                {
-                    State = vehicle.TriggerType.TellTaleInfo.State,
-                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale,
-                    OemTellTale = vehicle.TriggerType.TellTaleInfo.OemTellTale
-                };
-
-                TriggerObject triggerObject = new TriggerObject()
-                {
-                    Context = vehicle.TriggerType.Context,
-                    PtoId = vehicle.TriggerType.PtoId,
-                    TriggerInfo = vehicle.TriggerType.TriggerInfo,
-                    DriverId = driverIdObject,
-                    TriggerType = vehicle.TriggerType.Type,
-                    TellTaleInfo = tellTaleObject
-                };
-
-                Entity.GNSSPositionObject gNSSPositionObject = new GNSSPositionObject()
-                {
-                    Altitude = vehicle.GnssPosition.Altitude,
-                    Heading = vehicle.GnssPosition.Heading,
-                    Latitude = vehicle.GnssPosition.Latitude,
-                    Longitude = vehicle.GnssPosition.Longitude,
-                    PositionDateTime = vehicle.GnssPosition.PositionDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    Speed = vehicle.GnssPosition.Speed
-                };
-
-                VehiclePositions vehiclePosition = new VehiclePositions()
-                {
-                    CreatedDateTime = vehicle.CreatedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    ReceivedDateTime = vehicle.ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    TachographSpeed = vehicle.TachographSpeed,
-                    WheelBasedSpeed = vehicle.WheelBasedSpeed,
-                    TriggerType = triggerObject,
-                    Vin = vehicle.Vin,
-                    GnssPosition = gNSSPositionObject
-                };
-
-                vehiclePositions.Add(vehiclePosition);
-            }
-
-            Entity.VehiclePositionResponse vehiclePositionResponse = new Entity.VehiclePositionResponse()
-            {
-                VehiclePositions = vehiclePositions
-            };
-
-            return new VehiclePositionResponseObject()
-            {
-                RequestServerDateTime = currentdatetime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                MoreDataAvailable = rfmsVehiclePosition.MoreDataAvailable,
-                MoreDataAvailableLink = rfmsVehiclePosition.MoreDataAvailableLink,
-                VehiclePositionResponse = vehiclePositionResponse
-            };
-        }
-
-        private RfmsVehiclePositionRequest MapVehiclePositionRequest(string datetype,
-                                                         string starttime,
-                                                         string stoptime,
-                                                         string vin,
-                                                         bool latestOnly,
-                                                         string triggerFilter,
-                                                         string lastVin)
-        {
-            RfmsVehiclePositionRequest vehiclePositionRequest = new RfmsVehiclePositionRequest();
-
-            if (string.IsNullOrEmpty(datetype))
-                vehiclePositionRequest.Type = DateType.Received;
-            else
-                vehiclePositionRequest.Type = DateType.Created;
-            vehiclePositionRequest.LastVin = lastVin;
-            vehiclePositionRequest.LatestOnly = latestOnly;
-            vehiclePositionRequest.StartTime = starttime;
-            vehiclePositionRequest.StopTime = stoptime;
-            vehiclePositionRequest.TriggerFilter = triggerFilter;
-            vehiclePositionRequest.Vin = vin;
-            return vehiclePositionRequest;
-        }
-
-        private VehicleResponseObject MapVehiclesRecord(RfmsVehicles rfmsVehicles)
-        {
-            VehicleResponseObject responseObject = new VehicleResponseObject();
-            VehicleResponse vehicleObject = new VehicleResponse();
-            vehicleObject.Vehicles = new List<Entity.Vehicle>();
-            int vehicleCnt = 0;
-
-            //validate authorize paths
-            List<string> lstAuthorizedPaths = new List<string>();
-            if (_httpContextAccessor.HttpContext.Items["AuthorizedPaths"] != null)
-            {
-                lstAuthorizedPaths = (List<string>)_httpContextAccessor.HttpContext.Items["AuthorizedPaths"];
-            }
-
-            foreach (var item in rfmsVehicles.Vehicles)
-            {
-                Entity.Vehicle vehicleObj = new Entity.Vehicle();
-                vehicleObj.Vin = item.Vin;
-                vehicleObj.CustomerVehicleName = item.CustomerVehicleName;
-                vehicleObj.Brand = item.Brand;
-
-                if (item.ProductionDate != null)
-                {
-                    Entity.ProductionDate prdDate = new Entity.ProductionDate();
-                    prdDate.Day = item.ProductionDate.Day;
-                    prdDate.Month = item.ProductionDate.Month;
-                    prdDate.Year = item.ProductionDate.Year;
-                    vehicleObj.ProductionDate = prdDate;
-                }
-                //Below commented fields as due to no db mapping provided by database team and is currently seeks clarification from DAF
-                vehicleObj.Type = item.Type;
-                vehicleObj.Model = item.Model;
-                vehicleObj.PossibleFuelType = item.PossibleFuelType;
-                vehicleObj.EmissionLevel = item.EmissionLevel;
-                //vehicleObj.TellTaleCode = item.TellTaleCode;
-                vehicleObj.ChassisType = item.ChassisType;
-                vehicleObj.NoOfAxles = item.NoOfAxles;
-                vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume;
-                //vehicleObj.TachographType = item.TachographType;
-                vehicleObj.GearboxType = item.GearboxType;
-                //vehicleObj.BodyType = item.BodyType;
-                //vehicleObj.DoorConfiguration = item.DoorConfiguration;
-                //vehicleObj.HasRampOrLift = item.HasRampOrLift;
-                vehicleObj.AuthorizedPaths = lstAuthorizedPaths;
-                vehicleObject.Vehicles.Add(vehicleObj);
-                vehicleCnt++;
-            }
-            if (rfmsVehicles.MoreDataAvailable)
-            {
-                responseObject.MoreDataAvailable = true;
-                responseObject.MoreDataAvailableLink = "/rfms/vehicles?lastVin='" + rfmsVehicles.Vehicles.Last().Vin + "'";
-            }
-            else
-                responseObject.MoreDataAvailable = false;
-            responseObject.VehicleResponse = vehicleObject;
-
-            return responseObject;
-        }
-
-        private RfmsVehicleStatusRequest MapVehicleStatusRequest(string datetype,
-                                                        string starttime,
-                                                        string stoptime,
-                                                        string vin,
-                                                        bool latestOnly,
-                                                        string triggerFilter,
-                                                        string lastVin)
-        {
-            RfmsVehicleStatusRequest vehicleStatusRequest = new RfmsVehicleStatusRequest();
-
-            if (string.IsNullOrEmpty(datetype))
-                vehicleStatusRequest.Type = DateType.Received;
-            else
-                vehicleStatusRequest.Type = DateType.Created;
-            vehicleStatusRequest.LastVin = lastVin;
-            vehicleStatusRequest.LatestOnly = latestOnly;
-            vehicleStatusRequest.StartTime = starttime;
-            vehicleStatusRequest.StopTime = stoptime;
-            vehicleStatusRequest.TriggerFilter = triggerFilter;
-            vehicleStatusRequest.Vin = vin;
-            return vehicleStatusRequest;
-        }
-
-        private RfmsVehStatusResponse MapVehicleStatusResponse(RfmsVehicleStatus rfmsVehicleStatus)
-        {
-            DateTime currentdatetime = DateTime.Now;
-
-            //List<VehiclePositions> vehiclePositions = new List<VehiclePositions>();
-            List<VehStatusResponse> vehicleStatus = new List<VehStatusResponse>();
-            foreach (var vehicle in rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses)
-            {
-                Entity.TachoDriverIdentification tachoDriverIdentification = new Entity.TachoDriverIdentification()
-                {
-                    DriverIdentification = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverIdentification,
-                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState,
-                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex,
-                    CardReplacementIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardReplacementIndex,
-                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment
-                };
-
-                Entity.OemDriverIdentification oemDriverIdentification = new Entity.OemDriverIdentification()
-                {
-                    IdType = vehicle.TriggerType.DriverId.OemDriverIdentification.IdType,
-                    OemDriverId = vehicle.TriggerType.DriverId.OemDriverIdentification.DriverIdentification
-                };
-
-                DriverIdObject driverIdObject = new DriverIdObject()
-                {
-                    TachoDriverIdentification = tachoDriverIdentification,
-                    OemDriverIdentification = oemDriverIdentification
-                };
-
-                TellTaleObject tellTaleObject = new TellTaleObject()
-                {
-                    State = vehicle.TriggerType.TellTaleInfo.State,
-                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale,
-                    OemTellTale = vehicle.TriggerType.TellTaleInfo.OemTellTale
-                };
-
-                TriggerObject triggerObject = new TriggerObject()
-                {
-                    Context = vehicle.TriggerType.Context,
-                    PtoId = vehicle.TriggerType.PtoId,
-                    TriggerInfo = vehicle.TriggerType.TriggerInfo,
-                    DriverId = driverIdObject,
-                    TriggerType = vehicle.TriggerType.Type,
-                    TellTaleInfo = tellTaleObject
-                };
 
 
-                VehStatusResponse vehStatus = new VehStatusResponse()
-                {
-                    CreatedDateTime = vehicle.CreatedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    ReceivedDateTime = vehicle.ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-
-                    TriggerType = triggerObject,
-                    Vin = vehicle.Vin,
-                    GrossCombinationVehicleWeight = vehicle.GrossCombinationVehicleWeight,
-                    HrTotalVehicleDistance = vehicle.HrTotalVehicleDistance,
-                    TotalEngineHours = vehicle.TotalEngineHours,
-                    TotalFuelUsedGaseous = vehicle.TotalFuelUsedGaseous,
-                    Status2OfDoors = vehicle.Status2OfDoors
-
-                };
-
-                vehicleStatus.Add(vehStatus);
-            }
-
-            RfmsVehStatus rfmsVehStatus = new RfmsVehStatus()
-            {
-                VehicleStatuses = vehicleStatus // 
-            };
-
-            return new RfmsVehStatusResponse()
-            {
-                RequestServerDateTime = currentdatetime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                MoreDataAvailable = rfmsVehicleStatus.MoreDataAvailable,
-                MoreDataAvailableLink = rfmsVehicleStatus.MoreDataAvailableLink, //add entity  for master
-                RfmsVehStatus = rfmsVehStatus
-            };
-        }
         #endregion
 
-        #region Validators
-        private bool ValidateVehiclePositionParameters(ref RfmsVehiclePositionRequest vehiclePositionRequest, out string field)
+        private IActionResult ValidateHeaderRequest(RfmsVehiclePositionStatusFilter requestFilter, string acceptType)
         {
-            field = string.Empty;
+            var selectedType = string.Empty;
 
-            //Validate StartTime
-            if (!string.IsNullOrEmpty(vehiclePositionRequest.StartTime))
-            {
-                if (!DateTime.TryParse(vehiclePositionRequest.StartTime, out _))
-                {
-                    field = nameof(vehiclePositionRequest.StartTime);
-                    return false;
-                }
-            }
+            #region Request Header & Querystring Parameters checks
+            this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
 
-            //Validate StopTime
-            if (!string.IsNullOrEmpty(vehiclePositionRequest.StopTime))
-            {
-                if (!DateTime.TryParse(vehiclePositionRequest.StopTime, out _) || string.IsNullOrEmpty(vehiclePositionRequest.StartTime))
-                {
-                    field = nameof(vehiclePositionRequest.StopTime);
-                    return false;
-                }
-            }
+            if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
 
-            //Validate VIN
-            if (!string.IsNullOrEmpty(vehiclePositionRequest.Vin))
-            {
-                string vin = vehiclePositionRequest.Vin;
-                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(vin));
-                if (vinNo.Result == 0)
-                {
-                    field = nameof(vehiclePositionRequest.Vin);
-                    return false;
-                }
-            }
+            //Check if no mandatory parameters are supplied at all & raise error
+            if (!requestFilter.LatestOnly && string.IsNullOrEmpty(requestFilter.StartTime))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, "latestOnly or StartTime", "INVALID_SUPPLIED_PARAMETERS, LatestOnly or StartTime parameters are mandatory to get result");
 
-            //Validate Last VIN
-            if (!string.IsNullOrEmpty(vehiclePositionRequest.LastVin))
-            {
-                string vin = vehiclePositionRequest.LastVin;
-                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(vin));
-                if (vinNo.Result == 0)
-                {
-                    field = nameof(vehiclePositionRequest.LastVin);
-                    return false;
-                }
-            }
-            return true;
-        }
+            //If latestOnly and starttime and/or stoptime are set, a HTTP 400 error will be returned indicating that the parameters supplied are invalid.
+            if (requestFilter.LatestOnly && (!string.IsNullOrEmpty(requestFilter.StartTime) || !string.IsNullOrEmpty(requestFilter.StopTime)))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(requestFilter.LatestOnly), "INVALID_SUPPLIED_PARAMETERS, LatestOnly cannot be combined with StartTime and/or StopTime");
 
-        private bool ValidateVehicleStatusParameters(ref RfmsVehicleStatusRequest rfmsVehicleStatusRequest, out string field)
-        {
-            field = string.Empty;
-
-            //Validate StartTime
-            if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StartTime))
-            {
-                if (!DateTime.TryParse(rfmsVehicleStatusRequest.StartTime, out _))
-                {
-                    field = nameof(rfmsVehicleStatusRequest.StartTime);
-                    return false;
-                }
-            }
-
-            //Validate StopTime
-            if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.StopTime))
-            {
-                if (!DateTime.TryParse(rfmsVehicleStatusRequest.StopTime, out _) || string.IsNullOrEmpty(rfmsVehicleStatusRequest.StartTime))
-                {
-                    field = nameof(rfmsVehicleStatusRequest.StopTime);
-                    return false;
-                }
-            }
-
-            //Validate VIN
-            if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.Vin))
-            {
-                string vin = rfmsVehicleStatusRequest.Vin;
-                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(vin));
-                if (vinNo.Result == 0)
-                {
-                    field = nameof(rfmsVehicleStatusRequest.Vin);
-                    return false;
-                }
-            }
-
-            //Validate Last VIN
-            if (!string.IsNullOrEmpty(rfmsVehicleStatusRequest.LastVin))
-            {
-                string vin = rfmsVehicleStatusRequest.LastVin;
-                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(vin));
-                if (vinNo.Result == 0)
-                {
-                    field = nameof(rfmsVehicleStatusRequest.LastVin);
-                    return false;
-                }
-            }
-            return true;
-        }
-        private bool ValidateParameter(ref string lastVin, out bool moreData)
-        {
-            moreData = true;
-            if (string.IsNullOrEmpty(lastVin))
-            {
-                moreData = false;
-            }
+            if (acceptHeader.Any(x => x.Trim().Equals(acceptType, StringComparison.CurrentCultureIgnoreCase)))
+                selectedType = acceptType;
             else
-            {
-                //Validate Vin no from Db
-                string lastVinNo = lastVin;
-                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(lastVinNo));
-                if (vinNo.Result == 0)
-                {
-                    moreData = false;
-                    return false;
-                }
-            }
-            return true;
+                return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+
+            return Ok(selectedType);
+            #endregion
         }
-        #endregion
 
         #region Error Generator
         private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value, string message)
