@@ -37,12 +37,12 @@ public class IndexBasedAlertFunctions implements Serializable {
                     String dayOfWeekFromDbArr = getDayOfWeekFromDbArr(schema.getDayTypeArray());
                     if(currentDayOfWeek.equalsIgnoreCase(dayOfWeekFromDbArr)){
                         if(schema.getPeriodType().equalsIgnoreCase("A")){
-                            return getTarget(index, schema,index.getEvtDateTime());
+                            return getTarget(index, schema, convertDateToMillis(index.getEvtDateTime()));
                         }
                         if(schema.getPeriodType().equalsIgnoreCase("C")){
                             int currentTimeInSecond = getCurrentTimeInSecond();
                             if(schema.getStartTime() <= currentTimeInSecond && schema.getEndTime() > currentTimeInSecond){
-                                return getTarget(index, schema,index.getEvtDateTime());
+                                return getTarget(index, schema,convertDateToMillis(index.getEvtDateTime()));
                             }
                         }
                     }
