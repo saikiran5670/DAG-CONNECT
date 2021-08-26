@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -32,6 +30,7 @@ public class Utils implements Serializable {
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     static {
         mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
@@ -88,6 +87,16 @@ public class Utils implements Serializable {
     }
     public static long timeDiffBetweenDates(String startDateTime,String endDateTime) {
         return timeDiffBetweenDates(startDateTime,endDateTime,formatter);
+    }
+
+    public static long convertDateToMillis(String dateTime) {
+        LocalDateTime localTime = LocalDateTime.parse(dateTime, formatter);
+        return localTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    public static String convertMillisecondToDateTime(Long timeInMillis) {
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeInMillis), ZoneId.systemDefault());
+        return ldt.format(formatter);
     }
 
     public static long millisecondsToSeconds(long milliseconds){

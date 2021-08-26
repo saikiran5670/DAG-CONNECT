@@ -59,7 +59,7 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			double co2CoEfficient = cmDao.read(co2CoEfficientQry, stsData.getVin());
 			double co2Emission = 0;
 			if (co2CoEfficient != 0 && stsData.getVUsedFuel() != null)
-				co2Emission = (stsData.getVUsedFuel() * co2CoEfficient) / 1000;
+				co2Emission = (stsData.getVUsedFuel() * co2CoEfficient) / 1000000;
 
 			logger.info("tripId : "+stsData.getTripId() +" vin : " + stsData.getVin() + " co2CoEfficient :" + co2CoEfficient + " co2Emission :"+co2Emission);
 			stsData.setCo2Emission(co2Emission);

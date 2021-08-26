@@ -240,7 +240,7 @@
             </canvas>
         </div>
         </div>
-        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding: 10px;border: 1px solid #ddd;">
+        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding:10px 20px;border: 1px solid #ddd;">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;margin-bottom: 10px;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div  *ngIf = "activeVehicleChartType" class="chart-wrapper">
             <canvas baseChart 
