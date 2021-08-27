@@ -30,10 +30,9 @@ public class IndexBasedAlertFunctions implements Serializable {
         Map<String,Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("hoursOfService");
         List<String> priorityList = Arrays.asList("C", "W", "A");
-        if(Objects.nonNull(index.getDocument()) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
-            return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
-
         try{
+            if(Objects.nonNull(index) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
+                return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
             for(String priority : priorityList){
                 for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
                     if(schema.getUrgencyLevelType().equalsIgnoreCase(priority)){
