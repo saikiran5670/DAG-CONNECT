@@ -14,6 +14,8 @@ import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.process.config.AlertConfig;
 import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.IndexKeyBasedAlertDefService;
+import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
 import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.ReduceFunction;
@@ -93,9 +95,14 @@ public class IndexBasedAlertProcessing implements Serializable {
         /*SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);*/
 
+        /**
+         * Window time in milliseconds
+         */
+        long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis","300000"));
+
         KeyedStream<Tuple2<Index, Payload<Set<Long>>>, String> subscribeVehicleStream = indexStringStream
                 .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.minutes(0)) {
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
                                 return convertDateToMillis(index.getEvtDateTime());
@@ -103,7 +110,7 @@ public class IndexBasedAlertProcessing implements Serializable {
                         }
                 )
                 .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.minutes(5)))
+                .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)))
                 .reduce(new ReduceFunction<Index>() {
                     @Override
                     public Index reduce(Index index, Index t1) throws Exception {
@@ -112,25 +119,7 @@ public class IndexBasedAlertProcessing implements Serializable {
                 })
                 .keyBy(index -> index.getVin() !=null ? index.getVin() : index.getVid())
                 .connect(vehicleAlertRefSchemaBroadcastStream)
-                .process(new KeyedBroadcastProcessFunction<String, Index, VehicleAlertRefSchema, Tuple2<Index, Payload<Set<Long>>>>() {
-                    @Override
-                    public void processElement(Index index, KeyedBroadcastProcessFunction<String, Index, VehicleAlertRefSchema, Tuple2<Index, Payload<Set<Long>>>>.ReadOnlyContext readOnlyContext, Collector<Tuple2<Index, Payload<Set<Long>>>> collector) throws Exception {
-                        logger.info("Process index message for vim map check:: {}", index);
-                        ReadOnlyBroadcastState<String, Payload> vinMapState = readOnlyContext.getBroadcastState(VIN_ALERT_MAP_STATE);
-                        if (vinMapState.contains(index.getVin())) {
-                            logger.info("Vin subscribe for alert status:: {}", index);
-                            collector.collect(Tuple2.of(index, vinMapState.get(index.getVin())));
-                        }
-                    }
-
-                    @Override
-                    public void processBroadcastElement(VehicleAlertRefSchema vehicleAlertRefSchema, KeyedBroadcastProcessFunction<String, Index, VehicleAlertRefSchema, Tuple2<Index, Payload<Set<Long>>>>.Context context, Collector<Tuple2<Index, Payload<Set<Long>>>> collector) throws Exception {
-                        /**
-                         * Update vin mapping cache
-                         */
-                        CacheService.updateVinMappingCache(vehicleAlertRefSchema, context);
-                    }
-                })
+                .process(new IndexKeyBasedSubscription())
                 .keyBy(tup2 -> tup2.f0.getVin());
 
 
@@ -140,50 +129,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         SingleOutputStreamOperator<Index> alertProcessStream = subscribeVehicleStream
                 .connect(alertUrgencyLevelRefSchemaBroadcastStream)
-                .process(new KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>() {
-                    @Override
-                    public void processElement(Tuple2<Index, Payload<Set<Long>>> indexTup2, KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>.ReadOnlyContext readOnlyContext, Collector<Index> collector) throws Exception {
-                        ReadOnlyBroadcastState<Long, Payload> broadcastState = readOnlyContext.getBroadcastState(THRESHOLD_CONFIG_DESCRIPTOR);
-                        logger.info("Fetch alert definition from cache for {}", indexTup2);
-                        Index f0 = indexTup2.f0;
-                        Payload<Set<Long>> f1 = indexTup2.f1;
-                        Set<Long> alertIds = f1.getData().get();
-                        Map<String, Object> functionThresh = new HashMap<>();
-                        List<AlertUrgencyLevelRefSchema> hoursOfServiceAlertDef = new ArrayList<>();
-                        for (Long alertId : alertIds) {
-                            if (broadcastState.contains(alertId)) {
-                                List<AlertUrgencyLevelRefSchema> thresholdSet = (List<AlertUrgencyLevelRefSchema>) broadcastState.get(alertId).getData().get();
-                                for (AlertUrgencyLevelRefSchema schema : thresholdSet) {
-                                    if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("S")) {
-                                        hoursOfServiceAlertDef.add(schema);
-                                    }
-                                }
-                            }
-                        }
-                        logger.info("Alert definition from cache for vin :{} alertDef {}", f0.getVin(), hoursOfServiceAlertDef);
-                        functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
-                        AlertConfig
-                                .buildMessage(f0, configMap, functionThresh)
-                                .process()
-                                .getAlert()
-                                .ifPresent(
-                                        alerts -> {
-                                            alerts.stream()
-                                                    .forEach(alert -> readOnlyContext.output(OUTPUT_TAG, alert));
-                                        }
-                                );
-                        logger.info("Alert process for  {} check those alerts {}", f0, functionThresh);
-                        collector.collect(f0);
-                    }
-
-                    @Override
-                    public void processBroadcastElement(Payload<Object> payload, KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>.Context context, Collector<Index> collector) throws Exception {
-                        /**
-                         * Update threshold alert definition
-                         */
-                        CacheService.updateAlertDefinationCache(payload, context);
-                    }
-                });
+                .process(new IndexKeyBasedAlertDefService(configMap));
 
         /**
          * Publish alert on kafka topic
