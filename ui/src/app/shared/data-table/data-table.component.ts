@@ -135,18 +135,4 @@ export class DataTableComponent implements OnInit {
     }, 100);
   }
 
-  filterDataTable(filterValue) {
-    if (filterValue == "") {
-      this.dataSource.filter = '';
-    } else {
-      this.dataSource.filterPredicate = (data, filter: string) => {
-        console.log("filter", filter)
-        console.log("data", data)
-        return data.status === filter;
-      };
-      this.dataSource.filter = filterValue;
-    }
-    this.defaultSearchfilter();
-  }
-
 }

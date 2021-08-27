@@ -21,7 +21,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
   // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
   columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'viewstatus', 'action', 'action2'];
   columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
-  @ViewChild('gridComp') gridComp: DataTableComponent
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -152,22 +152,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
   }
  
   filterChangeStatus(event){
-    // let filterValue='';
-    // filterValue = event.value;   
-    // if(filterValue == ""){
-    //   this.dataSource.filter = '';
-    // }
-    // else{
-    //   console.log("filterValue", filterValue)
-    // this.dataSource.filterPredicate = function(data, filter: string): boolean {
-    //   console.log("filter", filter)
-    //   console.log("data", data)
-    //   return data.status === filter;
-    // };  
-    // this.dataSource.filter = filterValue;
-    // }    
-    this.gridComp.filterDataTable(event.value);
-    // this.initData
+    let filterValue = '';
+    filterValue = event.value;
+    let filterData = [];
+    if (filterValue != "") {
+      filterData = this.initData.filter((data) => data.status === filterValue);
+    }
+    this.gridComp.updatedTableData(filterData)
   }
 
   onCheckboxChange(e) {  
