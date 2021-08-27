@@ -635,12 +635,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
                 {
                     _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                        response.MenuFeatures.Features.Select(x => new SessionFeature { FeatureId = x.FeatureId, Name = x.Name }).ToArray());
                 }
                 else
                 {
                     _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                        new string[] { });
+                        new SessionFeature[] { });
                 }
 
                 if (response.Code == AccountBusinessService.Responcecode.Success)
@@ -1868,12 +1868,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
                 {
                     _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                        response.MenuFeatures.Features.Select(x => new SessionFeature { FeatureId = x.FeatureId, Name = x.Name }).ToArray());
                 }
                 else
                 {
                     _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                        new string[] { });
+                        new SessionFeature[] { });
                 }
 
                 if (response.Code == AccountBusinessService.Responcecode.Success)
