@@ -1,5 +1,5 @@
 <!-- fxLayoutAlign="space-between" class='margin-bottom-sm' -->
-<div fxLayout="row" fxLayoutGap="20px">
+<div fxLayout="row" fxLayoutGap="10px">
     <div class='areaWidth' fxLayoutAlign="center center">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)"
@@ -40,17 +40,17 @@
 
             <ng-container
                 *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'state' && column != 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData['lbl'+columnLabels[i]] ||
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
                     <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                    <span [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
+                    <span class="text-truncate" [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
                 </mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'viewstatus'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
@@ -59,7 +59,7 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'action'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
@@ -68,7 +68,7 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'action2'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
@@ -77,13 +77,13 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] || columnLabels[i] }}
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] || columnLabels[i] }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'select' || column == 'state'">
-                <mat-header-cell *matHeaderCellDef>
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='selectColumnHeaderElements'></ng-container>
                 </mat-header-cell>

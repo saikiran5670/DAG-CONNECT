@@ -21,7 +21,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
   // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
   columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'viewstatus', 'action', 'action2'];
   columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
-  @ViewChild('gridComp') gridComp: DataTableComponent
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;

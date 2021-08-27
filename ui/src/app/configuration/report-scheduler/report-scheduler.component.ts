@@ -10,6 +10,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
 import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 import { Util } from 'src/app/shared/util';
 
 @Component({
@@ -19,8 +20,9 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-
-  displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
+  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
+  columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
+  // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
@@ -54,6 +56,7 @@ export class ReportSchedulerComponent implements OnInit {
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
   accountPrefObj: any;
+  @ViewChild('gridComp') gridComp: DataTableComponent
 
   constructor(
     private translationService: TranslationService,
@@ -204,7 +207,8 @@ export class ReportSchedulerComponent implements OnInit {
        this.reportTypeSelection= 0;
        this.statusSelection= 0;
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);  
-       this.updateDatasource(this.schedulerData);  
+       this.initData = this.schedulerData;
+      //  this.updateDatasource(this.schedulerData);  
 
        this.hideloader();     
     }, (error) => {
@@ -248,7 +252,7 @@ export class ReportSchedulerComponent implements OnInit {
         });
       }
     }
-  
+    element.frequencyTypeName = this.getFrequencyTypeName(element.frequencyType);
     initdata[index].recipientList = recipientTxt.slice(0, -2); 
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
@@ -258,6 +262,22 @@ export class ReportSchedulerComponent implements OnInit {
   });
   
   return initdata;
+}
+
+getFrequencyTypeName(frequencyType) {
+  if(frequencyType=='D') {
+    return "Daily";
+  } else if(frequencyType=='W') {
+    return "Weekly";
+  } else if(frequencyType=='B') {
+    return "Biweekly";
+  } else if(frequencyType=='M') {
+    return "Monthly";
+  } else if(frequencyType=='Q') {
+    return "Quarterly";
+  } else {
+    return "";
+  }
 }
 
 getUnique(arr, comp) {
@@ -274,73 +294,73 @@ getUnique(arr, comp) {
   return unique;
 }
 
-  updateDatasource(data){
-    this.initData = data;
-    if(this.initData.length > 0){
-      this.initData = this.getNewTagData(data); 
-    } 
-    this.dataSource = new MatTableDataSource(this.initData);
-    // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-    //   return (
-    //     data.reportName.toString().toLowerCase().includes(filter) ||
-    //     data.recipientList.toString().toLowerCase().includes(filter) ||
-    //     data.driverList.toString().toLowerCase().includes(filter) ||
-    //     data.status.toString().toLowerCase().includes(filter) 
-    //   );
-    // };
+  // updateDatasource(data){
+  //   this.initData = data;
+  //   if(this.initData.length > 0){
+  //     this.initData = this.getNewTagData(data); 
+  //   } 
+  //   this.dataSource = new MatTableDataSource(this.initData);
+  //   // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+  //   //   return (
+  //   //     data.reportName.toString().toLowerCase().includes(filter) ||
+  //   //     data.recipientList.toString().toLowerCase().includes(filter) ||
+  //   //     data.driverList.toString().toLowerCase().includes(filter) ||
+  //   //     data.status.toString().toLowerCase().includes(filter) 
+  //   //   );
+  //   // };
    
-    this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
-      if (typeof data[sortHeaderId] === 'string') {
-        return data[sortHeaderId].toLocaleLowerCase();
-      }
+  //   this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+  //     if (typeof data[sortHeaderId] === 'string') {
+  //       return data[sortHeaderId].toLocaleLowerCase();
+  //     }
     
-      return data[sortHeaderId];
-    };
+  //     return data[sortHeaderId];
+  //   };
 
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
-        return data.sort((a: any, b:any)=>{
-            return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
-    });
-  }
+  //   setTimeout(()=>{
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
+  //       const isAsc = sort.direction === 'asc';
+  //       let columnName = this.sort.active;
+  //       return data.sort((a: any, b:any)=>{
+  //           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+  //       });
+  //     }
+  //   });
+  // }
 
-  compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
-    if(columnName == "recipientList"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b= b.toString().toUpperCase();
-    }
-    return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
-  }
+  // compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
+  //   if(columnName == "recipientList"){
+  //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
+  //     if(!(b instanceof Number)) b= b.toString().toUpperCase();
+  //   }
+  //   return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
+  // }
 
-  getNewTagData(data: any){
-    let currentDate = new Date().getTime();
-    data.forEach(row => {
-      if(row.createdAt){
-        let createdDate = parseInt(row.createdAt); 
-        let nextDate = createdDate + 86400000;
-        if(currentDate >= createdDate && currentDate < nextDate){
-          row.newTag = true;
-        }
-        else{
-          row.newTag = false;
-        }
-      } 
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
-    return newTrueData;
-  }
+  // getNewTagData(data: any){
+  //   let currentDate = new Date().getTime();
+  //   data.forEach(row => {
+  //     if(row.createdAt){
+  //       let createdDate = parseInt(row.createdAt); 
+  //       let nextDate = createdDate + 86400000;
+  //       if(currentDate >= createdDate && currentDate < nextDate){
+  //         row.newTag = true;
+  //       }
+  //       else{
+  //         row.newTag = false;
+  //       }
+  //     } 
+  //     else{
+  //       row.newTag = false;
+  //     }
+  //   });
+  //   let newTrueData = data.filter(item => item.newTag == true);
+  //   newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+  //   let newFalseData = data.filter(item => item.newTag == false);
+  //   Array.prototype.push.apply(newTrueData, newFalseData); 
+  //   return newTrueData;
+  // }
 
   onDeleteReportScheduler(item: any) {
     const options = {
@@ -466,60 +486,65 @@ getUnique(arr, comp) {
   
   onReportTypeChange(_event: any){
     this.reportTypeSelection = parseInt(_event.value);
-    if(this.reportTypeSelection == 0 && this.statusSelection == 0){
-      this.updateDatasource(this.schedulerData); //-- load all data
-    }
-    else if(this.reportTypeSelection == 0 && this.statusSelection != 0){
+    if (this.reportTypeSelection == 0 && this.statusSelection == 0) {
+      // this.updateDatasource(this.schedulerData); //-- load all data
+      this.gridComp.updateDataSource(this.schedulerData);
+    } else if (this.reportTypeSelection == 0 && this.statusSelection != 0) {
       let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
-      if(filterData){
-        this.updateDatasource(filterData);
+      if (filterData) {
+        // this.updateDatasource(filterData);
+        this.gridComp.updateDataSource(filterData);
       }
-      else{
-        this.updateDatasource([]);
+      else {
+        // this.updateDatasource([]);
+        this.gridComp.updateDataSource([]);
       }
-    }
-    else{
+    } else {
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
       let reportSchedulerData = this.schedulerData.filter(item => item.reportId === selectedReportType);
-      if(selectedStatus != 0){
+      if (selectedStatus != 0) {
         reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
-      this.updateDatasource(reportSchedulerData);
+      // this.updateDatasource(reportSchedulerData);
+      this.gridComp.updateDataSource(reportSchedulerData);
     }
   }
 
   onStatusSelectionChange(_event: any){
     this.statusSelection = _event.value == '0' ? parseInt(_event.value) : _event.value;
-    if(this.reportTypeSelection == 0 && this.statusSelection == 0){
-      this.updateDatasource(this.schedulerData); //-- load all data
-    }
-    else if(this.statusSelection == 0 && this.reportTypeSelection != 0){
+    if (this.reportTypeSelection == 0 && this.statusSelection == 0) {
+      // this.updateDatasource(this.schedulerData); //-- load all data
+      this.gridComp.updateDataSource(this.schedulerData);
+    } else if (this.statusSelection == 0 && this.reportTypeSelection != 0) {
       let filterData = this.schedulerData.filter(item => item.reportId === this.reportTypeSelection);
-      if(filterData){
-        this.updateDatasource(filterData);
+      if (filterData) {
+        // this.updateDatasource(filterData);
+        this.gridComp.updateDataSource(filterData);
       }
-      else{
-        this.updateDatasource([]);
+      else {
+        // this.updateDatasource([]);
+        this.gridComp.updateDataSource([]);
       }
-    }
-    else if(this.statusSelection != 0 && this.reportTypeSelection == 0){
+    } else if (this.statusSelection != 0 && this.reportTypeSelection == 0) {
       let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
-      if(filterData){
-        this.updateDatasource(filterData);
+      if (filterData) {
+        // this.updateDatasource(filterData);
+        this.gridComp.updateDataSource(filterData);
       }
-      else{
-        this.updateDatasource([]);
+      else {
+        // this.updateDatasource([]);
+        this.gridComp.updateDataSource([]);
       }
-    }
-    else{
+    } else {
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
       let reportSchedulerData = this.schedulerData.filter(item => item.reportId === selectedReportType);
-      if(selectedStatus != 0){
+      if (selectedStatus != 0) {
         reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
-      this.updateDatasource(reportSchedulerData);
+      // this.updateDatasource(reportSchedulerData);
+      this.gridComp.updateDataSource(reportSchedulerData);
     }
   }
 

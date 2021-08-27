@@ -149,4 +149,8 @@ export class DataTableComponent implements OnInit {
     this.defaultSearchfilter();
   }
 
+  updateDataSource(tableData) {
+    this.updatedTableData(tableData);
+  }
+
 }
