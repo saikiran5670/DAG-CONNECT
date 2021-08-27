@@ -1,11 +1,9 @@
 import { Component, HostListener, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
-import { TranslationService } from 'src/app/services/translation.service';
-import { TermsConditionsPopupComponent } from 'src/app/terms-conditions-content/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-login-dialog',
@@ -23,19 +21,15 @@ export class LoginDialogComponent {
     organization: any,
     role: any,
     accountDetail: any,
-    accountPreference: any,
-    organization_Id: any,
-    account_Id: any,
-    translationData: any,
-    tacValue: any
-  }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private dialog: MatDialog) {
+    accountPreference: any
+  }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService) {
     this.loginDialogForm = this.fb.group({
       'organization': [],
       'role': []
     });
      this.setDropdownValues();
   }
-  dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
+
   setDropdownValues(){
     if(this.data.organization.length > 0){
       this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
@@ -56,15 +50,6 @@ export class LoginDialogComponent {
   }
 
   public confirm(formValue) {
-    if(this.data.tacValue){
-      this.confirmTodashboard(formValue);
-    } else {
-      this.openTermsConditionsPopup(formValue);
-    }
-    return;
-  }
-  
-  confirmTodashboard(formValue){
     if (this.loginDialogForm.valid) {
       let selectedValues = formValue;
       localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
@@ -116,41 +101,4 @@ export class LoginDialogComponent {
     }
   }
 
-  openTermsConditionsPopup(formValue){
-    let objData= {
-      AccountId: this.data.account_Id,
-      OrganizationId: this.data.organization_Id
-    }  
-    this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
-
-      let arrayBuffer= response[0].description;
-      var base64File = btoa(
-        new Uint8Array(arrayBuffer)
-          .reduce((data, byte) => data + String.fromCharCode(byte), '')
-      );
-      let latestTCData= {
-        id: 0,
-        organization_Id: this.data.organization_Id,
-        account_Id: this.data.account_Id,
-        terms_And_Condition_Id: response[0].id,
-        version_no: response[0].versionno
-      }
-      const dialogConfig = new MatDialogConfig();
-      dialogConfig.disableClose = true;
-      dialogConfig.autoFocus = true;
-      dialogConfig.data = {
-        translationData: this.data.translationData,
-        base64File: base64File,
-        latestTCData: latestTCData
-      }
-      this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-      this.dialogRefTerms.afterClosed().subscribe(res => {
-        if(res.termsConditionsAgreeFlag){
-          this.confirmTodashboard(formValue);
-        }
-      });
-     }, (error) => {
-        this.confirmTodashboard(formValue);
-     });     
-  }
 }
