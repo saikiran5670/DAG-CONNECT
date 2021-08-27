@@ -28,6 +28,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.AccountId = session.GetInt32(SessionConstants.AccountKey).Value;
                     }
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.AccountEmailKey)))
+                    {
+                        headerObj.AccountEmailId = session.GetString(SessionConstants.AccountEmailKey);
+                    }
                     if (session.Keys.Any(x => x.Equals(SessionConstants.RoleKey)))
                     {
                         headerObj.RoleId = session.GetInt32(SessionConstants.RoleKey).Value;
@@ -42,7 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     }
                     if (session.Keys.Any(x => x.Equals(SessionConstants.FeaturesKey)))
                     {
-                        headerObj.UserFeatures = session.GetObject<string[]>(SessionConstants.FeaturesKey);
+                        headerObj.UserFeatures = session.GetObject<SessionFeature[]>(SessionConstants.FeaturesKey);
                     }
 
                     _logger.Info(headerObj.ToString() + $"\nSession Id - { session.Id }");

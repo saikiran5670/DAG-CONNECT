@@ -117,22 +117,22 @@ export class EditViewVehicleComponent implements OnInit {
     });
   }
 
-  getVehicleGridData(){
-    this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
-      this.goToLandingPage(vehData);
-    }, (error) => {
-        //console.error(error);
-        let vehData = [];
-        this.goToLandingPage(vehData);
-      }
-    );
-  }
+  // getVehicleGridData(){
+  //   this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
+  //     this.goToLandingPage(vehData);
+  //   }, (error) => {
+  //       //console.error(error);
+  //       let vehData = [];
+  //       this.goToLandingPage(vehData);
+  //     }
+  //   );
+  // }
 
-  goToLandingPage(tableData: any){
-    let updateMsg = this.getVehicleCreateUpdateMessage();
-    let emitObj = { stepFlag: false, tableData: tableData, successMsg: updateMsg };
-    this.backToPage.emit(emitObj);
-  }
+  // goToLandingPage(tableData: any){
+  //   let updateMsg = this.getVehicleCreateUpdateMessage();
+  //   let emitObj = { stepFlag: false, tableData: tableData, successMsg: updateMsg };
+  //   this.backToPage.emit(emitObj);
+  // }
 
   getVehicleCreateUpdateMessage(){
     let vehName = `${this.vehicleForm.controls.vehicleName.value}`;

@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             ,veh.license_plate_number as RegistrationNo	
                             from master.alert cte
                             inner join master.group grp 
-                            on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.id=@alertid
+                            on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.id=@alertid and cte.state='A'
                             left join master.groupref vgrpref
                             on  grp.id=vgrpref.group_id
                             left join master.vehicle veh
