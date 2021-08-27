@@ -14,6 +14,7 @@ import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DriverService } from '../../services/driver.service';
 import { OrganizationService } from '../../services/organization.service';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -24,6 +25,9 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 })
 
 export class DriverManagementComponent implements OnInit {
+  columnCodes = ['driverIdExt', 'fullName', 'email', 'viewstatus', 'action'];
+  columnLabels = ['DriverId','DriverName', 'EmailID', 'Consent', 'Action'];
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   driverRestData: any = [];
   titleVisibleMsg : boolean = false;
   userCreatedMsg : any;
@@ -220,20 +224,25 @@ export class DriverManagementComponent implements OnInit {
     let drvId: any = 0;
     this.showLoadingIndicator = true;
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
-      this.hideloader();
+      driverList.forEach(element => {
+        element['fullName'] = element.firstName + " " + element.lastName;
+      });
       this.initData = driverList;
-      this.onConsentChange(this.selectedConsentType);
+      this.hideloader();
+      // this.updateGridData(this.initData);
+      // this.onConsentChange(this.selectedConsentType);
     }, (error) => {
       console.log("error:: ", error);
-      this.hideloader();
       this.initData = [];
       this.selectedConsentType = 'All';
-      this.onConsentChange(this.selectedConsentType);
+      this.hideloader();
+      // this.updateGridData(this.initData);
+      // this.onConsentChange(this.selectedConsentType);
     });
   }
 
-  onConsentStatusChange(){
-    this.onConsentChange(this.consentType.value);  
+  onConsentStatusChange(evt){
+    this.onConsentChange(evt.value);  
   }
 
   get consentType() {
@@ -256,62 +265,63 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
     }
-    this.updateGridData(data);
+    this.gridComp.updatedTableData(data);
+    // this.updateGridData(data);
   }
 
-  updateGridData(tableData: any){
-    tableData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-          var a1;
-          var b1;
-          if(sort.active && sort.active === 'firstName'){
-            a1 = a.firstName + ' ' + a.lastName;
-            b1 = b.firstName + ' ' + b.lastName;
-          } else {
-            a1 = a[sort.active];
-            b1 = b[sort.active]
-          }
-          return this.compare(a1, b1, isAsc);
-        });
-       }
-    });
-  }
+  // updateGridData(tableData: any){
+  //   tableData = this.getNewTagData(tableData);
+  //   this.dataSource = new MatTableDataSource(tableData);
+  //   setTimeout(()=>{
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
+  //       const isAsc = sort.direction === 'asc';
+  //       return data.sort((a: any, b: any) => {
+  //         var a1;
+  //         var b1;
+  //         if(sort.active && sort.active === 'firstName'){
+  //           a1 = a.firstName + ' ' + a.lastName;
+  //           b1 = b.firstName + ' ' + b.lastName;
+  //         } else {
+  //           a1 = a[sort.active];
+  //           b1 = b[sort.active]
+  //         }
+  //         return this.compare(a1, b1, isAsc);
+  //       });
+  //      }
+  //   });
+  // }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean) {
-    if(!(a instanceof Number)) a = a.toUpperCase();
-    if(!(b instanceof Number)) b = b.toUpperCase();
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
+  // compare(a: Number | String, b: Number | String, isAsc: boolean) {
+  //   if(!(a instanceof Number)) a = a.toUpperCase();
+  //   if(!(b instanceof Number)) b = b.toUpperCase();
+  //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  // }
 
-  getNewTagData(data: any){
-    let currentDate = new Date().getTime();
-    if(data.length > 0){
-      data.forEach(row => {
-        let createdDate = parseInt(row.createdAt); 
-        let nextDate = createdDate + 86400000;
-        if(currentDate > createdDate && currentDate < nextDate){
-          row.newTag = true;
-        }
-        else{
-          row.newTag = false;
-        }
-      });
-      let newTrueData = data.filter(item => item.newTag == true);
-      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-      let newFalseData = data.filter(item => item.newTag == false);
-      Array.prototype.push.apply(newTrueData, newFalseData); 
-      return newTrueData;
-    }
-    else{
-      return data;
-    }
-  }
+  // getNewTagData(data: any){
+  //   let currentDate = new Date().getTime();
+  //   if(data.length > 0){
+  //     data.forEach(row => {
+  //       let createdDate = parseInt(row.createdAt); 
+  //       let nextDate = createdDate + 86400000;
+  //       if(currentDate > createdDate && currentDate < nextDate){
+  //         row.newTag = true;
+  //       }
+  //       else{
+  //         row.newTag = false;
+  //       }
+  //     });
+  //     let newTrueData = data.filter(item => item.newTag == true);
+  //     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+  //     let newFalseData = data.filter(item => item.newTag == false);
+  //     Array.prototype.push.apply(newTrueData, newFalseData); 
+  //     return newTrueData;
+  //   }
+  //   else{
+  //     return data;
+  //   }
+  // }
 
   importDrivers(clearInput: any){ 
     if(this.filelist.length > 0){
@@ -628,7 +638,7 @@ export class DriverManagementComponent implements OnInit {
     if(item.tableData){
       this.initData = item.tableData;
     }
-    this.updateGridData(this.initData);
+    this.loadDriverData();
   }
 
   onCloseMsg(){
@@ -662,12 +672,13 @@ export class DriverManagementComponent implements OnInit {
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe(res => {
-      if(res.tableData && res.tableData.length > 0){
+      // if(res.tableData && res.tableData.length > 0){
         this.selectedConsentType = 'All';
         this.setConsentDropdown();
-        this.initData = res.tableData;
-        this.updateGridData(this.initData);
-      }
+        // this.initData = res.tableData;
+        this.loadDriverData();
+        // this.updateGridData(this.initData);
+      // }
       if(res.consentMsg) { 
         if(dialogConfig.data.consentType=='H' || dialogConfig.data.consentType=='I') {
           var msg = res.tableData.length + " drivers were successfully Opted-In.";
