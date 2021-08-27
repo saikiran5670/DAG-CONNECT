@@ -60,7 +60,7 @@ public class TripBasedTest implements Serializable {
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class);
 
-        indexStringStream.print();
+//        indexStringStream.print();
 
         /*env.addSource(new IndexGenerator())
                 .returns(Index.class)*/

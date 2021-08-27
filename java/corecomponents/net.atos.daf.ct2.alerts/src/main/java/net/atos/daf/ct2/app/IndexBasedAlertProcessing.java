@@ -41,6 +41,7 @@ import java.util.*;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
 public class IndexBasedAlertProcessing implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
@@ -83,24 +84,26 @@ public class IndexBasedAlertProcessing implements Serializable {
         BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
-        /* SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(propertiesParamTool.get(""), propertiesParamTool, env)
+        SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+                        propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                        propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-                .returns(Index.class);*/
-
-        SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);
+
+        /*SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
+                .returns(Index.class);*/
 
         KeyedStream<Tuple2<Index, Payload<Set<Long>>>, String> subscribeVehicleStream = indexStringStream
                 .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.minutes(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
-                                return index.getReceivedTimestamp();
+                                return convertDateToMillis(index.getEvtDateTime());
                             }
                         }
                 )
                 .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.seconds(5)))
+                .window(TumblingEventTimeWindows.of(Time.minutes(5)))
                 .reduce(new ReduceFunction<Index>() {
                     @Override
                     public Index reduce(Index index, Index t1) throws Exception {
