@@ -889,11 +889,11 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
-                        -- Visible vehicles of type S/G
+                        -- Visible vehicles of type G
                         SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
                         FROM master.vehicle v
-                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         WHERE 
@@ -1137,8 +1137,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 									                                    and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
 									                                    and ors.state='A'
 									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-		                                    --	else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
+									                                    else COALESCE(end_date,0) =0 end)		                                    
 			                                    else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
 			                                    from master.group vg 
 			                                    left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
@@ -1150,13 +1149,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 else
                 {
-                    query = @"select distinct id,name,0 as count,true as is_group from (
-                                select vg.id,vg.name
-                                from master.group vg
-								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-								inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM'))))  and vg.object_type='V' and vg.group_type in ('G','D') 
-                                ) vehicleGroup";
+                    query = @"SELECT DISTINCT id,name,0 as count,true as is_group 
+                              FROM (
+                                SELECT vg.id,vg.name
+                                FROM master.group vg
+								INNER JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+								INNER JOIN master.orgrelationship as os on om.relationship_id=os.id 
+                                WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) 
+                                    and vg.object_type='V' and vg.group_type in ('G','D') 
+                              ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
                 IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
