@@ -123,10 +123,12 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   editViewVehicle(rowData: any, type: any){
+    this.showLoadingIndicator = true;
     if(rowData['associatedGroups'] && rowData['associatedGroups'] != '') {
       this.selectedRowData = rowData;
       this.actionType = type;
       this.updateViewStatus = true;
+      this.hideloader();
     } else {
       this.vehicleService.getVehicleAssociatedGroups(rowData.id).subscribe((res) => {
         console.log("res", res)
@@ -134,6 +136,7 @@ export class VehicleDetailsComponent implements OnInit {
         this.selectedRowData = rowData;
         this.actionType = type;
         this.updateViewStatus = true;
+        this.hideloader();
       })
     }
   }
