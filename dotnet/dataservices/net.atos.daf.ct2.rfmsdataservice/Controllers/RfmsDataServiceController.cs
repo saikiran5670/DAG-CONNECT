@@ -38,6 +38,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly Mapper _mapper;
+        internal int AccountId { get; set; }
+        internal int OrgId { get; set; }
 
 
         public RfmsDataServiceController(IAccountManager accountManager,
@@ -56,6 +58,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             this._configuration = configuration;
             this._httpContextAccessor = httpContextAccessor;
             _mapper = new Mapper(this._httpContextAccessor, _vehicleManager);
+
         }
 
         #endregion
@@ -135,14 +138,23 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         {
             try
             {
+                await GetUserDetails();
+                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                if (visibleVehicles.Count() == 0)
+                {
+
+                    var message = string.Format(RFMSResponseTypeConstants.GET_VIN_VISIBILITY_FAILURE_MSG, AccountId, OrgId);
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "VIN_VISIBILITY_FAILURE", message);
+
+                }
                 var requestFilter = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
                 var selectedType = ValidateHeaderRequest(requestFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON);
 
 
 
-                var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-                var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
-                var orgs = await _accountManager.GetAccountOrg(account.Id);
+                //var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+                //var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+                //var orgs = await _accountManager.GetAccountOrg(account.Id);
 
                 //Get Threshold Value from Congifurations
                 var thresholdRate = _configuration.GetSection("rfms3.vehiclepositions").GetSection("DataThresholdValue").Value;
@@ -152,8 +164,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Rfms Vehicle Position Service", "Rfms Vehicle Position Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get vehicle position method vehicle position service", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
 
-                vehiclePositionRequest.OrgId = orgs.First().Id;
-                vehiclePositionRequest.AccountId = account.Id;
+                vehiclePositionRequest.OrgId = OrgId;
+                vehiclePositionRequest.AccountId = AccountId;
                 vehiclePositionRequest.ThresholdValue = thresholdValue;
 
                 var isValid = _mapper.ValidateVehicleStatusParameters(requestFilter, out string field);
@@ -190,14 +202,24 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         {
             try
             {
+
+                await GetUserDetails();
+                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                if (visibleVehicles.Count() == 0)
+                {
+                    var response = new RfmsVehicleStatus();
+                    var message = string.Format(RFMSResponseTypeConstants.GET_VIN_VISIBILITY_FAILURE_MSG, AccountId, OrgId);
+                    _logger.LogError(message);
+                    return Ok(response);
+
+                }
+
                 var request = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
 
                 var requestFilter = new RfmsVehicleStatusRequest() { RfmsVehicleStatusFilter = request, ContentFilter = contentFilter };
                 var selectedType = ValidateHeaderRequest(requestFilter.RfmsVehicleStatusFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON);
 
-                var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-                var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
-                var orgs = await _accountManager.GetAccountOrg(account.Id);
+
 
                 //Get Threshold Value from Congifurations
                 var thresholdRate = _configuration.GetSection("rfms3.vehiclestatus").GetSection("DataThresholdValue").Value;
@@ -208,8 +230,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Rfms Vehicle Position Service", "Rfms Vehicle Position Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get vehicle position method vehicle position service", 0, 0, JsonConvert.SerializeObject(rfmsVehicleStatusRequest), 0, 0);
 
-                rfmsVehicleStatusRequest.OrgId = orgs.First().Id;
-                rfmsVehicleStatusRequest.AccountId = account.Id;
+                rfmsVehicleStatusRequest.OrgId = OrgId;
+                rfmsVehicleStatusRequest.AccountId = AccountId;
                 rfmsVehicleStatusRequest.ThresholdValue = thresholdValue;
 
                 var isValid = _mapper.ValidateVehicleStatusParameters(requestFilter.RfmsVehicleStatusFilter, out string field);
@@ -217,7 +239,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 {
                     var response = new RfmsVehicleStatus();
                     response = await _rfmsManager.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
-                    return Ok(response);// need to add mapper
+                    return Ok(response);
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, field, "INVALID_PARAMETER");
             }
@@ -271,5 +293,13 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             });
         }
         #endregion
+        private async Task GetUserDetails()
+        {
+            var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+            var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+            var orgs = await _accountManager.GetAccountOrg(account.Id);
+            OrgId = orgs.First().Id;
+            AccountId = account.Id;
+        }
     }
 }

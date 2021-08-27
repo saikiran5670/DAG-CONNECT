@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
                             Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = alertTypeValue, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType, ActualThresholdValue = item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
+                            AlertNotification = new AlertNotification() { AlertName = alertTypeValue, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType, ActualThresholdValue = item.AlertTypeEnum == "S" && item.AlertCategoryEnum == "L" ? item.ValueAtAlertTimeForHoursofServices : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail
@@ -257,7 +257,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
             string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
             string[] valueAtAlerttimeSplit = notificationHistorySMS.ValueAtAlertTime.ToString().Split('.');
-            string valueAtAlertTime = valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistorySMS.ValueAtAlertTime.ToString("#.0000") : notificationHistorySMS.ValueAtAlertTime.ToString() : notificationHistorySMS.ValueAtAlertTime.ToString();
+            string valueAtAlertTime = notificationHistorySMS.AlertTypeEnum == "S" && notificationHistorySMS.AlertCategoryEnum == "L" ? notificationHistorySMS.ValueAtAlertTimeForHoursofServices : valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistorySMS.ValueAtAlertTime.ToString("#.0000") : notificationHistorySMS.ValueAtAlertTime.ToString() : notificationHistorySMS.ValueAtAlertTime.ToString();
             sbSMSText.AppendFormat("AN:{0}", alertTypeValue);
             sbSMSText.AppendFormat(",DT:{0}", thresholdNum);
             sbSMSText.AppendFormat(",AT:{0}", notificationHistorySMS.ThresholdValueUnitType);
@@ -281,7 +281,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
             string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
             string[] valueAtAlerttimeSplit = notificationHistoryWS.ValueAtAlertTime.ToString().Split('.');
-            string valueAtAlertTime = valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistoryWS.ValueAtAlertTime.ToString("#.0000") : notificationHistoryWS.ValueAtAlertTime.ToString() : notificationHistoryWS.ValueAtAlertTime.ToString();
+            string valueAtAlertTime = notificationHistoryWS.AlertTypeEnum == "S" && notificationHistoryWS.AlertCategoryEnum == "L" ? notificationHistoryWS.ValueAtAlertTimeForHoursofServices : valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistoryWS.ValueAtAlertTime.ToString("#.0000") + " " + notificationHistoryWS.ThresholdValueUnitType : notificationHistoryWS.ValueAtAlertTime.ToString() + " " + notificationHistoryWS.ThresholdValueUnitType : notificationHistoryWS.ValueAtAlertTime.ToString() + " " + notificationHistoryWS.ThresholdValueUnitType;
             sbWSText.AppendFormat("Alert Name:{0}", alertTypeValue);
             sbWSText.AppendFormat(",Define Threshold:{0}", thresholdNum);
             sbWSText.AppendFormat(",Actual Threshold:{0}", notificationHistoryWS.ThresholdValueUnitType);
