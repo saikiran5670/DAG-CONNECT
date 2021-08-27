@@ -1088,9 +1088,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertCategory(this.selectedRowData.category);
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
+    this.alert_type_selected= this.selectedRowData.type;
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
-    if(!this.alert_category_selected+this.alert_type_selected == "LS" || !this.alert_category_selected+this.alert_type_selected == "FA" || !this.alert_category_selected+this.alert_type_selected == "FI"
-    || !this.alert_category_selected+this.alert_type_selected == "FP" || !this.alert_category_selected+this.alert_type_selected == "FL" || !this.alert_category_selected+this.alert_type_selected == "FT"){
+    if(this.selectedRowData.alertLandmarkRefs.length > 0){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
     }

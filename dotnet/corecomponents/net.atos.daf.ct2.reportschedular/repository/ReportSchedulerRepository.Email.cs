@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.email.Entity;
@@ -162,7 +163,44 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
+        public async Task<bool> UnSubscribeById(int recipientId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@recipient_id", recipientId);
+                #region Query UnSubscribeById
+                var query = @"update master.scheduledreportrecipient
+                                set state='A'
+                                where id = @recipient_id RETURNING id";
+                #endregion
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return id > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
-
+        public async Task<bool> UnSubscribeAllByEmailId(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@email_id", emailId);
+                #region Query UnSubscribeAllByEmailId
+                var query = @"update master.scheduledreportrecipient
+                                set state='A'
+                                where email = @email_id RETURNING id";
+                #endregion
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return id > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

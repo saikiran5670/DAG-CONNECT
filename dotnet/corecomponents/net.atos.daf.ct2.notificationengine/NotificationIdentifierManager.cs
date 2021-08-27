@@ -142,7 +142,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(unitEnum);
                         if (notificationHistory.AlertTypeEnum == "S" && notificationHistory.AlertCategoryEnum == "L")
                         {
-                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime) * 1000;
+                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime);
                             notificationHistory.ValueAtAlertTimeForHoursofServices = UTCHandling.GetConvertedDateTimeFromUTC(valueAtTimemilisecond, "UTC", "yyyy-MM-ddTHH:mm:ss.fffz");
                         }
                         else

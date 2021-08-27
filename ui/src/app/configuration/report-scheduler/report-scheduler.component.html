@@ -17,7 +17,7 @@
               </span>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -46,13 +46,6 @@
             </div>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <div fxLayout="row" class='areaWidth'>
-                    <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                    <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
-                    <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-                        <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
-                    </mat-menu>
-                    </div> -->
                     <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                         <button mat-flat-button color="primary" (click)="onClickNewReportScheduler()">
                         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblScheduleReport || 'Schedule Report'}}
@@ -60,8 +53,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-       <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+        </div> -->
+       <!-- <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
         <div *ngIf='initData.length > 0'>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
              <ng-container matColumnDef="reportName">      
@@ -146,9 +139,85 @@
             </mat-row>
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-        </div> 
-        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+        </div>  -->
+        
+        <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
+        [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [action2ColumnElements]="action2ColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
+        [viewStatusColumnElements]="viewStatusColumnElements" [showExport]="false" #gridComp>
+
+        <ng-template #topLeftElements let-gridData='rowData'>
+          <div class='areaWidth' fxLayoutAlign="center center">
+            <mat-form-field appearance="outline">
+              <mat-select [(ngModel)]="reportTypeSelection" (selectionChange)="onReportTypeChange($event)"
+                placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}">
+                <mat-option value="0">--All--</mat-option>
+                <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
+                  {{ rer.reportName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class='areaWidth' fxLayoutAlign="center center">
+            <mat-form-field appearance="outline">
+              <mat-select [(ngModel)]="statusSelection" (selectionChange)="onStatusSelectionChange($event)"
+                placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}">
+                <mat-option value="0">--All--</mat-option>
+                <mat-option *ngFor="let rer of StatusList" [value]="rer.id">
+                  {{ rer.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </ng-template>
+
+        <ng-template #topRightElements let-gridData='rowData'>
+          <div *ngIf="!adminAccessType.adminReadOnlyAccess" class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
+              <button mat-flat-button color="primary" (click)="onClickNewReportScheduler()">
+              <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblScheduleReport || 'Schedule Report'}}
+              </button>
+          </div>
+        </ng-template>
+    
+        <ng-template #viewStatusColumnElements let-gridData='rowData'>
+          <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(gridData)" matTooltip="{{ gridData.status == 'A' ? (translationData.lblClickToDeactivate || 'Click to Deactivate') : translationData.lblClickToActivate || 'Click to Activate' }}">
+            <mat-slide-toggle color="primary" [checked]='gridData.status == "A" ? true : false' >
+          </mat-slide-toggle>&nbsp;
+          <span>{{ gridData.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
+          </button>
+        </ng-template>
+    
+        <ng-template #actionColumnElements let-gridData='rowData'>
+          <button class='actionBtn' mat-flat-button (click)="onViewReportScheduler(gridData, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditReportScheduler(gridData, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+            <mat-icon>create</mat-icon>
+          </button>
+          <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDeleteReportScheduler(gridData)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+            <mat-icon class="deleteIcon">delete_outline</mat-icon>
+          </button>
+        </ng-template>
+
+        <ng-template #action2ColumnElements let-gridData='rowData'>
+          <span class="text-truncate"
+            *ngIf="gridData.scheduledReportVehicleRef.length ==1 && gridData.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
+            <span [ngClass]="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
+              (click)="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(gridData) : ''"
+              style="text-decoration: underline;cursor: pointer;">
+              {{ gridData.vehicleGroupAndVehicleList }}</span>
+          </span>
+          <span class="text-truncate"
+            *ngIf="gridData.scheduledReportVehicleRef.length ==1 && gridData.scheduledReportVehicleRef[0].vehicleGroupType == 'S'">{{
+              gridData.vehicleGroupAndVehicleList }}</span>
+          <span class="text-truncate" *ngIf="gridData.scheduledReportVehicleRef.length != 1" class="text-truncate">{{
+            gridData.scheduledReportVehicleRef.length > 0 ? gridData.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
+        </ng-template>
+    
+      </app-data-table>
+
       </mat-card>
+
+      <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </div>
   <div *ngIf='createEditStatus'>
       <app-create-edit-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"

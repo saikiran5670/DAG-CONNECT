@@ -131,22 +131,22 @@ export class AppComponent {
       vin: 'test 05',
       regNo: 'XLRTEM4100G041999'
     },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 6',
-      data: 1627986550000,
-      vehName: 'Veh 6 data',
-      vin: 'test 06',
-      regNo: 'XLRTEM4100G041999'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 7',
-      data: 1627986550000,
-      vehName: 'Veh 7 data',
-      vin: 'test 07',
-      regNo: 'XLRTEM4100G041999'
-    }
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 6',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 6 data',
+    //   vin: 'test 06',
+    //   regNo: 'XLRTEM4100G041999'
+    // },
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 7',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 7 data',
+    //   vin: 'test 07',
+    //   regNo: 'XLRTEM4100G041999'
+    // }
   ];
   private pagetTitles = {
     dashboard: 'Dashboard',
