@@ -250,7 +250,7 @@ namespace net.atos.daf.ct2.group
                 string selectStatement = string.Empty;
 
                 queryOwned = @"                        
-                        SELECT v.id, v.vin
+                        SELECT DISTINCT v.id, v.vin
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
