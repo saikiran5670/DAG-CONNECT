@@ -116,10 +116,9 @@ export class TermsConditionsManagementComponent implements OnInit {
     
    
     let tncObj= {
-      "start_date": "",
-      "end_date": "",
+      
       "created_by": parseInt(localStorage.getItem("accountId")),
-      "_data": this.filelist
+      "data": this.filelist
     }
 
     this.translationService.uploadTermsAndConditions(tncObj).subscribe(data => {
