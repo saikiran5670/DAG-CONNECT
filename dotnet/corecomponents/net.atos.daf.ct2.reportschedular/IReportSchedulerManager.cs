@@ -16,5 +16,7 @@ namespace net.atos.daf.ct2.reportscheduler
         Task<PDFReportScreenModel> GetPDFBinaryFormatById(ReportPDFByidModel request);
         Task<PDFReportScreenModel> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request);
         Task<string> UpdatePDFBinaryRecordByToken(string token);
+        Task<bool> UnSubscribeById(int recipientId);
+        Task<bool> UnSubscribeAllByEmailId(string emailId);
     }
 }
