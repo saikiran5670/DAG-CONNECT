@@ -439,9 +439,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var organizationId = !isGlobal ? GetContextOrgId() : 0;
 
                 char used_type = 'N';
-                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
+                if (_userDetails.UserFeatures.Any(x => x.Name.Contains("Report.ECOScoreReport")))
                     used_type = 'A';
-                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
+                if (_userDetails.UserFeatures.Any(x => x.Name.Contains("Report.ECOScoreReport.Advance")))
                     used_type = 'D';
 
                 Metadata headers = new Metadata();
