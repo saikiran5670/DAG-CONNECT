@@ -122,10 +122,10 @@ export class DataTableComponent implements OnInit {
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if (columnName == "code" || columnName == "name") {
+    // if (columnName == "code" || columnName == "name") {
       if (!(a instanceof Number)) a = a.toString().toUpperCase();
       if (!(b instanceof Number)) b = b.toString().toUpperCase();
-    }
+    // }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
