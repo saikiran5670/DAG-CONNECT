@@ -17,7 +17,10 @@ export class DataTableComponent implements OnInit {
   @Input() columnCodes = [];
   @Input() columnLabels = [];
   @Input() topRightElements;
+  @Input() topLeftElements;
   @Input() actionColumnElements;
+  @Input() action2ColumnElements;
+  @Input() viewStatusColumnElements;
   @Input() selectColumnDataElements;
   @Input() selectColumnHeaderElements;
   @Input() showExport;
@@ -84,10 +87,13 @@ export class DataTableComponent implements OnInit {
         });
       }
     });
+    this.defaultSearchfilter();
+  }
 
+  defaultSearchfilter() {
     this.dataSource.filterPredicate = (data, filter: any) => {
       for(let col of this.columnCodes) {
-        return data[col].toLowerCase().includes(filter)
+        return data[col].toLowerCase().includes(filter.toLowerCase())
       }
     }
   }
@@ -127,6 +133,20 @@ export class DataTableComponent implements OnInit {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
+  }
+
+  filterDataTable(filterValue) {
+    if (filterValue == "") {
+      this.dataSource.filter = '';
+    } else {
+      this.dataSource.filterPredicate = (data, filter: string) => {
+        console.log("filter", filter)
+        console.log("data", data)
+        return data.status === filter;
+      };
+      this.dataSource.filter = filterValue;
+    }
+    this.defaultSearchfilter();
   }
 
 }

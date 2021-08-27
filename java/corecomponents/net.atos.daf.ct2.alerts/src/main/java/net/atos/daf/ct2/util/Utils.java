@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -26,8 +26,11 @@ public class Utils implements Serializable {
     private static ObjectMapper mapper;
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+    public static final String DB_WEEK_ARR [] = new String[]{"SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"};
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     static {
         mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
@@ -86,12 +89,51 @@ public class Utils implements Serializable {
         return timeDiffBetweenDates(startDateTime,endDateTime,formatter);
     }
 
+    public static long convertDateToMillis(String dateTime) {
+        LocalDateTime localTime = LocalDateTime.parse(dateTime, formatter);
+        return localTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    public static String convertMillisecondToDateTime(Long timeInMillis) {
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeInMillis), ZoneId.systemDefault());
+        return ldt.format(formatter);
+    }
+
     public static long millisecondsToSeconds(long milliseconds){
         // Convert milliseconds to seconds
         long seconds_difference = (milliseconds / 1000)% 60;
         return seconds_difference;
     }
 
+    /***
+     * Return name of day in week
+     * From MONDAY to SUNDAY
+     */
+    public static String getCurrentDayOfWeek(){
+        return LocalDate.now().getDayOfWeek().name();
+    }
 
+    /**
+     * Convert db week array to day in week
+     * return name of day in week
+     */
+    public static String getDayOfWeekFromDbArr(String dbWeekArray){
+        String dayWeek="";
+        for(int i=0; i < dbWeekArray.length(); i++){
+            if(dbWeekArray.charAt(i)=='1'){
+                dayWeek = DB_WEEK_ARR[i];
+                break;
+            }
+        }
+        return dayWeek;
+    }
 
+    /**
+     *  Extracts the time as seconds of day, from 0 to 24 * 60 * 60 - 1.
+     *  Returns: the second-of-day equivalent to this time
+     */
+    public static int getCurrentTimeInSecond(){
+        LocalTime localTime = LocalTime.now();
+        return localTime.toSecondOfDay();
+    }
 }

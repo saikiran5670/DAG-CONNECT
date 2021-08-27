@@ -19,9 +19,11 @@ import * as fs from 'file-saver';
 })
 
 export class VehicleDetailsComponent implements OnInit {
+  columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'viewstatus', 'action'];
+  columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Relationship', 'Status', 'Action'];
   actionType: any = '';
   selectedRowData: any = [];
-  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
+  // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @Output() updateRelationshipVehiclesData = new EventEmitter();
@@ -72,7 +74,8 @@ export class VehicleDetailsComponent implements OnInit {
     //   this.processTranslation(data);
     //   // this.loadVehicleData();
     // });
-    this.updateDataSource(this.relationshipVehiclesData)
+    this.initData =this.relationshipVehiclesData;
+    // this.updateDataSource(this.relationshipVehiclesData)
   }
   
   // processTranslation(transData: any) {
@@ -83,22 +86,22 @@ export class VehicleDetailsComponent implements OnInit {
     this.updateRelationshipVehiclesData.emit()
   }
 
-  updateDataSource(tableData: any) {
-    this.initData = tableData;
-    setTimeout(() => {
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) =>{
-        const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
-        return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
+  // updateDataSource(tableData: any) {
+  //   this.initData = tableData;
+  //   setTimeout(() => {
+  //     this.dataSource = new MatTableDataSource(this.initData);
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //     this.dataSource.sortData = (data: String[], sort: MatSort) =>{
+  //       const isAsc = sort.direction === 'asc';
+  //       let columnName = this.sort.active;
+  //       return data.sort((a: any, b: any) => {
+  //         return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+  //       });
+  //     }
 
-    });
-  }
+  //   });
+  // }
 
   compare(a: Number  | String, b: Number  | String, isAsc: boolean, columnName: any){
     if(columnName == "name"  || columnName == "vin"){
@@ -144,7 +147,7 @@ export class VehicleDetailsComponent implements OnInit {
     if(item.tableData){
       this.initData = item.tableData;  
     }
-    this.updateDataSource(this.initData);
+    // this.updateDataSource(this.initData);
   }
 
   showSuccessMessage(msg: any){
@@ -164,7 +167,7 @@ export class VehicleDetailsComponent implements OnInit {
 exportAsCSV(){  
   const title = 'Vehicle Details';
   
-  const header = ['VIN', 'Registration Number', 'Model', 'Relationship','Status'];
+  const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
   
   //Create workbook and worksheet
   let workbook = new Workbook();
@@ -198,7 +201,7 @@ exportAsCSV(){
     }  else if(item.status == 'O'){
       status1 = 'Opt-Out'
     }  
-    worksheet.addRow([item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
+    worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
   }); 
   worksheet.mergeCells('A1:D2'); 
   for (var i = 0; i < header.length; i++) {    

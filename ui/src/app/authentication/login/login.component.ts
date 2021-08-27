@@ -119,14 +119,14 @@ export class LoginComponent implements OnInit {
                           }
                           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
                             this.processTranslation(resp);
-                            this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
+                            this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, response);
                           });
                         }
                         else{
-                          this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                          this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, response);
                         }
                       }, (error) => {
-                        this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                        this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, '');
                       })  
                     });
                   })
@@ -150,14 +150,14 @@ export class LoginComponent implements OnInit {
                       }
                       this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
                         this.processTranslation(resp);
-                        this.openTermsConditionsPopup(data.body, getAccresp[0], "");
+                        this.showOrganizationRolePopup(data.body, getAccresp[0], "", response);
                       });
                     }
                     else{
-                      this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                      this.showOrganizationRolePopup(data.body, getAccresp[0], "", response);
                     }
                   }, (error) => {
-                    this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                    this.showOrganizationRolePopup(data.body, getAccresp[0], "", "");
                   })  
                 } 
               }, (error) => {
@@ -214,7 +214,7 @@ export class LoginComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
-  openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
+  /* openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
     let objData= {
       AccountId: data.accountInfo.id,
       OrganizationId: data.accountOrganization[0].id
@@ -255,7 +255,7 @@ export class LoginComponent implements OnInit {
      });
 
      
-  }
+  } */
 
 
   public onResetPassword(values: object): void {
@@ -277,7 +277,7 @@ export class LoginComponent implements OnInit {
     this.cookieService.set('cookiePolicy', 'true', 365);
   }
 
-  public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any) {
+  public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any, tacValue: any) {
     if(data.accountInfo.id){
       data.accountId = data.accountInfo.id;
     }
@@ -326,7 +326,11 @@ export class LoginComponent implements OnInit {
         organization: options.organization,
         role: options.role,
         accountDetail: accountDetails,
-        accountPreference: accountPreference
+        accountPreference: accountPreference,
+        organization_Id: data.accountOrganization[0].id,
+        account_Id: data.accountInfo.id,
+        translationData: this.translationData,
+        tacValue: tacValue
       }
       this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
       this.dialogRefLogin.afterClosed().subscribe(res => {

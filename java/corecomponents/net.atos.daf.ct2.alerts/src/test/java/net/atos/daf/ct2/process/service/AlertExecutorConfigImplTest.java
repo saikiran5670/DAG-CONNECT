@@ -9,11 +9,8 @@ import net.atos.daf.ct2.process.config.AlertConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.excessiveDistanceDone;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.excessiveGlobalMileage;
@@ -37,7 +34,7 @@ public class AlertExecutorConfigImplTest {
 
         Map<String, Object> functionThresh = new HashMap<>();
 
-        Set<AlertUrgencyLevelRefSchema> refSchemas = new HashSet<>();
+        List<AlertUrgencyLevelRefSchema> refSchemas = new ArrayList<>();
 
         AlertUrgencyLevelRefSchema urgencyLevelRefSchema = AlertUrgencyLevelRefSchema.builder().build();
         urgencyLevelRefSchema.setAlertId(123L);
@@ -83,7 +80,7 @@ public class AlertExecutorConfigImplTest {
 
         Map<String, Object> functionThresh = new HashMap<>();
 
-        Set<AlertUrgencyLevelRefSchema> refSchemas = new HashSet<>();
+        List<AlertUrgencyLevelRefSchema> refSchemas = new ArrayList<>();
 
         AlertUrgencyLevelRefSchema urgencyLevelRefSchema = AlertUrgencyLevelRefSchema.builder().build();
         urgencyLevelRefSchema.setAlertId(123L);
@@ -111,7 +108,7 @@ public class AlertExecutorConfigImplTest {
         Alert alert = outputMessage.getAlert().get().get(0);
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
-        Assert.assertEquals("2000",alert.getValueAtAlertTime());
+        Assert.assertEquals("1000.0",alert.getValueAtAlertTime());
         Assert.assertEquals("900",alert.getThresholdValue());
         Assert.assertEquals("C",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());
