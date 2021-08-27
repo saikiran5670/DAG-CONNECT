@@ -8,15 +8,11 @@ import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.models.kafka.AlertCdc;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
-import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.api.common.state.BroadcastState;
-import org.apache.flink.api.common.state.MapState;
-import org.apache.flink.api.common.state.State;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.runtime.state.KeyedStateFunction;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -28,9 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 
@@ -74,7 +68,6 @@ public class CacheService implements Serializable {
 
     }
 
-
     @Deprecated
     private static DataStream<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> bootCache(StreamExecutionEnvironment env, ParameterTool propertiesParamTool){
         /**
@@ -106,8 +99,6 @@ public class CacheService implements Serializable {
         return tableStream.joinTable(thresholdStream, vinMappingStream);
 
     }
-
-
 
     public static SingleOutputStreamOperator<VehicleAlertRefSchema>  bootDataMartVehicleRef(StreamExecutionEnvironment env, ParameterTool propertiesParamTool){
         TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
@@ -165,7 +156,6 @@ public class CacheService implements Serializable {
         return thresholdStreamObjectStream;
     }
 
-
     @Deprecated
     public static BroadcastStream<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> broadcastCache(StreamExecutionEnvironment env, ParameterTool propertiesParamTool){
         KafkaCdcStream kafkaCdcStream = new KafkaCdcImpl(env, propertiesParamTool);
@@ -174,12 +164,130 @@ public class CacheService implements Serializable {
                 .broadcast(vinAlertMapStateDescriptor);
     }
 
-
-
     public static BroadcastStream<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> broadcastCacheV2(StreamExecutionEnvironment env, ParameterTool propertiesParamTool){
         KafkaCdcStream kafkaCdcStream = new KafkaCdcImpl(env, propertiesParamTool);
         SingleOutputStreamOperator<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> processCDCFlatten = kafkaCdcStream.cdcStreamV2();
         return processCDCFlatten.union(bootCache(env, propertiesParamTool))
                 .broadcast(vinAlertMapStateDescriptor);
     }
+
+
+    public static Tuple2<SingleOutputStreamOperator<VehicleAlertRefSchema>, SingleOutputStreamOperator<Payload<Object>>> loadBootCacheFromDB(StreamExecutionEnvironment env, ParameterTool propertiesParamTool){
+        TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
+
+        String jdbcUrlVinMap = new StringBuilder("jdbc:postgresql://")
+                .append(propertiesParamTool.get(DATAMART_POSTGRES_HOST))
+                .append(":" + propertiesParamTool.get(DATAMART_POSTGRES_PORT) + "/")
+                .append(propertiesParamTool.get(DATAMART_DATABASE))
+                .append("?user=" + propertiesParamTool.get(DATAMART_USERNAME))
+                .append("&password=" + propertiesParamTool.get(DATAMART_PASSWORD))
+                .append("&sslmode="+propertiesParamTool.get(DATAMART_POSTGRES_SSL))
+                .toString();
+
+        String thresholdDefUrlVinMap = new StringBuilder("jdbc:postgresql://")
+                .append(propertiesParamTool.get(MASTER_POSTGRES_HOST))
+                .append(":" + propertiesParamTool.get(MASTER_POSTGRES_PORT) + "/")
+                .append(propertiesParamTool.get(MASTER_DATABASE))
+                .append("?user=" + propertiesParamTool.get(MASTER_USERNAME))
+                .append("&password=" + propertiesParamTool.get(MASTER_PASSWORD))
+                .append("&sslmode="+propertiesParamTool.get(MASTER_POSTGRES_SSL))
+                .toString();
+
+        DataStreamSource<Row> thresholdStream = tableStream.scanTable(propertiesParamTool.get(ALERT_THRESHOLD_FETCH_QUERY), ALERT_THRESHOLD_SCHEMA_DEF,thresholdDefUrlVinMap);
+        DataStreamSource<Row> vinMappingStream = tableStream.scanTable(propertiesParamTool.get(ALERT_MAP_FETCH_QUERY), ALERT_MAP_SCHEMA_DEF,jdbcUrlVinMap);
+
+        SingleOutputStreamOperator<Payload<Object>> thresholdStreamObjectStream = thresholdStream.map(row -> AlertUrgencyLevelRefSchema.builder()
+                        .alertId(Long.valueOf(String.valueOf(row.getField(0))))
+                        .alertCategory(String.valueOf(row.getField(1)))
+                        .alertType(String.valueOf(row.getField(2)))
+                        .alertState(String.valueOf(row.getField(3)))
+                        .urgencyLevelType(String.valueOf(row.getField(4)))
+                        .thresholdValue(row.getField(5) == null ? -1L : Double.valueOf(String.valueOf(row.getField(5))).longValue())
+                        .unitType(String.valueOf(row.getField(6)))
+                        .periodType(String.valueOf(row.getField(7)))
+                        .dayTypeArray(String.valueOf(row.getField(8)))
+                        .startTime(row.getField(9) == null ? 0L : Long.valueOf(String.valueOf(row.getField(9))))
+                        .endTime(row.getField(10) == null ? 0L :   Long.valueOf(String.valueOf(row.getField(10))))
+                        .timestamp(System.currentTimeMillis())
+                        .build()
+                ).returns(AlertUrgencyLevelRefSchema.class)
+                .map(schema -> Payload.builder().data(Optional.of(Tuple2.of(new AlertCdc(), schema))).build())
+                .returns(TypeInformation.of(new TypeHint<Payload<Object>>() {
+                    @Override
+                    public TypeInformation<Payload<Object>> getTypeInfo() {
+                        return super.getTypeInfo();
+                    }
+                }));
+
+
+        SingleOutputStreamOperator<VehicleAlertRefSchema> vinMappingStreamObject = vinMappingStream.map(row -> new VehicleAlertRefSchema()
+                .withAlertId(Long.valueOf(String.valueOf(row.getField(2))))
+                .withVin(String.valueOf(row.getField(1)))
+                .withState("A")
+        ).returns(VehicleAlertRefSchema.class);
+
+       return  Tuple2.of(vinMappingStreamObject, thresholdStreamObjectStream);
+
+    }
+
+
+    public static void updateVinMappingCache(VehicleAlertRefSchema vehicleAlertRefSchema, KeyedBroadcastProcessFunction.Context context) throws Exception {
+        BroadcastState<String, Payload> vinMappingState = context.getBroadcastState(VIN_ALERT_MAP_STATE);
+        Set<Long> vinAlertList = new HashSet<>();
+        if (vehicleAlertRefSchema.getOp().equalsIgnoreCase("I")) {
+            if (vinMappingState.contains(vehicleAlertRefSchema.getVin())) {
+                Payload listPayload = vinMappingState.get(vehicleAlertRefSchema.getVin());
+                vinAlertList = (Set<Long>) listPayload.getData().get();
+                vinAlertList.add(vehicleAlertRefSchema.getAlertId());
+                vinMappingState.put(vehicleAlertRefSchema.getVin(), Payload.builder().data(Optional.of(vinAlertList)).build());
+                logger.info("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
+            } else {
+                logger.info("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
+                vinAlertList.add(vehicleAlertRefSchema.getAlertId());
+                vinMappingState.put(vehicleAlertRefSchema.getVin(), Payload.builder().data(Optional.of(vinAlertList)).build());
+            }
+        }
+        if (vehicleAlertRefSchema.getOp().equalsIgnoreCase("D")) {
+            if (vinMappingState.contains(vehicleAlertRefSchema.getVin())) {
+                vinMappingState.remove(vehicleAlertRefSchema.getVin());
+                logger.info("Alert removed for vin : {}, alert id: {}", vehicleAlertRefSchema, vehicleAlertRefSchema.getAlertId());
+            }
+        }
+    }
+
+    public static void updateAlertDefinationCache(Payload<Object> payload, KeyedBroadcastProcessFunction.Context context) throws Exception {
+
+        Tuple2<AlertCdc, AlertUrgencyLevelRefSchema> thresholdTuple = (Tuple2<AlertCdc, AlertUrgencyLevelRefSchema>) payload.getData().get();
+        logger.info("Alert threshold broadcast payload:: {}", thresholdTuple);
+        BroadcastState<Long, Payload> broadcastState = context.getBroadcastState(THRESHOLD_CONFIG_DESCRIPTOR);
+        AlertCdc f0 = thresholdTuple.f0;
+        AlertUrgencyLevelRefSchema f1 = thresholdTuple.f1;
+        if (Objects.nonNull(f0.getOperation()) && (f0.getOperation().equalsIgnoreCase("D") || f0.getOperation().equalsIgnoreCase("I"))) {
+            logger.info("Removing alert from threshold cache:: {}", f0);
+            try{
+                broadcastState.remove(Long.valueOf(f0.getAlertId()));
+            }catch (Exception e){
+                logger.error("Error while removing threshold from cache:: {}",f0);
+            }
+        } else {
+            logger.info("Adding alert to threshold cache:: {}", f0);
+            List<AlertUrgencyLevelRefSchema> alertDef = new ArrayList<>();
+            if(Objects.nonNull(f1) && broadcastState.contains(Long.valueOf(f1.getAlertId())) ){
+                Payload broadcastPayload = broadcastState.get(Long.valueOf(f1.getAlertId()));
+                alertDef= (List<AlertUrgencyLevelRefSchema>) broadcastPayload.getData().get();
+                alertDef.remove(f1);
+                alertDef.add(f1);
+                broadcastState.put(f1.getAlertId(), Payload.builder().data(Optional.of(alertDef)).build());
+            }else{
+                if(Objects.nonNull(f1) && f1.getAlertId() !=null){
+                    alertDef.add(f1);
+                    broadcastState.put(f1.getAlertId(), Payload.builder().data(Optional.of(alertDef)).build());
+                }
+
+            }
+
+        }
+
+    }
+
 }

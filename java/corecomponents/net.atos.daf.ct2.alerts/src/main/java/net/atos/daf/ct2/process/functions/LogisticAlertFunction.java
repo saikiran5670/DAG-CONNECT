@@ -35,7 +35,7 @@ public class LogisticAlertFunction implements Serializable {
                 if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                     if (thresholdBreach(value, Double.valueOf(urgency.getThresholdValue()))) {
                         logger.info("alert found excessiveDistanceDone ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
-                        return getTarget(status, urgency);
+                        return getTarget(status, urgency,value);
                     }
                 }
             }
@@ -55,7 +55,7 @@ public class LogisticAlertFunction implements Serializable {
                 if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                     if (thresholdBreach(Double.valueOf(status.getGpsStopVehDist()), Double.valueOf(urgency.getThresholdValue()))) {
                         logger.info("alert found excessiveGlobalMileage ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
-                        return getTarget(status, urgency);
+                        return getTarget(status, urgency,status.getGpsStopVehDist());
                     }
                 }
             }
@@ -71,19 +71,23 @@ public class LogisticAlertFunction implements Serializable {
         /**
          * Drive time calculations
          */
-        long diffBetweenDatesInSeconds = timeDiffBetweenDates(status.getGpsStartDateTime(), status.getGpsEndDateTime());
-        long diffSeconds = diffBetweenDatesInSeconds - status.getVIdleDuration();
+        try{
+            long diffBetweenDatesInSeconds = timeDiffBetweenDates(status.getGpsStartDateTime(), status.getGpsEndDateTime());
+            long diffSeconds = diffBetweenDatesInSeconds - status.getVIdleDuration();
 
-        List<String> priorityList = Arrays.asList("C", "W", "A");
-        for(String priority : priorityList){
-            for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
-                if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                    if (thresholdBreach(diffSeconds, Double.valueOf(urgency.getThresholdValue()))) {
-                        logger.info("alert found excessiveDriveTime ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
-                        return getTarget(status, urgency);
+            List<String> priorityList = Arrays.asList("C", "W", "A");
+            for(String priority : priorityList){
+                for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
+                    if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                        if (thresholdBreach(diffSeconds, Double.valueOf(urgency.getThresholdValue()))) {
+                            logger.info("alert found excessiveDriveTime ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
+                            return getTarget(status, urgency,diffSeconds);
+                        }
                     }
                 }
             }
+        }catch (Exception ex){
+            logger.error("Error while checking excessiveDriveTime threshold are breach:: {}",ex);
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
@@ -99,7 +103,7 @@ public class LogisticAlertFunction implements Serializable {
         return aLong > thresholdValue;
     }
 
-    private static Target getTarget(Status status, AlertUrgencyLevelRefSchema urgency) {
+    private static Target getTarget(Status status, AlertUrgencyLevelRefSchema urgency, Object actualValue) {
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
                         .tripid(status.getDocument() !=null ? status.getDocument().getTripID() : "")
@@ -110,7 +114,7 @@ public class LogisticAlertFunction implements Serializable {
                         .alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
                         .thresholdValue("" + urgency.getThresholdValue())
                         .thresholdValueUnitType(urgency.getUnitType())
-                        .valueAtAlertTime(""+status.getGpsStopVehDist())
+                        .valueAtAlertTime(""+actualValue)
                         .urgencyLevelType(urgency.getUrgencyLevelType())
                         .build()))
                 .build();

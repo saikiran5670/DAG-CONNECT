@@ -586,7 +586,7 @@ export class FleetkpiComponent implements OnInit {
     this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
       //console.log(kpiData);
       this.kpiData = kpiData;
-      this.activeVehicles = kpiData['fleetKpis']['vehicleCount'];
+      this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
       this.updateCharts();
       this.dataInterchangeService.getFleetData(kpiData);
 
@@ -605,7 +605,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateCO2Emmission(){
-    let currentValue = this.kpiData['fleetKpis']['co2Emission'];
+    let currentValue = this.kpiData['fleetKpis']?.co2Emission;
     this.currentC02Value =  currentValue > 0  ? currentValue.toFixed(2) : currentValue;
     let _thresholdValue = this.getPreferenceThreshold('co2emission')['value'];//10;
     this.co2Threshold = _thresholdValue;
@@ -617,7 +617,7 @@ export class FleetkpiComponent implements OnInit {
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['co2Emission'];
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
       caretColor = 'caretGreen';
@@ -826,7 +826,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateIdlingTime(){
-    let currentValue = this.kpiData['fleetKpis']['idlingTime'];
+    let currentValue = this.kpiData['fleetKpis']?.idlingTime;
     this.currentIdlingTime =  this.getTimeDisplay(currentValue);
     let _thresholdValue = this.getPreferenceThreshold('idlingtime')['value']; //3600000;
     this.idlingThreshold = _thresholdValue;
@@ -842,7 +842,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
       
     lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
@@ -1054,7 +1054,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateDrivingTime(){
-    let currentValue = this.kpiData['fleetKpis']['drivingTime'];
+    let currentValue = this.kpiData['fleetKpis']?.drivingTime;
     this.currentDrivingTime =  this.getTimeDisplay(currentValue);
     let _thresholdValue = this.getPreferenceThreshold('drivingtime')['value']; //3600000;
     this.drivingThreshold = _thresholdValue;
@@ -1070,7 +1070,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
 
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
@@ -1282,7 +1282,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateDistance(){
-    let currentValue = this.kpiData['fleetKpis']['distance'];
+    let currentValue = this.kpiData['fleetKpis']?.distance;
     this.currentDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
     let _thresholdValue = this.getPreferenceThreshold('totaldistance')['value'];//5000000;
     this.distanceThreshold = _thresholdValue;
@@ -1297,7 +1297,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
 
      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
@@ -1508,7 +1508,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumed(){
-    let currentValue = this.kpiData['fleetKpis']['fuelConsumed'];
+    let currentValue = this.kpiData['fleetKpis']?.fuelConsumed;
     this.currentFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
     let _thresholdValue = this.getPreferenceThreshold('fuelconsumed')['value']; // 5000000;
     this.fuelConsumedThreshold = _thresholdValue;
@@ -1523,7 +1523,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
       
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
 
@@ -1735,7 +1735,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateIdlingFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
+    let currentValue = this.kpiData['fleetKpis']?.idlingfuelconsumption;
     this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
     let _thresholdValue = this.getPreferenceThreshold('fuelusedidling')['value']; //5000000;
     this.fuelUsedThreshold = _thresholdValue;
@@ -1749,7 +1749,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
 
     lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
@@ -1960,7 +1960,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['fuelConsumption']; // value of fuel consumption is actually fuelConsumed from api
+    let currentValue = this.kpiData['fleetKpis']?.fuelConsumption; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
     let convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
@@ -1976,7 +1976,7 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
-    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
 
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);

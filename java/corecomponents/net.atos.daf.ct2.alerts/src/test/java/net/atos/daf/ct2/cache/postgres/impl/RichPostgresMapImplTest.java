@@ -22,23 +22,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.*;
 
-@RunWith(PowerMockRunner.class)
+
 public class RichPostgresMapImplTest {
-
-    @InjectMocks
-    private RichPostgresMapImpl richPostgresMap;
-    private ParameterTool parameterTool;
-
-    @Mock
-    private Connection connection;
-
-    @Before
-    public void setUp() throws Exception {
-        File resourcesFile = new File("src/test/resources/application-local-test.properties");
-        parameterTool = ParameterTool.fromPropertiesFile(resourcesFile);
-        richPostgresMap = new RichPostgresMapImpl(parameterTool);
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void open() throws Exception {

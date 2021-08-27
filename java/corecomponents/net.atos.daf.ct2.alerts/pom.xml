@@ -196,7 +196,7 @@
     </dependencies>
 
     <build>
-        <finalName>alert-processing-${version}</finalName>
+        <finalName>alert-processing-${project.version}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

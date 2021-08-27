@@ -285,7 +285,7 @@ ngOnDestroy(){
             this.selectionTimeRange('today');}
             
           if(this._state.fromMoreAlerts == true){
-            this.selectionTimeRange('last3month');}
+            this.selectionTimeRange('today');}
             }
       });
     });
@@ -543,6 +543,13 @@ ngOnDestroy(){
   }
   else if(this._state.fromDashboard == true && this._state.repairFlag == true){
     this.logBookForm.get('alertCategory').setValue("R");
+  }
+
+  //for alerts & notification individual alert click
+  if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertLevel);
+    this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+    this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
   }
 }
 }
@@ -887,6 +894,12 @@ ngOnDestroy(){
     }
     if(this._state.fromDashboard == true && this._state.repairFlag == true){
       this.logBookForm.get('alertCategory').setValue("R");
+    }
+      //for alerts & notification individual alert click
+    if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+      this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertLevel);
+      this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
     }
   }
   }

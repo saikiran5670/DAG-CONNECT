@@ -89,7 +89,7 @@
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per"  style="width:34%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
-              <mat-label class='custom-font'>
+              <mat-label class='custom-font1'>
                 {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
               </mat-label>
             </div>
@@ -181,7 +181,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
-                </mat-label>
+                </mat-label>              
                 <mat-form-field appearance="outline" class="full-width">
                   <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput 
                     formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
