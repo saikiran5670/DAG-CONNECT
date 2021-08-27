@@ -488,16 +488,16 @@ getUnique(arr, comp) {
     this.reportTypeSelection = parseInt(_event.value);
     if (this.reportTypeSelection == 0 && this.statusSelection == 0) {
       // this.updateDatasource(this.schedulerData); //-- load all data
-      this.gridComp.updateDataSource(this.schedulerData);
+      this.gridComp.updatedTableData(this.schedulerData);
     } else if (this.reportTypeSelection == 0 && this.statusSelection != 0) {
       let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
       if (filterData) {
         // this.updateDatasource(filterData);
-        this.gridComp.updateDataSource(filterData);
+        this.gridComp.updatedTableData(filterData);
       }
       else {
         // this.updateDatasource([]);
-        this.gridComp.updateDataSource([]);
+        this.gridComp.updatedTableData([]);
       }
     } else {
       let selectedReportType = this.reportTypeSelection;
@@ -507,7 +507,7 @@ getUnique(arr, comp) {
         reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
       // this.updateDatasource(reportSchedulerData);
-      this.gridComp.updateDataSource(reportSchedulerData);
+      this.gridComp.updatedTableData(reportSchedulerData);
     }
   }
 
@@ -515,26 +515,26 @@ getUnique(arr, comp) {
     this.statusSelection = _event.value == '0' ? parseInt(_event.value) : _event.value;
     if (this.reportTypeSelection == 0 && this.statusSelection == 0) {
       // this.updateDatasource(this.schedulerData); //-- load all data
-      this.gridComp.updateDataSource(this.schedulerData);
+      this.gridComp.updatedTableData(this.schedulerData);
     } else if (this.statusSelection == 0 && this.reportTypeSelection != 0) {
       let filterData = this.schedulerData.filter(item => item.reportId === this.reportTypeSelection);
       if (filterData) {
         // this.updateDatasource(filterData);
-        this.gridComp.updateDataSource(filterData);
+        this.gridComp.updatedTableData(filterData);
       }
       else {
         // this.updateDatasource([]);
-        this.gridComp.updateDataSource([]);
+        this.gridComp.updatedTableData([]);
       }
     } else if (this.statusSelection != 0 && this.reportTypeSelection == 0) {
       let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
       if (filterData) {
         // this.updateDatasource(filterData);
-        this.gridComp.updateDataSource(filterData);
+        this.gridComp.updatedTableData(filterData);
       }
       else {
         // this.updateDatasource([]);
-        this.gridComp.updateDataSource([]);
+        this.gridComp.updatedTableData([]);
       }
     } else {
       let selectedReportType = this.reportTypeSelection;
@@ -544,7 +544,7 @@ getUnique(arr, comp) {
         reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
       // this.updateDatasource(reportSchedulerData);
-      this.gridComp.updateDataSource(reportSchedulerData);
+      this.gridComp.updatedTableData(reportSchedulerData);
     }
   }
 
