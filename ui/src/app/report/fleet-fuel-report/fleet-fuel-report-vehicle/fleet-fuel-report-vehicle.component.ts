@@ -28,13 +28,15 @@ import { ViewChildren } from '@angular/core';
 import {VehicletripComponent} from 'src/app/report/fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component'
 import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
+import { DatePipe } from '@angular/common';
 
 
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
   templateUrl: './fleet-fuel-report-vehicle.component.html',
-  styleUrls: ['./fleet-fuel-report-vehicle.component.less']
+  styleUrls: ['./fleet-fuel-report-vehicle.component.less'],
+  providers: [DatePipe]
 })
 export class FleetFuelReportVehicleComponent implements OnInit {
   @Input() translationData: any;
@@ -109,6 +111,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
+  chartLabelDateFormat:any ='MM/DD/YYYY';
   chartsLabelsdefined: any = [];
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData2:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -140,7 +143,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: 'Minutes'    
         }
-      }]
+      }],
+      xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
   lineChartOptions = {
@@ -166,7 +185,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: 'No of Trips'    
         }
-      }]
+      }],
+      xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
   lineChartOptions2 = {
@@ -192,7 +227,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
         }
-      }]
+      }],
+      xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
   lineChartOptions3 = {
@@ -218,7 +269,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'    
         }
-      }]
+      }],
+      xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
   lineChartOptions4 = {
@@ -244,7 +311,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: 'Ton'    
         }
-      }]
+      }],
+       xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
   lineChartOptions5 = {
@@ -270,7 +353,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
         }
-      }]
+      }],
+       xAxes: [{       
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     }
   };
 
@@ -301,11 +400,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: 'Number of Trips'    
         }}
       ],
-      xAxes:[
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,         
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     },
   };
   barChartOptions1= {
@@ -326,11 +437,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes'       
         }}
       ],
-      xAxes:[
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     },
   };
   barChartOptions2= {
@@ -351,11 +474,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  
         }}
       ],
-      xAxes:[
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     },
   };
   barChartOptions4= {
@@ -376,14 +511,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: 'Ton'    
         }}
       ],
-      xAxes:[
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,
-          // gridLines: {
-          //   drawOnChartArea: false
-          // }
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     },
   };
   barChartOptions5= {
@@ -404,11 +548,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
         }}
       ],
-      xAxes:[
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }] 
     },
   };
   barChartOptions3= {
@@ -428,15 +584,24 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon' 
         }}
-      ],
-      xAxes:[
+      ],    
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
         {
-          barThickness: 6,
-          // gridLines: {
-          //   drawOnChartArea: false
-          // }
-        }
-      ]
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Dates'   
+      }      
+    }]      
     }
   };
 
@@ -471,7 +636,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) {}
+              private reportMapService: ReportMapService, private datePipe: DatePipe) {}
                defaultTranslation(){
                 this.translationData = {
                   lblSearchReportParameters: 'Search Report Parameters'
@@ -647,7 +812,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
-  
+   
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
          _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
@@ -826,11 +991,17 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   setChartData(graphData: any){
+    this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
+    this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
+   
     graphData.forEach(e => {
       var date = new Date(e.date);
-      let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
+     // let resultDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+      let resultDate= Util.convertDateToUtc(date); 
+      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy'); 
       this.barChartLabels.push(resultDate);
-      this.barData.push(e.numberofTrips);
+     
+      this.barData.push({ x:resultDate , y:e.numberofTrips });
       //let convertedFuelConsumed = e.fuelConsumed / 1000;
       // this.co2Chart.push(e.co2Emission);
       // this.distanceChart.push(e.distance);
@@ -839,21 +1010,42 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);  
       let convertedFuelConsumed = this.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
-      this.fuelConsumedChart.push(convertedFuelConsumed);      
-      this.co2Chart.push(e.co2Emission);
+      this.fuelConsumedChart.push({ x:resultDate , y: convertedFuelConsumed});      
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission });
       let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
-      this.distanceChart.push(convertedDistance);
+      this.distanceChart.push({ x:resultDate , y: convertedDistance });
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
-      this.fuelConsumptionChart.push(convertedFuelConsumption);      
+      this.fuelConsumptionChart.push({ x:resultDate , y: convertedFuelConsumption });      
       let minutes = this.convertTimeToMinutes(e.idleDuration);
-      this.idleDuration.push(minutes);  
-     
-        
+      this.idleDuration.push({ x:resultDate , y:minutes });  
     })   
 
     this.barChartLegend = true;
     this.barChartPlugins = [];
-    if(this.ConsumedChartType == 'Bar'){
+    this.chartsLabelsdefined=[];
+    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
+      let startDate = `${this.startDateValue.getMonth()+1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else{
+      let startDate = `${this.startDateValue.getMonth()+1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined;   
+    if(this.ConsumedChartType == 'Bar'){     
       this.barChartOptions3.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -865,14 +1057,48 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           display: true,
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
         }
-      }];      
+      }]; 
+      this.barChartOptions3.scales.xAxes= [{  
+        barThickness: 6,
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+      }     
+      }];     
       this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon', 
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  if(this.TripsChartType == 'Bar'){
+  if(this.TripsChartType == 'Bar'){    
+    this.barChartOptions.scales.xAxes= [{  
+      barThickness: 6,
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+    }     
+    }];     
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -880,6 +1106,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.Co2ChartType == 'Bar'){
+   this.barChartOptions4.scales.xAxes= [{  
+      barThickness: 6,
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+    }     
+    }];     
     this.barChartData3= [
       { data: this.co2Chart,
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Ton' : 'Ton' ,
@@ -887,7 +1130,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DistanceChartType == 'Bar'){
-    this.barChartOptions2.scales.yAxes= [{
+   this.barChartOptions2.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
       type: 'linear',
@@ -899,6 +1142,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'   
       }
     }]; 
+    this.barChartOptions2.scales.xAxes= [{  
+      barThickness: 6,
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'   
+    }     
+    }]; 
     this.barChartData4= [
       { data: this.distanceChart,
         label:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  ,
@@ -906,7 +1166,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DurationChartType == 'Bar'){
-    this.barChartOptions5.scales.yAxes= [{
+   this.barChartOptions5.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
       type: 'linear',
@@ -918,13 +1178,47 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
       }
     }]; 
+    this.barChartOptions5.scales.xAxes= [{  
+      barThickness: 6,
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon',  
+    }     
+    }]; 
     this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  if(this.ConsumedChartType == 'Bar'){   
+  if(this.ConsumedChartType == 'Bar'){  
+   this.barChartOptions1.scales.xAxes= [{  
+      barThickness: 6,
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      },        
+    scaleLabel: {
+      display: true,
+      labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+    }     
+    }];     
     this.barChartData6= [
       { data: this.idleDuration,
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes' ,
@@ -947,16 +1241,49 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
         }
       }];
+      this.lineChartOptions3.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'    
+      }     
+      }]; 
+      
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon') },];
   }
     if(this.TripsChartType == 'Line')
     {
+    this.lineChartOptions.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'No Of Trips'    
+      }     
+      }]; 
+   
     this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-      let data2 = this.prefUnitFormat == 'dunit_Metric' ?  'Ton' : 'Ton';
-      
+     let data2 = this.prefUnitFormat == 'dunit_Metric' ?  'Ton' : 'Ton';      
         this.lineChartOptions4.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -969,12 +1296,27 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: 'Ton'    
         }
       }];
-
+      this.lineChartOptions4.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Ton'    
+      }     
+      }]; 
     this.lineChartData3= [{ data: this.co2Chart, label: 'Ton'},];
   }
     if(this.DistanceChartType == 'Line')
     {    
-        this.lineChartOptions2.scales.yAxes= [{
+     this.lineChartOptions2.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
@@ -986,13 +1328,28 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles'    
         }
       }];
+      this.lineChartOptions2.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles'    
+      }     
+      }]; 
 
     this.lineChartData4= [{ data: this.distanceChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles') }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-   
-      this.lineChartOptions5.scales.yAxes= [{
+   this.lineChartOptions5.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
@@ -1004,15 +1361,46 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
         }
       }];
+      this.lineChartOptions5.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+      }     
+      }]; 
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon') }, ];
   }
     if(this.DurationChartType == 'Line')
     {
+    this.lineChartOptions1.scales.xAxes= [{  
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString: 'Minutes'    
+      }     
+      }];
     this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
-    this.lineChartLabels = this.barChartLabels; 
-    this.lineChartColors= [
+   this.lineChartColors= [
       {
         borderColor:'#7BC5EC',
         backgroundColor: 'rgba(255,255,0,0)',
@@ -1021,7 +1409,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   
     this.lineChartPlugins = [];
     this.lineChartType = 'line';
-      
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined; 
   }
 
   miliLitreToLitre(_data: any){
@@ -1178,22 +1567,27 @@ setPrefFormatDate(){
   switch(this.prefDateFormat){
     case 'ddateformat_dd/mm/yyyy': {
       this.dateFormats.display.dateInput = "DD/MM/YYYY";
+      this.chartLabelDateFormat='DD/MM/YYYY';
       break;
     }
     case 'ddateformat_mm/dd/yyyy': {
       this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      this.chartLabelDateFormat='MM/DD/YYYY';
       break;
     }
     case 'ddateformat_dd-mm-yyyy': {
       this.dateFormats.display.dateInput = "DD-MM-YYYY";
+      this.chartLabelDateFormat='DD-MM-YYYY';
       break;
     }
     case 'ddateformat_mm-dd-yyyy': {
       this.dateFormats.display.dateInput = "MM-DD-YYYY";
+      this.chartLabelDateFormat='MM-DD-YYYY';
       break;
     }
     default:{
       this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      this.chartLabelDateFormat='MM/DD/YYYY';
     }
   }
 }

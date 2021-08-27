@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, PortalConstants.AccountValidation.CREATE_REQUIRED);
                 }
                 // Length validation
-                if ((request.EmailId.Length > 50) || (request.FirstName.Length > 30)
+                if ((request.EmailId.Length > 120) || (request.FirstName.Length > 30)
                 || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out int validOrgId))
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.INVALID_DATA);
@@ -172,7 +172,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The AccountId, EmailId address, first name, last name is required.");
                 }
                 // Length validation
-                if ((request.EmailId.Length > 50) || (request.FirstName.Length > 30)
+                if ((request.EmailId.Length > 120) || (request.FirstName.Length > 30)
                 || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out int validOrgId))
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");

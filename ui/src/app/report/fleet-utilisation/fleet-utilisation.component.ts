@@ -105,7 +105,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   activeVehicleChartType : boolean = true;
   distanceChartType : boolean = false;
   fleetUtilReportId: any = 5;
-  chartLabelDateFormat:any ='';
+  chartLabelDateFormat:any ='MM/DD/YYYY';
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -1044,25 +1044,51 @@ calendarOptions: CalendarOptions = {
     this.calendarValue = [];
     chartData.forEach(e => {
       var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
-     var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
+      var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
       this.chartsLabelsdefined.push(resultDate);
     
-      this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      let averagedistanceperday= (this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
       let avgDistBarData= ((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
       this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
       this.calendarSelectedValues(e);   
     });
+    this.chartsLabelsdefined=[];
+    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
+      let startDate = `${this.startDateValue.getMonth()+1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else{
+      let startDate = `${this.startDateValue.getMonth()+1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
     this.assignChartData();
   }
 
   assignChartData(){
     this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    let startDate =this.startDateValue;
-    let endDate = this.endDateValue;        
-    this.chartsLabelsdefined=[ startDate, endDate ]
+    // let startDate =this.startDateValue;
+    // let endDate = this.endDateValue;        
+    // this.chartsLabelsdefined=[ startDate, endDate ]
+  
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined;   
     this.barChartData = [
       { 
         label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)',
@@ -1121,8 +1147,8 @@ calendarOptions: CalendarOptions = {
         data: this.lineChartVehicleCount,	    
         },
     ];
-    this.barChartLabels = this.chartsLabelsdefined;
-    this.lineChartLabels = this.chartsLabelsdefined;   
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined;    
   }
 
   calendarSelectedValues(element: any){
