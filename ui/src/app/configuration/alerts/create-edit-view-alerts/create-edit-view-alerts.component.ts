@@ -599,7 +599,7 @@ proceedStep(prefData: any, preference: any){
     let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
     vehicleGroups.forEach(element => {
       let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
-      if(vehGrp.length > 0){
+      if(vehGrp.length > 0 && vehGrp.vehicleGroupId!=0){
         this.vehicleGroupList.push(vehGrp[0]);
       }
     });
