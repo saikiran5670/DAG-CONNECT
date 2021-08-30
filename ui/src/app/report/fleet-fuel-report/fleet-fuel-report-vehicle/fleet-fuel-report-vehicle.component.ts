@@ -991,8 +991,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   setChartData(graphData: any){
-    // this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
-    // this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
+    this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
+    this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
+   
     graphData.forEach(e => {
       var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
@@ -1021,15 +1022,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
     this.barChartLegend = true;
     this.barChartPlugins = [];
-
+    this.chartsLabelsdefined=[];
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = `${this.startDateValue.getDate()}/${this.startDateValue.getMonth()+1}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}/${this.endDateValue.getMonth()+1}/${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);  
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = `${this.startDateValue.getDate()}-${this.startDateValue.getMonth()+1}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}-${this.endDateValue.getMonth()+1}-${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.convertDateToUtc(this.startDateValue);
+      let endDate = Util.convertDateToUtc(this.endDateValue);
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
@@ -1408,7 +1409,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   
     this.lineChartPlugins = [];
     this.lineChartType = 'line';
-    
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined; 
   }
 
   miliLitreToLitre(_data: any){
