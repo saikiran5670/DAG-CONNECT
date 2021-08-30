@@ -8,18 +8,17 @@
             <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
         </div>
     </div>
-    <mat-card class='mat-elevation-z'>
+    <mat-card *ngIf='organisationData' class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Organisation Details
-                    </span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblOrganisationDetails || 'Organisation Details' }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start" class='areaWidth'>
                  <mat-form-field appearance="outline">
                     <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
                       <mat-option *ngFor="let data of organisationList" [value]="data.id">
-                        {{data.name}}
+                        {{ data.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -30,7 +29,7 @@
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblID || 'ID' }}</span></mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.organizationId}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.organizationId }}</span>
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -38,13 +37,13 @@
                             <span>{{ translationData.lblName || 'Name' }}</span>
                         </mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.organizationName}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.organizationName }}</span>
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblStreetName || 'Street Name' }}</span></mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.addressStreet}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.addressStreet }}</span>
                         </div>
                     </div>
                     <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -58,13 +57,12 @@
                 </div>
 
                 <div fxLayout="row" class="full-width margin-bottom-xlg">
-                   
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblStreetNumber || 'Street Number' }}</span>
                         </mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.addressStreetNumber}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.addressStreetNumber }}</span>
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -72,25 +70,24 @@
                             <span>{{ translationData.lblPostalCode || 'Postal Code' }}</span>
                         </mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.postalCode}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.postalCode }}</span>
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblCity || 'City' }}</span></mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.city}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.city }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div fxLayout="row" class="full-width margin-bottom-xlg">
-                    
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblCountry || 'Country' }}</span>
                         </mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.country}}</span>
+                            <span style='font-weight: 500!important;'>{{ organisationData.country }}</span>
                         </div>
                     </div>
                 </div>
@@ -102,22 +99,21 @@
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Preferences Settings
+                            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPreferencesSettings || 'Preferences Settings' }}
                                 <mat-icon *ngIf='!editPrefereneceFlag' (click)="onPreferenceEdit()" style="cursor: pointer;">edit</mat-icon>
                             </span>
                         </div>
                     </div>
-                    <!-- <div *ngFor="let orgPreferenceData of organisationData.organizationPreference"> -->
                     <div>
                         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblLanguage || 'Language' }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.languageName}}</span>
+                                    <span style='font-weight: 500!important;'>{{ prefDefault.language }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)" formControlName="language" required>
+                                        <mat-select (selectionChange)="onSelectionChange($event)" formControlName="language" required>
                                             <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
@@ -130,11 +126,11 @@
                                     <span>{{ translationData.lblTimeZone || 'Time Zone' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span class="text-align" style='font-weight: 500!important;'>{{organisationData.timezone}}</span>
+                                    <span class="text-align" style='font-weight: 500!important;'>{{ prefDefault.timezone }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)"
+                                        <mat-select (selectionChange)="onSelectionChange($event)"
                                             formControlName="timeZone" required>
                                             <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -148,11 +144,11 @@
                                     <span class="text-truncate">{{ translationData.lblUnit || 'Unit' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.unit}}</span>
+                                    <span style='font-weight: 500!important;'>{{ prefDefault.unit }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)"
+                                        <mat-select (selectionChange)="onSelectionChange($event)"
                                          formControlName="unit"
                                             required>
                                             <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
@@ -168,11 +164,11 @@
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblCurrency || 'Currency' }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.currency}}</span>
+                                    <span style='font-weight: 500!important;'>{{ prefDefault.currency }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)"
+                                        <mat-select (selectionChange)="onSelectionChange($event)"
                                             formControlName="currency" required>
                                             <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -187,11 +183,11 @@
                                     <span>{{ translationData.lblDateFormat || 'Date Format' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.dateFormat}}</span>
+                                    <span style='font-weight: 500!important;'>{{ prefDefault.dateFormat }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)"
+                                        <mat-select (selectionChange)="onSelectionChange($event)"
                                             formControlName="dateFormat" required>
                                             <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -205,11 +201,11 @@
                                     <span>{{ translationData.lblTimeFormat || 'Time Format' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.timeFormat}}</span>
+                                    <span style='font-weight: 500!important;'>{{ prefDefault.timeFormat }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)"
+                                        <mat-select (selectionChange)="onSelectionChange($event)"
                                             formControlName="timeFormat" required>
                                             <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -225,11 +221,11 @@
                                 <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                         }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{vehicleOptIn}}</span>
+                                    <span style='font-weight: 500!important;'>{{ vehicleOptIn }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)" formControlName="vehicleDefaultStatus" required>
+                                        <mat-select (selectionChange)="onSelectionChange($event)" formControlName="vehicleDefaultStatus" required>
                                             <mat-option *ngFor="let rer of vehicleStatusDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
@@ -242,11 +238,11 @@
                                     <span>{{ translationData.lblDriverDefaultStatus || 'Driver Default Status' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{driverOptIn}}</span>
+                                    <span style='font-weight: 500!important;'>{{ driverOptIn }}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)" formControlName="driverDefaultStatus" required>
+                                        <mat-select (selectionChange)="onSelectionChange($event)" formControlName="driverDefaultStatus" required>
                                             <mat-option *ngFor="let rer of driverStatusDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
@@ -256,6 +252,7 @@
                             </div>
                             <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+                                <span *ngIf="!editPrefereneceFlag">{{ '-' }}</span>
                                 <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
                                   <div class="areaWidth min-width-15-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
                                     <button *ngIf="this.uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
@@ -264,10 +261,10 @@
                                     <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
                                   </div>
                                   <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
-                                    <mat-form-field appearance="outline">
-                                      <!-- <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input> -->
+                                    <!-- <mat-form-field appearance="outline">
+                                      <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
                                       <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                     <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
                                       <mat-form-field appearance="outline">
                                           <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
@@ -276,42 +273,42 @@
                                     </div> -->
                                   </div>
                                 </div>
-                                <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
-                                <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                                <span *ngIf="editPrefereneceFlag">{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
+                                <!-- <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
                                     The total size must not exceed {{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                                     | byteFormat}}).
                                 </mat-error>
                                 <mat-error *ngIf="imageEmptyMsg">
                                     {{ translationData.lblEmptyFile || 'Empty File' }}
-                                </mat-error>
+                                </mat-error> -->
                               </div>
                         </div>
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
                             <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
-                              <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
                                 <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
-                              </div>
-                              <div fxLayout="row" fxLayoutAlign="left center">
-                                <mat-form-field appearance="outline" style='width: 35%'>
-                                  <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
-                                  <span matSuffix>min</span>   
-                                </mat-form-field>
-                                <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
-                              </div>
-                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')">
-                                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
-                              </mat-error>
-                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
-                                  {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
-                              </mat-error>
-                              <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
-                                  {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
-                              </mat-error>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{ organisationData.pageRefreshTime ? organisationData.pageRefreshTime : '-' }}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" style='width: 35%'>
+                                        <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                                        <span matSuffix>min</span>   
+                                    </mat-form-field>
+                                    <span style="margin: 10px 0px 0px 10px;">({{ translationData.lblminimum1minormaximum60min || 'minimum 1 min or maximum 60 min' }})</span>
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')">
+                                        {{ translationData.lblPleaseEnterRefreshTime || 'Please Enter Refresh Time' }}
+                                    </mat-error>
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                                        {{ translationData.lblRefreshTimecannotbegreaterthan60 || 'Refresh Time cannot be greater than 60' }}
+                                    </mat-error>
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                                        {{ translationData.lblRefreshTimecannotbelessthan1 || 'Refresh Time cannot be less than 1' }}
+                                    </mat-error>
+                                </div>
                             </div>
                           </div>
                     </div>
                     <mat-card-actions class='no-margin no-padding'>
-                           
                         <div *ngIf="editPrefereneceFlag" fxLayout="column" fxLayoutAlign="center flex-end">
                             <div fxLayout="row" class='areaWidth'>
                                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
