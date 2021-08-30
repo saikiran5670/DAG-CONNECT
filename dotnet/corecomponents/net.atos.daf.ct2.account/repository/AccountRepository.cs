@@ -818,27 +818,73 @@ namespace net.atos.daf.ct2.account
                                     SELECT vg.id,vg.name,ar.access_type,
                                      CASE WHEN (vg.group_type ='D' and vg.function_enum='A') 
 						                  THEN (
-                                                SELECT count(veh.id) 
-									            FROM master.vehicle veh 
-									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
-									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                       AND ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                       OR (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
-									                       AND ors.state='A'
-									                       AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+                                                -- Fetch Owned+Visible vehicles from vehicle group type 'D'
+                                                -- Fetch Owned vehicles from vehicle group type 'D'
+                                                SELECT COUNT(id)
+                                                FROM
+                                                (
+                                                    SELECT veh.id
+									                FROM master.vehicle veh 
+									                INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
+									                INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
+									                            AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                            AND ors.state='A'
+									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+                                                    UNION
+                                                    SELECT v.id
+                                                        FROM master.vehicle v
+                                                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        WHERE 
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        else COALESCE(end_date,0) = 0 end
+
+                                                        UNION
+                                                        -- Visible vehicles of type D, method O
+                                                        SELECT v.id
+                                                        FROM master.group grp
+                                                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                                                        WHERE 
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        else COALESCE(end_date,0) = 0 end
+                                                 ) owned_visible_vehicles
                                                 )
 				                          WHEN (vg.group_type ='D' and vg.function_enum='V')
                                           THEN (
-						                        SELECT count(veh.id) 
-									            FROM master.vehicle veh 
-									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
-									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                        AND (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
-									                        AND ors.state='A'
-									                        AND CASE WHEN COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+                                                -- Fetch Visible vehicles from vehicle group type 'D'
+						                        -- Visible vehicles of type G
+                                                SELECT COUNT(id)
+                                                FROM
+                                                (
+                                                    SELECT v.id
+                                                    FROM master.vehicle v
+                                                    INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                                    INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    WHERE 
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    else COALESCE(end_date,0) = 0 end
+
+                                                    UNION
+                                                    -- Visible vehicles of type D, method O
+                                                    SELECT v.id
+                                                    FROM master.group grp
+                                                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                                                    WHERE 
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    else COALESCE(end_date,0) = 0 end
+                                                ) visible_vehicles
                                                )
 				                          WHEN (vg.group_type ='D' and vg.function_enum='O') 
 						                  THEN (
+                                                -- Fetch Owned vehicles from vehicle group type 'D'
                                                 SELECT count(veh.id) 
 									            FROM master.vehicle veh 
 									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
@@ -848,10 +894,11 @@ namespace net.atos.daf.ct2.account
 									                        AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
                                                )
 							              ELSE (
+                                                -- Fetch Owned vehicles from vehicle group type 'G'
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
                                                 WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))
+                                                      and om.owner_org_id=@organization_id and os.code='Owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
@@ -862,7 +909,7 @@ namespace net.atos.daf.ct2.account
                                     INNER JOIN master.group ag on ag.id = ar.account_group_id and ag.organization_id=@organization_id and ag.object_type='A'                             
                                     LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
 							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id 
+							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
                                     WHERE vg.organization_id=@organization_id
                                     ORDER BY vg.id desc 
                                 ) vehiclegroup
