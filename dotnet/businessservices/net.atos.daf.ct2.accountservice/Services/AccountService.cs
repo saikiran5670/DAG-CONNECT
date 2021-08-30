@@ -1687,7 +1687,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (accessList.Count > 0)
                     {
                         groupIds = accessList.Select(c => c.VehicleGroupId).ToArray();
-                        var count = await _groupManager.GetVehicleCount(groupIds, request.OrganizationId);
+                        var count = await _groupManager.GetVehiclesCount(groupIds, request.OrganizationId);
                         accountDetail.VehicleCount = count;
                     }
                     response.AccountGroupDetail.Add(accountDetail);

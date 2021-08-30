@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
         public const string UN_SUBCRIBE_FAIL_MSG = "Un-Subscribe to the report failed.";
         public const string UN_SUBCRIBE_FAIL_MSG2 = "Un-Subscribe to the report failed with error {0}";
         public const string UN_SUBCRIBE_ALL_SUCCESS_MSG = "Un-Subscribe to all the reports successfully.";
-        public const string UN_SUBCRIBE_ALL_FAIL_MSG = "Un-Subscribe to the all tje reports failed.";
+        public const string UN_SUBCRIBE_ALL_FAIL_MSG = "Un-Subscribe to the all the reports failed.";
         public const string UN_SUBCRIBE_ALL_FAIL_MSG2 = "Un-Subscribe to the all the reports failed with error {0}";
         public const string UN_SUBCRIBE_CALLED_MSG = "Un-Subscribe by recipent ID is called.";
         public const string UN_SUBCRIBE_ALL_CALLED_MSG = "Un-Subscribe All by email id is called.";

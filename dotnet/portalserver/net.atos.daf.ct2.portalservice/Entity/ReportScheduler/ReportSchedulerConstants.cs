@@ -17,5 +17,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         public const string REPORTSCHEDULER_UPDATE_FAILED_MSG = "There is an error while updatating report scheduler.";
         public const string REPORTSCHEDULER_DATA_NOT_FOUND_MSG = "Report Scheduler are not found.";
         public const string VEHICLE_GROUP_NAME = "VehicleGroup_{0}_{1}";
+        public const string REPORTSCHEDULER_RECIPENT_ID_NOT_FOUND = "Recipent id has to ne non zero.";
+        public const string REPORTSCHEDULER_EMAIL_ID_NOT_FOUND = "Email id is empty.";
+        public const string REPORTSCHEDULER_INTERNEL_SERVER_ISSUE_2 = "Internal Server Error:- {0}";
     }
 }

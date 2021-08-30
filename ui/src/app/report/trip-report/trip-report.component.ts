@@ -745,6 +745,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       }
       this.tripForm.get('vehicle').setValue('');
+    
     }
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
@@ -1187,9 +1188,20 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData.slice();
-    if (this.vehicleDD.length > 0) {
-      this.resetTripFormControlValue();
-    }
+    // if (this.vehicleDD.length > 0) {
+    //   let _s1 = this.vehicleListData.map(item=>item.vehicleName).filter((value,index,self)=>self.indexOf(value)=== index);
+    //   if(_s1.length > 0){
+    //     _s1.forEach(element => {
+    //       let count = this.vehicleListData.filter(j =>j.vehicleName == element);
+    //       if(count.length >0){
+    //         this.vehicleDD.push(count[1]);
+    //       }
+    //     });
+    //   }
+    //   this.vehicleDD.unshift({vehicleName:this.translationData.lblVehicleName || 'vehicle Name'})
+    //   this.resetTripFormControlValue();
+    // }
+    this.resetTripFormControlValue();
     this.setVehicleGroupAndVehiclePreSelection();
     if (this.showBack) {
       this.onSearch();
@@ -1199,6 +1211,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
+    if(this.vehicleDD.length>0){
+      let vehicleID = this.vehicleDD[0].vehicleId;
+      this.tripForm.get('vehicle').setValue(vehicleID);
     }
   }
 

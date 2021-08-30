@@ -163,16 +163,17 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
-        public async Task<bool> UnSubscribeById(int recipientId)
+        public async Task<bool> UnSubscribeById(int recipientId, string emailId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@recipient_id", recipientId);
+                parameter.Add("@email_id", emailId);
                 #region Query UnSubscribeById
                 var query = @"update master.scheduledreportrecipient
-                                set state='A'
-                                where id = @recipient_id RETURNING id";
+                                set state='D'
+                                where id = @recipient_id and email = @email_id RETURNING id";
                 #endregion
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return id > 0;
@@ -191,7 +192,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameter.Add("@email_id", emailId);
                 #region Query UnSubscribeAllByEmailId
                 var query = @"update master.scheduledreportrecipient
-                                set state='A'
+                                set state='D'
                                 where email = @email_id RETURNING id";
                 #endregion
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
