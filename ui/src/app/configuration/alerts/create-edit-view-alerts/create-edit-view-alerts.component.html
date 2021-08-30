@@ -118,7 +118,9 @@
                   <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                     <mat-option value="ALL">--All--</mat-option>  
                     <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.vehicleGroupId">
+                    <mat-option  *ngIf = "vehGrp.vehicleGroupId!=0 || vehGrp.vehicleGroupName!=''">
                           {{vehGrp.vehicleGroupName}}
+                    </mat-option>
                       </mat-option>
                   </mat-select>
               </mat-form-field>
