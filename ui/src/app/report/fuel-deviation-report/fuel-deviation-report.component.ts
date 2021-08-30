@@ -615,8 +615,10 @@ export class FuelDeviationReportComponent implements OnInit {
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);     
     if(this.wholeFuelDeviationData.vinTripList.length > 0){
       let filterVIN: any = this.wholeFuelDeviationData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
