@@ -1,9 +1,10 @@
 import { ElementRef, Input, Output, ViewChild, EventEmitter } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChanges,OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
+import { getMatIconFailedToSanitizeUrlError } from '@angular/material/icon';
 import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 import { element } from 'protractor';
 import { AlertService } from 'src/app/services/alert.service';
@@ -15,9 +16,10 @@ import { NotificationAdvancedFilterComponent } from './notification-advanced-fil
   templateUrl: './create-notifications-alert.component.html',
   styleUrls: ['./create-notifications-alert.component.less']
 })
-export class CreateNotificationsAlertComponent implements OnInit {
+export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   @Input() translationData: any = [];
   @Input() selectedRowData: any;
+  @Input()  formGroup: FormGroup;
   notificationForm: FormGroup;
   FormArrayItems: FormArray;
   FormEmailArray: FormArray;
@@ -32,9 +34,18 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() isCriticalLevelSelected: any;
   @Input() isWarningLevelSelected: any;
   @Input() isAdvisoryLevelSelected: any;
+  @Input() criticalThreshold: any;
+  @Input() warningThreshold: any;
+  @Input() advisoryThreshold: any;
   @Input() labelForThreshold: any;
   @Input() alert_type_selected: string;
   @Input() actionType: any;
+  @Input() criticalLevel: any;
+  @Input() warningLevel: any;
+  @Input() advisoryLevel: any;
+  criticalFlag: boolean = false;
+  warningFlag: boolean = false;
+  advisoryFlag: boolean = false;
   localStLanguage: any;
   organizationId: number;
   accountId: number;
@@ -142,6 +153,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("action type=" + this.actionType);
+    console.log("critical" +this.criticalLevel);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
@@ -162,7 +174,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
         ]
       });
     console.log(this.selectedRowData);
-   
+   this.notificationForm.addControl('criticalLevelThreshold', new FormControl(''));
+   this.notificationForm.addControl('warningLevelThreshold', new FormControl(''));
+   this.notificationForm.addControl('advisoryLevelThreshold', new FormControl(''));
     this.SearchCountryField = SearchCountryField;
     // TooltipLabel = TooltipLabel;
     this.CountryISO = CountryISO;
@@ -184,6 +198,68 @@ export class CreateNotificationsAlertComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    let d =this.criticalLevel;
+    let e = this.isWarningLevelSelected;
+    let f = this.advisoryLevel;
+    for (const d in changes) {
+      const chng1 = changes[d];
+      // const cur1  = JSON.stringify(chng1.currentValue);
+      if (changes.criticalThreshold) {
+        this.criticalThreshold = changes.criticalThreshold.currentValue;
+      }
+      if (changes.warningThreshold) {
+        this.warningThreshold = changes.warningThreshold.currentValue;
+      }
+      if (changes.advisoryThreshold) {
+        this.advisoryThreshold = changes.advisoryThreshold.currentValue;
+      }
+      if (changes.isCriticalLevelSelected) {
+        this.isCriticalLevelSelected = changes.isCriticalLevelSelected.currentValue;
+      }
+      if (changes.isWarningLevelSelected) {
+        this.isWarningLevelSelected = changes.isWarningLevelSelected.currentValue;
+      }
+      if (changes.isAdvisoryLevelSelected) {
+        this.isAdvisoryLevelSelected = changes.isAdvisoryLevelSelected.currentValue;
+      }
+      this.getLevelValues();
+    }
+
+  }
+
+
+getLevelValues(){
+  if(this.isCriticalLevelSelected && this.criticalThreshold == '' || this.isCriticalLevelSelected == false){
+    this.criticalLevel = false;
+    this.criticalFlag = false;
+    this.criticalThreshold = '';
+  }
+  else if(this.isCriticalLevelSelected && this.criticalThreshold != ''){
+    this.criticalLevel = true;
+    this.criticalFlag = true;
+  }
+  if(this.isWarningLevelSelected && this.warningThreshold == ''|| this.isWarningLevelSelected == false){
+    this.warningLevel = false;
+    this.warningFlag = false;
+    this.warningThreshold = '';
+  }
+  else if(this.isWarningLevelSelected && this.warningThreshold != ''){
+    this.warningLevel = true;
+    this.warningFlag = true;
+  } 
+
+  if(this.isAdvisoryLevelSelected && this.advisoryThreshold == ''|| this.isAdvisoryLevelSelected == false){
+    this.advisoryLevel = false;
+    this.advisoryFlag = false;
+    this.advisoryThreshold = '';
+  } 
+  else if(this.isAdvisoryLevelSelected && this.advisoryThreshold != ''){
+    this.advisoryLevel = true;
+    this.advisoryFlag = true;
+  } 
+
+}
 
   initEmailItems(): FormGroup {
     return this._formBuilder.group({
@@ -567,15 +643,30 @@ export class CreateNotificationsAlertComponent implements OnInit {
   }
 
   onChangeCriticalLevel(event: any) {
-
+    if(event.checked){
+      this.criticalFlag = true;
+    }
+    else{
+      this.criticalFlag = false;
+    }
   }
 
   onChangeWarningLevel(event: any) {
-
+    if(event.checked){
+      this.warningFlag = true;
+    }
+    else{
+      this.warningFlag = false;
+    }
   }
 
   onChangeAdvisoryLevel(event: any) {
-
+    if(event.checked){
+      this.advisoryFlag = true;
+    }
+    else{
+      this.advisoryFlag = false;
+    }
   }
 
   duplicateRecipientLabel(){
@@ -982,7 +1073,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
      }
     }
     if (this.actionType == 'create' || this.actionType == 'duplicate') {
-      this.notifications = [
+      this.notifications = [];
+      // if(this.criticalFlag){  // do not remove this line (changes done by chaitali for multiple levels in notification)
+        this.notifications= [ 
         {
           "alertUrgencyLevelType": "C",
           "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
@@ -993,6 +1086,36 @@ export class CreateNotificationsAlertComponent implements OnInit {
           "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
         }
       ]
+      // do not remove below line (changes done by chaitali for multiple levels in notification)
+        // this.notifications.push(objData);
+    // }
+    // do not remove below lines (changes done by chaitali for multiple levels in notification)
+    // if(this.warningFlag){
+    //   let objData = 
+    //     {
+    //       "alertUrgencyLevelType": "W",
+    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+    //       "frequencyThreshholdValue": 0,
+    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+    //       "createdBy": this.accountId,
+    //       "notificationRecipients": this.notificationReceipients,
+    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+    //     }
+    //     this.notifications.push(objData);
+    // }
+    // if(this.advisoryFlag){
+    //   let objData = 
+    //     {
+    //       "alertUrgencyLevelType": "A",
+    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+    //       "frequencyThreshholdValue": 0,
+    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+    //       "createdBy": this.accountId,
+    //       "notificationRecipients": this.notificationReceipients,
+    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+    //     }
+    //     this.notifications.push(objData);
+    // }
     }
     else if (this.actionType == 'edit') {
       this.notifications = [

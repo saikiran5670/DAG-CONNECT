@@ -59,9 +59,17 @@ namespace net.atos.daf.ct2.group
         public async Task<int> GetVehiclesCount(int[] groupIds, int organizationId)
         {
             int totalCount = 0;
+            var groupFilter = new GroupFilter();
+            groupFilter.GroupRefCount = false;
+            groupFilter.GroupRef = false;
+            groupFilter.ObjectType = ObjectType.VehicleGroup;
+            groupFilter.GroupType = GroupType.None;
+            groupFilter.FunctionEnum = FunctionEnum.None;
+
             foreach (var groupId in groupIds)
             {
-                var group = await _groupRepository.Get(new GroupFilter { Id = groupId });
+                groupFilter.Id = groupId;
+                var group = await _groupRepository.Get(groupFilter);
                 var groupType = group.FirstOrDefault()?.GroupType;
                 var functionEnum = group.FirstOrDefault()?.FunctionEnum ?? FunctionEnum.None;
                 switch (group.FirstOrDefault()?.GroupType)
