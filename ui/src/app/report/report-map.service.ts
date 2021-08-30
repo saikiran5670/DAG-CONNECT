@@ -1458,8 +1458,8 @@ export class ReportMapService {
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
     }else if(unitFormat == 'dunit_Metric') {
       gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " Ltr"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " Ltr/100km"
     }
     return JSON.stringify(gridData);
   }

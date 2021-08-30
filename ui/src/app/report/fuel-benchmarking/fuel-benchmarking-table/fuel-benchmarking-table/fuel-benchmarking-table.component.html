@@ -11,7 +11,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8">
+    <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8; padding: 0px 10px;">
       <span *ngIf="selectionValueBenchmarkBY == 'timePeriods'"
         style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedGroup || 'Selected Group:' }}
         <b>{{vehicleGroupSelected}}</b></span>
@@ -45,11 +45,8 @@
               !== 0? row[column] : i==3 && index !== 0? row[column] : row[column] }}</div>
 
             <div *ngIf="index !== 0 && i == 4">
-              {{ translationData.lblConsumption || 'Consumption ' }}
-              <span
-                style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
-                || ' mpg') }})</span>
+              <span style='font: 500 15px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblConsumption || 'Consumption' }}</span>&nbsp;
+              <span style='font: 500 12px/32px Roboto, "Helvetica Neue", sans-serif;'>({{ prefUnitFormat == 'dunit_Metric' ? (translationData.lblLtr100km || 'Ltr/100km') : (translationData.lblmpg || 'mpg') }})</span>
               <div style="margin-top: 10px;" *ngFor="let ranking of row[column]; let index=index">
                 <div>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}}
                   <span>
@@ -61,7 +58,7 @@
                   </span>
                 </div>
                 <div style="position: sticky;
-                    margin-top: -25px;font-size:10px; color:white;"> {{ranking.ltrVal}} </div>
+                    margin-top: -25px;font-size:10px; color:white;"> {{ ranking.ltrVal }} </div>
               </div>
 
             </div>
