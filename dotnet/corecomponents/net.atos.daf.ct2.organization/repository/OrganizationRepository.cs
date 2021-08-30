@@ -244,7 +244,8 @@ namespace net.atos.daf.ct2.organization.repository
                               tf.id TimeFormat,
                               df.id DateFormatType,
                               l.id LanguageName,
-                              u.id Unit
+                              u.id Unit,
+                              a.page_refresh_time PageRefreshTime
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -277,6 +278,7 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.Currency = item.Currency;
                     OrgDetailsResponse.Unit = item.Unit;
                     OrgDetailsResponse.DateFormatType = item.DateFormatType;
+                    OrgDetailsResponse.PageRefreshTime = item.PageRefreshTime;
                 }
                 return OrgDetailsResponse;
             }
