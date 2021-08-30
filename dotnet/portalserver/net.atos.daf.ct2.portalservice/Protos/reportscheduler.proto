@@ -213,6 +213,7 @@ message ReportPDFResponse {
 
 message UnSubscribeRequest{
 int32 RecipentId =1;
+string EmailId =2;
 }
 
 message UnSubscribeResponse {
