@@ -12,20 +12,19 @@ import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.process.config.AlertConfig;
+import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedAlertDefService;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
+import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
 import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.streaming.api.datastream.BroadcastStream;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
@@ -39,7 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
@@ -63,19 +65,19 @@ public class IndexBasedAlertProcessing implements Serializable {
         /**
          * RealTime functions defined
          */
-        Map<Object, Object> configMap = new HashMap() {{
+        Map<Object, Object> hoursOfServiceFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
                     hoursOfServiceFun
             ));
         }};
-
         /**
-         * Alert produce topic
+         * RealTime functions defined
          */
-        String dafAlertProduceTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC);
-        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
-        FlinkKafkaProducer<Alert> alertProducerTopic = new FlinkKafkaProducer<Alert>(dafAlertProduceTopic, new PojoKafkaSerializationSchema(dafAlertProduceTopic), kafkaTopicProp, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
-
+        Map<Object, Object> excessiveAverageSpeedFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+                    excessiveAverageSpeedFun
+            ));
+        }};
 
         /**
          *  Booting cache
@@ -83,8 +85,8 @@ public class IndexBasedAlertProcessing implements Serializable {
         KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
         Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
 
-        BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
-        BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
+        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
+        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
         SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
                         propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
@@ -100,7 +102,10 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis","300000"));
 
-        KeyedStream<Tuple2<Index, Payload<Set<Long>>>, String> subscribeVehicleStream = indexStringStream
+        /**
+         * Index Window Stream
+         */
+        WindowedStream<Index, String, TimeWindow> windowedIndexStream = indexStringStream
                 .assignTimestampsAndWatermarks(
                         new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
                             @Override
@@ -109,42 +114,58 @@ public class IndexBasedAlertProcessing implements Serializable {
                             }
                         }
                 )
-                .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)))
+                .keyBy(index -> index.getDocument() != null ? index.getDocument().getTripID() : "null")
+                .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)));
+
+        /**
+         * Hours of service keyed stream
+         */
+        KeyedStream<Index, String> indexWindowKeyedStream =
+                windowedIndexStream
                 .reduce(new ReduceFunction<Index>() {
                     @Override
                     public Index reduce(Index index, Index t1) throws Exception {
                         return t1;
                     }
                 })
-                .keyBy(index -> index.getVin() !=null ? index.getVin() : index.getVid())
-                .connect(vehicleAlertRefSchemaBroadcastStream)
-                .process(new IndexKeyBasedSubscription())
-                .keyBy(tup2 -> tup2.f0.getVin());
-
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
 
         /**
-         * Check for alert threshold definition
+         * Process indexWindowKeyedStream for Hours of service
          */
-        SingleOutputStreamOperator<Index> alertProcessStream = subscribeVehicleStream
-                .connect(alertUrgencyLevelRefSchemaBroadcastStream)
-                .process(new IndexKeyBasedAlertDefService(configMap));
+        IndexMessageAlertService.processIndexKeyStream(indexWindowKeyedStream,
+                env,propertiesParamTool,hoursOfServiceFunConfigMap);
+
 
         /**
-         * Publish alert on kafka topic
+         * Excessive Average Speed Fun keyed stream
          */
-        DataStream<Alert> alertFoundStream = alertProcessStream
-                .getSideOutput(OUTPUT_TAG);
+        KeyedStream<Index, String> indexExcessiveAvgSpeedKeyedStream = windowedIndexStream
+                .process(new ProcessWindowFunction<Index, Index, String, TimeWindow>() {
+                    @Override
+                    public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
+                                        Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
+                        List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
+                                .collect(Collectors.toList());
+                        if (!indexList.isEmpty()) {
+                            Index startIndex = indexList.get(0);
+                            Index endIndex = indexList.get(indexList.size() - 1);
+                            Long average = Utils.calculateAverage(startIndex, endIndex);
+                            startIndex.setVDist(average);
+                            arg3.collect(startIndex);
+                        }
+                    }
+                })
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
-
-        alertFoundStream.addSink(alertProducerTopic);
 
         /**
-         * Store into alert db
+         * Process indexWindowKeyedStream for Hours of service
          */
-        TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
-        tableStream.saveAlertIntoDB(alertFoundStream);
+        IndexMessageAlertService.processIndexKeyStream(indexExcessiveAvgSpeedKeyedStream,
+                env,propertiesParamTool,excessiveAverageSpeedFunConfigMap);
+
 
         env.execute(IndexBasedAlertProcessing.class.getSimpleName());
 
