@@ -39,7 +39,7 @@
         <ng-container [matColumnDef]="column" *ngFor="let column of columnCodes; let i=index;">
 
             <ng-container
-                *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'state' && column != 'isExclusive'">
+                *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'isExclusive'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
@@ -82,7 +82,7 @@
                 <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
             </ng-container>
 
-            <ng-container *ngIf="column == 'select' || column == 'state'">
+            <ng-container *ngIf="column == 'select'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='selectColumnHeaderElements'></ng-container>
