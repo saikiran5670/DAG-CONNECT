@@ -561,9 +561,9 @@ message FleetUtilizationCalenderResponse {
 }
 
 message FleetUtilizationDetails {
-    string VehicleName = 1;
+    google.protobuf.StringValue VehicleName = 1;
     string VIN = 2;
-    string RegistrationNumber = 3;
+    google.protobuf.StringValue RegistrationNumber = 3;
     double Distance = 4;
     int32 NumberOfTrips  = 5;
     int64 TripTime = 6;

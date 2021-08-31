@@ -913,13 +913,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.barChartPlugins = [];
     this.chartsLabelsdefined=[];
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = Util.convertDateToUtc(this.startDateValue);
-      let endDate = Util.convertDateToUtc(this.endDateValue);  
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+      // let startDate = Util.convertDateToUtc(this.startDateValue);
+      // let endDate = Util.convertDateToUtc(this.endDateValue);  
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = Util.convertDateToUtc(this.startDateValue);
-      let endDate = Util.convertDateToUtc(this.endDateValue);
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
@@ -1611,9 +1613,10 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
@@ -2280,11 +2283,15 @@ setVehicleGroupAndVehiclePreSelection() {
   driverInfo : any ={};
   dateInfo : any ={};
  onDriverSelected(vehData:any){
+  this.resetChartData();
   let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
   let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
   this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
-  let currentStartTime = Util.convertDateToUtc(this.startDateValue);
-  let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+  // let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+  // let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+  let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+  let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+
   this.dateInfo={
     startTime: currentStartTime,
     endTime : currentEndTime,
