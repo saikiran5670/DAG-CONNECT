@@ -143,6 +143,10 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   isWebValidate:boolean=true;
   isMobileValdate:boolean=true;
   isMaxRecipientLabelsReached: boolean= false;
+  isInvalidEmail: boolean = false;
+  invalidEmail: string;
+  only10Emails: boolean= false;
+  recipientEmailList: any= [];
   @Output() backToPage = new EventEmitter<any>();
   @Output() isNotifyEmailValid = new EventEmitter<any>();
   
@@ -585,6 +589,29 @@ getLevelValues(){
         }
       }
     }
+  }
+
+  validateRecipientEmails(value : any){
+    this.recipientEmailList= [];
+    this.only10Emails= false;
+    this.isInvalidEmail= false;
+    this.invalidEmail = '';
+    this.recipientEmailList = value.split(";");
+    if(this.recipientEmailList.length <= 10){
+      let pattern=/[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/
+      this.recipientEmailList.forEach(element => {
+      if(!pattern.test(element.trim())){
+        this.isInvalidEmail = true;    
+        this.invalidEmail += element +",";
+      }
+    });
+    this.invalidEmail= this.invalidEmail.slice(0, -1);
+    return;
+    }
+    else{
+      this.only10Emails = true;
+    }
+    
   }
 
   deleteWebNotificationRow(index: number) {
@@ -1154,8 +1181,9 @@ getLevelValues(){
 
   private scrollToEmailInvalidControl() {    
     let invalidControl: HTMLElement ; 
+    this.validateRecipientEmails(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value);
     //this.notificationForm.controls.FormEmailArray['emailAddress'].Invalid
-    if(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value =='' || this.FormEmailArray.at(this.emailIndex).get("emailAddress").invalid){
+    if(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value =='' || this.invalidEmail != ''){
       invalidControl =  this.el.nativeElement.querySelector('[formcontrolname="' + 'emailAddress' + '"]');
      }  
     if (invalidControl) {       
