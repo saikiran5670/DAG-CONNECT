@@ -55,7 +55,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
             }
         }
         logger.info("Alert definition from cache for vin :{} alertDef {}", f0.getVin(), hoursOfServiceAlertDef);
-       // functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
+        functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
         functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
         //
         AlertConfig

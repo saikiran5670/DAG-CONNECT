@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import org.apache.flink.api.common.functions.ReduceFunction;
+import net.atos.daf.ct2.util.IndexGenerator;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
@@ -35,7 +34,6 @@ import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.cache.kafka.KafkaCdcStreamV2;
 import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
 import net.atos.daf.ct2.cache.postgres.TableStream;
@@ -70,7 +68,7 @@ public class IndexBasedAlertProcessing2 {
          */
         Map<Object, Object> configMap = new HashMap() {{
             put("functions", Arrays.asList(
-            		excessiveAverageSpeedFun
+                    excessiveAverageSpeedFun
             ));
         }};
 
@@ -85,25 +83,28 @@ public class IndexBasedAlertProcessing2 {
         /**
          *  Booting cache
          */
-        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
+        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env, propertiesParamTool);
         Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
 
         BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
-        
-        SingleOutputStreamOperator<Index> indexKeyedStream = KafkaConnectionService.connectIndexObjectTopic(
-      		  propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC), propertiesParamTool, env)
-      		  .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-      		  .returns(net.atos.daf.ct2.pojo.standard.Index.class) ;
+
+        /*SingleOutputStreamOperator<Index> indexKeyedStream = KafkaConnectionService.connectIndexObjectTopic(
+                        propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC), propertiesParamTool, env)
+                .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .returns(net.atos.daf.ct2.pojo.standard.Index.class);*/
+
+        SingleOutputStreamOperator<Index> indexKeyedStream = env.addSource(new IndexGenerator())
+                .returns(Index.class);
 
 
         /**
          * Window time in milliseconds
          */
-        long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis","300000"));
+        long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis", "300000"));
 
-      
+
         KeyedStream<Tuple2<Index, Payload<Set<Long>>>, String> subscribeVehicleStream = indexKeyedStream
                 .assignTimestampsAndWatermarks(
                         new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
@@ -113,47 +114,39 @@ public class IndexBasedAlertProcessing2 {
                             }
                         }
                 )
-                .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
+                .keyBy(index -> index.getDocument() != null ? index.getDocument().getTripID() : "null")
                 .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)))
                 .process(new ProcessWindowFunction<Index, Index, String, TimeWindow>() {
 
-					@Override
-					public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
-							Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
-						// TODO Auto-generated method stub
-						List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
-								.collect(Collectors.toList());	
-						 
-						  logger.info("index list size  :"+indexList.size());
-						  
-						  IntStream.range(0, indexList.size() - 1) .forEach(i -> {
-						  logger.info("first index msg :"+indexList.get(i).toString());
-						  logger.info("second index msg :"+indexList.get(i+1).toString());
-						  
-						  Long average = calculateAverage(indexList.get(i), indexList.get(i + 1));
-						  indexList.get(i).setVDist(average); 
-						  arg3.collect(indexList.get(i)); });
-						
-					}
-				})
+                    @Override
+                    public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
+                                        Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
+                        List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
+                                .collect(Collectors.toList());
 
-				
-					
-				
-						/*
-						 * .reduce(new ReduceFunction<Index>() {
-						 * 
-						 * @Override public Index reduce(Index index1, Index index2) throws Exception {
-						 * long average= calculateAverage(index1,index2); index2.setVDist(average) ;
-						 * return index2; } })
-						 */
-						
-						  .keyBy(index -> index.getVin() !=null ? index.getVin() : index.getVid())
-						  
-						  .connect(vehicleAlertRefSchemaBroadcastStream) .process(new
-						  IndexKeyBasedSubscription()) .keyBy(tup2 -> tup2.f0.getVin());
-						 
+                        logger.info("index list size  :" + indexList.size());
+                        if (!indexList.isEmpty()) {
+                            Index startIndex = indexList.get(0);
+                            Index endIndex = indexList.get(indexList.size() - 1);
+                            Long average = Utils.calculateAverage(startIndex, endIndex);
+                            startIndex.setVDist(average);
+                            arg3.collect(startIndex);
+                        }
+                    }
+                })
 
+
+                /*
+                 * .reduce(new ReduceFunction<Index>() {
+                 *
+                 * @Override public Index reduce(Index index1, Index index2) throws Exception {
+                 * long average= calculateAverage(index1,index2); index2.setVDist(average) ;
+                 * return index2; } })
+                 */
+
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
+                .connect(vehicleAlertRefSchemaBroadcastStream).process(new IndexKeyBasedSubscription())
+                .keyBy(tup2 -> tup2.f0.getVin());
 
 
         /**
@@ -182,23 +175,5 @@ public class IndexBasedAlertProcessing2 {
 
 
     }
-    
-    private static Long calculateAverage(Index index1, Index index2) {
 
- 		Long odometerDiff = index2.getVDist() - index1.getVDist();
- 		Long timeDiff=0L;
- 		try {
- 			timeDiff = (TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
- 					"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
- 					- (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(),
- 							"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
- 		} catch (Exception e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
- 		logger.info("time diff :"+timeDiff);
- 		logger.info("average :"+odometerDiff/timeDiff);
- 		return odometerDiff/timeDiff;
-
- 	}
 }

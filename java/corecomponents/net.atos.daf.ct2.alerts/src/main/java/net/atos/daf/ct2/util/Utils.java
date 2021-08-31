@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.pojo.standard.Index;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,5 +137,28 @@ public class Utils implements Serializable {
     public static int getCurrentTimeInSecond(){
         LocalTime localTime = LocalTime.now();
         return localTime.toSecondOfDay();
+    }
+
+    public static Long calculateAverage(Index index1, Index index2) {
+        Long odometerDiff = index2.getVDist() - index1.getVDist();
+        Long timeDiff=0L;
+        Long avgValue=0L;
+        try {
+            /**
+             * Time diff in seconds
+             */
+            timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+                    - (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(),
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))) / 1000;
+            logger.info("time diff :"+timeDiff);
+            logger.info("odometerDiff :"+odometerDiff);
+            logger.info("average :"+odometerDiff/timeDiff);
+            avgValue= odometerDiff/timeDiff;
+        } catch (Exception e) {
+           logger.error("Error while calculation avg calculation {}",e);
+        }
+        return avgValue;
+
     }
 }
