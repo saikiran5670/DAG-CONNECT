@@ -645,7 +645,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
 
   checkPrefData(){
-    if(this.ecoScoreDriverDetails.singleDriverKPIInfo && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.length > 0){
+    if(this.ecoScoreDriverDetails.singleDriverKPIInfo && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.length > 0
+      && this.driverPerformanceColumnData && this.driverPerformanceColumnData.length > 0){
       this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.forEach(element => {
         if(element.subSingleDriver && element.subSingleDriver.length > 0){
           let _arr: any = [];
