@@ -121,4 +121,11 @@ export class HereService {
         let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?';
         return this.httpClient.get<any>(routeURL + (params));
     }
+
+    searchLocation(mapKey,searchParam){
+        
+        let routeURL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+mapKey +'&limit=5'+'&q='+searchParam ;
+        return this.httpClient.get<any>(routeURL);
+    }
+    
 }

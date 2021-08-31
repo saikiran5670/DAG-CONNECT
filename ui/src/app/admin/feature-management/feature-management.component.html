@@ -25,7 +25,7 @@
           </span>
         </mat-form-field>
       </div> -->
-      <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+      <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
         <div fxLayout="row" class='areaWidth'>
           <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
         <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
@@ -40,15 +40,24 @@
         </button>
         </div>
       </div>
-      </div>
+      </div> -->
     </div>
     <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
-    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" 
-    [actionColumnElements]="actionColumnElements" [selectColumnDataElements]="selectColumnDataElements" [selectColumnHeaderElements]="selectColumnHeaderElements">
+    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [topRightElements]="topRightElements"
+    [actionColumnElements]="actionColumnElements" [selectColumnDataElements]="selectColumnDataElements" [selectColumnHeaderElements]="selectColumnHeaderElements" showExport="true" exportFileName="Feature Details">
+
+    <ng-template #topRightElements>
+      <div *ngIf="!adminAccessType.adminReadOnlyAccess">
+        <button mat-flat-button color="primary" (click)="createNewFeature()">
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature || 'New Feature' }}
+        </button>
+      </div>
+    </ng-template>
 
     <ng-template #selectColumnHeaderElements let-gridData='rowData'>
       <span style="margin: 5px 0px 0px 5px;">{{  translationData.lblState || 'Status'}}</span>
     </ng-template>
+
     <ng-template #selectColumnDataElements let-gridData='rowData'>
       {{ gridData.status }}<button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(gridData)"
               matTooltip="{{ gridData.state == 'ACTIVE' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
