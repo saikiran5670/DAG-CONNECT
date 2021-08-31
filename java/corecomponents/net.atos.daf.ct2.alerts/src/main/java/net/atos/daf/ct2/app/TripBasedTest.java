@@ -5,15 +5,18 @@ import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
 import net.atos.daf.ct2.cache.postgres.TableStream;
 import net.atos.daf.ct2.cache.postgres.impl.JdbcFormatTableStream;
 import net.atos.daf.ct2.models.Alert;
+import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
 import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.io.jdbc.JDBCOutputFormat;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
 import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
@@ -39,6 +42,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Properties;
+import java.util.Set;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.*;
@@ -64,9 +68,11 @@ public class TripBasedTest implements Serializable {
 
         /*env.addSource(new IndexGenerator())
                 .returns(Index.class)*/
-        indexStringStream
+        long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis","300000"));
+
+         indexStringStream
                 .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.minutes(0)) {
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
                                 return convertDateToMillis(index.getEvtDateTime());
@@ -74,14 +80,15 @@ public class TripBasedTest implements Serializable {
                         }
                 )
                 .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.minutes(5L)))
+                .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)))
                 .reduce(new ReduceFunction<Index>() {
                     @Override
                     public Index reduce(Index index, Index t1) throws Exception {
                         return t1;
                     }
                 })
-               .print();
+                .keyBy(index -> index.getVin() !=null ? index.getVin() : index.getVid())
+                        .print();
 
 
         env.execute("TripBasedTest");
