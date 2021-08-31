@@ -15,6 +15,7 @@ public class IndexGenerator implements SourceFunction<Index> {
     @Override
     public void run(SourceContext sourceContext) throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        long counter = 154L;
         while (isRunning){
             long currentTimeMillis = System.currentTimeMillis();
             Date date = new Date();
@@ -22,6 +23,7 @@ public class IndexGenerator implements SourceFunction<Index> {
             Index idx = new Index();
             idx.setVid("XLR0998HGFFT74611");
             idx.setVin("XLR0998HGFFT74611");
+            idx.setVDist(1000L + counter);
             idx.setReceivedTimestamp(currentTimeMillis);
             IndexDocument indexDocument = new IndexDocument();
             indexDocument.setVEngineSpeed(10L);
@@ -32,8 +34,10 @@ public class IndexGenerator implements SourceFunction<Index> {
             idx.setEvtDateTime(format1);
             sourceContext.collect(idx);
             System.out.println("DATA SEND :: " + Utils.writeValueAsString(idx));
+            counter+=1000L;
             // Sleep for 1 second -> 1000 , 1 minute -> 60000
-            Thread.sleep(60000);
+            Thread.sleep(1000);
+
         }
 
     }
