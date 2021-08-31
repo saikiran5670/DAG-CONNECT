@@ -20,9 +20,9 @@ import html2canvas from 'html2canvas';
 export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
-  displayedColumns = ['name','isExclusive','state', 'action'];
-  columnCodes = ['name','isExclusive','state', 'action'];
-  columnLabels = ['Data Attribute Set Name', 'Data Attribute Set Type', 'Status', 'Action'];
+  // displayedColumns = ['name','isExclusive','state', 'action'];
+  columnCodes = ['name','isExclusive','select', 'action'];
+  columnLabels = ['DataAttributeSetName', 'DataAttributeSetType', 'Status', 'Action'];
   selectedElementData: any;
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
@@ -91,10 +91,12 @@ export class FeatureManagementComponent implements OnInit {
       this.hideloader();
       let filterTypeData = data.filter(item => item.type == "D");
       filterTypeData.forEach(element => {
-        element["isExclusive"] = element.dataAttribute.isExclusive
+        element["isExclusive"] = element.dataAttribute.isExclusive;
+        element["select"] = element.state;
       });
-      filterTypeData = this.getNewTagData(filterTypeData);
-      this.updatedTableData(filterTypeData);
+      // filterTypeData = this.getNewTagData(filterTypeData);
+      this.initData = filterTypeData;
+      // this.updatedTableData(filterTypeData);
     }, (error) => {
       console.log("error:: ", error);
       this.hideloader();
@@ -106,24 +108,24 @@ export class FeatureManagementComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
-  getNewTagData(data: any){
-    let currentDate = new Date().getTime();
-    data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
-      }
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
-    return newTrueData;
-  }
+  // getNewTagData(data: any){
+  //   let currentDate = new Date().getTime();
+  //   data.forEach(row => {
+  //     let createdDate = parseInt(row.createdAt); 
+  //     let nextDate = createdDate + 86400000;
+  //     if(currentDate > createdDate && currentDate < nextDate){
+  //       row.newTag = true;
+  //     }
+  //     else{
+  //       row.newTag = false;
+  //     }
+  //   });
+  //   let newTrueData = data.filter(item => item.newTag == true);
+  //   newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+  //   let newFalseData = data.filter(item => item.newTag == false);
+  //   Array.prototype.push.apply(newTrueData, newFalseData); 
+  //   return newTrueData;
+  // }
 
   exportAsCSV(){
     this.matTableExporter.exportTable('csv', {fileName:'Feature_Data', sheet: 'sheet_name'});
@@ -301,32 +303,32 @@ export class FeatureManagementComponent implements OnInit {
       this.initData = item.tableData;
     }
     this.loadFeatureData();
-    this.updatedTableData(this.initData);
+    // this.updatedTableData(this.initData);
   }
 
-  updatedTableData(tableData : any) {
-    this.initData = tableData;
-    this.initData.map(obj =>{   //temporary
-      obj.statusVal = obj.state === 'ACTIVE'? 'active': obj.state === 'INACTIVE' ? 'inactive': '';
-      obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
-    })
-    // this.initData = this.getNewTagData(this.initData);
-    this.dataSource = new MatTableDataSource(this.initData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc);
-        });
-       }
-    });
-  }
-      compare(a: Number | String, b: Number | String, isAsc: boolean) {
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
-      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-      }
+  // updatedTableData(tableData : any) {
+  //   this.initData = tableData;
+  //   this.initData.map(obj =>{   //temporary
+  //     obj.statusVal = obj.state === 'ACTIVE'? 'active': obj.state === 'INACTIVE' ? 'inactive': '';
+  //     obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
+  //   })
+  //   // this.initData = this.getNewTagData(this.initData);
+  //   this.dataSource = new MatTableDataSource(this.initData);
+  //   setTimeout(()=>{
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
+  //       const isAsc = sort.direction === 'asc';
+  //       return data.sort((a: any, b: any) => {
+  //         return this.compare(a[sort.active], b[sort.active], isAsc);
+  //       });
+  //      }
+  //   });
+  // }
+  //     compare(a: Number | String, b: Number | String, isAsc: boolean) {
+  //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
+  //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  //     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  //     }
 
 }
