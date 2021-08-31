@@ -143,22 +143,29 @@
                                 <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                                     <mat-label>{{ translationData.lblEmailAddress || 'Email Address' }} <span
                                             class='mandatoryColor'>*</span>
+                                            <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                                     </mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <input
                                             placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}"
-                                            matInput formControlName="emailAddress">
+                                            matInput formControlName="emailAddress" (focusout)="validateRecipientEmails($event.target.value)">
                                     </mat-form-field>
-                                    <!-- <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
-                            with comma (;) separated' }}</mat-hint> -->
+                                    <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
+                            with (;) separated' }}</mat-hint>
                                     <mat-error
                                         *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').touched">
                                         {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                     </mat-error>
-                                    <mat-error
+                                    <!-- <mat-error
                                         *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('email')">
                                         {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email
                                         address' }}
+                                    </mat-error> -->
+                                    <mat-error *ngIf="only10Emails">
+                                        {{ translationData.lblOnly10EmailIdsAreAllowed || 'Only 10 Email Ids Are Allowed' }}
+                                    </mat-error>
+                                    <mat-error *ngIf="isInvalidEmail">
+                                      {{ translationData.lblInvalidEmail || 'Invalid Email' }} : {{invalidEmail}}
                                     </mat-error>
                                 </div>
                                 <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
