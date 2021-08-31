@@ -59,8 +59,8 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , fd.etl_gps_driving_time    as DrivingTime
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
-                                            		  , round (fd.average_speed,2)     as AverageSpeed
-                                            		  , round (fd.average_weight,2)    as AverageWeightPerTrip
+                                            		  , round (fd.average_speed, 5)     as AverageSpeed
+                                            		  , round (fd.average_weight, 5)    as AverageWeightPerTrip
                                             		  , round (fd.start_odometer,2)    as Odometer
                                             		FROM
                                             			CTE_FleetDeatils fd
