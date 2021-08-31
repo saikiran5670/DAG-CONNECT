@@ -2283,6 +2283,7 @@ setVehicleGroupAndVehiclePreSelection() {
   driverInfo : any ={};
   dateInfo : any ={};
  onDriverSelected(vehData:any){
+  this.resetChartData();
   let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
   let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
   this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)

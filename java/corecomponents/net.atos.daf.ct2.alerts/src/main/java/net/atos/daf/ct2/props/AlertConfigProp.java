@@ -9,6 +9,7 @@ import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.BasicArrayTypeInfo;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.table.planner.expressions.In;
 import org.apache.flink.util.OutputTag;
 
@@ -86,4 +87,6 @@ public class AlertConfigProp {
     public  static final MapStateDescriptor<String, Payload> vinAlertMapStateDescriptor = new MapStateDescriptor("vinAlertMapStateDescriptor", String.class,Payload.class);
     public  static final MapStateDescriptor<String, Payload> VIN_ALERT_MAP_STATE = new MapStateDescriptor("vinAlertMappingState",String.class,Payload.class);
     public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
+    public static BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream;
+    public static BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream;
 }

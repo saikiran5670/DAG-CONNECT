@@ -40,6 +40,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         Set<Long> alertIds = f1.getData().get();
         Map<String, Object> functionThresh = new HashMap<>();
         List<AlertUrgencyLevelRefSchema> hoursOfServiceAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> excessiveAverageSpeedAlertDef = new ArrayList<>();
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
                 List<AlertUrgencyLevelRefSchema> thresholdSet = (List<AlertUrgencyLevelRefSchema>) broadcastState.get(alertId).getData().get();
@@ -47,11 +48,16 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("S")) {
                         hoursOfServiceAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("A")) {
+                    	excessiveAverageSpeedAlertDef.add(schema);
+                    }
                 }
             }
         }
         logger.info("Alert definition from cache for vin :{} alertDef {}", f0.getVin(), hoursOfServiceAlertDef);
         functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
+        functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
+        //
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)
                 .process()
