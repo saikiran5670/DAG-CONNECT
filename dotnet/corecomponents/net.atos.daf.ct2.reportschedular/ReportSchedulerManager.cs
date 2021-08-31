@@ -54,9 +54,9 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             return await _reportSchedulerRepository.UpdatePDFBinaryRecordByToken(token);
         }
-        public async Task<bool> UnSubscribeById(int recipientId)
+        public async Task<bool> UnSubscribeById(int recipientId, string emailId)
         {
-            return await _reportSchedulerRepository.UnSubscribeById(recipientId);
+            return await _reportSchedulerRepository.UnSubscribeById(recipientId, emailId);
         }
         public async Task<bool> UnSubscribeAllByEmailId(string emailId)
         {

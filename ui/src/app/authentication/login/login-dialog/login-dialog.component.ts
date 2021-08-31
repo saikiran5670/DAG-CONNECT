@@ -50,33 +50,34 @@ export class LoginDialogComponent {
   }
 
   public confirm(formValue) {
-    if (this.loginDialogForm.valid) {
-      let selectedValues = formValue;
-      localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
-      localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
-      let orgName = this.data.organization.filter(item => parseInt(item.id) === parseInt(this.loginDialogForm.controls.organization.value));
-      if(orgName.length > 0){
-        localStorage.setItem("organizationName", orgName[0].name);
-      }
-      let loginDetailsObj: any = {
-        organization: this.data.organization,
-        role: this.data.role,
-        accountDetail: this.data.accountDetail,
-        accountPreference: this.data.accountPreference
-      }
-      let sessionObject: any = {
-        accountId:  this.data.accountDetail.id,
-        orgId: this.loginDialogForm.controls.organization.value,
-        roleId: this.loginDialogForm.controls.role.value
-      }
-      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-      });
-      localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
-      this.close(false);
-      this.dataInterchangeService.getDataInterface(true);
-      this.dataInterchangeService.getOrgRoleInterface(this.data);
-      this.router.navigate(['/dashboard']);
-    }
+    this.mdDialogRef.close(formValue);
+    // if (this.loginDialogForm.valid) {
+    //   let selectedValues = formValue;
+    //   localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
+    //   localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
+    //   let orgName = this.data.organization.filter(item => parseInt(item.id) === parseInt(this.loginDialogForm.controls.organization.value));
+    //   if(orgName.length > 0){
+    //     localStorage.setItem("organizationName", orgName[0].name);
+    //   }
+    //   let loginDetailsObj: any = {
+    //     organization: this.data.organization,
+    //     role: this.data.role,
+    //     accountDetail: this.data.accountDetail,
+    //     accountPreference: this.data.accountPreference
+    //   }
+    //   let sessionObject: any = {
+    //     accountId:  this.data.accountDetail.id,
+    //     orgId: this.loginDialogForm.controls.organization.value,
+    //     roleId: this.loginDialogForm.controls.role.value
+    //   }
+    //   this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+    //   });
+    //   localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
+    //   this.close(false);
+    //   this.dataInterchangeService.getDataInterface(true);
+    //   this.dataInterchangeService.getOrgRoleInterface(this.data);
+    //   this.router.navigate(['/dashboard']);
+    // }
   }
 
   @HostListener('keydown.esc')

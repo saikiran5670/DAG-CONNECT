@@ -21,7 +21,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public Series Series { get; set; }
         public Model Model { get; set; }
         [StringLength(50, MinimumLength = 4)]
-        [ValidateDataType("int")]
         public string ModelYear { get; set; }
         public Type Type { get; set; }
     }
@@ -64,17 +63,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 1)]
         public string SideCollars { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string RearOverhang { get; set; }
     }
 
     public class Tank
     {
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Nr { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Volume { get; set; }
     }
 
@@ -90,7 +86,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 1)]
         public string Type { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Power { get; set; }
         [StringLength(50, MinimumLength = 1)]
         public string Coolant { get; set; }
@@ -189,13 +184,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class Size
     {
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Length { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Width { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("long")]
         public string Height { get; set; }
     }
 
@@ -209,7 +201,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 1)]
         public string Type { get; set; }
         [StringLength(50, MinimumLength = 1)]
-        [ValidateDataType("int")]
         public string Value { get; set; }
     }
 

@@ -1358,8 +1358,11 @@ createEndMarker(){
     this.ConsumptionChartType= 'Line';
     this.DurationChartType= 'Line';
     // this.resetChartData(); // reset chart data
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+
+    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
@@ -1527,7 +1530,7 @@ createEndMarker(){
       let resultDate= Util.convertDateToUtc(date); 
       resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy'); 
 
-      this.barChartLabels.push(resultDate);
+     // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips });
       // let convertedFuelConsumed = e.fuelConsumed / 1000;
       // this.fuelConsumedChart.push(convertedFuelConsumed);
@@ -1550,27 +1553,19 @@ createEndMarker(){
     })
 
     this.barChartLegend = true;
+    this.chartsLabelsdefined=[];
     this.barChartPlugins = [];
-    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = `${this.startDateValue.getDate()}/${this.startDateValue.getMonth()+1}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}/${this.endDateValue.getMonth()+1}/${this.endDateValue.getFullYear()}`;;  
+    if( this.chartLabelDateFormat=='DD/MM/YYYY' ||  this.chartLabelDateFormat=='DD-MM-YYYY'){
+      let startDate =this.dateDetails.startTime;
+      let endDate = this.dateDetails.endTime;  
       this.chartsLabelsdefined=[ startDate, endDate ];
+    }   
+    else {
+      let startDateValue =  (this.dateDetails.fromDate).split(' ');
+      let endDateValue = (this.dateDetails.endDate).split(' '); 
+      this.chartsLabelsdefined=[ startDateValue[0], endDateValue[0] ];
     }
-    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = `${this.startDateValue.getDate()}-${this.startDateValue.getMonth()+1}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}-${this.endDateValue.getMonth()+1}-${this.endDateValue.getFullYear()}`;;  
-      this.chartsLabelsdefined=[ startDate, endDate ];
-    }
-    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
-      let startDate = `${this.startDateValue.getMonth()+1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;  
-      this.chartsLabelsdefined=[ startDate, endDate ];
-    }
-    else{
-      let startDate = `${this.startDateValue.getMonth()+1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;  
-      this.chartsLabelsdefined=[ startDate, endDate ];
-    }
+   
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;   
     if(this.ConsumedChartType == 'Bar'){
@@ -1923,7 +1918,8 @@ createEndMarker(){
   
     this.lineChartPlugins = [];
     this.lineChartType = 'line';
-  
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined;  
   }
   
 
@@ -2214,9 +2210,11 @@ getLast3MonthDate(){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
 
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){

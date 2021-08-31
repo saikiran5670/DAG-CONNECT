@@ -508,20 +508,28 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
         {
             try
             {
-                string queryStatement = @"select coalesce((select COUNT(distinct termc.id)
-                                            from master.termsandcondition termc
-                                            inner join master.accounttermsacondition acctermc
-                                            on termc.id=acctermc.terms_and_condition_id
-                                            where acctermc.account_id=@account_id
-                                            and acctermc.organization_id=@organization_id
-                                            and termc.state=@state), 0)";
-
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@state", Convert.ToChar(State.Active));
+                string queryToGetPreferedLanguage = @"select coalesce((select UPPER(SPLIT_PART(l.code,'-',1)) as languageCode 
+						                    from master.accountpreference ap 
+						                    LEFT JOIN master.account a on a.preference_id = ap.id 
+						                    LEFT JOIN translation.language l on ap.language_id = l.id 
+						                    where a.id = @account_id), 'EN') as languagecode";
+                var preferedLanguageCode = await _dataAccess.ExecuteScalarAsync<string>(queryToGetPreferedLanguage, parameter);
+                parameter.Add("@code", preferedLanguageCode);
+                string queryStatement = @"select coalesce((select COUNT(distinct termc.id)
+                                            from master.termsandcondition termc
+                                            inner join master.accounttermsacondition acctermc
+                                            on termc.id=acctermc.terms_and_condition_id
+                                            where acctermc.account_id = @account_id
+                                            and acctermc.organization_id = @organization_id
+                                            and termc.state = @state
+                                            and termc.code = (select coalesce((select code from master.termsandcondition 
+				                            where state = @state
+				                            and code = @code), 'EN') as languagecode)), 0)";
                 int result = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-
                 return result > 0;
             }
             catch (Exception)

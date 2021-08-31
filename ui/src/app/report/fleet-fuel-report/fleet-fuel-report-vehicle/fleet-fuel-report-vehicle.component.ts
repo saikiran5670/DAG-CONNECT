@@ -697,8 +697,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
   loadfleetFuelDetails(_vinData: any){
-    let _startTime = Util.convertDateToUtc(this.startDateValue);
-    let _endTime = Util.convertDateToUtc(this.endDateValue);
+    // let _startTime = Util.convertDateToUtc(this.startDateValue);
+    // let _endTime = Util.convertDateToUtc(this.endDateValue);
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+   
     let getFleetFuelObj = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
@@ -991,8 +994,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   setChartData(graphData: any){
-    // this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
-    // this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
+    this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
+    this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
+   
     graphData.forEach(e => {
       var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
@@ -1016,20 +1020,22 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
       this.fuelConsumptionChart.push({ x:resultDate , y: convertedFuelConsumption });      
       let minutes = this.convertTimeToMinutes(e.idleDuration);
-      this.idleDuration.push({ x:resultDate , y:minutes });  
+      this.idleDuration.push({ x:resultDate , y:minutes});  
     })   
 
     this.barChartLegend = true;
     this.barChartPlugins = [];
-
+    this.chartsLabelsdefined=[];
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = `${this.startDateValue.getDate()}/${this.startDateValue.getMonth()+1}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}/${this.endDateValue.getMonth()+1}/${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);      
+      // let startDate = Util.convertDateToUtc(this.startDateValue);
+      // let endDate = Util.convertDateToUtc(this.endDateValue);  
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = `${this.startDateValue.getDate()}-${this.startDateValue.getMonth()+1}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}-${this.endDateValue.getMonth()+1}-${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
@@ -1408,7 +1414,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   
     this.lineChartPlugins = [];
     this.lineChartType = 'line';
-    
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined; 
   }
 
   miliLitreToLitre(_data: any){
@@ -1718,9 +1725,10 @@ getLast3MonthDate(){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
@@ -2509,11 +2517,14 @@ setVehicleGroupAndVehiclePreSelection() {
   vehicleInfo : any ={};
   dateInfo : any ={};
   onVehicleSelected(vehData:any){
+    this.resetChartData(); 
     let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
     let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
     this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
     this.dateInfo={
       startTime: currentStartTime,
       endTime : currentEndTime,

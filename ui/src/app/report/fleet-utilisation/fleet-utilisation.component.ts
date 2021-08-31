@@ -849,8 +849,10 @@ calendarOptions: CalendarOptions = {
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
@@ -1044,33 +1046,27 @@ calendarOptions: CalendarOptions = {
     this.calendarValue = [];
     chartData.forEach(e => {
       var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
-     var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
+      var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
       this.chartsLabelsdefined.push(resultDate);
     
-      this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      let averagedistanceperday= (this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
       let avgDistBarData= ((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
       this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
       this.calendarSelectedValues(e);   
     });
-    this.assignChartData();
-  }
-
-  assignChartData(){
-    this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
-    this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    // let startDate =this.startDateValue;
-    // let endDate = this.endDateValue;        
-    // this.chartsLabelsdefined=[ startDate, endDate ]
+    this.chartsLabelsdefined=[];
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = `${this.startDateValue.getDate()}/${this.startDateValue.getMonth()+1}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}/${this.endDateValue.getMonth()+1}/${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);      
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = `${this.startDateValue.getDate()}-${this.startDateValue.getMonth()+1}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getDate()}-${this.endDateValue.getMonth()+1}-${this.endDateValue.getFullYear()}`;;  
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
@@ -1083,6 +1079,16 @@ calendarOptions: CalendarOptions = {
       let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;  
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
+    this.assignChartData();
+  }
+
+  assignChartData(){
+    this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    // let startDate =this.startDateValue;
+    // let endDate = this.endDateValue;        
+    // this.chartsLabelsdefined=[ startDate, endDate ]
+  
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;   
     this.barChartData = [
@@ -1143,8 +1149,8 @@ calendarOptions: CalendarOptions = {
         data: this.lineChartVehicleCount,	    
         },
     ];
-    // this.barChartLabels = this.chartsLabelsdefined;
-    // this.lineChartLabels = this.chartsLabelsdefined;   
+    this.lineChartLabels = this.chartsLabelsdefined;
+    this.barChartLabels= this.chartsLabelsdefined;    
   }
 
   calendarSelectedValues(element: any){

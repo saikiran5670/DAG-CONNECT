@@ -157,6 +157,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
     let filterData = [];
     if (filterValue != "") {
       filterData = this.initData.filter((data) => data.status === filterValue);
+    } else {
+      filterData = this.initData;
     }
     this.gridComp.updatedTableData(filterData)
   }
