@@ -1039,7 +1039,7 @@ export class AppComponent {
   }
 
   navigateToPage(pageName) {
-    this.currentTitle = this.pagetTitles[pageName];
+    //this.currentTitle = this.pagetTitles[pageName];
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
