@@ -42,9 +42,17 @@
 
         </mat-label>
         <div  *ngIf="actionType != 'view'">
-            <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
-            [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
-            (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
+            <div class="searchBoxContainer">
+                <div id="searchbox">
+                  <input class="form-control form-control-small" type="text" (keyup)="searchStartValue($event)" [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"/>
+                </div>
+                <mat-list [ngClass]="[ activeSearchList ? 'showSearchList' : 'noSearch']">
+                  <mat-list-item *ngFor="let item of searchData" (click)="onSelected(item)">{{item.title}}</mat-list-item>
+                </mat-list>
+              </div>
+            <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()" (keyup)="onKeyUp()" [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+            (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
             <!-- <mat-form-field appearance="outline" class='full-width'>
                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
                     matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
@@ -66,9 +74,17 @@
 
         </mat-label>
         <div  *ngIf="actionType != 'view'">
-            <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+            <div class="searchBoxContainer">
+                <div id="searchbox">
+                  <input class="form-control form-control-small" type="text" (keyup)="searchEndValue($event)" [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"/>
+                </div>
+                <mat-list [ngClass]="[ activeEndList ? 'showSearchList' : 'noSearch']">
+                  <mat-list-item *ngFor="let item of searchEndData" (click)="onEndSelected(item)">{{item.title}}</mat-list-item>
+                </mat-list>
+              </div>
+            <!-- <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
             [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
-            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
+            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
            
             <!-- <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
