@@ -167,8 +167,19 @@ export class CreateEditViewGeofenceComponent implements OnInit {
             lng: data.position.lng,
             from: 'search'
           }
+          this.showSearchMarker(this.searchMarker);
         }
       });
+    }
+  }
+
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      this.hereMap.addObject(selectedMarker);
     }
   }
 
