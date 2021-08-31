@@ -74,7 +74,7 @@ export class VehicleDetailsComponent implements OnInit {
     //   this.processTranslation(data);
     //   // this.loadVehicleData();
     // });
-    this.initData =this.relationshipVehiclesData;
+    this.initData = this.updateStatusName(this.relationshipVehiclesData);
     // this.updateDataSource(this.relationshipVehiclesData)
   }
   
@@ -84,6 +84,23 @@ export class VehicleDetailsComponent implements OnInit {
 
   getRelationshipVehiclesData() {
     this.updateRelationshipVehiclesData.emit()
+  }
+
+  updateStatusName(relationshipVehiclesData) {
+    relationshipVehiclesData.forEach(item => {
+      if(item.status == 'T'){
+        item.viewstatus = 'Terminate'
+      } else if(item.status == 'N'){
+        item.viewstatus = 'Opt-In + OTA'
+      } else if(item.status == 'A'){
+        item.viewstatus = 'OTA'
+      } else if(item.status == 'C'){
+        item.viewstatus = 'Opt-In'
+      }  else if(item.status == 'O'){
+        item.viewstatus = 'Opt-Out'
+      }  
+    }); 
+    return relationshipVehiclesData;
   }
 
   // updateDataSource(tableData: any) {

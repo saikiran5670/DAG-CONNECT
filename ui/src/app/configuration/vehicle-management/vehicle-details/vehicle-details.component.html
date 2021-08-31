@@ -96,7 +96,7 @@
     
       <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" showExport="true">
+        [viewStatusColumnElements]="viewStatusColumnElements" showExport="true" exportFileName="Vehicle Details">
     
         <ng-template #viewStatusColumnElements let-gridData='rowData'>
           <span *ngIf="gridData.status == 'O'">
