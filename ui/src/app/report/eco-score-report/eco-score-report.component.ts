@@ -124,6 +124,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   feautreCreatedMsg : any = '';
   trendLineSearchDataParam: any;
   noSingleDriverData: boolean=false;
+  isSearched: boolean=false;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -566,6 +567,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   onSearch(){
     this.driverSelected = false;
     this.ecoScoreDriver = false;
+    this.isSearched=false;
     // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
@@ -606,6 +608,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
  
     if(_vehicelIds.length > 0){
+      if(this.allDriversSelected){
       this.showLoadingIndicator = true;
         this.reportService.getEcoScoreProfiles(true).subscribe((profiles: any) => {
           this.profileList = profiles.profiles;
@@ -624,23 +627,25 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           }
         this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_ecoScoreDriverData: any) => {
         this.hideloader();
-        if(this.allDriversSelected){
           this.setGeneralDriverValue();
           this.updateDataSource(_ecoScoreDriverData.driverRanking);
-        }
-        else{
-          this.setGeneralDriverValue();
-          this.loadSingleDriverDetails();
-        }       
-      }, (error)=>{
-        this.hideloader();
-        this.tableInfoObj = {};
-      });
-    }, (error)=>{
-      this.hideloader();
-      this.tableInfoObj = {};
-    });
-    }    
+            
+        }, (error)=>{
+          this.isSearched=true;
+          this.hideloader();
+          this.tableInfoObj = {};
+        });
+        }, (error)=>{
+          this.isSearched=true;
+          this.hideloader();
+          this.tableInfoObj = {};
+        });
+        }    
+       else {
+        this.setGeneralDriverValue();
+        this.loadSingleDriverDetails();
+      }
+    }
   }
 
   onReset(){
@@ -1003,6 +1008,7 @@ let finalGroupDataList = [];
     this.selectedDriverId = _row.driverId;
     this.selectedDriverName = _row.driverName;
     this.loadSingleDriverDetails();
+    this.isSearched=false;
   }
 
   loadSingleDriverDetails(){
@@ -1073,6 +1079,7 @@ let finalGroupDataList = [];
         this.hideloader();
      });
     }, (error)=>{
+      this.isSearched=true;
       this.ecoScoreDriver = true;
       this.noSingleDriverData = true;
       this.hideloader();
