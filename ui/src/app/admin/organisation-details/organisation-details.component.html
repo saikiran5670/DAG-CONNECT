@@ -99,8 +99,8 @@
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPreferencesSettings || 'Preferences Settings' }}
-                                <mat-icon *ngIf='!editPrefereneceFlag' (click)="onPreferenceEdit()" style="cursor: pointer;">edit</mat-icon>
+                            <span style='display: flex; align-items: center; font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPreferencesSettings || 'Preferences Settings' }}
+                                <mat-icon *ngIf='!editPrefereneceFlag' (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
                             </span>
                         </div>
                     </div>
@@ -252,36 +252,32 @@
                             </div>
                             <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
-                                <span *ngIf="!editPrefereneceFlag">{{ '-' }}</span>
-                                <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+                                <mat-label *ngIf="!editPrefereneceFlag" class='custom-font'>
+                                    <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="width: 30px; height: 30px;" />
+                                </mat-label>
+                                <div *ngIf="editPrefereneceFlag" fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutAlign="center center" fxLayoutGap="10px">
                                   <div class="areaWidth min-width-15-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
-                                    <button *ngIf="this.uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                                    <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                                       <mat-icon>cancel</mat-icon>
                                     </button>
                                     <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
                                   </div>
                                   <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
-                                    <!-- <mat-form-field appearance="outline">
-                                      <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
-                                      <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
-                                    </mat-form-field> -->
-                                    <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
-                                      <mat-form-field appearance="outline">
-                                          <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
-                                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
-                                      </mat-form-field>
-                                    </div> -->
+                                    <mat-form-field appearance="outline">
+                                      <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="{{ translationData.lblUploadLogo || 'Upload Logo' }}" ></ngx-mat-file-input>
+                                      <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                    </mat-form-field>
                                   </div>
                                 </div>
                                 <span *ngIf="editPrefereneceFlag">{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
-                                <!-- <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
-                                    The total size must not exceed {{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
-                                    | byteFormat}}).
+                                <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                                    The total size must not exceed {{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat }} ({{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
+                                    | byteFormat }}).
                                 </mat-error>
                                 <mat-error *ngIf="imageEmptyMsg">
                                     {{ translationData.lblEmptyFile || 'Empty File' }}
-                                </mat-error> -->
-                              </div>
+                                </mat-error>
+                            </div>
                         </div>
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
                             <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">

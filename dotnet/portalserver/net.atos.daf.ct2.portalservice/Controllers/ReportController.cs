@@ -1182,7 +1182,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
                 if (request.VIN.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
-                if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
+              // if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
 
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
 
