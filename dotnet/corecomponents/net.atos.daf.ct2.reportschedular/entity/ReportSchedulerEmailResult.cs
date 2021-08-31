@@ -22,5 +22,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public bool IsMailSent { get; set; }
         public string Key { get; set; }
         public string TimeZoneName { get; set; }
+        public Int64 RecipentId { get; set; }
     }
 }
