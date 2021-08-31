@@ -215,6 +215,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+       <div id="charts">
         <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -263,7 +264,8 @@
             </div>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+       </div>
+       <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">

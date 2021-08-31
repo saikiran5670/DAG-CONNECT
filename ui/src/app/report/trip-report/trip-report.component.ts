@@ -25,6 +25,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import html2canvas from 'html2canvas';
 
 declare var H: any;
 
@@ -882,6 +883,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   exportAsPDFFile() {
     var doc = new jsPDF('p', 'mm', 'a2');
+    let DATA = document.getElementById('charts');
+    html2canvas( DATA)
+    .then(canvas => {  
+
     (doc as any).autoTable({
       styles: {
         cellPadding: 0.5,
@@ -900,9 +905,19 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       margin: {
         bottom: 30,
-        top: 45
+        top: 62
       }
     });
+    
+    let fileWidth = 170;
+    let fileHeight = canvas.height * fileWidth / canvas.width;
+    
+    const FILEURI = canvas.toDataURL('image/png')
+    // let PDF = new jsPDF('p', 'mm', 'a4');
+    let position = 0;
+    doc.addImage(FILEURI, 'PNG', 10, 45, fileWidth, fileHeight) ;
+
+
 
     let pdfColumns = this.getPDFExcelHeader();
     let prepare = []
@@ -938,6 +953,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     })
     // below line for Download PDF document  
     doc.save('tripReport.pdf');
+  });
   }
 
   masterToggleForTrip() {
