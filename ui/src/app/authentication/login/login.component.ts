@@ -100,65 +100,67 @@ export class LoginComponent implements OnInit {
                 if(getAccresp[0].preferenceId != 0){
                   this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
                     localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
-                      this.translationService.getLanguageCodes().subscribe(languageCodes => {
-                      let objData = {
-                        AccountId: data.body.accountInfo.id,
-                        OrganizationId: data.body.accountOrganization[0].id
-                      }  
-                      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                        if(!response){
-                          let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
-                          let translationObj = {
-                            id: 0,
-                            code: filterLang[0].code, //-- TODO: Lang code based on account 
-                            type: "Menu",
-                            name: "",
-                            value: "",
-                            filter: "",
-                            menuId: 0 //-- for common & user preference
-                          }
-                          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                            this.processTranslation(resp);
-                            this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, response);
-                          });
-                        }
-                        else{
-                          this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, response);
-                        }
-                      }, (error) => {
-                        this.showOrganizationRolePopup(data.body, getAccresp[0], accPref, '');
-                      })  
-                    });
+                    this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                      // this.translationService.getLanguageCodes().subscribe(languageCodes => {
+                      // let objData = {
+                      //   AccountId: data.body.accountInfo.id,
+                      //   OrganizationId: data.body.accountOrganization[0].id
+                      // }  
+                      // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                      //   if(!response){
+                      //     let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
+                      //     let translationObj = {
+                      //       id: 0,
+                      //       code: filterLang[0].code, //-- TODO: Lang code based on account 
+                      //       type: "Menu",
+                      //       name: "",
+                      //       value: "",
+                      //       filter: "",
+                      //       menuId: 0 //-- for common & user preference
+                      //     }
+                      //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                      //       this.processTranslation(resp);
+                      //       this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
+                      //     });
+                        // }
+                        // else{
+                          // this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                        // }
+                      // }, (error) => {
+                      //   this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                      // })  
+                    // });
                   })
                 }
                 else{
                   localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
-                  let objData = {
-                    AccountId: data.body.accountInfo.id,
-                    OrganizationId: data.body.accountOrganization[0].id
-                  }  
-                  this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                    if(!response){
-                      let translationObj = {
-                        id: 0,
-                        code: "EN-GB", //-- TODO: Lang code based on account 
-                        type: "Menu",
-                        name: "",
-                        value: "",
-                        filter: "",
-                        menuId: 0 //-- for common & user preference
-                      }
-                      this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                        this.processTranslation(resp);
-                        this.showOrganizationRolePopup(data.body, getAccresp[0], "", response);
-                      });
-                    }
-                    else{
-                      this.showOrganizationRolePopup(data.body, getAccresp[0], "", response);
-                    }
-                  }, (error) => {
-                    this.showOrganizationRolePopup(data.body, getAccresp[0], "", "");
-                  })  
+                  // let objData = {
+                  //   AccountId: data.body.accountInfo.id,
+                  //   OrganizationId: data.body.accountOrganization[0].id
+                  // }  
+                  this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                  // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                  //   if(!response){
+                  //     let translationObj = {
+                  //       id: 0,
+                  //       code: "EN-GB", //-- TODO: Lang code based on account 
+                  //       type: "Menu",
+                  //       name: "",
+                  //       value: "",
+                  //       filter: "",
+                  //       menuId: 0 //-- for common & user preference
+                  //     }
+                  //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                  //       this.processTranslation(resp);
+                  //       this.openTermsConditionsPopup(data.body, getAccresp[0], "");
+                  //     });
+                  //   }
+                  //   else{
+                  //     this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                  //   }
+                  // }, (error) => {
+                  //   this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                  // })  
                 } 
               }, (error) => {
                 this.loginClicks = 0;
@@ -214,7 +216,7 @@ export class LoginComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
-  /* openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
+  openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
     let objData= {
       AccountId: data.accountInfo.id,
       OrganizationId: data.accountOrganization[0].id
@@ -241,22 +243,82 @@ export class LoginComponent implements OnInit {
         base64File: base64File,
         latestTCData: latestTCData
       }
+
       this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
       this.dialogRefTerms.afterClosed().subscribe(res => {
         if(res.termsConditionsAgreeFlag){
-          this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+          this.gotoDashBoard();
         } 
         else{
           this.loginClicks= 0;        
         } 
       });
      }, (error) => {
-      this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+      this.gotoDashBoard();
      });
+  }
 
-     
-  } */
+  checkTermsAndConditions(data, accountDetails, accountPreference){
+    this.translationService.getLanguageCodes().subscribe(languageCodes => {
+      let objData = {
+        AccountId: data.accountInfo.id,
+        OrganizationId: data.accountOrganization[0].id
+      }  
+      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+        if(!response){
+          let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
+          let translationObj = {
+            id: 0,
+            code: filterLang[0].code, //-- TODO: Lang code based on account 
+            type: "Menu",
+            name: "",
+            value: "",
+            filter: "",
+            menuId: 0 //-- for common & user preference
+          }
+          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+            this.processTranslation(resp);
+            this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+          });
+        }
+        else{
+          this.gotoDashBoard();
+        }
+      }, (error) => {
+        this.gotoDashBoard();
+      })  
+    });
+  }
 
+  result: any;
+  data: any;
+  gotoDashBoard(){
+    //  if (this.loginDialogForm.valid) {
+      localStorage.setItem('accountOrganizationId', this.result.organization);
+      localStorage.setItem('accountRoleId', this.result.role);
+      let orgName = this.data.organization.filter(item => parseInt(item.id) === parseInt(this.result.organization));
+      if(orgName.length > 0){
+        localStorage.setItem("organizationName", orgName[0].name);
+      }
+      let loginDetailsObj: any = {
+        organization: this.data.organization,
+        role: this.data.role,
+        accountDetail: this.data.accountDetail,
+        accountPreference: this.data.accountPreference
+      }
+      let sessionObject: any = {
+        accountId:  this.data.accountDetail.id,
+        orgId: this.result.organization,
+        roleId: this.result.role
+      }
+      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+      });
+      localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
+      this.dataInterchangeService.getDataInterface(true);
+      this.dataInterchangeService.getOrgRoleInterface(this.data);
+      this.router.navigate(['/dashboard']);
+    // }
+  }
 
   public onResetPassword(values: object): void {
     console.log("values:: ", values)
@@ -277,7 +339,7 @@ export class LoginComponent implements OnInit {
     this.cookieService.set('cookiePolicy', 'true', 365);
   }
 
-  public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any, tacValue: any) {
+  public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any) {
     if(data.accountInfo.id){
       data.accountId = data.accountInfo.id;
     }
@@ -326,15 +388,18 @@ export class LoginComponent implements OnInit {
         organization: options.organization,
         role: options.role,
         accountDetail: accountDetails,
-        accountPreference: accountPreference,
-        organization_Id: data.accountOrganization[0].id,
-        account_Id: data.accountInfo.id,
-        translationData: this.translationData,
-        tacValue: tacValue
+        accountPreference: accountPreference
       }
+      this.data = dialogConfig.data;
       this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
-      this.dialogRefLogin.afterClosed().subscribe(res => {
-        this.loginClicks = 0;
+      // this.dialogRefLogin.afterClosed().subscribe(res => {
+      //   this.loginClicks = 0;
+      // });
+      this.dialogRefLogin.disableClose = true;//disable default close operation
+      this.dialogRefLogin.beforeClosed().subscribe(result => {
+        this.result = result;
+        this.checkTermsAndConditions(data, accountDetails, accountPreference);
+        this.dialogRefLogin.close();
       });
     }
     else{ //-- skip popup

@@ -234,26 +234,56 @@ namespace net.atos.daf.ct2.group
         }
 
         /// <summary>
-        /// VEHICLE_QUERY
+        /// Group VEHICLE_QUERY
         /// </summary>
         /// <param name="groupIds"></param>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        public async Task<int> GetVehicleCount(int[] groupIds, int organizationId, FunctionEnum functionEnum)
+        public async Task<IEnumerable<int>> GetGroupVehicleCount(int groupId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@GroupIds", groupIds);
+                parameter.Add("@GroupId", groupId);
+                parameter.Add("@OrganizationId", organizationId);
+
+                var queryOwnedG = @"                        
+                        SELECT DISTINCT v.id
+                        FROM master.vehicle v
+                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.id = @GroupId
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        ELSE COALESCE(end_date,0) = 0 END";
+
+                return await _dataAccess.QueryAsync<int>(queryOwnedG, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Dynamic VEHICLE_QUERY
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <param name="organizationId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<int>> GetDynamicVehicleCount(int organizationId, FunctionEnum functionEnum)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
                 parameter.Add("@OrganizationId", organizationId);
                 string queryOwned = string.Empty, queryVisible = string.Empty, queryUnion = "UNION";
                 string selectStatement = string.Empty;
 
                 queryOwned = @"                        
-                        SELECT v.id, v.vin
+                        SELECT DISTINCT v.id
                         FROM master.vehicle v
-                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V' AND grp.id = ANY(@GroupIds)
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
                         WHERE 
@@ -261,22 +291,22 @@ namespace net.atos.daf.ct2.group
 	                        ELSE COALESCE(end_date,0) = 0 END";
 
                 queryVisible =
-                        @"SELECT v.id, v.vin
+                        @"SELECT v.id
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V' --AND grp.id = ANY(@GroupIds)
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@OrganizationId
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         WHERE 
 	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END
                         UNION
-                        SELECT v.id, v.vin
+                        SELECT v.id
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
                                     AND orm.owner_org_id=grp.organization_id 
                                     AND orm.target_org_id=@OrganizationId
-                                    AND grp.group_type='D' AND grp.object_type='V' --AND grp.id = ANY(@GroupIds)
+                                    AND grp.group_type='D' AND grp.object_type='V'
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
@@ -286,18 +316,18 @@ namespace net.atos.daf.ct2.group
                 switch (functionEnum)
                 {
                     case FunctionEnum.OwnedVehicles:
-                        selectStatement = $"SELECT COUNT(id) FROM ( { queryOwned } ) temp";
+                        selectStatement = queryOwned;
                         break;
                     case FunctionEnum.VisibleVehicles:
-                        selectStatement = $"SELECT COUNT(id) FROM ( { queryVisible } ) temp";
+                        selectStatement = queryVisible;
                         break;
                     case FunctionEnum.All:
-                        selectStatement = $"SELECT COUNT(id) FROM ( { queryOwned } { queryUnion } { queryVisible } ) temp";
+                        selectStatement = $"{ queryOwned } { queryUnion } { queryVisible }";
                         break;
                     default:
                         break;
                 }
-                return await _dataAccess.ExecuteScalarAsync<int>(selectStatement, parameter);
+                return await _dataAccess.QueryAsync<int>(selectStatement, parameter);
             }
             catch (Exception)
             {
@@ -711,8 +741,8 @@ namespace net.atos.daf.ct2.group
                                 case FunctionEnum.All:
                                 case FunctionEnum.OwnedVehicles:
                                 case FunctionEnum.VisibleVehicles:
-                                    //All
-                                    group.GroupRefCount = await GetVehicleCount(new int[] { group.Id }, group.OrganizationId, group.FunctionEnum);
+                                    var vehicleIds = await GetDynamicVehicleCount(group.OrganizationId, group.FunctionEnum);
+                                    group.GroupRefCount = vehicleIds.Count();
                                     break;
                                 default:
                                     break;

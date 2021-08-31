@@ -79,6 +79,7 @@ vehicleGrpDD: any = [];
 alertLvl: any =[];
 alertTyp: any=[];
 alertCtgry: any=[];
+fromAlertsNotifications: boolean = false;
 dataSource: any = new MatTableDataSource([]);
 selectedTrip = new SelectionModel(true, []);
 selectedPOI = new SelectionModel(true, []);
@@ -282,10 +283,10 @@ ngOnDestroy(){
           this.selectionTimeRange('today');}
                    
           if(this._state.fromAlertsNotifications == true){
-            this.selectionTimeRange('today');}
+            this.fromAlertsNotifications = true;}
             
-          if(this._state.fromMoreAlerts == true){
-            this.selectionTimeRange('last3month');}
+          // if(this._state.fromMoreAlerts == true){
+          //   this.selectionTimeRange('today');}
             }
       });
     });
@@ -543,6 +544,24 @@ ngOnDestroy(){
   }
   else if(this._state.fromDashboard == true && this._state.repairFlag == true){
     this.logBookForm.get('alertCategory').setValue("R");
+  }
+
+  //for alerts & notification individual alert click
+  if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    this.selectionTab = '';
+    let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+    let startDate = new Date( sdate +' UTC');
+    startDate.toString();
+    let newDate = new Date(this._state.data[0].date + 'UTC');
+    newDate.toString();
+    this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
+    this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertLevel);
+    this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+    this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
+  }
+  if(this._state.fromMoreAlerts == true){
+    this.selectionTab ='';
   }
 }
 }
@@ -860,11 +879,12 @@ ngOnDestroy(){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
       if(this._state){
         if(this.vehicleDD.length > 0){
+          if(this.fromAlertsNotifications == false  && this._state.fromMoreAlerts == false){
             let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
             if(_v.length > 0){
               let id =_v[0].vehicleId;
               this.logBookForm.get('vehicle').setValue(id);
-            }
+            }}
         }
         }else{
           this.logBookForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
@@ -887,6 +907,25 @@ ngOnDestroy(){
     }
     if(this._state.fromDashboard == true && this._state.repairFlag == true){
       this.logBookForm.get('alertCategory').setValue("R");
+    }
+      //for alerts & notification individual alert click
+    if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+      this.selectionTab = '';
+      let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+      let startDate = new Date( sdate +' UTC');
+      startDate.toString();
+      let newDate = new Date(this._state.data[0].date + 'UTC');
+      newDate.toString();
+      this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
+      this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertLevel);
+      this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
+      // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
+      // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
+    }
+    if(this._state.fromMoreAlerts == true){
+      this.selectionTab = '';
     }
   }
   }
@@ -1303,7 +1342,8 @@ let prepare = []
           });
         }
       }else{
-        this.resetFilterValues();
+        if(this.fromAlertsNotifications == false && this._state.fromMoreAlerts == false){
+        this.resetFilterValues();}
       }
     }
 

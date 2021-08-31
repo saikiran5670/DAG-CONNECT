@@ -37,13 +37,13 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AlertUrgencyLevelRefSchema that = (AlertUrgencyLevelRefSchema) o;
-        return Objects.equals(alertId, that.alertId) && Objects.equals(urgencyLevelType, that.urgencyLevelType) && Objects.equals(thresholdValue, that.thresholdValue) && Objects.equals(unitType, that.unitType) && Objects.equals(alertCategory, that.alertCategory) && Objects.equals(alertType, that.alertType) && Objects.equals(alertState, that.alertState);
+        AlertUrgencyLevelRefSchema schema = (AlertUrgencyLevelRefSchema) o;
+        return alertId.equals(schema.alertId) && urgencyLevelType.equals(schema.urgencyLevelType) && thresholdValue.equals(schema.thresholdValue) && unitType.equals(schema.unitType) && alertCategory.equals(schema.alertCategory) && alertType.equals(schema.alertType) && alertState.equals(schema.alertState) && periodType.equals(schema.periodType) && dayTypeArray.equals(schema.dayTypeArray) && startTime.equals(schema.startTime) && endTime.equals(schema.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState);
+        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime);
     }
 
     @Override

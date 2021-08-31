@@ -108,7 +108,7 @@ public class AlertExecutorConfigImplTest {
         Alert alert = outputMessage.getAlert().get().get(0);
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
-        Assert.assertEquals("2000",alert.getValueAtAlertTime());
+        Assert.assertEquals("1000.0",alert.getValueAtAlertTime());
         Assert.assertEquals("900",alert.getThresholdValue());
         Assert.assertEquals("C",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());

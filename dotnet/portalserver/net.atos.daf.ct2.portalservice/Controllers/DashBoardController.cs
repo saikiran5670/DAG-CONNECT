@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                if (request.VINs.Count <= 0)
+                if (request == null && request.VINs.Count <= 0)
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(request.StartDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_STARTDATE_MSG); }
+                if (request == null && !(request.StartDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_ENDDATE_MSG); }
                 if (request.VINs.Count <= 0) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_DATEMISMATCH_MSG); }
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.VINs.Count <= 0)
+                if (request == null && request.VINs.Count <= 0)
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }

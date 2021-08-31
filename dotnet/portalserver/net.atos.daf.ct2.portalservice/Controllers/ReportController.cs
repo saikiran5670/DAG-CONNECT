@@ -439,9 +439,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var organizationId = !isGlobal ? GetContextOrgId() : 0;
 
                 char used_type = 'N';
-                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
+                if (_userDetails.UserFeatures.Any(x => x.Name.Contains("Report.ECOScoreReport")))
                     used_type = 'A';
-                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
+                if (_userDetails.UserFeatures.Any(x => x.Name.Contains("Report.ECOScoreReport.Advance")))
                     used_type = 'D';
 
                 Metadata headers = new Metadata();
@@ -1182,7 +1182,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
                 if (request.VIN.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
-                if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
+              // if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
 
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
 

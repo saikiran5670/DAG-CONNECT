@@ -13,7 +13,7 @@
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
                         <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
-                            <div class="lds-roller-sm" style="height: 27px; width: 54px;">
+                            <div class="lds-roller-sm" style="height: 19px; width: 54px;">
                                 <div></div><div></div><div></div><div></div><div></div><div></div>
                               </div>
                            {{ subscribeTimer }}
@@ -45,7 +45,7 @@
 
                         <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
                             <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
-                                <mat-card class="card1" (click)="gotoLogBook()">
+                                <mat-card class="card1" (click)="gotoLogBook(item)">
                                 <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                 fxLayoutGap="1px">
                                 <div fxLayout="column" class="areaWidth min-width-10-per">
@@ -63,7 +63,11 @@
                                 <div class="line">
                                     <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
-                                    <span class="line2">{{item.regNo}}</span>                                </div>
+                                    <!-- <span class="line2">{{item.regNo}}</span> -->
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
+                                </div>
                             </div>
                         <!-- <mat-divider style="margin: 5px,5px!important;"></mat-divider> -->
                     </mat-card>

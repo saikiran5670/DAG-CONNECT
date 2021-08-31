@@ -224,7 +224,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
       let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
       this.existingGroupList.forEach(element => {
         let vehicleName = element.groupName;
-        if(vehGrpName==vehicleName){
+        if(vehGrpName !== this.selectedRowData.groupName && vehGrpName==vehicleName){
             this.duplicateVehicleCheck = true;
          }
       });   

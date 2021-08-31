@@ -80,7 +80,7 @@
             </div>
         </mat-card>
         <mat-card class='mat-elevation-z'>
-            <form [formGroup]= 'consentFormGroup'>
+            <!-- <form [formGroup]= 'consentFormGroup'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
@@ -145,9 +145,6 @@
                                 <div class='margin-left-10-per' *ngIf="row.status == 'U'">
                                     <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                                 </div>
-                                <!-- <div class='margin-left-10-per' *ngIf="row.optIn == 'H'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.status == 'I' ? (translationData.lblOptIn || 'Opt-In') : (translationData.lblOptOut || 'Opt-Out') }}" [src]="(row.status == 'I') ? 'assets/images/icons/driverOpt/opt-in.svg' : 'assets/images/icons/driverOpt/opt-out.svg'" style="width: 20px; height: 20px;" />
-                                </div> -->
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
@@ -170,9 +167,73 @@
                     </mat-table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
                 </div>
-                <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
-            </form>
-        </mat-card>       
+            </form> -->
+
+            <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
+                [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements"
+                [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
+                [viewStatusColumnElements]="viewStatusColumnElements"
+                [showExport]="false" #gridComp>
+            
+                <ng-template #topLeftElements let-gridData='rowData'>
+                    <div class='areaWidth' fxLayoutAlign="center center">
+                        <mat-form-field appearance="outline" class='margin-right-xxlg'>
+                            <mat-select [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
+                                placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
+                                <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
+                                    {{ rer.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            
+                <ng-template #topRightElements let-gridData='rowData'>
+                    <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
+                        <button mat-flat-button color="primary" [disabled]="initData.length == 0" (click)="onConsentClick('H')">
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll ||
+                            'Reset All'}}
+                        </button>
+                    </div>
+                    <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
+                        <button mat-flat-button color="primary" [disabled]="initData.length == 0" (click)="onConsentClick('I')">
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll ||
+                            'Opt-In All'}}
+                        </button>
+                    </div>
+                    <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
+                        <button style='background-color: #d62a29 !important;' mat-flat-button color="primary"
+                            [disabled]="initData.length == 0" (click)="onConsentClick('U')">
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll ||
+                            'Opt-Out All'}}
+                        </button>
+                    </div>
+                </ng-template>
+            
+                <ng-template #viewStatusColumnElements let-gridData='rowData'>
+                    <div class='margin-left-10-per' *ngIf="gridData.status == 'I'">
+                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                    </div>
+                    <div class='margin-left-10-per' *ngIf="gridData.status == 'U'">
+                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                    </div>
+                </ng-template>
+            
+                <ng-template #actionColumnElements let-gridData='rowData'>
+                    <button class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                        <mat-icon>create</mat-icon>
+                    </button>
+                    <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDelete(gridData)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                        <mat-icon class="deleteIcon">delete_outline</mat-icon>
+                    </button>
+                </ng-template>
+            
+            </app-data-table>
+        </mat-card>   
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>    
     </div>    
     <div *ngIf='editFlag'>
         <app-edit-driver-details [translationData]='translationData' [organizationData]='organizationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="updateEditData($event)"></app-edit-driver-details>

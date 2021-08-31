@@ -889,11 +889,11 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
-                        -- Visible vehicles of type S/G
+                        -- Visible vehicles of type G
                         SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
                         FROM master.vehicle v
-                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         WHERE 
@@ -1102,61 +1102,59 @@ namespace net.atos.daf.ct2.vehicle.repository
                 // org filter
                 if (organizationId > 0 && is_vehicle)
                 {
-                    query = @"select distinct id,name,count,true as is_group from (
-	                                     select vg.id,vg.name,
-			                                    case when (vg.group_type ='D' and vg.function_enum='A') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    Inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                                    or (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-				                                     when (vg.group_type ='D' and vg.function_enum='V') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-				                                    when (vg.group_type ='D' and vg.function_enum='O') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-		                                    --	else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
-			                                    else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
-			                                    from master.group vg 
-			                                    left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-			                                    left join master.orgrelationship as os on om.relationship_id=os.id 
-			                                    left join master.vehicle v on vg.organization_id=v.organization_id
-			                                    where (vg.organization_id=@organization_id or om.target_org_id=@organization_id)
-			                                    and vg.object_type='V' and vg.group_type in ('G','D')
-			                                    ) vehicleGroup";
+                    query = @"-- Owned vehicles G/D
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.vehicle v
+                              LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                              INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.group_type='D') AND grp.object_type='V'
+                              INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                              INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                              WHERE 
+	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name
+                              
+                              UNION
+                              
+                              -- Visible vehicles of type G
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.vehicle v
+                              INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                              INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
+                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                              WHERE 
+	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name
+
+                              UNION
+
+                              -- Visible vehicles of type D with method O
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.group grp
+                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
+                                          AND orm.owner_org_id=grp.organization_id 
+                                          AND orm.target_org_id=@organization_id
+                                          AND grp.group_type='D' AND grp.object_type='V'
+                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                              INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                              WHERE 
+	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name";
                 }
                 else
                 {
-                    query = @"select distinct id,name,0 as count,true as is_group from (
-                                select vg.id,vg.name
-                                from master.group vg
-								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-								inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM'))))  and vg.object_type='V' and vg.group_type in ('G','D') 
-                                ) vehicleGroup";
+                    query = @"SELECT DISTINCT id,name,0 as count,true as is_group 
+                              FROM (
+                                SELECT vg.id,vg.name
+                                FROM master.group vg
+								INNER JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+								INNER JOIN master.orgrelationship as os on om.relationship_id=os.id 
+                                WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) 
+                                    and vg.object_type='V' and vg.group_type in ('G','D') 
+                              ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
                 IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
