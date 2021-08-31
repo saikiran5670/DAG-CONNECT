@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.reports.repository
                                               , cte_combine as
                                             	(
                                             		SELECT
-                                            			vh.name as vehiclename
+                                            			vh.name as VehicleName
                                             		  , vh.vin  as VIN
                                             		  , numberoftrips as NumberOfTrips
                                             		  , vh.registration_no             as RegistrationNumber
