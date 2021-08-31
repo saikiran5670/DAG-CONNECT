@@ -694,15 +694,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.showLoadingIndicator = false;
   }
 
-  getOnLoadData(){    
+  getOnLoadData(){  
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
     let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
     let loadParam = {
       "reportId": 10,
       "accountId": this.accountId,
       "organizationId": this.accountOrganizationId,
-      "startDateTime": Util.convertDateToUtc(defaultStartValue),
-      "endDateTime": Util.convertDateToUtc(defaultEndValue)
+      "startDateTime":Util.getMillisecondsToUTCDate(defaultStartValue, this.prefTimeZone),
+      "endDateTime":Util.getMillisecondsToUTCDate(defaultEndValue, this.prefTimeZone)
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
@@ -724,8 +724,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let distinctGroupId : any = [];
     let distinctDriverId : any = [];
     let finalDriverList : any = [];
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue); //_last3m.getTime();
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // _yesterday.getTime();
+    let currentStartTime =  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); //_last3m.getTime();
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); // _yesterday.getTime();
    
 let groupIdArray = [];
 let finalGroupDataList = [];
@@ -1015,8 +1015,10 @@ let finalGroupDataList = [];
       driverName: this.selectedDriverName,
       driverOption: this.selectedDriverOption
     }
-    let _startTime = Util.convertDateToUtc(this.startDateValue);
-    let _endTime = Util.convertDateToUtc(this.endDateValue);
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    // let _startTime = Util.convertDateToUtc(this.startDateValue);
+    // let _endTime = Util.convertDateToUtc(this.endDateValue);
     let _vehicelIds = [];
     let _driverIds =[];
     let _minTripVal =0;
@@ -1321,8 +1323,11 @@ let finalGroupDataList = [];
     if(numSelected > 4){
       return;
     } else {
-      let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-      let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+      let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+      let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+  
+      // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+      // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
       let _vehicelIds = [];
       let _driverIds =[];
       var _minTripVal =0;

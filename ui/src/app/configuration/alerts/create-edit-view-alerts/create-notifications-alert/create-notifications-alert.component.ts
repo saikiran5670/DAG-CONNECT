@@ -104,14 +104,14 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
       id: 'H',
       value: 'Hours'
     },
-    {
-      id: 'D',
-      value: 'Days'
-    },
-    {
-      id: 'W',
-      value: 'Weeks'
-    },
+    // {
+    //   id: 'D',
+    //   value: 'Days'
+    // },
+    // {
+    //   id: 'W',
+    //   value: 'Weeks'
+    // },
   ];
   emailTimeList: any = [
     {
@@ -122,14 +122,14 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
       id: 'H',
       value: "Hours"
     },
-    {
-      id: 'D',
-      value: 'Days'
-    },
-    {
-      id: 'W',
-      value: 'Weeks'
-    },
+    // {
+    //   id: 'D',
+    //   value: 'Days'
+    // },
+    // {
+    //   id: 'W',
+    //   value: 'Weeks'
+    // },
   ];
   timeUnitValue: any;
   emailtimeUnitValue: any;

@@ -5,16 +5,16 @@ import { OrganizationService } from '../../services/organization.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { FileValidator } from 'ngx-material-file-input';
 
-
 @Component({
   selector: 'app-organisation-details',
   templateUrl: './organisation-details.component.html',
   styleUrls: ['./organisation-details.component.less']
 })
+
 export class OrganisationDetailsComponent implements OnInit {
-  // viewFlag: any = true;
   editPrefereneceFlag: boolean = false;
   initData: any = [];
+  accountNavMenu: any = [];
   dataSource: any;
   translationData: any;
   accountOrganizationId: any = 0;
@@ -31,7 +31,6 @@ export class OrganisationDetailsComponent implements OnInit {
   organisationSelected : string;
   preferenceId : number;
   organizationIdNo : number;
-  // private _formBuilder: any;
   languageDropdownData: any = [];
   timezoneDropdownData: any = [];
   unitDropdownData: any = [];
@@ -41,13 +40,13 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleStatusDropdownData: any = [];
   driverStatusDropdownData:any = [];
   vehicleDisplayDropdownData: any = [];
-  landingPageDisplayDropdownData: any = [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   languageHolder: string;
   timezoneHolder: string;
   currencyHolder: string;
   unitHolder: string;
+  prefDefault: any = {};
   dateFormatHolder: string;
   timeFormatHolder: string;
   driverOptHolder:string;
@@ -56,7 +55,6 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleOptIn : string;
   showLoadingIndicator : boolean = false;
   readonly maxSize= 5242880; //5 MB
-  
   imageEmptyMsg: boolean= false;
   clearInput: any;
   imageMaxMsg: boolean = false;
@@ -67,6 +65,7 @@ export class OrganisationDetailsComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
+
   defaultTranslation(){
     this.translationData = {
       lblCountry :'Country',
@@ -95,9 +94,20 @@ export class OrganisationDetailsComponent implements OnInit {
       lblPleasechooseDriverDefaultStatus: 'Please choose Driver Default Status type'
     }
   }
-  ngOnInit(): void {
+
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
+    this.organisationList = this.accountDetails["organization"];
+    this.accountId = parseInt(localStorage.getItem('accountId'));
+    this.accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
+    if(localStorage.getItem('contextOrgId')){
+      this.selectedOrganisationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{ 
+      this.selectedOrganisationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+
     this.orgDetailsPreferenceForm = this._formBuilder.group({
       language: ['', [Validators.required]],
       timeZone: ['', [Validators.required]],
@@ -128,85 +138,16 @@ export class OrganisationDetailsComponent implements OnInit {
       filter: "",
       menuId: 23 //-- for org details
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
-    });
-    
-      this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
-      this.organisationList = this.accountDetails["organization"];
-      this.accountId = parseInt(localStorage.getItem('accountId'));
-      this.selectedOrganisationId =  parseInt(localStorage.getItem('accountOrganizationId'));
-      this.loadOrganisationdata();
-  }
-
-  loadOrganisationdata(){
-    this.showLoadingIndicator=  true;
-    let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
-
-    this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
-      this.showLoadingIndicator=  false;
-      this.organisationData = orgData;
-      this.organizationIdNo = orgData.id;
-      this.preferenceId = orgData.preferenceId;
-      this.updateVehicleDefault();
-      this.updateDriverDefault();
-
-      //console.log("---orgData---",this.organisationData)
-    });
-  }
-
-
-  updateVehicleDefault(){
-    switch (this.organisationData.vehicleOptIn) {
-      case 'U':
-        this.vehicleOptIn = 'Opt Out'
-        break;
-        case 'I':
-          this.vehicleOptIn = 'Opt In'
-          break;
-          case 'H':
-        this.vehicleOptIn = 'Inherit'
-        break;
-      default:
-        break;
-    }
-  }
-
-  updateDriverDefault(){
-    switch (this.organisationData.driverOptIn) {
-      case 'U':
-        this.driverOptIn = 'Opt Out'
-        break;
-        case 'I':
-          this.driverOptIn= 'Opt In'
-          break;
-          case 'H':
-        this.driverOptIn = 'Inherit'
-        break;
-      default:
-        break;
-    }
-  }
-
-  selectionChanged(_event){
-    this.selectedOrganisationId = _event;
-    this.loadOrganisationdata();
-   // console.log(_event)
-  }
-  
-  languageChange(event:any) {
-
-  }
-
-  
-  onPreferenceEdit() {
-    this.editPrefereneceFlag = true;
-    let languageCode = this.localStLanguage.code;
     this.showLoadingIndicator = true;
-    let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
+      this.processTranslation(data);
+      this.getTranslatedPref();
+    });
+  }
 
+  getTranslatedPref(){
+    let languageCode = this.localStLanguage.code;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
-      this.showLoadingIndicator = false;
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.timezoneDropdownData = dropDownData.timezone;
@@ -214,35 +155,109 @@ export class OrganisationDetailsComponent implements OnInit {
       this.unitDropdownData = dropDownData.unit;
       this.dateFormatDropdownData = dropDownData.dateformat;
       this.timeFormatDropdownData = dropDownData.timeformat;
-      this.vehicleStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
-      this.driverStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
-      this.landingPageDisplayDropdownData = accountNavMenu;
-      
-      this.languageHolder =  this.organisationData.language ? this.organisationData.language :  this.languageDropdownData[0].id;
-      this.timezoneHolder =  this.organisationData.timezone ? this.organisationData.timezone :  this.timezoneDropdownData[0].id;
-      this.currencyHolder =  this.organisationData.currency ? this.organisationData.currency :  this.currencyDropdownData[0].id;
-      this.unitHolder =  this.organisationData.unit ? this.organisationData.unit :  this.unitDropdownData[0].id;
-      this.dateFormatHolder =  this.organisationData.dateFormat ? this.organisationData.dateFormat :  this.dateFormatDropdownData[0].id;
-      this.timeFormatHolder =  this.organisationData.timeFormat ? this.organisationData.timeFormat :  this.timeFormatDropdownData[0].id;
-      this.vehicleOptHolder =  this.organisationData.driverOptIn ? this.organisationData.driverOptIn :  this.vehicleStatusDropdownData[0].id;
-      this.driverOptHolder =  this.organisationData.vehicleOptIn ? this.organisationData.vehicleOptIn : this.driverStatusDropdownData[0].id;
-
-      this.orgDetailsPreferenceForm.controls.language.setValue(this.languageHolder);
-      this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.timezoneHolder);
-      this.orgDetailsPreferenceForm.controls.unit.setValue(this.unitHolder);
-      this.orgDetailsPreferenceForm.controls.currency.setValue(this.currencyHolder);
-      this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.dateFormatHolder);
-      this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.timeFormatHolder);
-      this.orgDetailsPreferenceForm.controls.driverDefaultStatus.setValue(this.organisationData.driverOptIn);
-      this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.setValue(this.organisationData.vehicleOptIn);
-      // this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
-      // this.landingPageDisplayDropdownData = accountNavMenu;
-      
-      
+      this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
+      this.vehicleStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt In'},{id:'H',value:'Inherit'}]
+      this.driverStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt In'},{id:'H',value:'Inherit'}]
+      this.loadOrganisationdata();
     });
+  }
 
+  loadOrganisationdata(){
+    this.showLoadingIndicator = true;
+    this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
+      this.hideloader();    
+      this.organisationData = orgData;
+      this.organizationIdNo = orgData.id;
+      this.preferenceId = orgData.preferenceId;
+      this.updatePrefDefault(this.organisationData);
+      this.updateVehicleDefault();
+      this.updateDriverDefault();
+    }, (error) => {
+      console.log("data not found...");
+      this.hideloader();
+    });
+  }
+
+  updatePrefDefault(orgData: any){
+    let lng: any = this.languageDropdownData.filter(i=>i.id == parseInt(orgData.languageName));
+    let tz: any = this.timezoneDropdownData.filter(i=>i.id == parseInt(orgData.timezone));
+    let unit: any = this.unitDropdownData.filter(i=>i.id == parseInt(orgData.unit));
+    let cur: any = this.currencyDropdownData.filter(i=>i.id == parseInt(orgData.currency));
+    let df: any = this.dateFormatDropdownData.filter(i=>i.id == parseInt(orgData.dateFormat));
+    let tf: any = this.timeFormatDropdownData.filter(i=>i.id == parseInt(orgData.timeFormat));
+    this.prefDefault = {
+      language: (lng.length > 0) ? lng[0].value : '-',
+      timezone: (tz.length > 0) ? tz[0].value : '-',
+      unit: (unit.length > 0) ? unit[0].value : '-',
+      currency: (cur.length > 0) ? cur[0].value : '-',
+      dateFormat: (df.length > 0) ? df[0].value : '-',
+      timeFormat: (tf.length > 0) ? tf[0].value : '-'
+    }  
+  }
+
+  hideloader(){
+    this.showLoadingIndicator = false;
+  }
+  
+  updateVehicleDefault(){
+    switch (this.organisationData.vehicleOptIn) {
+      case 'U':
+                this.vehicleOptIn = this.translationData.lblOptOut || 'Opt Out'
+                break;
+      case 'I':
+                this.vehicleOptIn = this.translationData.lblOptIn || 'Opt In'
+                break;
+      case 'H':
+                this.vehicleOptIn = this.translationData.lblInherit || 'Inherit'
+                break;
+      default:
+                break;
+    }
+  }
+
+  updateDriverDefault(){
+    switch (this.organisationData.driverOptIn) {
+      case 'U':
+                this.driverOptIn = this.translationData.lblOptOut || 'Opt Out'
+                break;
+      case 'I':
+                this.driverOptIn= this.translationData.lblOptIn || 'Opt In'
+                break;
+      case 'H':
+                this.driverOptIn = this.translationData.lblInherit || 'Inherit'
+                break;
+      default:
+                break;
+    }
+  }
+
+  selectionChanged(_event){
+    this.selectedOrganisationId = _event;
+    this.editPrefereneceFlag = false;
+    this.loadOrganisationdata();
+  }
+  
+  onSelectionChange(event: any) {
 
   }
+
+  onPreferenceEdit() {
+    this.editPrefereneceFlag = true;
+    this.setDefaultValues();
+  }
+
+  setDefaultValues(){
+    this.orgDetailsPreferenceForm.controls.language.setValue(this.organisationData.languageName ? parseInt(this.organisationData.languageName) : parseInt(this.languageDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.organisationData.timezone ? parseInt(this.organisationData.timezone) : parseInt(this.timezoneDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.unit.setValue(this.organisationData.unit ? parseInt(this.organisationData.unit) : parseInt(this.unitDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.currency.setValue(this.organisationData.currency ? parseInt(this.organisationData.currency) : parseInt(this.currencyDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.organisationData.dateFormat ? parseInt(this.organisationData.dateFormat) : parseInt(this.dateFormatDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData.timeFormat ? parseInt(this.organisationData.timeFormat) : parseInt(this.timeFormatDropdownData[0].id));
+    this.orgDetailsPreferenceForm.controls.driverDefaultStatus.setValue(this.organisationData.driverOptIn);
+    this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.setValue(this.organisationData.vehicleOptIn);  
+    this.orgDetailsPreferenceForm.controls.pageRefreshTime.setValue(parseInt(this.organisationData.pageRefreshTime));  
+  }
+
   onCloseMsg(){
     this.titleVisible = false;
   }
@@ -250,33 +265,31 @@ export class OrganisationDetailsComponent implements OnInit {
   onCancel() {
     this.editPrefereneceFlag = false;
   }
+
   onReset() {
-    this.onPreferenceEdit();
+    this.setDefaultValues();
   }
+
   onCreateUpdate() {
     let organizationUpdateObj = {
       id: this.organisationData.id,
       vehicle_default_opt_in: this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value : this.vehicleStatusDropdownData[0].id,
-      driver_default_opt_in: this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value : this.driverStatusDropdownData[0].id,
-    
-    
+      driver_default_opt_in: this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value : this.driverStatusDropdownData[0].id
     }
 
-    this.organizationService.updateOrganization(organizationUpdateObj).subscribe(ogranizationResult =>{
+    this.organizationService.updateOrganization(organizationUpdateObj).subscribe((ogranizationResult: any) =>{
       if(ogranizationResult){
-          this.createUpdatePreferences();
-          //orgSuccess = true;
-          // let successMsg = "Organisation Details Updated Successfully!";
-          // this.successMsgBlink(successMsg); 
+        this.createUpdatePreferences();
       }
-    })
-    
-  
+    }, (error) => {
+      console.log("Error in updateOrganization API...");
+    });
   }
 
   deleteBrandLogo(){
-     this.uploadLogo= "";
-   }
+    this.uploadLogo= "";
+  }
+
   keyPressNumbers(event: any){
     var charCode = (event.which) ? event.which : event.keyCode;
     // Only Numbers 0-9
@@ -288,49 +301,49 @@ export class OrganisationDetailsComponent implements OnInit {
     }
   }
 
-  createUpdatePreferences(){
-  
-    let prefSuccess : boolean = false;
-
-    let preferenceUpdateObj = 
-    {
+  createUpdatePreferences(){  
+    let preferenceUpdateObj: any = {
       id: this.preferenceId,
       refId: this.organizationIdNo,
-      languageId: this.orgDetailsPreferenceForm.controls.language.value ? this.orgDetailsPreferenceForm.controls.language.value : this.languageDropdownData[0].value,
-      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? this.orgDetailsPreferenceForm.controls.timeZone.value : this.timezoneDropdownData[0].value,
-      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? this.orgDetailsPreferenceForm.controls.currency.value : this.currencyDropdownData[0].value,
-      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].value,
-      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? this.orgDetailsPreferenceForm.controls.dateFormat.value : this.dateFormatDropdownData[0].value,
-      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? this.orgDetailsPreferenceForm.controls.timeFormat.value : this.timeFormatDropdownData[0].value,
-      vehicleDisplayId: this.orgDetailsPreferenceForm.controls.vehDisplay.value ? this.orgDetailsPreferenceForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
-      landingPageDisplayId: this.orgDetailsPreferenceForm.controls.landingPage.value ? this.orgDetailsPreferenceForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
-      iconId:  0,
+      languageId: this.orgDetailsPreferenceForm.controls.language.value ? parseInt(this.orgDetailsPreferenceForm.controls.language.value) : parseInt(this.languageDropdownData[0].value),
+      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeZone.value) : parseInt(this.timezoneDropdownData[0].value),
+      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? parseInt(this.orgDetailsPreferenceForm.controls.currency.value) : parseInt(this.currencyDropdownData[0].value),
+      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? parseInt(this.orgDetailsPreferenceForm.controls.unit.value) : parseInt(this.unitDropdownData[0].value),
+      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.dateFormat.value) : parseInt(this.dateFormatDropdownData[0].value),
+      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
+      vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
+      landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
+      iconId: 0,
       iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
-      createdBy: this.accountId
+      createdBy: this.accountId,
+      pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
     }
-    if(this.preferenceId === 0){
-      this.organizationService.createPreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
+    if(this.preferenceId === 0){ // create pref
+      this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
         if (preferenceResult) {
-          prefSuccess = true;
-          this.successStatus(prefSuccess)
+          this.loadOrganisationdata();
+          this.successStatus(true);
         }
       })
     }
-    else{
-      this.organizationService.updatePreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
+    else{ // update pref
+      this.organizationService.updatePreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
         if (preferenceResult) {
-          prefSuccess = true;
-          this.successStatus(prefSuccess)
+          this.loadOrganisationdata();
+          this.successStatus(false);
         }
       })
     }
   }
 
-  successStatus(prefSuccess){
-    if(prefSuccess){
-      let successMsg = "Organisation Details Updated Successfully!";
-      this.successMsgBlink(successMsg); 
+  successStatus(createStatus: any){
+    let successMsg: any = '';
+    if(createStatus){ // create
+      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully || "Organisation Details Created Successfully!";
+    }else{ // update
+      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully || "Organisation Details Updated Successfully!";
     }
+    this.successMsgBlink(successMsg); 
   }
 
   processTranslation(transData: any){
@@ -342,9 +355,9 @@ export class OrganisationDetailsComponent implements OnInit {
     this.titleVisible = true;
     this.editPrefereneceFlag = false;
     this.OrgDetailsMsg = msg;
-    this.loadOrganisationdata();
     setTimeout(() => {  
       this.titleVisible = false;
     }, 5000);
   }
+  
 }

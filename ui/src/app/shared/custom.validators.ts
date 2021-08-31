@@ -41,21 +41,24 @@ export class CustomValidators {
         number = /[0-9]/,
         special = /[ !"#$%&'()*+,\-/:;<=>?@[\\\]^_`{|}~]/;
 
-      if (!special.test(NEW_PASSWORD.value)) {
-        NEW_PASSWORD.setErrors({ specialCharRequired: true });
+      let specialCharRequired: boolean = false;
+      let numberRequired: boolean = false;
+      let lowercaseRequired: boolean = false;
+      let uppercaseRequired: boolean = false;
+      if (!special.test(NEW_PASSWORD.value)) {//errors.push(special);
+        specialCharRequired = true;
       }
       if (!number.test(NEW_PASSWORD.value)) {
-        NEW_PASSWORD.setErrors({ numberRequired: true });
+        numberRequired = true;
       }
       if (!lower.test(NEW_PASSWORD.value)) {
-        NEW_PASSWORD.setErrors({ lowercaseRequired: true });
+        lowercaseRequired = true;
       }
       if (!upper.test(NEW_PASSWORD.value)) {
-        NEW_PASSWORD.setErrors({ uppercaseRequired: true });
+        uppercaseRequired = true;
       }
-      if (!NEW_PASSWORD.value) {
-        NEW_PASSWORD.setErrors({ required: true });
-      }
+      let customError = { specialCharRequired: specialCharRequired, numberRequired: numberRequired, lowercaseRequired: lowercaseRequired, uppercaseRequired: uppercaseRequired};
+      NEW_PASSWORD.setErrors({...NEW_PASSWORD.errors,...customError});
       return;
     };
   }
