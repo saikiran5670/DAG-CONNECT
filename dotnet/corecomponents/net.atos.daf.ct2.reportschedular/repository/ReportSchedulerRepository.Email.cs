@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.end_date as EndDate,                                            
                                             repsch.created_by as ReportCreatedBy, 
                                             receipt.email as EmailId, 
+                                            receipt.id as RecipentId,
                                             schrep.token as ReportToken,
                                             coalesce((select t.value from translation.translation as t where t.name =report.key and t.code=repsch.code), (select t.value from translation.translation as t where t.name =report.key and t.code='EN-GB')) as Key,
                                             coalesce(tz.name,'UTC') as TimeZoneName

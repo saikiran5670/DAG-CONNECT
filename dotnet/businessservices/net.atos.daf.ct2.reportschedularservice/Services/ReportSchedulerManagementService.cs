@@ -445,7 +445,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     var response = new UnSubscribeResponse()
                     {
                         Message = ReportSchedulerConstant.UN_SUBCRIBE_SUCCESS_MSG,
-                        Code = ResponseCode.NotFound
+                        Code = ResponseCode.Success
                     };
                     return await Task.FromResult(response);
                 }
@@ -484,7 +484,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     var response = new UnSubscribeAllResponse()
                     {
                         Message = ReportSchedulerConstant.UN_SUBCRIBE_ALL_SUCCESS_MSG,
-                        Code = ResponseCode.NotFound
+                        Code = ResponseCode.Success
                     };
                     return await Task.FromResult(response);
                 }
