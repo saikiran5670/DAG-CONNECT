@@ -58,25 +58,33 @@ namespace net.atos.daf.ct2.group
 
         public async Task<int> GetVehiclesCount(int[] groupIds, int organizationId)
         {
-            int totalCount = 0;
+            List<int> vehicleIds = new List<int>();
+            var groupFilter = new GroupFilter();
+            groupFilter.GroupRefCount = false;
+            groupFilter.GroupRef = false;
+            groupFilter.ObjectType = ObjectType.VehicleGroup;
+            groupFilter.GroupType = GroupType.None;
+            groupFilter.FunctionEnum = FunctionEnum.None;
+
             foreach (var groupId in groupIds)
             {
-                var group = await _groupRepository.Get(new GroupFilter { Id = groupId });
+                groupFilter.Id = groupId;
+                var group = await _groupRepository.Get(groupFilter);
                 var groupType = group.FirstOrDefault()?.GroupType;
                 var functionEnum = group.FirstOrDefault()?.FunctionEnum ?? FunctionEnum.None;
                 switch (group.FirstOrDefault()?.GroupType)
                 {
                     case GroupType.Group:
-                        totalCount += await _groupRepository.GetGroupVehicleCount(groupId, organizationId);
+                        vehicleIds.AddRange(await _groupRepository.GetGroupVehicleCount(groupId, organizationId));
                         break;
                     case GroupType.Dynamic:
-                        totalCount += await _groupRepository.GetDynamicVehicleCount(organizationId, functionEnum);
+                        vehicleIds.AddRange(await _groupRepository.GetDynamicVehicleCount(organizationId, functionEnum));
                         break;
                     default:
                         break;
                 }
             }
-            return totalCount;
+            return vehicleIds.Distinct().Count();
         }
     }
 }
