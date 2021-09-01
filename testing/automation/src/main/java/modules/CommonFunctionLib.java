@@ -4,11 +4,21 @@ import static executionEngine.DriverScript.TestStep;
 import static executionEngine.DriverScript.prop;
 
 import java.io.File;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
@@ -2484,5 +2494,474 @@ public static void ClickOnMap() throws Exception {
 		DriverScript.bResult = false;
 	}
 }
+//*********************Connect to get milisecond**************************************************************
+public static long getMilisecond(String Rptdate, String UserEmail)//throws Exception
+{
+try{
+	String sql;
+	String Hrs = null,Min = null;
+	sql ="SELECT ut_coff_set FROM master.timezone TZ,master.accountpreference AP,master.account A where A.email ="+UserEmail+" AND AP.id=A.preference_id AND TZ.id=AP.timezone_id";
+	//sql ="SELECT ut_coff_set FROM master.timezone TZ,master.accountpreference AP,master.account A where A.email ='ulka.pate@atos.net' AND AP.id=A.preference_id AND TZ.id=AP.timezone_id";
+	String Temp = connectToMaster(sql);
+	System.out.print("Mast: " + Temp);
+	System.out.print("\n");			
+	String[] tz = Temp.split(" ");
+	String[] time = tz[1].split(":");
+	if(time[0].startsWith("+")) {
+		//Hrs = time[0].replace("+", "-");
+		Hrs = time[0].replace("+", "+");
+		Min = time[1];
+	}
+	if(time[0].startsWith("-")) {
+		//Hrs = time[0].replace("-", "");
+		Hrs = time[0].replace("-", "-");
+		Min = "-".concat(time[1]);
+	}
+
+	//String Rptdate = //"2021.08.17 09:21:26";
+	long Ltmp = timeConvertoMilisecond(Rptdate,Hrs,Min);
+	System.out.println(Ltmp);
+	return Ltmp;
+}catch (Exception e)
+{
+   	  test.log(LogStatus.FAIL, e.getMessage());
+   	  Log.error("Not able to click on Webelement..." + e.getMessage());	  
+   	  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+   	  DriverScript.bResult = false;
+   	return 0;
+     }
+
+}
+//*********************Convert into milisecond**************************************************************
+public static long timeConvertoMilisecond(String RPTdate, String UtcHrs, String UtcMin )//throws Exception
+{
+try{
+	SimpleDateFormat DateFormat =new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");// new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+	String temp = RPTdate;
+	DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	Date date = DateFormat.parse(temp);//new Date();
+	System.out.println("Current date = " +DateFormat.format(date));
+	int hrs,min;
+//	hrs =  Integer.parseInt(UtcHrs);
+//	min=  Integer.parseInt(UtcMin);
+//	System.out.println(hrs+ "\n");
+//	System.out.println(min+ "\n");
+	Calendar c = Calendar.getInstance();
+   //Setting the Calendar date and time to the given date and time
+	c.setTime(date);
+	// Perform addition/subtraction	       
+    c.add(Calendar.HOUR, Integer.parseInt(UtcHrs));
+    c.add(Calendar.MINUTE, Integer.parseInt(UtcMin));        
+    // Convert calendar back to Date
+    Date currentDatePlusOne = c.getTime();
+    System.out.println("Updated Date " + DateFormat.format(currentDatePlusOne));
+    // get epoch millis
+ 	long millis = currentDatePlusOne.getTime();
+ 	System.out.println(millis); // 1500475350423
+	//test.log(LogStatus.INFO, "Date and time converted in Milliseconds "+ millis);
+	//Log.info("Date and time converted in Milliseconds "+ millis);
+ 	return millis;	
+}catch (Exception e)
+    {
+   	  test.log(LogStatus.FAIL, e.getMessage());
+   	  Log.error("Not able to click on Webelement..." + e.getMessage());	  
+   	  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+   	  DriverScript.bResult = false;
+   	return 0;
+     }
+
+}
+//*********************Connect to master**************************************************************
+public static String connectToMaster(String SQL)//throws Exception
+{
+try{
+	//test.log(LogStatus.INFO, "Connecting to database… ");
+	//Log.info("Connecting to database… ");
+	String id = null;
+	String DB_URL = "jdbc:postgresql://dafct-lan4-d-euwe-cdp-pgsql-master.postgres.database.azure.com:5432/dafconnectmasterdatabase";
+	Properties props = new Properties();
+	props.setProperty("user","pgrmd_dbcreator_tst2@dafct-lan4-d-euwe-cdp-pgsql-master");
+	props.setProperty("password","LX<P/mi.~kR-");
+	props.setProperty("ssl","Require");
+	Statement stmt = null;
+	//STEP 2: Register JDBC driver
+	Class.forName("org.postgresql.Driver");
+	//STEP 3: Open a connection
+	System.out.println("Connecting to database…");
+	
+	Connection conn = DriverManager.getConnection(DB_URL, props);
+	//STEP 4: Execute a query
+	System.out.println("Creating statement…");
+	stmt = conn.createStatement();
+//	String sql;
+//	sql ="SELECT ut_coff_set FROM master.timezone TZ,master.accountpreference AP,master.account A where A.email ='ulka.pate@atos.net' AND AP.id=A.preference_id AND TZ.id=AP.timezone_id";
+			
+	ResultSet rs = stmt.executeQuery(SQL);
+	//STEP 5: Extract data from result set
+	while(rs.next()){
+	//Retrieve by column name        
+	String Sid  = rs.getString(1);//.getInt(1);
+	//String model = rs.getString(2);
+	//Display values
+	System.out.print("ID: " + Sid);
+	
+	id=Sid;
+	//System.out.print("model: " + model);
+	}			
+	//STEP 6: Clean-up environment
+	rs.close();
+	stmt.close();
+	conn.close();		
+	System.out.println("\n");
+	System.out.println("Goodbye, Connection Closed");
+	//test.log(LogStatus.INFO, "Connection Closed ");
+	//Log.info("Connection Closed ");
+	
+	return id;
+}catch(SQLException se){
+	//Handle errors for JDBC
+	se.printStackTrace();
+	test.log(LogStatus.FAIL, se.getMessage());
+	Log.error("Not able to click on Webelement..." + se.getMessage());	  
+	ExcelSheet.setCellData(se.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;
+}catch(Exception e){
+		//Handle errors for Class.forName
+	e.printStackTrace();
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Not able to click on Webelement..." + e.getMessage());	  
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;	    
+}
+
+   } 
+//*********************Connect to Data mart**************************************************************
+public static String connectToDatamart(String SQL)//throws Exception
+{
+try{
+	String id = null;
+	String DB_URL = "jdbc:postgresql://dafct-lan4-d-euwe-cdp-pgsql-datamart.postgres.database.azure.com:5432/vehicledatamart";
+	Properties props = new Properties();
+	props.setProperty("user","pgrdm_dbcreator_tst2@dafct-lan4-d-euwe-cdp-pgsql-datamart");
+	props.setProperty("password","LX<P/mi.~kR-");
+	props.setProperty("ssl","Require");
+	Statement stmt = null;
+	//STEP 2: Register JDBC driver
+	Class.forName("org.postgresql.Driver");
+	//STEP 3: Open a connection
+	System.out.println("Connecting to database…");
+	Connection conn = DriverManager.getConnection(DB_URL, props);
+	//STEP 4: Execute a query
+	System.out.println("Creating statement…");
+	stmt = conn.createStatement();
+//	String sql;
+//	sql = "SELECT SUM(etl_gps_distance) FROM tripdetail.trip_statistics where vin = 'XLRAE75PC0E348696' and start_time_stamp >= 1629138600710 and end_time_stamp <= 1629224999711";
+	ResultSet rs = stmt.executeQuery(SQL);
+	//STEP 5: Extract data from result set
+	while(rs.next()){
+	//Retrieve by column name        
+	 id  = rs.getString(1);//.getInt(1);
+	//String model = rs.getString(2);
+	//Display values
+	System.out.print("ID: " + id);
+	//System.out.print("model: " + model);
+	}			
+	//STEP 6: Clean-up environment
+	rs.close();
+	stmt.close();
+	conn.close();
+	System.out.println("\n");
+	System.out.println("Goodbye, Connection Closed");
+	return id;
+}catch(SQLException se){
+	//Handle errors for JDBC
+	se.printStackTrace();
+	test.log(LogStatus.FAIL, se.getMessage());
+	Log.error("Not able to click on Webelement..." + se.getMessage());	  
+	ExcelSheet.setCellData(se.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;
+}catch(Exception e){
+		//Handle errors for Class.forName
+	e.printStackTrace();
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Not able to click on Webelement..." + e.getMessage());	  
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;	    
+}
+   } 
+//*********************Connect to Data mart**************************************************************
+public static ArrayList connectToDM(String SQL)//throws Exception
+{
+try{
+	ArrayList books = new ArrayList();	
+	String DB_URL = "jdbc:postgresql://dafct-lan4-d-euwe-cdp-pgsql-datamart.postgres.database.azure.com:5432/vehicledatamart";
+	Properties props = new Properties();
+	props.setProperty("user","pgrdm_dbcreator_tst2@dafct-lan4-d-euwe-cdp-pgsql-datamart");
+	props.setProperty("password","LX<P/mi.~kR-");
+	props.setProperty("ssl","Require");
+	Statement stmt = null;
+	//STEP 2: Register JDBC driver
+	Class.forName("org.postgresql.Driver");
+	//STEP 3: Open a connection
+	System.out.println("Connecting to database…");
+	Connection conn = DriverManager.getConnection(DB_URL, props);
+	//STEP 4: Execute a query
+	System.out.println("Creating statement…");
+	stmt = conn.createStatement();
+//	String sql;
+//	sql = "SELECT SUM(etl_gps_distance) FROM tripdetail.trip_statistics where vin = 'XLRAE75PC0E348696' and start_time_stamp >= 1629138600710 and end_time_stamp <= 1629224999711";
+	ResultSet rs = stmt.executeQuery(SQL);
+	//STEP 5: Extract data from result set
+	while(rs.next()){
+	//Retrieve by column name   
+		books.add(rs.getString(1));	
+	//Display values
+	System.out.print("ID: " + books.toString());
+	}			
+	//STEP 6: Clean-up environment
+	rs.close();
+	stmt.close();
+	conn.close();
+	System.out.println("\n");
+	System.out.println("Goodbye, Connection Closed");
+	return books;
+}catch(SQLException se){
+	//Handle errors for JDBC
+	se.printStackTrace();
+	test.log(LogStatus.FAIL, se.getMessage());
+	Log.error("Not able to click on Webelement..." + se.getMessage());	  
+	ExcelSheet.setCellData(se.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;
+}catch(Exception e){
+		//Handle errors for Class.forName
+	e.printStackTrace();
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Not able to click on Webelement..." + e.getMessage());	  
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;	    
+}
+}
+//*********************Connect to Master for Array object**************************************************************
+
+public static ArrayList connectToM(String SQL)//throws Exception
+{
+try{
+	ArrayList books = new ArrayList();	
+	String DB_URL = "jdbc:postgresql://dafct-lan4-d-euwe-cdp-pgsql-master.postgres.database.azure.com:5432/dafconnectmasterdatabase";
+	Properties props = new Properties();
+	props.setProperty("user","pgrmd_dbcreator_tst2@dafct-lan4-d-euwe-cdp-pgsql-master");
+	props.setProperty("password","LX<P/mi.~kR-");
+	props.setProperty("ssl","Require");
+	Statement stmt = null;
+	//STEP 2: Register JDBC driver
+	Class.forName("org.postgresql.Driver");
+	//STEP 3: Open a connection
+	System.out.println("Connecting to database…");
+	Connection conn = DriverManager.getConnection(DB_URL, props);
+	//STEP 4: Execute a query
+	System.out.println("Creating statement…");
+	stmt = conn.createStatement();
+//	String sql;
+//	sql = "SELECT SUM(etl_gps_distance) FROM tripdetail.trip_statistics where vin = 'XLRAE75PC0E348696' and start_time_stamp >= 1629138600710 and end_time_stamp <= 1629224999711";
+	ResultSet rs = stmt.executeQuery(SQL);
+	//STEP 5: Extract data from result set
+	while(rs.next()){
+	//Retrieve by column name   
+		books.add(rs.getString(1));	
+	//Display values
+	System.out.print("ID: " + books.toString());
+	}			
+	//STEP 6: Clean-up environment
+	rs.close();
+	stmt.close();
+	conn.close();
+	System.out.println("\n");
+	System.out.println("Goodbye, Connection Closed");
+	return books;
+}catch(SQLException se){
+	//Handle errors for JDBC
+	se.printStackTrace();
+	test.log(LogStatus.FAIL, se.getMessage());
+	Log.error("Not able to click on Webelement..." + se.getMessage());	  
+	ExcelSheet.setCellData(se.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;
+}catch(Exception e){
+		//Handle errors for Class.forName
+	e.printStackTrace();
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Not able to click on Webelement..." + e.getMessage());	  
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	DriverScript.bResult = false;
+	return null;	    
+}
+
+}
+//********************* Convert Seconds In HH:MM **************************************************************
+
+  public static String ConvertSecondsInHHMM(int Seconds) throws Exception {		
+		try {
+	String time= null;
+	if(Seconds >=3600.00) {
+		  int p1 = (int) (Seconds % 60);
+			int p2 = (int) (Seconds / 60);
+			int p3 = p2 % 60;
+			p2 = p2 / 60;
+			System.out.print("Time in "+ "HH:MM:SS - " +p2 + ":" + p3 + ":" + p1);
+			System.out.print("\n");
+			time = "HH:MM:SS - " +p2 + ":" + p3 + ":" + p1;
+	  }else {
+		  int hours = Seconds / 3600;
+		    int minutes = (Seconds % 3600) / 60;
+		   // int seconds = (Seconds % 3600) % 60;		   
+		 	System.out.print("Time in "+ "HH:MM - " +hours + ":" + minutes);
+			System.out.print("\n");
+			time= new DecimalFormat("00").format(hours) + ":" + new DecimalFormat("00").format(minutes);
+	  }
+			return time;
+	  }catch (Exception e) {
+			test.log(LogStatus.FAIL, e.getMessage());
+			Log.error("Data is not present in table..." + e.getMessage());
+			String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+			test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+			ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+			DriverScript.bResult = false;
+			return null;
+			}	
+}
+	
+	//********************* Change Date Format**************************************************************
+		
+	public static void ChangeDateFormat() throws Exception {		
+		try {
+//			String object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+//			String txt = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+	SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+	String dateInString = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+	Date date = sdf.parse(dateInString);
+	System.out.println(date);
+	
+		}catch (Exception e) {
+			test.log(LogStatus.FAIL, e.getMessage());
+			Log.error("Data is not present in table..." + e.getMessage());
+			String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+			test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+			ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+			DriverScript.bResult = false;
+			
+			}	
+}
+	
 //*****************************************************************************  
+
+public static boolean verifyDBDataInTable(String Val,String Col) throws Exception {
+Thread.sleep(3000);
+try 
+{
+Actions actions = new Actions(driver);
+actions.sendKeys(Keys.PAGE_UP).perform();
+String column = Col;//ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+String value = Val;//ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+List<WebElement> options = driver.findElements(getLocator("GRP_COLUMNHEADER"));
+boolean temp = false;
+Thread.sleep(3000);
+for (int i = 1; i <= options.size(); i++) 
+{
+String PartialcolnameF =  getTextFromOR("PART_COL_F_N_FIRST");
+String PartialcolnameS =  getTextFromOR("PART_COL_F_N_SEC");
+String colnameF = driver.findElement(By.xpath(PartialcolnameF + i + PartialcolnameS)).getText();
+String colname = colnameF.trim();
+if (colname.equals(column.trim())) 
+{
+System.out.println(column);
+System.out.println(colname);	  		  
+String Page = driver.findElement(getLocator("PAGINATION")).getText();
+String TotalRecord =Page.split(" ")[1];
+String Rowcount =driver.findElement(getLocator("GRP_ROW_COUNT_VAL")).getText();
+int Page_No =1; //Integer.parseInt(TotalRecord);
+int remainder = 0;
+if(Integer.parseInt(TotalRecord) > Integer.parseInt(Rowcount))
+{
+	Page_No= Integer.parseInt(TotalRecord)/Integer.parseInt(Rowcount);
+	remainder = Integer.parseInt(TotalRecord)%Integer.parseInt(Rowcount);
+	if(remainder>0) {
+		Page_No=Page_No+1;
+	}
+}else if(Integer.parseInt(TotalRecord)< Integer.parseInt(Rowcount)) {
+	Page_No =1;
+}
+Thread.sleep(3000);
+for (int k = 1; k <= Page_No; k++) 
+{
+waitForLoadingImage();
+if (driver.findElement(getLocator("TABLE")).isDisplayed());
+{
+System.out.println(" Next Page button is working");
+Thread.sleep(3000);
+List<WebElement> options1 = driver.findElements(getLocator("GRP_ROW"));
+Thread.sleep(3000);
+for (int j = 1; j <= options1.size(); j++) 
+{
+String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
+//String rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getText();
+//String[] str;
+//if(column.equals("Vehicle Group")||column.equals("Vehicle Group/Vehicle")) {
+//	 str = rowvalueF.split("\\r?\\n");
+//	 rowvalueF = str[0];
+//}
+//@@@@@@@@@@
+String rowvalueF = null;
+rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getText();
+/*
+ * if(rowvalueF.startsWith("New")) { if(driver.findElement(By.xpath(RowPart + j
+ * + "]/mat-cell["+i+"]/span[3]")).isDisplayed()) { rowvalueF =
+ * driver.findElement(By.xpath(RowPart + j +
+ * "]/mat-cell["+i+"]/span[3]")).getText();
+ * System.out.println("New red tag is displayed"); test.log(LogStatus.PASS,
+ * "New red tag is displayed"); Log.info("New red tag is displayed"); } }
+ */
+String[] str;
+if(column.equals("Vehicle Group")||column.equals("Vehicle Group/Vehicle")) {
+	 str = rowvalueF.split("\\r?\\n");
+	 rowvalueF = str[0];
+}
+//@@@@@@@@@@
+String rowvalue = rowvalueF.trim();
+if (rowvalue.equals(value.trim())) 
+{
+	System.out.println(rowvalue +" UI Value Of " + Col);
+	test.log(LogStatus.INFO,  rowvalue +" UI Value Of " + Col);
+	Log.info(rowvalue +" UI Value Of " + Col);	
+//System.out.println(value);
+//System.out.println(rowvalue);
+	System.out.println(value +" Value Matched");
+	test.log(LogStatus.PASS,  value +" Value Matched");
+	Log.info(value +" Value Matched");	
+temp = true;
+return temp;
+}
+}
+}
+driver.findElement(getLocator("NEXT_PAGINATION")).click();
+}
+}
+}
+return temp;
+}catch (Exception e){
+test.log(LogStatus.FAIL, e.getMessage());
+Log.error("Data is not present in table..." + e.getMessage());
+String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+DriverScript.bResult = false;
+return false;
+}
+}
+
 }
