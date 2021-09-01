@@ -142,13 +142,14 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     response.Code = Responcecode.Conflict;
                     return response;
                 }
-                if (Objvehicle.VehicleLicensePlateNumberExists)
-                {
-                    response.Exists = true;
-                    response.Message = "Duplicate vehicle License Plate Number";
-                    response.Code = Responcecode.Conflict;
-                    return response;
-                }
+                //commenting as PersistenceStatus bug 6239
+                //if (Objvehicle.VehicleLicensePlateNumberExists)
+                //{
+                //    response.Exists = true;
+                //    response.Message = "Duplicate vehicle License Plate Number";
+                //    response.Code = Responcecode.Conflict;
+                //    return response;
+                //}
 
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Update method in vehicle service called.");

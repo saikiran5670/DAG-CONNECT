@@ -306,7 +306,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 _log.Info("VehicleUpdate TCU check if");
                 vehicle = await VehicleNameExists(vehicle);
-                vehicle = await VehicleLicensePlateNumberExists(vehicle);
+                //commenting as PersistenceStatus bug 6239
+                //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 
                 // duplicate vehicle Name
                 if (vehicle.VehicleNameExists)
