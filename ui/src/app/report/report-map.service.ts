@@ -1133,7 +1133,7 @@ export class ReportMapService {
     gridData.forEach(element => {
       element.convertedStartTime = this.getStarttime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getendtime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       // element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
       // element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);

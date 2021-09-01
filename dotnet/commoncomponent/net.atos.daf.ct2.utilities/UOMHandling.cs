@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.utilities
                         break;
                 }
             }
-            return Math.Round(expectedThresholdValue, 4, MidpointRounding.AwayFromZero);
+            return Math.Round(expectedThresholdValue, 2, MidpointRounding.AwayFromZero);
         }
         public static string GetConvertedTimeBasedThreshold(double actualValue, string expectedUnit)
         {
