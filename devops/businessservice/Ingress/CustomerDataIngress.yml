@@ -171,7 +171,7 @@ spec:
       - backend:
           serviceName: accountdataservice
           servicePort: 80
-        path: /account
+        path: /account/driver-lookup
   tls:
   - hosts:
     - #{IngressURL}#
