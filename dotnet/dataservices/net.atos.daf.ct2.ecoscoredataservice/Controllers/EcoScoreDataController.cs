@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("kpiinfo")]
         public async Task<IActionResult> GetKPIInfo([FromQuery] int? minDistance, [FromBody] EcoScoreRequest request)
         {
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("chartinfo")]
         public async Task<IActionResult> GetChartInfo([FromQuery] int? minDistance, [FromBody] EcoScoreRequest request)
         {
