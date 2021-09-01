@@ -26,14 +26,17 @@ public class Utils implements Serializable {
     private static final long serialVersionUID = -2623908626314058510L;
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
     private static ObjectMapper mapper;
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-    public static final String DB_WEEK_ARR [] = new String[]{"SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"};
+    private static final String MSG_EVT_DATE_FORMAT="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(MSG_EVT_DATE_FORMAT);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MSG_EVT_DATE_FORMAT, Locale.getDefault());
+    public static final String DB_WEEK_ARR[] = new String[]{"SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+
     static {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
+
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = BigDecimal.valueOf(value);
@@ -41,7 +44,7 @@ public class Utils implements Serializable {
         return bd.doubleValue();
     }
 
-    public static String writeValueAsString(Object obj){
+    public static String writeValueAsString(Object obj) {
         try {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
@@ -51,7 +54,7 @@ public class Utils implements Serializable {
 
     public static Object readValueAsObject(String json, Class clazz) throws Exception {
         try {
-            return mapper.readValue(json,clazz);
+            return mapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
             return clazz.getDeclaredConstructor().newInstance();
         }
@@ -59,36 +62,37 @@ public class Utils implements Serializable {
 
     public static Object readValueAsObject(String json, TypeReference clazz) throws Exception {
         try {
-            return mapper.readValue(json,clazz);
+            return mapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
             return null;
         }
     }
 
-    public static Properties getKafkaConnectProperties(ParameterTool parameterTool){
+    public static Properties getKafkaConnectProperties(ParameterTool parameterTool) {
         Properties kafkaTopicProp = new Properties();
         kafkaTopicProp.put("request.timeout.ms", parameterTool.get("request.timeout.ms"));
         kafkaTopicProp.put("client.id", parameterTool.get("client.id"));
         kafkaTopicProp.put("auto.offset.reset", parameterTool.get("auto.offset.reset"));
         kafkaTopicProp.put("group.id", parameterTool.get("group.id"));
         kafkaTopicProp.put("bootstrap.servers", parameterTool.get("bootstrap.servers"));
-        if(Objects.nonNull(parameterTool.get("security.protocol")))
-          kafkaTopicProp.put("security.protocol", parameterTool.get("security.protocol"));
-        if(Objects.nonNull(parameterTool.get("sasl.jaas.config")))
-          kafkaTopicProp.put("sasl.jaas.config", parameterTool.get("sasl.jaas.config"));
-        if(Objects.nonNull(parameterTool.get("sasl.mechanism")))
-           kafkaTopicProp.put("sasl.mechanism", parameterTool.get("sasl.mechanism"));
+        if (Objects.nonNull(parameterTool.get("security.protocol")))
+            kafkaTopicProp.put("security.protocol", parameterTool.get("security.protocol"));
+        if (Objects.nonNull(parameterTool.get("sasl.jaas.config")))
+            kafkaTopicProp.put("sasl.jaas.config", parameterTool.get("sasl.jaas.config"));
+        if (Objects.nonNull(parameterTool.get("sasl.mechanism")))
+            kafkaTopicProp.put("sasl.mechanism", parameterTool.get("sasl.mechanism"));
         return kafkaTopicProp;
     }
 
-    public static long timeDiffBetweenDates(String startDateTime, String endDateTime,DateTimeFormatter formatter) {
+    public static long timeDiffBetweenDates(String startDateTime, String endDateTime, DateTimeFormatter formatter) {
         LocalDateTime endTime = LocalDateTime.parse(endDateTime, formatter);
         LocalDateTime startTime = LocalDateTime.parse(startDateTime, formatter);
         Duration duration = Duration.between(startTime, endTime);
         return duration.getSeconds();
     }
-    public static long timeDiffBetweenDates(String startDateTime,String endDateTime) {
-        return timeDiffBetweenDates(startDateTime,endDateTime,formatter);
+
+    public static long timeDiffBetweenDates(String startDateTime, String endDateTime) {
+        return timeDiffBetweenDates(startDateTime, endDateTime, formatter);
     }
 
     public static long convertDateToMillis(String dateTime) {
@@ -101,9 +105,9 @@ public class Utils implements Serializable {
         return ldt.format(formatter);
     }
 
-    public static long millisecondsToSeconds(long milliseconds){
+    public static long millisecondsToSeconds(long milliseconds) {
         // Convert milliseconds to seconds
-        long seconds_difference = (milliseconds / 1000)% 60;
+        long seconds_difference = (milliseconds / 1000) % 60;
         return seconds_difference;
     }
 
@@ -111,7 +115,7 @@ public class Utils implements Serializable {
      * Return name of day in week
      * From MONDAY to SUNDAY
      */
-    public static String getCurrentDayOfWeek(){
+    public static String getCurrentDayOfWeek() {
         return LocalDate.now().getDayOfWeek().name();
     }
 
@@ -119,10 +123,10 @@ public class Utils implements Serializable {
      * Convert db week array to day in week
      * return name of day in week
      */
-    public static String getDayOfWeekFromDbArr(String dbWeekArray){
-        String dayWeek="";
-        for(int i=0; i < dbWeekArray.length(); i++){
-            if(dbWeekArray.charAt(i)=='1'){
+    public static String getDayOfWeekFromDbArr(String dbWeekArray) {
+        String dayWeek = "";
+        for (int i = 0; i < dbWeekArray.length(); i++) {
+            if (dbWeekArray.charAt(i) == '1') {
                 dayWeek = DB_WEEK_ARR[i];
                 break;
             }
@@ -131,32 +135,33 @@ public class Utils implements Serializable {
     }
 
     /**
-     *  Extracts the time as seconds of day, from 0 to 24 * 60 * 60 - 1.
-     *  Returns: the second-of-day equivalent to this time
+     * Extracts the time as seconds of day, from 0 to 24 * 60 * 60 - 1.
+     * Returns: the second-of-day equivalent to this time
      */
-    public static int getCurrentTimeInSecond(){
+    public static int getCurrentTimeInSecond() {
         LocalTime localTime = LocalTime.now();
         return localTime.toSecondOfDay();
     }
 
     public static Long calculateAverage(Index index1, Index index2) {
         Long odometerDiff = index2.getVDist() - index1.getVDist();
-        Long timeDiff=0L;
-        Long avgValue=0L;
+        Long avgValue = 0L;
         try {
             /**
              * Time diff in seconds
              */
-            timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
-                    - (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(),
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))) / 1000;
-            logger.info("time diff :"+timeDiff);
-            logger.info("odometerDiff :"+odometerDiff);
-            logger.info("average :"+odometerDiff/timeDiff);
-            avgValue= odometerDiff/timeDiff;
+            Long timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
+                    MSG_EVT_DATE_FORMAT)) - (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(), MSG_EVT_DATE_FORMAT)))
+                    / 1000;  // for converting milliseconds to seconds
+            logger.trace("time diff :" + timeDiff);
+            logger.trace("odometerDiff :" + odometerDiff);
+            if (timeDiff > 0) {
+                avgValue = odometerDiff / timeDiff;
+                logger.trace("average :" + odometerDiff / timeDiff);
+            }
+
         } catch (Exception e) {
-           logger.error("Error while calculation avg calculation {}",e);
+            logger.error("Error while calculation avg calculation error:: {} index1:: {}, index2 ::{}", e, index1,index2);
         }
         return avgValue;
 

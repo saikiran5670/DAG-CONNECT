@@ -8,6 +8,7 @@ package pushnotificationservice;
 
 service PushNotificationService {
   rpc GetAlertMessageStream (google.protobuf.Empty) returns (stream AlertMessageData);
+  rpc GetEligibleAccountForAlert (AccountClientMapping) returns (AccountClientMapping);
 }
 
 message AlertMessageData {
@@ -37,4 +38,17 @@ enum ResponseCode{
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
+}
+
+message AccountClient{
+int32 AccountId = 1;
+int32 OrgId = 2;
+string HubClientId = 3;
+}
+
+message AccountClientMapping{
+repeated AccountClient AccountClient = 1;
+AlertMessageData alertMessageData = 2;
+ResponseCode Code = 3;
+string message = 4;
 }

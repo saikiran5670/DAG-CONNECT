@@ -58,38 +58,19 @@ public class TripBasedTest implements Serializable {
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
-        SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
-                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
-                        propertiesParamTool, env)
-                .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-                .returns(Index.class);
 
-//        indexStringStream.print();
+        TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
+        String thresholdDefUrlVinMap = new StringBuilder("jdbc:postgresql://")
+                .append(propertiesParamTool.get(MASTER_POSTGRES_HOST))
+                .append(":" + propertiesParamTool.get(MASTER_POSTGRES_PORT) + "/")
+                .append(propertiesParamTool.get(MASTER_DATABASE))
+                .append("?user=" + propertiesParamTool.get(MASTER_USERNAME))
+                .append("&password=" + propertiesParamTool.get(MASTER_PASSWORD))
+                .append("&sslmode="+propertiesParamTool.get(MASTER_POSTGRES_SSL))
+                .toString();
+        DataStreamSource<Row> thresholdStream = tableStream.scanTable(propertiesParamTool.get(ALERT_THRESHOLD_FETCH_QUERY), ALERT_THRESHOLD_SCHEMA_DEF,thresholdDefUrlVinMap);
 
-        /*env.addSource(new IndexGenerator())
-                .returns(Index.class)*/
-        long WindowTime = Long.valueOf(propertiesParamTool.get("index.hours.of.service.window.millis","300000"));
-
-         indexStringStream
-                .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
-                            @Override
-                            public long extractTimestamp(Index index) {
-                                return convertDateToMillis(index.getEvtDateTime());
-                            }
-                        }
-                )
-                .keyBy(index -> index.getDocument() !=null ? index.getDocument().getTripID() : "null")
-                .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)))
-                .reduce(new ReduceFunction<Index>() {
-                    @Override
-                    public Index reduce(Index index, Index t1) throws Exception {
-                        return t1;
-                    }
-                })
-                .keyBy(index -> index.getVin() !=null ? index.getVin() : index.getVid())
-                        .print();
-
+        thresholdStream.print();
 
         env.execute("TripBasedTest");
 

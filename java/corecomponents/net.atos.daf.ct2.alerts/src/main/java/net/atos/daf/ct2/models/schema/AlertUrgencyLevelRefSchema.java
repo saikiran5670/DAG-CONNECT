@@ -19,7 +19,7 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
 
     private Long alertId;
     private String urgencyLevelType;
-    private Long thresholdValue;
+    private Double thresholdValue;
     private String unitType;
     private String alertCategory;
     private String alertType;
