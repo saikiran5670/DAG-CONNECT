@@ -62,7 +62,6 @@ public class AlertExecutorConfigImplTest {
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
         Assert.assertEquals("2000",alert.getValueAtAlertTime());
-        Assert.assertEquals("1500",alert.getThresholdValue());
         Assert.assertEquals("A",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());
 
@@ -109,7 +108,6 @@ public class AlertExecutorConfigImplTest {
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
         Assert.assertEquals("1000.0",alert.getValueAtAlertTime());
-        Assert.assertEquals("900",alert.getThresholdValue());
         Assert.assertEquals("C",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());
 
