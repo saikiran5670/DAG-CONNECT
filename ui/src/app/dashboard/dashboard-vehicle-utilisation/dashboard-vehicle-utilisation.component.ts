@@ -697,7 +697,7 @@ if(this.prefTimeFormat == 12){
       // let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
       let resultDate = new Date (date.getDate() + ' ' +months[date.getMonth()] +' '+ date.getFullYear());
       resultDate = this.chartDateFormat(resultDate); 
-      let distance = this.reportMapService.convertDistanceUnits(element.distanceperday,this.prefUnitFormat);
+      let distance = this.reportMapService.convertDistanceUnitsForChart(element.distanceperday,this.prefUnitFormat);
      // this.distance.push(distance);
       this.calenderDate.push(resultDate);
       //this.vehiclecount.push(element.vehiclecount);
@@ -722,9 +722,9 @@ if(this.prefTimeFormat == 12){
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
-    percentage1 = parseFloat(percentage1).toFixed(2);
+    percentage1 = parseFloat(percentage1);
     percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
-    percentage2 = parseFloat(percentage2).toFixed(2);
+    percentage2 = parseFloat(percentage2);
 
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
