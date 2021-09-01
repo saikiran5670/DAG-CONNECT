@@ -50,6 +50,27 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
+        public async Task<DriverLookup> GetDriver(int organizationId, string driverId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@id", driverId);
+                parameter.Add("@state", "A");
+
+                var queryStatement = @"SELECT first_name as FirstName, last_name as LastName
+                                    from master.driver where organization_id=@organization_id and driver_id_ext=@id and state=@state";
+
+                return await _dataAccess.QueryFirstOrDefaultAsync<DriverLookup>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
         public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
         {
             try
@@ -73,7 +94,7 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
-        public async Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
         {
             try
             {

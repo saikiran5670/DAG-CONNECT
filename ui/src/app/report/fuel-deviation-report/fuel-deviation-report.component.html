@@ -489,7 +489,7 @@
             <ng-container matColumnDef="alerts">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alerts != '' ? row.alerts : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.alerts }}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">

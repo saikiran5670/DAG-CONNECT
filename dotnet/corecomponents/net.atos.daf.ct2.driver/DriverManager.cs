@@ -26,6 +26,11 @@ namespace net.atos.daf.ct2.driver
             return await _driverRepository.GetDriver(organizationId, driverID);
         }
 
+        public async Task<DriverLookup> GetDriver(int organizationId, string driverID)
+        {
+            return await _driverRepository.GetDriver(organizationId, driverID);
+        }
+
         public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
         {
             return await _driverRepository.GetDriver(driverId, email);
@@ -64,24 +69,9 @@ namespace net.atos.daf.ct2.driver
 
         #endregion
 
-        public async Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
         {
             return await _driverRepository.CheckIfDriverExists(driverId, organisationId, email);
-        }
-
-        public async Task<RegisterDriverResponse> RegisterDriver(RegisterDriverDataServiceRequest request)
-        {
-            //Create new portal account in CT2.0 + KeyCloak
-            // Set the password for the account
-            //Set the driverId to the account
-            //Assign driver role to the account
-
-            return await Task.FromResult(new RegisterDriverResponse { Message = "OK", StatusCode = HttpStatusCode.OK });
-        }
-
-        public async Task<ValidateDriverResponse> ValidateDriver(RegisterDriverDataServiceRequest request)
-        {
-            return await Task.FromResult(new ValidateDriverResponse());
         }
     }
 }

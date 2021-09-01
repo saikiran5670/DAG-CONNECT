@@ -15,6 +15,8 @@ service ReportSchedulerService{
   rpc GetVehicleandVehicleGroupId (ReportParameterRequest) returns (VehicleandVehicleGroupIdResponse); 
   rpc GetPDFBinaryFormatById (ReportPDFByIdRequest) returns (ReportPDFResponse);
   rpc GetPDFBinaryFormatByToken (ReportPDFByTokenRequest) returns (ReportPDFResponse);
+  rpc UnSubscribeById (UnSubscribeRequest) returns (UnSubscribeResponse);
+  rpc UnSubscribeAllByEmailId (UnSubscribeAllRequest) returns (UnSubscribeAllResponse);
 }
 
 enum ResponseCode{
@@ -207,4 +209,23 @@ message ReportPDFResponse {
  string FileName = 4;
   ResponseCode Code=5;
   string Message = 6;
+}
+
+message UnSubscribeRequest{
+int32 RecipentId =1;
+string EmailId =2;
+}
+
+message UnSubscribeResponse {
+  ResponseCode Code=1;
+  string Message = 2;
+}
+
+message UnSubscribeAllRequest{
+string EmailId =1;
+}
+
+message UnSubscribeAllResponse {
+  ResponseCode Code=1;
+  string Message = 2;
 }

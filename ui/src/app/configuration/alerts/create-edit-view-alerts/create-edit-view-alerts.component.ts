@@ -21,6 +21,7 @@ import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-adva
 import { ReportMapService } from '../../../report/report-map.service';
 import { TranslationService } from '../../../services/translation.service';
 import { OrganizationService } from '../../../services/organization.service';
+import { SimpleChanges } from '@angular/core';
 
 declare var H: any;
 
@@ -73,6 +74,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   accountRoleId: number;
   userType: string;
   selectedApplyOn: string;
+  criticalLevel: boolean= false;
+  warningLevel: boolean= false;
+  advisoryLevel: boolean= false;
   openAdvancedFilter: boolean= false;
   poiGridData = [];
   geofenceGridData = [];
@@ -599,7 +603,7 @@ proceedStep(prefData: any, preference: any){
     let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
     vehicleGroups.forEach(element => {
       let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
-      if(vehGrp.length > 0){
+      if(vehGrp.length > 0 && vehGrp.vehicleGroupId!=0){
         this.vehicleGroupList.push(vehGrp[0]);
       }
     });
@@ -1088,9 +1092,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertCategory(this.selectedRowData.category);
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
+    this.alert_type_selected= this.selectedRowData.type;
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
-    if(!this.alert_category_selected+this.alert_type_selected == "LS" || !this.alert_category_selected+this.alert_type_selected == "FA" || !this.alert_category_selected+this.alert_type_selected == "FI"
-    || !this.alert_category_selected+this.alert_type_selected == "FP" || !this.alert_category_selected+this.alert_type_selected == "FL" || !this.alert_category_selected+this.alert_type_selected == "FT"){
+    if(this.selectedRowData.alertLandmarkRefs.length > 0){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
     }
@@ -2352,7 +2356,29 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onAddNotification(){
-     this.panelOpenState = !this.panelOpenState;    
+     this.panelOpenState = !this.panelOpenState;
+     this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
+     this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
+     this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value; 
+     if(this.isCriticalLevelSelected && this.criticalThreshold == ''){
+      this.criticalLevel = false;
+    }
+    else if(this.isCriticalLevelSelected && this.criticalThreshold != ''){
+      this.criticalLevel = true;
+    }
+    if(this.isWarningLevelSelected && this.warningThreshold == ''){
+      this.warningLevel = false;
+    }
+    else if(this.isWarningLevelSelected && this.warningThreshold != ''){
+      this.warningLevel = false;
+    } 
+
+    if(this.isAdvisoryLevelSelected && this.advisoryThreshold == ''){
+      this.advisoryLevel = false;
+    } 
+    else if(this.isAdvisoryLevelSelected && this.advisoryThreshold != ''){
+      this.advisoryLevel = false;
+    }     
   }
 
   onDeleteNotification(){
@@ -2401,4 +2427,25 @@ keyPressNumbers(event) {
   if (event.value.length == limit) event.preventDefault();
 return true;   
 }
+
+onKey(event: any) { // without type info
+  // let values += event.target.value + ' | ';
+}
+
+onChange($event){
+this.criticalThreshold = this.alertForm.controls.criticalLevelThreshold.value;
+this.warningThreshold = this.alertForm.controls.warningLevelThreshold.value;
+this.advisoryThreshold = this.alertForm.controls.advisoryLevelThreshold.value;
+}
+
+ngOnChanges(changes: SimpleChanges) {
+  // let d =this.criticalLevel;
+  // let e = this.warningLevel;
+  // let f = this.advisoryLevel;
+  for (const d in changes) {
+    const chng1 = changes[d];
+    const cur1  = JSON.stringify(chng1.currentValue);
+
+  }}
+  
 }

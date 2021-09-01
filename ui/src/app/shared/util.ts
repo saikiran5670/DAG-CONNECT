@@ -212,23 +212,28 @@ export class Util {
     return data;
   }
    
-  public static getMillisecondsToUTCDate(_date: any, prefTimezone: any){​​​​​​​
-   
-    let _t = prefTimezone.split(') ');
-    let _timezone: any;
-    if(_t.length > 0){​​​​​​​
-        _timezone = _t[1].trim();
-    }​​​​​​​    
-    
-    let gmtTimeDiff = _date.getTimezoneOffset();    
-    let _gmt = moment(_date).utcOffset(gmtTimeDiff);
-    //let localeToGmtTz:any = _date.getTimezoneOffset();
-    let localeToPrefTz:any = moment().tz(_timezone).utcOffset();    
-    let UtcValToSendToAPI = moment(_gmt).utcOffset(localeToPrefTz);
-    let _convertedUtc = UtcValToSendToAPI['_d'].getTime();
-    console.log('_convertedUtc==' + _convertedUtc);
-     return _convertedUtc;
-  }​​​​​​​
+    public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
+        //    console.log("_date", _date)
+        let _dateWithoutMiliSeconds = new Date(_date.setMilliseconds(0));
+        //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
+        //    console.log("_date", moment(_date).millisecond(0))
+        let _t = prefTimezone.split(') ');
+        let _timezone: any;
+        if (_t.length > 0) {
+            _timezone = _t[1].trim();
+        }
+        let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();
+        // console.log("gmtTimeDiff", gmtTimeDiff)  
+        let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff);
+        // console.log("_gmt", _gmt)
+        //let localeToGmtTz:any = _date.getTimezoneOffset();
+        let localeToPrefTz: any = moment().tz(_timezone).utcOffset();
+        // console.log("localeToPrefTz", localeToPrefTz)  
+        let UtcValToSendToAPI = moment(_gmt).utcOffset(localeToPrefTz);
+        let _convertedUtc = UtcValToSendToAPI['_d'].getTime();
+        // console.log('_convertedUtc==' + _convertedUtc);
+        return _convertedUtc;
+    }
 
   public static convertUtcToDateAndTimeFormat(_utc: any, timeZone: any, timeFormat? :any){
     let _t = timeZone.split(')');

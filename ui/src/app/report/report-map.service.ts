@@ -1131,8 +1131,8 @@ export class ReportMapService {
   // trip report data-conversion
   convertTripReportDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
+      element.convertedStartTime = this.getStarttime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
+      element.convertedEndTime = this.getendtime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       // element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
@@ -1340,10 +1340,95 @@ export class ReportMapService {
     return this.kmToMeter(km);
   }
 
+  formStartendDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean){
+    // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    // let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    // let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    // let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let date1 = date.split(" ")[0];
+    let time1 = date.split(" ")[1];
+    let h = time1.split(":")[0];
+    let m = time1.split(":")[1];
+    let s = time1.split(":")[2];
+    let _d = date1.split("/")[2];
+    let _m = date1.split("/")[1];
+    let _y = date1.split("/")[0];
+    let _date: any;
+    let _time: any;
+    if(timeFormat == 12){
+      _time = (h > 12 || (h == 12 && m > 0 && s>0)) ? `${h == 12 ? 12 : h-12}:${m}:${s} PM` : `${(h == 0) ? 12 : h}:${m}:${s} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    if(onlyTime){
+      return _time; // returns only time
+    }
+    switch(dateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        if(addTime)
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        else
+        _date = `${_d}/${_m}/${_y}`;
+
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        if(addTime)
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        else
+        _date = `${_m}/${_d}/${_y}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        if(addTime)
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        else
+        _date = `${_d}-${_m}-${_y}`;
+
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        if(addTime)
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        else
+        _date = `${_m}-${_d}-${_y}`;
+
+        break;
+      }
+      default:{
+        if(addTime)
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        else
+        _date = `${_m}/${_d}/${_y}`;
+
+      }
+    }
+    return _date; //returns dateTime if addTime is true or date if addTime is false
+  }
+   
+  getStarttime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
+    let sTime: any = 0;
+    if(startTime != 0){
+      sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
+    }
+    return sTime;
+  }
+
+  getendtime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
+    let sTime: any = 0;
+    if(startTime != 0){
+      sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
+    }
+    return sTime;
+  }
+  
+
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
+      element.convertedStopTime = this.getStarttime(element.StopTime, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
@@ -1373,8 +1458,8 @@ export class ReportMapService {
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
     }else if(unitFormat == 'dunit_Metric') {
       gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " Ltr"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " Ltr/100km"
     }
     return JSON.stringify(gridData);
   }

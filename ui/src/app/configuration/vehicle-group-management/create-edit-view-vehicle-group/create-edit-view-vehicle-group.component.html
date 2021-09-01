@@ -8,7 +8,7 @@
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
-<form [formGroup]="vehicleGroupForm">
+<form [formGroup]="vehicleGroupForm" (keydown.enter)="$event.preventDefault()">
   <mat-card class='mat-elevation-z'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>

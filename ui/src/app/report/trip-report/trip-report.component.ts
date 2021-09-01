@@ -25,6 +25,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import html2canvas from 'html2canvas';
 
 declare var H: any;
 
@@ -745,6 +746,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       }
       this.tripForm.get('vehicle').setValue('');
+    
     }
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
@@ -881,6 +883,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   exportAsPDFFile() {
     var doc = new jsPDF('p', 'mm', 'a2');
+    let DATA = document.getElementById('charts');
+    html2canvas( DATA)
+    .then(canvas => {  
+
     (doc as any).autoTable({
       styles: {
         cellPadding: 0.5,
@@ -899,9 +905,19 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       margin: {
         bottom: 30,
-        top: 45
+        top: 62
       }
     });
+    
+    let fileWidth = 170;
+    let fileHeight = canvas.height * fileWidth / canvas.width;
+    
+    const FILEURI = canvas.toDataURL('image/png')
+    // let PDF = new jsPDF('p', 'mm', 'a4');
+    let position = 0;
+    doc.addImage(FILEURI, 'PNG', 10, 45, fileWidth, fileHeight) ;
+
+
 
     let pdfColumns = this.getPDFExcelHeader();
     let prepare = []
@@ -937,6 +953,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     })
     // below line for Download PDF document  
     doc.save('tripReport.pdf');
+  });
   }
 
   masterToggleForTrip() {
@@ -1146,8 +1163,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     /* --- comment code as per discus with Atul --- */
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);     
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
     if (this.wholeTripData.vinTripList.length > 0) {
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
@@ -1187,9 +1206,20 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData.slice();
-    if (this.vehicleDD.length > 0) {
-      this.resetTripFormControlValue();
-    }
+    // if (this.vehicleDD.length > 0) {
+    //   let _s1 = this.vehicleListData.map(item=>item.vehicleName).filter((value,index,self)=>self.indexOf(value)=== index);
+    //   if(_s1.length > 0){
+    //     _s1.forEach(element => {
+    //       let count = this.vehicleListData.filter(j =>j.vehicleName == element);
+    //       if(count.length >0){
+    //         this.vehicleDD.push(count[1]);
+    //       }
+    //     });
+    //   }
+    //   this.vehicleDD.unshift({vehicleName:this.translationData.lblVehicleName || 'vehicle Name'})
+    //   this.resetTripFormControlValue();
+    // }
+    this.resetTripFormControlValue();
     this.setVehicleGroupAndVehiclePreSelection();
     if (this.showBack) {
       this.onSearch();
@@ -1199,6 +1229,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
+    if(this.vehicleDD.length>0){
+      let vehicleID = this.vehicleDD[0].vehicleId;
+      this.tripForm.get('vehicle').setValue(vehicleID);
     }
   }
 

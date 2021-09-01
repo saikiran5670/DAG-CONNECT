@@ -15,6 +15,11 @@ import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.servi
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isNgTemplate } from '@angular/compiler';
 import { ElementRef } from '@angular/core';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
+import { ConfigService } from '@ngx-config/core';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { HereService } from '../../../services/here.service';
 
 declare var H: any;
 const createGpx = require('gps-to-gpx').default;
@@ -24,6 +29,7 @@ const createGpx = require('gps-to-gpx').default;
   templateUrl: './manage-poi-geofence.component.html',
   styleUrls: ['./manage-poi-geofence.component.less']
 })
+
 export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
@@ -66,7 +72,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['name', 'latitude', 'longitude', 'categoryName', 'subCategoryName', 'address','zipcode', 'city', 'country'];
+  templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -97,19 +103,60 @@ export class ManagePoiGeofenceComponent implements OnInit {
   subCategorySelectionForPOI: any = 0;
   categorySelectionForGeo: any = 0;
   subCategorySelectionForGeo: any = 0;
+  searchStr: string = "";
+  suggestionData: any;
+  map_key: any = '';
+  dataService: any;
+  searchMarker: any = {};
   
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
     private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _configService: ConfigService, 
+    private completerService: CompleterService,
+    private hereService: HereService
     ) {
-      
+      this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       });
-   }
+      this.configureAutoSuggest();
+  }
+
+  private configureAutoSuggest() {
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?' + 'apiKey=' + this.map_key + '&limit=5' + '&q=' + searchParam;
+    // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+      URL, 'title', 'title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus() {
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem) {
+    if (selectedAddress) {
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey=' + this.map_key + '&id=' + id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if (data && data.position && data.position.lat && data.position.lng) {
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.showSearchMarker(this.searchMarker);
+        }
+      });
+    }
+  }
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
@@ -238,6 +285,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.addCirclePolygonOnMap();
     if(this.selectedpois.selected.length > 0){ //-- poi selected
       this.addMarkerOnMap(this.ui);
+    }
+  }
+
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      //this.map.addObject(selectedMarker);
     }
   }
 
@@ -947,17 +1004,56 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 100);
   }
 
-  public exportAsExcelFile(): void {
-    let json: any[], excelFileName: string = 'POIData';
-    this.poiService.downloadPOIForExcel().subscribe((poiData) => {
-      const result = poiData.map(({ name, latitude, longitude, categoryName, subCategoryName, address,zipcode, city, country})=> ({name, latitude, longitude, categoryName, subCategoryName, address,zipcode, city, country }));
-     //const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
-      const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
-      const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
-      const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
-      this.saveAsExcelFile(excelBuffer, excelFileName);
-     })
+  // public exportAsExcelFile(): void {
+  //   let json: any[], excelFileName: string = 'POIData';
+  //   this.poiService.downloadPOIForExcel().subscribe((poiData) => {
+    
+  //     this.initData.includes(item => {
+  //     const result = poiData.map(({ Name, Latitude, Longitude, CategoryName, SubCategoryName, Address,Zipcode, City, Country})=> ({Name, Latitude, Longitude, CategoryName, SubCategoryName, Address,Zipcode, City, Country }));
+  //    //const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
+     
+  //     myworksheet.addRow([item.name,item.latitude,item.categoryName,item.subCategoryName,item.address,item.zipcode,item.city,item.country])
+  //    });
+  //    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
+  //     const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
+  //     const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
+  //     this.saveAsExcelFile(excelBuffer, excelFileName);
+  //    })
+    
+  // }
+  exportAsExcelFile(){
+    const title = 'POIData';
+    const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country']
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('PoiData');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    worksheet.addRow([]);
+    let headerRow = worksheet.addRow(poiData); 
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    }) 
+    this.poiInitData.forEach(item => {
+      worksheet.addRow([item.name,item.latitude,item.longitude,item.categoryName,item.subCategoryName,item.address,item.zipcode,item.city,item.country])
+    });
+    for (var i = 0; i < poiData.length; i++) {
+      worksheet.columns[i].width = 20;
+    }
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'PoiData.xlsx');
+    })    
+
   }
+  
 
   private saveAsExcelFile(buffer: any, fileName: string): void {
     const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

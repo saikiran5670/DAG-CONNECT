@@ -247,7 +247,7 @@ namespace net.atos.daf.ct2.rfms.response
         public VehicleStatusResponse VehicleStatusResponse { get; set; }
         public bool MoreDataAvailable { get; set; }
         public string MoreDataAvailableLink { get; set; }
-        public DateTime RequestServerDateTime { get; set; }
+        public string RequestServerDateTime { get; set; }
 
     }
 }

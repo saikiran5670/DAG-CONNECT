@@ -76,7 +76,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
-    // console.log("=====prefUnitFormat====",this.prefUnitFormat)
+    // //console.log("=====prefUnitFormat====",this.prefUnitFormat)
     //to check if benchmark selection chage
     if (this.benchmarkSelectionChange && this.displayedColumns.length > 1) {
       this.displayedColumns = this.displayedColumns.splice(0, 1)
@@ -118,14 +118,14 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         if(this.firstColumn[colIndx] == 'ranking') {
           let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));
           for(let row of rakingSortedData) {
-            row["ltrVal"] = this.reportMapService.convertFuelConsumptionMlmToLtr100km(row.fuelConsumption); // no UOM applicable
+            row["ltrVal"] = this.reportMapService.getFuelConsumedUnits(row.fuelConsumption, this.prefUnitFormat , true); // no UOM applicable
           }
           this.dataSource[colIndx][column] = rakingSortedData;
         } else if(this.firstColumn[colIndx] == 'fuelConsumption') {
           let indCol = Number(colIndx) - 1;
           this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
         }else if(this.firstColumn[colIndx] == 'numberOfActiveVehicles'){
-          console.log("total vehicles", data);
+          //console.log("total vehicles", data);
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails.numberOfActiveVehicles + "/" + data.fuelBenchmarkDetails.numberOfTotalVehicles;
         }
         else {

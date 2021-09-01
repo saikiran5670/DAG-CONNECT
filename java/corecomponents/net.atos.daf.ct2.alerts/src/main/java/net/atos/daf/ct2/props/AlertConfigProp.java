@@ -6,8 +6,10 @@ import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
 import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.typeinfo.BasicArrayTypeInfo;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.table.planner.expressions.In;
 import org.apache.flink.util.OutputTag;
 
@@ -35,6 +37,9 @@ public class AlertConfigProp {
     public static final String KAFKA_DAF_ALERT_CDC_TOPIC = "daf.alert.cdc.topic";
     public static final String KAFKA_DAF_STATUS_MSG_TOPIC = "daf.status.topic";
     public static final String KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC = "daf.alert.produce.topic";
+    public static final String KAFKA_EGRESS_INDEX_MSG_TOPIC = "daf.index.topic";
+    public static final String KAFKA_INDEX_BOOTSTRAP_SERVER = "index.object.bootstrap.servers";
+    public static final String KAFKA_INDEX_SASL_JAAS_CONFIG = "index.object.sasl.jaas.config";
 
     public static final String ALERT_MAP_FETCH_QUERY="postgres.alert.map.fetch.query";
     public static final String ALERT_THRESHOLD_FETCH_QUERY="postgres.alert.threshold.fetch.query";
@@ -51,7 +56,11 @@ public class AlertConfigProp {
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.BIG_DEC_TYPE_INFO,
-            BasicTypeInfo.STRING_TYPE_INFO
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.LONG_TYPE_INFO,
+            BasicTypeInfo.LONG_TYPE_INFO
     };
 
     public static final TypeInformation<?>[] ALERT_MAP_SCHEMA_DEF = new TypeInformation<?>[] {
@@ -78,4 +87,6 @@ public class AlertConfigProp {
     public  static final MapStateDescriptor<String, Payload> vinAlertMapStateDescriptor = new MapStateDescriptor("vinAlertMapStateDescriptor", String.class,Payload.class);
     public  static final MapStateDescriptor<String, Payload> VIN_ALERT_MAP_STATE = new MapStateDescriptor("vinAlertMappingState",String.class,Payload.class);
     public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
+    public static BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream;
+    public static BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream;
 }

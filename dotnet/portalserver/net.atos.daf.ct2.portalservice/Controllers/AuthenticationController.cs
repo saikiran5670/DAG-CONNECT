@@ -98,6 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     HttpContext.Session.SetString(SessionConstants.TokenKey, response.TokenIdentifier);
 
                                 HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
+                                HttpContext.Session.SetString(SessionConstants.AccountEmailKey, accIdentity.AccountInfo.EmailId);
                                 _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id } & SessionId - { HttpContext.Session.Id }");
                             }
                             catch (Exception ex)

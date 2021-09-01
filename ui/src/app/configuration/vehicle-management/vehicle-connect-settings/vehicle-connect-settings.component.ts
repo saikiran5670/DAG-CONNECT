@@ -8,6 +8,7 @@ import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dia
 import { ActiveInactiveDailogComponent } from '../../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 @Component({
   selector: 'app-vehicle-connect-settings',
@@ -17,7 +18,10 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 export class VehicleConnectSettingsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any = [];
-  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
+  // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
+  columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'viewstatus', 'action', 'action2'];
+  columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -75,7 +79,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
     // };
     // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
     //   this.processTranslation(data);  
-      this.updateDataSource(this.relationshipVehiclesData);
+    this.initData = this.relationshipVehiclesData;
+    // this.updateDataSource(this.relationshipVehiclesData);
     //   this.loadVehicleData();  
     // }); 
   }
@@ -100,14 +105,14 @@ export class VehicleConnectSettingsComponent implements OnInit {
   //   );
   // }
  
-  updateDataSource(tableData: any) {
-    this.initData = tableData;
-    setTimeout(() => {
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
+  // updateDataSource(tableData: any) {
+  //   this.initData = tableData;
+  //   setTimeout(() => {
+  //     this.dataSource = new MatTableDataSource(this.initData);
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //   });
+  // }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -135,7 +140,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     if(item.tableData){
       this.initData = item.tableData;  
     }
-    this.updateDataSource(this.initData);
+    // this.updateDataSource(this.initData);
   }
 
   showSuccessMessage(msg: any){
@@ -147,17 +152,15 @@ export class VehicleConnectSettingsComponent implements OnInit {
   }
  
   filterChangeStatus(event){
-    let filterValue='';
-    filterValue = event.value;   
-    if(filterValue == ""){
-      this.dataSource.filter = '';
+    let filterValue = '';
+    filterValue = event.value;
+    let filterData = [];
+    if (filterValue != "") {
+      filterData = this.initData.filter((data) => data.status === filterValue);
+    } else {
+      filterData = this.initData;
     }
-    else{
-    this.dataSource.filterPredicate = function(data, filter: string): boolean {
-      return data.status === filter;
-    };  
-    this.dataSource.filter = filterValue;
-    }    
+    this.gridComp.updatedTableData(filterData)
   }
 
   onCheckboxChange(e) {  

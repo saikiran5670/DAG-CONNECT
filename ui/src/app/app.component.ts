@@ -78,14 +78,20 @@ export class AppComponent {
   alertDateFormat: any;
   startDateValue: any;
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  startTimeDisplay: any = '00:00:00';
+  selectedStartTime: any = '00:00';
   notificationData: any = [
     {
       icons:'unarchive',
       name: 'Entering Geofence',
-      data: 1628072950000,
+      // data: 1628072950000,
+      data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
       vehName: 'Veh data',
       vin: 'test 01',
-      regNo: 'XLRTEM4100G041999858'
+      regNo: 'XLRTEM4100G041999858',
+      alertLevel: 'A',
+      alertType: 'U',
+      alertCat: 'L',
     },
     {
       icons:'unarchive',
@@ -93,7 +99,10 @@ export class AppComponent {
       data: 1628072950000,
       vehName: 'Veh 2 data',
       vin: 'test 02',
-      regNo: 'XLRTEM4100G041999'
+      regNo: 'XLRTEM4100G041999',
+      alertLevel: 'C',
+      alertType: 'S',
+      alertCat: 'F'
     },
     {
       icons:'unarchive',
@@ -101,8 +110,43 @@ export class AppComponent {
       data: 1627986550000,
       vehName: 'Veh 3 data',
       vin: 'test 03',
+      regNo: 'XLRTEM4100G041999',
+      alertLevel: 'W',
+      alertType: 'U',
+      alertCat: 'R'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move 4',
+      data: 1627986550000,
+      vehName: 'Veh 4 data',
+      vin: 'test 04',
       regNo: 'XLRTEM4100G041999'
-    }
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move 5',
+      data: 1627986550000,
+      vehName: 'Veh 5  data',
+      vin: 'test 05',
+      regNo: 'XLRTEM4100G041999'
+    },
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 6',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 6 data',
+    //   vin: 'test 06',
+    //   regNo: 'XLRTEM4100G041999'
+    // },
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 7',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 7 data',
+    //   vin: 'test 07',
+    //   regNo: 'XLRTEM4100G041999'
+    // }
   ];
   private pagetTitles = {
     dashboard: 'Dashboard',
@@ -376,7 +420,7 @@ export class AppComponent {
         this.subpage = val.url.split('/')[2];
 
         let userLoginStatus = localStorage.getItem("isUserLogin");
-        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/")) {
+        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/") || val.url.includes("/unsubscribereport/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
@@ -596,11 +640,13 @@ export class AppComponent {
     let accessNameList = [];
     
     if(from && from == 'orgRoleChange'){
-      if(this.menuPages.menus.length > 0){
-        this.router.navigate(['/dashboard']);
-      }else{
-        this.router.navigate(['/menunotfound']);
-      }
+      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+      let _link = '/menunotfound';
+      if (this.menuPages.menus.length > 0) {
+        _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
+      } 
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+      this.router.navigate([_link]));
       
       this.orgContextType = false;
       let _orgContextStatus = localStorage.getItem("orgContextStatus");
@@ -610,7 +656,6 @@ export class AppComponent {
       this.menuPages.features.forEach((obj: any) => {
         accessNameList.push(obj.name)
       });
-      // console.log("---print name access ---",accessNameList)
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -636,14 +681,10 @@ export class AppComponent {
         this.userType = "Admin#Account";
       }
 
-
-
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
         localStorage.setItem("canSeeXRay", "true");
       }
       
-
-
       if (accessNameList.includes("Admin#Organization-Scope") && this.userType != 'Admin#Organisation' && this.userType != 'Admin#Account') {
         this.orgContextType = true;
         localStorage.setItem("orgContextStatus", this.orgContextType.toString());
@@ -656,15 +697,12 @@ export class AppComponent {
         if(_routerUrl){ // from refresh page
           this.router.navigate([_routerUrl]);
         }else{
-          this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-          this.router.onSameUrlNavigation = 'reload';
+          let _routerLink = '/menunotfound';
           if (_menu.length > 0) {
-            let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
-            this.router.navigate([_routerLink]);
-          } else {
-            //this.router.navigate(['/dashboard']);
-            this.router.navigate(['/menunotfound']);
-          }
+            _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
+          } 
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+          this.router.navigate([_routerLink]));
         }
         localStorage.removeItem('appRouterUrl'); 
       }
@@ -899,7 +937,7 @@ export class AppComponent {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
 
       this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
@@ -947,6 +985,8 @@ export class AppComponent {
     let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
     element.date = dateTimeObj[0];
     element.time = dateTimeObj[1];
+    this.setPrefFormatTime(element.date,element.time);
+    element.time =this.selectedStartTime;
   });
   console.log(this.notificationData);
   }
@@ -955,6 +995,8 @@ export class AppComponent {
     this.prefData = prefData;
     this.preference = preference;
     // this.loadReportData();
+    this.setPrefFormatDate();
+
   }
 
   setInitialPref(prefData,preference){
@@ -970,7 +1012,6 @@ export class AppComponent {
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
-    this.setPrefFormatDate();
     // this.selectionTimeRange('lastweek');
   }
 
@@ -998,7 +1039,7 @@ export class AppComponent {
   }
 
   navigateToPage(pageName) {
-    this.currentTitle = this.pagetTitles[pageName];
+    //this.currentTitle = this.pagetTitles[pageName];
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
@@ -1236,10 +1277,11 @@ export class AppComponent {
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
-   gotoLogBook(){
+   gotoLogBook(item: any){
   const navigationExtras: NavigationExtras = {
     state: {
-      fromAlertsNotifications: true
+      fromAlertsNotifications: true,
+      data: [item]
     }
   };
   this.router.navigate(['fleetoverview/logbook'], navigationExtras);
@@ -1282,6 +1324,44 @@ gotoLogBookForMoreAlerts(){
         this.alertDateFormat='MM/DD/YYYY';
       }
     }
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]} PM`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]} AM`;
+    }
+    return res;
+  }
+
+  setPrefFormatTime(date, time){
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(time);
+        }else{ // 24
+          time = this._get12Time(time);
+          this.selectedStartTime = this.get24Time(time); 
+        }
   }
 
 }

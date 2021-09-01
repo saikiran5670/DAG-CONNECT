@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.email.Entity
     {
         public string Token { get; set; }
         public string ReportName { get; set; }
+        public Int64 RecipentId { get; set; }
     }
     public class AlertNotification
     {

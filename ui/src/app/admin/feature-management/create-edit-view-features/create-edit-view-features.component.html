@@ -10,7 +10,7 @@
         </span>
     </div>
 </div>
-<form [formGroup]="featureFormGroup">
+<form [formGroup]="featureFormGroup" (keydown.enter)="$event.preventDefault()">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>

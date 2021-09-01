@@ -58,7 +58,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
@@ -69,7 +69,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} </mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
+                <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                       {{ rer.vehicleName }}
@@ -126,7 +126,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="alertLevel">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="alertLevel">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of alertLvl" [value]="rer.value">
                       {{ rer.name}}
@@ -137,7 +137,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertType || 'Alert Type' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="alertType">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="alertType">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
                       {{ rer.value }}
@@ -152,7 +152,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="alertCategory">
+                  <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="alertCategory">
                     <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                     <mat-option *ngFor="let rer of alertCtgry" [value]="rer.enum">
                         {{ rer.value }}
