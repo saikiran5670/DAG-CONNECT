@@ -1,18 +1,17 @@
 package net.atos.daf.ct2.models;
 
-import lombok.*;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-@Builder
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class Index implements Serializable {
-
-    private String vin;
-    private String gpsLat;
-    private String gpslong;
+public class Index extends net.atos.daf.ct2.pojo.standard.Index implements Serializable {
+	List<Object> list = new ArrayList<>();
+	
 }

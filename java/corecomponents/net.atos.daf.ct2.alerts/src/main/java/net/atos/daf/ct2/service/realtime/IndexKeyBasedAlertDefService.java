@@ -51,6 +51,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("A")) {
                     	excessiveAverageSpeedAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("H")) {
+                    	excessiveUnderUtilInHrsAlertDef.add(schema);
+                    }
                 }
             }
         }
@@ -58,6 +61,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
         functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
         //
+        functionThresh.put("excessiveUnderUtilInHrs", excessiveUnderUtilInHrsAlertDef);
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)
                 .process()

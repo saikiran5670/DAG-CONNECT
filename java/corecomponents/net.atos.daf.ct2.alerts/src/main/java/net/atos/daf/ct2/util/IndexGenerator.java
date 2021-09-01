@@ -21,8 +21,8 @@ public class IndexGenerator implements SourceFunction<Index> {
             Date date = new Date();
             String format1 = format.format(date);
             Index idx = new Index();
-            idx.setVid("XLR0998HGFFT74611");
-            idx.setVin("XLR0998HGFFT74611");
+            idx.setVid("XLR0998HGFFT70000");
+            idx.setVin("XLR0998HGFFT70000");
             idx.setVDist(1000L + counter);
             idx.setReceivedTimestamp(currentTimeMillis);
             IndexDocument indexDocument = new IndexDocument();
@@ -37,7 +37,6 @@ public class IndexGenerator implements SourceFunction<Index> {
             counter+=1000L;
             // Sleep for 1 second -> 1000 , 1 minute -> 60000
             Thread.sleep(1000);
-
         }
 
     }
