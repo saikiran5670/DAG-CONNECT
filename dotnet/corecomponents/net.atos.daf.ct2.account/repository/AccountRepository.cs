@@ -577,6 +577,85 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        private async Task<int?> GetAccountPreferenceId(string emailId, int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (orgId > 0)
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgId", orgId);
+
+                        orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
+                    return orgPreferenceId;
+                }
+                return accountPreferenceId;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<AccountPreferenceResponse> GetAccountPreferencesById(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT 
+                        l.name as Language,
+	                    df.name as DateFormat,
+	                    tz.name as TimeZone,
+	                    tf.name as TimeFormat,
+	                    u.name as UnitDisplay,
+	                    vd.name as VehicleDisplay
+                    FROM master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id
+                    INNER JOIN master.dateformat df ON ap.id = @preferenceId AND ap.date_format_id=df.id
+                    INNER JOIN master.timezone tz ON ap.id = @preferenceId AND ap.timezone_id=tz.id
+                    INNER JOIN master.timeformat tf ON ap.id = @preferenceId AND ap.time_format_id=tf.id
+                    INNER JOIN master.unit u ON ap.id = @preferenceId AND ap.unit_id=u.id
+                    INNER JOIN master.vehicledisplay vd ON ap.id = @preferenceId AND ap.vehicle_display_id=vd.id";
+
+                return await _dataAccess.QueryFirstAsync<AccountPreferenceResponse>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays)
         {
             try
@@ -1690,16 +1769,13 @@ namespace net.atos.daf.ct2.account
 
         #endregion
 
-        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, string driverId)
+        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, int organisationId)
         {
             try
             {
-                var parameter = new DynamicParameters();
-                string query = string.Empty;
-                parameter.Add("@AccountEmail", accountEmail);
-                parameter.Add("@DriverId", driverId);
-                query = @"";
-                return await _dataAccess.QueryFirstOrDefaultAsync<AccountPreferenceResponse>(query, parameter);
+                var prefId = await GetAccountPreferenceId(accountEmail, organisationId);
+
+                return await GetAccountPreferencesById(prefId ?? 0);
             }
             catch (Exception)
             {
@@ -1709,27 +1785,107 @@ namespace net.atos.daf.ct2.account
 
         public async Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request)
         {
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
             try
             {
+                int result = 0;
                 var parameter = new DynamicParameters();
-                string query = string.Empty;
-                parameter.Add("@AccountEmail", request.AccountEmail);
-                parameter.Add("@DriverId", request.DriverId);
+                parameter.Add("@AccountEmail", request.AccountEmail.ToLower());
+
+                var query = @"SELECT preference_id FROM master.account WHERE lower(email) = @AccountEmail";
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(query, parameter);
+
+                parameter = new DynamicParameters();
+                parameter.Add("@Language", request.Language);
                 parameter.Add("@TimeZone", request.TimeZone);
                 parameter.Add("@TimeFormat", request.TimeFormat);
                 parameter.Add("@UnitDisplay", request.UnitDisplay);
                 parameter.Add("@VehicleDisplay", request.VehicleDisplay);
                 parameter.Add("@DateFormat", request.DateFormat);
-                query = @"";
-                await _dataAccess.ExecuteAsync(query, parameter);
 
-                return true;
+                if (accountPreferenceId.HasValue)
+                {
+                    parameter.Add("@PreferenceId", accountPreferenceId.Value);
+                    query = @"UPDATE master.accountpreference 
+                              SET
+                                language_id = (SELECT id FROM translation.language WHERE name = @Language),
+                                date_format_id = (SELECT id FROM master.dateformat WHERE name = @DateFormat),
+                                timezone_id = (SELECT id FROM master.timezone WHERE name = @TimeZone),
+                                time_format_id = (SELECT id FROM master.timeformat WHERE name = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE name = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE name = @VehicleDisplay)
+                              WHERE id = @PreferenceId";
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                else
+                {
+                    query = @"INSERT INTO master.accountpreference
+                                (type, state, currency_id, landing_page_display_id, icon_id, page_refresh_time, language_id, timezone_id,
+                                 unit_id, vehicle_display_id, date_format_id, time_format_id) 
+                              VALUES ('A', 'A', 1, 1, NULL, 2, 
+                                       (SELECT id FROM translation.language WHERE name = @Language),
+                                       (SELECT id FROM master.dateformat WHERE name = @DateFormat),
+                                       (SELECT id FROM master.timezone WHERE name = @TimeZone),
+                                       (SELECT id FROM master.timeformat WHERE name = @TimeFormat),
+                                       (SELECT id FROM master.unit WHERE name = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE name = @VehicleDisplay)) RETURNING id";
+                    var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                    parameter = new DynamicParameters();
+                    parameter.Add("@PreferenceId", preferenceId);
+                    parameter.Add("@AccountEmail", request.AccountEmail.ToLower());
+
+                    result = await _dataAccess.ExecuteScalarAsync<int>("UPDATE master.account SET preference_id=@PreferenceId WHERE lower(email) = @AccountEmail RETURNING id", parameter);
+                }
+
+                transaction.Commit();
+                return result > 0;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
+        }
+
+        public async Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@OrganisationId", organisationId);
+                parameter.Add("@AccountEmail", accountEmail);
+
+                var account = await GetAccountByEmailId(accountEmail);
+
+                var preferenceId = await GetAccountPreferenceId(accountEmail, organisationId);
+
+                var response = await GetAccountPreferencesById(preferenceId ?? 0);
+
+                var finalResponse = new ValidateDriverResponse
+                {
+                    AccountID = accountEmail,
+                    AccountName = $"{ account.FirstName } { account.LastName }",
+                    DateFormat = response.DateFormat,
+                    TimeFormat = response.TimeFormat,
+                    TimeZone = response.TimeZone,
+                    UnitDisplay = response.UnitDisplay,
+                    VehicleDisplay = response.VehicleDisplay,
+                    Language = response.Language
+                };
+                return finalResponse;
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
     }
 
 }

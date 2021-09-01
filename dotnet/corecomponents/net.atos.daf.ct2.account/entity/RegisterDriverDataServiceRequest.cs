@@ -1,10 +1,10 @@
-namespace net.atos.daf.ct2.driver.entity
+namespace net.atos.daf.ct2.account.entity
 {
     public class RegisterDriverDataServiceRequest
     {
-        public string OrganisationId { get; set; }
+        public int OrganisationId { get; set; }
         public string DriverId { get; set; }
-        public string Username { get; set; }
+        public string AccountEmail { get; set; }
         public string Password { get; set; }
     }
 }

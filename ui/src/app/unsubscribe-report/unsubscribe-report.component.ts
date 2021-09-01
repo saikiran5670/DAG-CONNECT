@@ -31,7 +31,7 @@ export class UnsubscribeReportComponent implements OnInit {
       })
     }
 
-    if(this.id > 0){
+    if(this.id == 0){
       this.reportSchedulerService.getUnsubscribeForAll(this.emailId).subscribe(response => {
         this.errorStatus= 200;
         

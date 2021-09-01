@@ -67,6 +67,10 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
         [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_FIELD")]
         [StringLength(19, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string DriverId { get; set; }
+
+        [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_FIELD")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        public string OrganisationId { get; set; }
     }
 
     public class UpdatePreferencesRequest
