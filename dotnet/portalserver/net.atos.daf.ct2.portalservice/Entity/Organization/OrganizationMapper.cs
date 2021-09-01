@@ -112,6 +112,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             preference.PreferenceType = request.PreferenceType;
             preference.PageRefreshTime = request.PageRefreshTime;
+            preference.IconId = request.IconId;
+            preference.IconByte = request.IconByte;
+            preference.CreatedBy = request.CreatedBy;
             return preference;
         }
         public AccountBusinessService.AccountPreference ToAccountPreference(net.atos.daf.ct2.portalservice.Account.AccountPreferenceRequest request)
@@ -129,7 +132,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
                 DateFormatId = request.DateFormatTypeId,
                 TimeFormatId = request.TimeFormatId,
                 LandingPageDisplayId = request.LandingPageDisplayId,
-                PageRefreshTime = request.PageRefreshTime
+                PageRefreshTime = request.PageRefreshTime,
+                IconByte = request.IconByte,
+                IconId = request.IconId,
+                CreatedBy = request.CreatedBy
             };
             return preference;
         }
