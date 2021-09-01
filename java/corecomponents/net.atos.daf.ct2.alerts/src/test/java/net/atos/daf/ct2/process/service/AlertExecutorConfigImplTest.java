@@ -41,7 +41,7 @@ public class AlertExecutorConfigImplTest {
         urgencyLevelRefSchema.setUrgencyLevelType("A");
         urgencyLevelRefSchema.setAlertCategory("L");
         urgencyLevelRefSchema.setUnitType("G");
-        urgencyLevelRefSchema.setThresholdValue(1500L);
+        urgencyLevelRefSchema.setThresholdValue(1500.0);
 
         refSchemas.add(urgencyLevelRefSchema);
         functionThresh.put("excessiveGlobalMileage", refSchemas);
@@ -62,7 +62,6 @@ public class AlertExecutorConfigImplTest {
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
         Assert.assertEquals("2000",alert.getValueAtAlertTime());
-        Assert.assertEquals("1500",alert.getThresholdValue());
         Assert.assertEquals("A",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());
 
@@ -88,7 +87,7 @@ public class AlertExecutorConfigImplTest {
         urgencyLevelRefSchema.setAlertCategory("L");
         urgencyLevelRefSchema.setAlertType("D");
         urgencyLevelRefSchema.setUnitType("M");
-        urgencyLevelRefSchema.setThresholdValue(900L);
+        urgencyLevelRefSchema.setThresholdValue(900.0);
 
         refSchemas.add(urgencyLevelRefSchema);
         functionThresh.put("excessiveDistanceDone", refSchemas);
@@ -109,7 +108,6 @@ public class AlertExecutorConfigImplTest {
         Assert.assertEquals("abc",alert.getVin());
         Assert.assertEquals("123",alert.getAlertid());
         Assert.assertEquals("1000.0",alert.getValueAtAlertTime());
-        Assert.assertEquals("900",alert.getThresholdValue());
         Assert.assertEquals("C",alert.getUrgencyLevelType());
         Assert.assertEquals("L",alert.getCategoryType());
 

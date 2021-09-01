@@ -36,7 +36,7 @@ public class AlertConfigTest {
         urgencyLevelRefSchema.setUrgencyLevelType("A");
         urgencyLevelRefSchema.setAlertCategory("L");
         urgencyLevelRefSchema.setUnitType("G");
-        urgencyLevelRefSchema.setThresholdValue(1500L);
+        urgencyLevelRefSchema.setThresholdValue(1500.0);
 
         refSchemas.add(urgencyLevelRefSchema);
         functionThresh.put("excessiveGlobalMileage", refSchemas);
