@@ -1612,14 +1612,14 @@ createEndMarker(){
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);
       
-      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
+      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnitsForChart(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});      
       this.co2Chart.push({ x:resultDate , y:e.co2Emission});
-      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
+      let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
       this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption});      
-      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
     })
 
@@ -1987,13 +1987,7 @@ createEndMarker(){
     this.barChartLabels= this.chartsLabelsdefined; 
 
   }
-  
-
-  convertTimeToMinutes(milisec: any){
-    let newMin = milisec / 60000;
-    return newMin;
-  }
-
+ 
   resetChartData(){
     this.lineChartLabels=[];
     this.lineChartColors=[];
@@ -2993,9 +2987,12 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
+      // sum += parseFloat(element.idleDuration);
+      let convertedDuration:any = this.reportMapService.convertTimeToMinutesForChart(element.idleDuration);
+      sum += parseFloat(convertedDuration);
       });
-      sum = this.reportMapService.getHhMmTime(sum);
+      sum=sum.toFixed(2)*1;
+      //sum = this.reportMapService.getHhMmTime(sum);
       break;
     }
     case 'fuelConsumption': { 
