@@ -168,6 +168,10 @@ spec:
           serviceName: provisioningdataservice
           servicePort: 80
         path: /provisioning
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account
   tls:
   - hosts:
     - #{IngressURL}#

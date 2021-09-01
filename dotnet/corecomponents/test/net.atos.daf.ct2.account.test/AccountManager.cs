@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.account.test
             };
             IOptions<Identity.IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
             _identity = new Identity.AccountManager(setting);
-            _manager = new AccountManager(_repo, _auditlog, _identity, null, null);
+            _manager = new AccountManager(_repo, _auditlog, _identity, null, null, null);
         }
         [TestMethod]
         public void CreateAccount()

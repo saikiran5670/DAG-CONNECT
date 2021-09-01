@@ -17,6 +17,9 @@ import { isNgTemplate } from '@angular/compiler';
 import { ElementRef } from '@angular/core';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { ConfigService } from '@ngx-config/core';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { HereService } from '../../../services/here.service';
 
 declare var H: any;
 const createGpx = require('gps-to-gpx').default;
@@ -26,6 +29,7 @@ const createGpx = require('gps-to-gpx').default;
   templateUrl: './manage-poi-geofence.component.html',
   styleUrls: ['./manage-poi-geofence.component.less']
 })
+
 export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
@@ -99,19 +103,60 @@ export class ManagePoiGeofenceComponent implements OnInit {
   subCategorySelectionForPOI: any = 0;
   categorySelectionForGeo: any = 0;
   subCategorySelectionForGeo: any = 0;
+  searchStr: string = "";
+  suggestionData: any;
+  map_key: any = '';
+  dataService: any;
+  searchMarker: any = {};
   
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
     private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _configService: ConfigService, 
+    private completerService: CompleterService,
+    private hereService: HereService
     ) {
-      
+      this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       });
-   }
+      this.configureAutoSuggest();
+  }
+
+  private configureAutoSuggest() {
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?' + 'apiKey=' + this.map_key + '&limit=5' + '&q=' + searchParam;
+    // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+      URL, 'title', 'title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus() {
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem) {
+    if (selectedAddress) {
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey=' + this.map_key + '&id=' + id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if (data && data.position && data.position.lat && data.position.lng) {
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.showSearchMarker(this.searchMarker);
+        }
+      });
+    }
+  }
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
@@ -240,6 +285,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.addCirclePolygonOnMap();
     if(this.selectedpois.selected.length > 0){ //-- poi selected
       this.addMarkerOnMap(this.ui);
+    }
+  }
+
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      //this.map.addObject(selectedMarker);
     }
   }
 

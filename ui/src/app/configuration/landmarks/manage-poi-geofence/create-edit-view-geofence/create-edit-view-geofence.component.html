@@ -34,6 +34,11 @@
     <mat-icon (click)='clickInfoBubbled($event)' class='infoIcon'>info</mat-icon>
     <span *ngIf='infoBubbleText' class="infoText">{{ translationData.polygonInfoMsg || 'Click on map to create nodes and then generate geofence by clicking Create Polygon button. Minimum 3 nodes required.' }}</span>
   </div>
+  <div class="searchBoxContainer">
+    <ng2-completer placeholder="{{ translationData.lblSearchlocation || 'Search location' }}" inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+        [datasource]="dataService" [minSearchLength]="0" (focus)="onSearchFocus()" [(ngModel)]="searchStr" [ngModelOptions]="{ standalone: true }"
+        (selected)="onSearchSelected($event)" [selectOnClick]="true"></ng2-completer>
+  </div>
   <div #map style="width: 100%; height: 450px; margin-bottom: 25px" [ngClass]="{'opacity-0-5': geoSelectionFlag}"></div>
 
   <div *ngIf="polygoanGeofence || circularGeofence">

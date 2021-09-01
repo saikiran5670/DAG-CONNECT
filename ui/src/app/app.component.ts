@@ -937,7 +937,7 @@ export class AppComponent {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
 
       this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
