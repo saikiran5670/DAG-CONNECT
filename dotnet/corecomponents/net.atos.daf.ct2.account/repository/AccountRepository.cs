@@ -1792,7 +1792,7 @@ namespace net.atos.daf.ct2.account
             {
                 var prefId = await GetAccountPreferenceId(accountEmail, organisationId);
 
-                return await GetAccountPreferencesById(prefId ?? 0);
+                return await GetAccountPreferencesById(prefId ?? 0) ?? new AccountPreferenceResponse();
             }
             catch (Exception)
             {
@@ -1814,39 +1814,41 @@ namespace net.atos.daf.ct2.account
                 var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(query, parameter);
 
                 parameter = new DynamicParameters();
-                parameter.Add("@Language", request.Language);
-                parameter.Add("@TimeZone", request.TimeZone);
-                parameter.Add("@TimeFormat", request.TimeFormat);
-                parameter.Add("@UnitDisplay", request.UnitDisplay);
-                parameter.Add("@VehicleDisplay", request.VehicleDisplay);
-                parameter.Add("@DateFormat", request.DateFormat);
+                parameter.Add("@Language", request.Language.ToLower().Trim());
+                parameter.Add("@TimeZone", request.TimeZone.ToLower().Trim());
+                parameter.Add("@TimeFormat", request.TimeFormat.ToLower().Trim());
+                parameter.Add("@UnitDisplay", request.UnitDisplay.ToLower().Trim());
+                parameter.Add("@VehicleDisplay", request.VehicleDisplay.ToLower().Trim());
+                parameter.Add("@DateFormat", request.DateFormat.ToLower().Trim());
 
                 if (accountPreferenceId.HasValue)
                 {
                     parameter.Add("@PreferenceId", accountPreferenceId.Value);
                     query = @"UPDATE master.accountpreference 
                               SET
-                                language_id = (SELECT id FROM translation.language WHERE name = @Language),
-                                date_format_id = (SELECT id FROM master.dateformat WHERE name = @DateFormat),
-                                timezone_id = (SELECT id FROM master.timezone WHERE name = @TimeZone),
-                                time_format_id = (SELECT id FROM master.timeformat WHERE name = @TimeFormat),
-                                unit_id = (SELECT id FROM master.unit WHERE name = @UnitDisplay),
-                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE name = @VehicleDisplay)
-                              WHERE id = @PreferenceId";
+                                language_id = (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                date_format_id = (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
+                                timezone_id = (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay)
+                              WHERE id = @PreferenceId RETURNING id";
                     result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 else
                 {
                     query = @"INSERT INTO master.accountpreference
-                                (type, state, currency_id, landing_page_display_id, icon_id, page_refresh_time, language_id, timezone_id,
+                                (type, state, icon_id, page_refresh_time, currency_id, landing_page_display_id, language_id, timezone_id,
                                  unit_id, vehicle_display_id, date_format_id, time_format_id) 
-                              VALUES ('A', 'A', 1, 1, NULL, 2, 
-                                       (SELECT id FROM translation.language WHERE name = @Language),
-                                       (SELECT id FROM master.dateformat WHERE name = @DateFormat),
-                                       (SELECT id FROM master.timezone WHERE name = @TimeZone),
-                                       (SELECT id FROM master.timeformat WHERE name = @TimeFormat),
-                                       (SELECT id FROM master.unit WHERE name = @UnitDisplay),
-                                       (SELECT id FROM master.vehicledisplay WHERE name = @VehicleDisplay)) RETURNING id";
+                              VALUES ('A', 'A', NULL, 2, 
+                                       (SELECT id FROM master.currency WHERE lower(name) = 'euro (€)'),
+                                       (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
+                                       (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                       (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                       (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
+                                       (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),                                       
+                                       (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat)) RETURNING id";
                     var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     parameter = new DynamicParameters();
@@ -1905,6 +1907,18 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-    }
+        public async Task<int> GetDriverRoleId(int organisationId)
+        {
+            try
+            {
+                var query = @"SELECT id FROM master.role WHERE organization_id IS NULL AND code='DRIVER'";
 
+                return await _dataAccess.ExecuteScalarAsync<int>(query, null);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
 }

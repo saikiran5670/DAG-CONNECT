@@ -84,18 +84,27 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
         public string DriverId { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        public string Language { get; set; }
+
+        [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string TimeZone { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string DateFormat { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string UnitDisplay { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string VehicleDisplay { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
         public string TimeFormat { get; set; }
     }
 }
