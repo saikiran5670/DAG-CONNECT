@@ -8,6 +8,7 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.repository;
@@ -59,6 +60,8 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
