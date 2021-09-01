@@ -137,9 +137,9 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.AlertTypeEnum = generatedAlertForVehicle.Select(c => c.Type).FirstOrDefault();
                         notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyTypeKey).FirstOrDefault();
                         notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyLevelType).FirstOrDefault();
-                        string unitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
-                        notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, unitEnum);
-                        notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(unitEnum);
+                        notificationHistory.ThresholdUnitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
+                        notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(notificationHistory.ThresholdUnitEnum);
                         if (notificationHistory.AlertTypeEnum == "S" && notificationHistory.AlertCategoryEnum == "L")
                         {
                             long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime);
@@ -147,7 +147,14 @@ namespace net.atos.daf.ct2.notificationengine
                         }
                         else
                         {
-                            notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, unitEnum);
+                            if (notificationHistory.ThresholdUnitEnum == "H" || notificationHistory.ThresholdUnitEnum == "T")
+                            {
+                                notificationHistory.TimeBasedValueAtAlertTime = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                            }
+                            else
+                            {
+                                notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, notificationHistory.ThresholdUnitEnum);
+                            }
                         }
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;

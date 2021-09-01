@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.notificationservice.services
         //    try
         //    {
 
-                
+
         //        return await Task.FromResult(response);
         //    }
         //    catch (Exception ex)
