@@ -784,7 +784,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<bool> IsReportFeatureTagged(int reportId)
+        public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
         {
             try
             {
@@ -792,10 +792,10 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@report_id", reportId);
 
                 #region Query RoleBasedDataColumn
-                var query = @"SELECT feature_id IS NOT NULL FROM master.report WHERE id = @report_id";
+                var query = @"SELECT feature_id FROM master.report WHERE id = @report_id";
                 #endregion
 
-                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+                return await _dataAccess.QueryAsync<int>(query, parameter);
             }
             catch (Exception)
             {

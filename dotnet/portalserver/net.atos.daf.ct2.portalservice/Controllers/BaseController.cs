@@ -75,5 +75,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return 999;
             }
         }
+        protected SessionFeature[] GetUserSubsribeFetures()
+        {
+            return _userDetails.UserFeatures;
+        }
     }
 }
