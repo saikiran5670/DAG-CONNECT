@@ -6,12 +6,12 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
 {
     public class DriverLookupRequest
     {
-        [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_FIELD")]
-        [EmailRegex(ErrorMessage = "INVALID_FIELD")]
+        [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]
+        [EmailRegex(ErrorMessage = "INVALID_PARAMETER")]
         public string Email { get; set; }
 
-        [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_FIELD")]
-        [StringLength(19, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]
+        [StringLength(19, MinimumLength = 1, ErrorMessage = "INVALID_PARAMETER")]
         public string DriverId { get; set; }
     }
 

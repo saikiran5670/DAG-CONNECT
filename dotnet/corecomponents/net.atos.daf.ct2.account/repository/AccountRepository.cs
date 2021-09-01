@@ -648,7 +648,7 @@ namespace net.atos.daf.ct2.account
                     INNER JOIN master.unit u ON ap.id = @preferenceId AND ap.unit_id=u.id
                     INNER JOIN master.vehicledisplay vd ON ap.id = @preferenceId AND ap.vehicle_display_id=vd.id";
 
-                return await _dataAccess.QueryFirstAsync<AccountPreferenceResponse>(query, parameter);
+                return await _dataAccess.QueryFirstOrDefaultAsync<AccountPreferenceResponse>(query, parameter);
             }
             catch (Exception)
             {
@@ -1413,6 +1413,23 @@ namespace net.atos.daf.ct2.account
             }
             return keyValueList;
         }
+
+        private async Task<IEnumerable<OrganizationKeyValue>> GetAccountOrgs(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+                var query = @"select o.org_id as OrgCode, o.name as Name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
+
+                return await _dataAccess.QueryAsync<OrganizationKeyValue>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<AccountOrgRole>> GetAccountRole(int accountId)
         {
             List<AccountOrgRole> AccountOrgRoleList = null;
@@ -1862,6 +1879,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@AccountEmail", accountEmail);
 
                 var account = await GetAccountByEmailId(accountEmail);
+                var accountOrgs = await GetAccountOrgs(account.Id);
 
                 var preferenceId = await GetAccountPreferenceId(accountEmail, organisationId);
 
@@ -1871,12 +1889,13 @@ namespace net.atos.daf.ct2.account
                 {
                     AccountID = accountEmail,
                     AccountName = $"{ account.FirstName } { account.LastName }",
-                    DateFormat = response.DateFormat,
-                    TimeFormat = response.TimeFormat,
-                    TimeZone = response.TimeZone,
-                    UnitDisplay = response.UnitDisplay,
-                    VehicleDisplay = response.VehicleDisplay,
-                    Language = response.Language
+                    DateFormat = response?.DateFormat,
+                    TimeFormat = response?.TimeFormat,
+                    TimeZone = response?.TimeZone,
+                    UnitDisplay = response?.UnitDisplay,
+                    VehicleDisplay = response?.VehicleDisplay,
+                    Language = response?.Language,
+                    Organisations = accountOrgs.Select(x => new ValidateDriverOrganisation { Id = x.OrgCode, Name = x.Name }).ToList()
                 };
                 return finalResponse;
             }

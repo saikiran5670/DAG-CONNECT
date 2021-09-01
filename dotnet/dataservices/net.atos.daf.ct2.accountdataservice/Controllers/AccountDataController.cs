@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
     [ApiController]
     [Route("account")]
-    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class AccountDataController : ControllerBase
     {
         private readonly IAuditTraillib _auditTrail;
@@ -377,7 +377,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             {
                 identity = Encoding.UTF8.GetString(Convert.FromBase64String(request.Authorization));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_FIELD", parameter: nameof(request.Authorization));
             }

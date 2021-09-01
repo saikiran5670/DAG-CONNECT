@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.driver.entity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string OrganizationId { get; set; }
-        public string OrganizationName { get; set; }
+        public string OrganisationId { get; set; }
+        public string OrganisationName { get; set; }
     }
 }
