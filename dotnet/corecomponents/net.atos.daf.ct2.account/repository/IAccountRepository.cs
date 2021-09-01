@@ -49,7 +49,8 @@ namespace net.atos.daf.ct2.account
         Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays);
         Task<int> UpdateIsReminderSent(int accountId, bool isReminderSend = true);
         Task<List<SSOTokenResponse>> GetAccountSSODetails(AccountToken accountID);
-        Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, string driverId);
+        Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, int organisationId);
         Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request);
+        Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId);
     }
 }
