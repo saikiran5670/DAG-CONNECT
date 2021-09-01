@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -208,10 +209,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //check duplicate recipient label in UI list
-                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
-                if (result.Count() > 0)
+
+                if (request.Notifications.Count() > 0)
                 {
-                    return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                    foreach (var item in request.Notifications)
+                    {
+                        var result = item.NotificationRecipients.GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+                        if (result.Count() > 0)
+                        {
+                            return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                        }
+                    }
                 }
 
                 var alertRequest = new AlertRequest();
