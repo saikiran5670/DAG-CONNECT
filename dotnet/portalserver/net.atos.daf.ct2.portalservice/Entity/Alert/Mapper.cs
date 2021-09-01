@@ -1,4 +1,6 @@
-﻿using net.atos.daf.ct2.alertservice;
+﻿using System.Collections.Generic;
+using net.atos.daf.ct2.alertservice;
+using net.atos.daf.ct2.pushnotificationservice;
 using net.atos.daf.ct2.vehicleservice;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
 
@@ -537,5 +539,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             return alertTimingDetailRequest;
         }
 
+        public AlertMessageData GetAlertMessageEntity(TripAlert tripAlert)
+        {
+            AlertMessageData alertMessageData = new AlertMessageData();
+            alertMessageData.Id = tripAlert.Id;
+            alertMessageData.Name = tripAlert.Name;
+            alertMessageData.Tripid = tripAlert.Tripid;
+            alertMessageData.Alertid = tripAlert.Alertid;
+            alertMessageData.CategoryType = tripAlert.CategoryType;
+            alertMessageData.Type = tripAlert.Type;
+            alertMessageData.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
+            return alertMessageData;
+        }
     }
 }
