@@ -153,8 +153,11 @@ public static void navigateUrl() throws Exception
 		case "Test":
 			baseUrl= Constants.UrlTest;
 			break;
+		case "Acc3":
+			baseUrl= Constants.UrlAcc3;
+			break;
 		default:
-			baseUrl= Constants.UrlDev;
+			baseUrl= Constants.UrlTest;
 			break;
 		}		
 		
@@ -2095,6 +2098,7 @@ public static void selectValueFromList() throws Exception
 {
 	try
 	  {
+		waitforPageLoad(driver);
 		  String object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
 		  String value = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);		  
 		  driver.findElement(getLocator(object)).click();				

@@ -82,7 +82,7 @@ public class Constants {
     
     public static final String UrlDev    = "https://portal.dev2.ct2.atos.net/";
     public static final String UrlTest  = "https://portal.tst2.ct2.atos.net/";
-   
+    public static final String UrlAcc3  = "https://portal.acc3.ct2.atos.net/";
     public static String Read_Txt = null;
     public static final String Path_File_Upload = "\\src\\main\\resources\\testdata\\";
     
