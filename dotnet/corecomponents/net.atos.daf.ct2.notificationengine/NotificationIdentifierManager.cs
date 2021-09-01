@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.notificationengine
                         {
                             if (notificationHistory.ThresholdUnitEnum == "H" || notificationHistory.ThresholdUnitEnum == "T")
                             {
-                                notificationHistory.TimeBasedValueAtAlertTime = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                                notificationHistory.TimeBasedValueAtAlertTime = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ValueAtAlertTime, notificationHistory.ThresholdUnitEnum);
                             }
                             else
                             {
