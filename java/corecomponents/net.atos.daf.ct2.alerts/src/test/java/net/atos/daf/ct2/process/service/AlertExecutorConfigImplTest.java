@@ -41,7 +41,7 @@ public class AlertExecutorConfigImplTest {
         urgencyLevelRefSchema.setUrgencyLevelType("A");
         urgencyLevelRefSchema.setAlertCategory("L");
         urgencyLevelRefSchema.setUnitType("G");
-        urgencyLevelRefSchema.setThresholdValue(1500L);
+        urgencyLevelRefSchema.setThresholdValue(1500.0);
 
         refSchemas.add(urgencyLevelRefSchema);
         functionThresh.put("excessiveGlobalMileage", refSchemas);
@@ -88,7 +88,7 @@ public class AlertExecutorConfigImplTest {
         urgencyLevelRefSchema.setAlertCategory("L");
         urgencyLevelRefSchema.setAlertType("D");
         urgencyLevelRefSchema.setUnitType("M");
-        urgencyLevelRefSchema.setThresholdValue(900L);
+        urgencyLevelRefSchema.setThresholdValue(900.0);
 
         refSchemas.add(urgencyLevelRefSchema);
         functionThresh.put("excessiveDistanceDone", refSchemas);

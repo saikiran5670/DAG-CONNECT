@@ -100,7 +100,7 @@ public class JdbcFormatTableStream extends TableStream<Row> implements Serializa
                 .alertType(String.valueOf(row.getField(2)))
                 .alertState(String.valueOf(row.getField(3)))
                 .urgencyLevelType(String.valueOf(row.getField(4)))
-                .thresholdValue(row.getField(5) == null ? -1L : Long.valueOf(String.valueOf(row.getField(5))))
+                .thresholdValue(row.getField(5) == null ? 0.0 : Double.valueOf(String.valueOf(row.getField(5))))
                 .unitType(String.valueOf(row.getField(6)))
                 .timestamp(System.currentTimeMillis())
                 .build()
