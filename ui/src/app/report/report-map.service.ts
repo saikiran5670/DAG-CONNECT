@@ -1133,7 +1133,7 @@ export class ReportMapService {
     gridData.forEach(element => {
       element.convertedStartTime = this.getStarttime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getendtime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       // element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
       // element.convertedFuelConsumed100Km = Number(element.convertedFuelConsumed100Km).toFixed(2);
@@ -1880,6 +1880,96 @@ export class ReportMapService {
     let ft;
     ft = length * 3.281;
     return Math.round(ft);
+  }
+
+  miliLitreToLitreForChart(_data: any){
+    return (_data/1000);
+}
+
+getFuelConsumptionUnitsForChart(fuelConsumption: any, unitFormat: any){
+  let _fuelConsumption: any = 0;
+  switch(unitFormat){
+    case 'dunit_Metric': { 
+      _fuelConsumption =   this.miliLitreToLitreForChart(fuelConsumption); //-- Ltr/100Km / ltr
+      break;
+    }
+    case 'dunit_Imperial':{
+      _fuelConsumption =  this.miliLitreToGallonForChart(fuelConsumption); // mpg / gallon
+      break;
+    }
+    default: {
+      _fuelConsumption =  this.miliLitreToLitreForChart(fuelConsumption); // Ltr/100Km / ltr
+    }
+  }
+  return _fuelConsumption; 
+}
+convertDistanceUnitsForChart(data: any, unitFormat: any){
+  let _data: any;
+  switch(unitFormat){
+    case 'dunit_Metric': { 
+      _data = this.meterToKmForChart(data); // km
+      break;
+    }
+    case 'dunit_Imperial': {
+      _data = this.meterToMileForChart(data); // mile
+      break;
+    }
+    default: {
+      _data = this.meterToKmForChart(data); // km
+    }
+  }
+  return _data;
+}
+
+meterToKmForChart(_data: any){
+  return (_data/1000);
+}
+
+meterToMileForChart(_data: any){
+  let km: any = this.meterToKm(_data);
+  let mile = km/1.609;
+  return mile;
+}
+
+convertFuelConsumptionL100kmToMpgForChart(_data: any){ // as value is sent in L/100Km - convert to mpg
+  let data: any = (282.481 / _data);
+  return (data) 
+}
+
+miliLitreToGallonForChart(_data: any){
+  let litre: any = this.miliLitreToLitre(_data);
+  let gallon: any = litre/3.780;
+  return gallon;
+}
+  convertFuelConsumptionMlmToLtr100kmForChart(_data: any){
+    return (_data*100);
+  }
+  convertFuelConsumptionMlmToMpgForChart(_data: any){
+    let data: any = 1.6/(_data * 3.78);
+    return (data);
+  }
+
+  getFuelConsumedUnitsForChart(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
+    let _fuelConsumed: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        break;
+      }
+      default: {
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
+      }
+    }
+    return _fuelConsumed; 
+  }
+  
+  convertTimeToMinutesForChart(milisec: any){
+    let newMin = milisec / 60000;
+    return newMin;
   }
 
 }

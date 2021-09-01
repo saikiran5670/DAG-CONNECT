@@ -228,7 +228,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
   //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
-  let milDone = this.fleetMapService.getDistance(tripDistance, this.prefUnitFormat);
+  let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
   this.driveTime = totDriveTime[0] + (this.translationData.lblhh || ' hh ') + totDriveTime[1] + (this.translationData.lblmm || ' mm');
@@ -236,11 +236,14 @@ export class FleetOverviewSummaryComponent implements OnInit {
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
   //Fleet Mileage rate
-  let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100;
-  this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
+  let liveFleetMileageVal:any= localStorage.getItem('liveFleetMileageThreshold');
+  let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(liveFleetMileageVal)) * 100;
+  let mileageRateVal:any = (Number.parseFloat(milDone)/Number.parseInt(liveFleetMileageVal)) * 100;
+  this.mileageRate = mileageRateVal;
+  // this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
   this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
   //Fleet Utilization rate
-  this.utilizationRate = (this.movedVehicle/Number.parseInt(localStorage.getItem('liveFleetUtilizationThreshold'))) * 100;
+  this.utilizationRate = (this.movedVehicle/Number.parseInt(liveFleetMileageVal)) * 100;
   this.doughnutChartDataUtil = [ [this.utilizationRate, 100-this.utilizationRate] ];
  }
 
@@ -258,5 +261,23 @@ export class FleetOverviewSummaryComponent implements OnInit {
   this.driveTime = '00' + (this.translationData.lblhh || ' hh ') + '00' + (this.translationData.lblmm || ' mm');
   this.drivers=0;
  }
-
+ getDistance(distance: any, unitFormat: any){
+  // distance in meter
+  let _distance: any = 0;
+  switch(unitFormat){
+    case 'dunit_Metric': { 
+      _distance = (distance/1000); //-- km
+      break;
+    }
+    case 'dunit_Imperial':
+    case 'dunit_USImperial': {
+      _distance = (distance/1609.344); //-- mile
+      break;
+    }
+    default: {
+      _distance = distance;
+    }
+  }
+  return _distance;    
+}
 }

@@ -398,7 +398,7 @@ proceedStep(prefData: any, preference: any){
     
     //----------------------------------------------------------------------------------------------------------
 
-    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C' ||this.alert_type_selected === 'S')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
       }
