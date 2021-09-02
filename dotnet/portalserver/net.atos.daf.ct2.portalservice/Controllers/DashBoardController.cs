@@ -222,7 +222,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 userPrefRequest.OrganizationId = GetUserSelectedOrgId();
                 userPrefRequest.ContextOrgId = GetContextOrgId();
 
-                string strFeature = JsonConvert.SerializeObject(GetUserSubsribeFetures());
+                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
                 SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
 
                 if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }

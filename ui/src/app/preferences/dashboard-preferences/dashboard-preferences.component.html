@@ -63,23 +63,23 @@
                                 </mat-checkbox>
                             </div>
 
-                            <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'"
+                            <div *ngIf="field.translatedName !=='Driving Time' && field.translatedName !=='Idling Time'"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
-                                    <span *ngIf="field.translatedName =='CO2Emission'" matSuffix>Ton</span>
-                                    <span *ngIf="field.translatedName =='FuelConsumption'" matSuffix>
+                                    <span *ngIf="field.translatedName =='CO2 Emission'" matSuffix>Ton</span>
+                                    <span *ngIf="field.translatedName =='Fuel Consumption'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lblltr100km || 'Ltr/100km') :
                                         (translationData.lblmpg || 'MPG')}}
                                     </span>
-                                    <span *ngIf="field.translatedName =='TotalDistance'" matSuffix>
+                                    <span *ngIf="field.translatedName =='Total Distance'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') : (translationData.lblmile
                                         ||
                                         'Miles')}} </span>
-                                    <span *ngIf="field.translatedName =='FuelUsedIdling' || 
-                        field.translatedName =='FuelConsumed'" matSuffix>
+                                    <span *ngIf="field.translatedName =='Fuel Used Idling' || 
+                        field.translatedName =='Fuel Consumed'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lbl || 'L') : (translationData.lbl ||
                                         'G')}}
                                     </span>
@@ -95,7 +95,7 @@
                                 </mat-form-field>
                             </div>
 
-                            <div *ngIf="field.translatedName =='DrivingTime' || field.translatedName =='IdlingTime'"
+                            <div *ngIf="field.translatedName =='Driving Time' || field.translatedName =='Idling Time'"
                                 style="display: inline-block" fxLayout="column"
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display: inline-block">
@@ -175,7 +175,7 @@
                                 </mat-checkbox>
                             </div>
 
-                            <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block"
+                            <div *ngIf="field.translatedName == 'Time Based Utilization Rate'" style="display:inline-block"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <div style="display:inline-block">
@@ -205,13 +205,13 @@
                                 </div>
                             </div>
 
-                            <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'"
+                            <div *ngIf="field.translatedName == 'Distance Based Utilization Rate' || field.translatedName =='Active Vehicles'"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
-                                    <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>
+                                    <span *ngIf="field.translatedName == 'Distance Based Utilization Rate'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') : (translationData.lblmile
                                         ||
                                         'Miles')}}
@@ -228,7 +228,7 @@
                                 </mat-form-field>
                             </div>
 
-                            <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate' || field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName == 'ActiveVehicles'"
+                            <div *ngIf="field.translatedName == 'Time Based Utilization Rate' || field.translatedName == 'Distance Based Utilization Rate' || field.translatedName == 'Active Vehicles'"
                                 fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                                 class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
@@ -280,12 +280,12 @@
                                 </mat-checkbox>
                             </div>
 
-                            <div *ngIf="field.translatedName!== 'TimeBasedUtilizationRate' && field.translatedName!== 'DistanceBasedUtilizationRate'"
+                            <div *ngIf="field.translatedName!== 'Time Based Utilization Rate' && field.translatedName!== 'Distance Based Utilization Rate'"
                                 fxLayout="column" class="areaWidth min-width-25-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                             </div>
 
-                            <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'" fxLayout="column"
+                            <div *ngIf="field.translatedName== 'Time Based Utilization Rate'" fxLayout="column"
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display:inline-block">
                                     <mat-form-field appearance="outline" style='width: 38%;'>
@@ -313,7 +313,7 @@
                                 </div>
                             </div>
 
-                            <div *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'" fxLayout="column"
+                            <div *ngIf="field.translatedName== 'Distance Based Utilization Rate'" fxLayout="column"
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'" placeholder="{{ 'Set Target' }}">
@@ -335,7 +335,7 @@
                                 class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <mat-select
-                                        *ngIf="field.translatedName== 'DistanceBasedUtilizationRate' || field.translatedName== 'TimeBasedUtilizationRate'"
+                                        *ngIf="field.translatedName== 'Distance Based Utilization Rate' || field.translatedName== 'Time Based Utilization Rate'"
                                         [disabled]='!editDashboardFlag || donutPieDD.length == 0' placeholder="{{'Chart Type' }}"
                                         [formControlName]="field.key+'chartType'">
                                         <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
@@ -344,7 +344,7 @@
                                     </mat-select>
 
                                     <mat-select
-                                        *ngIf="field.translatedName== 'DistancePerDay' || field.translatedName== 'ActiveVehiclesPerDay'"
+                                        *ngIf="field.translatedName== 'Distance Per Day' || field.translatedName== 'Active Vehicles Per Day'"
                                         [disabled]='!editDashboardFlag || lineBarDD.length == 0' placeholder="{{'Chart Type' }}"
                                         [formControlName]="field.key+'chartType'">
                                         <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">

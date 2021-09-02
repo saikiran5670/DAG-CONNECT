@@ -305,11 +305,12 @@ namespace net.atos.daf.ct2.dashboardservice
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
             var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+            IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
                 var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
-                userPreferences = preferences;
+                userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
             }
             else
             {
@@ -320,8 +321,6 @@ namespace net.atos.daf.ct2.dashboardservice
                 {
                     // Get all attributes from reportattribute table
                     var reportDataAttribute = await _reportManager.GetReportDataAttributes(request.ReportId);
-
-                    IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
 
                     if (roleBasedUserPreferences.Count() > 0)
                     {
