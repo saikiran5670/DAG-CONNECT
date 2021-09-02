@@ -22,6 +22,7 @@ using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity.Common;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
@@ -38,6 +39,9 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
+
+        private readonly Dictionary<string, string> _vehicleDisplayOptions;
+
         public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
         {
             _accountManager = accountManager;
@@ -48,6 +52,8 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
+
+            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
         }
 
         #region Driver Lookup
@@ -522,7 +528,17 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = request.VehicleDisplay
+                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.UnitDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
+            };
+        }
+
+        private Dictionary<string, string> PrepareUnitDisplayOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "vin", "Vehicle Identification Number" },
+                { "name", "Name" },
+                { "regno", "Vehicle Registration Number" }
             };
         }
 
