@@ -93,18 +93,22 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(values: new string[] { "dd/mm/yyyy", "mm/dd/yyyy", "dd-mm-yyyy", "mm-dd-yyyy" }, ErrorMessage = "INVALID_FIELD")]
         public string DateFormat { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(values: new string[] { "metric", "imperial" }, ErrorMessage = "INVALID_FIELD")]
         public string UnitDisplay { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(values: new string[] { "vin", "name", "regno" }, ErrorMessage = "INVALID_FIELD")]
         public string VehicleDisplay { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(values: new string[] { "12 hours", "24 hours" }, ErrorMessage = "INVALID_FIELD")]
         public string TimeFormat { get; set; }
     }
 }
