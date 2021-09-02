@@ -772,8 +772,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
                                               ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
                               FROM master.reportattribute ra
-                              INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
-                              INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id";
+                              INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id";
                 #endregion
 
                 return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
