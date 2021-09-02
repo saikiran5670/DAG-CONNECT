@@ -355,7 +355,7 @@ displayPiechart: boolean = true;
               private messageService: MessageService) {
                 if(this._fleetTimer){
                   this.messageService.getMessage().subscribe(message => {
-                    if (message.key.indexOf("refreshData") !== -1) {                  
+                    if (message.key.indexOf("refreshData") !== -1) {                                      
                       this.getVehicleData();
                     }
                   });
@@ -372,7 +372,7 @@ displayPiechart: boolean = true;
 
     this.setInitialPref(this.prefData,this.preference);
     // this.setChartData();
-    this.selectionTimeRange('lastweek');     
+    this.selectionTimeRange('lastweek');
   }
 
   setInitialPref(prefData,preference){
@@ -416,8 +416,8 @@ displayPiechart: boolean = true;
       }
     }
     if(this._fleetTimer){
-      this.messageService.sendMessage('refreshData');     
-    
+      //this.messageService.clearMessages();
+      this.messageService.sendMessage('refreshData'); 
     }
     else{
       this.getVehicleData();
@@ -503,10 +503,11 @@ displayPiechart: boolean = true;
   }
 
   getVehicleData(){
-
+    // let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    // let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
   let startDate = Util.convertDateToUtc(this.startDateValue);
-   let endDate = Util.convertDateToUtc(this.endDateValue);
-        let _vehiclePayload = {
+  let endDate = Util.convertDateToUtc(this.endDateValue);
+  let _vehiclePayload = {
       "startDateTime": startDate,
       "endDateTime": endDate,
       "viNs": this.finalVinList
@@ -728,8 +729,10 @@ if(this.prefTimeFormat == 12){
 
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-        let startDate = Util.convertDateToUtc(this.startDateValue-1);
-        let endDate = Util.convertDateToUtc(this.endDateValue);     
+        // let startDate = Util.convertDateToUtc(this.startDateValue-1);
+        // let endDate = Util.convertDateToUtc(this.endDateValue); 
+        let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+        let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);    
           this.calenderDate=[ startDate, endDate ]
         this.barChartOptions2.scales={
                 yAxes: [
@@ -779,8 +782,8 @@ if(this.prefTimeFormat == 12){
 
  else{
     let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-    let startDate = Util.convertDateToUtc(this.startDateValue-1);
-    let endDate = Util.convertDateToUtc(this.endDateValue);        
+    let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
     this.calenderDate=[ startDate, endDate ] 
     this.lineChartOptions2.scales={
         yAxes: [
@@ -840,8 +843,8 @@ if(this.prefTimeFormat == 12){
   //for vehicle per day chart
  if(this.vehicleChartType == 'line'){
   let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-  let startDate = Util.convertDateToUtc(this.startDateValue-1);
-  let endDate = Util.convertDateToUtc(this.endDateValue);        
+  let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+  let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);    
   this.calenderDate=[ startDate, endDate ]
     this.lineChartOptions.scales={   
         yAxes: [{
@@ -897,8 +900,8 @@ if(this.prefTimeFormat == 12){
   else{
    
    let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-   let startDate = Util.convertDateToUtc(this.startDateValue-1);
-   let endDate = Util.convertDateToUtc(this.endDateValue);        
+   let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+   let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
    this.calenderDate=[ startDate, endDate ]
      this.barChartOptions.scales={
       yAxes: [{
