@@ -15,9 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 
 import static java.time.DayOfWeek.TUESDAY;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
@@ -135,5 +133,18 @@ public class UtilsTest {
       //  System.out.println(dtf.format(localTime));
         System.out.println(localTime.toSecondOfDay());
 
+    }
+
+    @Test
+    public void duplicateCheck(){
+        List<Integer> lst = new ArrayList<>();
+        lst.add(1);
+
+        System.out.println("SIZE:: "+lst.size());
+        System.out.println("mod op:: "+21%2);
+
+        for(int i=1; i < lst.size(); i++){
+            System.out.println(lst.get(i-1)+" :: "+lst.get(i));
+        }
     }
 }
