@@ -121,6 +121,9 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.LanguageName = request.LanguageName;
             objResponse.Unit = request.Unit;
             objResponse.PageRefreshTime = request.PageRefreshTime;
+            objResponse.Icon = request.Icon;
+            objResponse.Iconid = request.IconId;
+
             return objResponse;
         }
 
