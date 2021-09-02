@@ -30,6 +30,11 @@ message AlertMessageData {
 	int64 ModifiedAt=16;
 	ResponseCode Code=17;
     string message = 18;
+	string UrgencyLevelType = 19;
+	int32 VehicleGroupId = 20;
+	string VehicleGroupName = 21;
+	string VehicleRegNo = 22;
+	string VehicleName = 23;
 }
 enum ResponseCode{
   None = 0;
