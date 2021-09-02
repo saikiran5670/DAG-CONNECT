@@ -26,6 +26,7 @@ using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.driver;
 
 namespace net.atos.daf.ct2.ecoscoredataservice
 {
@@ -81,6 +82,8 @@ namespace net.atos.daf.ct2.ecoscoredataservice
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddControllers();
             services.AddMvc()

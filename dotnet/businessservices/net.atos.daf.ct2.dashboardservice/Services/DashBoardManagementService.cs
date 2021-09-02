@@ -267,17 +267,9 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 DashboardUserPreferenceResponse response = new DashboardUserPreferenceResponse();
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
-                var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
-                var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
-                if (userPreferencesExists)
-                {
-                    var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
 
-                    //Filter out preferences based on Account role and org package subscription
-                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
-                }
-                else
-                { userPreferences = roleBasedUserPreferences; }
+                // New implementation considering Functional feature mapping with attribute
+                userPreferences = await GetReportUserPreferences_New(request);
 
                 try
                 {
@@ -308,6 +300,42 @@ namespace net.atos.daf.ct2.dashboardservice
             }
         }
 
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(DashboardUserPreferenceRequest request)
+        {
+            IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+            IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+            if (userPreferencesExists)
+            {
+                // Return saved report user preferences
+                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+                userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
+            }
+            else
+            {
+                IEnumerable<int> reportFeatures = await _reportManager.GetReportFeatureId(request.ReportId);
+
+                bool isReportFeatureExists = request.UserFeatures.Any(usr => usr.FeatureId.Equals(reportFeatures.FirstOrDefault()));
+                if (isReportFeatureExists)
+                {
+                    // Get all attributes from reportattribute table
+                    var reportDataAttribute = await _reportManager.GetReportDataAttributes(request.ReportId);
+
+                    if (roleBasedUserPreferences.Count() > 0)
+                    {
+                        // In case user has subcriptions for report data Attributes package show subscribed attributes only
+                        userPreferences = roleBasedUserPreferences;
+                    }
+                    else
+                    {
+                        // In case user do not have subcription then show all attributes
+                        userPreferences = reportDataAttribute;
+                    }
+                }
+            }
+            return userPreferences ?? new List<reports.entity.ReportUserPreference>();
+        }
         #endregion
     }
 }

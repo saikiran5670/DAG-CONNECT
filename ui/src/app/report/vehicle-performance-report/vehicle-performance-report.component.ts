@@ -386,7 +386,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
         } else {
           this.pieChartLabels.push(pieLabel);
         }
-        this.pieChartData.push(pie.value);
+        this.pieChartData.push((pie.value).toFixed(2));
         this.pieChartColors.push(this.colorToLegends[pieLabel]);
       }
     }

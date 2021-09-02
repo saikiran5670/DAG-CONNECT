@@ -33,6 +33,7 @@ using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.rfmsdataservice.Common;
+using net.atos.daf.ct2.driver;
 
 namespace net.atos.daf.ct2.rfmsdataservice
 {
@@ -107,6 +108,8 @@ namespace net.atos.daf.ct2.rfmsdataservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>

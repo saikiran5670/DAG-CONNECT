@@ -14,6 +14,7 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.customerdataservice.Common;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.repository;
@@ -102,6 +103,8 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<ICustomerDataCdcRepository, CustomerDataCdcRepository>();
             services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>

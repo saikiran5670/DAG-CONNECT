@@ -768,16 +768,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
 
-                var response = await _reportServiceClient
-                                        .GetReportUserPreferenceAsync(
-                                            new GetReportUserPreferenceRequest
-                                            {
-                                                ReportId = reportId,
-                                                AccountId = _userDetails.AccountId,
-                                                RoleId = _userDetails.RoleId,
-                                                OrganizationId = GetUserSelectedOrgId(),
-                                                ContextOrgId = GetContextOrgId()
-                                            });
+                GetReportUserPreferenceRequest userPrefRequest = new GetReportUserPreferenceRequest();
+                userPrefRequest.ReportId = reportId;
+                userPrefRequest.AccountId = _userDetails.AccountId;
+                userPrefRequest.RoleId = _userDetails.RoleId;
+                userPrefRequest.OrganizationId = GetUserSelectedOrgId();
+                userPrefRequest.ContextOrgId = GetContextOrgId();
+
+                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
+                SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+
+                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+
+                var response = await _reportServiceClient.GetReportUserPreferenceAsync(userPrefRequest);
                 if (response.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
@@ -1182,7 +1185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
                 if (request.VIN.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
-              // if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
+                // if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
 
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
 

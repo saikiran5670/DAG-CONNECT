@@ -1735,9 +1735,7 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
-   
-    var doc = new jsPDF('p', 'mm', 'a4');
-    
+  var doc = new jsPDF('p', 'mm', 'a4');  
   let pdfColumns = this.getPDFHeaders();
   let prepare = []
     this.initData.forEach(e=>{
@@ -1853,8 +1851,7 @@ getAllSummaryData(){
     let displayArray =[];
     this.displayedColumns.forEach(i => {
       let _s = this.prefMapData.filter(item => item.value == i);
-      if (_s.length > 0)
-        {          
+      if (_s.length > 0){          
           displayArray.push(this.translationData[_s[0].key]);
         }
     })

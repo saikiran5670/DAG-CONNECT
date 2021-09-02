@@ -53,7 +53,35 @@ export class DashboardPreferencesComponent implements OnInit {
     let languageCode = JSON.parse(localStorage.getItem('language')).code;
     this.translationService.getPreferences(languageCode).subscribe((res) => { this.generalPreferences = res; this.getUnits() }
     )
+    this.translationUpdate();
+  }
 
+  translationUpdate(){
+    this.translationData = {
+      rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
+      rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
+      rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
+      rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
+      rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
+      rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
+      rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
+      rp_db_dashboard_todaylivevehicle_distance: 'Distance',
+      rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
+      rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
+      rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
+      rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
+      rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+      rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
+      rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+      rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
+      rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
+      rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
+      rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
+      rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
+      rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
+      rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
+      rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
+    }
   }
 
   upperLowerDD: any = [
@@ -213,7 +241,7 @@ export class DashboardPreferencesComponent implements OnInit {
             _data.translatedName = this.getName(element.name);
             //console.log("translated name1....", _data.translatedName);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('fleetkpi_drivingtime') || element.key.includes('fleetkpi_idlingtime')) {
@@ -250,7 +278,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.todayLiveVehicleColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('todaylivevehicle_timebasedutilizationrate')) {
@@ -280,7 +308,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
           
           if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {          
@@ -314,7 +342,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.alertLast24HoursColumnData.push(_data);
         }
       });

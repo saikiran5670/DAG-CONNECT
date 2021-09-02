@@ -1428,8 +1428,8 @@ export class ReportMapService {
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStopTime = this.getStarttime(element.stopTime, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, false);
+      element.convertedStopTime = this.getStarttime(element.stopTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
@@ -1883,7 +1883,7 @@ export class ReportMapService {
   }
 
   miliLitreToLitreForChart(_data: any){
-    return (_data/1000);
+    return (_data/1000).toFixed(2);
 }
 
 getFuelConsumptionUnitsForChart(fuelConsumption: any, unitFormat: any){
@@ -1922,31 +1922,31 @@ convertDistanceUnitsForChart(data: any, unitFormat: any){
 }
 
 meterToKmForChart(_data: any){
-  return (_data/1000);
+  return (_data/1000).toFixed(2);
 }
 
 meterToMileForChart(_data: any){
   let km: any = this.meterToKm(_data);
   let mile = km/1.609;
-  return mile;
+  return mile.toFixed(2);
 }
 
 convertFuelConsumptionL100kmToMpgForChart(_data: any){ // as value is sent in L/100Km - convert to mpg
   let data: any = (282.481 / _data);
-  return (data) 
+  return (data.toFixed(2)) 
 }
 
 miliLitreToGallonForChart(_data: any){
   let litre: any = this.miliLitreToLitre(_data);
   let gallon: any = litre/3.780;
-  return gallon;
+  return gallon.toFixed(2);
 }
   convertFuelConsumptionMlmToLtr100kmForChart(_data: any){
     return (_data*100);
   }
   convertFuelConsumptionMlmToMpgForChart(_data: any){
     let data: any = 1.6/(_data * 3.78);
-    return (data);
+    return (data).toFixed(2);
   }
 
   getFuelConsumedUnitsForChart(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
@@ -1969,7 +1969,7 @@ miliLitreToGallonForChart(_data: any){
   
   convertTimeToMinutesForChart(milisec: any){
     let newMin = milisec / 60000;
-    return newMin;
+    return newMin.toFixed(2);
   }
 
 }
