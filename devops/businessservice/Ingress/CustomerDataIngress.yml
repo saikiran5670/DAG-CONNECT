@@ -139,7 +139,7 @@ spec:
       - backend:
           serviceName: portalservice
           servicePort: 80
-        path: /NotificationHub
+        path: /notificationhub
       - backend:
           serviceName: ecoscoredataservice
           servicePort: 80
@@ -192,10 +192,6 @@ spec:
           serviceName: accountdataservice
           servicePort: 80
         path: /account/preferences
-      - backend:
-          serviceName: portalservice
-          servicePort: 80
-        path: /notificationhub
   tls:
   - hosts:
     - #{IngressURL}#
