@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class Utils implements Serializable {
     private static final long serialVersionUID = -2623908626314058510L;
@@ -107,8 +108,7 @@ public class Utils implements Serializable {
 
     public static long millisecondsToSeconds(long milliseconds) {
         // Convert milliseconds to seconds
-        long seconds_difference = (milliseconds / 1000) % 60;
-        return seconds_difference;
+        return TimeUnit.MILLISECONDS.toSeconds(milliseconds);
     }
 
     /***
@@ -141,6 +141,10 @@ public class Utils implements Serializable {
     public static int getCurrentTimeInSecond() {
         LocalTime localTime = LocalTime.now();
         return localTime.toSecondOfDay();
+    }
+
+    public static Long convertHoursToSeconds(Double hours){
+        return (long)(hours * 3600);
     }
 
     public static Long calculateAverage(Index index1, Index index2) {

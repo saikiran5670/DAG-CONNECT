@@ -41,13 +41,13 @@ namespace net.atos.daf.ct2.utilities
             switch (expectedUnit)
             {
                 case "H":
-                    expectedThresholdValue = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                    expectedThresholdValue = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
                             timespan.Hours,
                             timespan.Minutes,
                             timespan.Seconds);
                     break;
                 case "T":
-                    expectedThresholdValue = string.Format("{0:D2}:{1:D2}",
+                    expectedThresholdValue = string.Format("{0:D2}m:{1:D2}s",
                            (timespan.Hours * 60) + timespan.Minutes,
                             timespan.Seconds);
                     break;

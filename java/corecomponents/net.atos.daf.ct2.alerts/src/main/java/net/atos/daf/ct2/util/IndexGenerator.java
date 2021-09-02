@@ -21,9 +21,17 @@ public class IndexGenerator implements SourceFunction<Index> {
             Date date = new Date();
             String format1 = format.format(date);
             Index idx = new Index();
-            idx.setVid("XLR0998HGFFT74611");
-            idx.setVin("XLR0998HGFFT74611");
-            idx.setVDist(1000L + counter);
+            if(counter%2==0){
+                idx.setVid("XLR0998HGFFT70000"+((int)(Math.random()*2)));
+                idx.setVin("XLR0998HGFFT70000"+((int)(Math.random()*2)));
+            }else{
+                idx.setVid("XLR0998HGFFT70000");
+                idx.setVin("XLR0998HGFFT70000");
+            }
+
+            idx.setVDist(1000L);
+            idx.setGpsLatitude(124.3433);
+            idx.setGpsLongitude(124.3433);
             idx.setReceivedTimestamp(currentTimeMillis);
             IndexDocument indexDocument = new IndexDocument();
             indexDocument.setVEngineSpeed(10L);
@@ -34,7 +42,7 @@ public class IndexGenerator implements SourceFunction<Index> {
             idx.setEvtDateTime(format1);
             sourceContext.collect(idx);
             System.out.println("DATA SEND :: " + Utils.writeValueAsString(idx));
-            counter+=1000L;
+            counter+=1L;
             // Sleep for 1 second -> 1000 , 1 minute -> 60000
             Thread.sleep(1000);
 

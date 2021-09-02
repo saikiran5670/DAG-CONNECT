@@ -122,8 +122,8 @@ export class DataTableComponent implements OnInit {
   }
 
   updatedTableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
+    this.tableData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(this.tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

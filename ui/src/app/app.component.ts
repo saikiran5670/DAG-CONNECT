@@ -947,7 +947,9 @@ export class AppComponent {
             this.proceedStep(prefData, pref);
           });
         }
-        this.setInitialPref(this.prefData,this.preference);
+        if(this.prefData) {
+          this.setInitialPref(this.prefData,this.preference);
+        }
         this.getDateAndTime();
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
