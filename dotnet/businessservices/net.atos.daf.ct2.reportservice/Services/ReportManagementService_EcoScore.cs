@@ -650,7 +650,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //userPreferences = await GetReportUserPreferencesOld(request, context);
 
                 // New implementation considering Functional feature mapping with attribute
-                userPreferences = await GetReportUserPreferences_New(request, context);
+                userPreferences = await GetReportUserPreferences_New(request);
 
                 try
                 {
@@ -701,26 +701,29 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
-        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(GetReportUserPreferenceRequest request, ServerCallContext context)
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
             var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+            IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
                 var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
-                userPreferences = preferences;
+                userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
             }
             else
             {
-                bool isReportFeatureExists = await _reportManager.IsReportFeatureTagged(request.ReportId);
+                IEnumerable<int> reportFeatures = await _reportManager.GetReportFeatureId(request.ReportId);
+
+                bool isReportFeatureExists = request.UserFeatures.Any(usr => usr.FeatureId.Equals(reportFeatures.FirstOrDefault()));
                 if (isReportFeatureExists)
                 {
                     // Get all attributes from reportattribute table
                     var reportDataAttribute = await _reportManager.GetReportDataAttributes(request.ReportId);
 
-                    IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+
 
                     if (roleBasedUserPreferences.Count() > 0)
                     {

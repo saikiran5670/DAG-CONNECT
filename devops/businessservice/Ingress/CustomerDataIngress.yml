@@ -171,7 +171,27 @@ spec:
       - backend:
           serviceName: accountdataservice
           servicePort: 80
-        path: /account
+        path: /account/driver-lookup
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account/register/driver
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account/validate/driver
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account/password/change
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account/password/reset
+      - backend:
+          serviceName: accountdataservice
+          servicePort: 80
+        path: /account/preferences
   tls:
   - hosts:
     - #{IngressURL}#

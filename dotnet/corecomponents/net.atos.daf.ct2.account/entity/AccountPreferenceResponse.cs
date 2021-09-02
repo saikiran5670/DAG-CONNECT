@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.account.entity
         public string Id { get; set; }
         public string Name { get; set; }
     }
+
     public class AccountPreferenceResponse
     {
         public string Language { get; set; }

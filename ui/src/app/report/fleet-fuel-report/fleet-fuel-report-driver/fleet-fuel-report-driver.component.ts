@@ -898,14 +898,14 @@ export class FleetFuelReportDriverComponent implements OnInit {
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);
       
-      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
+      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnitsForChart(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});      
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission});
-      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.tofixed(2)});
+      let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance });
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
       this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption });      
-      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
     })
 
@@ -1288,47 +1288,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined; 
 
-  }
-  
-  miliLitreToLitre(_data: any){
-    return (_data/1000).toFixed(2);
-}
-
-
-miliLitreToGallon(_data: any){
-  let litre: any = this.miliLitreToLitre(_data);
-  let gallon: any = litre/3.780;
-  return gallon.toFixed(2);
-}
-  convertFuelConsumptionMlmToLtr100km(_data: any){
-    return (_data*100).toFixed(2);
-  }
-  convertFuelConsumptionMlmToMpg(_data: any){
-    let data: any = 1.6/(_data * 3.78);
-    return (data).toFixed(2);
-  }
-
-  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
-    let _fuelConsumed: any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
-        break;
-      }
-      case 'dunit_Imperial':{
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
-        break;
-      }
-      default: {
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
-      }
-    }
-    return _fuelConsumed; 
-  }
-  
-  convertTimeToMinutes(milisec: any){
-    let newMin = milisec / 60000;
-    return newMin;
   }
 
   resetChartData(){
@@ -2338,9 +2297,12 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-        sum += parseFloat(element.idleDuration);
+        //sum += parseFloat(element.idleDuration);
+        let convertedDuration:any = this.reportMapService.convertTimeToMinutesForChart(element.idleDuration);
+        sum += parseFloat(convertedDuration);
         });
-        sum = this.reportMapService.getHhMmTime(sum);
+        sum=sum.toFixed(2)*1;
+        //sum = this.reportMapService.getHhMmTime(sum);
         break;
       //  let s = this.tripData.forEach(element => {
       //    let time: any = 0;

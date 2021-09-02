@@ -297,9 +297,9 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetReportDataAttributes(reportId);
         }
 
-        public async Task<bool> IsReportFeatureTagged(int reportId)
+        public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
         {
-            return await _reportRepository.IsReportFeatureTagged(reportId);
+            return await _reportRepository.GetReportFeatureId(reportId);
         }
         #endregion
 

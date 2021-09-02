@@ -8,6 +8,7 @@ using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
@@ -73,6 +74,8 @@ namespace net.atos.daf.ct2.organizationservice
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();

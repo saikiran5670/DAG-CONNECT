@@ -64,6 +64,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleCreate Received vehicle Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
                 char org_status = await GetOrganisationStatusofVehicle(Convert.ToInt32(vehicle.Organization_Id));
                 vehicle.Opt_In = VehicleStatusType.Inherit;
                 vehicle.Is_Ota = false;
@@ -177,6 +178,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
 
                 return vehicle;
+                _log.Info("VehicleCreate Newly Created vehicle object" + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle) + " Vehicle DataMart Insert ");
             }
             catch (Exception)
             {
@@ -299,10 +301,13 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> Update(Vehicle vehicle)
         {
+            _log.Info("VehicleUpdate Received vehicle Object  " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string")
             {
+                _log.Info("VehicleUpdate TCU check if");
                 vehicle = await VehicleNameExists(vehicle);
-                vehicle = await VehicleLicensePlateNumberExists(vehicle);
+                //commenting as PersistenceStatus bug 6239
+                //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 
                 // duplicate vehicle Name
                 if (vehicle.VehicleNameExists)
@@ -341,14 +346,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicleDataMart.Name = vehicle.Name;
                 vehicleDataMart.Vid = "";
                 await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
-
+                _log.Info("VehicleUpdate UpdateComplete tcuchec" + vehicleID.ToString() + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             }
             else
             {
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
                 await CheckUnknownOEM(vehicle.VIN);
-
+                _log.Info("VehicleUpdate else");
                 var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         vid=@vid
@@ -379,6 +384,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicleDataMart.VIN = vehicle.VIN;
                 vehicleDataMart.Vid = vehicle.Vid;
                 await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
+
+                _log.Info("VehicleUpdate UpdatedObject " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
 
 
                 //    transactionScope.Complete();
@@ -428,6 +435,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@termination_date", null);
             }
             int vehiclepropertyId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateStatus UpdateComplete " + vehiclepropertyId);
+
             if (vehiclepropertyId > 0)
             {
                 var InsertQueryStatement = @"INSERT INTO master.vehicleoptinoptout
@@ -452,6 +461,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
 
                 int Id = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
+                _log.Info("VehicleUpdateStatus InsertComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleOptInOptOut));
+
             }
             return vehicleOptInOptOut;
         }
@@ -537,6 +548,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
         {
+            _log.Info("VehicleUpdateOrgVehicleDetails Received Obj " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             _dataAccess.Connection.Open();
             var transaction = _dataAccess.Connection.BeginTransaction();
             try
@@ -609,7 +621,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
 
                 transaction.Commit();
+                _log.Info("VehicleUpdateOrgVehicleDetails UpdateComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
+
                 return vehicle;
+
             }
             catch (Exception)
             {
@@ -1188,6 +1203,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleUpdateInterface Property Received object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
                 Vehicle objVeh = new Vehicle();
                 var InsertQueryStatement = string.Empty;
                 var UpdateQueryStatement = string.Empty;
@@ -1250,6 +1266,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,type_id = @type_id
                                       WHERE id = @id
                                       RETURNING id";
+                    _log.Info("VehicleUpdateInterface Property updateComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
                 }
                 else
                 {
@@ -1319,6 +1336,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,@chasis_side_collar 
                                         ,@width
                                         ,@type_id) RETURNING id";
+                    _log.Info("VehicleUpdateInterface Property insertComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
+
 
                 }
 
@@ -1375,6 +1394,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
                     objVeh.ID = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;
+                    _log.Info("VehicleUpdateInterface Property updateComplete vehicle" + vehicleproperty);
+
                 }
                 else if (vehicleId == 0)
                 {
@@ -1382,6 +1403,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
+                    _log.Info("VehicleUpdateInterface Property createRequest vehicle" + vehicleproperty);
+
                 }
                 else
                 {
@@ -1428,6 +1451,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             bool is_result = false;
             int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            _log.Info("VehicleUpdateInterface ExcelInfo Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleaxelinfo));
 
             if (VehicleId > 0)
             {
@@ -1471,6 +1495,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 is_result = true;
             }
+            _log.Info("VehicleUpdateInterface ExcelInfo Inserted Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleaxelinfo));
 
             return is_result;
         }
@@ -1484,12 +1509,15 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
             int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateInterface ExcelInfo DeleteId" + vehicleID);
 
             return vehicleID;
         }
 
         public async Task<bool> CreateVehicleFuelTank(List<VehicleFuelTankProperties> vehiclefuelTank, int vehicleId)
         {
+            _log.Info("VehicleUpdateInterface FuelTank Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehiclefuelTank));
+
             bool is_result = false;
             int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
 
@@ -1516,10 +1544,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@chasis_fuel_tank_number", fuelTank.Chassis_Tank_Nr);
                 parameter.Add("@chasis_fuel_tank_volume", fuelTank.Chassis_Tank_Volume);
 
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                fuelTank.VehicleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 is_result = true;
             }
-
+            _log.Info("VehicleUpdateInterface FuelTank Inserted Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehiclefuelTank));
             return is_result;
         }
 
@@ -1531,6 +1559,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
             int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateInterface FuelTank Delete " + vehicleId);
 
             return vehicleID;
         }
@@ -1839,6 +1868,8 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleUpdateDataMart Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 int VehicleDataMartID = await _dataMartdataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicledatamart.VIN });
                 var queryStatement = "";
                 bool isNameOrRegUpdated = false;
@@ -1877,6 +1908,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,@created_modified_at
                                        ,@created_modified_at
                                       ) RETURNING id";
+                    _log.Info("VehicleUpdateDataMart Created object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == true)
                 {
@@ -1898,6 +1931,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,model_type=@model_type
                                             WHERE id = @id
                                             RETURNING id;";
+                    _log.Info("VehicleUpdateDataMart Update " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == false && vehicledatamart.Vid == "")
                 {
@@ -1928,6 +1963,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     queryStatement = @"UPDATE master.vehicle
                                          SET vid=@vid
                                          WHERE id = @id RETURNING id;";
+                    _log.Info("VehicleUpdateDataMart Update TCUCondition " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
 
                 int vehicleID = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);

@@ -52,5 +52,6 @@ namespace net.atos.daf.ct2.account
         Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, int organisationId);
         Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request);
         Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId);
+        Task<int> GetDriverRoleId(int organisationId);
     }
 }

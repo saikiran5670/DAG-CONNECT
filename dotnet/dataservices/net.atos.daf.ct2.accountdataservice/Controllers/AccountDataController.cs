@@ -13,16 +13,16 @@ using Newtonsoft.Json;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.entity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.accountdataservice.CustomAttributes;
-using net.atos.daf.ct2.driver.entity;
-using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.driver;
 using System.Text;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.identity.Common;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
@@ -39,6 +39,9 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
+
+        private readonly Dictionary<string, string> _vehicleDisplayOptions;
+
         public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
         {
             _accountManager = accountManager;
@@ -49,6 +52,8 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
+
+            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
         }
 
         #region Driver Lookup
@@ -104,21 +109,22 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is OkObjectResult)
                 {
-                    var resultObj = (string)(result as ObjectResult).Value as dynamic;
+                    var resultObj = (result as ObjectResult).Value as dynamic;
                     var response = await _accountManager.RegisterDriver(new RegisterDriverDataServiceRequest
                     {
                         AccountEmail = resultObj.Email,
                         Password = resultObj.Password,
                         DriverId = request.DriverId,
-                        OrganisationId = resultObj.OrgId
+                        OrganisationId = resultObj.OrgId,
+                        IsLoginSuccessful = resultObj.IsLoginSuccessful
                     });
 
                     if (response.StatusCode == HttpStatusCode.OK)
                         return Ok();
                     else if (response.StatusCode == HttpStatusCode.Conflict)
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: nameof(request.DriverId));
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: "Password does not meet complexity requirements.");
+                    else if (response.StatusCode == HttpStatusCode.Forbidden)
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: nameof(request.Authorization));
                     else
                     {
                         _logger.Error($"Account API - Register Driver request was unsuccessful. { response.StatusCode } - { response.Message }");
@@ -204,18 +210,11 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     account.Password = identity.Split(":")[1];
                     var identityResult = await _accountManager.ChangePassword(account);
                     if (identityResult.StatusCode == HttpStatusCode.NoContent)
-                    {
                         return Ok();
-                    }
+                    else if (identityResult.StatusCode == HttpStatusCode.BadRequest || identityResult.StatusCode == HttpStatusCode.Forbidden)
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", nameof(request.NewAuthorization));
                     else
-                    {
-                        if (identityResult.StatusCode == HttpStatusCode.BadRequest)
-                            return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: "Password does not meet complexity requirements.");
-                        else if (identityResult.StatusCode == HttpStatusCode.Forbidden)
-                            return GenerateErrorResponse(HttpStatusCode.Forbidden, errorCode: "PASSWORD_NON_COMPLIANT", parameter: "Password does not meet company's password policy requirements.");
-                        else
-                            return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
-                    }
+                        return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
                 }
                 else
                 {
@@ -250,6 +249,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 {
                     _logger.Error("Account API - Reset password request was unsuccessful. " + JsonConvert.SerializeObject(response));
                 }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -361,13 +361,27 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             var email = identity.Split(":")[0].Trim();
             var password = identity.Split(":")[1].Trim();
 
+            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[""''!*@#$%^&+=~`^()\\/-_;:<>|{}\[\]]).{10,256})"), password))
+            {
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: nameof(request.Authorization));
+            }
+
+            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
 
             var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, org?.Id ?? 0, email);
             if (!isExists)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
 
-            return new OkObjectResult(new { Email = email, Password = password, OrgId = org?.Id ?? 0 });
+            return new OkObjectResult(
+                new
+                {
+                    Email = email,
+                    Password = password,
+                    OrgId = org?.Id ?? 0,
+                    IsLoginSuccessful = (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
+                });
         }
 
         private async Task<IActionResult> ValidateParameters(DriverValidateRequest request)
@@ -478,7 +492,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
             if (org == null)
-                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrganisationId));
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.OrganisationId));
 
             var orgs = await _accountManager.GetAccountOrg(account.Id);
             if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
@@ -509,11 +523,22 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             {
                 AccountEmail = request.AccountId,
                 DriverId = request.DriverId,
+                Language = request.Language,
                 DateFormat = request.DateFormat,
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = request.VehicleDisplay
+                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
+            };
+        }
+
+        private Dictionary<string, string> PrepareUnitDisplayOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "vin", "Vehicle Identification Number" },
+                { "name", "Name" },
+                { "regno", "Vehicle Registration Number" }
             };
         }
 
