@@ -1676,7 +1676,7 @@ getAllSummaryData(){
   const title = 'Trip Fleet Utilisation Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'miles') : (this.translationData.lblmile || 'miles');
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
   let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
   
   const header = this.getPDFExcelHeader();
