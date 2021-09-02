@@ -247,7 +247,7 @@ namespace net.atos.daf.ct2.organization.repository
                               u.id Unit,
                               a.page_refresh_time PageRefreshTime,
                               i.id IconId,
-							  i.icon Icon
+							  i.icon IconBute
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -274,7 +274,6 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.PostalCode = item.PostalCode;
                     OrgDetailsResponse.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
                     OrgDetailsResponse.DriverDefaultOptIn = item.DriverDefaultOptIn;
-
                     OrgDetailsResponse.LanguageName = item.LanguageName;
                     OrgDetailsResponse.Timezone = item.Timezone;
                     OrgDetailsResponse.TimeFormat = item.TimeFormat;
@@ -282,9 +281,9 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.Unit = item.Unit;
                     OrgDetailsResponse.DateFormatType = item.DateFormatType;
                     OrgDetailsResponse.PageRefreshTime = item.PageRefreshTime;
-                    OrgDetailsResponse.Icon = item.Icon;
+                    OrgDetailsResponse.IconBute = item.IconBute;                    
+                    OrgDetailsResponse.Icon = item.IconBute == null ? "" : item.IconBute.ToString(); 
                     OrgDetailsResponse.IconId = item.IconId;
-
                 }
                 return OrgDetailsResponse;
             }
