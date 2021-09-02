@@ -498,17 +498,22 @@ export class FleetkpiComponent implements OnInit {
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
       private reportMapService : ReportMapService,private messageService: MessageService,private dataInterchangeService: DataInterchangeService) {
         if(this._fleetTimer){
-          this.messageService.getMessage().subscribe(message => {
-            if (message.key.indexOf("refreshData") !== -1) {
-              this.getKPIData();
-            }
-          });
+          // this.messageService.getMessage().subscribe(message => {
+          //   if (message.key.indexOf("refreshData") !== -1) {
+          //     this.getKPIData();
+          //   }
+          // });
         }
         
     }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
+    this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshData") !== -1) {
+        this.getKPIData();
+      }
+    });
 
   }
 
@@ -557,14 +562,18 @@ export class FleetkpiComponent implements OnInit {
         break;
       }
     }
-    if(this._fleetTimer){
-      this.messageService.sendMessage('refreshData');
+    this.messageService.sendMessage('refreshTimer'); 
+    this.messageService.sendMessage('refreshData');
 
-    }
-    else{
-      this.getKPIData();
+    // if(this._fleetTimer){
+      
+    //   this.messageService.sendMessage('refreshData');
 
-    }
+    // }
+    // else{
+    //   this.getKPIData();
+
+    // }
   }
 
   getKPIData(){
