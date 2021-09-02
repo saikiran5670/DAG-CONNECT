@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.reports.entity
 {
     public class FleetFuelDetails
     {
+        public int Id { get; set; }
         public string VehicleName { get; set; }
         public string Tripid { get; set; }
         public string VIN { get; set; }
