@@ -224,7 +224,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       ]
     });
 
-    this.loadFilterDataBasedOnPrivileges();
+    // this.loadFilterDataBasedOnPrivileges();
 
     if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
       this.breadcumMsg = this.getBreadcum();
@@ -248,6 +248,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
       }
 
+      this.loadFilterDataBasedOnPrivileges();
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
       if(vehicleDisplayId) {
         let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
