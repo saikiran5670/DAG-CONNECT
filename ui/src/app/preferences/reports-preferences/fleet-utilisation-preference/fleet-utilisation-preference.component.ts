@@ -220,10 +220,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
             let _data: any = item;
             let txt: any;
             if(item.key.includes('rp_fu_report_summary_')){
-              if(item.key == 'rp_fu_report_summary_totaldistance' || item.key == 'rp_fu_report_summary_averagedistanceperday'){
+              if(item.key == 'rp_fu_report_summary_totaldistance'){
                 txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
-              }else if(item.key == 'rp_fu_report_summary_idleduration'){
+              }else if(item.key == 'rp_fu_report_summary_averagedistanceperday'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.translationData.lblmilesperday || 'miles/day');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }
+              else if(item.key == 'rp_fu_report_summary_idleduration'){
                 txt = this.translationData.lblhhmm || 'hh:mm';
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else{

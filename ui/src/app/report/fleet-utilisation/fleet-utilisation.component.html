@@ -172,7 +172,7 @@
                         <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles')  }}</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
                     </div>
                 </div>
                 <div *ngIf='noOfTripsStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
