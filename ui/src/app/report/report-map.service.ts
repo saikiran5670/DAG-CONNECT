@@ -1502,6 +1502,10 @@ export class ReportMapService {
             // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
             // element.dpaScore = parseFloat(element.dpaScore);
             // element.dpaScore = element.dpaScore.toFixed(2)*1;
+            element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+            element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
+    
+  
     });
     return gridData;
   }
