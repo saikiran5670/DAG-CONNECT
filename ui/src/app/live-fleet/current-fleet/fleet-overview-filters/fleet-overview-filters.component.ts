@@ -431,17 +431,22 @@ removeDuplicates(originalArray, prop) {
     let newAlertCat=[];
     let status=this.filterVehicleForm.controls.status.value;
     let health_status:any;
-    if(status.length == 0){
+    if(status.length == 0 || status == 'all'){
       health_status =['all'];
     }
     else {
       if(status.includes(0))
       {
-        let newStatus = status.filter(i=>i != 0);       
+        let newStatus = status.filter(i=>i != 0 && i != undefined);       
         newStatus.push('all');
         status =  newStatus
       }     
       health_status =status;
+    }
+    let d = this.filterVehicleForm.controls.category.value;
+    if(d == 'all')
+    {
+      this.filterVehicleForm.get("category").setValue(['all']);
     }
     if(!this.todayFlagClicked  && this.selectedIndex == 0)
     {

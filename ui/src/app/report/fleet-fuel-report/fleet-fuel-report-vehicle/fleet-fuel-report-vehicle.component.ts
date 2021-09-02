@@ -992,7 +992,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     return _date;
   }
-
+ 
   setChartData(graphData: any){
     this.barData=[];this.fuelConsumedChart=[];this.co2Chart=[];
     this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
@@ -1012,14 +1012,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       // let minutes = this.convertTimeToMinutes(e.idleDuration);
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);  
-      let convertedFuelConsumed = this.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
+      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnitsForChart(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y: convertedFuelConsumed});      
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission });
-      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2) });
+      let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y: convertedDistance });
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
       this.fuelConsumptionChart.push({ x:resultDate , y: convertedFuelConsumption });      
-      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
     })   
 
@@ -2044,8 +2044,8 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
     this.initData.forEach(item => {
       worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
-      item.convertedAverageDistance, item.convertedAverageSpeed, item.maxSpeed, item.numberOfTrips,
-      item.averageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration,
+      item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
+      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration,
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
       item.idlingConsumption, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
@@ -2322,7 +2322,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'maxSpeed' :{
-            tempObj.push(e.maxSpeed);
+            tempObj.push(e.convertedMaxSpeed);
             break;
           }
           case 'numberOfTrips' :{
@@ -2330,7 +2330,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'averageGrossWeightComb' :{
-            tempObj.push(e.averageGrossWeightComb);
+            tempObj.push(e.convertedAverageGrossWeightComb);
             break;
           }
           case 'fuelConsumed' :{
@@ -2555,7 +2555,7 @@ setVehicleGroupAndVehiclePreSelection() {
         let s = this.displayData.forEach(element => {
         sum += parseFloat(element.convertedDistance);
         });
-        sum= sum.toFixed(2)*1;
+       sum= sum.toFixed(2)*1;    
         break;
       }
     case 'fuelconsumed': { 
@@ -2567,9 +2567,12 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-        sum += parseFloat(element.idleDuration);
+        let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
+        sum += parseFloat(convertedDuration);
+        //  sum += parseFloat(element.idleDuration);
         });
-        sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
+        sum=sum.toFixed(2)*1;
+        // sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
         break;
     }
     case 'fuelConsumption': { 

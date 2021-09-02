@@ -80,5 +80,25 @@ namespace net.atos.daf.ct2.notificationservice.services
                 });
             }
         }
+
+        //public override async Task<AccountClientMapping> GetEligibleAccountForAlert(AccountClientMapping request, ServerCallContext context)
+        //{
+        //    try
+        //    {
+
+
+        //        return await Task.FromResult(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(null, ex);
+        //        return await Task.FromResult(new AccountClientMapping
+        //        {
+        //            Code = ResponseCode.Failed,
+        //            Message = "Get notification recipient list fail : " + ex.Message
+        //        });
+        //    }
+        //}
+
     }
 }

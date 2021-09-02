@@ -33,7 +33,9 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string UrgencyTypeEnum { get; set; }
         public double ThresholdValue { get; set; }
         public string ThresholdValueUnitType { get; set; }
+        public string ThresholdUnitEnum { get; set; }
         public double ValueAtAlertTime { get; set; }
+        public string TimeBasedValueAtAlertTime { get; set; }
         public string SMS { get; set; }
         public string AlertName { get; set; }
         public string Vehicle_group_vehicle_name { get; set; }

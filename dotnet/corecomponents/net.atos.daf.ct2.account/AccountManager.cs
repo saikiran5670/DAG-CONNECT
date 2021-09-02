@@ -712,24 +712,25 @@ namespace net.atos.daf.ct2.account
 
             var identityresult = await _identity.CreateUser(identityEntity);
 
-            // Set the password for the account
-            var result = await _identity.ChangeUserPassword(identityEntity);
-
-            if (result.StatusCode == HttpStatusCode.NoContent)
-                await _repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            else if (result.StatusCode == HttpStatusCode.BadRequest)
-                return new RegisterDriverResponse { StatusCode = HttpStatusCode.BadRequest, Message = "PASSWORD_NON_COMPLIANT" };
+            // Get Driver role Id
+            var driverRoleId = await _repository.GetDriverRoleId(request.OrganisationId);
 
             if (identityresult.StatusCode == HttpStatusCode.Created)
             {
                 account = await _repository.Create(account);
+
+                // Set the password for the account
+                var result = await _identity.ChangeUserPassword(identityEntity);
+
+                if (result.StatusCode == HttpStatusCode.NoContent)
+                    await _repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                 //Assign driver role to the account
                 await AddRole(new AccountRole
                 {
                     AccountId = account.Id,
                     OrganizationId = request.OrganisationId,
-                    RoleIds = new List<int> { 8 },
+                    RoleIds = new List<int> { driverRoleId },
                     StartDate = DateTime.UtcNow
                 });
             }
@@ -744,6 +745,12 @@ namespace net.atos.daf.ct2.account
                 if (accountGet == null)
                 {
                     account = await _repository.Create(account);
+
+                    // Set the password for the account
+                    var result = await _identity.ChangeUserPassword(identityEntity);
+
+                    if (result.StatusCode == HttpStatusCode.NoContent)
+                        await _repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 }
                 else
                 {
@@ -752,7 +759,15 @@ namespace net.atos.daf.ct2.account
                         return new RegisterDriverResponse { StatusCode = HttpStatusCode.Conflict, Message = "ACCOUNT_EXISTS" };
                     else
                     {
-                        await AddAccountToOrg(account);
+                        // If user identity is proven then associate user with said organization
+                        if (request.IsLoginSuccessful)
+                        {
+                            account.Organization_Id = request.OrganisationId;
+                            account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.UtcNow);
+                            await AddAccountToOrg(account);
+                        }
+                        else
+                            return new RegisterDriverResponse { StatusCode = HttpStatusCode.Forbidden, Message = "NOT_VALIDATED" };
                     }
                 }
 
@@ -761,7 +776,7 @@ namespace net.atos.daf.ct2.account
                 {
                     AccountId = account.Id,
                     OrganizationId = request.OrganisationId,
-                    RoleIds = new List<int> { 8 },
+                    RoleIds = new List<int> { driverRoleId },
                     StartDate = DateTime.UtcNow
                 });
             }

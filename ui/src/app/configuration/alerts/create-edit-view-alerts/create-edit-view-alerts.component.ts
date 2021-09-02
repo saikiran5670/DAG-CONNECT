@@ -22,6 +22,7 @@ import { ReportMapService } from '../../../report/report-map.service';
 import { TranslationService } from '../../../services/translation.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { SimpleChanges } from '@angular/core';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 declare var H: any;
 
@@ -40,7 +41,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleGroupList: any = [];
   vehicleList: any = [];
   accountInfo:any = {};
+  initData: any = [];
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'viewstatus'];
+  columnLabels = ['VIN','VehicleName', 'VehicleGroupName', 'Status'];
+  @ViewChild('gridComp') gridComp: DataTableComponent;
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
@@ -354,18 +359,19 @@ proceedStep(prefData: any, preference: any){
   }
 
   updateVehiclesDataSource(tableData: any){
-    this.vehiclesDataSource= new MatTableDataSource(tableData);
-    this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
-      return (
-        data.vehicleName.toString().toLowerCase().includes(filter) ||
-        data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
-        data.subcriptionStatus.toString().toLowerCase().includes(filter)
-      );
-    };
-    setTimeout(()=>{
-      this.vehiclesDataSource.paginator = this.paginator.toArray()[0];
-      this.vehiclesDataSource.sort = this.sort.toArray()[0];
-    });
+    this.gridComp.updatedTableData(tableData);
+    // this.vehiclesDataSource= new MatTableDataSource(tableData);
+    // this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //   return (
+    //     data.vehicleName.toString().toLowerCase().includes(filter) ||
+    //     data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
+    //     data.subcriptionStatus.toString().toLowerCase().includes(filter)
+    //   );
+    // };
+    // setTimeout(()=>{
+    //   this.vehiclesDataSource.paginator = this.paginator.toArray()[0];
+    //   this.vehiclesDataSource.sort = this.sort.toArray()[0];
+    // });
   }
 
   onChangeAlertCategory(value){
@@ -398,7 +404,7 @@ proceedStep(prefData: any, preference: any){
     
     //----------------------------------------------------------------------------------------------------------
 
-    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C' ||this.alert_type_selected === 'S')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
       }

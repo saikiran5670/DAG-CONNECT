@@ -245,7 +245,9 @@ namespace net.atos.daf.ct2.organization.repository
                               df.id DateFormatType,
                               l.id LanguageName,
                               u.id Unit,
-                              a.page_refresh_time PageRefreshTime
+                              a.page_refresh_time PageRefreshTime,
+                              i.id IconId,
+							  i.icon IconBute
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -253,7 +255,8 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.dateformat df on df.id=a.date_format_id
                             left join  master.unit u on u.id=a.unit_id
-                            left join  translation.language l on l.id=a.language_id                                                      
+                            left join  translation.language l on l.id=a.language_id  
+                            left join  master.icon i on i.id=a.icon_id
                             where o.id=@Id and o.state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationDetailsResponse> OrgDetails = await _dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
@@ -271,7 +274,6 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.PostalCode = item.PostalCode;
                     OrgDetailsResponse.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
                     OrgDetailsResponse.DriverDefaultOptIn = item.DriverDefaultOptIn;
-
                     OrgDetailsResponse.LanguageName = item.LanguageName;
                     OrgDetailsResponse.Timezone = item.Timezone;
                     OrgDetailsResponse.TimeFormat = item.TimeFormat;
@@ -279,6 +281,9 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.Unit = item.Unit;
                     OrgDetailsResponse.DateFormatType = item.DateFormatType;
                     OrgDetailsResponse.PageRefreshTime = item.PageRefreshTime;
+                    OrgDetailsResponse.IconBute = item.IconBute;                    
+                    OrgDetailsResponse.Icon = item.IconBute == null ? "" : item.IconBute.ToString(); 
+                    OrgDetailsResponse.IconId = item.IconId;
                 }
                 return OrgDetailsResponse;
             }
