@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly Entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         private readonly Entity.Alert.Mapper _mapper;
+        private static int _alertId = 1;
         public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration)
         {
             _pushNotofocationServiceClient = pushNotofocationServiceClient;
@@ -34,14 +35,32 @@ namespace net.atos.daf.ct2.portalservice.hubs
         }
         public async Task NotifyAlert(string someTextFromClient)
         {
-            var cts = new CancellationTokenSource(TimeSpan.FromMinutes(50));
-            using var streamingCall = _pushNotofocationServiceClient.GetAlertMessageStream(new Google.Protobuf.WellKnownTypes.Empty(), cancellationToken: cts.Token);
-            string str = string.Empty;
             try
             {
-                await foreach (var alertMessageData in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
+                while (true)
                 {
-                    await Clients.All.SendAsync("NotifyAlertResponse", this.Context.ConnectionId + " " + JsonConvert.SerializeObject(alertMessageData) + " " + someTextFromClient);
+                    TripAlert tripAlert = new TripAlert
+                    {
+                        Id = _alertId,
+                        Tripid = Convert.ToString(Guid.NewGuid()),
+                        Vin = "XLR0998HGFFT76657",
+                        CategoryType = "L",
+                        Type = "G",
+                        Alertid = _alertId * 2,
+                        Latitude = 51.12768896,
+                        Longitude = 4.935644520,
+                        AlertGeneratedTime = 1626965785,
+                        ThresholdValue = 8766,
+                        ValueAtAlertTime = 8767,
+                        ThresholdValueUnitType = "M"
+                    };
+                    await Clients.All.SendAsync("NotifyAlertResponse", this.Context.ConnectionId + " " + JsonConvert.SerializeObject(tripAlert));
+                    if (_alertId == 1000)
+                    {
+                        _alertId = 1;
+                    }
+                    _alertId = _alertId + 1;
+                    Thread.Sleep(2000);
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
@@ -51,11 +70,11 @@ namespace net.atos.daf.ct2.portalservice.hubs
             }
             catch (Exception ex)
             {
+                _ = ex.Message + someTextFromClient;
                 _logger.Error(null, ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
         }
-
 
         private async Task ReadKafkaMessages()
         {
