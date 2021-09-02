@@ -8,14 +8,6 @@ namespace net.atos.daf.ct2.accountdataservice.CustomAttributes
     {
         private readonly string[] _values;
 
-        public string[] Values
-        {
-            get
-            {
-                return _values;
-            }
-        }
-
         public ValueWithinCheckAttribute(string[] values)
         : base("Invalid {0}")
         {
