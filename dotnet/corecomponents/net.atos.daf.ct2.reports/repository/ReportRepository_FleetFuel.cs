@@ -125,6 +125,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	(
                                                   		SELECT
                                                   			vh.name                                              as VehicleName
+                                                          , '' as tripid
                                                   		  , fd.vin                                               as VIN
                                                   		  , vh.registration_no                                   as VehicleRegistrationNo
                                                   		  , round ( fd.etl_gps_distance,2)                       as Distance
@@ -236,6 +237,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                	(
                                                		SELECT
                                                			vh.name            as VehicleName
+                                                      , '' as tripid
                                                		  , fd.vin             as VIN
                                                		  , vh.registration_no as VehicleRegistrationNo
                                                		  , fd.DriverId
@@ -413,6 +415,7 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				Select
 					VIN				  
+                  , id as Id
 				  , trip_id  as tripid
 				  , 1 as numberoftrips 
 				  , 1 as totalworkingdays
@@ -455,6 +458,7 @@ namespace net.atos.daf.ct2.reports.repository
             (
                 SELECT
                     vh.name as VehicleName
+                  , fd.Id
 				  , tripid
 				  , fd.vin as VIN
 				  , vh.registration_no as VehicleRegistrationNo
@@ -553,6 +557,7 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				Select
 					VIN
+                  , id as Id
                   ,trip_id                                                                 as tripid
 				  , driver1_id                                                             as DriverId
 				  , 1                                                         as numberoftrips
@@ -596,6 +601,7 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				SELECT
 					vh.name            as VehicleName
+                   ,  fd.Id
                    ,tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
