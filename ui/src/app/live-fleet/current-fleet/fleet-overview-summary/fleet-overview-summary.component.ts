@@ -238,12 +238,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
   //Fleet Mileage rate
   let liveFleetMileageVal:any= localStorage.getItem('liveFleetMileageThreshold');
   let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(liveFleetMileageVal)) * 100;
-  let mileageRateVal:any = (Number.parseFloat(milDone)/Number.parseInt(liveFleetMileageVal)) * 100;
-  this.mileageRate = mileageRateVal;
-  // this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
+   this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
   this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
   //Fleet Utilization rate
-  this.utilizationRate = (this.movedVehicle/Number.parseInt(liveFleetMileageVal)) * 100;
+  let utilRate:any = ((this.movedVehicle/Number.parseInt(liveFleetMileageVal)) * 100).toFixed(2);
+  this.utilizationRate = utilRate;
   this.doughnutChartDataUtil = [ [this.utilizationRate, 100-this.utilizationRate] ];
  }
 

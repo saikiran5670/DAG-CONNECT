@@ -355,12 +355,12 @@ displayPiechart: boolean = true;
               private messageService: MessageService) {
                 if(this._fleetTimer){
                   this.messageService.getMessage().subscribe(message => {
-                    if (message.key.indexOf("refreshData") !== -1) {
+                    if (message.key.indexOf("refreshData") !== -1) {                  
                       this.getVehicleData();
                     }
                   });
                 }
-
+                
                 this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
                   if(data){
                     this.totalActiveVehicles = data['fleetKpis']?.vehicleCount;
@@ -395,7 +395,7 @@ displayPiechart: boolean = true;
   selectionTimeRange(selection: any){
     // this.internalSelection = true;
     this.clickButton = true;
-    switch(selection){
+    switch(selection){      
       case 'lastweek': {
         this.selectionTab = 'lastweek';
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
@@ -416,8 +416,8 @@ displayPiechart: boolean = true;
       }
     }
     if(this._fleetTimer){
-      this.messageService.sendMessage('refreshData');
-
+      this.messageService.sendMessage('refreshData');     
+    
     }
     else{
       this.getVehicleData();
@@ -504,9 +504,9 @@ displayPiechart: boolean = true;
 
   getVehicleData(){
 
-    let startDate = Util.convertDateToUtc(this.startDateValue);
-    let endDate = Util.convertDateToUtc(this.endDateValue);
-    let _vehiclePayload = {
+  let startDate = Util.convertDateToUtc(this.startDateValue);
+   let endDate = Util.convertDateToUtc(this.endDateValue);
+        let _vehiclePayload = {
       "startDateTime": startDate,
       "endDateTime": endDate,
       "viNs": this.finalVinList
@@ -722,15 +722,15 @@ if(this.prefTimeFormat == 12){
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
-    percentage1 = parseFloat(percentage1);
+    percentage1 = parseFloat(percentage1).toFixed(2);
     percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
-    percentage2 = parseFloat(percentage2);
+    percentage2 = parseFloat(percentage2).toFixed(2);
 
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
         let startDate = Util.convertDateToUtc(this.startDateValue-1);
-        let endDate = Util.convertDateToUtc(this.endDateValue);        
-        this.calenderDate=[ startDate, endDate ]
+        let endDate = Util.convertDateToUtc(this.endDateValue);     
+          this.calenderDate=[ startDate, endDate ]
         this.barChartOptions2.scales={
                 yAxes: [
                   {

@@ -1014,12 +1014,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       // this.idleDuration.push(minutes);  
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnitsForChart(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y: convertedFuelConsumed});      
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission });
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2) });
       let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y: convertedDistance });
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
       this.fuelConsumptionChart.push({ x:resultDate , y: convertedFuelConsumption });      
-      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
     })   
 
