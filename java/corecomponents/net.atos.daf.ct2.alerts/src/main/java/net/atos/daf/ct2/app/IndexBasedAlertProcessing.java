@@ -15,6 +15,7 @@ import net.atos.daf.ct2.process.config.AlertConfig;
 import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedAlertDefService;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
@@ -22,8 +23,12 @@ import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
@@ -41,8 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
@@ -76,6 +80,15 @@ public class IndexBasedAlertProcessing implements Serializable {
         Map<Object, Object> excessiveAverageSpeedFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
                     excessiveAverageSpeedFun
+            ));
+        }};
+
+        /**
+         * RealTime functions defined
+         */
+        Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+                    excessiveUnderUtilizationInHoursFun
             ));
         }};
 
@@ -165,6 +178,33 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         IndexMessageAlertService.processIndexKeyStream(indexExcessiveAvgSpeedKeyedStream,
                 env,propertiesParamTool,excessiveAverageSpeedFunConfigMap);
+
+
+        /**
+         * Excessive Under Utilization In Hours
+         */
+        long WindowTimeExcessiveUnderUtilization = Long.valueOf(propertiesParamTool.get("index.excessive.under.utilization.window.seconds","1800"));
+        WindowedStream<Index, String, TimeWindow> windowedExcessiveUnderUtilizationStream = indexStringStream
+                .assignTimestampsAndWatermarks(
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
+                            @Override
+                            public long extractTimestamp(Index index) {
+                                return convertDateToMillis(index.getEvtDateTime());
+                            }
+                        }
+                )
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
+                .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
+
+        KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
+                .process(new ExcessiveUnderUtilizationProcessor())
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        /**
+         * Process indexWindowKeyedStream for Excessive Under Utilization
+         */
+        IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
+                env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
 
 
         env.execute(IndexBasedAlertProcessing.class.getSimpleName());

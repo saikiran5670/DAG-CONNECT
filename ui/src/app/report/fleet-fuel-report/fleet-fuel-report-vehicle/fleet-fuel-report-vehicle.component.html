@@ -601,7 +601,7 @@
                 (translationData.lblmileh || 'mph') }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_maxspeed')">
-              <span>{{row.maxSpeed}}</span>
+              <span>{{row.convertedMaxSpeed}}</span>
             </mat-cell>
             <!-- <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell> -->
           </ng-container>
@@ -624,7 +624,7 @@
                 'Ton') }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">
-              <span>{{row.averageGrossWeightComb}}</span>
+              <span>{{row.convertedAverageGrossWeightComb}}</span>
             </mat-cell>
             <!-- <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell> -->
           </ng-container>

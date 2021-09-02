@@ -528,7 +528,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.UnitDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
+                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
             };
         }
 

@@ -212,8 +212,17 @@ export class AlertAdvancedFilterComponent implements OnInit {
         if(element.filterType == 'T')
         {
           this.isDistanceSelected =true;
-          let threshold = this.convertValues(element.thresholdValue,element.unitType);
-          this.alertAdvancedFilterForm.get('distance').setValue(threshold);
+          // let threshold = this.convertValues(element.thresholdValue,element.unitType);
+          // this.alertAdvancedFilterForm.get('distance').setValue(threshold);
+          if(this.prefUnitFormat == 'dunit_Metric')
+          {
+            this.alertAdvancedFilterForm.get('distance').setValue(element.thresholdValue);
+          }
+          else{
+            this.isDistanceSelected =true;
+            let threshold = this.convertValues(element.thresholdValue,'F');
+            this.alertAdvancedFilterForm.get('distance').setValue(threshold);
+          }
         }
         if(element.filterType == 'D')
         {
@@ -1062,6 +1071,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
            this.poiWidthKm = this.poiWidth / 1609;
          }
         // this.poiWidthKm = this.poiWidth / 1000;
+        this.poiWidthKm.toFixed(2);
         this.alertAdvancedFilterForm.controls.widthInput.setValue(this.poiWidthKm);
         if(this.markerArray.length > 0){
         this.addMarkerOnMap(this.ui);

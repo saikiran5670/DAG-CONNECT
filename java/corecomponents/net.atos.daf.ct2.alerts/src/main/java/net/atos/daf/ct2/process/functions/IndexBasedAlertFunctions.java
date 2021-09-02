@@ -6,6 +6,7 @@ import net.atos.daf.ct2.models.process.Target;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.process.service.AlertLambdaExecutor;
+import net.atos.daf.ct2.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static net.atos.daf.ct2.util.Utils.*;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
 import static net.atos.daf.ct2.util.Utils.getCurrentTimeInSecond;
@@ -40,12 +42,12 @@ public class IndexBasedAlertFunctions implements Serializable {
                         String dayOfWeekFromDbArr = getDayOfWeekFromDbArr(schema.getDayTypeArray());
                         if(currentDayOfWeek.equalsIgnoreCase(dayOfWeekFromDbArr)){
                             if(schema.getPeriodType().equalsIgnoreCase("A")){
-                                return getTarget(index, schema, convertDateToMillis(index.getEvtDateTime()));
+                                return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
                             }
                             if(schema.getPeriodType().equalsIgnoreCase("C")){
                                 int currentTimeInSecond = getCurrentTimeInSecond();
                                 if(schema.getStartTime() <= currentTimeInSecond && schema.getEndTime() > currentTimeInSecond){
-                                    return getTarget(index, schema,convertDateToMillis(index.getEvtDateTime()));
+                                    return getTarget(index, schema,millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
                                 }
                             }
                         }
@@ -77,6 +79,49 @@ public class IndexBasedAlertFunctions implements Serializable {
             }
         } catch (Exception ex) {
             logger.error("Error while calculating excessiveAverageSpeed:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
+    public static AlertLambdaExecutor<Message, Target> excessiveUnderUtilizationInHoursFun = (Message s) -> {
+        net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveUnderUtilizationInHours");
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        logger.info("Checking excessiveUnderUtilizationInHours for vin:: {}, threshold::{}",index.getVin(),urgencyLevelRefSchemas);
+        try {
+            for (String priority : priorityList) {
+                for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                        Boolean isVehicleMoved=Boolean.FALSE;
+                        List<Index> indexList = index.getIndexList();
+                        for(int i=1; i < indexList.size(); i++){
+                            Index previous = indexList.get(i-1);
+                            Index next = indexList.get(i);
+                            if( (previous.getGpsLatitude().doubleValue() != next.getGpsLatitude().doubleValue())
+                                    && (previous.getGpsLongitude().doubleValue() != next.getGpsLongitude().doubleValue())
+                                    && (previous.getVDist().longValue() != next.getVDist().longValue())){
+                                isVehicleMoved=Boolean.TRUE;
+                                break;
+                            }
+                        }
+                        if (! isVehicleMoved ) {
+                            for(Index idx : indexList){
+                                long eventTimeInMillis = convertDateToMillis(idx.getEvtDateTime());
+                                long eventTimeInSeconds = millisecondsToSeconds(eventTimeInMillis);
+                                long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - convertHoursToSeconds(schema.getThresholdValue());
+                                long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
+                                if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
+                                    logger.info("alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
+                                    return getTarget(index, schema, eventTimeInSeconds);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error while calculating excessiveUnderUtilizationInHours:: {}", ex);
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };

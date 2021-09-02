@@ -1502,6 +1502,10 @@ export class ReportMapService {
             // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
             // element.dpaScore = parseFloat(element.dpaScore);
             // element.dpaScore = element.dpaScore.toFixed(2)*1;
+            element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+            element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
+    
+  
     });
     return gridData;
   }
@@ -1812,11 +1816,11 @@ export class ReportMapService {
       }
       //Miles to meter 
       case 'L':{
-        distance = val * 1609;
+        distance = val * 1609.344;
         break;
       }
     }
-    return distance; 
+    return parseFloat(distance.toFixed(6)); 
   }
 
   getConvertedDistance(val ,unit){
@@ -1829,11 +1833,11 @@ export class ReportMapService {
       }
       //meter to Miles
       case 'L':{
-        distance = (val / 1609);
+        distance = (val / 1609.344);
         break;
       }
     }
-    return Math.round(distance); 
+    return distance.toFixed(2); 
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
@@ -1850,7 +1854,7 @@ export class ReportMapService {
         break;
       }
     }
-    return parseFloat(speed.toFixed(2)); 
+    return parseFloat(speed.toFixed(6)); 
   }
 
   getConvertedSpeed(val ,unit){
@@ -1867,21 +1871,21 @@ export class ReportMapService {
         break;
       }
     }
-    return Math.round(speed); 
+    return speed.toFixed(2); 
   }
 
   convertFtToMeters(length){
     let meter;
-    meter = length / 3.281;
-    return parseFloat(meter.toFixed(2));
+    meter = length / 3.28084;
+    return parseFloat(meter.toFixed(6));
   }
 
   convertMetersToFt(length){
     let ft;
-    ft = length * 3.281;
-    return Math.round(ft);
+    ft = length * 3.28084;
+    return ft.toFixed(2); 
   }
-
+  
   miliLitreToLitreForChart(_data: any){
     return (_data/1000).toFixed(2);
 }
