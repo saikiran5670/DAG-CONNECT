@@ -52,9 +52,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         AlertGeneratedTime = 1626965785,
                         ThresholdValue = 8766,
                         ValueAtAlertTime = 8767,
-                        ThresholdValueUnitType = "M"
+                        ThresholdValueUnitType = "M",
+                        LandmarkName = this.Context.ConnectionId,
                     };
-                    await Clients.All.SendAsync("NotifyAlertResponse", this.Context.ConnectionId + " " + JsonConvert.SerializeObject(tripAlert));
+                    await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
                     if (_alertId == 1000)
                     {
                         _alertId = 1;
