@@ -650,7 +650,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //userPreferences = await GetReportUserPreferencesOld(request, context);
 
                 // New implementation considering Functional feature mapping with attribute
-                userPreferences = await GetReportUserPreferences_New(request, context);
+                userPreferences = await GetReportUserPreferences_New(request);
 
                 try
                 {
@@ -701,7 +701,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
-        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(GetReportUserPreferenceRequest request, ServerCallContext context)
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
@@ -714,7 +714,9 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             else
             {
-                bool isReportFeatureExists = await _reportManager.IsReportFeatureTagged(request.ReportId);
+                IEnumerable<int> reportFeatures = await _reportManager.GetReportFeatureId(request.ReportId);
+
+                bool isReportFeatureExists = request.UserFeatures.Any(usr => usr.FeatureId.Equals(reportFeatures.FirstOrDefault()));
                 if (isReportFeatureExists)
                 {
                     // Get all attributes from reportattribute table

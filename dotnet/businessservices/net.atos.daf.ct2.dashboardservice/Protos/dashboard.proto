@@ -176,9 +176,13 @@ message DashboardUserPreferenceRequest {
     int32 AccountId=2;
     int32 RoleId=3;
     int32 OrganizationId=4;
-    int32 ContextOrgId=5; 
+    int32 ContextOrgId=5;
+    repeated SessionFeatures UserFeatures =6;
 }
-
+message SessionFeatures {
+    int32 FeatureId=1;
+    string Name=2;
+}
 message DashboardUserPreferenceResponse {
     DashboardUserPreference UserPreference = 1;
     Responsecode Code = 2;

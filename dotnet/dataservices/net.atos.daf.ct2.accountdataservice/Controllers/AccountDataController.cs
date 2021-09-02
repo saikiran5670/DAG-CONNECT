@@ -206,7 +206,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     if (identityResult.StatusCode == HttpStatusCode.NoContent)
                         return Ok();
                     else if (identityResult.StatusCode == HttpStatusCode.BadRequest || identityResult.StatusCode == HttpStatusCode.Forbidden)
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: "Password does not meet company's password policy requirements.");
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", nameof(request.NewAuthorization));
                     else
                         return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
                 }
@@ -355,9 +355,9 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             var email = identity.Split(":")[0].Trim();
             var password = identity.Split(":")[1].Trim();
 
-            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[""''!*@#$%^&+=~`^()\\/-_;:<>|{}\[\]]).{6,120})"), password))
+            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[""''!*@#$%^&+=~`^()\\/-_;:<>|{}\[\]]).{10,256})"), password))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: "Password does not meet complexity requirements.");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: nameof(request.Authorization));
             }
 
             var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
@@ -486,7 +486,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
             if (org == null)
-                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrganisationId));
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.OrganisationId));
 
             var orgs = await _accountManager.GetAccountOrg(account.Id);
             if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))

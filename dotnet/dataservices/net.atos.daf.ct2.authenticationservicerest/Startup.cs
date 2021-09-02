@@ -10,6 +10,7 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using AccountComponent = net.atos.daf.ct2.account;
@@ -41,10 +42,16 @@ namespace net.atos.daf.ct2.authenticationservicerest
             });
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+            });
+
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
@@ -63,16 +70,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
 
             services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
 
-            //services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
-            //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
-
-            // services.AddTransient<IGroupManager, GroupManager>();
-            // services.AddTransient<IGroupRepository, GroupRepository>();
-
             services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddCors(c =>
             {
