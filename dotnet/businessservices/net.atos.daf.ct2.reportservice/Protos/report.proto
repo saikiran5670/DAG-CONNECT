@@ -808,6 +808,8 @@ message FleetFuelDetails {
     google.protobuf.StringValue VehicleName = 1;
     google.protobuf.StringValue VIN = 2;
     google.protobuf.StringValue VehicleRegistrationNo = 3;
+    int64 Id=53;
+    string TripId=54;
     int64 Distance = 4;
     int64 AverageDistancePerDay = 5;
     double AverageSpeed = 6;

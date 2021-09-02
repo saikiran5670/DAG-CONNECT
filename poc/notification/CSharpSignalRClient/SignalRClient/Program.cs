@@ -11,9 +11,23 @@ namespace SignalRClient
             Console.WriteLine("Hello World!");
             try
             {
-                var connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:44300/NotificationHub")
-                .Build();
+                //var connection = new HubConnectionBuilder()
+                //.WithUrl("https://localhost:44300/NotificationHub")
+                //.Build();
+
+				var connection = new HubConnectionBuilder()
+                 .WithUrl($"https://api.dev1.ct2.atos.net/NotificationHub", (opts) =>
+                 {
+                     opts.HttpMessageHandlerFactory = (message) =>
+                     {
+                         if (message is HttpClientHandler clientHandler)
+                             // bypass SSL certificate
+                             clientHandler.ServerCertificateCustomValidationCallback +=
+                                 (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                         return message;
+                     };
+                 }).Build();	
+
                 connection.StartAsync().Wait();
                 //var mes = Console.ReadLine();
                 _ = connection.InvokeCoreAsync("NotifyAlert", args: new[] { " Test name" });
