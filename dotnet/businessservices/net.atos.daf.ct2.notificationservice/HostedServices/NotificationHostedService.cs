@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("Notification Host Service", ex);
                 ///failed message is getting logged.
                 _logger.Info(JsonConvert.SerializeObject(tripAlert));
                 //Need a discussion on handling failed kafka topic messages 
