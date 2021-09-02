@@ -444,7 +444,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageWeight">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'ton') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeightperTrip || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{ translationData.lblton || 'ton' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
           </ng-container>
