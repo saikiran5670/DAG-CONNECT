@@ -187,7 +187,8 @@
             <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewVehiclesConcerned || 'View Vehicles Concerned ' }}</span> </span>
           </mat-panel-title>
           </mat-expansion-panel-header>
-      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+
+      <!-- <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
         <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <mat-form-field appearance="outline">
               <input matInput (keyup)="applyFilterForVehicles($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -195,6 +196,7 @@
           </mat-form-field>
         </div>
       </div>
+
       <div>
         <mat-table matTableExporter [dataSource]="vehiclesDataSource" matSort>
           <ng-container matColumnDef="vin">
@@ -218,7 +220,16 @@
           </mat-row>
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-      </div>
+      </div> -->
+
+      <app-data-table [tableData]="initData" [translationData]="translationData"
+        [columnCodes]="columnCodes" [columnLabels]="columnLabels" [viewStatusColumnElements]="viewStatusColumnElements"
+        [showExport]="false"  #gridComp>
+
+        <ng-template #viewStatusColumnElements let-gridData='rowData'>        
+          {{ gridData.subcriptionStatus ? 'Subscribed' : 'Non-Subscribed' }}
+      </ng-template>
+    </app-data-table>
     </mat-expansion-panel>
 
     <!-- Advance filter -->
