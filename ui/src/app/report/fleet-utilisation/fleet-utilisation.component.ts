@@ -1050,9 +1050,9 @@ calendarOptions: CalendarOptions = {
       this.chartsLabelsdefined.push(resultDate);
     
       // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
-      let averagedistanceperday= (this.reportMapService.convertDistanceUnitsForChart(e.averagedistanceperday, this.prefUnitFormat));
+      let averagedistanceperday = (this.reportMapService.convertDistanceUnitsForChart(e.averagedistanceperday, this.prefUnitFormat));
       this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
-      let avgDistBarData= ((this.reportMapService.convertDistanceUnitsForChart(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
+      let avgDistBarData = ((this.reportMapService.convertDistanceUnitsForChart(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
       this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
@@ -1165,7 +1165,7 @@ calendarOptions: CalendarOptions = {
         break;
       }
       case "rp_fu_report_calendarview_distance": { // distance
-        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistanceperday,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistance,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
       case "rp_fu_report_calendarview_activevehicles": { // active vehicles
