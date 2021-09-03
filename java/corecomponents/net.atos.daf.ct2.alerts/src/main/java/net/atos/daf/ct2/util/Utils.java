@@ -170,4 +170,18 @@ public class Utils implements Serializable {
         return avgValue;
 
     }
+    
+    public static Long calculateIdleDuration( Iterable<Index> indexMsg) {
+    	 Long idleDuration=0L;
+    	 
+    	 try {
+			  for(Index ind:indexMsg) { 
+			  idleDuration +=ind.getVIdleDuration(); 
+			  }
+			 
+			} catch(Exception e) {
+				logger.error("Error while calculation Idle time calculation error:: {} indexMsg{}", e, indexMsg);
+			}
+    	 return idleDuration;
+    }
 }
