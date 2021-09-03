@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
     [ApiController]
     [Route("account")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class AccountDataController : ControllerBase
     {
         private readonly IAuditTraillib _auditTrail;
