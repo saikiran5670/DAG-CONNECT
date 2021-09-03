@@ -42,8 +42,12 @@ export class MapService {
         return data;
       }
       
-      viewselectedroutes(_selectedRoutes:any, _displayRouteView?: any,trackType?: any, row?: any){
+      getUI(){
+        return this.ui;
+      }
 
+      viewselectedroutes(_selectedRoutes:any, _ui: any, _displayRouteView?: any, trackType?: any, row?: any){
+        this.clearRoutesFromMap();
         if(_selectedRoutes && _selectedRoutes.length > 0){
           _selectedRoutes.forEach(elem => {
             this.startAddressPositionLat = elem.startpositionlattitude;
@@ -53,12 +57,56 @@ export class MapService {
             let houseMarker = this.createHomeMarker();
             let markerSize = { w: 26, h: 32 };
             const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-            this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
+            this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong },{ icon: icon });
             let endMarker = this.createEndMarker();
             const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
             this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
             this.group.addObjects([this.startMarker, this.endMarker]);
             
+            var startBubble;
+            this.startMarker.addEventListener('pointerenter', function (evt) {
+              // event target is the marker itself, group is a parent event target
+              // for all objects that it contains
+              startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+                // read custom data
+                content:`<table style='width: 350px;'>
+                  <tr>
+                    <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
+                  </tr>
+                  <tr>
+                    <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
+                  </tr>
+                </table>`
+              });
+              // show info bubble
+              _ui.addBubble(startBubble);
+            }, false);
+            this.startMarker.addEventListener('pointerleave', function(evt) {
+              startBubble.close();
+            }, false);
+
+            var endBubble;
+            this.endMarker.addEventListener('pointerenter', function (evt) {
+              // event target is the marker itself, group is a parent event target
+              // for all objects that it contains
+              endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+                // read custom data
+                content:`<table style='width: 350px;'>
+                  <tr>
+                    <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
+                  </tr>
+                  <tr>
+                    <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
+                  </tr>
+                </table>`
+              });
+              // show info bubble
+              _ui.addBubble(endBubble);
+            }, false);
+            this.endMarker.addEventListener('pointerleave', function(evt) {
+              endBubble.close();
+            }, false);
+
             if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
               let liveFleetPoints: any = elem.liveFleetPosition;
               liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
@@ -69,14 +117,13 @@ export class MapService {
                 let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
                 filterDataPoints.forEach((element) => {
                   this.drawPolyline(element, trackType);
-              
                 });
               }
             }
             this.hereMap.addObject(this.group);
 
-            if(elem.id == row.id){
-              let grp= new H.map.Group();
+            if(row && elem.id == row.id){
+              let grp = new H.map.Group();
               grp.addObjects([this.startMarker, this.endMarker]);
               this.hereMap.addObject(grp);
               this.hereMap.getViewModel().setLookAtData({
@@ -194,6 +241,7 @@ export class MapService {
         );
         this.group.addObject(polyline);
       }
+
       showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
         let lineString: any = new H.geo.LineString();
         dataPoints.map((element) => {
@@ -213,7 +261,7 @@ export class MapService {
         
         this.group.addObject(polyline);
        }
-      viewSelectedRoutes(_selectedRoutes, accountOrganizationId?) {
+      viewSelectedRoutessss(_selectedRoutes, accountOrganizationId?) {
         let corridorName = '';
         let startAddress = '';
         let endAddress = '';
@@ -318,7 +366,7 @@ export class MapService {
         //Step 2: initialize a map - this map is centered over Europe
         this.defaultLayers  = this.platform.createDefaultLayers();
         this.hereMap = new H.Map(mapElement.nativeElement,
-          this.defaultLayers.vector.normal.map, {
+          this.defaultLayers.raster.normal.map, {
           center: { lat: 51.43175839453286, lng: 5.519981221425336 },
           //center:{lat:41.881944, lng:-87.627778},
           zoom: 4,
@@ -336,13 +384,37 @@ export class MapService {
         this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
         var group = new H.map.Group();
         this.mapGroup = group;
+
+        this.ui.removeControl("mapsettings");
+        // create custom one
+        var ms = new H.ui.MapSettingsControl( {
+            baseLayers : [ { 
+              label: "Normal", layer: this.defaultLayers.raster.normal.map
+            },{
+              label: "Satellite", layer: this.defaultLayers.raster.satellite.map
+            }, {
+              label: "Terrain", layer: this.defaultLayers.raster.terrain.map
+            }
+            ],
+          layers : [{
+                label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            },
+            {
+                label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            }
+          ]
+        });
+        this.ui.addControl("customized", ms);
       }
 
       clearRoutesFromMap() { 
+        this.hereMap.removeObjects(this.hereMap.getObjects());
         this.mapGroup.removeAll();
-        this.startMarker = null; this.endMarker = null;
-        this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
-        this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+        this.group.removeAll();
+        this.startMarker = null; 
+        this.endMarker = null;
+        // this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+        // this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
         //this.transportOnceChecked = false;
        // this.trafficOnceChecked = false;
         this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));

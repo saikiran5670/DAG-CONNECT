@@ -17,10 +17,10 @@ namespace net.atos.daf.ct2.driver
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DriverRepository(IDataAccess dataAccess, IDataMartDataAccess DataMartdataAccess)
+        public DriverRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
-            _dataMartdataAccess = DataMartdataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
 
         public Task<int> UploadDriverTemplate()
@@ -78,12 +78,12 @@ namespace net.atos.daf.ct2.driver
                 var response = new DriverLookupResponse();
                 var parameter = new DynamicParameters();
                 parameter.Add("@DriverId", driverId);
-                parameter.Add("@Email", email);
+                parameter.Add("@Email", email.ToLower());
 
                 var queryStatement =
                         @"SELECT first_name FirstName, last_name LastName, organization_id as OrganisationId, org.name as OrganisationName
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and email = @Email";
+                            WHERE driver_id_ext = @DriverId and lower(email) = @Email and state='A'";
 
                 response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
                 return response;
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.driver
                 var queryStatement =
                         @"SELECT EXISTS (SELECT 1
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId)";
+                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId and drv.state='A')";
 
                 return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
             }

@@ -13,7 +13,7 @@
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
     (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
-      color="primary">{{translationData.lblLast30days || 'Last 90 days' }}</button>
+      color="primary">{{translationData.lblLast90days || 'Last 90 days' }}</button>
 
   <div *ngIf='vehicleUtilisationLength > 0' fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <div [hidden]="!checkForVehiclePreference('distanceperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">

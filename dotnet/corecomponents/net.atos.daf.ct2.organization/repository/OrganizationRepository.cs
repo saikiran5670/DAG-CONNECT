@@ -281,9 +281,10 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.Unit = item.Unit;
                     OrgDetailsResponse.DateFormatType = item.DateFormatType;
                     OrgDetailsResponse.PageRefreshTime = item.PageRefreshTime;
-                    OrgDetailsResponse.IconBute = item.IconBute;                    
-                    OrgDetailsResponse.Icon = item.IconBute == null ? "" : item.IconBute.ToString(); 
                     OrgDetailsResponse.IconId = item.IconId;
+                    if (item.IconBute != null && item.IconBute.Length > 0)
+                        OrgDetailsResponse.Icon = Convert.ToBase64String(item.IconBute, 0, item.IconBute.Length);
+
                 }
                 return OrgDetailsResponse;
             }

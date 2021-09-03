@@ -138,11 +138,18 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyTypeKey).FirstOrDefault();
                         notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyLevelType).FirstOrDefault();
                         notificationHistory.ThresholdUnitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
-                        notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        if (notificationHistory.ThresholdUnitEnum == "H" || notificationHistory.ThresholdUnitEnum == "T")
+                        {
+                            notificationHistory.TimeBasedThresholdValue = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        }
+                        else
+                        {
+                            notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        }
                         notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(notificationHistory.ThresholdUnitEnum);
                         if (notificationHistory.AlertTypeEnum == "S" && notificationHistory.AlertCategoryEnum == "L")
                         {
-                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime);
+                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime * 1000);
                             notificationHistory.ValueAtAlertTimeForHoursofServices = UTCHandling.GetConvertedDateTimeFromUTC(valueAtTimemilisecond, "UTC", "yyyy-MM-ddTHH:mm:ss.fffz");
                         }
                         else
@@ -184,6 +191,10 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<string> GetLanguageCodePreference(string emailId)
         {
             return await _notificationIdentifierRepository.GetLanguageCodePreference(emailId);
+        }
+        public async Task<AlertMessageAndAccountClientEntity> GetEligibleAccountForAlert(AlertMessageAndAccountClientEntity alertMessageAndAccountClientEntity)
+        {
+            return await _notificationIdentifierRepository.GetEligibleAccountForAlert(alertMessageAndAccountClientEntity);
         }
     }
 }

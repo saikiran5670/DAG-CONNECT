@@ -160,7 +160,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                                 AlertName = alertTypeValue,
                                 AlertLevel = urgencyTypeValue,
                                 AlertLevelCls = GetAlertTypeCls(urgencyTypeValue),
-                                DefinedThreshold = item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
+                                DefinedThreshold = (item.ThresholdUnitEnum == "H" || item.ThresholdUnitEnum == "T")
+                                                    ? item.TimeBasedThresholdValue
+                                                    : item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
                                 ActualThresholdValue = item.AlertTypeEnum == "S" && item.AlertCategoryEnum == "L"
                                                         ? item.ValueAtAlertTimeForHoursofServices
                                                         : (
@@ -265,14 +267,22 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         {
             StringBuilder sbSMSText = new StringBuilder();
             string valueAtAlertTime;
+            string thresholdNum;
             string alertCategoryValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.AlertCategoryKey);
             string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.AlertTypeKey);
             string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.UrgencyTypeKey);
             string smsDescription = string.IsNullOrEmpty(notificationHistorySMS.SMS) ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Length <= 50 ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Substring(0, 50);
             string vehicleGroup = string.IsNullOrEmpty(notificationHistorySMS.Vehicle_group_vehicle_name) ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Length <= 17 ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Substring(0, 17);
             string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistorySMS.AlertGeneratedTime, "UTC", null);
-            string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
-            string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
+            if (notificationHistorySMS.ThresholdUnitEnum == "H" || notificationHistorySMS.ThresholdUnitEnum == "T")
+            {
+                thresholdNum = notificationHistorySMS.TimeBasedThresholdValue;
+            }
+            else
+            {
+                string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
+                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
+            }
             if (notificationHistorySMS.ThresholdUnitEnum == "H" || notificationHistorySMS.ThresholdUnitEnum == "T")
             {
                 valueAtAlertTime = notificationHistorySMS.TimeBasedValueAtAlertTime;
@@ -302,6 +312,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private async Task<string> PrepareWSBody(NotificationHistory notificationHistoryWS)
         {
             string valueAtAlertTime;
+            string thresholdNum;
             StringBuilder sbWSText = new StringBuilder();
             string alertCategoryValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.AlertCategoryKey);
             string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.AlertTypeKey);
@@ -309,8 +320,15 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             string wsDescription = notificationHistoryWS.WsText;
             string vehicleGroup = notificationHistoryWS.Vehicle_group_vehicle_name;
             string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistoryWS.AlertGeneratedTime, "UTC", null);
-            string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
-            string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
+            if (notificationHistoryWS.ThresholdUnitEnum == "H" || notificationHistoryWS.ThresholdUnitEnum == "T")
+            {
+                thresholdNum = notificationHistoryWS.TimeBasedThresholdValue;
+            }
+            else
+            {
+                string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
+                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
+            }
             if (notificationHistoryWS.ThresholdUnitEnum == "H" || notificationHistoryWS.ThresholdUnitEnum == "T")
             {
                 valueAtAlertTime = notificationHistoryWS.TimeBasedValueAtAlertTime;
