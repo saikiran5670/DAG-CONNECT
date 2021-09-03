@@ -7,7 +7,6 @@ import {
   GridOption,
   Formatter,
 } from 'angular-slickgrid';
-import { ReportService } from '../../../services/report.service';
 
 @Component({
   selector: 'app-eco-score-driver-compare',
@@ -57,7 +56,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   showTable: boolean;
   gridOptionsCommon: GridOption;
   
-  constructor(private reportService: ReportService, private elementRef:ElementRef) { }
+  constructor(private elementRef:ElementRef) { }
 
   ngOnInit() {
     this.translationUpdate();
@@ -464,7 +463,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.621371).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return val * 235.215;
+            return (282.481/(val)).toFixed(2);
           }
         }
     }
