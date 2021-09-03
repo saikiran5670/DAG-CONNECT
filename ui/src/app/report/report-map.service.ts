@@ -1922,9 +1922,8 @@ meterToKmForChart(_data: any){
 }
 
 meterToMileForChart(_data: any){
-  let km: any = this.meterToKm(_data);
-  let mile = km/1.609;
-  return mile.toFixed(2);
+  let data = _data * 0.000621371;
+  return data.toFixed(2);
 }
 
 miliLitreToGallonForChart(_data: any){
