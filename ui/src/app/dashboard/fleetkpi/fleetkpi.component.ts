@@ -498,22 +498,18 @@ export class FleetkpiComponent implements OnInit {
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
       private reportMapService : ReportMapService,private messageService: MessageService,private dataInterchangeService: DataInterchangeService) {
         if(this._fleetTimer){
-          // this.messageService.getMessage().subscribe(message => {
-          //   if (message.key.indexOf("refreshData") !== -1) {
-          //     this.getKPIData();
-          //   }
-          // });
+          this.messageService.getMessage().subscribe(message => {
+            if (message.key.indexOf("refreshData") !== -1) {
+              this.getKPIData();
+            }
+          });
         }
         
     }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
-    this.messageService.getMessage().subscribe(message => {
-      if (message.key.indexOf("refreshData") !== -1) {
-        this.getKPIData();
-      }
-    });
+   
 
   }
 
@@ -563,17 +559,17 @@ export class FleetkpiComponent implements OnInit {
       }
     }
     this.messageService.sendMessage('refreshTimer'); 
-    this.messageService.sendMessage('refreshData');
+    //this.messageService.sendMessage('refreshData');
 
-    // if(this._fleetTimer){
+    if(this._fleetTimer){
       
-    //   this.messageService.sendMessage('refreshData');
+      this.messageService.sendMessage('refreshData');
 
-    // }
-    // else{
-    //   this.getKPIData();
+    }
+    else{
+      this.getKPIData();
 
-    // }
+    }
   }
 
   getKPIData(){
@@ -1977,9 +1973,9 @@ export class FleetkpiComponent implements OnInit {
     let convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
     this.fuelConsumptionThreshold = _thresholdValue;
     let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,convertedThreshold,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
-    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
-    let currentPercent = calculationValue['kpiPercent'];
+    let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
+    this.cutOffFuelConsumption = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
+    let currentPercent = (this.currentFuelConsumption / this.fuelConsumptionThreshold ) * 100;//calculationValue['kpiPercent'];
     
      
     let showLastChange = this.showLastChange;
