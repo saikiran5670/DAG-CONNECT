@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.driver
                 var queryStatement =
                         @"SELECT first_name FirstName, last_name LastName, organization_id as OrganisationId, org.name as OrganisationName
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and lower(email) = @Email and state='A'";
+                            WHERE driver_id_ext = @DriverId and lower(email) = @Email and drv.state='A'";
 
                 response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
                 return response;
