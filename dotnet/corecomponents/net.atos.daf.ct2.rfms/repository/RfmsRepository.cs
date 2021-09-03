@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         ,VP.ENGINE_EMISSION_LEVEL AS EMISSIONLEVEL
 										,VP.TYPE_ID AS CHASSISTYPE
                                         ,(SELECT COUNT(*) FROM MASTER.VEHICLEAXLEPROPERTIES WHERE VEHICLE_ID = V.ID) AS NOOFAXLES
-                                        ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID) AS TOTALFUELTANKVOLUME
+                                        ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID and CHASIS_FUEL_TANK_VOLUME ~ '^[0-9.]+$') AS TOTALFUELTANKVOLUME
                                         ,VP.TRANSMISSION_GEARBOX_TYPE AS GEARBOXTYPE
                                         FROM MASTER.VEHICLE V 
                                         LEFT OUTER JOIN MASTER.VEHICLEPROPERTIES VP ON VP.ID = V.VEHICLE_PROPERTY_ID";

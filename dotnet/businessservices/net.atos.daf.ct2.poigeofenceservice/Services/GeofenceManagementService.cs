@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Geofence Creation Faile due to - " + ex.Message,
+                    Message = "Geofence Creation Failed due to - " + ex.Message,
                 });
             }
         }

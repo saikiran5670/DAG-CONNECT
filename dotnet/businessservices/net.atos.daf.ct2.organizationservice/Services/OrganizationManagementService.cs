@@ -222,7 +222,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new RelationshipDeleteResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Deletion Faile due to - " + ex.Message,
+                    Message = "Relationship Deletion Failed due to - " + ex.Message,
 
                 });
             }
@@ -233,10 +233,10 @@ namespace net.atos.daf.ct2.organizationservice
             OrganizationRelationShip objRelationship = new OrganizationRelationShip();
             try
             {
-                OrgRelationshipCreateResponse responce = new OrgRelationshipCreateResponse();
+                OrgRelationshipCreateResponse response = new OrgRelationshipCreateResponse();
 
                 var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrId);
-                int Relationscount = 0;
+                int relationsCount = 0;
                 if (request.Isconfirmed == false)
                 {
                     foreach (var organization in request.TargetOrgId)
@@ -245,15 +245,15 @@ namespace net.atos.daf.ct2.organizationservice
                         {
                             if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup && i.Relationship_id == request.RelationShipId))
                             {
-                                Relationscount++;
-                                responce.Code = Responcecode.Conflict;
+                                relationsCount++;
+                                response.Code = Responcecode.Conflict;
                             }
                         }
-                        request.Isconfirmed = Relationscount == 0;
+                        request.Isconfirmed = relationsCount == 0;
                     }
                 }
 
-                int orgrelationid = 0;
+                int orgRelationId = 0;
                 foreach (var organization in request.TargetOrgId)
                 {
                     foreach (var vehgroup in request.VehicleGroupID)
@@ -266,29 +266,29 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.Allow_chain = request.AllowChain;
                         if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id && i.Relationship_id == objRelationship.Relationship_id))
                         {
-                            OrgRelationshipMappingGetRequest Presetrelationships = new OrgRelationshipMappingGetRequest();
-                            Presetrelationships.RelationShipId = request.RelationShipId;
-                            Presetrelationships.VehicleGroupID = vehgroup;
-                            Presetrelationships.OwnerOrId = request.OwnerOrId;
-                            Presetrelationships.CreatedOrgId = request.CreatedOrgId;
-                            Presetrelationships.TargetOrgId = organization;
-                            responce.OrgRelationshipMappingList.Add(Presetrelationships);
+                            OrgRelationshipMappingGetRequest presetRelationships = new OrgRelationshipMappingGetRequest();
+                            presetRelationships.RelationShipId = request.RelationShipId;
+                            presetRelationships.VehicleGroupID = vehgroup;
+                            presetRelationships.OwnerOrId = request.OwnerOrId;
+                            presetRelationships.CreatedOrgId = request.CreatedOrgId;
+                            presetRelationships.TargetOrgId = organization;
+                            response.OrgRelationshipMappingList.Add(presetRelationships);
                         }
                         else if (request.Isconfirmed)
                         {
-                            orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
-                            responce.Code = Responcecode.Success;
+                            orgRelationId = await _relationshipManager.CreateRelationShipMapping(objRelationship);
+                            response.Code = Responcecode.Success;
                         }
 
-                        request.OrgRelationId = orgrelationid;
+                        request.OrgRelationId = orgRelationId;
 
                         //responce.Code = Responcecode.Success;
-                        responce.Relationship.Add(orgrelationid);
+                        response.Relationship.Add(orgRelationId);
 
                     }
                 }
 
-                return await Task.FromResult(responce);
+                return await Task.FromResult(response);
 
             }
             catch (Exception ex)
@@ -297,7 +297,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new OrgRelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Create Faile due to - " + ex.Message,
+                    Message = "Relationship Create Failed due to - " + ex.Message,
 
                 });
             }
@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new EndOrgRelationshipResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Create Faile due to - " + ex.Message,
+                    Message = "Relationship Create Failed due to - " + ex.Message,
 
                 });
                 throw;
@@ -604,7 +604,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -632,7 +632,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference update Faile due to - " + ex.Message,
+                    Message = "Preference update Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -663,7 +663,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Deletion Faile due to - " + ex.Message,
+                    Message = "Preference Deletion Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -691,7 +691,7 @@ namespace net.atos.daf.ct2.organizationservice
                 return await Task.FromResult(new OrganizationPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization Preference Get Faile due to - " + ex.Message
+                    Message = "Organization Preference Get Failed due to - " + ex.Message
                 });
             }
         }
