@@ -1017,7 +1017,7 @@ if(this.prefTimeFormat == 12){
       },
         }
     }
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];    
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -1044,8 +1044,8 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
-    if(percentage1 > 100){
+      this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];
+       if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
     else{
@@ -1105,7 +1105,7 @@ if(this.prefTimeFormat == 12){
     label3 = 'Miles'
   }
   if(this.mileageDChartType =='doughnut'){
-    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.doughnutChartData2 = [percentage2, 0];
     }
@@ -1132,7 +1132,7 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+      this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.mileagePieChartData = [percentage2, 0];
     }
