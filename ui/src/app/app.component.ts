@@ -488,8 +488,10 @@ export class AppComponent {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     let _orgContextStatus = localStorage.getItem("orgContextStatus");
-    if(refresh && _orgContextStatus) {
-        this.orgContextType = true;
+    if(refresh) {
+        if(_orgContextStatus){
+          this.orgContextType = true;
+        }
         this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
     } else {
       let featureMenuObj = {
