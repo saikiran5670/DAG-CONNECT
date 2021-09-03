@@ -26,8 +26,8 @@ export class SetPasswordComponent implements OnInit {
 
   constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
     this.setPasswordForm = this.fb.group({
-      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(256)])],
-      'confirmPassword': [null, Validators.compose([Validators.required])],
+      'newPassword': [null, [Validators.required, Validators.minLength(10), Validators.maxLength(256)]],
+      'confirmPassword': [null, [Validators.required]],
     },{
       validator : [
         CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')
