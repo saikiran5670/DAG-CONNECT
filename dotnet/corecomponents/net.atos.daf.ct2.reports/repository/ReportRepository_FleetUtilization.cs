@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(etl_gps_distance)     as veh_message_distance
                                             		  , SUM(average_speed)            as average_speed
                                             		  , SUM(average_weight)           as average_weight
-                                            		  , SUM(last_odometer)           as last_odometer
+                                            		  , Max(last_odometer)           as last_odometer
                                             		FROM
                                             			tripdetail.trip_statistics
                                             		where
