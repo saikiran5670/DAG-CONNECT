@@ -47,5 +47,9 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string AlertCategoryKey { get; set; }
         public string AlertTypeKey { get; set; }
         public string UrgencyTypeKey { get; set; }
+        public int VehicleGroupId { get; set; }
+        public string VehicleGroupName { get; set; }
+        public string VehicleRegNo { get; set; }
+        public string VehicleName { get; set; }
     }
 }

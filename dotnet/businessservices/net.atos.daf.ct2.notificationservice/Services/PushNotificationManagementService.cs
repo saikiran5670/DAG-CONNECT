@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.notificationengine;
+using Notificationengine = net.atos.daf.ct2.notificationengine;
 using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Newtonsoft.Json;
@@ -11,6 +11,7 @@ using Grpc.Core;
 using log4net;
 using System.Reflection;
 using net.atos.daf.ct2.confluentkafka.entity;
+using net.atos.daf.ct2.notificationservice.Entity;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
@@ -20,13 +21,17 @@ namespace net.atos.daf.ct2.notificationservice.services
         private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         //private readonly ITripAlertManager _tripAlertManager;
-        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration)
+        private readonly Notificationengine.INotificationIdentifierManager _notificationIdentifierManager;
+        private readonly Mapper _mapper;
+        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration, Notificationengine.INotificationIdentifierManager notificationIdentifierManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             //_tripAlertManager = tripAlertManager;
+            _notificationIdentifierManager = notificationIdentifierManager;
+            _mapper = new Mapper();
         }
 
         public override async Task GetAlertMessageStream(Google.Protobuf.WellKnownTypes.Empty _, IServerStreamWriter<AlertMessageData> responseStream, ServerCallContext context)
@@ -81,24 +86,24 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
         }
 
-        //public override async Task<AccountClientMapping> GetEligibleAccountForAlert(AccountClientMapping request, ServerCallContext context)
-        //{
-        //    try
-        //    {
+        public override async Task<AccountClientMapping> GetEligibleAccountForAlert(AccountClientMapping request, ServerCallContext context)
+        {
+            try
+            {
 
-
-        //        return await Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error(null, ex);
-        //        return await Task.FromResult(new AccountClientMapping
-        //        {
-        //            Code = ResponseCode.Failed,
-        //            Message = "Get notification recipient list fail : " + ex.Message
-        //        });
-        //    }
-        //}
+                Notificationengine.entity.AlertMessageAndAccountClientEntity alertAccountMapped = await _notificationIdentifierManager.GetEligibleAccountForAlert(_mapper.GetAlertMessageAndAccountEntity(request));
+                return await Task.FromResult(_mapper.GetAlertMessageAndAccountEntity(alertAccountMapped));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AccountClientMapping
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get notification recipient list fail : " + ex.Message
+                });
+            }
+        }
 
     }
 }
