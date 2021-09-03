@@ -1826,24 +1826,12 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@PreferenceId", accountPreferenceId.Value);
                     query = @"UPDATE master.accountpreference 
                               SET
-                                language_id = (SELECT COALESCE(
-                                                        (SELECT id FROM translation.language WHERE lower(name) = @Language),
-                                                        (SELECT id FROM translation.language WHERE lower(name) = 'uk english'))),
-                                date_format_id = (SELECT COALESCE(
-                                                        (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
-                                                        (SELECT id FROM master.dateformat WHERE lower(name) = 'dd/mm/yyyy'))),
-                                timezone_id = (SELECT COALESCE(
-                                                        (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                                        (SELECT id FROM master.timezone WHERE lower(name) = 'europe/amsterdam'))),
-                                time_format_id = (SELECT COALESCE(
-                                                        (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
-                                                        (SELECT id FROM master.timeformat WHERE lower(name) = '24 hours'))),
-                                unit_id = (SELECT COALESCE(
-                                                        (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                                        (SELECT id FROM master.unit WHERE lower(name) = 'metric'))),
-                                vehicle_display_id = (SELECT COALESCE(
-                                                        (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
-                                                        (SELECT id FROM master.vehicledisplay WHERE lower(name) = 'vehicle identification number')))
+                                language_id = (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                date_format_id = (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
+                                timezone_id = (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay)
                               WHERE id = @PreferenceId RETURNING id";
                     result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
@@ -1855,25 +1843,12 @@ namespace net.atos.daf.ct2.account
                               VALUES ('A', 'A', NULL, 2, 
                                        (SELECT id FROM master.currency WHERE lower(name) = 'euro (€)'),
                                        (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
-                                       (SELECT COALESCE(
-                                                (SELECT id FROM translation.language WHERE lower(name) = @Language),
-                                                (SELECT id FROM translation.language WHERE lower(name) = 'uk english'))),
-                                        (SELECT COALESCE(
-                                                (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                                (SELECT id FROM master.timezone WHERE lower(name) = 'europe/amsterdam'))),
-                                        (SELECT COALESCE(
-                                                (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                                (SELECT id FROM master.unit WHERE lower(name) = 'metric'))),
-                                        (SELECT COALESCE(
-                                                (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
-                                                (SELECT id FROM master.vehicledisplay WHERE lower(name) = 'vehicle identification number'))),
-                                        (SELECT COALESCE(
-                                                (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
-                                                (SELECT id FROM master.dateformat WHERE lower(name) = 'dd/mm/yyyy'))),
-                                        (SELECT COALESCE(
-                                                (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
-                                                (SELECT id FROM master.timeformat WHERE lower(name) = '24 hours')))
-                                    ) RETURNING id";
+                                       (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                       (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                       (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
+                                       (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),                                       
+                                       (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat)) RETURNING id";
                     var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     parameter = new DynamicParameters();

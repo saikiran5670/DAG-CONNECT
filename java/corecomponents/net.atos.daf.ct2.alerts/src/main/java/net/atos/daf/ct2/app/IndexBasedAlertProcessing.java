@@ -48,6 +48,7 @@ import java.util.stream.StreamSupport;
 
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
+//import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
@@ -79,7 +80,8 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         Map<Object, Object> excessiveAverageSpeedFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    excessiveAverageSpeedFun
+                    excessiveAverageSpeedFun,
+                    excessiveIdlingFun
             ));
         }};
 
@@ -166,6 +168,9 @@ public class IndexBasedAlertProcessing implements Serializable {
                             Index endIndex = indexList.get(indexList.size() - 1);
                             Long average = Utils.calculateAverage(startIndex, endIndex);
                             startIndex.setVDist(average);
+                            Long idleDuration = Utils.calculateIdleDuration(indexMsg);
+                            startIndex.setVIdleDuration(idleDuration);
+							
                             arg3.collect(startIndex);
                         }
                     }

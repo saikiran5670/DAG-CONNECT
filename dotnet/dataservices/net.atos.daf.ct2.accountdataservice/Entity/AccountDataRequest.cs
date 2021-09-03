@@ -85,10 +85,12 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(ErrorMessage = "INVALID_FIELD")]
         public string Language { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(100, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(ErrorMessage = "INVALID_FIELD")]
         public string TimeZone { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
