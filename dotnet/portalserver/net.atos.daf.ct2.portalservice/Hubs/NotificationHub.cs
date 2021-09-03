@@ -81,7 +81,6 @@ namespace net.atos.daf.ct2.portalservice.hubs
         {
             try
             {
-                List<AccountClient> accountClients = new List<AccountClient>();
                 confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -99,17 +98,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
                     if (tripAlert != null && tripAlert.Alertid > 0)
                     {
-                        AccountClientMapping accountClientMapping = new AccountClientMapping();
-                        accountClientMapping.AlertMessageData = _mapper.GetAlertMessageEntity(tripAlert);
-                        foreach (var item in accountClients)
-                        {
-                            AccountClient accountClient = new AccountClient();
-                            accountClient.AccountId = item.AccountId;
-                            accountClient.OrgId = item.OrgId;
-                            accountClient.HubClientId = item.HubClientId;
-                            accountClientMapping.AccountClient.Add(accountClient);
-                        }
-                        await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(accountClientMapping);
+                        AlertMesssageProp alertMesssageProp = new AlertMesssageProp();
+                        alertMesssageProp.VIN = tripAlert.Vin;
+                        alertMesssageProp.AlertId = tripAlert.Alertid;
+                        await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
                     }
                 }
             }

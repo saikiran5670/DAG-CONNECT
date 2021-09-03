@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string VehicleRegNo { get; set; }
         public string VehicleName { get; set; }
         public int AlertCreatedAccountId { get; set; }
+        public int OrganizationId { get; set; }
     }
 }
