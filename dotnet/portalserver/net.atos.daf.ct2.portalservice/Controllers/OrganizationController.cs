@@ -747,17 +747,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.Allow_chain;
                 objRelationship.Isconfirmed = request.IsConfirm;
-                var CreateResponce = await _organizationClient.CreateOrgRelationshipAsync(objRelationship);
-                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
+                var createResponse = await _organizationClient.CreateOrgRelationshipAsync(objRelationship);
+                if (createResponse.Code == OrganizationBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                    return Ok(CreateResponce);
+                    return Ok(createResponse);
                 }
-                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Conflict)
+                if (createResponse.Code == OrganizationBusinessService.Responcecode.Conflict)
                 {
-                    return StatusCode(409, CreateResponce);
+                    return StatusCode(409, createResponse);
                 }
                 else
                 {
