@@ -696,6 +696,7 @@ namespace net.atos.daf.ct2.account
             var account = new Account();
             account.AccountType = AccountType.PortalAccount;
             account.EmailId = request.AccountEmail;
+            account.Salutation = string.Empty;
             account.FirstName = driver.FirstName;
             account.LastName = driver.LastName;
             account.DriverId = request.DriverId;    //Set the driverId to the account

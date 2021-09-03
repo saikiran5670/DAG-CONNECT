@@ -1611,7 +1611,7 @@ createEndMarker(){
       this.co2Chart.push({ x:resultDate , y:e.co2Emission.tofixed(2)});
       let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat,true);
       this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption});      
       let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
