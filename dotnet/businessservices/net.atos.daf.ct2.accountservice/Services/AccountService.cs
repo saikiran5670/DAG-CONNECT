@@ -193,7 +193,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message,
+                    Message = "Account Creation Failed due to - " + ex.Message,
                     Account = null
                 });
             }
@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Updation Faile due to - " + ex.Message,
+                    Message = "Account Updation Failed due to - " + ex.Message,
                     Account = null
                 });
             }
@@ -250,7 +250,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Faile due to - " + ex.Message
+                    Message = "Account Deletion Failed due to - " + ex.Message
                 });
             }
         }
@@ -838,7 +838,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Faile due to - " + ex.Message
+                    Message = "Account Blob Creation Failed due to - " + ex.Message
                 });
             }
         }
@@ -869,7 +869,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Faile due to - " + ex.Message
+                    Message = "Account Blob Creation Failed due to - " + ex.Message
                 });
             }
         }
@@ -1345,7 +1345,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -1376,7 +1376,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -1407,7 +1407,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Get Faile due to - " + ex.Message
+                    Message = "Preference Get Failed due to - " + ex.Message
 
                 });
             }
