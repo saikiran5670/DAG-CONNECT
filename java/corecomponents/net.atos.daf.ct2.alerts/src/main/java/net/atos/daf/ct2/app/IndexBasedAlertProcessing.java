@@ -168,13 +168,9 @@ public class IndexBasedAlertProcessing implements Serializable {
                             Index endIndex = indexList.get(indexList.size() - 1);
                             Long average = Utils.calculateAverage(startIndex, endIndex);
                             startIndex.setVDist(average);
-                            Long idleDuration=0L;
-                            
+                            Long idleDuration = Utils.calculateIdleDuration(indexMsg);
+                            startIndex.setVIdleDuration(idleDuration);
 							
-							  for(Index ind:indexMsg) { 
-							  idleDuration +=ind.getVIdleDuration(); 
-							  }
-							  startIndex.setVIdleDuration(idleDuration);
                             arg3.collect(startIndex);
                         }
                     }
