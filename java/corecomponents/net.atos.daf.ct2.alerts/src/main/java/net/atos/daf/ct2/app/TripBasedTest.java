@@ -12,6 +12,7 @@ import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
 import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
+import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
 import net.atos.daf.ct2.util.IndexGenerator;
@@ -19,6 +20,8 @@ import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.state.MapState;
+import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -32,6 +35,7 @@ import org.apache.flink.connector.jdbc.JdbcSink;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
@@ -45,12 +49,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDuringStopFun;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.*;
 
@@ -68,9 +74,9 @@ public class TripBasedTest implements Serializable {
         /**
          * RealTime functions defined
          */
-        Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
+        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    excessiveUnderUtilizationInHoursFun
+                    fuelDuringStopFun
             ));
         }};
 
@@ -88,30 +94,20 @@ public class TripBasedTest implements Serializable {
 
 
         /**
-         * Excessive Under Utilization In Hours
+         * Excessive Fuel during stop
          */
-        long WindowTimeExcessiveUnderUtilization = Long.valueOf(propertiesParamTool.get("index.excessive.under.utilization.window.seconds","1800"));
-        WindowedStream<Index, String, TimeWindow> windowedExcessiveUnderUtilizationStream = indexStringStream
-                .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
-                            @Override
-                            public long extractTimestamp(Index index) {
-                                return convertDateToMillis(index.getEvtDateTime());
-                            }
-                        }
-                )
+        KeyedStream<Index, String> indexStringKeyedStream = indexStringStream
+                .filter(index -> index.getVEvtID() == 4 || index.getVEvtID() == 5)
+                .returns(Index.class)
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
-                .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
-
-        KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
-                .process(new ExcessiveUnderUtilizationProcessor())
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
         /**
          * Process indexWindowKeyedStream for Excessive Under Utilization
          */
-        IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
-                env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
+        IndexMessageAlertService.processIndexKeyStream(indexStringKeyedStream,
+                env,propertiesParamTool,fuelDuringStopFunConfigMap);
+
 
         env.execute("TripBasedTest");
 

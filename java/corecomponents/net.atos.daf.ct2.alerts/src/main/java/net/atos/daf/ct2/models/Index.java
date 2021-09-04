@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,4 +17,5 @@ public class Index extends net.atos.daf.ct2.pojo.standard.Index  implements Seri
     private String vid;
     private String vin;
     private List<net.atos.daf.ct2.pojo.standard.Index> indexList = new ArrayList<>();
+    private BigDecimal vFuelStopPrevVal;
 }

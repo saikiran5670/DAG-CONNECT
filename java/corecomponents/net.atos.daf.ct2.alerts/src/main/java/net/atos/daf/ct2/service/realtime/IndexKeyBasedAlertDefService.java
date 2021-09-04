@@ -42,6 +42,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> hoursOfServiceAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveAverageSpeedAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveUnderUtilizationInHoursAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> fuelDuringStopFunAlertDef = new ArrayList<>();
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
                 List<AlertUrgencyLevelRefSchema> thresholdSet = (List<AlertUrgencyLevelRefSchema>) broadcastState.get(alertId).getData().get();
@@ -55,6 +56,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("H")) {
                         excessiveUnderUtilizationInHoursAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("P")) {
+                        fuelDuringStopFunAlertDef.add(schema);
+                    }
                 }
             }
         }
@@ -62,6 +66,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
         functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
         functionThresh.put("excessiveUnderUtilizationInHours", excessiveUnderUtilizationInHoursAlertDef);
+        functionThresh.put("fuelDuringStopFunAlertDef", fuelDuringStopFunAlertDef);
         //
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)

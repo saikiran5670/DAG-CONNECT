@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -72,13 +73,39 @@ public class IndexBasedAlertFunctions implements Serializable {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                         if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
                             logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, convertDateToMillis(index.getEvtDateTime()));
+                            return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
                         }
                     }
                 }
             }
         } catch (Exception ex) {
             logger.error("Error while calculating excessiveAverageSpeed:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
+
+    public static AlertLambdaExecutor<Message, Target> fuelDuringStopFun = (Message s) -> {
+        net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDuringStopFunAlertDef");
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        Index index1 = index.getIndexList().get(0);
+        BigDecimal vFuelStopPrevVal = index.getVFuelStopPrevVal();
+        try {
+            for (String priority : priorityList) {
+                for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                        //TODO change code accordingly
+                       /* if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
+                            logger.info("alert found fuelDuringStopFun ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
+                            return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
+                        }*/
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error while calculating fuelDuringStopFun:: {}", ex);
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
@@ -109,7 +136,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                             for(Index idx : indexList){
                                 long eventTimeInMillis = convertDateToMillis(idx.getEvtDateTime());
                                 long eventTimeInSeconds = millisecondsToSeconds(eventTimeInMillis);
-                                long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - convertHoursToSeconds(schema.getThresholdValue());
+                                long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - schema.getThresholdValue().longValue();
                                 long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
                                 if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
                                     logger.info("alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
