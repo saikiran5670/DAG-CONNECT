@@ -1210,29 +1210,35 @@ export class ReportMapService {
       return (_data/1000).toFixed(2);
   }
   
-
+  litreToMilliLitre(_data: any){
+    return (_data * 1000).toFixed(2);
+}
+  //Imperial UK units
   miliLitreToGallon(_data: any){
-    let litre: any = this.miliLitreToLitre(_data);
-    let gallon: any = litre/3.780;
-    return gallon.toFixed(2);
+    let data = _data * 0.000219969;
+    return data.toFixed(2);
+  }
+
+  gallonToMilliLitre(_data: any){
+    let data = _data * 4546.09;
+    return data.toFixed(2);
   }
 
   convertFuelConsumptionMlmToLtr100km(_data: any){
     return (_data*100).toFixed(2);
   }
 
-  convertFuelConsumptionL100kmToMpg(_data: any){ // as value is sent in L/100Km - convert to mpg
-    let data: any = (282.481 / _data);
-    return (data).toFixed(2); 
+  convertFuelConsumptionLtr100kmToMlm(_data: any){
+    return (_data/100).toFixed(2);
   }
 
-  convertFuelConsumptionMpgToL100km(_data: any){ // convert from mpg to L/100Km
-    let data: any = (282.481 / _data);
+  convertFuelConsumptionMpgToMlm(_data: any){ // convert from mpg to L/100Km
+    let data: any = (282.481/_data)/100;
     return (data).toFixed(2); 
   }
 
   convertFuelConsumptionMlmToMpg(_data: any){
-    let data: any = 1.6/(_data * 3.78);
+    let data: any = 282.481/(_data*100);
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
@@ -1241,7 +1247,11 @@ export class ReportMapService {
   }
 
   convertKgToTonnes(_data: any){
-    return (_data/1000).toFixed(2);
+    return (_data / 1000).toFixed(2);
+  }
+
+  convertKgToTons(_data: any){
+    return (_data * 0.000984207).toFixed(2);
   }
 
   convertWeightUnits(data: any, unitFormat: any, tonFlag?: boolean){
@@ -1252,7 +1262,7 @@ export class ReportMapService {
         break;
       }
       case 'dunit_Imperial': {
-        _data = tonFlag ? this.convertKgToTonnes(data) : this.convertKgToPound(data); //-- pound/ton
+        _data = tonFlag ? this.convertKgToTons(data) : data; //-- pound/ton
         break;
       }
       default: {
@@ -1281,22 +1291,14 @@ export class ReportMapService {
   }
 
   convertSpeedMmsToKmph(_data: any){
-    return (_data*3600).toFixed(2);
+    let data = _data * 3600;
+    return data.toFixed(2);
   }
 
   convertSpeedMmsToMph(_data: any){
-    let kmph: any = this.convertSpeedMmsToKmph(_data);
-    let mph: any = kmph/1.609;
-    return mph.toFixed(2);
+    let data = _data * 2236.94;
+    return data.toFixed(2);
   }
-
-  // convertSpeedMsToKmph(){
-
-  // }
-
-  // convertSpeedMsToMph(){
-    
-  // }
 
   convertDistanceUnits(data: any, unitFormat: any){
     let _data: any;
@@ -1317,27 +1319,21 @@ export class ReportMapService {
   }
 
   meterToKm(_data: any){
-    return (_data/1000).toFixed(2);
+    return (_data / 1000).toFixed(2);
   }
 
   kmToMeter(_data: any){
-    return (_data*1000).toFixed(2);
+    return (_data * 1000).toFixed(2);
   }
 
   meterToMile(_data: any){
-    let km: any = this.meterToKm(_data);
-    let mile = km/1.609;
-    return mile.toFixed(2);
-  }
-
-  mileToKm(_data: any){
-    let km: any = _data * 1.609;
-    return km.toFixed(2);
+    let data=_data * 0.000621371;
+    return data.toFixed(2);
   }
 
   mileToMeter(_data: any){
-    let km: any = this.mileToKm(_data);
-    return this.kmToMeter(km);
+    let data = _data * 1609.34;
+    return data.toFixed(2);
   }
 
   formStartendDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean){
@@ -1509,6 +1505,7 @@ export class ReportMapService {
     });
     return gridData;
   }
+
   getFuelConsumptionUnits(fuelConsumption: any, unitFormat: any, litreFlag?: boolean){
     let _fuelConsumption: any = 0;
     switch(unitFormat){
@@ -1526,8 +1523,6 @@ export class ReportMapService {
     }
     return _fuelConsumption; 
   }
-
- 
 
   getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     //gridData.forEach(element => {
@@ -1582,19 +1577,20 @@ export class ReportMapService {
  
 
 
-  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
+  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
+     //getFuelConsumtionFlag = true to get fuel Consumption Conversion ; false to get fuel Consumed conversion
     let _fuelConsumed: any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _fuelConsumed = litreFlag ? (fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
         break;
       }
       case 'dunit_Imperial':{
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionL100kmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
         break;
       }
       default: {
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
+        _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
       }
     }
     return _fuelConsumed; 
@@ -1666,19 +1662,15 @@ export class ReportMapService {
     let _avgSpeed : any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _avgSpeed = (avgSpeed * 360).toFixed(2); //-- km/h(converted from m/ms)
+        _avgSpeed = (avgSpeed * 3600).toFixed(2); //-- km/h(converted from m/ms)
         break;
       }
       case 'dunit_Imperial':{
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //miles/h
-        break;
-      }
-      case 'dunit_USImperial': {
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //-- miles/h
+        _avgSpeed = (avgSpeed * 2236.94).toFixed(2); //miles/h
         break;
       }
       default: {
-        _avgSpeed = avgSpeed.toFixed(2);
+        _avgSpeed = (avgSpeed * 3600).toFixed(2);
       }
     }
     return _avgSpeed;    
@@ -1845,16 +1837,16 @@ export class ReportMapService {
     switch(unit){
       //Km/h to m/s
       case 'A':{
-        speed = (val * 5) /18;
+        speed = val * 0.277778;
         break;
       }
       //miles/h to m/s
       case 'B':{
-        speed = (val /2.237);
+        speed = val * 0.447040357632;
         break;
       }
     }
-    return parseFloat(speed.toFixed(6)); 
+    return parseFloat(speed.toFixed(2)); 
   }
 
   getConvertedSpeed(val ,unit){
@@ -1862,12 +1854,12 @@ export class ReportMapService {
     switch(unit){
       // m/s to Km/h
       case 'A':{
-        speed = (val * 18) /5;
+        speed = val * 3.60000288;
         break;
       }
       // m/s to miles/h
       case 'B':{
-        speed = (val * 2.237);
+        speed = val * 2.2369380816;
         break;
       }
     }
@@ -1876,8 +1868,8 @@ export class ReportMapService {
 
   convertFtToMeters(length){
     let meter;
-    meter = length / 3.28084;
-    return parseFloat(meter.toFixed(6));
+    meter = length * 0.3048;
+    return parseFloat(meter.toFixed(2));
   }
 
   convertMetersToFt(length){
@@ -1930,14 +1922,8 @@ meterToKmForChart(_data: any){
 }
 
 meterToMileForChart(_data: any){
-  let km: any = this.meterToKm(_data);
-  let mile = km/1.609;
-  return mile.toFixed(2);
-}
-
-convertFuelConsumptionL100kmToMpgForChart(_data: any){ // as value is sent in L/100Km - convert to mpg
-  let data: any = (282.481 / _data);
-  return (data.toFixed(2)) 
+  let data = _data * 0.000621371;
+  return data.toFixed(2);
 }
 
 miliLitreToGallonForChart(_data: any){

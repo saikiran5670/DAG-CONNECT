@@ -302,7 +302,7 @@ export class OrganisationDetailsComponent implements OnInit {
       timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
       vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
       landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
-      iconId: this.uploadLogo != '' ? this.organisationData.iconId ? this.organisationData.iconId : 0 : 0,
+      iconId: this.uploadLogo != '' ? this.organisationData.iconid ? this.organisationData.iconid : 0 : 0,
       iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
       createdBy: this.accountId,
       pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,

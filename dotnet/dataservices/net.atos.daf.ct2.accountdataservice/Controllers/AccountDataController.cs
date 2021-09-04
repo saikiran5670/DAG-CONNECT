@@ -416,7 +416,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
             var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
-            if (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
+            if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
             return new OkObjectResult(new { Email = email, OrgId = org?.Id ?? 0 });
@@ -470,7 +470,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             if (email.ToLower().Equals(newIdentity.Split(":")[0].Trim().ToLower()))
             {
                 var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
-                if (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
+                if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
             }
             else

@@ -666,7 +666,8 @@ tripTraceArray: any = [];
   _state: any ;
   map_key: any = '';
   platform: any = '';
-  
+  rowdata = [];
+
   constructor(private _formBuilder: FormBuilder, 
               private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
@@ -846,6 +847,7 @@ tripTraceArray: any = [];
       this.userPOIList = [];
     });
   }
+  
 viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
   if(_selectedRoutes && _selectedRoutes.length > 0){
     _selectedRoutes.forEach(elem => {
@@ -1118,20 +1120,20 @@ createEndMarker(){
   }
 
   masterToggleForTrip() {
-    this.tripTraceArray = [];
-    let _ui = this.reportMapService.getUI();
+    this.rowdata = [];
+    let _ui = this.mapService.getUI();
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType);
       this.showMap = false;
     }
     else{
       this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
-        this.tripTraceArray.push(row);
+        this.rowdata.push(row);
       });
       this.showMap = true;
-      //this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType);
     }
   }
 
@@ -1149,24 +1151,17 @@ createEndMarker(){
         } row`;
   }
 
-  rowdata =[];
   tripCheckboxClicked(event: any, row: any) {
-    
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
-    
+    let _ui: any = this.mapService.getUI();
     if(event.checked){
-      
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType, row);
-
-      let _ui = this.reportMapService.getUI();
-     // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType, row);
     }
     else{ //-- remove existing marker
-     // let arr = this.tripTraceArray.filter(item => item.id != row.id);
-    //  this.tripTraceArray = arr;
-    //  let _ui = this.reportMapService.getUI();
-    //  this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      let arr = this.rowdata.filter(item => item.id != row.id);
+      this.rowdata = arr;
+      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType, row);
     }
   }
 
@@ -1176,7 +1171,7 @@ createEndMarker(){
 
   onDisplayChange(event: any){
     this.displayRouteView = event.value;
-    let _ui = this.reportMapService.getUI();
+    let _ui: any = this.mapService.getUI();
   //  this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
@@ -1216,7 +1211,7 @@ createEndMarker(){
         });
       }
     });
-    let _ui = this.reportMapService.getUI();
+    let _ui = this.mapService.getUI();
    // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
@@ -1226,7 +1221,7 @@ createEndMarker(){
 
   onMapRepresentationChange(event: any){
     this.trackType = event.value;
-    let _ui = this.reportMapService.getUI();
+    let _ui = this.mapService.getUI();
    // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
@@ -1259,7 +1254,7 @@ createEndMarker(){
             lng: data.position.lng,
             from: 'search'
           }
-          let _ui = this.reportMapService.getUI();
+          let _ui = this.mapService.getUI();
          // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
         }
       });
@@ -1329,7 +1324,7 @@ createEndMarker(){
           });
         }
       });
-      let _ui = this.reportMapService.getUI();
+      let _ui = this.mapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
     //}
   }
@@ -1546,7 +1541,7 @@ createEndMarker(){
       this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2) });
       let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat,true);
       this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption });      
       let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  

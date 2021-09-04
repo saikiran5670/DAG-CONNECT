@@ -316,6 +316,8 @@ alertPieChartColors: Color[] = [
   },
 ];
 vehicleUtilisationData: any;
+vehicleUtilisationLength: number = 0;
+
 distance = [];
 calenderDate = [];
 vehiclecount = [];
@@ -345,7 +347,7 @@ totalActiveVehicles : any = 0;
 chartLabelDateFormat :any;
 alert24: any;
 displayPiechart: boolean = true;
-
+subscriberOn : boolean = false;
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
@@ -353,26 +355,29 @@ displayPiechart: boolean = true;
               private dataInterchangeService : DataInterchangeService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private messageService: MessageService) {
-                if(this._fleetTimer){
-                  this.messageService.getMessage().subscribe(message => {
-                    if (message.key.indexOf("refreshData") !== -1) {                                      
-                      this.getVehicleData();
-                    }
-                  });
-                }
+               // if(this._fleetTimer){
+                 
+                //}
                 
                 this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
                   if(data){
                     this.totalActiveVehicles = data['fleetKpis']?.vehicleCount;
                   }
                 })
-               }
+    }
 
   ngOnInit(): void {
 
     this.setInitialPref(this.prefData,this.preference);
+    this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshData") !== -1) {         
+        this.subscriberOn = true;                             
+        this.getVehicleData(); // subscribed after pref are set
+
+      }
+    });
     // this.setChartData();
-    this.selectionTimeRange('lastweek');
+    //this.selectionTimeRange('lastweek');
   }
 
   setInitialPref(prefData,preference){
@@ -415,13 +420,24 @@ displayPiechart: boolean = true;
         break;
       }
     }
-    if(this._fleetTimer){
-      //this.messageService.clearMessages();
+    this.messageService.sendMessage('refreshTimer'); 
+
+    if(this.subscriberOn){
       this.messageService.sendMessage('refreshData'); 
     }
     else{
       this.getVehicleData();
     }
+    
+
+    //this.getVehicleData();
+
+    // if(this._fleetTimer){
+    //   this.messageService.sendMessage('refreshData'); 
+    // }
+    // else{
+    //  this.getVehicleData();
+    //}
 
   }
 
@@ -503,10 +519,10 @@ displayPiechart: boolean = true;
   }
 
   getVehicleData(){
-    // let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-    // let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-  let startDate = Util.convertDateToUtc(this.startDateValue);
-  let endDate = Util.convertDateToUtc(this.endDateValue);
+    let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);  // timezone included to get details 
+    let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+  //let startDate = Util.convertDateToUtc(this.startDateValue);
+  //let endDate = Util.convertDateToUtc(this.endDateValue);
   let _vehiclePayload = {
       "startDateTime": startDate,
       "endDateTime": endDate,
@@ -515,7 +531,11 @@ displayPiechart: boolean = true;
   this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
     if(vehicleData["fleetutilizationcharts"].length > 0){
        this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+       this.vehicleUtilisationLength = vehicleData["fleetutilizationcharts"].length;
        this.setChartData();
+    }
+    else{
+      this.vehicleUtilisationLength = 0;
     }
  });
 

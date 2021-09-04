@@ -488,8 +488,10 @@ export class AppComponent {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     let _orgContextStatus = localStorage.getItem("orgContextStatus");
-    if(refresh && _orgContextStatus) {
-        this.orgContextType = true;
+    if(refresh) {
+        if(_orgContextStatus){
+          this.orgContextType = true;
+        }
         this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
     } else {
       let featureMenuObj = {
@@ -645,7 +647,7 @@ export class AppComponent {
       if (this.menuPages.menus.length > 0) {
         _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
       } 
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+      this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
       this.orgContextType = false;
@@ -688,6 +690,9 @@ export class AppComponent {
       if (accessNameList.includes("Admin#Organization-Scope") && this.userType != 'Admin#Organisation' && this.userType != 'Admin#Account') {
         this.orgContextType = true;
         localStorage.setItem("orgContextStatus", this.orgContextType.toString());
+      }else if(this.orgContextType){
+        this.orgContextType = false;
+        localStorage.removeItem("orgContextStatus");
       }
       localStorage.setItem("userType", this.userType);
     }else{
@@ -701,7 +706,7 @@ export class AppComponent {
           if (_menu.length > 0) {
             _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
           } 
-          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+          this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
           this.router.navigate([_routerLink]));
         }
         localStorage.removeItem('appRouterUrl'); 

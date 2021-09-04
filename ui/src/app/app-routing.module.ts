@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
   { path: 'menunotfound', loadChildren: () => import('./menu-not-found/menu-not-found-routing.module').then(m => m.MenuNotFoundRoutingModule) },
+  { path: 'switchOrgRole', loadChildren: () => import('./org-role-navigation/org-role-navigation-routing.module').then(m => m.OrgRoleNavigationRoutingModule) },
 
 ];
 

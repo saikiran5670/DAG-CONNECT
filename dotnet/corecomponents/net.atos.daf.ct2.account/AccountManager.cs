@@ -689,6 +689,7 @@ namespace net.atos.daf.ct2.account
 
         public async Task<RegisterDriverResponse> RegisterDriver(RegisterDriverDataServiceRequest request)
         {
+            var accountId = 0;
             //Fetch driver details from driver management
             var driver = await _driverManager.GetDriver(request.OrganisationId, request.DriverId);
 
@@ -696,6 +697,7 @@ namespace net.atos.daf.ct2.account
             var account = new Account();
             account.AccountType = AccountType.PortalAccount;
             account.EmailId = request.AccountEmail;
+            account.Salutation = string.Empty;
             account.FirstName = driver.FirstName;
             account.LastName = driver.LastName;
             account.DriverId = request.DriverId;    //Set the driverId to the account
@@ -713,7 +715,7 @@ namespace net.atos.daf.ct2.account
             var identityresult = await _identity.CreateUser(identityEntity);
 
             // Get Driver role Id
-            var driverRoleId = await _repository.GetDriverRoleId(request.OrganisationId);
+            var driverRoleId = await _repository.GetDriverRoleId();
 
             if (identityresult.StatusCode == HttpStatusCode.Created)
             {
@@ -764,6 +766,9 @@ namespace net.atos.daf.ct2.account
                         {
                             account.Organization_Id = request.OrganisationId;
                             account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.UtcNow);
+
+                            //Save accountId before getting override from AddAccountToOrg method
+                            accountId = account.Id;
                             await AddAccountToOrg(account);
                         }
                         else
@@ -774,7 +779,7 @@ namespace net.atos.daf.ct2.account
                 //Assign driver role to the account
                 await AddRole(new AccountRole
                 {
-                    AccountId = account.Id,
+                    AccountId = accountId,
                     OrganizationId = request.OrganisationId,
                     RoleIds = new List<int> { driverRoleId },
                     StartDate = DateTime.UtcNow

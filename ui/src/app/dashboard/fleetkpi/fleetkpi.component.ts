@@ -509,6 +509,7 @@ export class FleetkpiComponent implements OnInit {
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
+   
 
   }
 
@@ -557,7 +558,11 @@ export class FleetkpiComponent implements OnInit {
         break;
       }
     }
+    this.messageService.sendMessage('refreshTimer'); 
+    //this.messageService.sendMessage('refreshData');
+
     if(this._fleetTimer){
+      
       this.messageService.sendMessage('refreshData');
 
     }
@@ -1967,10 +1972,10 @@ export class FleetkpiComponent implements OnInit {
     let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
     let convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
     this.fuelConsumptionThreshold = _thresholdValue;
-    let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,_thresholdValue,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
-    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
-    let currentPercent = calculationValue['kpiPercent'];
+    let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,convertedThreshold,this.totalDays);
+    let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
+    this.cutOffFuelConsumption = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
+    let currentPercent = (this.currentFuelConsumption / this.fuelConsumptionThreshold ) * 100;//calculationValue['kpiPercent'];
     
      
     let showLastChange = this.showLastChange;

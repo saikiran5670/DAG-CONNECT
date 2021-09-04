@@ -118,9 +118,9 @@
                   <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                     <mat-option value="ALL">--All--</mat-option>  
                     <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.vehicleGroupId">
-                    <mat-option  *ngIf = "vehGrp.vehicleGroupId!=0 || vehGrp.vehicleGroupName!=''">
+                    <!--<mat-option  *ngIf = "vehGrp.vehicleGroupId!=0 || vehGrp.vehicleGroupName!=''"> -->
                           {{vehGrp.vehicleGroupName}}
-                    </mat-option>
+                   <!-- </mat-option> -->
                       </mat-option>
                   </mat-select>
               </mat-form-field>
@@ -340,8 +340,8 @@
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keyup)="onKey($event)" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="3"
-                      (change)="onChange($event)">                    
+                      <input type="number" min="0" max="100" (keyup)="onKey($event)" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">                    
                     </mat-form-field>
                   </div>
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -365,8 +365,8 @@
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="3"
-                      (change)="onChange($event)">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -390,8 +390,8 @@
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event);" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="3"
-                      (change)="onChange($event)">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event);" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">

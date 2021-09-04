@@ -549,6 +549,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertMessageData.CategoryType = tripAlert.CategoryType;
             alertMessageData.Type = tripAlert.Type;
             alertMessageData.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
+            alertMessageData.UrgencyLevelType = tripAlert.UrgencyLevelType;
             return alertMessageData;
         }
     }

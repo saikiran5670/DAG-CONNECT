@@ -344,5 +344,86 @@ namespace net.atos.daf.ct2.notificationengine.repository
             }
         }
 
+        public async Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alert_id", alertMessageEntity.AlertId);
+                string query =
+                    @"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
+	                         case when grp.group_type = 'S' then '' else grp.name end VehicleGroupName,
+                             ale.created_by as AlertCreatedAccountId,
+                             ale.organization_id as OrganizationId
+                                from master.alert ale
+                                inner join master.group grp
+                                on ale.vehicle_group_id=grp.id where id=@alert_id";
+
+                AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
+
+                string alertVehicleQuery = @"select name as VehicleName,license_plate_number as VehicleRegNo from master.vehicle where vin =@vin";
+                parameter.Add("@vin", alertMessageEntity.Vin);
+                AlertVehicleEntity alertVeh = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(alertVehicleQuery, parameter);
+                alertVehicledetails.VehicleName = alertVeh.VehicleName;
+                alertVehicledetails.VehicleRegNo = alertVeh.VehicleRegNo;
+                return alertVehicledetails;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories)
+        {
+            try
+            {
+                int id = 0;
+                var parameter = new DynamicParameters();
+                foreach (NotificationViewHistory item in notificationViewHistories)
+                {
+                    parameter.Add("@trip_id", item.TripId);
+                    parameter.Add("@vin", item.Vin);
+                    parameter.Add("@alert_category", item.AlertCategory);
+                    parameter.Add("@alert_type", item.AlertType);
+                    parameter.Add("@alert_id", item.AlertId);
+                    parameter.Add("@alert_generated_time", item.AlertGeneratedTime);
+                    parameter.Add("@organization_id", item.OrganizationId);
+                    parameter.Add("@account_id", item.AccountId);
+                    parameter.Add("@alert_view_timestamp", item.AlertViewTimestamp);
+                    parameter.Add("@trip_alert_id", item.TripAlertId);
+
+                    string query =
+                        @"INSERT INTO tripdetail.notificationviewhistory(
+	                                    trip_id
+                                        , vin
+                                        , alert_category
+                                        , alert_type
+                                        , alert_id
+                                        , alert_generated_time
+                                        , organization_id
+                                        , account_id
+                                        , alert_view_timestamp
+                                        , trip_alert_id)
+	                              VALUES (@trip_id
+                                        , @vin
+                                        , @alert_category
+                                        , @alert_type
+                                        , @alert_id
+                                        , @alert_generated_time
+                                        , @organization_id
+                                        , @account_id
+                                        , @alert_view_timestamp
+                                        , @trip_alert_id) RETURNING id;";
+
+                    id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                return id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
