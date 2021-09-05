@@ -42,7 +42,8 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> hoursOfServiceAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveAverageSpeedAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveUnderUtilizationInHoursAlertDef = new ArrayList<>();
-        List<AlertUrgencyLevelRefSchema> fuelDuringStopFunAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> fuelIncreaseDuringStopFunAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> fuelDecreaseDuringStopFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveIdlingAlertDef = new ArrayList<>();
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
@@ -62,7 +63,10 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                 		excessiveIdlingAlertDef.add(schema);
                 	}
                     if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("P")) {
-                        fuelDuringStopFunAlertDef.add(schema);
+                    	fuelIncreaseDuringStopFunAlertDef.add(schema);
+                    }
+                    if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("L")) {
+                    	fuelDecreaseDuringStopFunAlertDef.add(schema);
                     }
                 }
             }
@@ -72,7 +76,8 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
         functionThresh.put("excessiveUnderUtilizationInHours", excessiveUnderUtilizationInHoursAlertDef);
         functionThresh.put("excessiveIdling", excessiveIdlingAlertDef);
-        functionThresh.put("fuelDuringStopFunAlertDef", fuelDuringStopFunAlertDef);
+        functionThresh.put("fuelIncreaseDuringStopFunAlertDef", fuelIncreaseDuringStopFunAlertDef);
+        functionThresh.put("fuelDecreaseDuringStopFunAlertDef", fuelDecreaseDuringStopFunAlertDef);
         //
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)

@@ -121,8 +121,6 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
 				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
 
-		System.out.println("Valid Url = " + url);
-
 		return url;
 	}
 	

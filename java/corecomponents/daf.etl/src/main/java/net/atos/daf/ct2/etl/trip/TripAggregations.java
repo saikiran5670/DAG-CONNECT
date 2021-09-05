@@ -9,10 +9,6 @@ import java.util.Map;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple11;
@@ -33,6 +29,7 @@ import net.atos.daf.ct2.etl.common.bo.TripStatusAggregation;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.hbase.TripIndexData;
 import net.atos.daf.ct2.etl.common.postgre.TripCo2Emission;
+import net.atos.daf.ct2.etl.common.postgre.TripGranularData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
 import net.atos.daf.postgre.bo.EcoScore;
@@ -47,10 +44,10 @@ public class TripAggregations implements Serializable{
 	private static Logger logger = LoggerFactory.getLogger(TripAggregations.class);
 
 	
-	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
+	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
 	{
 		Map<String, List<String>> tripIndxClmns = getTripIndexColumns();
-		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = hbaseStsData
+		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData = hbaseStsData
 				.keyBy(value -> value.getTripId())
 				.flatMap(new TripIndexData(envParams.get(ETLConstants.INDEX_TABLE_NM), tripIndxClmns, null));
 
@@ -59,6 +56,13 @@ public class TripAggregations implements Serializable{
 			.name("writeIndexDataToFile");*/
 
 		return indxData;
+	}
+	
+	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> getTripGranularData(SingleOutputStreamOperator<TripStatusData> tripStatusData)
+	{
+		return tripStatusData
+				.keyBy(value -> value.getTripId())
+				.flatMap(new TripGranularData());
 	}
 	
 	private Map<String, List<String>> getTripIndexColumns() {
@@ -81,7 +85,7 @@ public class TripAggregations implements Serializable{
 		return tripIndxClmns;
 	}
 	
-	private DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli)
+	private DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli)
 	{
 
 		tableEnv.createTemporaryView("indexData", indxData);
@@ -103,7 +107,7 @@ public class TripAggregations implements Serializable{
 		return tableEnv.toRetractStream(indxTblAggrResult, Row.class).map(new MapRowToTuple());
 	}
 		
-	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
+	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
 		DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
 		
@@ -166,7 +170,7 @@ public class TripAggregations implements Serializable{
 						 * 
 						 */
 						private static final long serialVersionUID = 1L;
-						private transient ValueState<Tuple2<String, Long>> prevVDistState ;
+						//private transient ValueState<Tuple2<String, Long>> prevVDistState ;
 
 						long vDistDiff = 0;
 						long prevVDist = 0;
@@ -264,11 +268,11 @@ public class TripAggregations implements Serializable{
 						
 						@Override
 					public void open(org.apache.flink.configuration.Configuration config) {
-						ValueStateDescriptor<Tuple2<String, Long>> descriptor = new ValueStateDescriptor<Tuple2<String, Long>>(// the state name
+						/*ValueStateDescriptor<Tuple2<String, Long>> descriptor = new ValueStateDescriptor<Tuple2<String, Long>>(// the state name
 								"tripPrevVDist", TypeInformation.of(new TypeHint<Tuple2<String, Long>>() {
 								}));
 						prevVDistState = getRuntimeContext().getState(descriptor);
-						logger.info("Created the value state for tripStreaming Job ");
+						logger.info("Created the value state for tripStreaming Job ");*/
 					}
 					});
 	}

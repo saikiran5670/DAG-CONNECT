@@ -1,14 +1,10 @@
 package net.atos.daf.ct2.process.functions;
 
-import net.atos.daf.ct2.models.Alert;
-import net.atos.daf.ct2.models.process.Message;
-import net.atos.daf.ct2.models.process.Target;
-import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
-import net.atos.daf.ct2.pojo.standard.Index;
-import net.atos.daf.ct2.process.service.AlertLambdaExecutor;
-import net.atos.daf.ct2.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
+import static net.atos.daf.ct2.util.Utils.getCurrentTimeInSecond;
+import static net.atos.daf.ct2.util.Utils.getDayOfWeekFromDbArr;
+import static net.atos.daf.ct2.util.Utils.millisecondsToSeconds;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -18,11 +14,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static net.atos.daf.ct2.util.Utils.*;
-import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
-import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
-import static net.atos.daf.ct2.util.Utils.getCurrentTimeInSecond;
-import static net.atos.daf.ct2.util.Utils.getDayOfWeekFromDbArr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.atos.daf.ct2.models.Alert;
+import net.atos.daf.ct2.models.process.Message;
+import net.atos.daf.ct2.models.process.Target;
+import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
+import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.process.service.AlertLambdaExecutor;
 
 public class IndexBasedAlertFunctions implements Serializable {
 	private static final long serialVersionUID = -2623908626314058510L;
@@ -109,30 +109,87 @@ public class IndexBasedAlertFunctions implements Serializable {
     };
 
 
-    public static AlertLambdaExecutor<Message, Target> fuelDuringStopFun = (Message s) -> {
+    public static AlertLambdaExecutor<Message, Target> fuelIncreaseDuringStopFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
-        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDuringStopFunAlertDef");
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelIncreaseDuringStopFunAlertDef");
         List<String> priorityList = Arrays.asList("C", "W", "A");
-        Index index1 = index.getIndexList().get(0);
+        Index originalIdxMsg = index.getIndexList().get(0);
         BigDecimal vFuelStopPrevVal = index.getVFuelStopPrevVal();
+        BigDecimal currentFuelVal = null;
+        Integer tripStart = Integer.valueOf(4) ;
         try {
-            for (String priority : priorityList) {
+        	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
+        		currentFuelVal = BigDecimal.valueOf(originalIdxMsg.getDocument().getVFuelLevel1());
+            
+        	for (String priority : priorityList) {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                        //TODO change code accordingly
-                       /* if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
-                            logger.info("alert found fuelDuringStopFun ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
-                        }*/
+                      
+                    	if(Objects.nonNull(vFuelStopPrevVal) && Objects.nonNull(currentFuelVal)){
+    						BigDecimal fuelIncreaseDiff = BigDecimal.ZERO;
+    						
+    						if(tripStart == originalIdxMsg.getVEvtID())
+    							fuelIncreaseDiff = currentFuelVal.subtract(vFuelStopPrevVal);
+    						logger.info("Fuel Stop Deviation, tripStartFuel: {} , vFuelStopPrevVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelStopPrevVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
+
+    						//1 when fuelIncreaseDiff > threshold
+    						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
+    							logger.info("Raising alert for fuelIncreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelIncreaseDiff,schema.getThresholdValue());
+    							return getTarget(index, schema, fuelIncreaseDiff);
+    						}
+    					}
                     }
                 }
             }
         } catch (Exception ex) {
-            logger.error("Error while calculating fuelDuringStopFun:: {}", ex);
+            logger.error("Error while calculating fuelIncreaseDuringStopFun:: {}", ex);
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
+    
+
+    public static AlertLambdaExecutor<Message, Target> fuelDecreaseDuringStopFun = (Message s) -> {
+        net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDecreaseDuringStopFunAlertDef");
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        Index originalIdxMsg = index.getIndexList().get(0);
+        BigDecimal vFuelStartVal = index.getVFuelStopPrevVal();
+        BigDecimal currentFuelVal = null;
+        Integer tripEnd = Integer.valueOf(5) ;
+        try {
+        	
+        	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
+        		currentFuelVal = BigDecimal.valueOf(originalIdxMsg.getDocument().getVFuelLevel1());
+            
+        	for (String priority : priorityList) {
+                for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                      
+                    	if(Objects.nonNull(vFuelStartVal) && Objects.nonNull(currentFuelVal)){
+    						BigDecimal fuelDecreaseDiff = BigDecimal.ZERO;
+    						
+    						if(tripEnd == originalIdxMsg.getVEvtID())
+    							fuelDecreaseDiff = vFuelStartVal.subtract(currentFuelVal);
+    						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelStartVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelStartVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
+
+    						//1 when fuelIncreaseDiff > threshold
+    						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
+    							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
+    							return getTarget(index, schema, fuelDecreaseDiff);
+    						}
+    					}
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error while calculating fuelDecreaseDuringStopFun:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
+
 
     public static AlertLambdaExecutor<Message, Target> excessiveUnderUtilizationInHoursFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();

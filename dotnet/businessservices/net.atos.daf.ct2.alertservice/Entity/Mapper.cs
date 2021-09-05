@@ -553,5 +553,25 @@ namespace net.atos.daf.ct2.alertservice.Entity
             objNotificationTemplate.Subject = string.IsNullOrEmpty(notificationTemplate.Subject) ? string.Empty : notificationTemplate.Subject;
             return objNotificationTemplate;
         }
+        public List<NotificationViewHistory> GetNotificationViewHistoryEntity(NotificationViewRequest notificationViewRequest)
+        {
+            List<NotificationViewHistory> lstnotificationView = new List<NotificationViewHistory>();
+            foreach (var item in notificationViewRequest.NotificationView)
+            {
+                NotificationViewHistory notificationViewHistory = new NotificationViewHistory();
+                notificationViewHistory.AccountId = item.AccountId;
+                notificationViewHistory.AlertId = item.AlertId;
+                notificationViewHistory.AlertCategory = item.AlertCategory;
+                notificationViewHistory.AlertType = item.AlertType;
+                notificationViewHistory.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewHistory.OrganizationId = item.OrganizationId;
+                notificationViewHistory.TripAlertId = item.TripAlertId;
+                notificationViewHistory.TripId = item.TripId;
+                notificationViewHistory.Vin = item.Vin;
+                notificationViewHistory.AlertViewTimestamp = item.AlertViewTimestamp;
+                lstnotificationView.Add(notificationViewHistory);
+            }
+            return lstnotificationView;
+        }
     }
 }

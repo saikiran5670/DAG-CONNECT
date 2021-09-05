@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.notificationengine.entity
+namespace net.atos.daf.ct2.alert.entity
 {
     public class NotificationViewHistory
     {

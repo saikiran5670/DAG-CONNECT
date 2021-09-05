@@ -66,13 +66,13 @@ public class IndexMessageAlertService implements Serializable {
                 .getSideOutput(OUTPUT_TAG);
 
 
-//        alertFoundStream.addSink(alertProducerTopic);
+        alertFoundStream.addSink(alertProducerTopic);
 
         /**
          * Store into alert db
          */
         TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
-//        tableStream.saveAlertIntoDB(alertFoundStream);
+        tableStream.saveAlertIntoDB(alertFoundStream);
     }
 
 
