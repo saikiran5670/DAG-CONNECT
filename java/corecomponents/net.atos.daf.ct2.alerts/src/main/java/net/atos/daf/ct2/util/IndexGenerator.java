@@ -22,20 +22,22 @@ public class IndexGenerator implements SourceFunction<Index> {
             String format1 = format.format(date);
             Index idx = new Index();
             if(counter%2==0){
-                idx.setVid("XLR0998HGFFT70000"+((int)(Math.random()*2)));
-                idx.setVin("XLR0998HGFFT70000"+((int)(Math.random()*2)));
+                idx.setVid("XLR0998HGFFT74611"+((int)(Math.random()*2)));
+                idx.setVin("XLR0998HGFFT74611"+((int)(Math.random()*2)));
             }else{
-                idx.setVid("XLR0998HGFFT70000");
-                idx.setVin("XLR0998HGFFT70000");
+                idx.setVid("XLR0998HGFFT74611");
+                idx.setVin("XLR0998HGFFT74611");
             }
 
             idx.setVDist(1000L);
             idx.setGpsLatitude(124.3433);
             idx.setGpsLongitude(124.3433);
+            idx.setVEvtID(4);
             idx.setReceivedTimestamp(currentTimeMillis);
             IndexDocument indexDocument = new IndexDocument();
             indexDocument.setVEngineSpeed(10L);
             indexDocument.setVWheelBasedSpeed(20L);
+            indexDocument.setVFuelLevel1(counter+0.0);
             indexDocument.setTripID("XLR0998HGFFT70000-XLR0998HGFFT7"/*+(int)(Math.random()*3)*/);
             idx.setDocument(indexDocument);
             idx.setEvtDateTime(convertMillisecondToDateTime(currentTimeMillis));

@@ -158,7 +158,7 @@
                 <span matSuffix>{{ prefUnitFormat == 'dunit_Metric' ? 'km' : 'mi' }}</span>
             </mat-form-field>
             <mat-error *ngIf="fleetUtilForm.get('mileageTarget').hasError('cannotExceedMaxValue')">
-                {{ translationData.lblMileageTargetvaluecannotbegreaterthan60 || 'Mileage Target value cannot be greater than ' }} {{ (prefUnitFormat == 'dunit_Metric') ? '1000 km' : '625 mile' }}
+                {{ translationData.lblMileageTargetvaluecannotbegreaterthan60 || 'Mileage Target value cannot be greater than ' }} {{ (prefUnitFormat == 'dunit_Metric') ? '1000 km' : '621.371 mile' }}
             </mat-error>
             <mat-error *ngIf="fleetUtilForm.get('mileageTarget').hasError('cannotExceedMinValue')">
                 {{ translationData.lblMileageTargetvaluecannotbelessthan0 || 'Mileage Target value cannot be less than 0' }}

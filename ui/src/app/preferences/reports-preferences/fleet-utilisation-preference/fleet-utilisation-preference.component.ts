@@ -96,7 +96,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       calenderViewMode: []
     },{
       validator: [
-        CustomValidators.numberFieldValidation('mileageTarget', (this.prefUnitFormat == 'dunit_Metric') ? 1000 : 625),
+        CustomValidators.numberFieldValidation('mileageTarget', (this.prefUnitFormat == 'dunit_Metric') ? 1000 : 621.371),
         CustomValidators.numberMinFieldValidation('mileageTarget', 0)
       ]
     });

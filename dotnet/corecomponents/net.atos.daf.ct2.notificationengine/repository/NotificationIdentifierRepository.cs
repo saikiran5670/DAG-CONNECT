@@ -344,42 +344,30 @@ namespace net.atos.daf.ct2.notificationengine.repository
             }
         }
 
-        public async Task<AlertMessageAndAccountClientEntity> GetEligibleAccountForAlert(AlertMessageAndAccountClientEntity alertMessageAndAccountClientEntity)
+        public async Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity)
         {
             try
             {
-                AlertMessageAndAccountClientEntity accountMappedAlert = new AlertMessageAndAccountClientEntity();
                 var parameter = new DynamicParameters();
-                List<int> accountIds = new List<int>();
-                foreach (var item in alertMessageAndAccountClientEntity.AccountClientEntity)
-                {
-                    accountIds.Add(item.AccountId);
-                }
-                parameter.Add("@created_by", accountIds);
-                parameter.Add("@alert_id", alertMessageAndAccountClientEntity.TripAlert.Alertid);
+                parameter.Add("@alert_id", alertMessageEntity.AlertId);
                 string query =
                     @"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
 	                         case when grp.group_type = 'S' then '' else grp.name end VehicleGroupName,
-                             ale.created_by as AlertCreatedAccountId
+                             ale.created_by as AlertCreatedAccountId,
+                             ale.organization_id as OrganizationId
                                 from master.alert ale
                                 inner join master.group grp
-                                on ale.vehicle_group_id=grp.id where created_by= ANY(@created_by) and id=@alert_id";
+                                on ale.vehicle_group_id=grp.id where id=@alert_id";
 
                 AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
-                accountMappedAlert.TripAlert = alertMessageAndAccountClientEntity.TripAlert;
-                accountMappedAlert.TripAlert.VehicleGroupId = alertVehicledetails.VehicleGroupId;
-                accountMappedAlert.TripAlert.VehicleGroupName = alertVehicledetails.VehicleGroupName;
 
                 string alertVehicleQuery = @"select name as VehicleName,license_plate_number as VehicleRegNo from master.vehicle where vin =@vin";
-                parameter.Add("@vin", alertMessageAndAccountClientEntity.TripAlert.Vin);
+                parameter.Add("@vin", alertMessageEntity.Vin);
                 AlertVehicleEntity alertVeh = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(alertVehicleQuery, parameter);
-                accountMappedAlert.TripAlert.VehicleName = alertVeh.VehicleName;
-                accountMappedAlert.TripAlert.VehicleRegNo = alertVeh.VehicleRegNo;
-
-                accountMappedAlert.AccountClientEntity.RemoveAll(r => r.AccountId != alertVehicledetails.AlertCreatedAccountId);
-                return accountMappedAlert;
+                alertVehicledetails.VehicleName = alertVeh.VehicleName;
+                alertVehicledetails.VehicleRegNo = alertVeh.VehicleRegNo;
+                return alertVehicledetails;
             }
-
             catch (Exception)
             {
                 throw;

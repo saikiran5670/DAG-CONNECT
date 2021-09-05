@@ -185,8 +185,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 }
                 return isResult;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error("Notification Host Service Email", ex);
                 throw;
             }
         }
@@ -241,8 +242,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 }
                 return isResult;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error("Notification Host Service SMS", ex);
                 throw;
             }
         }

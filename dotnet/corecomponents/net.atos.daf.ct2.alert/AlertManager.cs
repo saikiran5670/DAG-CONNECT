@@ -95,5 +95,16 @@ namespace net.atos.daf.ct2.alert
                 throw;
             }
         }
+        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories)
+        {
+            try
+            {
+                return await _alertRepository.InsertViewNotification(notificationViewHistories);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
