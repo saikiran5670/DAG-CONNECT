@@ -17,6 +17,7 @@ service AlertService {
   rpc GetNotificationTemplate (AccountIdRequest) returns (NotificationTemplateResponse);
   rpc GetRecipientLabelList (OrgIdRequest) returns (NotificationRecipientResponse);
   rpc GetAlertCategoryFilter (AlertCategoryFilterIdRequest) returns (AlertCategoryFilterResponse);
+  rpc InsertViewNotification (NotificationViewRequest) returns (NotificationViewResponse);
 }
 
 enum ResponseCode{
@@ -309,4 +310,28 @@ message AlertCategoryFilterResponse{
 	repeated AlertCategoryFilterRequest AlertCategoryFilterRequest = 4;
 	repeated AssociatedVehicleRequest AssociatedVehicleRequest =5;
 	repeated NotificationTemplate NotificationTemplate=6;
+}
+
+message NotificationViewMessage{
+ string TripId = 1;
+ string Vin = 2;
+ string AlertCategory = 3;
+ string AlertType = 4;
+ int64 AlertGeneratedTime = 5;
+ int32 OrganizationId = 6;
+ int32 TripAlertId = 7;
+ int32 AlertId = 8;
+ int32 AccountId = 9;
+ int64 AlertViewTimestamp = 10;
+}
+
+message NotificationViewRequest{
+ repeated NotificationViewMessage NotificationView = 1;
+}
+
+message NotificationViewResponse{
+ ResponseCode Code = 1;
+ string message = 2;
+ int32 InsertedId = 3;
+
 }

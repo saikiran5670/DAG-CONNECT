@@ -489,5 +489,50 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region
+        [HttpPost]
+        [Route("insertviewnotification")]
+        public async Task<IActionResult> InsertViewedNotifications(List<PortalAlertEntity.NotificationViewHistory> request)
+        {
+            try
+            {
+                var notificationRequest = new NotificationViewRequest();
+                notificationRequest = _mapper.ToNotificationViewRequest(request);
+                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest);
+
+                if (notiResponse != null && notiResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, AlertConstants.VIEWED_NOTIFICATION_INSERT_FAILED_MSG);
+                }
+                else if (notiResponse != null && notiResponse.Code == ResponseCode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                    AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "CreateAlert", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
+                    _userDetails);
+                    return Ok(notiResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(500, AlertConstants.VIEWED_NOTIFICATION_INSERT_FAILED_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "CreateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                // check for fk violation
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
+                {
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
     }
 }

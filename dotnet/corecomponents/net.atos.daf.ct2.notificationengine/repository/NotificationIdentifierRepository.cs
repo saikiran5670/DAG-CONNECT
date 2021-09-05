@@ -373,57 +373,5 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 throw;
             }
         }
-
-        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories)
-        {
-            try
-            {
-                int id = 0;
-                var parameter = new DynamicParameters();
-                foreach (NotificationViewHistory item in notificationViewHistories)
-                {
-                    parameter.Add("@trip_id", item.TripId);
-                    parameter.Add("@vin", item.Vin);
-                    parameter.Add("@alert_category", item.AlertCategory);
-                    parameter.Add("@alert_type", item.AlertType);
-                    parameter.Add("@alert_id", item.AlertId);
-                    parameter.Add("@alert_generated_time", item.AlertGeneratedTime);
-                    parameter.Add("@organization_id", item.OrganizationId);
-                    parameter.Add("@account_id", item.AccountId);
-                    parameter.Add("@alert_view_timestamp", item.AlertViewTimestamp);
-                    parameter.Add("@trip_alert_id", item.TripAlertId);
-
-                    string query =
-                        @"INSERT INTO tripdetail.notificationviewhistory(
-	                                    trip_id
-                                        , vin
-                                        , alert_category
-                                        , alert_type
-                                        , alert_id
-                                        , alert_generated_time
-                                        , organization_id
-                                        , account_id
-                                        , alert_view_timestamp
-                                        , trip_alert_id)
-	                              VALUES (@trip_id
-                                        , @vin
-                                        , @alert_category
-                                        , @alert_type
-                                        , @alert_id
-                                        , @alert_generated_time
-                                        , @organization_id
-                                        , @account_id
-                                        , @alert_view_timestamp
-                                        , @trip_alert_id) RETURNING id;";
-
-                    id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                }
-                return id;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
     }
 }
