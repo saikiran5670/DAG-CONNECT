@@ -33,7 +33,7 @@ import net.atos.daf.hbase.connection.HbaseConnection;
 import net.atos.daf.hbase.connection.HbaseConnectionPool;
 
 public class TripIndexData
-		extends RichFlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> {
+		extends RichFlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> {
 	private static final Logger logger = LoggerFactory.getLogger(TripIndexData.class);
 
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class TripIndexData
 	private List<Long> timeRangeLst = null;
 	private Map<String, List<String>> colFamMap = null;
 	private HbaseConnection conn = null;
-	private Integer vGrossWtThreshold = 0;
+	private Long vGrossWtThreshold = 0L;
 
 	public TripIndexData(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList) {
 		this.colFamMap = colFamMap;
@@ -67,7 +67,7 @@ public class TripIndexData
 				tableName);
 		
 		if(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD) != null)
-			vGrossWtThreshold = Integer.valueOf(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD));
+			vGrossWtThreshold = Long.valueOf(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD));
 
 		try {
 			conn = connectionPool.getHbaseConnection();
@@ -111,7 +111,7 @@ public class TripIndexData
 
 	@Override
 	public void flatMap(TripStatusData stsData,
-			Collector<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> out) throws Exception {
+			Collector<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> out) throws Exception {
 
 		try {
 			
@@ -137,7 +137,7 @@ public class TripIndexData
 			Iterator<Result> iterator = rs.iterator();
 			logger.info("iterator is " + iterator+" for trip ::"+stsData.getTripId());
 
-			List<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long,Integer, String>> indexDataList = new ArrayList<>();
+			List<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long,Integer, String>> indexDataList = new ArrayList<>();
 			while (iterator.hasNext()) {
 
 				Result result = iterator.next();
@@ -147,7 +147,7 @@ public class TripIndexData
 				String tripId = null;
 				String vid = null;
 				Integer vTachographSpeed = ETLConstants.ZERO;
-				Integer vGrossWeightCombination = ETLConstants.ZERO;
+				Long vGrossWeightCombination = ETLConstants.ZERO_VAL;
 				String jobNm = "";
 				Long increment = ETLConstants.ZERO_VAL;
 				Long evtDateTime = ETLConstants.ZERO_VAL;
@@ -176,7 +176,7 @@ public class TripIndexData
 						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
 								&& ETLConstants.INDEX_MSG_V_GROSSWEIGHT_COMBINATION.equals(column)
 								&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
-							vGrossWeightCombination = Integer.valueOf(Bytes.toString(value));
+							vGrossWeightCombination = Long.valueOf(Bytes.toString(value));
 						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
 								&& ETLConstants.INDEX_MSG_DRIVER2_ID.equals(column) && null != Bytes.toString(value)
 								&& !"null".equals(Bytes.toString(value)))
@@ -221,13 +221,13 @@ public class TripIndexData
 					logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
 				}*/
 				
-				if (vGrossWtThreshold < vGrossWeightCombination) {
+				if (vGrossWtThreshold.compareTo(vGrossWeightCombination) < 0) {
 					logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
-					vGrossWeightCombination = ETLConstants.ZERO;
+					vGrossWeightCombination = ETLConstants.ZERO_VAL;
 					grossWtRec = ETLConstants.ZERO;
 				}
 				
-				Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 = new Tuple11<>();
+				Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple11 = new Tuple11<>();
 				tuple11.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime,
 						vDist, increment, grossWtRec, driverId);
 
@@ -235,16 +235,16 @@ public class TripIndexData
 			}
 			
 			Collections.sort(indexDataList,
-					new Comparator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>>() {
+					new Comparator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>>() {
 						@Override
 						public int compare(
-								Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple1,
-								Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple2) {
+								Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple1,
+								Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple2) {
 							return Long.compare(tuple1.f6, tuple2.f6);
 						}
 					});
 			
-			for(Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 : indexDataList){
+			for(Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple11 : indexDataList){
 				logger.info("lookup data for trip :: "+tuple11);
 				out.collect(tuple11);
 			}

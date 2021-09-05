@@ -94,8 +94,13 @@ public class TripStreamingJob {
 			
 			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 
-			SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = tripAggregation
-					.getTripIndexData(statusDataStream, tableEnv, envParams);
+			SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData;
+			
+			if(ETLConstants.TRUE.equals(envParams.get(ETLConstants.LOOKPUP_HBASE_TABLE)))
+				indxData = tripAggregation.getTripIndexData(statusDataStream, tableEnv, envParams);
+			else
+				indxData = tripAggregation.getTripGranularData(statusDataStream);
+				
 			
 			SingleOutputStreamOperator<TripStatusData> tripStsWithCo2Emission = tripAggregation.getTripStsWithCo2Emission(statusDataStream);
 						
@@ -111,7 +116,7 @@ public class TripStreamingJob {
 			ecoScoreData.addSink(new EcoScoreSink());
 			finalTripData.addSink(new TripSink());
 			
-			if ("true".equals(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_DATA))){
+			if (ETLConstants.TRUE.equals(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_DATA))){
 				ObjectMapper mapper = new ObjectMapper();
 			      
 				tripStreamingJob.egressTripData(getSinkProperties(envParams), finalTripData,
@@ -194,6 +199,7 @@ public class TripStreamingJob {
 	{
 		TripStatusData tripStsData = null;
 		try {
+			
 			tripStsData = new TripStatusData();
 			tripStsData.setEtlProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime());
 			tripStsData.setDriverId(stsMsg.getDriverID());

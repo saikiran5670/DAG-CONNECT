@@ -97,8 +97,11 @@ public class FlinkUtil {
 			 * env.getCheckpointConfig().setMaxConcurrentCheckpoints(
 			 * Integer.parseInt(envParams.get(DafConstants.MAX_CONCURRENT_CHECKPOINTS)));
 			 */
-			env.setStateBackend(
-					(StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_INDEX), true));
+		  
+		  if(DafConstants.INDEX_TRIPJOB.equals(jobName))
+			env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_TRIPINDEX), true)); 
+		  else
+			env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_INDEX), true));
 		  
 		  // env.setStateBackend( // (StateBackend) new
 			/*
