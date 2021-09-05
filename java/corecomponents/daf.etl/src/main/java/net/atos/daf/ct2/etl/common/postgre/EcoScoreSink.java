@@ -117,9 +117,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 		String encodedPassword = encodeValue(password);
 		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
 				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
-
-		System.out.println("Valid Url = " + url);
-
+	
 		return url;
 	}
 	

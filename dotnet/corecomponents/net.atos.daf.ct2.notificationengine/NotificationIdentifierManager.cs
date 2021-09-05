@@ -192,9 +192,9 @@ namespace net.atos.daf.ct2.notificationengine
         {
             return await _notificationIdentifierRepository.GetLanguageCodePreference(emailId);
         }
-        public async Task<AlertMessageAndAccountClientEntity> GetEligibleAccountForAlert(AlertMessageAndAccountClientEntity alertMessageAndAccountClientEntity)
+        public async Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity)
         {
-            return await _notificationIdentifierRepository.GetEligibleAccountForAlert(alertMessageAndAccountClientEntity);
+            return await _notificationIdentifierRepository.GetEligibleAccountForAlert(alertMessageEntity);
         }
     }
 }

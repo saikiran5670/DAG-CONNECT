@@ -1,4 +1,5 @@
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { objectWithoutKey } from 'angular-slickgrid';
 
 export class CustomValidators {
   static emailDomain(domainName: string) {
@@ -41,25 +42,44 @@ export class CustomValidators {
         number = /[0-9]/,
         special = /[ !"#$%&'()*+,\-/:;<=>?@[\\\]^_`{|}~]/;
 
-      let specialCharRequired: boolean = false;
-      let numberRequired: boolean = false;
-      let lowercaseRequired: boolean = false;
-      let uppercaseRequired: boolean = false;
+      // let specialCharRequired: boolean = false;
+      // let numberRequired: boolean = false;
+      // let lowercaseRequired: boolean = false;
+      // let uppercaseRequired: boolean = false;
+      let customError = {};
       if (!special.test(NEW_PASSWORD.value)) {//errors.push(special);
-        specialCharRequired = true;
+        // specialCharRequired = true;
+        customError['specialCharRequired']=true;
+      } else {
+        customError['specialCharRequired'] ? delete customError['specialCharRequired'] : '';
       }
       if (!number.test(NEW_PASSWORD.value)) {
-        numberRequired = true;
+        // numberRequired = true;
+        customError['numberRequired']=true;
+      } else {
+        customError['numberRequired'] ? delete customError['numberRequired'] : '';
       }
       if (!lower.test(NEW_PASSWORD.value)) {
-        lowercaseRequired = true;
+        // lowercaseRequired = true;
+        customError['lowercaseRequired']=true;
+      } else {
+        customError['lowercaseRequired'] ? delete customError['lowercaseRequired'] : '';
       }
       if (!upper.test(NEW_PASSWORD.value)) {
-        uppercaseRequired = true;
+        // uppercaseRequired = true;
+        customError['uppercaseRequired']=true;
+      } else {
+        customError['uppercaseRequired'] ? delete customError['uppercaseRequired'] : '';
       }
-      let customError = { specialCharRequired: specialCharRequired, numberRequired: numberRequired, lowercaseRequired: lowercaseRequired, uppercaseRequired: uppercaseRequired};
-      NEW_PASSWORD.setErrors({...NEW_PASSWORD.errors,...customError});
-      return;
+      // let customError = { specialCharRequired: specialCharRequired, numberRequired: numberRequired, lowercaseRequired: lowercaseRequired, uppercaseRequired: uppercaseRequired};
+      let allErrors = {...NEW_PASSWORD.errors,...customError};
+      
+      if(Object.keys(allErrors).length==0) {
+        NEW_PASSWORD.setErrors(null);
+        return false;
+      }
+      NEW_PASSWORD.setErrors(allErrors);
+      return true;
     };
   }
 

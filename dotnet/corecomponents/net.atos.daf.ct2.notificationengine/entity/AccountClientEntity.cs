@@ -6,14 +6,14 @@ namespace net.atos.daf.ct2.notificationengine.entity
 {
     public class AccountClientEntity
     {
-        public int AccountId { get; set; }
+        public int AlertId { get; set; }
         public int OrganizationId { get; set; }
         public string HubClientId { get; set; }
     }
 
-    public class AlertMessageAndAccountClientEntity
+    public class AlertMessageEntity
     {
-        public List<AccountClientEntity> AccountClientEntity { get; set; }
-        public TripAlert TripAlert { get; set; }
+        public int AlertId { get; set; }
+        public string Vin { get; set; }
     }
 }

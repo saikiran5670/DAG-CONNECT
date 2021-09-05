@@ -1,56 +1,51 @@
 package net.atos.daf.ct2.app;
 
-import net.atos.daf.ct2.cache.kafka.KafkaCdcStreamV2;
-import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
-import net.atos.daf.ct2.cache.postgres.TableStream;
-import net.atos.daf.ct2.cache.postgres.impl.JdbcFormatTableStream;
-import net.atos.daf.ct2.cache.service.CacheService;
-import net.atos.daf.ct2.models.Alert;
-import net.atos.daf.ct2.models.Payload;
-import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
-import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
-import net.atos.daf.ct2.pojo.standard.Index;
-import net.atos.daf.ct2.pojo.standard.Status;
-import net.atos.daf.ct2.process.config.AlertConfig;
-import net.atos.daf.ct2.props.AlertConfigProp;
-import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
-import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
-import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
-import net.atos.daf.ct2.service.realtime.IndexKeyBasedAlertDefService;
-import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
-import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
-import net.atos.daf.ct2.util.IndexGenerator;
-import net.atos.daf.ct2.util.Utils;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
+//import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
+import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_INDEX_MSG_TOPIC;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.datastream.*;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
-import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
-//import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
-import static net.atos.daf.ct2.props.AlertConfigProp.*;
-import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+import net.atos.daf.ct2.cache.kafka.KafkaCdcStreamV2;
+import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
+import net.atos.daf.ct2.models.Payload;
+import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
+import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.props.AlertConfigProp;
+import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
+import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
+import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
+import net.atos.daf.ct2.util.Utils;
 
 public class IndexBasedAlertProcessing implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
@@ -91,6 +86,16 @@ public class IndexBasedAlertProcessing implements Serializable {
         Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
                     excessiveUnderUtilizationInHoursFun
+            ));
+        }};
+        
+        /**
+         * RealTime functions defined
+         */
+        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+            		fuelIncreaseDuringStopFun,
+            		fuelDecreaseDuringStopFun
             ));
         }};
 
@@ -202,7 +207,7 @@ public class IndexBasedAlertProcessing implements Serializable {
                 .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
 
         KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
-                .process(new ExcessiveUnderUtilizationProcessor())
+               .process(new ExcessiveUnderUtilizationProcessor())
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
         /**
@@ -210,6 +215,23 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
                 env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
+        
+        
+        /**
+         * Excessive Fuel during stop
+         */
+        KeyedStream<Index, String> indexStringKeyedStream = indexStringStream
+                .filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
+                .returns(Index.class)
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
+                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        /**
+         * Process indexWindowKeyedStream for Excessive Under Utilization
+         */
+        IndexMessageAlertService.processIndexKeyStream(indexStringKeyedStream,
+                env,propertiesParamTool,fuelDuringStopFunConfigMap);
+
 
 
         env.execute(IndexBasedAlertProcessing.class.getSimpleName());

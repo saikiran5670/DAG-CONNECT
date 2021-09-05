@@ -34,5 +34,6 @@
         public const string ALERT_FILTER_SUCCESS_MSG = "Alert Category Filter data retrieved";
         public const string ALERT_FILTER_FAILURE_MSG = "Alert Category Filter data retrieve failed. Error : - {0}";
         public const string ALERT_GET_FAILED_MSG = "There is an error while getting alert.";
+        public const string VIEWED_NOTIFICATION_INSERT_FAILED_MSG = "There is an error while inserting views notification.";
     }
 }

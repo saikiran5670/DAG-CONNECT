@@ -86,24 +86,25 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
         }
 
-        public override async Task<AccountClientMapping> GetEligibleAccountForAlert(AccountClientMapping request, ServerCallContext context)
+        public override async Task<AlertVehicleDetails> GetEligibleAccountForAlert(AlertMesssageProp request, ServerCallContext context)
         {
             try
             {
-
-                Notificationengine.entity.AlertMessageAndAccountClientEntity alertAccountMapped = await _notificationIdentifierManager.GetEligibleAccountForAlert(_mapper.GetAlertMessageAndAccountEntity(request));
-                return await Task.FromResult(_mapper.GetAlertMessageAndAccountEntity(alertAccountMapped));
+                Notificationengine.entity.AlertMessageEntity alertMessageEntity = new Notificationengine.entity.AlertMessageEntity();
+                alertMessageEntity.AlertId = request.AlertId;
+                alertMessageEntity.Vin = request.VIN;
+                Notificationengine.entity.AlertVehicleEntity alertVehicleEntity = await _notificationIdentifierManager.GetEligibleAccountForAlert(alertMessageEntity);
+                return await Task.FromResult(_mapper.GetAlertVehicleEntity(alertVehicleEntity));
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new AccountClientMapping
+                return await Task.FromResult(new AlertVehicleDetails
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get notification recipient list fail : " + ex.Message
+                    Message = "Get alert vehicle fail : " + ex.Message
                 });
             }
         }
-
     }
 }

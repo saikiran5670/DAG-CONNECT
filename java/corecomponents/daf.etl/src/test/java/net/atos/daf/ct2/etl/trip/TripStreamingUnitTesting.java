@@ -86,22 +86,22 @@ public class TripStreamingUnitTesting {
 		final SingleOutputStreamOperator<TripStatusData> tripStsData= env.fromElements(
 				tripData);
 
-		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = tripStsData.flatMap(		
-		new FlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>>() {
+		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData = tripStsData.flatMap(		
+		new FlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>>() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void flatMap(TripStatusData value, Collector<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> out) throws Exception {
+			public void flatMap(TripStatusData value, Collector<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> out) throws Exception {
 				//2020-11-02T16:55:37.000Z
-				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L, 0, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350L, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L, 0, "testDriver") );
 				long ts =TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:37.000Z", ETLConstants.DATE_FORMAT );
-				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1, "testDriver") );
-				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1, "testDriver") );
-				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L, 1, "testDriver") );
-				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000L, "index", ts, 11111996L, 111113L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000L, "index", ts, 11111996L, 111113L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000L, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000L, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L, 1, "testDriver") );
 								
 			}
 		});

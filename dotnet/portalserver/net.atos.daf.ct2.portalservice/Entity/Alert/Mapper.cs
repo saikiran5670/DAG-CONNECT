@@ -549,7 +549,30 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertMessageData.CategoryType = tripAlert.CategoryType;
             alertMessageData.Type = tripAlert.Type;
             alertMessageData.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
+            alertMessageData.UrgencyLevelType = tripAlert.UrgencyLevelType;
             return alertMessageData;
+        }
+
+        public NotificationViewRequest ToNotificationViewRequest(List<PortalAlertEntity.NotificationViewHistory> notificationViewHistory)
+        {
+            NotificationViewRequest notificationViewRequest = new NotificationViewRequest();
+
+            foreach (var item in notificationViewHistory)
+            {
+                NotificationViewMessage notificationViewMessage = new NotificationViewMessage();
+                notificationViewMessage.AccountId = item.AccountId;
+                notificationViewMessage.AlertId = item.AlertId;
+                notificationViewMessage.AlertCategory = item.AlertCategory;
+                notificationViewMessage.AlertType = item.AlertType;
+                notificationViewMessage.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewMessage.OrganizationId = item.OrganizationId;
+                notificationViewMessage.TripAlertId = item.TripAlertId;
+                notificationViewMessage.TripId = item.TripId;
+                notificationViewMessage.Vin = item.Vin;
+                notificationViewMessage.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewRequest.NotificationView.Add(notificationViewMessage);
+            }
+            return notificationViewRequest;
         }
     }
 }
