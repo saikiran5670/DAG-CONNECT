@@ -76,7 +76,16 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
         }
-
+        public override Task OnConnectedAsync()
+        {
+            ConnectedUser.Ids.Add(Context.ConnectionId);
+            return Task.CompletedTask;
+        }
+        public override Task OnDisconnectedAsync(Exception ex)
+        {
+            ConnectedUser.Ids.Remove(Context.ConnectionId);
+            return Task.CompletedTask;
+        }
         private async Task ReadKafkaMessages()
         {
             try
@@ -110,6 +119,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
 
                 throw;
             }
+        }
+        public static class ConnectedUser
+        {
+            public static List<string> Ids = new List<string>();
         }
     }
 }
