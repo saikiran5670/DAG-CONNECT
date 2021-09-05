@@ -55,8 +55,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.*;
 
@@ -76,10 +79,14 @@ public class TripBasedTest implements Serializable {
          */
         Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    fuelDuringStopFun
+            		fuelIncreaseDuringStopFun,
+                    fuelDecreaseDuringStopFun
             ));
         }};
-
+        
+     
+        
+      
         /**
          *  Booting cache
          */
@@ -92,12 +99,19 @@ public class TripBasedTest implements Serializable {
         SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);
 
+        /*SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                propertiesParamTool, env)
+        .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+        .returns(Index.class);*/
+        
+        
 
         /**
          * Excessive Fuel during stop
          */
-        KeyedStream<Index, String> indexStringKeyedStream = indexStringStream
-                .filter(index -> index.getVEvtID() == 4 || index.getVEvtID() == 5)
+        KeyedStream<Index, String> fuelDuringStopStream = indexStringStream
+        		.filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
                 .returns(Index.class)
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
                 .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
@@ -105,9 +119,8 @@ public class TripBasedTest implements Serializable {
         /**
          * Process indexWindowKeyedStream for Excessive Under Utilization
          */
-        IndexMessageAlertService.processIndexKeyStream(indexStringKeyedStream,
+        IndexMessageAlertService.processIndexKeyStream(fuelDuringStopStream,
                 env,propertiesParamTool,fuelDuringStopFunConfigMap);
-
 
         env.execute("TripBasedTest");
 

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class FuelDuringStopProcessor extends ProcessFunction<Index, Index> implements Serializable {
 
@@ -24,16 +25,25 @@ public class FuelDuringStopProcessor extends ProcessFunction<Index, Index> imple
     @Override
     public void processElement(Index index, ProcessFunction<Index, Index>.Context context, Collector<Index> collector) throws Exception {
 
-        BigDecimal bigDecimal = fuelStopState.get(index.getVin());
-        if (bigDecimal == null) {
-            fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+        BigDecimal fuelPrevState = fuelStopState.get(index.getVin());
+        if (fuelPrevState == null) {
+        	if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
+        		fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+                logger.info("1st time state inserted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
+        	}
+            
         } else {
             net.atos.daf.ct2.models.Index index1 = new net.atos.daf.ct2.models.Index();
             index1.setVid(index.getVid());
             index1.setVin(index.getVin());
-            index1.setVFuelStopPrevVal(bigDecimal);
+            index1.setVEvtID(index.getVEvtID());
+            index1.setVFuelStopPrevVal(fuelPrevState);
             index1.getIndexList().add(index);
-            fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+            if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
+        		fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+        		logger.info("state upadted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
+        	}
+                
             collector.collect(index1);
         }
 
