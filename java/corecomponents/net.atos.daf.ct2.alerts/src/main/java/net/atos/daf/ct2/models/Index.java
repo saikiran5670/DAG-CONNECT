@@ -5,20 +5,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 
-/*@Getter
+@Getter
 @Setter
-@ToString*/
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@ToString
 public class Index extends net.atos.daf.ct2.pojo.standard.Index  implements Serializable {
 
-    private String vid;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String vid;
     private String vin;
     private BigDecimal vFuelStopPrevVal;
     private Integer EvtId;
