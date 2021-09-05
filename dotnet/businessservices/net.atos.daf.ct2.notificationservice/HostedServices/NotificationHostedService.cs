@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsSMSSend == true)
                             {
-                                //await SendSMS(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").ToList());
+                                await SendSMS(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").ToList());
                             }
                         }
 
