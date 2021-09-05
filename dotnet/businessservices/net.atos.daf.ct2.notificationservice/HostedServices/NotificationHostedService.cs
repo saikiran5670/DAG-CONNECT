@@ -188,7 +188,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             catch (Exception ex)
             {
                 _logger.Error("Notification Host Service Email", ex);
-                throw;
+                return false;
             }
         }
         public async Task<bool> SendViaWebService(List<NotificationHistory> notificationHistoryWebService)
@@ -214,9 +214,10 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
 
                 return isResult;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.Error("Notification Host Service WS", ex);
+                return false;
             }
         }
         public async Task<bool> SendSMS(List<NotificationHistory> notificationHistory)
@@ -245,7 +246,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             catch (Exception ex)
             {
                 _logger.Error("Notification Host Service SMS", ex);
-                throw;
+                return false;
+                //throw;
             }
         }
         private string GetAlertTypeCls(string alertType)
