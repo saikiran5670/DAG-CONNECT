@@ -37,6 +37,7 @@ using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.dashboardservice;
 using net.atos.daf.ct2.notificationservice;
+using net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -82,6 +83,7 @@ namespace net.atos.daf.ct2.portalservice
             var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
             var httpsport = Configuration["WebServerConfiguration:httpsport"];
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<AccountSignalRClientsMappingList>();
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
