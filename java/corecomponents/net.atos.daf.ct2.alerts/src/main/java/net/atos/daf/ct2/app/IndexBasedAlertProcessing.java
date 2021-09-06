@@ -170,7 +170,7 @@ public class IndexBasedAlertProcessing implements Serializable {
                         try {
 							List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
 							        .collect(Collectors.toList());
-							if (!indexList.isEmpty()) {
+							/*if (!indexList.isEmpty()) {
 							    Index startIndex = indexList.get(0);
 							    Index endIndex = indexList.get(indexList.size() - 1);
 							    Long average = Utils.calculateAverage(startIndex, endIndex);
@@ -179,6 +179,25 @@ public class IndexBasedAlertProcessing implements Serializable {
 							    startIndex.setVIdleDuration(idleDuration);
 								
 							    arg3.collect(startIndex);
+							}*/
+							
+							if (!indexList.isEmpty()) {
+								  System.out.println(indexList.size());;
+								  Index startIndex = indexList.get(0);
+								  if (indexList.size()==1) {
+								      startIndex.setVDist((indexList.get(0).getVDist())/300);
+								     startIndex.setVIdleDuration(indexList.get(0).getVIdleDuration());
+								 } else {
+								 
+								  Index endIndex = indexList.get(indexList.size() - 1);
+								  System.out.println("startIndex--" + startIndex);
+								  System.out.println("endIndex--" + endIndex);
+								  Long average = Utils.calculateAverage(startIndex, endIndex);
+								  startIndex.setVDist(average);
+								  Long idleDuration = Utils.calculateIdleDuration(indexMsg);
+								  startIndex.setVIdleDuration(idleDuration);
+								 }
+								  arg3.collect(startIndex);
 							}
 						} catch (Exception e) {
 							logger.info("Issue while preparing data for ExcessiveAvgSpeed :{}",indexMsg);
