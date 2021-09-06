@@ -167,18 +167,23 @@ public class IndexBasedAlertProcessing implements Serializable {
                     @Override
                     public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
                                         Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
-                        List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
-                                .collect(Collectors.toList());
-                        if (!indexList.isEmpty()) {
-                            Index startIndex = indexList.get(0);
-                            Index endIndex = indexList.get(indexList.size() - 1);
-                            Long average = Utils.calculateAverage(startIndex, endIndex);
-                            startIndex.setVDist(average);
-                            Long idleDuration = Utils.calculateIdleDuration(indexMsg);
-                            startIndex.setVIdleDuration(idleDuration);
-							
-                            arg3.collect(startIndex);
-                        }
+                        try {
+							List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
+							        .collect(Collectors.toList());
+							if (!indexList.isEmpty()) {
+							    Index startIndex = indexList.get(0);
+							    Index endIndex = indexList.get(indexList.size() - 1);
+							    Long average = Utils.calculateAverage(startIndex, endIndex);
+							    startIndex.setVDist(average);
+							    Long idleDuration = Utils.calculateIdleDuration(indexMsg);
+							    startIndex.setVIdleDuration(idleDuration);
+								
+							    arg3.collect(startIndex);
+							}
+						} catch (Exception e) {
+							logger.info("Issue while preparing data for ExcessiveAvgSpeed :{}",indexMsg);
+							e.printStackTrace();
+						}
                     }
                 })
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
