@@ -718,7 +718,7 @@ if(this.prefTimeFormat == 12){
       // let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
       let resultDate = new Date (date.getDate() + ' ' +months[date.getMonth()] +' '+ date.getFullYear());
       resultDate = this.chartDateFormat(resultDate); 
-      let distance = this.reportMapService.convertDistanceUnitsForChart(element.distanceperday,this.prefUnitFormat);
+      let distance = this.reportMapService.convertDistanceUnits(element.distanceperday,this.prefUnitFormat);
      // this.distance.push(distance);
       this.calenderDate.push(resultDate);
       //this.vehiclecount.push(element.vehiclecount);
