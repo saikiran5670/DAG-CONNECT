@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Grpc.Core;
 using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.hubs
 {
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -68,10 +71,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         ModifiedAt = _userDetails.AccountId,
                         LandmarkThresholdValueUnitType = _userDetails.OrgId.ToString(),
                     };
-                    IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
-                    await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
+                    //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
+                    await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
                     //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Select(clients => clients.HubClientId).ToList();
-                    //await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
+                    //await Clients.Clients(connectionIds).SendAt5sync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
                     if (_alertId == 1000)
                     {
                         _alertId = 1;
