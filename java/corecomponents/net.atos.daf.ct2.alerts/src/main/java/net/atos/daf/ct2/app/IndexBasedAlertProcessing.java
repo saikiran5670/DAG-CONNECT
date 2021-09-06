@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -221,7 +222,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Excessive Fuel during stop
          */
         KeyedStream<Index, String> indexStringKeyedStream = indexStringStream
-                .filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
+                .filter( index -> Objects.nonNull(index.getVEvtID()) && (4 == index.getVEvtID() || 5 == index.getVEvtID()) )
                 .returns(Index.class)
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
                 .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());

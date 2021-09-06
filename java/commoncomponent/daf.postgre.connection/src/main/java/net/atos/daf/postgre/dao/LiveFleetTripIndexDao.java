@@ -19,7 +19,7 @@ public class LiveFleetTripIndexDao implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(EcoScoreDao.class);
+	private static Logger logger = LoggerFactory.getLogger(LiveFleetTripIndexDao.class);
 
 	private Connection connection;
 
