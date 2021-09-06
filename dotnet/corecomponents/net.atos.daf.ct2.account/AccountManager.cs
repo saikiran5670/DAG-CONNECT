@@ -9,6 +9,7 @@ using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
@@ -29,8 +30,10 @@ namespace net.atos.daf.ct2.account
         private readonly EmailConfiguration _emailConfiguration;
         private readonly IConfiguration _configuration;
         private readonly ITranslationManager _translationManager;
+        private readonly IDriverManager _driverManager;
 
-        public AccountManager(IAccountRepository Repository, IAuditTraillib Auditlog, Identity.IAccountManager Identity, IConfiguration Configuration, ITranslationManager TranslationManager)
+        public AccountManager(IAccountRepository Repository, IAuditTraillib Auditlog, Identity.IAccountManager Identity,
+                              IConfiguration Configuration, ITranslationManager TranslationManager, IDriverManager driverManager)
         {
             this._repository = Repository;
             this._auditlog = Auditlog;
@@ -39,7 +42,9 @@ namespace net.atos.daf.ct2.account
             _emailConfiguration = new EmailConfiguration();
             Configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
             this._translationManager = TranslationManager;
+            _driverManager = driverManager;
         }
+
         public async Task<Account> Create(Account account)
         {
             // create user in identity
@@ -670,6 +675,127 @@ namespace net.atos.daf.ct2.account
             return responses.FirstOrDefault();
         }
 
+        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, int organisationId)
+        {
+            return await _repository.GetAccountPreferences(accountEmail, organisationId);
+        }
+
+        public async Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request)
+        {
+            return await _repository.UpdateAccountPreferences(request);
+        }
+
         #endregion
+
+        public async Task<RegisterDriverResponse> RegisterDriver(RegisterDriverDataServiceRequest request)
+        {
+            var accountId = 0;
+            //Fetch driver details from driver management
+            var driver = await _driverManager.GetDriver(request.OrganisationId, request.DriverId);
+
+            //Create new portal account in CT2.0 + KeyCloak
+            var account = new Account();
+            account.AccountType = AccountType.PortalAccount;
+            account.EmailId = request.AccountEmail;
+            account.Salutation = string.Empty;
+            account.FirstName = driver.FirstName;
+            account.LastName = driver.LastName;
+            account.DriverId = request.DriverId;    //Set the driverId to the account
+            account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.UtcNow);
+            account.StartDate = account.CreatedAt;
+            account.Organization_Id = request.OrganisationId;
+
+            IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
+            identityEntity.UserName = request.AccountEmail;
+            identityEntity.EmailId = request.AccountEmail;
+            identityEntity.FirstName = driver.FirstName;
+            identityEntity.LastName = driver.LastName;
+            identityEntity.Password = request.Password;
+
+            var identityresult = await _identity.CreateUser(identityEntity);
+
+            // Get Driver role Id
+            var driverRoleId = await _repository.GetDriverRoleId();
+
+            if (identityresult.StatusCode == HttpStatusCode.Created)
+            {
+                account = await _repository.Create(account);
+
+                // Set the password for the account
+                var result = await _identity.ChangeUserPassword(identityEntity);
+
+                if (result.StatusCode == HttpStatusCode.NoContent)
+                    await _repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
+
+                //Assign driver role to the account
+                await AddRole(new AccountRole
+                {
+                    AccountId = account.Id,
+                    OrganizationId = request.OrganisationId,
+                    RoleIds = new List<int> { driverRoleId },
+                    StartDate = DateTime.UtcNow
+                });
+            }
+            else if (identityresult.StatusCode == HttpStatusCode.Conflict)
+            {
+                int organization_Id = account.Organization_Id.Value;
+                AccountFilter filter = new AccountFilter();
+                filter.Email = request.AccountEmail;
+                filter.OrganizationId = request.OrganisationId;
+
+                var accountGet = await _repository.Duplicate(filter);
+                if (accountGet == null)
+                {
+                    account = await _repository.Create(account);
+
+                    // Set the password for the account
+                    var result = await _identity.ChangeUserPassword(identityEntity);
+
+                    if (result.StatusCode == HttpStatusCode.NoContent)
+                        await _repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                }
+                else
+                {
+                    account = accountGet;
+                    if (accountGet.IsDuplicateInOrg)
+                        return new RegisterDriverResponse { StatusCode = HttpStatusCode.Conflict, Message = "ACCOUNT_EXISTS" };
+                    else
+                    {
+                        // If user identity is proven then associate user with said organization
+                        if (request.IsLoginSuccessful)
+                        {
+                            account.Organization_Id = request.OrganisationId;
+                            account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.UtcNow);
+
+                            //Save accountId before getting override from AddAccountToOrg method
+                            accountId = account.Id;
+                            await AddAccountToOrg(account);
+                        }
+                        else
+                            return new RegisterDriverResponse { StatusCode = HttpStatusCode.Forbidden, Message = "NOT_VALIDATED" };
+                    }
+                }
+
+                //Assign driver role to the account
+                await AddRole(new AccountRole
+                {
+                    AccountId = accountId,
+                    OrganizationId = request.OrganisationId,
+                    RoleIds = new List<int> { driverRoleId },
+                    StartDate = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                return new RegisterDriverResponse { StatusCode = identityresult.StatusCode, Message = (string)identityresult.Result };
+            }
+
+            return new RegisterDriverResponse { StatusCode = HttpStatusCode.OK };
+        }
+
+        public async Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId)
+        {
+            return await _repository.ValidateDriver(accountEmail, organisationId);
+        }
     }
 }

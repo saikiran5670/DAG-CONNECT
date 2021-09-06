@@ -232,7 +232,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.provisioni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.dashboard.test", "corecomponents\test\net.atos.daf.ct2.dashboard.test\net.atos.daf.ct2.dashboard.test.csproj", "{F3EF328F-0853-4243-9730-B1DD1B39976E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.accountdataservice", "dataservices\net.atos.daf.ct2.accountdataservice\net.atos.daf.ct2.accountdataservice.csproj", "{65C6CC6E-7AAE-4C2E-8F14-F278863C18BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.accountdataservice", "dataservices\net.atos.daf.ct2.accountdataservice\net.atos.daf.ct2.accountdataservice.csproj", "{65C6CC6E-7AAE-4C2E-8F14-F278863C18BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

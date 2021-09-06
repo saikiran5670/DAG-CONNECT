@@ -8,6 +8,7 @@ package pushnotificationservice;
 
 service PushNotificationService {
   rpc GetAlertMessageStream (google.protobuf.Empty) returns (stream AlertMessageData);
+  rpc GetEligibleAccountForAlert (AlertMesssageProp) returns (AlertVehicleDetails);
 }
 
 message AlertMessageData {
@@ -29,6 +30,11 @@ message AlertMessageData {
 	int64 ModifiedAt=16;
 	ResponseCode Code=17;
     string message = 18;
+	string UrgencyLevelType = 19;
+	int32 VehicleGroupId = 20;
+	string VehicleGroupName = 21;
+	string VehicleRegNo = 22;
+	string VehicleName = 23;
 }
 enum ResponseCode{
   None = 0;
@@ -37,4 +43,20 @@ enum ResponseCode{
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
+}
+
+message AlertMesssageProp{
+int32 AlertId = 1;
+string VIN = 2;
+}
+
+message AlertVehicleDetails{
+	int32 VehicleGroupId = 1;
+	string VehicleGroupName = 2;
+	string VehicleRegNo = 3;
+	string VehicleName = 4;
+	int32 OrganizationId = 5;
+	ResponseCode Code = 6;
+	string message = 7;
+	int32 AlertCreatedAccountId = 8;
 }

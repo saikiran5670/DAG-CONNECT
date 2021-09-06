@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 return await Task.FromResult(new AuditResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Addlogs Faile due to - " + ex.Message
+                    Message = "Addlogs Failed due to - " + ex.Message
                 });
 
             }
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 return await Task.FromResult(new AuditLogResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetAllLangaugecodes Faile due to - " + ex.Message
+                    Message = "GetAllLangaugecodes Failed due to - " + ex.Message
                 });
             }
 

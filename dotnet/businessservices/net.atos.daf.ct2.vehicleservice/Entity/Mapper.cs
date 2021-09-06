@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
         {
             Vehicle vehicle = new Vehicle();
             vehicle.ID = request.Id;
-            vehicle.Name = request.Name;
+            vehicle.Name = request.Name ?? string.Empty;
             vehicle.VIN = request.Vin;
-            vehicle.License_Plate_Number = request.LicensePlateNumber;
+            vehicle.License_Plate_Number = request.LicensePlateNumber ?? string.Empty;
             vehicle.Vid = null;
             vehicle.ModelId = null;
             vehicle.Tcu_Id = null;
@@ -95,12 +95,10 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             if (Convert.ToInt32(vehicle.Organization_Id) > 0)
                 vehicledetails.Organizationid = vehicle.Organization_Id;
             vehicledetails.Vin = vehicle.VIN;
-            if (!string.IsNullOrEmpty(vehicle.License_Plate_Number))
-                vehicledetails.LicensePlateNumber = vehicle.License_Plate_Number;
+            vehicledetails.LicensePlateNumber = vehicle.License_Plate_Number ?? string.Empty;
             if (!string.IsNullOrEmpty(vehicle.ModelId))
                 vehicledetails.ModelId = vehicle.ModelId;
-            if (!string.IsNullOrEmpty(vehicle.Name))
-                vehicledetails.Name = vehicle.Name;
+            vehicledetails.Name = vehicle.Name ?? string.Empty;
 
             if (vehicle.Status == VehicleCalculatedStatus.Connected)
             {
@@ -140,6 +138,20 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             }
             vehicledetails.RelationShip = vehicle.RelationShip;
             vehicledetails.AssociatedGroups = vehicle.AssociatedGroups;
+
+            return vehicledetails;
+        }
+
+        public VehicleDetails ToVehicleDetails(VehicleManagementDto dto)
+        {
+            var vehicledetails = new VehicleDetails();
+            vehicledetails.Id = dto.Id;
+            vehicledetails.Name = dto.Name ?? string.Empty;
+            vehicledetails.LicensePlateNumber = dto.License_Plate_Number ?? string.Empty;
+            vehicledetails.Vin = dto.VIN;
+            vehicledetails.ModelId = dto.Model_Id ?? string.Empty;
+            vehicledetails.Status = dto.Status;
+            vehicledetails.OptIn = dto.Opt_In;
 
             return vehicledetails;
         }
@@ -239,21 +251,21 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
 
         public Group.GroupFilter ToGroupFilterEntity(GroupFilterRequest request)
         {
-            Group.GroupFilter GroupFilter = new Group.GroupFilter();
-            GroupFilter.Id = request.Id;
-            GroupFilter.OrganizationId = request.OrganizationId;
-            GroupFilter.FunctionEnum = Group.FunctionEnum.None;
-            GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
-            GroupFilter.GroupType = Group.GroupType.None;
-            GroupFilter.GroupRef = request.Vehicles;
-            GroupFilter.GroupRefCount = true;
-            GroupFilter.GroupIds = new List<int>();
+            Group.GroupFilter groupFilter = new Group.GroupFilter();
+            groupFilter.Id = request.Id;
+            groupFilter.OrganizationId = request.OrganizationId;
+            groupFilter.FunctionEnum = Group.FunctionEnum.None;
+            groupFilter.ObjectType = Group.ObjectType.VehicleGroup;
+            groupFilter.GroupType = Group.GroupType.None;
+            groupFilter.GroupRef = request.Vehicles;
+            groupFilter.GroupRefCount = true;
+            groupFilter.GroupIds = new List<int>();
             foreach (int item in request.GroupIds)
             {
                 if (item > 0)
-                    GroupFilter.GroupIds.Add(item);
+                    groupFilter.GroupIds.Add(item);
             }
-            return GroupFilter;
+            return groupFilter;
         }
 
         public OrgVehicleGroupDetails ToOrgVehicleGroup(net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest request)
@@ -278,21 +290,12 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
 
         public Group.GroupFilter ToVehicleGroupLandingFilterEntity(VehicleGroupLandingRequest request)
         {
-            Group.GroupFilter GroupFilter = new Group.GroupFilter();
-            GroupFilter.Id = request.Id;
-            GroupFilter.OrganizationId = request.OrganizationId;
-            //   GroupFilter.FunctionEnum = Group.FunctionEnum.None;
-            GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
-            GroupFilter.GroupType = Group.GroupType.None;
-            //   GroupFilter.GroupRef = request.Vehicles;
-            //   GroupFilter.GroupRefCount = true;
-            //GroupFilter.GroupIds = new List<int>();
-            //foreach (int item in request.GroupIds)
-            //{
-            //    if (item > 0)
-            //        GroupFilter.GroupIds.Add(item);
-            //}
-            return GroupFilter;
+            Group.GroupFilter groupFilter = new Group.GroupFilter();
+            groupFilter.Id = request.Id;
+            groupFilter.OrganizationId = request.OrganizationId;
+            groupFilter.ObjectType = Group.ObjectType.VehicleGroup;
+            groupFilter.GroupType = Group.GroupType.None;
+            return groupFilter;
         }
 
         public VehicleGroupList MapVehicleGroup(net.atos.daf.ct2.vehicle.entity.VehicleGroupList vehiclegroup)

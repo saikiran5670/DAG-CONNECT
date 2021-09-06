@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatTableExporterDirective } from 'mat-table-exporter';
+import { MatTableExporterDirective, CsvExporterService } from 'mat-table-exporter';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 @Component({
   selector: 'app-data-table',
@@ -17,10 +19,14 @@ export class DataTableComponent implements OnInit {
   @Input() columnCodes = [];
   @Input() columnLabels = [];
   @Input() topRightElements;
+  @Input() topLeftElements;
   @Input() actionColumnElements;
+  @Input() action2ColumnElements;
+  @Input() viewStatusColumnElements;
   @Input() selectColumnDataElements;
   @Input() selectColumnHeaderElements;
   @Input() showExport;
+  @Input() exportFileName;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -40,11 +46,56 @@ export class DataTableComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  exportAsCSV() {
-    this.matTableExporter.exportTable('csv', { fileName: 'Package_Data', sheet: 'sheet_name' });
+  // exportAsCSV() {
+  //   let fileName = this.exportFileName || 'Data';
+  //   let actionIndex = this.columnCodes.indexOf('action');
+  //   this.matTableExporter.hiddenColumns = [actionIndex];
+  //   console.log("exporter",this.matTableExporter.exporter);
+  //   this.matTableExporter.exportTable('csv', { fileName: fileName, sheet: fileName });
+  // }
+
+  exportAsCSV(){  
+    let fileName = this.exportFileName || 'Data Export';
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet(fileName);
+    let header = [];
+    for (let headerRow of this.columnLabels) {
+      if (headerRow != 'Action') {
+        header.push(this.translationData['lbl' + headerRow]);
+      }
+    }
+    worksheet.addRow(header);
+    // headerRow.eachCell((cell, number) => {
+    //   cell.fill = {
+    //     type: 'pattern',
+    //     pattern: 'solid',
+    //     fgColor: { argb: 'FFFFFF00' },
+    //     bgColor: { argb: 'FF0000FF' }
+    //   }
+    //   cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    // })
+    this.tableData.forEach(item => {
+      let excelRow = [];
+      for (let col of this.columnCodes) {
+        if (col != 'action') {
+          excelRow.push(item[col]);
+        }
+      }
+      worksheet.addRow(excelRow);
+    });
+    // worksheet.mergeCells('A1:D2'); 
+    // for (var i = 0; i < header.length; i++) {    
+    //   worksheet.columns[i].width = 20;      
+    // }
+    // worksheet.addRow([]); 
+    workbook.csv.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, fileName+'.csv');
+   }) 
   }
 
   exportAsPdf() {
+    let fileName = this.exportFileName || 'Data Export';
     let DATA = document.getElementById('packageData');
 
     html2canvas(DATA, {
@@ -65,14 +116,14 @@ export class DataTableComponent implements OnInit {
         let position = 0;
         PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
 
-        PDF.save('package_Data.pdf');
+        PDF.save(fileName+'.pdf');
         PDF.output('dataurlnewwindow');
       });
   }
 
   updatedTableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
+    this.tableData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(this.tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -84,10 +135,13 @@ export class DataTableComponent implements OnInit {
         });
       }
     });
+    this.defaultSearchfilter();
+  }
 
+  defaultSearchfilter() {
     this.dataSource.filterPredicate = (data, filter: any) => {
       for(let col of this.columnCodes) {
-        return data[col].toLowerCase().includes(filter)
+        return data[col].toLowerCase().includes(filter.toLowerCase())
       }
     }
   }
@@ -116,10 +170,10 @@ export class DataTableComponent implements OnInit {
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if (columnName == "code" || columnName == "name") {
+    // if (columnName == "code" || columnName == "name") {
       if (!(a instanceof Number)) a = a.toString().toUpperCase();
       if (!(b instanceof Number)) b = b.toString().toUpperCase();
-    }
+    // }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

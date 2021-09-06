@@ -170,7 +170,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}	
 	    public static void KeyHandover() throws Exception {
 	    	Log.info("Updating Customer data");
@@ -178,7 +178,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.keyhandover;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}
 	    public static void Vehicle_Data() throws Exception {
 	    	Log.info("Updating Vehicle data");
@@ -186,7 +186,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}	
 	    public static void Vehicle_DataWithInvalidUser() throws Exception {
 	    	Log.info("Updating vehicle data with invalid user");
@@ -202,7 +202,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}	
 	   // Subscription_withAuth
 	    
@@ -212,7 +212,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}	
 	    
 	    public static void GetVehicleMillage_withAuth() throws Exception {
@@ -221,7 +221,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle;
 	    	String request = Constants.VhMileage;
-	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Accept","since","vehicles");
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567","Accept","since","vehicles");
 	    	}	    
 	    public static void GetVehicleNameList_withAuth() throws Exception {
 	    	Log.info("Updating Subscription of package");
@@ -229,7 +229,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle;
 	    	String request = Constants.VhNameList;
-	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Content-Type","since","vehicles");	
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567","Content-Type","since","vehicles");	
 	    }	    
 	    
 //***************************Common Functions************************************************************
@@ -532,7 +532,8 @@ public class CommonAPI extends CommonFunctionLib {
 	    		}	
 	        }
 	    
-	    private static JSONObject replacekeyInJSONObject(JSONObject jsonObject, String jsonKey, String jsonValue) {
+	    @SuppressWarnings("unchecked")
+		private static JSONObject replacekeyInJSONObject(JSONObject jsonObject, String jsonKey, String jsonValue) {
 
 	        for (Object key : jsonObject.keySet()) {
 	            if (key.equals(jsonKey) && ((jsonObject.get(key) instanceof String)||(jsonObject.get(key) instanceof Number)||jsonObject.get(key) ==null)) {
@@ -548,7 +549,8 @@ public class CommonAPI extends CommonFunctionLib {
 	        }
 	        return jsonObject;
 	    }
-	    private static JSONObject replaceINTkeyInJSONObject(JSONObject jsonObject, String jsonKey, Number jsonValue) {
+	    @SuppressWarnings({ "unused", "unchecked" })
+		private static JSONObject replaceINTkeyInJSONObject(JSONObject jsonObject, String jsonKey, Number jsonValue) {
 
 	        for (Object key : jsonObject.keySet()) {
 	            if (key.equals(jsonKey) && ((jsonObject.get(key) instanceof String)||(jsonObject.get(key) instanceof Number)||jsonObject.get(key) ==null)) {

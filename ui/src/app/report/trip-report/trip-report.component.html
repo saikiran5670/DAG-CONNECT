@@ -215,6 +215,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+       <div id="charts">
         <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -263,7 +264,8 @@
             </div>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+       </div>
+       <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -303,12 +305,7 @@
               </mat-header-cell>
               <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.vin }}' *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
             </ng-container>           
-            <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmi || 'mi') : (translationData.lblkm || 'km') }})</span>
-              </mat-header-cell>
-              <mat-cell matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
-            </ng-container>          
-              <ng-container matColumnDef="vehicleName">
+            <ng-container matColumnDef="vehicleName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
@@ -345,9 +342,14 @@
             </ng-container>
             <ng-container matColumnDef="averageWeight">
               <!-- <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblton || 'ton') }})</span> -->
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ 'ton' }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ translationData.lblton || 'ton' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '0.00' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="odometer">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmi || 'mi') : (translationData.lblkm || 'km') }})</span>
+              </mat-header-cell>
+              <mat-cell matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="startPosition">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPosition || 'Start Position' }}
@@ -359,10 +361,15 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.endPosition != '' ? row.endPosition : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="fuelConsumed100Km">
+            <!-- <ng-container matColumnDef="fuelConsumed100Km">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblltr100km || 'ltr/100km') }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed100Km != '' ? row.convertedFuelConsumed100Km : '-' }}</mat-cell>
+            </ng-container> -->
+            <ng-container matColumnDef="fuelConsumed">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') : (translationData.lblltr || 'ltr') }})</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
@@ -372,13 +379,13 @@
             <ng-container matColumnDef="alert">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : 0 }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="events">
+            <!-- <ng-container matColumnDef="events">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : '-' }}</mat-cell>
-            </ng-container>
+              <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : 0 }}</mat-cell>
+            </ng-container> -->
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">
             </mat-row>

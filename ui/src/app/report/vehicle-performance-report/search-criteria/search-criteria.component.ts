@@ -261,8 +261,11 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-    let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
+     
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
+    // let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if (filterVIN.length > 0) {
@@ -542,8 +545,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         vin = vehCount[0].vin;
         registrationNo = vehCount[0].registrationNo;
       }
-      let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
-      let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
+      
+      // let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
+      // let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
+     
+      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
+      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
+    
       let searchData = {
         utcStartDateTime: utcStartDateTime,
         utcEndDateTime: utcEndDateTime,

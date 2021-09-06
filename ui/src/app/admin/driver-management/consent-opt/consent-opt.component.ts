@@ -138,7 +138,8 @@ export class ConsentOptComponent implements OnInit {
         modifiedBy: this.accountId //0
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
-        this.getDriverList();
+        // this.getDriverList();
+        this.onClose({ tableData: [], consentMsg: this.getConsentUpdatedMsg() });
       });
     }
   }

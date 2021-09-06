@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.notification
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
         public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)

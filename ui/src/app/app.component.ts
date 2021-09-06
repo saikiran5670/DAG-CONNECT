@@ -17,6 +17,10 @@ import { MessageService } from './services/message.service';
 import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { ReportService } from './services/report.service';
 import { takeUntil } from 'rxjs/operators';
+import { NavigationExtras } from '@angular/router';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { Util } from '../app/shared/util';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-root',
@@ -64,6 +68,86 @@ export class AppComponent {
   appForm: FormGroup;
   selectedRoles: any = [];
   orgContextType: any = false;
+  accountPrefObj: any;
+  prefData : any;
+  preference : any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  alertDateFormat: any;
+  startDateValue: any;
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  startTimeDisplay: any = '00:00:00';
+  selectedStartTime: any = '00:00';
+  notificationData: any = [
+    {
+      icons:'unarchive',
+      name: 'Entering Geofence',
+      // data: 1628072950000,
+      data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
+      vehName: 'Veh data',
+      vin: 'test 01',
+      regNo: 'XLRTEM4100G041999858',
+      alertLevel: 'A',
+      alertType: 'U',
+      alertCat: 'L',
+    },
+    {
+      icons:'unarchive',
+      name: 'Fuel Driver Performance',
+      data: 1628072950000,
+      vehName: 'Veh 2 data',
+      vin: 'test 02',
+      regNo: 'XLRTEM4100G041999',
+      alertLevel: 'C',
+      alertType: 'S',
+      alertCat: 'F'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move',
+      data: 1627986550000,
+      vehName: 'Veh 3 data',
+      vin: 'test 03',
+      regNo: 'XLRTEM4100G041999',
+      alertLevel: 'W',
+      alertType: 'U',
+      alertCat: 'R'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move 4',
+      data: 1627986550000,
+      vehName: 'Veh 4 data',
+      vin: 'test 04',
+      regNo: 'XLRTEM4100G041999'
+    },
+    {
+      icons:'unarchive',
+      name: 'Time & Move 5',
+      data: 1627986550000,
+      vehName: 'Veh 5  data',
+      vin: 'test 05',
+      regNo: 'XLRTEM4100G041999'
+    },
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 6',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 6 data',
+    //   vin: 'test 06',
+    //   regNo: 'XLRTEM4100G041999'
+    // },
+    // {
+    //   icons:'unarchive',
+    //   name: 'Time & Move 7',
+    //   data: 1627986550000,
+    //   vehName: 'Veh 7 data',
+    //   vin: 'test 07',
+    //   regNo: 'XLRTEM4100G041999'
+    // }
+  ];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
@@ -270,7 +354,7 @@ export class AppComponent {
     protected _onDestroy = new Subject<void>();
 
 
-  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService) {
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -336,7 +420,7 @@ export class AppComponent {
         this.subpage = val.url.split('/')[2];
 
         let userLoginStatus = localStorage.getItem("isUserLogin");
-        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/")) {
+        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/") || val.url.includes("/unsubscribereport/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
@@ -404,8 +488,10 @@ export class AppComponent {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     let _orgContextStatus = localStorage.getItem("orgContextStatus");
-    if(refresh && _orgContextStatus) {
-        this.orgContextType = true;
+    if(refresh) {
+        if(_orgContextStatus){
+          this.orgContextType = true;
+        }
         this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
     } else {
       let featureMenuObj = {
@@ -556,11 +642,13 @@ export class AppComponent {
     let accessNameList = [];
     
     if(from && from == 'orgRoleChange'){
-      if(this.menuPages.menus.length > 0){
-        this.router.navigate(['/dashboard']);
-      }else{
-        this.router.navigate(['/menunotfound']);
-      }
+      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+      let _link = '/menunotfound';
+      if (this.menuPages.menus.length > 0) {
+        _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
+      } 
+      this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+      this.router.navigate([_link]));
       
       this.orgContextType = false;
       let _orgContextStatus = localStorage.getItem("orgContextStatus");
@@ -570,7 +658,6 @@ export class AppComponent {
       this.menuPages.features.forEach((obj: any) => {
         accessNameList.push(obj.name)
       });
-      // console.log("---print name access ---",accessNameList)
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -596,17 +683,16 @@ export class AppComponent {
         this.userType = "Admin#Account";
       }
 
-
-
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
         localStorage.setItem("canSeeXRay", "true");
       }
       
-
-
       if (accessNameList.includes("Admin#Organization-Scope") && this.userType != 'Admin#Organisation' && this.userType != 'Admin#Account') {
         this.orgContextType = true;
         localStorage.setItem("orgContextStatus", this.orgContextType.toString());
+      }else if(this.orgContextType){
+        this.orgContextType = false;
+        localStorage.removeItem("orgContextStatus");
       }
       localStorage.setItem("userType", this.userType);
     }else{
@@ -616,15 +702,12 @@ export class AppComponent {
         if(_routerUrl){ // from refresh page
           this.router.navigate([_routerUrl]);
         }else{
-          this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-          this.router.onSameUrlNavigation = 'reload';
+          let _routerLink = '/menunotfound';
           if (_menu.length > 0) {
-            let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
-            this.router.navigate([_routerLink]);
-          } else {
-            //this.router.navigate(['/dashboard']);
-            this.router.navigate(['/menunotfound']);
-          }
+            _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
+          } 
+          this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+          this.router.navigate([_routerLink]));
         }
         localStorage.removeItem('appRouterUrl'); 
       }
@@ -855,7 +938,33 @@ export class AppComponent {
     this.accountID = parseInt(localStorage.getItem("accountId"));
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId = JSON.parse(localStorage.getItem("language"));
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
 
+      this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
+        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+        if(this.prefData) {
+          this.setInitialPref(this.prefData,this.preference);
+        }
+        this.getDateAndTime();
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+
+      });
 
     //this.getOrgListData();
     if (this.router.url) {
@@ -874,6 +983,43 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
+    
+  }
+
+  getDateAndTime(){
+    this.notificationData.forEach(element => {
+    this.startDateValue = element.data;
+    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
+    element.date = dateTimeObj[0];
+    element.time = dateTimeObj[1];
+    this.setPrefFormatTime(element.date,element.time);
+    element.time =this.selectedStartTime;
+  });
+  console.log(this.notificationData);
+  }
+
+  proceedStep(prefData: any, preference: any){
+    this.prefData = prefData;
+    this.preference = preference;
+    // this.loadReportData();
+    this.setPrefFormatDate();
+
+  }
+
+  setInitialPref(prefData,preference){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    // this.selectionTimeRange('lastweek');
   }
 
   private setPageTitle() {
@@ -900,7 +1046,7 @@ export class AppComponent {
   }
 
   navigateToPage(pageName) {
-    this.currentTitle = this.pagetTitles[pageName];
+    //this.currentTitle = this.pagetTitles[pageName];
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
@@ -1138,5 +1284,91 @@ export class AppComponent {
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
+   gotoLogBook(item: any){
+  const navigationExtras: NavigationExtras = {
+    state: {
+      fromAlertsNotifications: true,
+      data: [item]
+    }
+  };
+  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+}
+
+gotoLogBookForMoreAlerts(){
+  const navigationExtras: NavigationExtras = {
+    state: {
+      fromMoreAlerts: true
+    }
+  };
+  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+}
+
+   //********************************** Date Time Functions *******************************************//
+   setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";      
+        this.alertDateFormat='DD/MM/YYYY';
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.alertDateFormat='MM/DD/YYYY';
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";       
+        this.alertDateFormat='DD-MM-YYYY';
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.alertDateFormat='MM-DD-YYYY';
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.alertDateFormat='MM/DD/YYYY';
+      }
+    }
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]} PM`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]} AM`;
+    }
+    return res;
+  }
+
+  setPrefFormatTime(date, time){
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(time);
+        }else{ // 24
+          time = this._get12Time(time);
+          this.selectedStartTime = this.get24Time(time); 
+        }
+  }
 
 }

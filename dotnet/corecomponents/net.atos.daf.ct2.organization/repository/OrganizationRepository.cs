@@ -239,12 +239,15 @@ namespace net.atos.daf.ct2.organization.repository
                               o.country_code CountryCode,
                               o.vehicle_default_opt_in VehicleDefaultOptIn,
                               o.driver_default_opt_in DriverDefaultOptIn,
-                              c.name Currency,
-                              t.name Timezone,
-                              tf.name TimeFormat,
-                              df.name DateFormatType,
-                              l.name LanguageName,
-                              u.name Unit
+                              c.id Currency,
+                              t.id Timezone,
+                              tf.id TimeFormat,
+                              df.id DateFormatType,
+                              l.id LanguageName,
+                              u.id Unit,
+                              a.page_refresh_time PageRefreshTime,
+                              i.id IconId,
+							  i.icon IconBute
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -252,7 +255,8 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.dateformat df on df.id=a.date_format_id
                             left join  master.unit u on u.id=a.unit_id
-                            left join  translation.language l on l.id=a.language_id                                                      
+                            left join  translation.language l on l.id=a.language_id  
+                            left join  master.icon i on i.id=a.icon_id
                             where o.id=@Id and o.state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationDetailsResponse> OrgDetails = await _dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
@@ -270,13 +274,17 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.PostalCode = item.PostalCode;
                     OrgDetailsResponse.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
                     OrgDetailsResponse.DriverDefaultOptIn = item.DriverDefaultOptIn;
-
                     OrgDetailsResponse.LanguageName = item.LanguageName;
                     OrgDetailsResponse.Timezone = item.Timezone;
                     OrgDetailsResponse.TimeFormat = item.TimeFormat;
                     OrgDetailsResponse.Currency = item.Currency;
                     OrgDetailsResponse.Unit = item.Unit;
                     OrgDetailsResponse.DateFormatType = item.DateFormatType;
+                    OrgDetailsResponse.PageRefreshTime = item.PageRefreshTime;
+                    OrgDetailsResponse.IconId = item.IconId;
+                    if (item.IconBute != null && item.IconBute.Length > 0)
+                        OrgDetailsResponse.Icon = Convert.ToBase64String(item.IconBute, 0, item.IconBute.Length);
+
                 }
                 return OrgDetailsResponse;
             }
@@ -441,8 +449,8 @@ namespace net.atos.daf.ct2.organization.repository
                     await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
                     // Assign base package at ORG lavel if not exist                   
-                    await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
-
+                    var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
                 else
                 {
@@ -481,7 +489,8 @@ namespace net.atos.daf.ct2.organization.repository
                     await CreateDefaultGroupsAndAccessRelationship(organizationId);
 
                     // Assign base package at ORG lavel
-                    await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
             }
             catch (Exception ex)

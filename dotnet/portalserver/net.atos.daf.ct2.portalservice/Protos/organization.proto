@@ -332,6 +332,8 @@ message OrganizationGetData {
     google.protobuf.StringValue TimeFormat=16;   
     int32 preferenceId=17;
     int32 PageRefreshTime=18;
+    google.protobuf.StringValue Icon=19;
+    int32 Iconid=20;
 }
 
 message ListOfOrganization {

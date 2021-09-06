@@ -1,6 +1,7 @@
 //using net.atos.daf.ct2.driver.repository;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.driver.entity;
@@ -21,6 +22,11 @@ namespace net.atos.daf.ct2.driver
             return await _driverRepository.ImportDrivers(driver, orgid);
         }
         public async Task<IEnumerable<DriverResponse>> GetDriver(int organizationId, int driverID)
+        {
+            return await _driverRepository.GetDriver(organizationId, driverID);
+        }
+
+        public async Task<DriverLookup> GetDriver(int organizationId, string driverID)
         {
             return await _driverRepository.GetDriver(organizationId, driverID);
         }
@@ -63,9 +69,9 @@ namespace net.atos.daf.ct2.driver
 
         #endregion
 
-        public Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
         {
-            return Task.FromResult(true);
+            return await _driverRepository.CheckIfDriverExists(driverId, organisationId, email);
         }
     }
 }

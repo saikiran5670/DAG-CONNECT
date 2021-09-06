@@ -156,7 +156,7 @@ namespace net.atos.daf.ct2.packageservice
                 return await Task.FromResult(new PackageResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Package Deletion Faile due to - " + ex.Message,
+                    Message = "Package Deletion Failed due to - " + ex.Message,
 
                 });
             }

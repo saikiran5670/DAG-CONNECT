@@ -23,6 +23,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   selectionForSetTimerColumns = new SelectionModel(true, []);
   selectionForVehInfoColumns = new SelectionModel(true, []);
   fleetOverviewForm: FormGroup;
+  requestSent:boolean = false;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
@@ -141,61 +142,65 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     this.setDefaultFormValues();
   }
 
-  onConfirm(){ 
-    let _timerArr: any = [];
-    let _vehInfoArr: any = [];
-    let parentDataAttr: any = [];
+  onConfirm() {
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let _timerArr: any = [];
+      let _vehInfoArr: any = [];
+      let parentDataAttr: any = [];
 
-    this.timerPrefData.forEach(element => {
-      let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value)});
-      }else{
-        _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value)});
-      }
-    });
-
-    this.vehInfoPrefData.forEach(element => {
-      let sSearch = this.selectionForVehInfoColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
-      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      this.initData.subReportUserPreferences.forEach(elem => {
-        if(elem.key.includes('rp_fo_fleetoverview_settimer')){
-          let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
-          if(_val && _val > 0){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')){
-          if(this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
+      this.timerPrefData.forEach(element => {
+        let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value) });
+        } else {
+          _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value) });
         }
       });
-    }
 
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
-    }
-    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
-      this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
-      this.loadFleetOverviewPreferences();
-      this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("fleetoverview/fleetoverview")){
-        this.reloadCurrentComponent();
+      this.vehInfoPrefData.forEach(element => {
+        let sSearch = this.selectionForVehInfoColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
+        parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        this.initData.subReportUserPreferences.forEach(elem => {
+          if (elem.key.includes('rp_fo_fleetoverview_settimer')) {
+            let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
+            if (_val && _val > 0) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')) {
+            if (this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          }
+        });
       }
-    });
+
+      let objData: any = {
+        reportId: this.reportId,
+        attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
+      }
+      this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+        this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
+        this.loadFleetOverviewPreferences();
+        this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("fleetoverview/fleetoverview")) {
+          this.reloadCurrentComponent();
+        }
+        this.requestSent = false;
+      });
+    }
   }
 
   setTimerValueInLocalStorage(timerVal: any){

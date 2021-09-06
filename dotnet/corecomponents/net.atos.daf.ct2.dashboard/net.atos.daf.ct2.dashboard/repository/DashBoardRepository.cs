@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         sum(etl_gps_trip_time) as totaltriptime,
                         sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
-                        sum(veh_message_distance) as totalAveragedistanceperday,
+                        sum(etl_gps_distance) as totalAveragedistanceperday,
                         sum(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer,

@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,end_time_stamp AS EndTimeStamp
 	                        ,etl_gps_distance AS Distance
 	                        ,idle_duration AS IdleDuration
-	                        ,average_speed AS AverageSpeed
+	                        ,ROUND(average_speed,5) AS AverageSpeed
 	                        ,average_weight AS AverageWeight
 	                        ,last_odometer AS Odometer
                             , coalesce(startgeoaddr.address,'') AS StartPosition
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,end_position_lattitude AS EndPositionLattitude
 	                        ,end_position_longitude AS EndPositionLongitude
 	                        ,etl_gps_fuel_consumed AS FuelConsumed
-	                        ,veh_message_driving_time AS DrivingTime
+	                        ,etl_gps_driving_time AS DrivingTime
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events
 	                        ,fuel_consumption  AS FuelConsumed100km

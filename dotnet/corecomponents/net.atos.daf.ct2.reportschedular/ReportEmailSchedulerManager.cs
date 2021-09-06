@@ -53,6 +53,7 @@ namespace net.atos.daf.ct2.reportscheduler
                             ReportTokens objReportTokens = new ReportTokens();
                             objReportTokens.Token = emailItem.ReportToken.ToString();
                             objReportTokens.ReportName = emailItem.Key.Trim();
+                            objReportTokens.RecipentId = emailItem.RecipentId;
                             reportTokensList.Add(objReportTokens);
                             if (!toAddressList.ContainsKey(emailItem.EmailId))
                             {

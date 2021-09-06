@@ -17,9 +17,11 @@ import modules.Access_Relationship;
 import modules.CommonAPI;
 import modules.CommonFunctionLib;
 import modules.Driver_Management;
+import modules.Landmark;
 import modules.Org_Management;
 import modules.Package_Management;
 import modules.Role;
+import modules.TripReportDB;
 import modules.User;
 import modules.User_Group;
 import modules.Vehicles;
@@ -48,8 +50,10 @@ public class DriverScript
 	public static Driver_Management DM;
 	public static Package_Management PM;
 	public static Access_Relationship AR;
+	public static Landmark LM;
+	public static TripReportDB TR;
 	public static List<Method> method;
-	public static Method[] methodVH,methodUG,methodAPI,methodCOM, methodSSB, methodUSR, methodRol,methodDM,methodPM,methodAR;	
+	public static Method[] methodVH,methodUG,methodAPI,methodCOM, methodSSB, methodUSR, methodRol,methodDM,methodPM,methodAR,methodLM, methodTR;	
 	public static boolean bResult;
 	
     public DriverScript() throws NoSuchMethodException, SecurityException{
@@ -63,6 +67,8 @@ public class DriverScript
 			DM= new Driver_Management();
 			PM = new Package_Management();
 			AR= new Access_Relationship();
+			LM= new Landmark();
+			TR=new TripReportDB();
 			methodCOM = commfunction.getClass().getMethods();
 			methodVH = vehi.getClass().getMethods();
 			methodUG = ug.getClass().getMethods();
@@ -73,6 +79,8 @@ public class DriverScript
 			methodDM = DM.getClass().getMethods();
 			methodPM = PM.getClass().getMethods();
 			methodAR =AR.getClass().getMethods();
+			methodLM = LM.getClass().getMethods();
+			methodTR = TR.getClass().getMethods();
 	      //=================
 	        List<Method> mergedArray = new ArrayList<Method>(Arrays.asList(methodCOM)); //will give you first list.
 	        mergedArray.addAll(Arrays.asList(methodVH));
@@ -84,6 +92,8 @@ public class DriverScript
 	        mergedArray.addAll(Arrays.asList(methodDM));
 	        mergedArray.addAll(Arrays.asList(methodPM));
 	        mergedArray.addAll(Arrays.asList(methodAR));
+	        mergedArray.addAll(Arrays.asList(methodLM));
+	        mergedArray.addAll(Arrays.asList(methodTR));
 	        method = mergedArray;
 
 	        //System.out.println(method.toString());

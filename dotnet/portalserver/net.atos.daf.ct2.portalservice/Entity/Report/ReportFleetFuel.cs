@@ -26,7 +26,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         [Required]
         public string VIN { get; set; }
 
-        [Required]
         public string DriverId { get; set; }
     }
 

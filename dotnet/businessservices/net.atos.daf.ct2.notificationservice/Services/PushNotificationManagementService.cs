@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.notificationengine;
+using Notificationengine = net.atos.daf.ct2.notificationengine;
 using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Newtonsoft.Json;
@@ -11,6 +11,7 @@ using Grpc.Core;
 using log4net;
 using System.Reflection;
 using net.atos.daf.ct2.confluentkafka.entity;
+using net.atos.daf.ct2.notificationservice.Entity;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
@@ -20,13 +21,17 @@ namespace net.atos.daf.ct2.notificationservice.services
         private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         //private readonly ITripAlertManager _tripAlertManager;
-        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration)
+        private readonly Notificationengine.INotificationIdentifierManager _notificationIdentifierManager;
+        private readonly Mapper _mapper;
+        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration, Notificationengine.INotificationIdentifierManager notificationIdentifierManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             //_tripAlertManager = tripAlertManager;
+            _notificationIdentifierManager = notificationIdentifierManager;
+            _mapper = new Mapper();
         }
 
         public override async Task GetAlertMessageStream(Google.Protobuf.WellKnownTypes.Empty _, IServerStreamWriter<AlertMessageData> responseStream, ServerCallContext context)
@@ -77,6 +82,27 @@ namespace net.atos.daf.ct2.notificationservice.services
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = ResponseCode.InternalServerError
+                });
+            }
+        }
+
+        public override async Task<AlertVehicleDetails> GetEligibleAccountForAlert(AlertMesssageProp request, ServerCallContext context)
+        {
+            try
+            {
+                Notificationengine.entity.AlertMessageEntity alertMessageEntity = new Notificationengine.entity.AlertMessageEntity();
+                alertMessageEntity.AlertId = request.AlertId;
+                alertMessageEntity.Vin = request.VIN;
+                Notificationengine.entity.AlertVehicleEntity alertVehicleEntity = await _notificationIdentifierManager.GetEligibleAccountForAlert(alertMessageEntity);
+                return await Task.FromResult(_mapper.GetAlertVehicleEntity(alertVehicleEntity));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AlertVehicleDetails
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get alert vehicle fail : " + ex.Message
                 });
             }
         }

@@ -34,6 +34,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     }
   ];
   fuelBenchmarkForm: FormGroup;
+  requestSent:boolean = false;
 
   constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
 
@@ -140,49 +141,51 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   }
 
   onConfirm() {
-   
-    let temp_attr = [];   
-    for (let section of this.getReportPreferenceResponse.subReportUserPreferences) {
-      for (let field of section.subReportUserPreferences) {   
-        let testObj;
-        if (field.key == "rp_fb_chart_fuelconsumption") {
-          testObj = {
-            dataAttributeId: field.dataAttributeId,
-            state: "A",
-            preferenceType: "C",
-            chartType: this.fuelBenchmarkForm.get([field.key]).value,
-            thresholdType: "",
-            thresholdValue: 0
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let temp_attr = [];
+      for (let section of this.getReportPreferenceResponse.subReportUserPreferences) {
+        for (let field of section.subReportUserPreferences) {
+          let testObj;
+          if (field.key == "rp_fb_chart_fuelconsumption") {
+            testObj = {
+              dataAttributeId: field.dataAttributeId,
+              state: "A",
+              preferenceType: "C",
+              chartType: this.fuelBenchmarkForm.get([field.key]).value,
+              thresholdType: "",
+              thresholdValue: 0
+            }
           }
-        }
-        else {
-          testObj = {
-            dataAttributeId: field.dataAttributeId,
-            state: "A",
-            preferenceType: "C",
-            chartType: field.chartType,
-            thresholdType: "",
-            thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value)
-            //thresholdValue:4
+          else {
+            testObj = {
+              dataAttributeId: field.dataAttributeId,
+              state: "A",
+              preferenceType: "C",
+              chartType: field.chartType,
+              thresholdType: "",
+              thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value)
+              //thresholdValue:4
+            }
           }
+
+          temp_attr.push(testObj)
         }
 
-        temp_attr.push(testObj)
+      }
+      let benchmarkObject = {
+        reportId: this.reportId,
+        attributes: temp_attr
       }
 
+      this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
+        this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.requestSent = false;
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      });
     }
-    let benchmarkObject = {
-      reportId: this.reportId,
-      attributes: temp_attr
-    }
-  
-    this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
-      this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    });
-
   }
 
   onDonutPieDDChange(event: any) {

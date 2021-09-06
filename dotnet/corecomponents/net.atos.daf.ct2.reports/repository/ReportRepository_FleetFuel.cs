@@ -92,8 +92,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , count(trip_id)                                                         as numberoftrips
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                                  		  , SUM(veh_message_distance)                                              as veh_message_distance
-                                                  		  , SUM(average_speed)                                                     as average_speed
+                                                  		  , SUM(etl_gps_distance)                                              as veh_message_distance
+                                                  		  , AVG(average_speed)                                                     as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -125,11 +125,12 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	(
                                                   		SELECT
                                                   			vh.name                                              as VehicleName
+                                                          , '' as tripid
                                                   		  , fd.vin                                               as VIN
                                                   		  , vh.registration_no                                   as VehicleRegistrationNo
                                                   		  , round ( fd.etl_gps_distance,2)                       as Distance
                                                   		  , case when totalworkingdays>0 then round ((fd.veh_message_distance/totalworkingdays),2) else 0 end as AverageDistancePerDay
-                                                  		  , round (fd.average_speed,2)                           as AverageSpeed
+                                                  		  , round (fd.average_speed,5)                           as AverageSpeed
                                                   		  , max_speed                                            as MaxSpeed
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
@@ -202,8 +203,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , count(trip_id)                                                         as numberoftrips
                                                		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                               		  , SUM(veh_message_distance)                                              as veh_message_distance
-                                               		  , SUM(average_speed)                                                     as average_speed
+                                               		  , SUM(etl_gps_distance)                                              as veh_message_distance
+                                               		  , AVG(average_speed)                                                     as average_speed
                                                		  , MAX(max_speed)                                                         as max_speed
                                                		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -236,12 +237,13 @@ namespace net.atos.daf.ct2.reports.repository
                                                	(
                                                		SELECT
                                                			vh.name            as VehicleName
+                                                      , '' as tripid
                                                		  , fd.vin             as VIN
                                                		  , vh.registration_no as VehicleRegistrationNo
                                                		  , fd.DriverId
                                                		  , round ( fd.etl_gps_distance,2)                         as Distance
                                                		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
-                                               		  , round (fd.average_speed,2)                             as AverageSpeed
+                                               		  , round (fd.average_speed,5)                             as AverageSpeed
                                                		  , max_speed                                              as MaxSpeed
                                                		  , numberoftrips                                          as NumberOfTrips
                                                		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
@@ -413,11 +415,12 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				Select
 					VIN				  
+                  , id as Id
 				  , trip_id  as tripid
 				  , 1 as numberoftrips 
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
-				  , (veh_message_distance)                                              as veh_message_distance
+				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
@@ -455,12 +458,13 @@ namespace net.atos.daf.ct2.reports.repository
             (
                 SELECT
                     vh.name as VehicleName
+                  , fd.Id
 				  , tripid
 				  , fd.vin as VIN
 				  , vh.registration_no as VehicleRegistrationNo
 				  , round(fd.etl_gps_distance, 2) as Distance
 				  , round((fd.veh_message_distance), 2) as AverageDistancePerDay
-				  , round(fd.average_speed, 2) as AverageSpeed
+				  , round(fd.average_speed, 5) as AverageSpeed
 				  , max_speed as MaxSpeed
 				  , numberoftrips as NumberOfTrips
 				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
@@ -553,12 +557,13 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				Select
 					VIN
+                  , id as Id
                   ,trip_id                                                                 as tripid
 				  , driver1_id                                                             as DriverId
 				  , 1                                                         as numberoftrips
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
-				  , (veh_message_distance)                                              as veh_message_distance
+				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
@@ -596,13 +601,14 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				SELECT
 					vh.name            as VehicleName
+                   ,  fd.Id
                    ,tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
 				  , fd.DriverId
 				  , round ( fd.etl_gps_distance,2)                       as Distance
 				  , round ((fd.veh_message_distance),2) as AverageDistancePerDay
-				  , round (fd.average_speed,2)                           as AverageSpeed
+				  , round (fd.average_speed,5)                           as AverageSpeed
 				  , max_speed                                            as MaxSpeed
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb

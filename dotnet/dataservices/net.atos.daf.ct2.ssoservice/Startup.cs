@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
@@ -77,6 +78,8 @@ namespace net.atos.daf.ct2.singlesignonservice
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 
             services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+            services.AddTransient<IDriverManager, DriverManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
 
             //services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
             //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();

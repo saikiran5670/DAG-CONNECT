@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 
-public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload> implements Serializable {
+public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload<Object>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload> imple
     }
 
     @Override
-    public Payload map(AlertCdc alertCdc) throws Exception {
+    public Payload<Object> map(AlertCdc alertCdc) throws Exception {
         ResultSet row = connection.createStatement()
                 .executeQuery(parameterTool.get(ALERT_THRESHOLD_FETCH_SINGLE_QUERY) + "" + alertCdc.getAlertId());
         AlertUrgencyLevelRefSchema refSchema=null;
@@ -61,8 +61,13 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload> imple
                     .alertType(String.valueOf(row.getObject(3)))
                     .alertState(String.valueOf(row.getObject(4)))
                     .urgencyLevelType(String.valueOf(row.getObject(5)))
-                    .thresholdValue(row.getObject(6) == null ? -1L : Long.valueOf(String.valueOf(row.getObject(6))))
+                    .thresholdValue(row.getObject(6) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(6))))
                     .unitType(String.valueOf(row.getObject(7)))
+                    .periodType(String.valueOf(row.getObject(8)))
+                    .dayTypeArray(String.valueOf(row.getObject(9)))
+                    .startTime(row.getObject(10) == null ? 0L : Long.valueOf(String.valueOf(row.getObject(10))))
+                    .endTime(row.getObject(11) == null ? 0L :   Long.valueOf(String.valueOf(row.getObject(11))))
+                    .timestamp(System.currentTimeMillis())
                     .build();
         }
         logger.info("Record fetch from database :: {} ",refSchema);

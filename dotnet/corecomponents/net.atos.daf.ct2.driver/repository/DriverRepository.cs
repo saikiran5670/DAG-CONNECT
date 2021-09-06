@@ -17,10 +17,10 @@ namespace net.atos.daf.ct2.driver
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DriverRepository(IDataAccess dataAccess, IDataMartDataAccess DataMartdataAccess)
+        public DriverRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
-            _dataMartdataAccess = DataMartdataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
 
         public Task<int> UploadDriverTemplate()
@@ -50,6 +50,27 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
+        public async Task<DriverLookup> GetDriver(int organizationId, string driverId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@id", driverId);
+                parameter.Add("@state", "A");
+
+                var queryStatement = @"SELECT first_name as FirstName, last_name as LastName
+                                    from master.driver where organization_id=@organization_id and driver_id_ext=@id and state=@state";
+
+                return await _dataAccess.QueryFirstOrDefaultAsync<DriverLookup>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
         public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
         {
             try
@@ -57,14 +78,37 @@ namespace net.atos.daf.ct2.driver
                 var response = new DriverLookupResponse();
                 var parameter = new DynamicParameters();
                 parameter.Add("@DriverId", driverId);
-                parameter.Add("@Email", email);
+                parameter.Add("@Email", email.ToLower());
 
-                var queryStatement = @"SELECT first_name FirstName, last_name LastName, organization_id as OrganizationId, org.name as OrganizationName
-                                    from master.driver drv inner join master.organization org on org.id=drv.organization_id
-                                    where driver_id_ext = @DriverId and email = @Email";
+                var queryStatement =
+                        @"SELECT first_name FirstName, last_name LastName, organization_id as OrganisationId, org.name as OrganisationName
+                            FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
+                            WHERE driver_id_ext = @DriverId and lower(email) = @Email and drv.state='A'";
 
                 response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
                 return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@DriverId", driverId);
+                parameter.Add("@Email", email);
+                parameter.Add("@OrganisationId", organisationId);
+
+                var queryStatement =
+                        @"SELECT EXISTS (SELECT 1
+                            FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
+                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId and drv.state='A')";
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
             }
             catch (Exception)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.entity;
@@ -127,24 +128,18 @@ namespace net.atos.daf.ct2.email
         }
         public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)
         {
-            System.Text.StringBuilder builder = new System.Text.StringBuilder();
-            var downloadUrl = $"#/downloadreport/{0}";
-            //Uri baseUrl = new Uri(messageRequest.ReportSchedulerConfiguration.APIBaseUrl);
-            string btnLabel = "\"button\"";
-            string lblBlank = "\"_blank\"";
-            string lblPlaceholder = "\"{0}\"";
-            string lblDescription = messageRequest.Description + "<br/>";
-            var urldown = @"<a class=" + btnLabel + " href=" + lblPlaceholder + " target=" + lblBlank + ">[lblDownloadReportButton]</a>";
-            string urlplace = string.Empty;
+            var rowBuilder = new StringBuilder();
+            var logoImageUrl = new Uri(baseUrl, "assets/logo.png");
+            var emailId = messageRequest.ToAddressList.FirstOrDefault().Key;
             foreach (var token in messageRequest.ReportTokens)
             {
-                //Uri downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token.Key));
                 Uri downloadReportUrl = new Uri(baseUrl, $"#/downloadreport/{token.Token}");
-                urldown += "<br/>";
-                urlplace += token.ReportName + "<br/>";
-                urlplace += string.Format(urldown, downloadReportUrl);
+                Uri unSubscribeUrl = new Uri(baseUrl, $"#/unsubscribereport/{token.Token}/{token.RecipentId}/{emailId}");
+                rowBuilder.AppendFormat(EmailTemplateConstant.EMAIL_TEMPLATE, token.ReportName, downloadReportUrl, unSubscribeUrl);
             }
-            builder.AppendFormat(emailTemplate, messageRequest.AccountInfo.FullName, lblDescription, urlplace);
+            var builder = new StringBuilder();
+            Uri unSubscribeAllUrl = new Uri(baseUrl, $"#/unsubscribereport/{Guid.NewGuid()}/0/{emailId}");
+            builder.AppendFormat(emailTemplate, messageRequest.AccountInfo.FullName, messageRequest.Description, rowBuilder.ToString(), unSubscribeAllUrl, logoImageUrl);
             return builder.ToString();
         }
 

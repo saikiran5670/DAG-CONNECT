@@ -137,9 +137,9 @@ namespace atos.net.daf.ct2.reportscheduler.test
             bool isresult;
             ReportEmailFrequency objReportEmailFrequency = new ReportEmailFrequency();
             objReportEmailFrequency.ReportNextScheduleRunDate = 1626201000000;
-            objReportEmailFrequency.ReportScheduleRunDate = 1626201000000; 
+            objReportEmailFrequency.ReportScheduleRunDate = 1626201000000;
             objReportEmailFrequency.StartDate = 1625596200000;
-            objReportEmailFrequency.EndDate = 1626201000000; 
+            objReportEmailFrequency.EndDate = 1626201000000;
             objReportEmailFrequency.FrequencyType = TimeFrequenyType.Weekly;
             _helper.GetNextFrequencyTime(objReportEmailFrequency);
             isresult = true;

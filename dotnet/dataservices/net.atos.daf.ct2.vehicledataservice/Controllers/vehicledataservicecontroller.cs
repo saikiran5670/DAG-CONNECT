@@ -5,30 +5,35 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 using net.atos.daf.ct2.vehicledataservice.Entity;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle-data")]
-    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class VehicleDataserviceController : ControllerBase
     {
         private readonly ILogger<VehicleDataserviceController> _logger;
+        private readonly IAuditTraillib _auditTrail;
         private readonly IVehicleManager _vehicleManager;
         private readonly IOrganizationManager _organizationManager;
         private readonly IConfiguration _configuration;
-        public VehicleDataserviceController(IVehicleManager vehicleManager, ILogger<VehicleDataserviceController> logger, IOrganizationManager organizationManager, IConfiguration configuration)
+        public VehicleDataserviceController(IAuditTraillib auditTrail, IVehicleManager vehicleManager, ILogger<VehicleDataserviceController> logger, IOrganizationManager organizationManager, IConfiguration configuration)
         {
             this._organizationManager = organizationManager;
             this._vehicleManager = vehicleManager;
             this._logger = logger;
             _configuration = configuration;
+            _auditTrail = auditTrail;
         }
 
         [HttpPost]
@@ -37,6 +42,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Vehicle Data Service", "Vehicle data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "vehicle Update dataservice received object", 0, 0, JsonConvert.SerializeObject(vehicleData), 0, 0);
                 _logger.LogInformation("UpdateVehicle function called - " + vehicleData.VehicleUpdatedEvent?.Vehicle?.VehicleID?.VIN);
 
                 VehicleProperty vehicleProperties = new VehicleProperty();
@@ -69,14 +75,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series != null)
                     {
                         vehicleProperties.Classification_Series_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID?.Trim();
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != "CF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange != null)
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        else
-                        {
-                            vehicleProperties.Classification_Series_VehicleRange = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange?.Trim();
-                        }
+                        vehicleProperties.Classification_Series_VehicleRange = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.VehicleRange?.Trim();
                     }
 
                     vehicleProperties.Classification_Model_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Model?.ID?.Trim();
@@ -234,13 +233,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     relationshipMapping.AllowChain = true;
                     await _organizationManager.CreateOwnerRelationship(relationshipMapping);
                 }
-
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Vehicle data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "vehicle Update dataservice modified object", 0, 0, JsonConvert.SerializeObject(vehicleData), 0, 0);
                 _logger.LogInformation("Vehicle Properties updated with VIN - " + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
                 return Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while processing Vehicle data.");
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Vehicle Data Service", "Vehicle data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "vehicle Update dataservice modified object", 0, 0, JsonConvert.SerializeObject(vehicleData), 0, 0);
                 return StatusCode(500, string.Empty);
             }
         }

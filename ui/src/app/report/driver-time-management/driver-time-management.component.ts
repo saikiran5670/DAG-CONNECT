@@ -567,8 +567,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   allDriverData : any;
   graphPayload : any;
   onSearch(){
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+  
     let _vehicelIds = [];
     let _driverIds =[];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
@@ -802,8 +805,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       "reportId": 10,
       "accountId": this.accountId,
       "organizationId": this.accountOrganizationId,
-      "startDateTime": Util.convertDateToUtc(defaultStartValue),
-      "endDateTime": Util.convertDateToUtc(defaultEndValue)
+      "startDateTime": Util.getMillisecondsToUTCDate(defaultStartValue, this.prefTimeZone),
+      "endDateTime": Util.getMillisecondsToUTCDate(defaultEndValue, this.prefTimeZone)
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
@@ -831,8 +834,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let distinctGroupId : any = [];
     let distinctDriverId : any = [];
     let finalDriverList : any = [];
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue); //_last3m.getTime();
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // _yesterday.getTime();
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);     
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue); //_last3m.getTime();
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // _yesterday.getTime();
     //this.resetdriverTimeFormControlValue();
     let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
     let filteredDriverList = [];
@@ -1144,9 +1149,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
  
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.driverSelected = true;
-    this.graphPayload = {
-      "startDateTime": Util.convertDateToUtc(this.startDateValue),//this.startDateValue,
-      "endDateTime": Util.convertDateToUtc(this.endDateValue), //this.endDateValue,
+    this.graphPayload = {   
+      "startDateTime":Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,
+      "endDateTime":  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone), //this.endDateValue,
       "driverId": _row.driverId
     }
     // this.driverDetails = 

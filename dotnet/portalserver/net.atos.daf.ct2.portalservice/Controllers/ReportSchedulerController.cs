@@ -480,6 +480,71 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region UnSubscribeById
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("UnSubscribe")]
+        public async Task<IActionResult> UnSubscribe([FromQuery] UnSubscribeRequest request)
+        {
+            try
+            {
+                if (request.RecipentId == 0) return StatusCode(404, ReportSchedulerConstants.REPORTSCHEDULER_RECIPENT_ID_NOT_FOUND);
+                if (string.IsNullOrEmpty(request.EmailId)) return StatusCode(404, ReportSchedulerConstants.REPORTSCHEDULER_EMAIL_ID_NOT_FOUND);
+                var data = await _reportschedulerClient.UnSubscribeByIdAsync(request);
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                {
+                    return Ok(data);
+                }
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE_2, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UnSubscribe", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+        #endregion
+
+        #region UnSubscribeById
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("Unsubscribeall")]
+        public async Task<IActionResult> UnSubscribeAll([FromQuery] UnSubscribeAllRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.EmailId)) return StatusCode(404, ReportSchedulerConstants.REPORTSCHEDULER_EMAIL_ID_NOT_FOUND);
+                var data = await _reportschedulerClient.UnSubscribeAllByEmailIdAsync(request);
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                {
+                    return Ok(data);
+                }
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE_2, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UnSubscribe", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+        #endregion
+
         #region GetPDFBinaryFormatById
         [HttpGet]
         [Route("getpdf")]

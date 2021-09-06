@@ -63,5 +63,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return false;
             }
         }
+
+        protected async Task<int> GetUserPrivilegeLevel()
+        {
+            try
+            {
+                return await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
+            }
+            catch (Exception)
+            {
+                return 999;
+            }
+        }
+        protected SessionFeature[] GetUserSubscribeFeatures()
+        {
+            return _userDetails.UserFeatures;
+        }
     }
 }

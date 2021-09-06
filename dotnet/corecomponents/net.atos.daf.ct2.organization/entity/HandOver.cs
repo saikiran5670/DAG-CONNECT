@@ -40,5 +40,6 @@ namespace net.atos.daf.ct2.organization.entity
         public string OEMRelationship { get; set; }
         public string OrgCreationPackage { get; set; }
         public string DAFPACCAR { get; set; }
+        public string SubscriptionId { get; set; }
     }
 }

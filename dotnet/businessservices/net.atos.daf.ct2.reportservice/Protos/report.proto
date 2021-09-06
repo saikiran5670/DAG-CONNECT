@@ -195,8 +195,12 @@ message GetReportUserPreferenceRequest {
     int32 RoleId=3;
     int32 OrganizationId=4;
     int32 ContextOrgId=5; 
+    repeated SessionFeatures UserFeatures =6;
 }
-
+message SessionFeatures {
+    int32 FeatureId=1;
+    string Name=2;
+}
 message GetReportUserPreferenceResponse {
     ReportUserPreference UserPreference = 1;
     Responsecode Code = 2;
@@ -561,9 +565,9 @@ message FleetUtilizationCalenderResponse {
 }
 
 message FleetUtilizationDetails {
-    string VehicleName = 1;
+    google.protobuf.StringValue VehicleName = 1;
     string VIN = 2;
-    string RegistrationNumber = 3;
+    google.protobuf.StringValue RegistrationNumber = 3;
     double Distance = 4;
     int32 NumberOfTrips  = 5;
     int64 TripTime = 6;
@@ -804,6 +808,8 @@ message FleetFuelDetails {
     google.protobuf.StringValue VehicleName = 1;
     google.protobuf.StringValue VIN = 2;
     google.protobuf.StringValue VehicleRegistrationNo = 3;
+    int64 Id=53;
+    string TripId=54;
     int64 Distance = 4;
     int64 AverageDistancePerDay = 5;
     double AverageSpeed = 6;

@@ -39,6 +39,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
         [DataMember(Name = "status2OfDoors", EmitDefaultValue = false)]
         public string Status2OfDoors { get; set; }
 
+
+        [DataMember(Name = "doorStatus", EmitDefaultValue = false)]
+        public DoorStatusObject DoorStatus { get; set; }
+
         //doorStatus:list
 
     }

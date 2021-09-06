@@ -21,6 +21,8 @@ import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-adva
 import { ReportMapService } from '../../../report/report-map.service';
 import { TranslationService } from '../../../services/translation.service';
 import { OrganizationService } from '../../../services/organization.service';
+import { SimpleChanges } from '@angular/core';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 declare var H: any;
 
@@ -39,7 +41,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleGroupList: any = [];
   vehicleList: any = [];
   accountInfo:any = {};
+  initData: any = [];
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'viewstatus'];
+  columnLabels = ['VIN','VehicleName', 'VehicleGroupName', 'Status'];
+  @ViewChild('gridComp') gridComp: DataTableComponent;
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
@@ -73,11 +79,18 @@ export class CreateEditViewAlertsComponent implements OnInit {
   accountRoleId: number;
   userType: string;
   selectedApplyOn: string;
+  criticalLevel: boolean= false;
+  warningLevel: boolean= false;
+  advisoryLevel: boolean= false;
   openAdvancedFilter: boolean= false;
   poiGridData = [];
   geofenceGridData = [];
   groupGridData = [];
   corridorGridData = [];
+  selectedPOIList: any = [];
+  selectedGeofenceList: any = [];
+  selectedGroupList: any = [];
+  selectedCorridorList: any = [];
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
@@ -211,7 +224,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       ]
     });
 
-    this.loadFilterDataBasedOnPrivileges();
+    // this.loadFilterDataBasedOnPrivileges();
 
     if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
       this.breadcumMsg = this.getBreadcum();
@@ -235,6 +248,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
       }
 
+      this.loadFilterDataBasedOnPrivileges();
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
       if(vehicleDisplayId) {
         let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
@@ -247,6 +261,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.sliderChanged();
       }
     });
+
+    if (this.actionType == 'view') {
+      this.openAdvancedFilter = true;
+      if(this.selectedRowData.alertLandmarkRefs.length > 0){
+        this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
+        this.sliderChanged();
+      }
+    }
 }
   
 proceedStep(prefData: any, preference: any){
@@ -342,18 +364,19 @@ proceedStep(prefData: any, preference: any){
   }
 
   updateVehiclesDataSource(tableData: any){
-    this.vehiclesDataSource= new MatTableDataSource(tableData);
-    this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
-      return (
-        data.vehicleName.toString().toLowerCase().includes(filter) ||
-        data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
-        data.subcriptionStatus.toString().toLowerCase().includes(filter)
-      );
-    };
-    setTimeout(()=>{
-      this.vehiclesDataSource.paginator = this.paginator.toArray()[0];
-      this.vehiclesDataSource.sort = this.sort.toArray()[0];
-    });
+    this.gridComp.updatedTableData(tableData);
+    // this.vehiclesDataSource= new MatTableDataSource(tableData);
+    // this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //   return (
+    //     data.vehicleName.toString().toLowerCase().includes(filter) ||
+    //     data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
+    //     data.subcriptionStatus.toString().toLowerCase().includes(filter)
+    //   );
+    // };
+    // setTimeout(()=>{
+    //   this.vehiclesDataSource.paginator = this.paginator.toArray()[0];
+    //   this.vehiclesDataSource.sort = this.sort.toArray()[0];
+    // });
   }
 
   onChangeAlertCategory(value){
@@ -386,7 +409,7 @@ proceedStep(prefData: any, preference: any){
     
     //----------------------------------------------------------------------------------------------------------
 
-    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C' ||this.alert_type_selected === 'S')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
       }
@@ -591,7 +614,7 @@ proceedStep(prefData: any, preference: any){
     let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
     vehicleGroups.forEach(element => {
       let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
-      if(vehGrp.length > 0){
+      if(vehGrp.length > 0 && vehGrp.vehicleGroupId!=0){
         this.vehicleGroupList.push(vehGrp[0]);
       }
     });
@@ -1080,9 +1103,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertCategory(this.selectedRowData.category);
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
+    this.alert_type_selected= this.selectedRowData.type;
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
-    if(!this.alert_category_selected+this.alert_type_selected == "LS" || !this.alert_category_selected+this.alert_type_selected == "FA" || !this.alert_category_selected+this.alert_type_selected == "FI"
-    || !this.alert_category_selected+this.alert_type_selected == "FP" || !this.alert_category_selected+this.alert_type_selected == "FL" || !this.alert_category_selected+this.alert_type_selected == "FT"){
+    if(this.selectedRowData.alertLandmarkRefs.length > 0){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
     }
@@ -1187,18 +1210,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadPOISelectedData(tableData: any){
-    let selectedPOIList: any = [];
+    this.selectedPOIList = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
         if (search.length > 0) {
-          selectedPOIList.push(row);
+          this.selectedPOIList.push(row);
           setTimeout(() => {
             this.PoiCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedPOIList;
+      tableData = this.selectedPOIList;
       this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
       this.updatePOIDataSource(tableData);
     }
@@ -1246,18 +1269,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadGeofenceSelectedData(tableData: any){
-    let selectedGeofenceList: any = [];
+    this.selectedGeofenceList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
         if (search.length > 0) {
-          selectedGeofenceList.push(row);
+          this.selectedGeofenceList.push(row);
           setTimeout(() => {
             this.geofenceCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedGeofenceList;
+      tableData = this.selectedGeofenceList;
       this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName', 'address'];
       this.updateGeofenceDataSource(tableData);
     }
@@ -1311,15 +1334,15 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadGroupSelectedData(tableData: any){
-    let selectedGroupList: any = [];
+    this.selectedGroupList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
         if (search.length > 0) {
-          selectedGroupList.push(row);
+          this.selectedGroupList.push(row);
         }
       });
-      tableData = selectedGroupList;
+      tableData = this.selectedGroupList;
       this.displayedColumnsGroup= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
@@ -1347,18 +1370,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   loadCorridorSelectedData(tableData: any){
-    let selectedGroupList: any = [];
+    this.selectedCorridorList= [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "R" || item.landmarkType == "E"));
         if (search.length > 0) {
-          selectedGroupList.push(row);
+          this.selectedCorridorList.push(row);
           setTimeout(() => {
             this.corridorCheckboxClicked({checked : true}, row);  
           }, 1000);
         }
       });
-      tableData = selectedGroupList;
+      tableData = this.selectedCorridorList;
       this.displayedColumnsCorridor= ['corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
       this.updateCorridorDatasource(tableData);
     }
@@ -2344,7 +2367,29 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onAddNotification(){
-     this.panelOpenState = !this.panelOpenState;    
+     this.panelOpenState = !this.panelOpenState;
+     this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
+     this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
+     this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value; 
+     if(this.isCriticalLevelSelected && this.criticalThreshold == ''){
+      this.criticalLevel = false;
+    }
+    else if(this.isCriticalLevelSelected && this.criticalThreshold != ''){
+      this.criticalLevel = true;
+    }
+    if(this.isWarningLevelSelected && this.warningThreshold == ''){
+      this.warningLevel = false;
+    }
+    else if(this.isWarningLevelSelected && this.warningThreshold != ''){
+      this.warningLevel = false;
+    } 
+
+    if(this.isAdvisoryLevelSelected && this.advisoryThreshold == ''){
+      this.advisoryLevel = false;
+    } 
+    else if(this.isAdvisoryLevelSelected && this.advisoryThreshold != ''){
+      this.advisoryLevel = false;
+    }     
   }
 
   onDeleteNotification(){
@@ -2393,4 +2438,25 @@ keyPressNumbers(event) {
   if (event.value.length == limit) event.preventDefault();
 return true;   
 }
+
+onKey(event: any) { // without type info
+  // let values += event.target.value + ' | ';
+}
+
+onChange($event){
+this.criticalThreshold = this.alertForm.controls.criticalLevelThreshold.value;
+this.warningThreshold = this.alertForm.controls.warningLevelThreshold.value;
+this.advisoryThreshold = this.alertForm.controls.advisoryLevelThreshold.value;
+}
+
+ngOnChanges(changes: SimpleChanges) {
+  // let d =this.criticalLevel;
+  // let e = this.warningLevel;
+  // let f = this.advisoryLevel;
+  for (const d in changes) {
+    const chng1 = changes[d];
+    const cur1  = JSON.stringify(chng1.currentValue);
+
+  }}
+  
 }

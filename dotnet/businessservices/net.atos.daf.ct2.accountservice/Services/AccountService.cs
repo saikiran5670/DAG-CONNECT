@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.accountservice
         // private readonly ILogger<AccountManagementService> _logger;
         private readonly AccountComponent.IAccountManager _accountmanager;
         private readonly Preference.IPreferenceManager _preferencemanager;
-        private readonly Group.IGroupManager _groupmanager;
+        private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
         private readonly IVehicleManager _vehicelManager;
         private readonly ILog _logger;
@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.accountservice
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._accountmanager = Accountmanager;
             _preferencemanager = Preferencemanager;
-            this._groupmanager = Groupmanager;
+            this._groupManager = Groupmanager;
             this._accountIdentityManager = AccountIdentityManager;
             _mapper = new Mapper();
             _vehicelManager = VehicelManager;
@@ -193,7 +193,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message,
+                    Message = "Account Creation Failed due to - " + ex.Message,
                     Account = null
                 });
             }
@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Updation Faile due to - " + ex.Message,
+                    Message = "Account Updation Failed due to - " + ex.Message,
                     Account = null
                 });
             }
@@ -250,7 +250,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Faile due to - " + ex.Message
+                    Message = "Account Deletion Failed due to - " + ex.Message
                 });
             }
         }
@@ -351,7 +351,7 @@ namespace net.atos.daf.ct2.accountservice
                     groupFilter.GroupRefCount = false;
                     // get account group accounts
 
-                    var accountGroupList = await _groupmanager.Get(groupFilter);
+                    var accountGroupList = await _groupManager.Get(groupFilter);
                     var group = accountGroupList.FirstOrDefault();
                     List<int> accountIds = null;
                     if (group != null && group.GroupRef != null)
@@ -451,7 +451,7 @@ namespace net.atos.daf.ct2.accountservice
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupRef = true;
                     // get account group accounts
-                    var groups = _groupmanager.Get(groupFilter).Result;
+                    var groups = _groupManager.Get(groupFilter).Result;
                     foreach (Group.Group group in groups)
                     {
                         // check for dynamic group 
@@ -528,7 +528,7 @@ namespace net.atos.daf.ct2.accountservice
                         groupFilter.ObjectType = Group.ObjectType.None;
                         groupFilter.GroupType = Group.GroupType.None;
                         groupFilter.FunctionEnum = Group.FunctionEnum.None;
-                        var vehicleGroups = await _groupmanager.Get(groupFilter);
+                        var vehicleGroups = await _groupManager.Get(groupFilter);
                         // Get group reference
                         foreach (Group.Group vGroup in vehicleGroups)
                         {
@@ -573,7 +573,7 @@ namespace net.atos.daf.ct2.accountservice
                     groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupType = Group.GroupType.Group;
-                    var accountGroupList = await _groupmanager.Get(groupFilter);
+                    var accountGroupList = await _groupManager.Get(groupFilter);
                     if (accountGroupList != null)
                     {
                         foreach (Group.Group aGroup in accountGroupList)
@@ -838,7 +838,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Faile due to - " + ex.Message
+                    Message = "Account Blob Creation Failed due to - " + ex.Message
                 });
             }
         }
@@ -869,7 +869,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Faile due to - " + ex.Message
+                    Message = "Account Blob Creation Failed due to - " + ex.Message
                 });
             }
         }
@@ -894,7 +894,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                                     Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     vehicleGroupId = group.Id;
                 }
                 if (vehicleGroupId > 0)
@@ -910,7 +910,7 @@ namespace net.atos.daf.ct2.accountservice
                             if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                             group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
                                                           Group.FunctionEnum.None, account.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                            group = await _groupmanager.Create(group);
+                            group = await _groupManager.Create(group);
                             accountGroupId = group.Id;
                             var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
                             var result = await _accountmanager.CreateAccessRelationship(accessRelationship);
@@ -955,7 +955,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                                     Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     vehicleGroupId = group.Id;
                 }
                 // delete access relatioship for vehicle or vehicle group
@@ -976,7 +976,7 @@ namespace net.atos.daf.ct2.accountservice
                             if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                             group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
                                                           Group.FunctionEnum.None, account.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                            group = await _groupmanager.Create(group);
+                            group = await _groupManager.Create(group);
                             accountGroupId = group.Id;
                             var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
                             var accessRelationshipResult = await _accountmanager.CreateAccessRelationship(accessRelationship);
@@ -1020,7 +1020,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     Group.Group group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                         Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     vehicleGroupId = group.Id;
                 }
                 // delete access relatioship for vehicle or vehicle group
@@ -1067,7 +1067,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
                                                     Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     accountGroupId = group.Id;
                 }
                 if (accountGroupId > 0)
@@ -1084,7 +1084,7 @@ namespace net.atos.daf.ct2.accountservice
                             if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                             group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                                           Group.FunctionEnum.None, vehicle.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                            group = await _groupmanager.Create(group);
+                            group = await _groupManager.Create(group);
                             vehicleGroupId = group.Id;
                             var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
                             var result = await _accountmanager.CreateAccessRelationship(accessRelationship);
@@ -1129,7 +1129,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
                                                     Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     accountGroupId = group.Id;
                 }
                 // delete access relatioship for vehicle or vehicle group
@@ -1151,7 +1151,7 @@ namespace net.atos.daf.ct2.accountservice
                             if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                             group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                                           Group.FunctionEnum.None, vehicle.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                            group = await _groupmanager.Create(group);
+                            group = await _groupManager.Create(group);
                             vehicleGroupId = group.Id;
                             var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
                             var accessRelationshipResult = await _accountmanager.CreateAccessRelationship(accessRelationship);
@@ -1194,7 +1194,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
                     Group.Group group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
                                         Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await _groupmanager.Create(group);
+                    group = await _groupManager.Create(group);
                     accountGroupId = group.Id;
                 }
                 // delete access relatioship for vehicle or vehicle group
@@ -1270,8 +1270,8 @@ namespace net.atos.daf.ct2.accountservice
                         accountList = await _accountmanager.GetAccount(filter, false);
                         vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
                     }
-                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.Id, Name = a.Name, Is_group = a.Is_group, Count = a.Count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
-                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(Objvehiclelist));
+                    List<AccountVehicleEntity> objVehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.Id, Name = a.Name, Is_group = a.Is_group, Count = a.Count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
+                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(objVehiclelist));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
                     _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }
@@ -1345,7 +1345,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -1376,7 +1376,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -1407,7 +1407,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Get Faile due to - " + ex.Message
+                    Message = "Preference Get Failed due to - " + ex.Message
 
                 });
             }
@@ -1423,7 +1423,7 @@ namespace net.atos.daf.ct2.accountservice
                 response.AccountGroup = new AccountGroupRequest();
                 Group.Group group = new Group.Group();
                 group = _mapper.ToGroup(request);
-                group = await _groupmanager.Create(group);
+                group = await _groupManager.Create(group);
                 // check for exists
                 response.AccountGroup.Exists = false;
                 if (group.Exists)
@@ -1442,7 +1442,7 @@ namespace net.atos.daf.ct2.accountservice
                         if (item.RefId > 0)
                             group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId, Group_Id = group.Id });
                     }
-                    bool accountRef = await _groupmanager.AddRefToGroups(group.GroupRef);
+                    bool accountRef = await _groupManager.AddRefToGroups(group.GroupRef);
                 }
                 request.Id = group.Id;
                 request.CreatedAt = group.CreatedAt.Value;
@@ -1470,7 +1470,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 Group.Group entity = new Group.Group();
                 entity = _mapper.ToGroup(request);
-                entity = await _groupmanager.Update(entity);
+                entity = await _groupManager.Update(entity);
                 if (entity.Id > 0 && entity != null)
                 {
                     if (request.GroupRef != null && Convert.ToInt16(request.GroupRef.Count) > 0)
@@ -1483,18 +1483,18 @@ namespace net.atos.daf.ct2.accountservice
                         }
                         if ((entity.GroupRef != null) && Convert.ToInt16(entity.GroupRef.Count) > 0)
                         {
-                            bool accountRef = await _groupmanager.UpdateRef(entity);
+                            bool accountRef = await _groupManager.UpdateRef(entity);
                         }
                         else
                         {
                             // delete existing reference
-                            await _groupmanager.RemoveRef(entity.Id);
+                            await _groupManager.RemoveRef(entity.Id);
                         }
                     }
                     else
                     {
                         // delete existing reference
-                        await _groupmanager.RemoveRef(entity.Id);
+                        await _groupManager.RemoveRef(entity.Id);
                     }
                 }
                 _logger.Info("Update Account Group :" + Convert.ToString(entity.Name));
@@ -1519,7 +1519,7 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                bool result = await _groupmanager.Delete(request.Id, Group.ObjectType.AccountGroup);
+                bool result = await _groupManager.Delete(request.Id, Group.ObjectType.AccountGroup);
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account Group deleted.",
@@ -1554,7 +1554,7 @@ namespace net.atos.daf.ct2.accountservice
                     // add account to groups
                     if (group.GroupRef != null && Convert.ToInt16(group.GroupRef.Count) > 0)
                     {
-                        result = _groupmanager.AddRefToGroups(group.GroupRef).Result;
+                        result = _groupManager.AddRefToGroups(group.GroupRef).Result;
                     }
                 }
                 if (result)
@@ -1587,7 +1587,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 AccountGroupResponce response = new AccountGroupResponce();
                 bool result = false;
-                result = await _groupmanager.RemoveRefByRefId(request.Id);
+                result = await _groupManager.RemoveRefByRefId(request.Id);
                 if (result)
                 {
                     response.Code = Responcecode.Success;
@@ -1627,7 +1627,7 @@ namespace net.atos.daf.ct2.accountservice
                 ObjGroupFilter.ObjectType = Group.ObjectType.AccountGroup;
                 ObjGroupFilter.GroupType = Group.GroupType.None;
 
-                IEnumerable<Group.Group> ObjRetrieveGroupList = await _groupmanager.Get(ObjGroupFilter);
+                IEnumerable<Group.Group> ObjRetrieveGroupList = await _groupManager.Get(ObjGroupFilter);
                 _logger.Info("Get account group.");
                 foreach (var item in ObjRetrieveGroupList)
                 {
@@ -1665,13 +1665,13 @@ namespace net.atos.daf.ct2.accountservice
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                 groupFilter.GroupRefCount = true;
                 // all account group of organization with account count
-                IEnumerable<Group.Group> accountGroups = await _groupmanager.Get(groupFilter);
+                IEnumerable<Group.Group> accountGroups = await _groupManager.Get(groupFilter);
                 // get access relationship 
                 AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
 
                 foreach (Group.Group group in accountGroups)
                 {
-                    List<GroupRef> Associatedvehicle = new List<GroupRef>();
+                    List<GroupRef> associatedVehicle = new List<GroupRef>();
                     accountDetail = new AccountGroupDetail();
                     accountDetail.GroupId = group.Id;
                     accountDetail.AccountGroupName = group.Name;
@@ -1682,32 +1682,15 @@ namespace net.atos.daf.ct2.accountservice
                     accessFilter.AccountGroupId = group.Id;
 
                     var accessList = await _accountmanager.GetAccessRelationship(accessFilter);
-                    List<Int32> groupId = new List<int>();
-                    accountDetail.VehicleCount = 0;
-                    // vehicle group 
-                    if (Convert.ToInt32(accessList.Count) > 0)
+                    int[] groupIds;
+                    // Get vehicles count
+                    if (accessList.Count > 0)
                     {
-                        groupId.AddRange(accessList.Select(c => c.VehicleGroupId).ToList());
-                        groupFilter = new Group.GroupFilter();
-                        groupFilter.GroupIds = groupId;
-                        groupFilter.GroupRefCount = false;
-                        groupFilter.GroupRef = true;
-                        groupFilter.ObjectType = Group.ObjectType.None;
-                        groupFilter.GroupType = Group.GroupType.None;
-                        groupFilter.FunctionEnum = Group.FunctionEnum.None;
-                        var vehicleGroups = await _groupmanager.Get(groupFilter);
-                        //Int32 count = 0;
-                        // Get vehicles count
-                        foreach (Group.Group vGroup in vehicleGroups)
-                        {
-                            if (vGroup.GroupRef != null) Associatedvehicle.AddRange(vGroup.GroupRef);
-                            // count = count + vGroup.GroupRefCount;
-                        }
-                        //accountDetail.VehicleCount = count;
+                        groupIds = accessList.Select(c => c.VehicleGroupId).ToArray();
+                        var count = await _groupManager.GetVehiclesCount(groupIds, request.OrganizationId);
+                        accountDetail.VehicleCount = count;
                     }
-                    accountDetail.VehicleCount = Associatedvehicle.Select(I => I.Ref_Id).Distinct().Count();
                     response.AccountGroupDetail.Add(accountDetail);
-                    _logger.Info("Get account group details.");
                 }
 
                 response.Message = "Get AccountGroup";

@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                     @"select unit_type from master.alerturgencylevelref 
                           where urgency_level_type=@urgency_level_type and alert_id=@alert_id and state=@state";
 
-                string unitType = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+                string unitType = await _dataAccess.QueryFirstOrDefaultAsync<string>(query, parameter);
 
                 return unitType;
             }
@@ -344,5 +344,34 @@ namespace net.atos.daf.ct2.notificationengine.repository
             }
         }
 
+        public async Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alert_id", alertMessageEntity.AlertId);
+                string query =
+                    @"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
+	                         case when grp.group_type = 'S' then '' else grp.name end VehicleGroupName,
+                             ale.created_by as AlertCreatedAccountId,
+                             ale.organization_id as OrganizationId
+                                from master.alert ale
+                                inner join master.group grp
+                                on ale.vehicle_group_id=grp.id where id=@alert_id";
+
+                AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
+
+                string alertVehicleQuery = @"select name as VehicleName,license_plate_number as VehicleRegNo from master.vehicle where vin =@vin";
+                parameter.Add("@vin", alertMessageEntity.Vin);
+                AlertVehicleEntity alertVeh = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(alertVehicleQuery, parameter);
+                alertVehicledetails.VehicleName = alertVeh.VehicleName;
+                alertVehicledetails.VehicleRegNo = alertVeh.VehicleRegNo;
+                return alertVehicledetails;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

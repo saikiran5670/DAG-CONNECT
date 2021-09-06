@@ -118,7 +118,9 @@
                   <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                     <mat-option value="ALL">--All--</mat-option>  
                     <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.vehicleGroupId">
+                    <!--<mat-option  *ngIf = "vehGrp.vehicleGroupId!=0 || vehGrp.vehicleGroupName!=''"> -->
                           {{vehGrp.vehicleGroupName}}
+                   <!-- </mat-option> -->
                       </mat-option>
                   </mat-select>
               </mat-form-field>
@@ -185,7 +187,8 @@
             <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewVehiclesConcerned || 'View Vehicles Concerned ' }}</span> </span>
           </mat-panel-title>
           </mat-expansion-panel-header>
-      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+
+      <!-- <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
         <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <mat-form-field appearance="outline">
               <input matInput (keyup)="applyFilterForVehicles($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -193,6 +196,7 @@
           </mat-form-field>
         </div>
       </div>
+
       <div>
         <mat-table matTableExporter [dataSource]="vehiclesDataSource" matSort>
           <ng-container matColumnDef="vin">
@@ -216,7 +220,16 @@
           </mat-row>
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-      </div>
+      </div> -->
+
+      <app-data-table [tableData]="initData" [translationData]="translationData"
+        [columnCodes]="columnCodes" [columnLabels]="columnLabels" [viewStatusColumnElements]="viewStatusColumnElements"
+        [showExport]="false"  #gridComp>
+
+        <ng-template #viewStatusColumnElements let-gridData='rowData'>        
+          {{ gridData.subcriptionStatus ? 'Subscribed' : 'Non-Subscribed' }}
+      </ng-template>
+    </app-data-table>
     </mat-expansion-panel>
 
     <!-- Advance filter -->
@@ -225,7 +238,8 @@
     || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <a class="linkBtn" (click)="onClickAdvancedFilter()"  style="margin-top: 20px;"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+            <a *ngIf="actionType !=  'view'"class="linkBtn" (click)="onClickAdvancedFilter()"  style="margin-top: 20px;"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+            <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter || 'Advanced Filter' }}</span>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -326,7 +340,8 @@
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="3">
+                      <input type="number" min="0" max="100" (keyup)="onKey($event)" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">                    
                     </mat-form-field>
                   </div>
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -350,7 +365,8 @@
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="3">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -374,7 +390,8 @@
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="3">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event);" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="5"
+                      (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -397,7 +414,7 @@
 (alert_category_selected === 'L' && alert_type_selected === 'C')">
   <span>{{ translationData.lblWidth|| 'Width' }} ({{ ( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles') }}):
     <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
-    <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
+    <span *ngIf="poiWidth == 0" style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
 </span>
 <div class="areawidth" fxLayout="row" fxLayoutAlign="left">
   <div class="col-sm-4  areawidth">
@@ -412,7 +429,7 @@
         </div>
                             
         <!-- POI table -->
-        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedPOIList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -480,7 +497,7 @@
           </div>
          
           <!-- Geofence table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedGeofenceList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -542,7 +559,7 @@
           </div>
 
           <!-- Group table -->
-          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedGroupList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>

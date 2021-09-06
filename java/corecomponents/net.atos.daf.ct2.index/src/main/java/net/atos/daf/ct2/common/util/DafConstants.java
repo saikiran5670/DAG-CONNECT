@@ -12,7 +12,8 @@ public class DafConstants {
 	public static final String CHECKPOINT_DIRECTORY_INDEX = "checkpoint_directory_index";
 	public static final String CHECKPOINT_DIRECTORY_STATUS = "checkpoint_directory_status";
 	public static final String CHECKPOINT_DIRECTORY_MONITORING = "checkpoint_directory_monitor";
-
+	public static final String CHECKPOINT_DIRECTORY_TRIPINDEX = "trip.index.checkpoint.directory";
+	
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
 
@@ -38,6 +39,7 @@ public class DafConstants {
 	public static final String EVENT_HUB_BOOTSTRAP = "event.hub.bootstrap";
 	public static final String EVENT_HUB_GROUPID = "event.hub.group.id";
 	public static final String EVENT_HUB_CLIENTID = "event.hub.client.id";
+	public static final String AUTO_OFFSET_RESET ="auto.offset.reset";
 
 	// event.hub.config
 
@@ -73,12 +75,14 @@ public class DafConstants {
 	public static final String AUDIT_EVENT_STATUS_FAIL = "1";
 
 	public static final String TRIP_JOB_NAME = "RealtimeIndexMSGProcess";
+	public static final String TRIP_INDEX_JOB_NAME = "TripIndexJob";
 	public static final String DEFAULT_OBJECT_ID = "00";
 
 	// job constants
 	public static final String INDEX_JOB = "IndexJob";
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
+	public static final String INDEX_TRIPJOB = "IndexTripJob";
 
 	// queries
 	public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
@@ -104,7 +108,12 @@ public static final String Index="I";
 		public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
 		public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
 		
-		
+		public static final Long ZERO_VAL = 0L;
+		public static final String TRIP_INDEX_INSERT_STATEMENT = "INSERT INTO livefleet.index_message_data( trip_id, vin, tachograph_speed, gross_weight_combination"
+				+ ", driver2_id, driver1_id, jobname, increment, distance, event_datetime, event_id, created_at )"
+				+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+			
 		
 
 }

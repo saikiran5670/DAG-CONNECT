@@ -137,14 +137,15 @@
                     tripPrefData.length > 0 ? tripPrefData[14].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+        <!-- <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(tripPrefData[15]) : null; checkboxClicked($event, tripPrefData[15])'
                 [checked]="selectionForTripColumns.isSelected(tripPrefData[15])"
                 [aria-label]='checkboxLabelForColumns(tripPrefData[15])' class='custom-checkbox'><span>{{
                     tripPrefData.length > 0 ? tripPrefData[15].translatedName : '' }}</span>
             </mat-checkbox>
-        </div>
+        </div> -->
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' style='height: 44px;' fxLayoutAlign="left"></div>
         <div fxLayout="row" class='areaWidth adjust-padding' style='height: 44px;' fxLayoutAlign="left"></div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' style='height: 44px;' fxLayoutAlign="left">
         </div>
