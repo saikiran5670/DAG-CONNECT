@@ -26,7 +26,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   selectionForAllDriver = new SelectionModel(true, []);
   selectionForDriver = new SelectionModel(true, []);
   selectionForChart = new SelectionModel(true, []);
-
+  requestSent:boolean = false;
   constructor(private reportService: ReportService, private router: Router) { }
 
   ngOnInit(){ 
@@ -220,76 +220,80 @@ export class DriverTimePreferencesComponent implements OnInit {
     this.setColumnCheckbox();
   }
 
-  onConfirm(){
-    let _allDriverArr: any = [];
-    let _specificDriverArr: any = [];
-    let _chartArr: any = [];
-    let _parentDataAttr: any = [];
+  onConfirm() {
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let _allDriverArr: any = [];
+      let _specificDriverArr: any = [];
+      let _chartArr: any = [];
+      let _parentDataAttr: any = [];
 
-    this.allDriverTableData.forEach(element => {
-      let sSearch = this.selectionForAllDriver.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _allDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _allDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    this.chartData.forEach(element => {
-      let sSearch = this.selectionForChart.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    this.specificDriverData.forEach(element => {
-      let sSearch = this.selectionForDriver.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _specificDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _specificDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
-      _parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      this.initData.subReportUserPreferences.forEach(elem => {
-        if(elem.key.includes('rp_dtm_report_chart')){
-          if(this.selectionForChart.selected.length == this.chartData.length){ // parent selected
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_dtm_report_alldetails')){
-          if(this.selectionForAllDriver.selected.length == this.allDriverTableData.length){ // parent selected
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_dtm_report_bydriver')){
-          if(this.selectionForDriver.selected.length == this.specificDriverData.length){ // parent selected
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
+      this.allDriverTableData.forEach(element => {
+        let sSearch = this.selectionForAllDriver.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _allDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _allDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
         }
       });
-    }
 
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: [..._allDriverArr, ..._chartArr, ..._specificDriverArr, ..._parentDataAttr] //-- merge data
-    }
+      this.chartData.forEach(element => {
+        let sSearch = this.selectionForChart.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
 
-    this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
-      this.loadDriveTimePreferences();
-      this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("drivetimemanagement")){
-        this.reloadCurrentComponent();
+      this.specificDriverData.forEach(element => {
+        let sSearch = this.selectionForDriver.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _specificDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _specificDriverArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
+        _parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        this.initData.subReportUserPreferences.forEach(elem => {
+          if (elem.key.includes('rp_dtm_report_chart')) {
+            if (this.selectionForChart.selected.length == this.chartData.length) { // parent selected
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_dtm_report_alldetails')) {
+            if (this.selectionForAllDriver.selected.length == this.allDriverTableData.length) { // parent selected
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_dtm_report_bydriver')) {
+            if (this.selectionForDriver.selected.length == this.specificDriverData.length) { // parent selected
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              _parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          }
+        });
       }
-    });
+
+      let objData: any = {
+        reportId: this.reportId,
+        attributes: [..._allDriverArr, ..._chartArr, ..._specificDriverArr, ..._parentDataAttr] //-- merge data
+      }
+
+      this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
+        this.loadDriveTimePreferences();
+        this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("drivetimemanagement")) {
+          this.reloadCurrentComponent();
+        }
+        this.requestSent = false;
+      });
+    }
   }
 
   getSuccessMsg(){

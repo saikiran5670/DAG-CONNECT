@@ -27,7 +27,8 @@ public class FlinkKafkaIndexDataConsumer {
 
 		properties.setProperty("client.id", envParams.get(DafConstants.EVENT_HUB_CLIENTID));
 		// properties.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,"6000");
-		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		//properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, envParams.get(DafConstants.AUTO_OFFSET_RESET));
 		properties.setProperty("group.id", envParams.get(DafConstants.EVENT_HUB_GROUPID));
 		properties.setProperty("bootstrap.servers", envParams.get(DafConstants.EVENT_HUB_BOOTSTRAP));
 		properties.setProperty("security.protocol", "SASL_SSL");
