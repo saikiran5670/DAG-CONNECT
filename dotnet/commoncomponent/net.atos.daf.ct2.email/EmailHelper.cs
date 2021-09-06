@@ -121,9 +121,9 @@ namespace net.atos.daf.ct2.email
                     return await SendEmail(messageRequest); //wrap this function usder while loop with retry condition
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
         public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)

@@ -264,6 +264,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
     if (this.actionType == 'view') {
       this.openAdvancedFilter = true;
+      if(this.selectedRowData.alertLandmarkRefs.length > 0){
+        this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
+        this.sliderChanged();
+      }
     }
 }
   

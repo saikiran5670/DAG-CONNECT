@@ -1,7 +1,11 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.postgre.bo.IndexTripData;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.LiveFleetTripIndexDao;
 
 public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Serializable {
@@ -61,13 +64,22 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 		synchronizedCopy = new ArrayList<IndexTripData>();
 		
 		try {
-			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
+					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));*/
+			
+			Class.forName(envParams.get(DafConstants.POSTGRE_SQL_DRIVER));
+			String dbUrl = createValidUrlToConnectPostgreSql(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
 					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
-			
+			connection = DriverManager.getConnection(dbUrl);
+						
 			logger.info("In TripIndexSink connection done" + connection);
 			tripIndexDao.setConnection(connection);
 			tripIndexQry = connection.prepareStatement(DafConstants.TRIP_INDEX_INSERT_STATEMENT);
@@ -96,5 +108,21 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 		}
 	}
 	
+	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+			String password) throws Exception {
+
+		String encodedPassword = encodeValue(password);
+		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
+				+ encodedPassword + DafConstants.POSTGRE_SQL_SSL_MODE;
+
+		return url;
+	}
 	
+	private String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
+		}
+	}
 }
