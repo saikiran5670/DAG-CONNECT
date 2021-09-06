@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.alert.entity
             Dictionary<int, AlertLandmarkRef> alertLandmarkRefLookup = new Dictionary<int, AlertLandmarkRef>();
 
             Dictionary<Tuple<int, int>, NotificationRecipient> notificationRecipientRefLookup = new Dictionary<Tuple<int, int>, NotificationRecipient>();
-            Dictionary<Tuple<int, int>, NotificationLimit> notificationLimitkRefLookup = new Dictionary<Tuple<int, int>, NotificationLimit>();
+            Dictionary<Tuple<int, int, int>, NotificationLimit> notificationLimitkRefLookup = new Dictionary<Tuple<int, int, int>, NotificationLimit>();
             Dictionary<int, NotificationAvailabilityPeriod> notificationAvailabilityPeriodLookup = new Dictionary<int, NotificationAvailabilityPeriod>();
 
             NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod();
@@ -116,10 +116,10 @@ namespace net.atos.daf.ct2.alert.entity
                         }
                         if (alertItem.Notlim_id > 0 && alertItem.Notlim_recipient_id == alertItem.Notrec_id)
                         {
-                            if (!notificationLimitkRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(alertItem.Notlim_id), alertItem.Notref_alert_id), out _))
+                            if (!notificationLimitkRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(alertItem.Notlim_id), alertItem.Notlim_notification_id, alertItem.Notref_alert_id), out _))
                             {
                                 var notificationLimit = ToNotificationLimitModel(alertItem);
-                                notificationLimitkRefLookup.Add(Tuple.Create(Convert.ToInt32(alertItem.Notlim_id), alertItem.Notref_alert_id), notificationLimit);
+                                notificationLimitkRefLookup.Add(Tuple.Create(Convert.ToInt32(alertItem.Notlim_id), alertItem.Notlim_notification_id, alertItem.Notref_alert_id), notificationLimit);
                                 notificationRecipient.NotificationLimits.Add(notificationLimit);
                             }
                         }

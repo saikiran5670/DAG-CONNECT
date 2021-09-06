@@ -372,6 +372,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   masterToggle(section) {
+    console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
     if (this.isAllSelected(section)) {
       this["selectionFor" + section + "Columns"].clear();
     } else {
