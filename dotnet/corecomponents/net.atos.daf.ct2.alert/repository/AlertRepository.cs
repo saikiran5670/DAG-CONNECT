@@ -888,7 +888,7 @@ namespace net.atos.daf.ct2.alert.repository
                     left join master.notificationrecipient notrec
                     on notrec.id=notref.recipient_id and notrec.state in ('A','I')
                     left join master.notificationlimit notlim
-                    on notref.recipient_id= notlim.recipient_id and notlim.state in ('A','I')                    
+                    on notref.recipient_id= notlim.recipient_id and noti.id= notlim.notification_id and notlim.state in ('A','I')                    
 					left join master.group grp 
 					on ale.vehicle_group_id=grp.id
 					left join master.groupref vgrpref
