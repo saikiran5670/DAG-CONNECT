@@ -6,6 +6,7 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.map.repository;
 using net.atos.daf.ct2.notification;
@@ -41,15 +42,25 @@ namespace net.atos.daf.ct2.applications
                     services.AddSingleton(dataAccess);
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();
                     services.AddSingleton<ITranslationRepository, TranslationRepository>();
-                    services.AddSingleton<ITranslationManager, TranslationManager>();
-                    services.AddSingleton<Identity.IAccountManager, Identity.AccountManager>();
+                    services.AddSingleton<ITranslationManager, TranslationManager>();                    
                     services.AddSingleton<IAuditLogRepository, AuditLogRepository>();
-                    services.AddSingleton<IAccountManager, AccountManager>();
-                    services.AddSingleton<IAccountRepository, AccountRepository>();
                     if (args != null)
                     {
                         if (args[0] == "PasswordExpiry")
+                        {
+                            string dataMartconnectionString = hostContext.Configuration["ConnectionStrings:DataMartConnectionString"];
+
+                            services.AddSingleton<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+                            {
+                                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+                            });
+                            services.AddSingleton<Identity.IAccountManager, Identity.AccountManager>();
+                            services.AddSingleton<IDriverRepository, DriverRepository>();
+                            services.AddSingleton<IDriverManager, DriverManager>();
+                            services.AddSingleton<IAccountManager, AccountManager>();
+                            services.AddSingleton<IAccountRepository, AccountRepository>();
                             services.AddHostedService<PasswordExpiryWorker>();
+                        }
                         else if (args[0] == "ReportCreationScheduler")
                         {
                             string dataMartconnectionString = hostContext.Configuration["ConnectionStrings:DataMartConnectionString"];
