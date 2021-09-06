@@ -537,7 +537,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             return new Dictionary<string, string>()
             {
                 { "vin", "Vehicle Identification Number" },
-                { "name", "Name" },
+                { "name", "Vehicle Name" },
                 { "regno", "Vehicle Registration Number" }
             };
         }
