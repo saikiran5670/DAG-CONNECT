@@ -42,8 +42,7 @@ namespace net.atos.daf.ct2.applications
                     services.AddSingleton(dataAccess);
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();
                     services.AddSingleton<ITranslationRepository, TranslationRepository>();
-                    services.AddSingleton<ITranslationManager, TranslationManager>();
-                    services.AddSingleton<Identity.IAccountManager, Identity.AccountManager>();
+                    services.AddSingleton<ITranslationManager, TranslationManager>();                    
                     services.AddSingleton<IAuditLogRepository, AuditLogRepository>();
                     if (args != null)
                     {
@@ -55,6 +54,7 @@ namespace net.atos.daf.ct2.applications
                             {
                                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
                             });
+                            services.AddSingleton<Identity.IAccountManager, Identity.AccountManager>();
                             services.AddSingleton<IDriverRepository, DriverRepository>();
                             services.AddSingleton<IDriverManager, DriverManager>();
                             services.AddSingleton<IAccountManager, AccountManager>();
