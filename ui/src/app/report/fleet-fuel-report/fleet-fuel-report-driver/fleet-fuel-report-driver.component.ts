@@ -687,7 +687,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
-    }
+    } 
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
@@ -900,7 +900,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});      
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission.tofixed(2)});
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2)});
       let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance });
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat,true);
