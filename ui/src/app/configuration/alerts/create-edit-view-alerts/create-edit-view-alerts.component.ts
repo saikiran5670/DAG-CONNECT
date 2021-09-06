@@ -661,6 +661,8 @@ proceedStep(prefData: any, preference: any){
     this.vehicleByVehGroupList= [];
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.onChangeAlertType(this.selectedRowData.type);
+      this.vehicleByVehGroupList = [];
+      this.vehicleListForTable = [];
     }
     this.alertForm.get('vehicle').setValue('');    
   // this.isUnsubscribedVehicle= false;
