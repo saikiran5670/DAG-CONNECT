@@ -266,16 +266,22 @@ export class LoginComponent implements OnInit {
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
         if(!response){
-          let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
-          let translationObj = {
-            id: 0,
-            code: filterLang[0].code, //-- TODO: Lang code based on account 
-            type: "Menu",
-            name: "",
-            value: "",
-            filter: "",
-            menuId: 0 //-- for common & user preference
+          let langCode;
+          if(accountPreference && accountPreference !== ''){
+            let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
+            langCode = filterLang[0].code;
+          } else {
+            langCode ='EN-GB';
           }
+            let translationObj = {
+              id: 0,
+              code: langCode, //-- TODO: Lang code based on account 
+              type: "Menu",
+              name: "",
+              value: "",
+              filter: "",
+              menuId: 0 //-- for common & user preference
+            }
           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
             this.processTranslation(resp);
             this.openTermsConditionsPopup(data, accountDetails, accountPreference);

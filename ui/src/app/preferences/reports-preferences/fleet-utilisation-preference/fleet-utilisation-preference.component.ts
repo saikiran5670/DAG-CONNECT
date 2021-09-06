@@ -70,6 +70,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
+  requestSent:boolean = false;
   
   constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService) { }
 
@@ -383,95 +384,99 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.setColumnCheckbox();
   }
 
-  onConfirm(){
-    let _summaryArr: any = [];
-    let _chartArr: any = [];
-    let _calenderArr: any = [];
-    let _detailArr: any = [];
+  onConfirm() {
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let _summaryArr: any = [];
+      let _chartArr: any = [];
+      let _calenderArr: any = [];
+      let _detailArr: any = [];
 
-    this.summaryColumnData.forEach(element => {
-      let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(sSearch.length > 0){
-        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    this.chartsColumnData.forEach((element, index) => {
-      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(index == 2){ // mileage base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: (this.prefUnitFormat == 'dunit_Metric') ? parseInt(this.reportMapService.kmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) : parseInt(this.reportMapService.mileToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) });
-      }else if(index == 3){ // time base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
-      }else{ // distance & active vehicle
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    this.calenderColumnData.forEach(element => {
-      if(element.dataAttributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
-        _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-    if(this.slideStateData.dataAttributeId){
-      _calenderArr.push({ dataAttributeId: this.slideStateData.dataAttributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
-    }
-
-    this.detailColumnData.forEach(element => {
-      let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(dSearch.length > 0){
-        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
-    });
-
-    let parentDataAttr: any = [];
-    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
-      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      this.initData.subReportUserPreferences.forEach(elem => {
-        if(elem.key.includes('rp_fu_report_summary')){
-          if(this.selectionForSummaryColumns.selected.length == this.summaryColumnData.length){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_fu_report_chart')){
-          if(this.selectionForChartsColumns.selected.length == this.chartsColumnData.length){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_fu_report_calendarview')){
-          if(this.selectionForCalenderColumns.selected.length == this.calenderHeader.length){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
-        }else if(elem.key.includes('rp_fu_report_details')){
-          if(this.selectionForDetailsColumns.selected.length == this.detailColumnData.length){ // parent selected
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }else{
-            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-          }
+      this.summaryColumnData.forEach(element => {
+        let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (sSearch.length > 0) {
+          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
         }
       });
-    }
 
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr, ...parentDataAttr] //-- merge data
-    }
-    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
-      this.loadFleetUtilisationPreferences();
-      this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("fleetutilisation")){
-        this.reloadCurrentComponent();
+      this.chartsColumnData.forEach((element, index) => {
+        let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (index == 2) { // mileage base utilisation
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: (this.prefUnitFormat == 'dunit_Metric') ? parseInt(this.reportMapService.kmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) : parseInt(this.reportMapService.mileToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) });
+        } else if (index == 3) { // time base utilisation
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
+        } else { // distance & active vehicle
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      this.calenderColumnData.forEach(element => {
+        if (element.dataAttributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)) {
+          _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+      if (this.slideStateData.dataAttributeId) {
+        _calenderArr.push({ dataAttributeId: this.slideStateData.dataAttributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
       }
-    });
+
+      this.detailColumnData.forEach(element => {
+        let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (dSearch.length > 0) {
+          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      let parentDataAttr: any = [];
+      if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
+        parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        this.initData.subReportUserPreferences.forEach(elem => {
+          if (elem.key.includes('rp_fu_report_summary')) {
+            if (this.selectionForSummaryColumns.selected.length == this.summaryColumnData.length) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_fu_report_chart')) {
+            if (this.selectionForChartsColumns.selected.length == this.chartsColumnData.length) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_fu_report_calendarview')) {
+            if (this.selectionForCalenderColumns.selected.length == this.calenderHeader.length) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          } else if (elem.key.includes('rp_fu_report_details')) {
+            if (this.selectionForDetailsColumns.selected.length == this.detailColumnData.length) { // parent selected
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            } else {
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+            }
+          }
+        });
+      }
+
+      let objData: any = {
+        reportId: this.reportId,
+        attributes: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr, ...parentDataAttr] //-- merge data
+      }
+      this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+        this.loadFleetUtilisationPreferences();
+        this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("fleetutilisation")) {
+          this.reloadCurrentComponent();
+        }
+        this.requestSent = false;
+      });
+    }
   }
 
   reloadCurrentComponent(){
