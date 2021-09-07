@@ -162,6 +162,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         AlertMesssageProp alertMesssageProp = new AlertMesssageProp();
                         alertMesssageProp.VIN = tripAlert.Vin;
                         alertMesssageProp.AlertId = tripAlert.Alertid;
+                        alertMesssageProp.AlertCategory = tripAlert.CategoryType;
+                        alertMesssageProp.AlertType = tripAlert.Type;
+                        alertMesssageProp.AlertUrgency = tripAlert.UrgencyLevelType;
 
                         AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
                         NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages

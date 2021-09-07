@@ -927,10 +927,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.driverTimeForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value))[0]["vehicleName"];
     this.onSearchData.driverActivities.forEach(element => {
-    this.totalDriveTime += element.driveTime,
-    this.totalWorkTime += element.workTime,
-    this.totalRestTime += element.restTime,
-    this.totalAvailableTime += element.availableTime
+      if (element.driveTime >= 0)
+        this.totalDriveTime += element.driveTime;
+      if (element.workTime >= 0)
+        this.totalWorkTime += element.workTime;
+      if (element.restTime >= 0)
+        this.totalRestTime += element.restTime;
+      if (element.totalAvailableTime >= 0)
+        this.totalAvailableTime += element.availableTime
     });
       this.tableInfoObj= {
         driveTime: Util.getHhMmTimeFromMS(this.totalDriveTime),
