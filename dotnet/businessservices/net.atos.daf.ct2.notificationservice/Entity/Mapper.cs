@@ -18,6 +18,9 @@ namespace net.atos.daf.ct2.notificationservice.Entity
             alertVehicle.VehicleRegNo = alertVehicleEntity.VehicleRegNo;
             alertVehicle.OrganizationId = alertVehicleEntity.OrganizationId;
             alertVehicle.AlertCreatedAccountId = alertVehicleEntity.AlertCreatedAccountId;
+            alertVehicle.AlertCategoryKey = alertVehicleEntity.AlertCategoryKey;
+            alertVehicle.AlertTypeKey = alertVehicleEntity.AlertTypeKey;
+            alertVehicle.UrgencyTypeKey = alertVehicleEntity.UrgencyTypeKey;
             return alertVehicle;
         }
     }

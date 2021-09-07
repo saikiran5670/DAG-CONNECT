@@ -2482,9 +2482,9 @@ setVehicleGroupAndVehiclePreSelection() {
         })    
         this.initData.forEach(item => {
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
-            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
             item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
         });
   
@@ -2722,7 +2722,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'maxSpeed' :{
-            tempObj.push(e.maxSpeed);
+            tempObj.push(e.convertedMaxSpeed);
             break;
           }
           case 'startPosition' :{
@@ -2734,7 +2734,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'averageGrossWeightComb' :{
-            tempObj.push(e.averageGrossWeightComb);
+            tempObj.push(e.convertedAverageGrossWeightComb);
             break;
           }
           case 'fuelConsumed' :{

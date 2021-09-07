@@ -54,6 +54,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     floor: 0,
     ceil: 100000
   };
+  alertTypeObject: any;
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName', 'address'];
@@ -405,6 +406,7 @@ proceedStep(prefData: any, preference: any){
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
     this.getVehicleGroupsForAlertType(alertTypeObj);
     this.getVehiclesForAlertType(alertTypeObj);
+    this.alertTypeObject = alertTypeObj;
 
     
     //----------------------------------------------------------------------------------------------------------
@@ -621,6 +623,40 @@ proceedStep(prefData: any, preference: any){
     this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
   }
 
+  updateVehiclesList(alertTypeObj: any){
+    this.vehicleByVehGroupList = [];
+    this.vehicleListForTable = [];
+    let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleId");
+    vehicles.forEach(element => {
+      let veh = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId&& item.vehicleGroupId == this.selectedRowData.vehicleGroupId);
+      if(veh.length > 0){
+        this.vehicleByVehGroupList.push(veh[0]);
+      }
+    });
+        //subscribed vehicles
+        this.vehicleByVehGroupList.forEach(element => {
+          element["subcriptionStatus"] = true;
+          this.vehicleListForTable.push(element);
+        });
+    
+        //non-subscribed vehicles
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+          let isDuplicateVehicle= false;
+          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+                isDuplicateVehicle= true;
+                break;
+            }
+          }
+          if(!isDuplicateVehicle){
+            element["subcriptionStatus"] = false;
+            this.vehicleListForTable.push(element);
+          }
+        });
+        
+        this.updateVehiclesDataSource(this.vehicleListForTable);
+  }
+
   getVehiclesForAlertType(alertTypeObj: any){
     let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleId");
     vehicles.forEach(element => {
@@ -688,7 +724,8 @@ proceedStep(prefData: any, preference: any){
       });
 
       //non-subscribed vehicles
-      this.associatedVehicleData.filter(item => item.vehicleGroupId == this.vehicle_group_selected).forEach(element => {
+      // this.associatedVehicleData.filter(item => item.vehicleGroupId == this.vehicle_group_selected).forEach(element => {
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
         let isDuplicateVehicle= false;
         for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
           if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
@@ -1587,6 +1624,9 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
+    if(this.selectedApplyOn != 'G'){
+      this.updateVehiclesList(this.alertTypeObject);
+    }
   }
 
   onClickAdvancedFilter(){
