@@ -1921,7 +1921,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.RequestCountry requestCountry = new AccountBusinessService.RequestCountry();
                 requestCountry.Code = countryFilter.Code;
                 requestCountry.RegionType = countryFilter.RegionType;
-                //ResponseCountry response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
                 AccountBusinessService.ResponseCountry responseCountry = await _accountClient.GetCountryDetailAsync(requestCountry);
 
 
@@ -1936,11 +1935,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, "Account Component",
-                //          "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                //          "getCountry details  method in Account controller", JsonConvert.SerializeObject(countryFilter),
-                //           _userDetails);
-                return Ok(true);
+
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                            "Get Country Details method in Package controller", 0, 0, JsonConvert.SerializeObject(countryFilter),
+                                             _userDetails);
+
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
