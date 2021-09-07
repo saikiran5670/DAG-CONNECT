@@ -1911,5 +1911,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        [Route("getcountrydetails")]
+        public async Task<IActionResult> GetCountryDetail(CountryFilter countryFilter)
+        {
+            try
+            {
+                AccountBusinessService.RequestCountry requestCountry = new AccountBusinessService.RequestCountry();
+                requestCountry.Code = countryFilter.Code;
+                requestCountry.RegionType = countryFilter.RegionType;
+                AccountBusinessService.ResponseCountry responseCountry = await _accountClient.GetCountryDetailAsync(requestCountry);
+
+
+                if (responseCountry == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (responseCountry.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(responseCountry.Country);
+                else
+                {
+                    return StatusCode(500, responseCountry.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                            "Get Country Details method in Package controller", 0, 0, JsonConvert.SerializeObject(countryFilter),
+                                             _userDetails);
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
     }
 }

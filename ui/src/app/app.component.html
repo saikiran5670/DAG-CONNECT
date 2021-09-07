@@ -23,12 +23,19 @@
                             {{ subscribeTimer }}
                         </button>&nbsp;</span> -->
                         <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center; margin-left: 10px;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
+                        
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
-                        (selectionChange)="applyFilterOnOrganization($event.value)">
-                        <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{ options.name }}">
-                            {{options.name}}
-                          </mat-option>
+                            (selectionChange)="applyFilterOnOrganization($event.value)">
+                            <mat-option>
+                                <ngx-mat-select-search (keyup)="filterContextSettings(search.value)" #search>
+                                    <mat-icon (click)="resetContextSettingFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let options of filteredOrganizationList | async" [value]="options.id" matTooltip="{{ options.name }}">
+                                {{options.name}}
+                            </mat-option>
                         </mat-select>
+
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"
                                 (click)="isFullScreen ? exitFullScreen() : fullScreen()"

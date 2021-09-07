@@ -15,5 +15,8 @@ namespace net.atos.daf.ct2.notificationengine.entity
     {
         public int AlertId { get; set; }
         public string Vin { get; set; }
+        public string AlertCategory { get; set; }
+        public string AlertType { get; set; }
+        public string AlertUrgency { get; set; }
     }
 }

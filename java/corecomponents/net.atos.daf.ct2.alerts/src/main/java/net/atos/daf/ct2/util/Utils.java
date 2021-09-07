@@ -154,7 +154,7 @@ public class Utils implements Serializable {
             /**
              * Time diff in seconds
              */
-            Long timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
+           /* Long timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
                     MSG_EVT_DATE_FORMAT)) - (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(), MSG_EVT_DATE_FORMAT)))
                     / 1000;  // for converting milliseconds to seconds
             logger.trace("time diff :" + timeDiff);
@@ -162,7 +162,10 @@ public class Utils implements Serializable {
             if (timeDiff > 0) {
                 avgValue = odometerDiff / timeDiff;
                 logger.trace("average :" + odometerDiff / timeDiff);
-            }
+            }*/
+        	
+        	avgValue = odometerDiff / 300;
+            logger.trace("average :" +avgValue);
 
         } catch (Exception e) {
             logger.error("Error while calculation avg calculation error:: {} index1:: {}, index2 ::{}", e, index1,index2);
