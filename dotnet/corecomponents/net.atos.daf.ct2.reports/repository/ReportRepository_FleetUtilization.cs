@@ -55,8 +55,9 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , vh.registration_no             as RegistrationNumber
                                             		  , fd.etl_gps_trip_time           as TripTime
                                             		  , fd.end_time_stamp              as StopTime
-                                            		  , round ( fd.etl_gps_distance,2) as Distance
-                                            		  , fd.etl_gps_driving_time    as DrivingTime
+                                                      , fd.totalworkingdays            as VehicleActiveDays
+                                            		  , round (fd.etl_gps_distance,2)  as Distance
+                                            		  , fd.etl_gps_driving_time        as DrivingTime
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),5)   as AverageSpeed
