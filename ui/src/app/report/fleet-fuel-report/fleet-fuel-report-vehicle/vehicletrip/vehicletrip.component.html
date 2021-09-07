@@ -412,7 +412,7 @@
                             ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_maxspeed')">              
-                          <span>{{row.maxSpeed}}</span>             
+                          <span>{{row.convertedMaxSpeed}}</span>             
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="distance">     
@@ -526,7 +526,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Gross Weight Combination(Ton)' }}      
                 </mat-header-cell>     
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">      
-                  <span>{{row.averageGrossWeightComb}}</span>      
+                  <span>{{row.convertedAverageGrossWeightComb}}</span>      
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="averageTrafficClassification">      
