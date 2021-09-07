@@ -34,7 +34,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("hoursOfService");
         List<String> priorityList = Arrays.asList("C", "W", "A");
         try{
-            if(Objects.nonNull(index) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
+            if(Objects.nonNull(index.getDocument()) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
                 return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
             for(String priority : priorityList){
                 for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
@@ -61,7 +61,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
 
-
     public static AlertLambdaExecutor<Message, Target> excessiveAverageSpeedFun = (Message s) -> {
         Index index = (Index) s.getPayload().get();
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
@@ -73,7 +72,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                         if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
                             logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
+                            return getTarget(index, schema, index.getVDist());
                         }
                     }
                 }
@@ -107,7 +106,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
-
 
     public static AlertLambdaExecutor<Message, Target> fuelIncreaseDuringStopFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
@@ -147,7 +145,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
-    
 
     public static AlertLambdaExecutor<Message, Target> fuelDecreaseDuringStopFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
@@ -188,8 +185,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
-
-
 
     public static AlertLambdaExecutor<Message, Target> excessiveUnderUtilizationInHoursFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();

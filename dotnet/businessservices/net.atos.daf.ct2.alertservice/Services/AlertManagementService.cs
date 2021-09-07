@@ -518,8 +518,8 @@ namespace net.atos.daf.ct2.alertservice.Services
                 offlinePushNotification = await _alertManager.GetOfflinePushNotification(offlinePushNotificationFilter);
                 OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
                 offlineNotificationResponse = _mapper.ToOfflineNotificationResponse(offlinePushNotification);
-                offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp.Count > 0 ? $" Offline notification data fetched successful" : $" Offline notification data fetched failed";
-                offlineNotificationResponse.Code = offlinePushNotification.NotificationDisplayProp.Count > 0 ? ResponseCode.Success : ResponseCode.Failed;
+                offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp != null ? $" Offline notification data fetched successful" : $" Offline notification data not found";
+                offlineNotificationResponse.Code = offlinePushNotification.NotificationDisplayProp != null ? ResponseCode.Success : ResponseCode.NotFound;
                 return await Task.FromResult(offlineNotificationResponse);
             }
             catch (Exception ex)
