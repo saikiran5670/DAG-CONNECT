@@ -797,5 +797,10 @@ namespace net.atos.daf.ct2.account
         {
             return await _repository.ValidateDriver(accountEmail, organisationId);
         }
+
+        public async Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter)
+        {
+            return await _repository.GetCountryDetails(countryFilter);
+        }
     }
 }

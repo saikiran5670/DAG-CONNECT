@@ -17,7 +17,6 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
-
 namespace net.atos.daf.ct2.portalservice.hubs
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
@@ -32,7 +31,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly SessionHelper _sessionHelper;
         private readonly HeaderObj _userDetails;
-        private static int _alertId = 1;
+        private static int _pkId = 1;
 
         public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper)
         {
@@ -53,33 +52,33 @@ namespace net.atos.daf.ct2.portalservice.hubs
             {
                 while (true)
                 {
-                    TripAlert tripAlert = new TripAlert
+                    NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
                     {
-                        Id = _alertId,
-                        Tripid = Convert.ToString(Guid.NewGuid()),
+                        TripAlertId = _pkId,
+                        TripId = Convert.ToString(Guid.NewGuid()),
                         Vin = "XLR0998HGFFT76657",
-                        CategoryType = "L",
-                        Type = "G",
-                        Alertid = _alertId * 2,
-                        Latitude = 51.12768896,
-                        Longitude = 4.935644520,
-                        AlertGeneratedTime = 1626965785,
-                        ThresholdValue = 8766,
-                        ValueAtAlertTime = 8767,
-                        ThresholdValueUnitType = "M",
-                        LandmarkName = this.Context.ConnectionId,
-                        ModifiedAt = _userDetails.AccountId,
-                        LandmarkThresholdValueUnitType = _userDetails.OrgId.ToString(),
+                        AlertCategory = "L",
+                        AlertType = "G",
+                        AlertId = _pkId * 2,
+                        AlertGeneratedTime = DateTime.Now.Millisecond,
+                        VehicleGroupId = 185,
+                        VehicleGroupName = "Fleet",
+                        VehicleName = "testKri",
+                        VehicleLicencePlate = "testKri",
+                        AlertCategoryKey = "enumcategory_logisticsalerts",
+                        AlertTypeKey = "enumtype_excessivedistancedone(trip)",
+                        UrgencyTypeKey = "enumurgencylevel_critical",
+                        UrgencyLevel = "C"
                     };
                     //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
-                    await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
+                    await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
                     //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Select(clients => clients.HubClientId).ToList();
                     //await Clients.Clients(connectionIds).SendAt5sync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
-                    if (_alertId == 1000)
+                    if (_pkId == 1000)
                     {
-                        _alertId = 1;
+                        _pkId = 1;
                     }
-                    _alertId = _alertId + 1;
+                    _pkId = _pkId + 1;
                     Thread.Sleep(10000);
                 }
             }
@@ -165,9 +164,27 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         alertMesssageProp.AlertId = tripAlert.Alertid;
 
                         AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
+                        NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
+                        {
+                            TripAlertId = tripAlert.Id,
+                            TripId = tripAlert.Tripid,
+                            Vin = tripAlert.Vin,
+                            AlertCategory = tripAlert.CategoryType,
+                            AlertType = tripAlert.Type,
+                            AlertId = tripAlert.Alertid,
+                            AlertGeneratedTime = tripAlert.AlertGeneratedTime,
+                            VehicleGroupId = objAlertVehicleDetails.VehicleGroupId,
+                            VehicleGroupName = objAlertVehicleDetails.VehicleGroupName,
+                            VehicleName = objAlertVehicleDetails.VehicleName,
+                            VehicleLicencePlate = objAlertVehicleDetails.VehicleRegNo,
+                            AlertCategoryKey = tripAlert.AlertCategoryKey,
+                            AlertTypeKey = tripAlert.AlertTypeKey,
+                            UrgencyTypeKey = tripAlert.UrgencyTypeKey,
+                            UrgencyLevel = tripAlert.UrgencyLevelType
+                        };
                         // match session values with clientID & created by 
                         IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
-                        await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
+                        await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
 
                     }
                 }
@@ -214,9 +231,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
                             await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
                         }
                     }
-                    if (_alertId == 1000)
+                    if (_pkId == 1000)
                     {
-                        _alertId = 1;
+                        _pkId = 1;
                     }
                     Thread.Sleep(2000);
                 }

@@ -599,8 +599,7 @@ getLevelValues(){
     this.invalidEmail = '';
     this.recipientEmailList = value.split(";");
     if(this.recipientEmailList.length <= 10){
-      // let pattern=/[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/
-      let pattern= /[a-zA-Z0-9\\-_.]{1,}@[a-zA-Z0-9\\-_.]{2,}[.]{1}[a-zA-Z]{2,}/
+      let pattern=/^[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}$/
       this.recipientEmailList.forEach(element => {
       if(!pattern.test(element.trim())){
         this.isInvalidEmail = true;    

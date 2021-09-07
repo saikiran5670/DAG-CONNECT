@@ -721,7 +721,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_maxspeed')">
   
-                <span>{{row.maxSpeed}}</span>
+                <span>{{row.convertedMaxSpeed}}</span>
   
               </mat-cell>
   
@@ -755,7 +755,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">
   
-                <span>{{row.averageGrossWeightComb}}</span>
+                <span>{{row.convertedAverageGrossWeightComb}}</span>
   
               </mat-cell>
   
