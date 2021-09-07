@@ -1841,7 +1841,7 @@ namespace net.atos.daf.ct2.account
                                 (type, state, icon_id, page_refresh_time, currency_id, landing_page_display_id, language_id, timezone_id,
                                  unit_id, vehicle_display_id, date_format_id, time_format_id) 
                               VALUES ('A', 'A', NULL, 2, 
-                                       (SELECT id FROM master.currency WHERE lower(name) = 'euro (€)'),
+                                       (SELECT id FROM master.currency WHERE lower(name) like 'euro%'),
                                        (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
                                        (SELECT id FROM translation.language WHERE lower(name) = @Language),
                                        (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),

@@ -581,7 +581,7 @@ message FleetUtilizationDetails {
     double AverageSpeed = 11;
     double AverageWeightPerTrip = 12;
     int64 Odometer = 13;
-
+    int32 VehicleActiveDays =14;
 }
 
 message FleetUtilizationcalender {

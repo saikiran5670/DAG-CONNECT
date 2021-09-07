@@ -39,6 +39,7 @@ public class DafConstants {
 	public static final String EVENT_HUB_BOOTSTRAP = "event.hub.bootstrap";
 	public static final String EVENT_HUB_GROUPID = "event.hub.group.id";
 	public static final String EVENT_HUB_CLIENTID = "event.hub.client.id";
+	public static final String AUTO_OFFSET_RESET ="auto.offset.reset";
 
 	// event.hub.config
 

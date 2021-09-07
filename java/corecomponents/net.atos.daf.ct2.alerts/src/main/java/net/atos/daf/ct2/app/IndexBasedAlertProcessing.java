@@ -15,9 +15,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import net.atos.daf.ct2.service.realtime.ExcessiveAverageSpeedService;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -162,24 +164,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Excessive Average Speed Fun keyed stream
          */
         KeyedStream<Index, String> indexExcessiveAvgSpeedKeyedStream = windowedIndexStream
-                .process(new ProcessWindowFunction<Index, Index, String, TimeWindow>() {
-                    @Override
-                    public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
-                                        Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
-                        List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
-                                .collect(Collectors.toList());
-                        if (!indexList.isEmpty()) {
-                            Index startIndex = indexList.get(0);
-                            Index endIndex = indexList.get(indexList.size() - 1);
-                            Long average = Utils.calculateAverage(startIndex, endIndex);
-                            startIndex.setVDist(average);
-                            Long idleDuration = Utils.calculateIdleDuration(indexMsg);
-                            startIndex.setVIdleDuration(idleDuration);
-							
-                            arg3.collect(startIndex);
-                        }
-                    }
-                })
+                .process(new ExcessiveAverageSpeedService())
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
 
@@ -221,7 +206,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Excessive Fuel during stop
          */
         KeyedStream<Index, String> indexStringKeyedStream = indexStringStream
-                .filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
+                .filter( index -> Objects.nonNull(index.getVEvtID()) && (4 == index.getVEvtID() || 5 == index.getVEvtID()) )
                 .returns(Index.class)
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
                 .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());

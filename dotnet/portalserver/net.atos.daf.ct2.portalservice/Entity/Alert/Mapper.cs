@@ -564,7 +564,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                 notificationViewMessage.AlertId = item.AlertId;
                 notificationViewMessage.AlertCategory = item.AlertCategory;
                 notificationViewMessage.AlertType = item.AlertType;
-                notificationViewMessage.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewMessage.AlertGeneratedTime = item.AlertGeneratedTime;
                 notificationViewMessage.OrganizationId = item.OrganizationId;
                 notificationViewMessage.TripAlertId = item.TripAlertId;
                 notificationViewMessage.TripId = item.TripId;

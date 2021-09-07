@@ -203,7 +203,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertType: ['', [Validators.required]],
       applyOn: ['G', [Validators.required]],
       // vehicleGroup: [''],
-      vehicleGroup: ['',[Validators.required]],
+      vehicleGroup: [''],
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
@@ -661,6 +661,8 @@ proceedStep(prefData: any, preference: any){
     this.vehicleByVehGroupList= [];
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.onChangeAlertType(this.selectedRowData.type);
+      this.vehicleByVehGroupList = [];
+      this.vehicleListForTable = [];
     }
     this.alertForm.get('vehicle').setValue('');    
   // this.isUnsubscribedVehicle= false;

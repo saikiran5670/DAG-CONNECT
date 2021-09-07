@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                           , Round(sum(distance),2)              as distance
                                                           , Round(sum(drivingtime),2)           as drivingtime
                                                           , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
-                                                          , Round(sum(fuelconsumption),2)       as fuelconsumption
+                                                          , Round((sum(distance)/SUM(fuelconsumed)),2) fuelconsumption
                                                           , Round(sum(fuelconsumed),2)          as fuelconsumed
                                                           , Round(sum(idlingtime),2)            as idlingtime
                                                         FROM cte_filteredTrip 

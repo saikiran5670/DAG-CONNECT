@@ -563,7 +563,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
                 notificationViewHistory.AlertId = item.AlertId;
                 notificationViewHistory.AlertCategory = item.AlertCategory;
                 notificationViewHistory.AlertType = item.AlertType;
-                notificationViewHistory.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewHistory.AlertGeneratedTime = item.AlertGeneratedTime;
                 notificationViewHistory.OrganizationId = item.OrganizationId;
                 notificationViewHistory.TripAlertId = item.TripAlertId;
                 notificationViewHistory.TripId = item.TripId;
@@ -572,6 +572,39 @@ namespace net.atos.daf.ct2.alertservice.Entity
                 lstnotificationView.Add(notificationViewHistory);
             }
             return lstnotificationView;
+        }
+
+        public OfflineNotificationResponse ToOfflineNotificationResponse(OfflinePushNotification offlinePushNotification)
+        {
+            OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
+            offlineNotificationResponse.NotAccResponse = new NotificationAccountResponse();
+            offlineNotificationResponse.NotAccResponse.NotificationCount = offlinePushNotification.NotificationAccount.NotificationCount;
+            offlineNotificationResponse.NotAccResponse.AccountId = offlineNotificationResponse.NotAccResponse.AccountId;
+            if (offlinePushNotification.NotificationDisplayProp != null)
+            {
+                foreach (var item in offlinePushNotification.NotificationDisplayProp)
+                {
+                    NotificationDisplayResponse notificationDisplayResponse = new NotificationDisplayResponse();
+                    notificationDisplayResponse.AlertId = item.AlertId;
+                    notificationDisplayResponse.AlertCategory = item.AlertCategory;
+                    notificationDisplayResponse.AlertCategoryKey = item.AlertCategoryKey;
+                    notificationDisplayResponse.AlertType = item.AlertType;
+                    notificationDisplayResponse.AlertTypeKey = item.AlertTypeKey;
+                    notificationDisplayResponse.AlertUrgency = item.UrgencyLevel;
+                    notificationDisplayResponse.UrgencyTypeKey = item.UrgencyTypeKey;
+                    notificationDisplayResponse.TripId = item.TripId;
+                    notificationDisplayResponse.TripAlertId = item.TripAlertId;
+                    notificationDisplayResponse.VehicleGroupId = item.VehicleGroupId;
+                    notificationDisplayResponse.VehicleGroupName = item.VehicleGroupName;
+                    notificationDisplayResponse.VehicleName = item.VehicleName;
+                    notificationDisplayResponse.VehicleLicencePlate = item.VehicleLicencePlate;
+                    notificationDisplayResponse.Vin = item.Vin;
+                    notificationDisplayResponse.AlertGeneratedTime = item.AlertGeneratedTime;
+                    offlineNotificationResponse.NotificationResponse.Add(notificationDisplayResponse);
+
+                }
+            }
+            return offlineNotificationResponse;
         }
     }
 }

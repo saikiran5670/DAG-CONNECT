@@ -14,14 +14,14 @@ namespace net.atos.daf.ct2.reports.repository
         /// </summary>
         /// <param name="FleetUtilizationFilters"></param>
         /// <returns></returns>
-        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters)
+        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter fleetUtilizationFilters)
         {
             try
             {
                 var parameterOfFilters = new DynamicParameters();
-                parameterOfFilters.Add("@FromDate", FleetUtilizationFilters.StartDateTime);
-                parameterOfFilters.Add("@ToDate", FleetUtilizationFilters.EndDateTime);
-                parameterOfFilters.Add("@Vins", FleetUtilizationFilters.VIN);
+                parameterOfFilters.Add("@FromDate", fleetUtilizationFilters.StartDateTime);
+                parameterOfFilters.Add("@ToDate", fleetUtilizationFilters.EndDateTime);
+                parameterOfFilters.Add("@Vins", fleetUtilizationFilters.VIN);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                             	(
                                             		SELECT
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(idle_duration)            as idle_duration
                                             		  , SUM(etl_gps_distance)     as veh_message_distance
                                             		  , SUM(average_speed)            as average_speed
-                                            		  , SUM(average_weight)           as average_weight
+                                            		  , (SUM(average_weight)/count(trip_id))           as average_weight
                                             		  , Max(last_odometer)           as last_odometer
                                             		FROM
                                             			tripdetail.trip_statistics
@@ -55,8 +55,9 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , vh.registration_no             as RegistrationNumber
                                             		  , fd.etl_gps_trip_time           as TripTime
                                             		  , fd.end_time_stamp              as StopTime
-                                            		  , round ( fd.etl_gps_distance,2) as Distance
-                                            		  , fd.etl_gps_driving_time    as DrivingTime
+                                                      , fd.totalworkingdays            as VehicleActiveDays
+                                            		  , round (fd.etl_gps_distance,2)  as Distance
+                                            		  , fd.etl_gps_driving_time        as DrivingTime
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),5)   as AverageSpeed

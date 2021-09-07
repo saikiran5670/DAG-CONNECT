@@ -1536,14 +1536,14 @@ createEndMarker(){
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);
 
-      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnitsForChart(e.fuelConsumed, this.prefUnitFormat);
+      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed });      
       this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2) });
-      let convertedDistance =  this.reportMapService.convertDistanceUnitsForChart(e.distance, this.prefUnitFormat);
+      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
-      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnitsForChart(e.fuelConsumtion, this.prefUnitFormat,true);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat,true);
       this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption });      
-      let minutes = this.reportMapService.convertTimeToMinutesForChart(e.idleDuration);
+      let minutes = this.reportMapService.convertTimeToMinutes(e.idleDuration);
       this.idleDuration.push({ x:resultDate , y:minutes});  
     })
 
@@ -2482,9 +2482,9 @@ setVehicleGroupAndVehiclePreSelection() {
         })    
         this.initData.forEach(item => {
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
-            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
             item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
         });
   
@@ -2722,7 +2722,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'maxSpeed' :{
-            tempObj.push(e.maxSpeed);
+            tempObj.push(e.convertedMaxSpeed);
             break;
           }
           case 'startPosition' :{
@@ -2734,7 +2734,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'averageGrossWeightComb' :{
-            tempObj.push(e.averageGrossWeightComb);
+            tempObj.push(e.convertedAverageGrossWeightComb);
             break;
           }
           case 'fuelConsumed' :{

@@ -19,6 +19,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
   logbookPrefData: any = [];
   selectionForLoogbookColumns = new SelectionModel(true, []);
   reqField: boolean = false;
+  requestSent:boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -153,38 +154,42 @@ export class LogbookTabPreferencesComponent implements OnInit {
     this.validateRequiredField();
   }
 
-  onConfirm(){
-    let _dataArr: any = [];
-    this.logbookPrefData.forEach(element => {
-      let search = this.selectionForLoogbookColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+  onConfirm() {
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let _dataArr: any = [];
+      this.logbookPrefData.forEach(element => {
+        let search = this.selectionForLoogbookColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (search.length > 0) {
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
+      if (this.selectionForLoogbookColumns.selected.length == this.logbookPrefData.length) { // parent selected
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      } else { // parent un-selected
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
-    });
 
-    _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
-    if(this.selectionForLoogbookColumns.selected.length == this.logbookPrefData.length){ // parent selected
-      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-    }else{ // parent un-selected
-      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-    }
-
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: _dataArr
-    }
-
-    this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
-      this.loadLogbookPreferences();
-      this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("fleetoverview/logbook")){
-        this.reloadCurrentComponent();
+      let objData: any = {
+        reportId: this.reportId,
+        attributes: _dataArr
       }
-    }, (error) => {
-      console.log(error);
-    });
+
+      this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
+        this.loadLogbookPreferences();
+        this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("fleetoverview/logbook")) {
+          this.reloadCurrentComponent();
+        }
+        this.requestSent = false;
+      }, (error) => {
+        console.log(error);
+      });
+    }
   }
 
   getSuccessMsg(){

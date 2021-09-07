@@ -106,5 +106,16 @@ namespace net.atos.daf.ct2.alert
                 throw;
             }
         }
+        public async Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter)
+        {
+            try
+            {
+                return await _alertRepository.GetOfflinePushNotification(offlinePushNotificationFilter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
