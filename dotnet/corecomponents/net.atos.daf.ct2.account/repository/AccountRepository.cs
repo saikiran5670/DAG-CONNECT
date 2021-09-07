@@ -1920,5 +1920,43 @@ namespace net.atos.daf.ct2.account
                 throw;
             }
         }
+
+        public async Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter)
+        {
+            try
+            {
+
+                var parameter = new DynamicParameters();
+                var queryStatement = @"SELECT id,name,
+                                        region_type as RegionType, code 
+                                       --dailing_code 
+	                                   FROM master.country where 1=1";
+
+                if (!string.IsNullOrEmpty(countryFilter.Code))
+                {
+                    parameter.Add("@code", countryFilter.Code);
+                    queryStatement = queryStatement + " and code = @code";
+                }
+
+                if (!string.IsNullOrEmpty(countryFilter.RegionType))
+                {
+                    parameter.Add("@region_type", countryFilter.RegionType);
+                    queryStatement = queryStatement + " and region_type = @region_type";
+                }
+                //dailing code yet not added in db.
+                //if (countryFilter.DailingCode > 0)
+                //{
+                //    parameter.Add("@dailing_code", countryFilter.DailingCode);
+                //    queryStatement = queryStatement + "and dailing_code = @dailingCode";
+
+                //}
+                return await _dataAccess.QueryAsync<CountryDetails>(queryStatement, parameter);
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+        }
     }
 }
