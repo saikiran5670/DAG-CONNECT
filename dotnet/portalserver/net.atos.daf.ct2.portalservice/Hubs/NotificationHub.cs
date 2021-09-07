@@ -102,8 +102,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 {
                     AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
                     {
-                        AccountId = _userDetails.AccountId,
-                        OrganizationId = _userDetails.OrgId,
+                        AccountId = 187,// _userDetails.AccountId,
+                        OrganizationId = 36,//_userDetails.OrgId,
                         HubClientId = Context.ConnectionId
                     };
                     _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
@@ -153,6 +153,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 while (true)
                 {
                     //Pushing message to kafka topic
+                    Thread.Sleep(2000);
                     ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
                     TripAlert tripAlert = new TripAlert();
                     if (response != null)
@@ -166,7 +167,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                             alertMesssageProp.AlertId = tripAlert.Alertid;
                             alertMesssageProp.AlertCategory = tripAlert.CategoryType;
                             alertMesssageProp.AlertType = tripAlert.Type;
-                            alertMesssageProp.AlertUrgency = tripAlert.UrgencyLevelType;
+                            alertMesssageProp.AlertUrgency = tripAlert.UrgencyLevelType ?? "";
 
                             AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
                             NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
@@ -177,30 +178,27 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 AlertCategory = tripAlert.CategoryType,
                                 AlertType = tripAlert.Type,
                                 AlertId = tripAlert.Alertid,
+                                UrgencyLevel = tripAlert.UrgencyLevelType,
                                 AlertGeneratedTime = tripAlert.AlertGeneratedTime,
                                 VehicleGroupId = objAlertVehicleDetails.VehicleGroupId,
                                 VehicleGroupName = objAlertVehicleDetails.VehicleGroupName,
                                 VehicleName = objAlertVehicleDetails.VehicleName,
                                 VehicleLicencePlate = objAlertVehicleDetails.VehicleRegNo,
-                                AlertCategoryKey = tripAlert.AlertCategoryKey,
-                                AlertTypeKey = tripAlert.AlertTypeKey,
-                                UrgencyTypeKey = tripAlert.UrgencyTypeKey,
-                                UrgencyLevel = tripAlert.UrgencyLevelType
+                                AlertCategoryKey = objAlertVehicleDetails.AlertCategoryKey,
+                                AlertTypeKey = objAlertVehicleDetails.AlertTypeKey,
+                                UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
+                                CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
                             };
                             // match session values with clientID & created by 
-                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
+                            //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
+                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == _userDetails.AccountId).Select(clients => clients.HubClientId).ToList();
                             await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
 
                         }
                     }
-                    if (_pkId > 1000)
-                    {
-                        _pkId = 1;
-                    }
-                    Thread.Sleep(2000);
                 }
             }
-            catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
+            catch (RpcException ex)
             {
                 _logger.Error(null, ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
@@ -218,6 +216,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
             {
                 while (true)
                 {
+                    Thread.Sleep(2000);
+
                     confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                     {
                         BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -271,7 +271,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     {
                         _pkId = 1;
                     }
-                    Thread.Sleep(2000);
+                    _pkId++;
+
                 }
 
             }

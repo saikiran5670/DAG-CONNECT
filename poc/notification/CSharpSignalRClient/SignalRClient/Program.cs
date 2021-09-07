@@ -30,7 +30,7 @@ namespace SignalRClient
 
                 connection.StartAsync().Wait();
                 //var mes = Console.ReadLine();
-                _ = connection.InvokeCoreAsync("NotifyAlert", args: new[] { " Test name" });
+                _ = connection.InvokeCoreAsync("ReadKafkaMessages", args: new[] { " Test name" });
 
             connection.On<string>("NotifyAlertResponse",
                 (string message) =>
