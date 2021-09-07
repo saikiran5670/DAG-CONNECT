@@ -35,8 +35,9 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(idle_duration)            as idle_duration
                                             		  , SUM(etl_gps_distance)     as veh_message_distance
                                             		  , SUM(average_speed)            as average_speed
-                                            		  , (SUM(average_weight)/count(trip_id))           as average_weight
+                                            		  , SUM(average_weight)           as average_weight
                                             		  , Max(last_odometer)           as last_odometer
+                                                      , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
                                             		FROM
                                             			tripdetail.trip_statistics
                                             		where
@@ -61,7 +62,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),5)   as AverageSpeed
-                                            		  , round (fd.average_weight, 5)    as AverageWeightPerTrip
+                                            		  , round (fd.average_weight/numoftripswithavgweight, 3)    as AverageWeightPerTrip
                                             		  , round (fd.last_odometer,2)    as Odometer
                                             		FROM
                                             			CTE_FleetDeatils fd
