@@ -1242,9 +1242,9 @@ export class ReportMapService {
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
-  convertKgToPound(_data: any){
-    return (_data*2.2).toFixed(2);
-  }
+  // convertKgToPound(_data: any){
+  //   return (_data*2.2).toFixed(2);
+  // }
 
   convertKgToTonnes(_data: any){
     return (_data / 1000).toFixed(2);
