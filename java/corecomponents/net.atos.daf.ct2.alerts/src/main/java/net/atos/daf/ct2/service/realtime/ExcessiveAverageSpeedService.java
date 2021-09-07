@@ -24,7 +24,7 @@ public class ExcessiveAverageSpeedService extends ProcessWindowFunction<Index, I
             List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
                     .collect(Collectors.toList());
             if (!indexList.isEmpty()) {
-                System.out.println(indexList.size());;
+                logger.info("ExcessiveAverageSpeedService index size ::{}",indexList.size());;
                 Index startIndex = indexList.get(0);
                 if (indexList.size()==1) {
                     startIndex.setVDist((indexList.get(0).getVDist())/300);
