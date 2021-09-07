@@ -35,5 +35,8 @@
         public const string ALERT_FILTER_FAILURE_MSG = "Alert Category Filter data retrieve failed. Error : - {0}";
         public const string ALERT_GET_FAILED_MSG = "There is an error while getting alert.";
         public const string VIEWED_NOTIFICATION_INSERT_FAILED_MSG = "There is an error while inserting views notification.";
+        public const string OFFLINE_NOTI_ACCOUNT_ID_NOT_NULL_MSG = "Account id cannot be null.";
+        public const string OFFLINE_NOTI_GET_FAILED_MSG = "There is an error while getting offline notifications.";
+        public const string OFFLINE_NOTI_NOT_FOUND_MSG = "Offline notifications are not found.";
     }
 }
