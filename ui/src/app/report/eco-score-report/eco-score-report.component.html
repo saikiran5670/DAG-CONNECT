@@ -123,9 +123,6 @@
                     <input matInput class='inputBox' (input)="validateMinTripVal()" placeholder="00" type="number" formControlName="minTripValue"/>
                   </div>
                   </div>
-                  <mat-error *ngIf="minTripInputCheck">
-                    {{translationData.lblPleaseSelectDriverMinDist || 'Please input Minimum Driver Total Distance between 0 and 100' }}
-                    </mat-error>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutGap="2px">
@@ -139,9 +136,6 @@
                     <input matInput class='inputBox' (input)="validateMinDistVal()" placeholder="00" type="number" formControlName="minDriverValue"/>
                   </div>
                   </div>
-                  <mat-error *ngIf="minDriverInputCheck">
-                    {{translationData.lblPleaseSelectTotalDriverDist || 'Please input Minimum Driver Total Distance between 0 and 100' }}
-                    </mat-error>
                 </div>
               </div>
             </div>
@@ -162,7 +156,18 @@
               </mat-error>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
+          <div fxLayout="row"  class='areaWidth' fxLayoutAlign="end"> 
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-error *ngIf="minTripInputCheck">
+                {{translationData.lblPleaseSelectDriverMinDist || 'Please input Minimum Driver Total Distance between 0 and 100' }}
+              </mat-error>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-error *ngIf="minDriverInputCheck">
+                {{translationData.lblPleaseSelectTotalDriverDist || 'Please input Minimum Driver Total Distance between 0 and 100' }}
+              </mat-error>
+            </div>
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left"></div>
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button [disabled]="!ecoScoreForm.valid || minDriverInputCheck || minTripInputCheck" class='no-margin' mat-raised-button color="primary"
