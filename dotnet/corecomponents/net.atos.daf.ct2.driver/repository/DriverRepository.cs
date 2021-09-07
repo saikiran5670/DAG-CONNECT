@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@Email", email.ToLower());
 
                 var queryStatement =
-                        @"SELECT first_name FirstName, last_name LastName, organization_id as OrganisationId, org.name as OrganisationName
+                        @"SELECT first_name FirstName, last_name LastName, org.org_id as OrganisationId, org.name as OrganisationName
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
                             WHERE driver_id_ext = @DriverId and lower(email) = @Email and drv.state='A'";
 
