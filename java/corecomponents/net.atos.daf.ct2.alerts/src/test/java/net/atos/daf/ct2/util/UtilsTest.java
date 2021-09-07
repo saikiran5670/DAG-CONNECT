@@ -3,7 +3,9 @@ package net.atos.daf.ct2.util;
 import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.kafka.AlertCdc;
 import net.atos.daf.ct2.models.kafka.CdcPayloadWrapper;
+import net.atos.daf.ct2.models.process.Target;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.table.planner.expressions.In;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,9 +18,12 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.TUESDAY;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+import static net.atos.daf.ct2.util.Utils.millisecondsToSeconds;
 import static org.junit.Assert.*;
 
 public class UtilsTest {
@@ -94,13 +99,23 @@ public class UtilsTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
-        String gpsStartDateTime = "2021-03-28T01:38:15.000Z";
-        String gpsEndDateTime   = "2021-03-29T12:49:47.000Z";
-
-        LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
-        LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
-        Duration duration = Duration.between(startTime, endTime);
-        System.out.println(duration.getSeconds());
+        String gpsStartDateTime = "2021-09-07T08:55:39.555Z";
+//        String gpsEndDateTime   = "2021-03-29T12:49:47.000Z";
+//
+//        LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
+//        LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
+//        Duration duration = Duration.between(startTime, endTime);
+        String currentTime = Utils.convertMillisecondToDateTime(System.currentTimeMillis());
+        System.out.println("current time : "+currentTime);
+        long custome = millisecondsToSeconds(System.currentTimeMillis());
+        long eventTimeInMillis = convertDateToMillis(gpsStartDateTime);
+        long eventTimeInSeconds = millisecondsToSeconds(eventTimeInMillis);
+        long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - 28800L;
+        long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
+        if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
+            System.out.println("Critical");
+        }
+       
     }
 
     @Test
@@ -146,5 +161,23 @@ public class UtilsTest {
         for(int i=1; i < lst.size(); i++){
             System.out.println(lst.get(i-1)+" :: "+lst.get(i));
         }
+    }
+
+    @Test
+    public void flatMapTest(){
+        Target target = Target.builder()
+                .payload(
+                        Optional.of(Arrays.asList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                        Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9))))
+        .build();
+        List<List<Integer>> lst = (List<List<Integer>>) target.getPayload()
+                .get();
+
+        List<Integer> collect = lst.stream().flatMap(integers -> integers.stream().map(i -> i))
+                .collect(Collectors.toList());
+
+        System.out.println(lst);
+        System.out.println(collect);
+
     }
 }
