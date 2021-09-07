@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.alert.entity;
@@ -14,9 +15,11 @@ namespace net.atos.daf.ct2.alert.repository
     public class AlertRepository : IAlertRepository
     {
         private readonly IDataAccess _dataAccess;
-        public AlertRepository(IDataAccess dataAccess)
+        private readonly IDataMartDataAccess _dataMartdataAccess;
+        public AlertRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             this._dataAccess = dataAccess;
+            this._dataMartdataAccess = dataMartdataAccess;
 
         }
         #region Create Alert
@@ -1472,11 +1475,84 @@ namespace net.atos.daf.ct2.alert.repository
                                         , @alert_view_timestamp
                                         , @trip_alert_id) RETURNING id;";
 
-                    id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 return id;
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter)
+        {
+            try
+            {
+                var parameterAlert = new DynamicParameters();
+                StringBuilder queryString = new StringBuilder();
+                queryString.Append(@"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
+	                                        case when grp.group_type = 'S' then '' else grp.name end VehicleGroupName,
+                                            ale.created_by as AlertCreatedAccountId,
+                                            ale.organization_id as OrganizationId,
+                                            ale.id as AlertId
+                                            from master.alert ale
+                                            inner join master.group grp
+                                            on ale.vehicle_group_id = grp.id where state=@state ");
+                parameterAlert.Add("@state", Convert.ToChar(AlertState.Active));
+                if (offlinePushNotificationFilter.AccountId > 0)
+                {
+                    queryString.Append(" and created_by = @created_by");
+                    parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
+                }
+
+                if (offlinePushNotificationFilter.OrganizationId > 0)
+                {
+                    queryString.Append(" and organization_id = @organization_id ");
+                    parameterAlert.Add("@organization_id", offlinePushNotificationFilter.OrganizationId);
+                }
+
+                List<AlertVehicleGroup> alertIds = (List<AlertVehicleGroup>)await _dataAccess.QueryAsync<AlertVehicleGroup>(queryString.ToString(), parameterAlert);
+                List<int> lstAlertId = new List<int>();
+                foreach (var item in alertIds)
+                {
+                    lstAlertId.Add(item.AlertId);
+                }
+                parameterAlert.Add("@alertIDs", lstAlertId);
+                StringBuilder queryStringNoti = new StringBuilder();
+                queryStringNoti.Append(@"SELECT triale.id as TripAlertId
+                                    , triale.trip_id as TripId
+                                    , triale.vin as Vin
+                                    , triale.category_type as AlertCategory
+                                    , triale.type as AlertType
+                                    , triale.name as AlertName
+                                    , triale.alert_id as AlertId
+                                    , triale.alert_generated_time as AlertGeneratedTime
+                                    , triale.urgency_level_type as UrgencyLevel
+                                    , veh.name as VehicleName
+                                    , veh.registration_no as VehicleLicencePlate FROM tripdetail.tripalert triale inner join master.vehicle veh
+                                    on triale.vin = veh.vin where triale.id not in (select trip_alert_id from tripdetail.notificationviewhistory) and alert_id = ANY(@alertIDs)");
+                List<NotificationDisplayProp> notificationDisplayProps = (List<NotificationDisplayProp>)await _dataMartdataAccess.QueryAsync<NotificationDisplayProp>(queryStringNoti.ToString(), parameterAlert);
+                List<NotificationDisplayProp> latestTop5Notification = notificationDisplayProps.OrderByDescending(x => x.AlertGeneratedTime).Take(5).ToList();
+                foreach (var item in latestTop5Notification)
+                {
+                    item.AlertCategoryKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.AlertCategory });
+                    item.AlertTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where parent_enum=@parentEnum and enum=@typeEnum", new { parentEnum = item.AlertCategory, typeEnum = item.AlertType });
+                    item.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = item.UrgencyLevel });
+                    item.VehicleGroupId = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.VehicleGroupId).FirstOrDefault();
+                    item.VehicleGroupName = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.VehicleGroupName).FirstOrDefault();
+                }
+                OfflinePushNotification offlinePushNotification = new OfflinePushNotification();
+                if (notificationDisplayProps.Count() > 0)
+                {
+                    offlinePushNotification.NotificationDisplayProp = latestTop5Notification;
+                }
+                offlinePushNotification.NotificationAccount = new NotificationAccount();
+                offlinePushNotification.NotificationAccount.NotificationCount = notificationDisplayProps.Count();
+                return offlinePushNotification;
+
+            }
+            catch (Exception ex)
             {
                 throw;
             }

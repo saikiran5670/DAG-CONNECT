@@ -506,6 +506,34 @@ namespace net.atos.daf.ct2.alertservice.Services
                 });
             }
         }
+
+        public override async Task<OfflineNotificationResponse> GetOfflinePushNotification(OfflinePushNotiRequest request, ServerCallContext context)
+        {
+            try
+            {
+                OfflinePushNotificationFilter offlinePushNotificationFilter = new OfflinePushNotificationFilter();
+                offlinePushNotificationFilter.AccountId = request.AccountId;
+                offlinePushNotificationFilter.OrganizationId = request.OrganizationId;
+                OfflinePushNotification offlinePushNotification = new OfflinePushNotification();
+                offlinePushNotification = await _alertManager.GetOfflinePushNotification(offlinePushNotificationFilter);
+                OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
+                offlineNotificationResponse = _mapper.ToOfflineNotificationResponse(offlinePushNotification);
+                offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp.Count > 0 ? $" Offline notification data fetched successful" : $" Offline notification data fetched failed";
+                offlineNotificationResponse.Code = offlinePushNotification.NotificationDisplayProp.Count > 0 ? ResponseCode.Success : ResponseCode.Failed;
+                return await Task.FromResult(offlineNotificationResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new OfflineNotificationResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed
+                });
+            }
+        }
+
+
         #endregion
 
     }
