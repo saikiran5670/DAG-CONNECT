@@ -349,6 +349,7 @@ export class AppComponent {
   
      /** list of banks filtered by search keyword */
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
     /** Subject that emits when the component has been destroyed. */
     protected _onDestroy = new Subject<void>();
@@ -901,6 +902,10 @@ export class AppComponent {
     this.filteredLanguages.next(this.languages.slice());
   }
 
+  resetContextSettingFilter() {
+    this.filteredOrganizationList.next(this.organizationList.slice());
+  }
+
   compare(a, b) {
     if (a.name < b.name) {
       return -1;
@@ -1267,6 +1272,22 @@ export class AppComponent {
         this.sub.unsubscribe();
     }
   }
+
+  filterContextSettings(search) {
+    if (!this.languages) {
+      return;
+    }
+    if (!search) {
+      this.resetContextSettingFilter();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredOrganizationList.next(
+      this.organizationList.filter(item => item.name.toLowerCase().indexOf(search) > -1)
+    );
+    console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
+   }
 
   filterLanguages(search) {
     if (!this.languages) {
