@@ -509,7 +509,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                     AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "CreateAlert", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
+                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "InsertViewedNotifications", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
                     _userDetails);
                     return Ok(notiResponse.Message);
                 }
@@ -522,7 +522,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "CreateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "InsertViewedNotifications", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
@@ -533,6 +533,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("getofflinenotification")]
+        public async Task<IActionResult> GetOfflinePushNotification()
+        {
+            try
+            {
+                OfflinePushNotiRequest offlinePushNotiRequest = new OfflinePushNotiRequest();
+                offlinePushNotiRequest.AccountId = _userDetails.AccountId;
+                offlinePushNotiRequest.OrganizationId = 0;
+
+                OfflineNotificationResponse response = await _alertServiceClient.GetOfflinePushNotificationAsync(offlinePushNotiRequest);
+
+                if (response.NotificationResponse != null && response.NotificationResponse.Count > 0)
+                {
+                    response.Code = ResponseCode.Success;
+                    return Ok(response);
+                }
+                else if (response.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, AlertConstants.OFFLINE_NOTI_GET_FAILED_MSG);
+                }
+                else
+                {
+                    return StatusCode(404, AlertConstants.OFFLINE_NOTI_NOT_FOUND_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "getofflinenotification", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

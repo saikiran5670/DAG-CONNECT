@@ -181,7 +181,7 @@ public class IndexBasedAlertProcessing implements Serializable {
 							    arg3.collect(startIndex);
 							}*/
 							
-							if (!indexList.isEmpty()) {
+							/*if (!indexList.isEmpty()) {
 								  System.out.println(indexList.size());;
 								  Index startIndex = indexList.get(0);
 								  if (indexList.size()==1) {
@@ -198,6 +198,35 @@ public class IndexBasedAlertProcessing implements Serializable {
 								  startIndex.setVIdleDuration(idleDuration);
 								 }
 								  arg3.collect(startIndex);
+							}*/
+							
+							if (!indexList.isEmpty()) {
+								logger.info("list size :{}",indexList.size());
+								Index startIndex = indexList.get(0);
+								if (indexList.size() == 1) {
+									if (null != indexList.get(0).getDocument().getVTachographSpeed()) {
+
+										startIndex.setVDist(Long.valueOf(
+												(((indexList.get(0).getDocument().getVTachographSpeed()) * 1000)
+														/ 3600)));
+									} else {
+										startIndex.setVDist(0L);
+									}
+
+									// startIndex.setVDist((indexList.get(0).getVDist())/300);
+									startIndex.setVIdleDuration(indexList.get(0).getVIdleDuration());
+								} else {
+
+									Index endIndex = indexList.get(indexList.size() - 1);
+									logger.info("startIndex: {}" , startIndex);
+									logger.info("endIndex: {}" , endIndex);
+									Long average = Utils.calculateAverage(startIndex, endIndex);
+									startIndex.setVDist(average);
+									Long idleDuration = Utils.calculateIdleDuration(indexMsg);
+									startIndex.setVIdleDuration(idleDuration);
+								}
+
+								arg3.collect(startIndex);
 							}
 						} catch (Exception e) {
 							logger.info("Issue while preparing data for ExcessiveAvgSpeed :{}",indexMsg);
