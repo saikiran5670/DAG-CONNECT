@@ -15,6 +15,7 @@ namespace net.atos.daf.ct2.reports.entity
         public long DrivingTime { get; set; }
         public long IdleDuration { get; set; }
         public long StopTime { get; set; }
+        public int VehicleActiveDays { get; set; }
         public double AverageDistancePerDay { get; set; }
         public double AverageSpeed { get; set; }
         public double AverageWeightPerTrip { get; set; }
