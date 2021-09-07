@@ -29,5 +29,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public string UrgencyTypeKey { get; set; }
         public int VehicleGroupId { get; set; }
         public string VehicleGroupName { get; set; }
+        public int CreatedBy { get; set; }
     }
 }
