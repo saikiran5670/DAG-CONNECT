@@ -600,6 +600,8 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notificationDisplayResponse.VehicleLicencePlate = item.VehicleLicencePlate;
                     notificationDisplayResponse.Vin = item.Vin;
                     notificationDisplayResponse.AlertGeneratedTime = item.AlertGeneratedTime;
+                    notificationDisplayResponse.AccountId = item.AccountId;
+                    notificationDisplayResponse.OrganizationId = item.OrganizationId;
                     offlineNotificationResponse.NotificationResponse.Add(notificationDisplayResponse);
 
                 }

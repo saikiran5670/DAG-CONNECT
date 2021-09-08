@@ -22,6 +22,8 @@ namespace net.atos.daf.ct2.alert.entity
         public string UrgencyTypeKey { get; set; }
         public int VehicleGroupId { get; set; }
         public string VehicleGroupName { get; set; }
+        public int AccountId { get; set; }
+        public int OrganizationId { get; set; }
     }
 
     public class NotificationAccount
@@ -50,5 +52,6 @@ namespace net.atos.daf.ct2.alert.entity
         public int VehicleGroupId { get; set; }
         public string VehicleGroupName { get; set; }
         public int OrganizationId { get; set; }
+        public int AlertCreatedAccountId { get; set; }
     }
 }

@@ -1501,13 +1501,9 @@ namespace net.atos.daf.ct2.alert.repository
                                             ale.id as AlertId
                                             from master.alert ale
                                             inner join master.group grp
-                                            on ale.vehicle_group_id = grp.id where state=@state ");
+                                            on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by ");
                 parameterAlert.Add("@state", Convert.ToChar(AlertState.Active));
-                if (offlinePushNotificationFilter.AccountId > 0)
-                {
-                    queryString.Append(" and created_by = @created_by");
-                    parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
-                }
+                parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
 
                 if (offlinePushNotificationFilter.OrganizationId > 0)
                 {
@@ -1521,7 +1517,9 @@ namespace net.atos.daf.ct2.alert.repository
                 {
                     lstAlertId.Add(item.AlertId);
                 }
+                long alterGeneratedTime = await _dataMartdataAccess.QuerySingleOrDefaultAsync<long>("select coalesce((select alert_generated_time from tripdetail.notificationviewhistory where account_id = @account_id order by alert_generated_time desc LIMIT 1),0)", new { account_id = offlinePushNotificationFilter.AccountId });
                 parameterAlert.Add("@alertIDs", lstAlertId);
+                parameterAlert.Add("@alterGeneratedTime", alterGeneratedTime);
                 StringBuilder queryStringNoti = new StringBuilder();
                 queryStringNoti.Append(@"SELECT triale.id as TripAlertId
                                     , triale.trip_id as TripId
@@ -1533,8 +1531,12 @@ namespace net.atos.daf.ct2.alert.repository
                                     , triale.alert_generated_time as AlertGeneratedTime
                                     , triale.urgency_level_type as UrgencyLevel
                                     , veh.name as VehicleName
-                                    , veh.registration_no as VehicleLicencePlate FROM tripdetail.tripalert triale inner join master.vehicle veh
-                                    on triale.vin = veh.vin where triale.id not in (select trip_alert_id from tripdetail.notificationviewhistory) and alert_id = ANY(@alertIDs)");
+                                    , veh.registration_no as VehicleLicencePlate 
+                                    FROM tripdetail.tripalert triale 
+                                    inner join master.vehicle veh
+                                    on triale.vin = veh.vin 
+                                    where  triale.alert_generated_time > @alterGeneratedTime
+                                    and triale.alert_id = ANY(@alertIDs)");
                 List<NotificationDisplayProp> notificationDisplayProps = (List<NotificationDisplayProp>)await _dataMartdataAccess.QueryAsync<NotificationDisplayProp>(queryStringNoti.ToString(), parameterAlert);
                 List<NotificationDisplayProp> latestTop5Notification = notificationDisplayProps.OrderByDescending(x => x.AlertGeneratedTime).Take(5).ToList();
                 foreach (var item in latestTop5Notification)
@@ -1544,6 +1546,8 @@ namespace net.atos.daf.ct2.alert.repository
                     item.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = item.UrgencyLevel });
                     item.VehicleGroupId = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.VehicleGroupId).FirstOrDefault();
                     item.VehicleGroupName = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.VehicleGroupName).FirstOrDefault();
+                    item.AccountId = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.AlertCreatedAccountId).FirstOrDefault();
+                    item.OrganizationId = alertIds.Where(a => a.AlertId == item.AlertId).Select(x => x.OrganizationId).FirstOrDefault();
                 }
                 OfflinePushNotification offlinePushNotification = new OfflinePushNotification();
                 if (notificationDisplayProps.Count() > 0)
