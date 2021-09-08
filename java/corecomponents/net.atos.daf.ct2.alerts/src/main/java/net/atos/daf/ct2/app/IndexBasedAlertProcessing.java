@@ -110,10 +110,12 @@ public class IndexBasedAlertProcessing implements Serializable {
         AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
-        SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+        SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
                         propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
                         propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .returns(Index.class)
+                .filter(index -> index.getVid() != null)
                 .returns(Index.class);
 
         /*SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
@@ -136,7 +138,9 @@ public class IndexBasedAlertProcessing implements Serializable {
                             }
                         }
                 )
-                .keyBy(index -> index.getDocument() != null ? index.getDocument().getTripID() : "null")
+                .filter(index -> index.getDocument().getTripID() !=null)
+                .returns(Index.class)
+                .keyBy(index -> index.getDocument().getTripID() != null ? index.getDocument().getTripID() : "")
                 .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)));
 
         /**
@@ -165,6 +169,8 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         KeyedStream<Index, String> indexExcessiveAvgSpeedKeyedStream = windowedIndexStream
                 .process(new ExcessiveAverageSpeedService())
+                .filter(index -> index.getDocument().getTripID() !=null)
+                .returns(Index.class)
                 .keyBy(index -> index.getDocument().getTripID() != null ? index.getDocument().getTripID() : "");
 
 
