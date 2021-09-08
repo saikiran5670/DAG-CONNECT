@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.kafkacdc
         {
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
-            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
+            configuration.GetSection("KafkaConfigurationAlertCDC").Bind(_kafkaConfig);
 
             _vehicleGroupAlertCdcRepository = vehicleGroupAlertCdcRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
