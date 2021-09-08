@@ -132,46 +132,49 @@ namespace net.atos.daf.ct2.alert.repository
                             int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                             alertTimingDetail.Id = alertTimingDetailId;
                         }
-                        foreach (var notificationRecipient in notification.NotificationRecipients)
+                    }
+                    foreach (var notificationRecipient in notification.NotificationRecipients)
+                    {
+                        notificationRecipient.NotificationId = notificationId;
+                        NotificationRecipientRef notificationRecipientRef = new NotificationRecipientRef();
+                        notificationRecipientRef.NotificationId = notificationId;
+                        notificationRecipientRef.AlertId = alertId;
+                        int alertNotificationRecipientId = 0;
+                        if (notificationRecipient.Id > 0)
                         {
-                            notificationRecipient.NotificationId = notificationId;
-                            NotificationRecipientRef notificationRecipientRef = new NotificationRecipientRef();
-                            notificationRecipientRef.NotificationId = notificationId;
-                            notificationRecipientRef.AlertId = alertId;
-                            int alertNotificationRecipientId = 0;
-                            if (notificationRecipient.Id > 0)
+                            NotificationRecipient recipients = await CheckRecipientdetailsExists(notificationRecipient, alert.OrganizationId);
+                            notificationRecipientRef.RecipientId = recipients.Id;
+                            alertNotificationRecipientId = recipients.Id;
+                            await CreateNotificationRecipientRef(notificationRecipientRef);
+                        }
+                        else
+                        {
+                            if (recordCnt == 0)
                             {
-                                NotificationRecipient recipients = await CheckRecipientdetailsExists(notificationRecipient, alert.OrganizationId);
-                                notificationRecipientRef.RecipientId = recipients.Id;
-                                alertNotificationRecipientId = recipients.Id;
-                                await CreateNotificationRecipientRef(notificationRecipientRef);
+                                alertNotificationRecipientId = await CreateNotificationrecipient(notificationRecipient);
+                            }
+                            notificationRecipientRef.RecipientId = alertNotificationRecipientId;
+                            await CreateNotificationRecipientRef(notificationRecipientRef);
+                        }
+                        notificationRecipient.Id = notificationRecipientRef.RecipientId;
+                        foreach (var limit in notificationRecipient.NotificationLimits)
+                        {
+                            limit.NotificationId = notificationId;
+                            limit.RecipientId = alertNotificationRecipientId;
+                            int alertNotificationLimitId = 0;
+                            if (limit.Id > 0)
+                            {
+                                NotificationLimit notificationLimit = await CheckNotificationLimitExists(limit);
+                                //alertNotificationLimitId = await CreateNotificationLimit(limit);
                             }
                             else
                             {
-                                alertNotificationRecipientId = await CreateNotificationrecipient(notificationRecipient);
-                                notificationRecipientRef.RecipientId = alertNotificationRecipientId;
-                                await CreateNotificationRecipientRef(notificationRecipientRef);
+                                alertNotificationLimitId = await CreateNotificationLimit(limit);
                             }
-                            notificationRecipient.Id = notificationRecipientRef.RecipientId;
-                            foreach (var limit in notificationRecipient.NotificationLimits)
-                            {
-                                limit.NotificationId = notificationId;
-                                limit.RecipientId = alertNotificationRecipientId;
-                                int alertNotificationLimitId = 0;
-                                if (limit.Id > 0)
-                                {
-                                    NotificationLimit notificationLimit = await CheckNotificationLimitExists(limit);
-                                    //alertNotificationLimitId = await CreateNotificationLimit(limit);
-                                }
-                                else
-                                {
-                                    alertNotificationLimitId = await CreateNotificationLimit(limit);
-                                }
-                                limit.Id = alertNotificationLimitId;
-                            }
+                            limit.Id = alertNotificationLimitId;
                         }
-                        recordCnt += 1;
                     }
+                    recordCnt += 1;
                 }
 
                 transactionScope.Commit();

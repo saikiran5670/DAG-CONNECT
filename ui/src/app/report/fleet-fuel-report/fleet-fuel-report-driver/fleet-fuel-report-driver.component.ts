@@ -178,7 +178,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'No of Trips'     
         }
       }],
       xAxes: [{       
@@ -220,7 +220,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Kms'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
         }
       }],
       xAxes: [{       
@@ -262,7 +262,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ltrs'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'   
         }
       }],
       xAxes: [{       
@@ -346,7 +346,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ltrs /100 km'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'  
         }
       }],
       xAxes: [{       
@@ -391,7 +391,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Number of Trips'    
+          labelString: 'No of Trips'  
         }}
       ],
       xAxes: [{ 
@@ -411,7 +411,87 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },        
       scaleLabel: {
         display: true,
-        labelString: 'Number of Trips'  
+        labelString: 'Dates'  
+      }      
+    }] 
+  }
+  };
+  barChartOptions1= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString:  'Minutes'      
+        }}
+      ],
+      xAxes: [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString:'Dates'
+      }      
+    }] 
+  }
+  };
+  barChartOptions2= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+        }}
+      ],
+      xAxes: [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString:'Dates'
       }      
     }] 
   }
@@ -431,7 +511,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Values (ltr)'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'     
         }}
       ],
       xAxes: [{ 
@@ -451,7 +531,87 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },        
       scaleLabel: {
         display: true,
-        labelString:'Values (ltr)'
+        labelString:'Dates'
+      }      
+    }] 
+  }
+  };
+  barChartOptions4= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Ton'      
+        }}
+      ],
+      xAxes: [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString:'Dates'
+      }      
+    }] 
+  }
+  };
+  barChartOptions5= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+        }}
+      ],
+      xAxes: [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        },        
+      scaleLabel: {
+        display: true,
+        labelString:'Dates'
       }      
     }] 
   }
@@ -937,54 +1097,40 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;  
 
+  
     if(this.ConsumedChartType == 'Bar'){
-      this.barChartOptions.scales.xAxes= [{ 
-        barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },      
-        type:'time',
-        time:
-        {
-          tooltipFormat:  this.chartLabelDateFormat,
-          unit: 'day',
-          stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Values ()'
-      }      
-    }] 
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
+      this.barChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data1    
+        }
+      }];     
     this.barChartData1= [
       { data: this.fuelConsumedChart,
-        label: 'Values ()',
+        label: data1,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.TripsChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },      
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Number of Trips'  
-    }      
-  }] 
+    this.barChartOptions.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'Number of Trips'    
+      }
+    }]; 
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -992,110 +1138,79 @@ export class FleetFuelReportDriverComponent implements OnInit {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.Co2ChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },      
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'  
-    }      
-  }] 
+    let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+    this.barChartOptions4.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data2   
+      }
+    }];
     this.barChartData3= [
       { data: this.co2Chart,
-        label: 'Values ()',
+        label: data2,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DistanceChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },      
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString:  'Values ()'  
-    }      
-  }] 
-    this.barChartData4= [
+    let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+    this.barChartOptions2.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data3   
+      }
+    }];
+     this.barChartData4= [
       { data: this.distanceChart,
-        label: 'Values ()',
+        label: data3,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DurationChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },      
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'  
-    }      
-  }] 
-    this.barChartData5= [
-      { data: this.fuelConsumptionChart,
-        label: 'Values ()',
-        backgroundColor: '#7BC5EC',
-        hoverBackgroundColor: '#7BC5EC', }];
+    this.barChartOptions1.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'Minutes'      
+      }
+    }];
+  this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
+  hoverBackgroundColor: '#7BC5EC', }, ];
+    
   }
-  if(this.ConsumedChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },      
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'  
-    }      
-  }] 
-    this.barChartData6= [
-      { data: this.idleDuration,
-        label: 'Values ()',
+  if(this.ConsumptionChartType == 'Bar'){
+    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+    this.barChartOptions5.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data4    
+      }
+    }];
+     this.barChartData5= [
+      { data: this.fuelConsumptionChart,
+        label:data4,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }

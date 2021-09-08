@@ -357,7 +357,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                              ale.organization_id as OrganizationId
                                 from master.alert ale
                                 inner join master.group grp
-                                on ale.vehicle_group_id=grp.id where id=@alert_id";
+                                on ale.vehicle_group_id=grp.id where ale.id=@alert_id";
 
                 AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
 
@@ -366,6 +366,10 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 AlertVehicleEntity alertVeh = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(alertVehicleQuery, parameter);
                 alertVehicledetails.VehicleName = alertVeh.VehicleName;
                 alertVehicledetails.VehicleRegNo = alertVeh.VehicleRegNo;
+                alertVehicledetails.AlertCategoryKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = alertMessageEntity.AlertCategory });
+                alertVehicledetails.AlertTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where parent_enum=@parentEnum and enum=@typeEnum", new { parentEnum = alertMessageEntity.AlertCategory, typeEnum = alertMessageEntity.AlertType });
+                alertVehicledetails.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = alertMessageEntity.AlertUrgency });
+
                 return alertVehicledetails;
             }
             catch (Exception)

@@ -48,6 +48,9 @@ enum ResponseCode{
 message AlertMesssageProp{
 int32 AlertId = 1;
 string VIN = 2;
+string AlertCategory = 3;
+string AlertType = 4;
+string AlertUrgency = 5;
 }
 
 message AlertVehicleDetails{
@@ -59,4 +62,7 @@ message AlertVehicleDetails{
 	ResponseCode Code = 6;
 	string message = 7;
 	int32 AlertCreatedAccountId = 8;
+	string AlertCategoryKey =  9;
+	string AlertTypeKey =  10;
+	string UrgencyTypeKey =  11;
 }
