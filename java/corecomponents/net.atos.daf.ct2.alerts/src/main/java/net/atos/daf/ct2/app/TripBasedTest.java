@@ -67,6 +67,14 @@ public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
 
+    /**
+     * RealTime functions defined
+     */
+    public static Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
+        put("functions", Arrays.asList(
+                excessiveUnderUtilizationInHoursFun
+        ));
+    }};
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -75,17 +83,42 @@ public class TripBasedTest implements Serializable {
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
         /**
-         * RealTime functions defined
+         *  Booting cache
          */
-        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
-            put("functions", Arrays.asList(
-            		fuelIncreaseDuringStopFun,
-                    fuelDecreaseDuringStopFun
-            ));
-        }};
-        
-        env.addSource(new IndexGenerator())
-                        .print();
+        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
+        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
+
+        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
+        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
+
+
+        SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
+                .returns(Index.class);
+
+        long WindowTimeExcessiveUnderUtilization = Long.valueOf(propertiesParamTool.get("index.excessive.under.utilization.window.seconds","1800"));
+        WindowedStream<Index, String, TimeWindow> windowedExcessiveUnderUtilizationStream = indexStringStream
+                .assignTimestampsAndWatermarks(
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
+                            @Override
+                            public long extractTimestamp(Index index) {
+                                return convertDateToMillis(index.getEvtDateTime());
+                            }
+                        }
+                )
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
+                .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
+
+        KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
+                .process(new ExcessiveUnderUtilizationProcessor())
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        /**
+         * Process indexWindowKeyedStream for Excessive Under Utilization
+         */
+        IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
+                env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
+
+
         env.execute("TripBasedTest");
 
 

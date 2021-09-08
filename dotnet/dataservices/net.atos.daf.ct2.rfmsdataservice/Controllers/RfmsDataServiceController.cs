@@ -148,8 +148,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
                 }
                 var requestFilter = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
-                var selectedType = ValidateHeaderRequest(requestFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON);
 
+                var selectedType = ValidateHeaderRequest(requestFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON, out bool isHeaderValid);
+                if (!isHeaderValid)
+                    return selectedType;
 
 
                 //var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
@@ -217,7 +219,11 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 var request = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
 
                 var requestFilter = new RfmsVehicleStatusRequest() { RfmsVehicleStatusFilter = request, ContentFilter = contentFilter };
-                var selectedType = ValidateHeaderRequest(requestFilter.RfmsVehicleStatusFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON);
+                var selectedType = ValidateHeaderRequest(requestFilter.RfmsVehicleStatusFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_STATUS_JSON, out bool isHeaderValid);
+                if (!isHeaderValid)
+                    return selectedType;
+
+
 
 
 
@@ -255,9 +261,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
         #endregion
 
-        private IActionResult ValidateHeaderRequest(RfmsVehiclePositionStatusFilter requestFilter, string acceptType)
+        private IActionResult ValidateHeaderRequest(RfmsVehiclePositionStatusFilter requestFilter, string acceptType, out bool isHeaderValid)
         {
             var selectedType = string.Empty;
+            isHeaderValid = false;
 
             #region Request Header & Querystring Parameters checks
             this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
@@ -274,7 +281,12 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(requestFilter.LatestOnly), "INVALID_SUPPLIED_PARAMETERS, LatestOnly cannot be combined with StartTime and/or StopTime");
 
             if (acceptHeader.Any(x => x.Trim().Equals(acceptType, StringComparison.CurrentCultureIgnoreCase)))
+
+            {
+                isHeaderValid = true;
                 selectedType = acceptType;
+            }
+
             else
                 return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
 

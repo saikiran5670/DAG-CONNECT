@@ -1037,7 +1037,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
                                 
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -1364,7 +1364,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
                                 
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -1656,7 +1656,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
                                 
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -1951,7 +1951,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
                                 
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -2247,7 +2247,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
                                 
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -2732,7 +2732,7 @@ namespace net.atos.daf.ct2.reports.repository
 								eco.Day,'Overall_Driver' as HeaderType, 'Overall' as VIN,'Overall' as VehicleName,
 								eco.driver1_id as DriverId
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50
@@ -3140,7 +3140,7 @@ namespace net.atos.daf.ct2.reports.repository
 								eco.Day,'VIN_Driver' as HeaderType, eco.vin as VIN,eco.name as VehicleName,
 								eco.driver1_id as DriverId
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
-                                ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
+                                ,CAST(f.fuelconsumption * 100 AS DOUBLE PRECISION) as FuelConsumption   -- Convert mililitre/meters to ltrs/100Kms
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
                                 ,CAST(crusa.cruisecontrolusage30 AS DOUBLE PRECISION) as CruiseControlUsage30
                                 ,CAST(crucon.cruisecontrolusage50 AS DOUBLE PRECISION) as CruiseControlUsage50

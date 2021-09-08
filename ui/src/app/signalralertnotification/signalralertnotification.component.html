@@ -1,0 +1,28 @@
+   <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
+        <mat-card class="card1" (click)="gotoLogBook(item)">
+        <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+        fxLayoutGap="1px">
+        <div fxLayout="column" class="areaWidth min-width-10-per">
+            <mat-icon class="line3">{{item.icons}}</mat-icon>
+        </div>
+        <div fxLayout="column" class="areaWidth min-width-50-per line3">
+            <span>{{item.name}}</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+            <span class="demo1">{{item.date}}</span>
+            <span class="demo2">{{item.time}}</span>
+        </div>
+    </div>
+
+        <div class="line">
+            <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
+            fxLayoutGap="1px">
+            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
+            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
+            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
+        </div>
+    </div>
+</mat-card>
+</div>
+
+<a class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
