@@ -668,7 +668,12 @@ namespace net.atos.daf.ct2.organization.repository
                 string queryOrgInsert = "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
                               "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
-                return await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
+                var organizationId = await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
+
+                // Subscribe base package for the created organization
+                await _subscriptionManager.Create(organizationId, Convert.ToInt32(keyHandOver.OrgCreationPackage));
+
+                return organizationId;
             }
             catch (Exception ex)
             {
