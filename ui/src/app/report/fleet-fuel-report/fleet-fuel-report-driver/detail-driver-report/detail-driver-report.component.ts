@@ -339,11 +339,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }   
     }] 
     }
   };
@@ -381,11 +377,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -423,11 +415,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }  
     }]     
     }
   };
@@ -465,11 +453,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -507,11 +491,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }     
     }] 
     }
   };
@@ -549,11 +529,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }      
     }] 
     }
   };
@@ -598,11 +574,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'  
-      }      
+        }    
     }] 
   }
   };
@@ -638,11 +610,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }    
     }] 
   }
   };
@@ -678,11 +646,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }    
     }] 
   }
   };
@@ -718,11 +682,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }     
     }] 
   }
   };
@@ -758,11 +718,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }     
     }] 
   }
   };
@@ -798,11 +754,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }   
     }] 
   }
   };
@@ -1934,11 +1886,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data1 
-      }      
+        }   
     }];  
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
@@ -1954,11 +1902,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'No Of Trips'  
-      }      
+        }      
     }]; 
     this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
@@ -1988,11 +1932,7 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: data2  
-    }      
+      }      
   }];
     this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
   }
@@ -2021,11 +1961,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data3 
-      }      
+        }     
     }];
     this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
@@ -2054,11 +1990,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data4 
-      }      
+        }      
     }]; 
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
@@ -2074,11 +2006,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Minutes'  
-      }      
+        }     
     }]; 
     this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }

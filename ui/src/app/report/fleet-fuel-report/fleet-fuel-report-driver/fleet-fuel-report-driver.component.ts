@@ -149,11 +149,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -191,11 +187,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }   
     }] 
     }
   };
@@ -233,11 +225,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        } 
     }]     
     }
   };
@@ -275,11 +263,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -317,11 +301,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -359,11 +339,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        }    
     }] 
     }
   };
@@ -408,11 +384,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'  
-      }      
+        }    
     }] 
   }
   };
@@ -448,11 +420,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }    
     }] 
   }
   };
@@ -488,11 +456,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }   
     }] 
   }
   };
@@ -528,11 +492,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }    
     }] 
   }
   };
@@ -568,11 +528,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }    
     }] 
   }
   };
@@ -608,11 +564,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:'Dates'
-      }      
+        }   
     }] 
   }
   };
@@ -851,7 +803,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
-    });
+    });    
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -1240,11 +1192,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:data1 
-      }      
+        }     
     }]  
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
@@ -1260,11 +1208,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'No Of Trips'  
-      }      
+        }   
     }] 
     this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
@@ -1294,11 +1238,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: data2  
-    }      
+      }    
   }] 
     this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
   }
@@ -1327,11 +1267,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data3 
-      }      
+        }     
     }] 
     this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
@@ -1360,11 +1296,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data4 
-      }      
+        }     
     }] 
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
@@ -1380,11 +1312,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Minutes'  
-      }      
+        }     
     }] 
     this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }

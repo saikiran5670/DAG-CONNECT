@@ -342,7 +342,7 @@ export class DriverTimeDetailComponent implements OnInit {
   // }
 
   ngOnChanges(){
-    this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data)=>{
+    this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
       this.showLoadingIndicator = false;
       this.createChart(data);
     })
@@ -408,23 +408,23 @@ export class DriverTimeDetailComponent implements OnInit {
     });
     
     
-    if(driveData.length>0)
+   // if(driveData.length>0)
     _series.push({
       'name': 'Drive',
       'data': driveData,
     })
-      if(workData.length>0)
+    //  if(workData.length>0)
       _series.push({
         'name': 'Work',
         'data': workData,
       });
       
-      if(restData.length>0)
+     // if(restData.length>0)
       _series.push({
         'name': 'Rest',
         'data': restData,
       });
-      if(availableData.length>0)
+    //  if(availableData.length>0)
       _series.push({
         'name': 'Available',
         'data': availableData,
@@ -432,15 +432,17 @@ export class DriverTimeDetailComponent implements OnInit {
       this.chartOptions.series = _series;
       this.chartOptions.legend = {
         position: 'bottom',
+        show : true,
         showForNullSeries : true,
         showForZeroSeries : true,
+        showForSingleSeries : true,
         markers:{
           width: 12,
           height: 12,
           fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
         },
         onItemClick: {
-          toggleDataSeries: true
+          toggleDataSeries: false
       },
         labels: {
         colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],

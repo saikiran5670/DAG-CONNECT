@@ -24,24 +24,32 @@ public class ExcessiveAverageSpeedService extends ProcessWindowFunction<Index, I
             List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
                     .collect(Collectors.toList());
             if (!indexList.isEmpty()) {
-                logger.info("ExcessiveAverageSpeedService index size ::{}",indexList.size());;
+                logger.info("list size :{}", indexList.size());
                 Index startIndex = indexList.get(0);
-                if (indexList.size()==1) {
-                    startIndex.setVDist((indexList.get(0).getVDist())/300);
+                if (indexList.size() == 1) {
+                    if (null != indexList.get(0).getDocument().getVTachographSpeed()) {
+                        startIndex.setVDist(Long.valueOf(
+                                (((indexList.get(0).getDocument().getVTachographSpeed()) * 1000)
+                                        / 3600)));
+                    } else {
+                        startIndex.setVDist(0L);
+                    }
                     startIndex.setVIdleDuration(indexList.get(0).getVIdleDuration());
                 } else {
+
                     Index endIndex = indexList.get(indexList.size() - 1);
-                    logger.trace("startIndex-- {}" , startIndex);
-                    logger.trace("endIndex-- {}" , endIndex);
+                    logger.info("startIndex: {}", startIndex);
+                    logger.info("endIndex: {}", endIndex);
                     Long average = Utils.calculateAverage(startIndex, endIndex);
                     startIndex.setVDist(average);
                     Long idleDuration = Utils.calculateIdleDuration(indexMsg);
                     startIndex.setVIdleDuration(idleDuration);
                 }
+
                 arg3.collect(startIndex);
             }
         } catch (Exception e) {
-            logger.error("Issue while preparing data for ExcessiveAvgSpeed :{} , error {}",indexMsg,e);
+            logger.error("Issue while preparing data for ExcessiveAvgSpeed :{} , error {}", indexMsg, e);
         }
     }
 }

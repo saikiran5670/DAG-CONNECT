@@ -84,44 +84,8 @@ public class TripBasedTest implements Serializable {
             ));
         }};
         
-     
-        
-      
-        /**
-         *  Booting cache
-         */
-        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
-        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
-
-        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
-        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
-
-        SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
-                .returns(Index.class);
-
-        /*SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
-                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
-                propertiesParamTool, env)
-        .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-        .returns(Index.class);*/
-        
-        
-
-        /**
-         * Excessive Fuel during stop
-         */
-        KeyedStream<Index, String> fuelDuringStopStream = indexStringStream
-        		.filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
-                .returns(Index.class)
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
-                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
-
-        /**
-         * Process indexWindowKeyedStream for Excessive Under Utilization
-         */
-        IndexMessageAlertService.processIndexKeyStream(fuelDuringStopStream,
-                env,propertiesParamTool,fuelDuringStopFunConfigMap);
-
+        env.addSource(new IndexGenerator())
+                        .print();
         env.execute("TripBasedTest");
 
 
