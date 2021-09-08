@@ -62,7 +62,8 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , fd.idle_duration               as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),5)   as AverageSpeed
-                                            		  , round (fd.average_weight/numoftripswithavgweight, 3)    as AverageWeightPerTrip
+                                            		  ,case when numoftripswithavgweight>0 then round (fd.average_weight/numoftripswithavgweight, 3) 
+													  else round (fd.average_weight,3) end as AverageWeightPerTrip
                                             		  , round (fd.last_odometer,2)    as Odometer
                                             		FROM
                                             			CTE_FleetDeatils fd
