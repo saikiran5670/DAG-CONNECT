@@ -558,7 +558,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 var vehicleGroups = await _groupManager.Get(groupFilter);
                 var vehicleGroup = vehicleGroups.FirstOrDefault();
 
-                if (vehicleGroup.GroupType == Group.GroupType.Group)
+                if (vehicleGroup?.GroupType == Group.GroupType.Group)
                 {
                     List<Group.GroupRef> vehicleDetails = _groupManager.GetRef(request.GroupId).Result;
                     StringBuilder vehicleIdList = new StringBuilder();
@@ -584,13 +584,13 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     switch (vehicleGroup.FunctionEnum)
                     {
                         case Group.FunctionEnum.All:
-                            vehicles = await _vehicleManager.GetDynamicAllVehicle(vehicleGroup.OrganizationId);
+                            vehicles = await _vehicleManager.GetDynamicAllVehicle(vehicleGroup?.OrganizationId ?? 0);
                             break;
                         case Group.FunctionEnum.OwnedVehicles:
-                            vehicles = await _vehicleManager.GetDynamicOwnedVehicle(vehicleGroup.OrganizationId);
+                            vehicles = await _vehicleManager.GetDynamicOwnedVehicle(vehicleGroup?.OrganizationId ?? 0);
                             break;
                         case Group.FunctionEnum.VisibleVehicles:
-                            vehicles = await _vehicleManager.GetDynamicVisibleVehicle(vehicleGroup.OrganizationId);
+                            vehicles = await _vehicleManager.GetDynamicVisibleVehicle(vehicleGroup?.OrganizationId ?? 0);
                             break;
                         default:
                             break;

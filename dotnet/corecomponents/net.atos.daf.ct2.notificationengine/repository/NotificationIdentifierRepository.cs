@@ -357,7 +357,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                              ale.organization_id as OrganizationId
                                 from master.alert ale
                                 inner join master.group grp
-                                on ale.vehicle_group_id=grp.id where id=@alert_id";
+                                on ale.vehicle_group_id=grp.id where ale.id=@alert_id";
 
                 AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
 
