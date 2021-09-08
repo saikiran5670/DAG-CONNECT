@@ -143,9 +143,13 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     string languageCode = await _notificationIdentifierManager.GetLanguageCodePreference(item.EmailId);
                     string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                    if (!addAddress.ContainsKey(item.EmailId))
+                    string[] splitemail = item?.EmailId.Split(';');
+                    foreach (var itememail in splitemail)
                     {
-                        addAddress.Add(item.EmailId, null);
+                        if (!addAddress.ContainsKey(itememail))
+                        {
+                            addAddress.Add(itememail, null);
+                        }
                     }
                     var mailNotification = new MailNotificationRequest()
                     {
