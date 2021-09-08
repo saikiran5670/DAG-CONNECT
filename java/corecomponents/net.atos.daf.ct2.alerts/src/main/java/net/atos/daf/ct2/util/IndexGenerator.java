@@ -49,7 +49,6 @@ public class IndexGenerator implements SourceFunction<Index> {
             // 4.3 hours 15480000  -> advisory
             // 5.3 hours 19080000  -> warning
             // 6.3 hours 22680000  -> critical
-            // 8.3 hours 29880000
             idx.setEvtDateTime(convertMillisecondToDateTime(currentTimeMillis - 19080000));
             sourceContext.collect(idx);
             logger.info("DATA SEND :: {}" , Utils.writeValueAsString(idx));
