@@ -45,12 +45,17 @@
                         <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
                         <a class="navIcon">
                             <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
-                                [matMenuTriggerFor]="menu">
+                                [matMenuTriggerFor]="menu" (click) ="notificationClicked()">
                                 notifications_none</mat-icon>
                             <span class="badge">0</span>
                         </a>
 
-                        <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
+                        <mat-menu #menu="matMenu"  class="notificationList" yPosition="below" > 
+                                <app-signalralertnotification *ngIf="showNotificationAlerts">
+                                </app-signalralertnotification>
+                        </mat-menu>
+
+                        <!-- <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
                             <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
                                 <mat-card class="card1" (click)="gotoLogBook(item)">
                                 <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
@@ -70,18 +75,16 @@
                                 <div class="line">
                                     <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
                                     fxLayoutGap="1px">
-                                    <!-- <span class="line2">{{item.regNo}}</span> -->
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
                                 </div>
                             </div>
-                        <!-- <mat-divider style="margin: 5px,5px!important;"></mat-divider> -->
                     </mat-card>
                     </div>
 
                     <a class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
-                    </mat-menu>
+                    </mat-menu> -->
                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
 
