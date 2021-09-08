@@ -1424,7 +1424,7 @@ export class ReportMapService {
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStopTime = this.getStarttime(element.stopTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedStopTime = this.calculateStopTime(element.vehicleActiveDays, element.tripTime);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
@@ -1433,11 +1433,17 @@ export class ReportMapService {
       element.convertedTripTime = Util.getHhMmTimeFromMS(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
-    
     });
     return gridData;
   }
 
+  calculateStopTime(activeDays: any, tripTime: any){
+    let time: any = 0;
+    let stopTime: any = 0;
+    time = activeDays * 24 * 3600 * 1000; // stop-time in ms
+    stopTime = time - tripTime; // total time - trip time 
+    return Util.getHhMmTimeFromMS(stopTime);
+  }
 
   // Fuel Benchmarking data conversions
   getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){

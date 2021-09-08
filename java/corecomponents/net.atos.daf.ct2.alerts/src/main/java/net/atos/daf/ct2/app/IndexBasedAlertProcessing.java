@@ -165,7 +165,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         KeyedStream<Index, String> indexExcessiveAvgSpeedKeyedStream = windowedIndexStream
                 .process(new ExcessiveAverageSpeedService())
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+                .keyBy(index -> index.getDocument().getTripID() != null ? index.getDocument().getTripID() : "");
 
 
         /**
