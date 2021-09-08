@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new Entity.KafkaConfiguration();
-            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+            configuration.GetSection("PushAlertKafkaConfiguration").Bind(_kafkaConfiguration);
             _mapper = new Entity.Alert.Mapper();
             _accountSignalRClientsMappingList = accountSignalRClientsMappingList;
             _httpContextAccessor = httpContextAccessor;
@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         _pkId = 1;
                     }
                     _pkId = _pkId + 1;
-                    Thread.Sleep(10000);
+                    Thread.Sleep(1000);
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
