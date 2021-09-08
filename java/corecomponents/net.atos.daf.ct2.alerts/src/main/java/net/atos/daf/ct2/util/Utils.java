@@ -147,9 +147,9 @@ public class Utils implements Serializable {
         return (long)(hours * 3600);
     }
 
-    public static Long calculateAverage(Index index1, Index index2) {
-        Long odometerDiff = index2.getVDist() - index1.getVDist();
-        Long avgValue = 0L;
+    public static Double calculateAverage(Index index1, Index index2) {
+        Double odometerDiff = Double.valueOf(index2.getVDist() - index1.getVDist());
+        Double avgValue = 0.0;
         try {
             /**
              * Time diff in seconds
