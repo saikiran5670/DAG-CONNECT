@@ -38,26 +38,26 @@ spec:
       - name: testservice-auto-grpc-container
         image: #{acrurl}#/testservice-auto
         imagePullPolicy: "Always"
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /account
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 60
-            periodSeconds: 60
-            successThreshold: 1
-            timeoutSeconds: 3
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /account
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 60
-            periodSeconds: 60
-            successThreshold: 1
-            timeoutSeconds: 3
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /account
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /account
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 3
         volumeMounts:
         - name: tmp
           mountPath: /tmp
