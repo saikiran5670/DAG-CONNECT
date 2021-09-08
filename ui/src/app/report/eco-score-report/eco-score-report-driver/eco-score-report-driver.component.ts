@@ -189,7 +189,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     //litre/100 km - mpg pending
     let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
     if(this.prefUnitFormat == 'dunit_Imperial' && fuelConsumption !== '0.0')
-      fuelConsumption = (235.215/fuelConsumption).toFixed(3);
+      fuelConsumption = (282.481/(fuelConsumption)).toFixed(2);
     this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
     // Doughnut - Anticipation Score
     this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore || 'Anticipation Score'), '', ''];
@@ -645,7 +645,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
 
   checkPrefData(){
-    if(this.ecoScoreDriverDetails.singleDriverKPIInfo && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.length > 0){
+    if(this.ecoScoreDriverDetails.singleDriverKPIInfo && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.length > 0
+      && this.driverPerformanceColumnData && this.driverPerformanceColumnData.length > 0){
       this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.forEach(element => {
         if(element.subSingleDriver && element.subSingleDriver.length > 0){
           let _arr: any = [];
@@ -977,7 +978,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.621371).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return val * 235.215;
+            return (282.481/(val)).toFixed(2);
           }
         }
     }

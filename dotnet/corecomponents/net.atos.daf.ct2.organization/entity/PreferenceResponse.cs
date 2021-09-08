@@ -35,5 +35,8 @@ namespace net.atos.daf.ct2.organization.entity
         public string DateFormatType { get; set; }
         public string TimeFormat { get; set; }
         public int PageRefreshTime { get; set; }
+        public int IconId { get; set; }
+        public byte[] IconBute { get; set; }
+        public string Icon { get; set; }
     }
 }

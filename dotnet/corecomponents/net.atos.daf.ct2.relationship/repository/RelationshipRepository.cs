@@ -266,63 +266,63 @@ namespace net.atos.daf.ct2.relationship.repository
         public async Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping)
         {
 
-            var Inputparameter = new DynamicParameters();
+            var parameters = new DynamicParameters();
             var relationships = new List<Relationship>();
-            Inputparameter.Add("@relationship_id", relationshipMapping.Relationship_id);
+            parameters.Add("@relationship_id", relationshipMapping.Relationship_id);
             //Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
             if (relationshipMapping.Vehicle_group_id == 0)
             {
-                Inputparameter.Add("@vehicle_group_id", null);
+                parameters.Add("@vehicle_group_id", null);
             }
             else
             {
-                Inputparameter.Add("@vehicle_group_id", relationshipMapping.Vehicle_group_id);
+                parameters.Add("@vehicle_group_id", relationshipMapping.Vehicle_group_id);
             }
-            Inputparameter.Add("@owner_org_id", relationshipMapping.Owner_org_id);
-            Inputparameter.Add("@created_org_id", relationshipMapping.Created_org_id);
-            Inputparameter.Add("@target_org_id", relationshipMapping.Target_org_id);
-            Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            Inputparameter.Add("@end_date", null);
-            Inputparameter.Add("@allow_chain", relationshipMapping.Allow_chain);
-            Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            parameters.Add("@owner_org_id", relationshipMapping.Owner_org_id);
+            parameters.Add("@created_org_id", relationshipMapping.Created_org_id);
+            parameters.Add("@target_org_id", relationshipMapping.Target_org_id);
+            parameters.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            parameters.Add("@end_date", null);
+            parameters.Add("@allow_chain", relationshipMapping.Allow_chain);
+            parameters.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
             var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain,created_at)                     
                      values(@relationship_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at) returning id";
 
-            var OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
-            return OwnerRelationshipId;
+            var ownerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameters);
+            return ownerRelationshipId;
         }
 
-        public async Task<int> EndRelationShipMapping(int OrgRelationId)
+        public async Task<int> EndRelationShipMapping(int orgRelationId)
         {
-            var Inputparameter = new DynamicParameters();
-            Inputparameter.Add("@orgrelationid", OrgRelationId);
-            Inputparameter.Add("@enddate", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            var parameters = new DynamicParameters();
+            parameters.Add("@orgrelationid", orgRelationId);
+            parameters.Add("@enddate", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             var query = @"update master.orgrelationshipmapping set end_date = @enddate 
                             where id=@orgrelationid returning id";
-            var OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(query, Inputparameter);
-            return OwnerRelationshipId;
+            var ownerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
+            return ownerRelationshipId;
         }
 
-        public async Task<int> AllowChaining(int OrgRelationId, bool AllowChaining)
+        public async Task<int> AllowChaining(int orgRelationId, bool allowChaining)
         {
-            var Inputparameter = new DynamicParameters();
-            Inputparameter.Add("@orgrelationid", OrgRelationId);
-            Inputparameter.Add("@allowchaining", AllowChaining);
-            Inputparameter.Add("@enddate", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            var parameters = new DynamicParameters();
+            parameters.Add("@orgrelationid", orgRelationId);
+            parameters.Add("@allowchaining", allowChaining);
+            parameters.Add("@enddate", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             var query = @"update master.orgrelationshipmapping set allow_chain = @allowchaining 
                             where id=@orgrelationid returning id";
-            var OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(query, Inputparameter);
-            return OwnerRelationshipId;
+            var ownerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
+            return ownerRelationshipId;
         }
 
-        public async Task<IEnumerable<OrganizationRelationShip>> GetOrgRelationships(int OrganizationID)
+        public async Task<IEnumerable<OrganizationRelationShip>> GetOrgRelationships(int organizationID)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@owner_org_id", OrganizationID);
+                parameter.Add("@owner_org_id", organizationID);
 
                 string query = @"select relationship_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id from master.orgrelationshipmapping where owner_org_id=@owner_org_id";
@@ -334,7 +334,6 @@ namespace net.atos.daf.ct2.relationship.repository
                 throw;
             }
         }
-
 
         public async Task<List<OrganizationRelationShip>> GetRelationshipMapping(OrganizationRelationShip filter)
         {

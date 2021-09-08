@@ -14,7 +14,10 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.customerdataservice.Common;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
 using net.atos.daf.ct2.subscription.repository;
@@ -57,14 +60,14 @@ namespace net.atos.daf.ct2.customerdataservice
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
 
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
@@ -96,6 +99,12 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<ICustomerDataCdcManager, CustomerDataCdcManager>();
+            services.AddTransient<ICustomerDataCdcRepository, CustomerDataCdcRepository>();
+            services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
 
             services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>

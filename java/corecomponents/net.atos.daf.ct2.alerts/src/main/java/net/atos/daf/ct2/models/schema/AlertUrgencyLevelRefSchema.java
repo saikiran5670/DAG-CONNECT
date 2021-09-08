@@ -15,15 +15,19 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlertUrgencyLevelRefSchema implements Serializable{
+public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelRefSchema>, Serializable{
 
     private Long alertId;
     private String urgencyLevelType;
-    private Long thresholdValue;
+    private Double thresholdValue;
     private String unitType;
     private String alertCategory;
     private String alertType;
     private String alertState;
+    private String periodType;
+    private String dayTypeArray;
+    private Long   startTime;
+    private Long   endTime;
 
     private Long timestamp = System.currentTimeMillis();
 
@@ -33,12 +37,17 @@ public class AlertUrgencyLevelRefSchema implements Serializable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AlertUrgencyLevelRefSchema that = (AlertUrgencyLevelRefSchema) o;
-        return alertId.equals(that.alertId);
+        AlertUrgencyLevelRefSchema schema = (AlertUrgencyLevelRefSchema) o;
+        return alertId.equals(schema.alertId) && urgencyLevelType.equals(schema.urgencyLevelType) && thresholdValue.equals(schema.thresholdValue) && unitType.equals(schema.unitType) && alertCategory.equals(schema.alertCategory) && alertType.equals(schema.alertType) && alertState.equals(schema.alertState) && periodType.equals(schema.periodType) && dayTypeArray.equals(schema.dayTypeArray) && startTime.equals(schema.startTime) && endTime.equals(schema.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alertId);
+        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime);
+    }
+
+    @Override
+    public int compareTo(AlertUrgencyLevelRefSchema o) {
+        return this.getUrgencyLevelType().compareTo(o.getUrgencyLevelType());
     }
 }

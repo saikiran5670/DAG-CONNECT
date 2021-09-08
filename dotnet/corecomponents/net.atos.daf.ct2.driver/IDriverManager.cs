@@ -24,8 +24,10 @@ namespace net.atos.daf.ct2.driver
 
         Task<ProvisioningDriverDataServiceResponse> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
         Task<ProvisioningDriverDataServiceResponse> GetDriverList(ProvisioningDriverDataServiceRequest request);
-        Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email);
 
         #endregion
+
+        Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email);
+        Task<DriverLookup> GetDriver(int organizationId, string driverID);
     }
 }

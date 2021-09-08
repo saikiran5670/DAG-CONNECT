@@ -21,9 +21,9 @@ namespace net.atos.daf.ct2.vehicle
         Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
         Task<int> IsVINExists(string VIN);
         Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state);
-        Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
-        Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
-        Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
+        Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int organizationId);
+        Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int organizationId);
+        Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int organizationId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
         Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);

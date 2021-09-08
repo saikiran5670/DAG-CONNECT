@@ -1,18 +1,28 @@
 package net.atos.daf.ct2.models;
 
-import lombok.*;
-
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-@Builder
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class Index implements Serializable {
+public class Index extends net.atos.daf.ct2.pojo.standard.Index  implements Serializable {
 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String vid;
     private String vin;
-    private String gpsLat;
-    private String gpslong;
+    private BigDecimal vFuelStopPrevVal;
+    private Integer EvtId;
+    private List<net.atos.daf.ct2.pojo.standard.Index> indexList = new ArrayList<>();
+    
 }

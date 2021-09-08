@@ -25,6 +25,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import html2canvas from 'html2canvas';
 
 declare var H: any;
 
@@ -58,7 +59,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   mapFilterForm: FormGroup;
   // displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
   // displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
-  displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+  // displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+  displayedColumns = ['All', 'vin', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'odometer', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alert'];
   translationData: any;
   showMap: boolean = false;
   showBack: boolean = false;
@@ -145,7 +147,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     },
     {
       key: 'rp_tr_report_tripreportdetails_fuelconsumed',
-      value: 'fuelConsumed100Km'
+      value: 'fuelConsumed' // fuelConsumed100Km
     },
     {
       key: 'rp_tr_report_tripreportdetails_idleduration',
@@ -444,8 +446,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         if (this.prefTimeFormat == 12) { // 12
           this.selectedStartTime = this._get12Time(this.globalSearchFilterData.startTimeStamp);
           this.selectedEndTime = this._get12Time(this.globalSearchFilterData.endTimeStamp);
-          this.startTimeDisplay = this.selectedStartTime;
-          this.endTimeDisplay = this.selectedEndTime;
+          this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
+          this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
         } else { // 24
           this.selectedStartTime = this.get24Time(this.globalSearchFilterData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.globalSearchFilterData.endTimeStamp);
@@ -460,8 +462,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       } else {
-        this.startTimeDisplay = '12:00 AM';
-        this.endTimeDisplay = '11:59 PM';
+        this.startTimeDisplay = '12:00:00 AM';
+        this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
       }
@@ -600,9 +602,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.advanceFilterOpen = false;
     this.searchMarker = {};
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+  
     //this.internalSelection = true;
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     if (_vinData.length > 0) {
@@ -658,7 +663,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _date: any;
     let _time: any;
     if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
     } else {
       _time = `${h}:${m}:${s}`;
     }
@@ -741,6 +746,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       }
       this.tripForm.get('vehicle').setValue('');
+    
     }
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
@@ -785,10 +791,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
   getPDFExcelHeader(){
     let col: any = [];
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg || 'mpg') : (this.translationData.lblmpg || 'mpg');
-    let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'ton') : (this.translationData.lblpound || 'ton');
+    let unitValLtrGallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal || 'gal') : (this.translationData.lblgal || 'gal');
+    let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
-    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumption || 'Fuel Consumption'} (${unitVal100km})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`, `${this.translationData.lblEvents || 'Events'}`];
+    //col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumption || 'Fuel Consumption'} (${unitVal100km})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`, `${this.translationData.lblEvents || 'Events'}`];
+    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValLtrGallon})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`];
     return col;
   }
 
@@ -843,11 +851,18 @@ export class TripReportComponent implements OnInit, OnDestroy {
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })
 
+    // this.initData.forEach(item => {
+    //   worksheet.addRow([item.vin, item.convertedOdometer, item.vehicleName, item.registrationNo, item.convertedStartTime,
+    //   item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
+    //   item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
+    //   item.convertedDrivingTime, item.alert, item.events]);
+    // });
+
     this.initData.forEach(item => {
-      worksheet.addRow([item.vin, item.convertedOdometer, item.vehicleName, item.registrationNo, item.convertedStartTime,
+      worksheet.addRow([item.vin, item.vehicleName, item.registrationNo, item.convertedStartTime,
       item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
-      item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
-      item.convertedDrivingTime, item.alert, item.events]);
+      item.convertedAverageWeight, item.convertedOdometer, item.startPosition, item.endPosition, item.convertedFuelConsumed,
+      item.convertedDrivingTime, item.alert]);
     });
     worksheet.mergeCells('A1:D2');
     subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
@@ -868,6 +883,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   exportAsPDFFile() {
     var doc = new jsPDF('p', 'mm', 'a2');
+    let DATA = document.getElementById('charts');
+    html2canvas( DATA)
+    .then(canvas => {  
+
     (doc as any).autoTable({
       styles: {
         cellPadding: 0.5,
@@ -886,16 +905,25 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       margin: {
         bottom: 30,
-        top: 45
+        top: 62
       }
     });
+    
+    let fileWidth = 170;
+    let fileHeight = canvas.height * fileWidth / canvas.width;
+    
+    const FILEURI = canvas.toDataURL('image/png')
+    // let PDF = new jsPDF('p', 'mm', 'a4');
+    let position = 0;
+    doc.addImage(FILEURI, 'PNG', 10, 45, fileWidth, fileHeight) ;
+
+
 
     let pdfColumns = this.getPDFExcelHeader();
     let prepare = []
     this.initData.forEach(e => {
       var tempObj = [];
       tempObj.push(e.vin);
-      tempObj.push(e.convertedOdometer);
       tempObj.push(e.vehicleName);
       tempObj.push(e.registrationNo);
       tempObj.push(e.convertedStartTime);
@@ -904,12 +932,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
       tempObj.push(e.convertedIdleDuration);
       tempObj.push(e.convertedAverageSpeed);
       tempObj.push(e.convertedAverageWeight);
+      tempObj.push(e.convertedOdometer);
       tempObj.push(e.startPosition);
       tempObj.push(e.endPosition);
-      tempObj.push(e.convertedFuelConsumed100Km);
+      //tempObj.push(e.convertedFuelConsumed100Km);
+      tempObj.push(e.convertedFuelConsumed);
       tempObj.push(e.convertedDrivingTime);
       tempObj.push(e.alert);
-      tempObj.push(e.events);
+      //tempObj.push(e.events);
 
       prepare.push(tempObj);
     });
@@ -923,6 +953,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     })
     // below line for Download PDF document  
     doc.save('tripReport.pdf');
+  });
   }
 
   masterToggleForTrip() {
@@ -1132,8 +1163,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     /* --- comment code as per discus with Atul --- */
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);     
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
     if (this.wholeTripData.vinTripList.length > 0) {
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
@@ -1173,9 +1206,20 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData.slice();
-    if (this.vehicleDD.length > 0) {
-      this.resetTripFormControlValue();
-    }
+    // if (this.vehicleDD.length > 0) {
+    //   let _s1 = this.vehicleListData.map(item=>item.vehicleName).filter((value,index,self)=>self.indexOf(value)=== index);
+    //   if(_s1.length > 0){
+    //     _s1.forEach(element => {
+    //       let count = this.vehicleListData.filter(j =>j.vehicleName == element);
+    //       if(count.length >0){
+    //         this.vehicleDD.push(count[1]);
+    //       }
+    //     });
+    //   }
+    //   this.vehicleDD.unshift({vehicleName:this.translationData.lblVehicleName || 'vehicle Name'})
+    //   this.resetTripFormControlValue();
+    // }
+    this.resetTripFormControlValue();
     this.setVehicleGroupAndVehiclePreSelection();
     if (this.showBack) {
       this.onSearch();
@@ -1185,6 +1229,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
+    if(this.vehicleDD.length>0){
+      let vehicleID = this.vehicleDD[0].vehicleId;
+      this.tripForm.get('vehicle').setValue(vehicleID);
     }
   }
 

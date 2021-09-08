@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.cache.postgres.impl;
 
 import net.atos.daf.ct2.cache.postgres.TableStream;
+import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
@@ -11,6 +12,9 @@ import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
+import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
+import org.apache.flink.connector.jdbc.JdbcSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -25,7 +29,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.Optional;
 
-import static net.atos.daf.ct2.props.AlertConfigProp.DRIVER;
+import static net.atos.daf.ct2.props.AlertConfigProp.*;
 
 
 public class JdbcFormatTableStream extends TableStream<Row> implements Serializable {
@@ -50,6 +54,44 @@ public class JdbcFormatTableStream extends TableStream<Row> implements Serializa
     }
 
     @Override
+    public void saveAlertIntoDB(DataStream<Alert> alertFoundStream) {
+        /**
+         * Store into alert db
+         */
+        String jdbcInsertUrl = new StringBuilder("jdbc:postgresql://")
+                .append(parameters.get(DATAMART_POSTGRES_HOST))
+                .append(":" + parameters.get(DATAMART_POSTGRES_PORT) + "/")
+                .append(parameters.get(DATAMART_DATABASE))
+                .append("?user=" + parameters.get(DATAMART_USERNAME))
+                .append("&password=" + parameters.get(DATAMART_PASSWORD))
+                .append("&sslmode="+parameters.get(DATAMART_POSTGRES_SSL))
+                .toString();
+
+        alertFoundStream
+                .addSink(JdbcSink.sink(
+                        parameters.get("postgres.insert.into.alerts"),
+                        (ps, a) -> {
+                            ps.setString(1, a.getTripid());
+                            ps.setString(2, a.getVin());
+                            ps.setString(3, a.getCategoryType());
+                            ps.setString(4, a.getType());
+                            ps.setLong(5, Long.valueOf(a.getAlertid()));
+                            ps.setLong(6, Long.valueOf(a.getAlertGeneratedTime()));
+                            ps.setLong(7, Long.valueOf(a.getAlertGeneratedTime()));
+                            ps.setString(8, a.getUrgencyLevelType());
+                        },
+                        JdbcExecutionOptions.builder()
+                                .withMaxRetries(0)
+                                .withBatchSize(1)
+                                .build(),
+                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
+                                .withUrl(jdbcInsertUrl)
+                                .withDriverName(parameters.get("driver.class.name"))
+                                .build()));
+    }
+
+    @Deprecated
+    @Override
     public DataStream<Payload>joinTable(DataStreamSource<Row> first, DataStreamSource<Row> second) {
 
         SingleOutputStreamOperator<AlertUrgencyLevelRefSchema> alertUrgencyStream = first.map(row ->  AlertUrgencyLevelRefSchema.builder()
@@ -58,7 +100,7 @@ public class JdbcFormatTableStream extends TableStream<Row> implements Serializa
                 .alertType(String.valueOf(row.getField(2)))
                 .alertState(String.valueOf(row.getField(3)))
                 .urgencyLevelType(String.valueOf(row.getField(4)))
-                .thresholdValue(row.getField(5) == null ? -1L : Long.valueOf(String.valueOf(row.getField(5))))
+                .thresholdValue(row.getField(5) == null ? 0.0 : Double.valueOf(String.valueOf(row.getField(5))))
                 .unitType(String.valueOf(row.getField(6)))
                 .timestamp(System.currentTimeMillis())
                 .build()

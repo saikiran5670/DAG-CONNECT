@@ -25,6 +25,7 @@ export class TripReportPreferenceComponent implements OnInit {
   reqField: boolean = false;
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
+  requestSent:boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -109,7 +110,8 @@ export class TripReportPreferenceComponent implements OnInit {
                 txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_fuelconsumed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
+                //txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgal || 'gal');
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averagespeed'){
                 txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
@@ -117,7 +119,10 @@ export class TripReportPreferenceComponent implements OnInit {
               }else{
                 _data.translatedName = this.getTranslatedValues(item);
               }
-              this.tripPrefData.push(_data);
+
+              if(item.key !== 'rp_tr_report_tripreportdetails_events'){
+                this.tripPrefData.push(_data);
+              }
             }
           });
         }
@@ -200,37 +205,41 @@ export class TripReportPreferenceComponent implements OnInit {
   }
 
   onConfirm(){
-    let _dataArr: any = [];
-    this.tripPrefData.forEach(element => {
-      let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }else{
-        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+    if (!this.requestSent) {
+      this.requestSent = true;
+      let _dataArr: any = [];
+      this.tripPrefData.forEach(element => {
+        let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+        if (search.length > 0) {
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        } else {
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        }
+      });
+
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
+      if (this.selectionForTripColumns.selected.length == this.tripPrefData.length) { // parent selected
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      } else { // parent un-selected
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
-    });
 
-    _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
-    if(this.selectionForTripColumns.selected.length == this.tripPrefData.length){ // parent selected
-      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-    }else{ // parent un-selected
-      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-    }
-
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: _dataArr
-    }
-
-    this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
-      this.loadTripReportPreferences();
-      this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("tripreport")){
-        this.reloadCurrentComponent();
+      let objData: any = {
+        reportId: this.reportId,
+        attributes: _dataArr
       }
-    }, (error) => {
-      console.log(error);
-    });
+
+      this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
+        this.loadTripReportPreferences();
+        this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("tripreport")) {
+          this.reloadCurrentComponent();
+        }
+        this.requestSent = false;
+      }, (error) => {
+        console.log(error);
+      });
+    }
   }
 
   getSuccessMsg(){

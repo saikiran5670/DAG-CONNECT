@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.customerdataservice.Common;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.entity;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
@@ -19,11 +24,17 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         private readonly ILogger<CustomerDataController> _logger;
         private readonly IOrganizationManager _organizationManager;
         private readonly IConfiguration _configuration;
-        public CustomerDataController(ILogger<CustomerDataController> logger, IOrganizationManager organizationmanager, IConfiguration configuration)
+        private readonly CustomerDataCdcHelper _customerDataCdcHelper;
+        private readonly ICustomerDataCdcManager _customerDataCdcManager;
+        private readonly IAuditTraillib _auditTrail;
+        public CustomerDataController(IAuditTraillib auditTrail, ILogger<CustomerDataController> logger, IOrganizationManager organizationmanager, IConfiguration configuration, ICustomerDataCdcManager customerDataCdcManager)
         {
             this._logger = logger;
+            _auditTrail = auditTrail;
             _organizationManager = organizationmanager;
             _configuration = configuration;
+            _customerDataCdcManager = customerDataCdcManager;
+            _customerDataCdcHelper = new CustomerDataCdcHelper(_customerDataCdcManager);
         }
 
         [HttpPost]
@@ -32,6 +43,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         {
             try
             {
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "Customer Update dataservice received object", 0, 0, JsonConvert.SerializeObject(customer), 0, 0);
                 string dateformat = "yyyy-MM-ddTHH:mm:ss";
                 if (DateTime.TryParseExact(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime parsedRefDateTime))
                 {
@@ -58,7 +70,14 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CountryCode = customer.CompanyUpdatedEvent.Company.Address?.CountryCode?.Trim()
                 };
 
-                await _organizationManager.UpdateCustomer(customerRequest);
+                var customerData = await _organizationManager.UpdateCustomer(customerRequest);
+                if (!string.IsNullOrEmpty(customerData.SubscriptionId) && customerData.SubscriptionId != "0")
+                {
+                    //Triggering subscription cdc 
+                    int subscriptionId = Convert.ToInt32(customerRequest.SubscriptionId);
+                    await _customerDataCdcManager.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId, "I");
+                }
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Customer Update dataservice modified object", 0, 0, JsonConvert.SerializeObject(customerData), 0, 0);
                 _logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
                 return Ok();
             }
@@ -73,6 +92,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         [Route("keyhandover")]
         public async Task<IActionResult> KeyHandover(KeyHandOver keyHandOver)
         {
+            await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "Customer dataservice Keyhandover received object", 0, 0, JsonConvert.SerializeObject(keyHandOver), 0, 0);
             try
             {
                 if (!(keyHandOver.KeyHandOverEvent.TCUActivation.Trim().ToUpper().Equals("YES") || keyHandOver.KeyHandOverEvent.TCUActivation.Trim().ToUpper().Equals("NO")))
@@ -116,10 +136,12 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 };
 
                 await _organizationManager.KeyHandOverEvent(objHandOver);
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Customer dataservice Keyhandover modified object", 0, 0, JsonConvert.SerializeObject(objHandOver), 0, 0);
                 return Ok();
             }
             catch (Exception ex)
             {
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Customer dataservice Keyhandover received object", 0, 0, JsonConvert.SerializeObject(keyHandOver), 0, 0);
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
             }

@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                if (request.VINs.Count <= 0)
+                if (request == null && request.VINs.Count <= 0)
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(request.StartDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_STARTDATE_MSG); }
+                if (request == null && !(request.StartDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_ENDDATE_MSG); }
                 if (request.VINs.Count <= 0) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_DATEMISMATCH_MSG); }
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.VINs.Count <= 0)
+                if (request == null && request.VINs.Count <= 0)
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }
@@ -214,22 +214,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
-                DashboardUserPreferenceRequest obj = new DashboardUserPreferenceRequest
-                {
-                    ReportId = reportId,
-                    AccountId = _userDetails.AccountId, // 171
-                    RoleId = _userDetails.RoleId, // 33
-                    OrganizationId = GetUserSelectedOrgId(),//36
-                    ContextOrgId = GetContextOrgId() //36
-                };
 
-                //ReportId = reportId,
-                //AccountId = _userDetails.AccountId, // 171
-                //RoleId = _userDetails.RoleId, // 33
-                //OrganizationId = GetUserSelectedOrgId(),//36
-                //ContextOrgId = GetContextOrgId() //36
+                DashboardUserPreferenceRequest userPrefRequest = new DashboardUserPreferenceRequest();
+                userPrefRequest.ReportId = reportId;
+                userPrefRequest.AccountId = _userDetails.AccountId;
+                userPrefRequest.RoleId = _userDetails.RoleId;
+                userPrefRequest.OrganizationId = GetUserSelectedOrgId();
+                userPrefRequest.ContextOrgId = GetContextOrgId();
 
-                var response = await _dashboardServiceClient.GetDashboardUserPreferenceAsync(obj);
+                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
+                SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+
+                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+
+                var response = await _dashboardServiceClient.GetDashboardUserPreferenceAsync(userPrefRequest);
                 if (response.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Dashboard Controller", "Dashboard service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,

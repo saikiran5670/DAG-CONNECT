@@ -1,0 +1,13 @@
+<div class='logoIcon'>
+<div >
+    <img class='margin-left-sm' src="assets/logo.png">
+</div>
+<div *ngIf="errorStatus == 200">
+<p class="text1">You have successfully unsubscribed.</p>
+<p class="text2">You have been successfully removed from this subscriber list and won't receive any further emails from us.</p>
+</div>
+<div *ngIf="errorStatus != 200 && errorStatus" class="data">
+    <p>We are facing some problem.</p>
+    <span class="error">Unsubscription action failed</span><span>, try again after some time.</span>
+    </div>
+</div>

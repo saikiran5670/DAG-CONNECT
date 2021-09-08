@@ -8,6 +8,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { GeofenceService } from '../../../../services/landmarkGeofence.service';
+import { ConfigService } from '@ngx-config/core';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 declare var H: any;
 
 @Component({
@@ -15,6 +17,7 @@ declare var H: any;
   templateUrl: './create-edit-view-geofence.component.html',
   styleUrls: ['./create-edit-view-geofence.component.less']
 })
+
 export class CreateEditViewGeofenceComponent implements OnInit {
   displayedColumns: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   selectedPOI = new SelectionModel(true, []);
@@ -69,15 +72,22 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   subCategorySelectionForPOI: any = 0;
   infoBubble: boolean = false;
   infoBubbleText: boolean = false;
+  searchStr: string = "";
+  suggestionData: any;
+  map_key: any = '';
+  dataService: any;
+  searchMarker: any = {};
 
   @ViewChild("map")
   public mapElement: ElementRef;
 
-  constructor(private hereService: HereService, private _formBuilder: FormBuilder, private geofenceService: GeofenceService) {
+  constructor(private _configService: ConfigService, private completerService: CompleterService, private hereService: HereService, private _formBuilder: FormBuilder, private geofenceService: GeofenceService) {
     this.query = "starbucks";
+    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
+    this.configureAutoSuggest();
   }
 
   ngOnInit(): void {
@@ -93,6 +103,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         validator: [
           CustomValidators.specialCharValidationForName('circularName'),
           CustomValidators.specialCharValidationForName('radius'),
+          CustomValidators.numberFieldValidation('radius', 100000),
+          CustomValidators.numberMinFieldValidation('radius', 1)
         ]
       });
 
@@ -127,6 +139,48 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     //     this.setDefaultPolygonGeofenceFormValue();
     //   }
     // }
+  }
+
+  private configureAutoSuggest() {
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?' + 'apiKey=' + this.map_key + '&limit=5' + '&q=' + searchParam;
+    // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+      URL, 'title', 'title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus() {
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem) {
+    if (selectedAddress) {
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey=' + this.map_key + '&id=' + id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if (data && data.position && data.position.lat && data.position.lng) {
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.showSearchMarker(this.searchMarker);
+        }
+      });
+    }
+  }
+
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      this.hereMap.addObject(selectedMarker);
+    }
   }
 
   public ngAfterViewInit() {
@@ -586,7 +640,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         //thisRef.uiElem.removeBubble(bubble); //- remove bubble
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
                 evt.currentPointer.viewportY);
-        if(!thisRef.isPolyCreated && pointsArray.length <= 21){ //-- Min-3 & Max-5 //changing to max to 8
+        if(!thisRef.isPolyCreated && pointsArray.length <= 30000){ //-- Min-3 & Max-10000
           nodeNo++;
           let x = Math.abs(coord.lat.toFixed(4));
           let y = Math.abs(coord.lng.toFixed(4));

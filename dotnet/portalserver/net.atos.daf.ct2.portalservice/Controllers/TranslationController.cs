@@ -825,20 +825,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("tac/checkuseracceptedtac")]
-        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int AccountId, int OrganizationId)
+        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int accountId, int organizationId)
         {
             try
             {
 
-                if (OrganizationId <= 0 || AccountId <= 0)
+                if (organizationId <= 0 || accountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
                 }
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                organizationId = GetContextOrgId();
+                if (organizationId <= 0)
+                {
+                    return StatusCode(400, "Organization Id is Zero for GetContextOrgId.");
+                }
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
-                request.AccountId = AccountId;
-                request.OrganizationId = OrganizationId;
+                request.AccountId = accountId;
+                request.OrganizationId = organizationId;
                 UserAcceptedTermConditionResponse response = await _translationServiceClient.CheckUserAcceptedTermConditionAsync(request);
                 if (response != null && response.Code == translationservice.Responcecode.Failed)
                 {
@@ -856,7 +860,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
 
@@ -869,26 +873,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger.Info("UploadTermsAndCondition Method post");
 
             UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
-            try
-            {
-                long startdatetime = 0; long enddatetime = 0;
-                if (request.Start_date != string.Empty)
-                {
-                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.Start_date));
-                }
-
-                if (request.End_date != string.Empty)
-                {//Assign only if enddate is passed
-                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.End_date));
-                }
-                objUploadTermandConditionRequestList.StartDate = startdatetime;
-                objUploadTermandConditionRequestList.EndDate = enddatetime;
-            }
-            catch (Exception)
-            {
-                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.Start_date)}");
-                return StatusCode(400, string.Empty); ;
-            }
+            objUploadTermandConditionRequestList.StartDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(DateTime.Now));
+            objUploadTermandConditionRequestList.EndDate = 0;
             objUploadTermandConditionRequestList.CreatedBy = request.Created_by;
             foreach (var item in request.Data)
             {
@@ -896,7 +882,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
-
                     objUploadTermandConditionRequest.Code = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Versionno = aryFileNameContent[1].ToUpper();
                     objUploadTermandConditionRequest.FileName = item.FileName;
@@ -907,7 +892,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, string.Empty);
                 }
-
             }
             var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
             _logger.Info("UploadTermsAndCondition Service called");

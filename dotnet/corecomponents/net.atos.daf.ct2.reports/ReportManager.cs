@@ -292,7 +292,15 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
         }
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId)
+        {
+            return await _reportRepository.GetReportDataAttributes(reportId);
+        }
 
+        public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
+        {
+            return await _reportRepository.GetReportFeatureId(reportId);
+        }
         #endregion
 
         #region Eco Score Report Compare Drivers

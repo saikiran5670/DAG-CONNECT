@@ -118,7 +118,7 @@ public class MessageProcessing<U,R, T> {
 							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
 							String vid = jsonNodeRec.get("VID").asText();
 							logger.info("History Record for VID: {}" , vid);
-							String vin = DAFCT2Constant.UNKNOWN;
+							String vin = vid;
 
 							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
 							Message<U> keyMessage = new Message<>((U) vid);
@@ -127,6 +127,7 @@ public class MessageProcessing<U,R, T> {
 								VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)rKafkaRecord.getValue();
 								vin = vinStatusRecord.getVin();
 							}
+							
 							value.setKey(jsonNodeRec.get("TransID").asText() + "_" + vin + "_"
 									+ TimeFormatter.getInstance().getCurrentUTCTime());
 

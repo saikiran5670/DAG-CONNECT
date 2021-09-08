@@ -431,5 +431,83 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
         }
         #endregion
+
+        #region UnSubscribeById
+        public override async Task<UnSubscribeResponse> UnSubscribeById(UnSubscribeRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var isUpdated = await _reportSchedulerManager.UnSubscribeById(request.RecipentId, request.EmailId);
+                _logger.Info(ReportSchedulerConstant.UN_SUBCRIBE_CALLED_MSG);
+
+                if (isUpdated)
+                {
+                    var response = new UnSubscribeResponse()
+                    {
+                        Message = ReportSchedulerConstant.UN_SUBCRIBE_SUCCESS_MSG,
+                        Code = ResponseCode.Success
+                    };
+                    return await Task.FromResult(response);
+                }
+                else
+                {
+                    var response = new UnSubscribeResponse()
+                    {
+                        Message = ReportSchedulerConstant.UN_SUBCRIBE_FAIL_MSG,
+                        Code = ResponseCode.NotFound
+                    };
+                    return await Task.FromResult(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new UnSubscribeResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_FAIL_MSG2, ex.Message)
+                });
+            }
+        }
+        #endregion
+
+        #region UnSubscribeAllByEmailId
+        public override async Task<UnSubscribeAllResponse> UnSubscribeAllByEmailId(UnSubscribeAllRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var isUpdated = await _reportSchedulerManager.UnSubscribeAllByEmailId(request.EmailId);
+                _logger.Info(ReportSchedulerConstant.UN_SUBCRIBE_ALL_CALLED_MSG);
+
+                if (isUpdated)
+                {
+                    var response = new UnSubscribeAllResponse()
+                    {
+                        Message = ReportSchedulerConstant.UN_SUBCRIBE_ALL_SUCCESS_MSG,
+                        Code = ResponseCode.Success
+                    };
+                    return await Task.FromResult(response);
+                }
+                else
+                {
+                    var response = new UnSubscribeAllResponse()
+                    {
+                        Message = ReportSchedulerConstant.UN_SUBCRIBE_ALL_FAIL_MSG,
+                        Code = ResponseCode.NotFound
+                    };
+                    return await Task.FromResult(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new UnSubscribeAllResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_ALL_FAIL_MSG2, ex.Message)
+                });
+            }
+        }
+        #endregion
     }
 }

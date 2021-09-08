@@ -8,7 +8,7 @@ import {
 } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
 import { Options } from '@angular-slider/ngx-slider';
-
+import { LandmarkCategoryService } from '../../.../../../../../services/landmarkCategory.service'
 declare var H: any;
 
 @Component({
@@ -147,8 +147,19 @@ export class RouteCalculatingComponent implements OnInit {
   duplicateError : boolean = false;
   duplicateErrorMsg : string = '';
 
+  suggestionData :  any;
+  dataService : any;
+  userPOIList : any;
+  
+  poiSuggestions: any;
+  searchData : any;
+  searchEndData : any;
+  activeSearchList : boolean = false;
+  activeEndList : boolean = false;
+  poiLocalCollection = [];
+
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
-    private completerService: CompleterService, private config: ConfigService) {
+    private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
       this.map_key =  config.getSettings("hereMap").api_key;
      this.map_id =  config.getSettings("hereMap").app_id;
@@ -161,7 +172,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.configureAutoSuggest();
     setTimeout(()=>{   
       this.hideloader();
-        }); 
+    }); 
     
    }
 
@@ -213,7 +224,17 @@ export class RouteCalculatingComponent implements OnInit {
 
     if(this.actionType === 'edit'){
       this.corridorFormGroup.controls.label.disable();
+      
     }
+
+    this.landmarkCategoryService.getCategoryWisePOI(this.organizationId).subscribe((poiData: any) => {
+      this.userPOIList = poiData;
+      //this.configureAutoSuggest();
+
+    }, (error) => {
+      this.userPOIList = [];
+    });
+    
   }
 
   subscribeWidthValue(){
@@ -789,38 +810,65 @@ export class RouteCalculatingComponent implements OnInit {
     // }
   }
 
-  onSelected(selectedAddress: CompleterItem){
+  onKeyUp(){
+    console.log('here');
+    console.log(this.suggestionData)
+    console.log(this.poiSuggestions)
+  }
+
+  onSelected(selectedAddress: any){
     //console.log(item.title)
+   
     if(this.searchStr){
        this.searchStrError = false;
        this.strPresentStart = true;
     }
     if(selectedAddress){
-      let id = selectedAddress["originalObject"]["id"];
-      let qParam = 'apiKey='+this.map_key + '&id='+ id;
-      this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
-        this.startAddressPositionLat = data.position.lat;
-        this.startAddressPositionLong = data.position.lng;
-        this.plotStartPoint();
-      })
+      let id = selectedAddress["id"];
+      this.searchStr = selectedAddress.title;
+      this.activeSearchList = false;
+      if(id){
+        let qParam = 'apiKey='+this.map_key + '&id='+ id;
+        this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+          this.startAddressPositionLat = data.position.lat;
+          this.startAddressPositionLong = data.position.lng;
+          this.plotStartPoint();
+        })
+      }
+      else{
+          this.startAddressPositionLat = selectedAddress.lat;
+          this.startAddressPositionLong = selectedAddress.lng;
+          this.plotStartPoint();
+      }
+      
     }
 
   }
 
-  onEndSelected(selectedAddress: CompleterItem){
+  onEndSelected(selectedAddress: any){
     
     if(this.searchEndStr){
       this.searchEndStrError = false;
       this.strPresentEnd = true;
       }
       if(selectedAddress){
-        let id = selectedAddress["originalObject"]["id"];
-        let qParam = 'apiKey='+this.map_key + '&id='+ id;
-        this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
-          this.endAddressPositionLat = data.position.lat;
-          this.endAddressPositionLong = data.position.lng;
-          this.plotEndPoint();
-        })
+        let id = selectedAddress["id"];
+        if(id){
+          let qParam = 'apiKey='+this.map_key + '&id='+ id;
+          this.searchEndStr = selectedAddress.title;
+          this.activeEndList = false;
+          this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+            this.endAddressPositionLat = data.position.lat;
+            this.endAddressPositionLong = data.position.lng;
+            this.plotEndPoint();
+          })
+        }
+        else{
+          this.startAddressPositionLat = selectedAddress.lat;
+          this.startAddressPositionLong = selectedAddress.lng;
+          this.plotStartPoint();
+        }
+        
       }
 
   }
@@ -973,16 +1021,85 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
-  suggestionData :  any;
-  dataService : any;
+ 
+  searchStartValue(event: any) {
+    this.activeSearchList = true;
+    if(event.target.value == "") {
+      this.activeSearchList = false;
+    }
+    ////console.log("----search value called--",event.target.value);
+    let inputData = event.target.value;
+          // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+      this.poiLocalCollection = [];
+      let _poiAddress = this.userPOIList.sort((a, b) => parseInt(b.poiId) - parseInt(a.poiId));
+      let uniquePoi = _poiAddress.filter((value, index, self) => self.indexOf(value) === index);
+
+      uniquePoi.forEach(element => {
+        let tempAddress = element.poiName.toLowerCase();
+        let searchParam = inputData.toLowerCase();
+        if(tempAddress.indexOf(searchParam) != -1){
+          this.poiLocalCollection.push({
+            'title':element.poiName,
+            'address':element.poiAddress,
+            'lat':element.latitude,
+            'lng':element.longitude
+          })
+        }
+
+      });
+      this.hereService.searchLocation(this.map_key,inputData).subscribe((res: any) => {
+          let resultData = res.items;
+          this.searchData = [...resultData,...this.poiLocalCollection];
+      });
+      
+      //let poiAddress = this.userPOIList.map(i=>i.poiAddress);
+      
+  }
+
+  searchEndValue(event: any) {
+    this.activeEndList = true;
+    if(event.target.value == "") {
+      this.activeEndList = false;
+    }
+    ////console.log("----search value called--",event.target.value);
+    let inputData = event.target.value;
+          // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+      this.poiLocalCollection = [];
+      let _poiAddress = this.userPOIList.sort((a, b) => parseInt(b.poiId) - parseInt(a.poiId));
+      let uniquePoi = _poiAddress.filter((value, index, self) => self.indexOf(value) === index);
+
+      uniquePoi.forEach(element => {
+        let tempAddress = element.poiName.toLowerCase();
+        let searchParam = inputData.toLowerCase();
+        if(tempAddress.indexOf(searchParam) != -1){
+          this.poiLocalCollection.push({
+            'title':element.poiName,
+            'address':element.poiAddress,
+            'lat':element.latitude,
+            'lng':element.longitude
+          })
+        }
+
+      });
+      this.hereService.searchLocation(this.map_key,inputData).subscribe((res: any) => {
+          let resultData = res.items;
+          this.searchEndData = [...resultData,...this.poiLocalCollection];
+      });
+      
+      //let poiAddress = this.userPOIList.map(i=>i.poiAddress);
+      
+  }
 
   private configureAutoSuggest(){
     let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
+  
     let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
    // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
     this.suggestionData = this.completerService.remote(
     URL,'title','title');
-    this.suggestionData.dataField("items");
+    this.suggestionData.dataField("items")
     this.dataService = this.suggestionData;
   }
 

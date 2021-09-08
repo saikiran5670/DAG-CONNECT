@@ -33,7 +33,7 @@ import net.atos.daf.hbase.connection.HbaseConnection;
 import net.atos.daf.hbase.connection.HbaseConnectionPool;
 
 public class TripIndexData
-		extends RichFlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> {
+		extends RichFlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> {
 	private static final Logger logger = LoggerFactory.getLogger(TripIndexData.class);
 
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class TripIndexData
 	private List<Long> timeRangeLst = null;
 	private Map<String, List<String>> colFamMap = null;
 	private HbaseConnection conn = null;
-	private Integer vGrossWtThreshold = 0;
+	private Long vGrossWtThreshold = 0L;
 
 	public TripIndexData(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList) {
 		this.colFamMap = colFamMap;
@@ -67,7 +67,7 @@ public class TripIndexData
 				tableName);
 		
 		if(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD) != null)
-			vGrossWtThreshold = Integer.valueOf(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD));
+			vGrossWtThreshold = Long.valueOf(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD));
 
 		try {
 			conn = connectionPool.getHbaseConnection();
@@ -78,11 +78,11 @@ public class TripIndexData
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			logger.info("tableName " + tableName );
+			//logger.info("tableName " + tableName );
 
 		} catch (IOException e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Failed to get HBase connection in trip streaming job :: " + e);
+			logger.error("Issue, Failed to get HBase connection in trip streaming job :: " + e);
 			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -92,7 +92,7 @@ public class TripIndexData
 
 		logger.info("Index tableName :: " + tableName);
 
-		scan = new Scan();
+		/*scan = new Scan();
 		if (colFamMap != null)
 			colFamMap.forEach((cf, colmns) -> {
 				if (colmns != null) {
@@ -106,132 +106,152 @@ public class TripIndexData
 			scan.setFilter(filterLst);
 
 		if (null != timeRangeLst && 2 == timeRangeLst.size())
-			scan.setTimeRange(timeRangeLst.get(0), timeRangeLst.get(1));
+			scan.setTimeRange(timeRangeLst.get(0), timeRangeLst.get(1));*/
 	}
 
 	@Override
 	public void flatMap(TripStatusData stsData,
-			Collector<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> out) throws Exception {
+			Collector<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> out) throws Exception {
 
-		PrefixFilter rowPrefixFilter = new PrefixFilter(
-				Bytes.toBytes(ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
-		scan.setFilter(rowPrefixFilter);
-
-		logger.info("Index filter :: " + (ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
-		
-		ResultScanner rs = table.getScanner(scan);
-		Iterator<Result> iterator = rs.iterator();
-
-		List<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long,Integer, String>> indexDataList = new ArrayList<>();
-		while (iterator.hasNext()) {
-
-			Result result = iterator.next();
+		try {
 			
-			String driver2Id = null;
-			String driverId = null;
-			String tripId = null;
-			String vid = null;
-			Integer vTachographSpeed = ETLConstants.ZERO;
-			Integer vGrossWeightCombination = ETLConstants.ZERO;
-			String jobNm = "";
-			Long increment = ETLConstants.ZERO_VAL;
-			Long evtDateTime = ETLConstants.ZERO_VAL;
-			Long vDist = ETLConstants.ZERO_VAL;
-			Integer grossWtRec = ETLConstants.ONE;
-			logger.info("inside while loop key :: "+Bytes.toString(result.getRow()));
-			
-			for (Cell cell : result.listCells()) {
-				try {
-					String family = Bytes.toString(CellUtil.cloneFamily(cell));
-					String column = Bytes.toString(CellUtil.cloneQualifier(cell));
-					byte[] value = CellUtil.cloneValue(cell);
-					
-					if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_TRIP_ID.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						tripId = Bytes.toString(value);
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_VID.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						vid = Bytes.toString(value);
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_V_TACHOGRAPH_SPEED.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						vTachographSpeed = Integer.valueOf(Bytes.toString(value));
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_V_GROSSWEIGHT_COMBINATION.equals(column)
-							&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
-						vGrossWeightCombination = Integer.valueOf(Bytes.toString(value));
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_DRIVER2_ID.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						driver2Id = Bytes.toString(value);
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_DRIVER_ID.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						driverId = Bytes.toString(value);
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_JOBNAME.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						jobNm = Bytes.toString(value);
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_INCREMENT.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						increment = Long.valueOf(Bytes.toString(value));
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_VDIST.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value)))
-						vDist = Long.valueOf(Bytes.toString(value));
-					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.INDEX_MSG_EVT_DATETIME.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value))){
-						evtDateTime = TimeFormatter.getInstance().convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT);
-					}
-					
-				} catch (Exception e) {
-					logger.error("Issue while reading Index message data for prefix filter :: " +rowPrefixFilter + " exception is :: "+ e);
-				}
-			}
-
-			logger.info(" Index tripId  :: " + tripId);
-			logger.info("increment: "+increment + " vGrossWeightCombination: "+vGrossWeightCombination + " vGrossWtThreshold : "+vGrossWtThreshold);
-			
-			/*if(vGrossWeightCombination < vGrossWtThreshold){
-				Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 = new Tuple9<>();
-				tuple9.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime, vDist, increment);
-
-				logger.info("increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
-				indexDataList.add(tuple9);
-			}else{
-				logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
-			}*/
-			
-			if (vGrossWtThreshold < vGrossWeightCombination) {
-				vGrossWeightCombination = ETLConstants.ZERO;
-				grossWtRec = ETLConstants.ZERO;
-				logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
-			}
-			
-			Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 = new Tuple11<>();
-			tuple11.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime,
-					vDist, increment, grossWtRec, driverId);
-
-			logger.info("increment: " + increment + " vGrossWeightCombination : " + vGrossWeightCombination);
-			indexDataList.add(tuple11);
-		}
-		
-		Collections.sort(indexDataList,
-				new Comparator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>>() {
-					@Override
-					public int compare(
-							Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple1,
-							Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple2) {
-						return Long.compare(tuple1.f6, tuple2.f6);
+			scan = new Scan();
+			if (colFamMap != null)
+				colFamMap.forEach((cf, colmns) -> {
+					if (colmns != null) {
+						for (String clmn : colmns) {
+							scan.addColumn(Bytes.toBytes(cf), Bytes.toBytes(clmn));
+						}
 					}
 				});
-		
-		for(Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 : indexDataList){
-			out.collect(tuple11);
+			
+			PrefixFilter rowPrefixFilter = new PrefixFilter(
+					Bytes.toBytes(ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
+			scan.setFilter(rowPrefixFilter);
+
+			logger.info("Index filter :: " + (ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
+			logger.info("table is " + table);
+			
+			ResultScanner rs = table.getScanner(scan);
+			logger.info("ResultScanner is " + rs +" for trip ::"+stsData.getTripId());
+			Iterator<Result> iterator = rs.iterator();
+			logger.info("iterator is " + iterator+" for trip ::"+stsData.getTripId());
+
+			List<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long,Integer, String>> indexDataList = new ArrayList<>();
+			while (iterator.hasNext()) {
+
+				Result result = iterator.next();
+				
+				String driver2Id = null;
+				String driverId = null;
+				String tripId = null;
+				String vid = null;
+				Integer vTachographSpeed = ETLConstants.ZERO;
+				Long vGrossWeightCombination = ETLConstants.ZERO_VAL;
+				String jobNm = "";
+				Long increment = ETLConstants.ZERO_VAL;
+				Long evtDateTime = ETLConstants.ZERO_VAL;
+				Long vDist = ETLConstants.ZERO_VAL;
+				Integer grossWtRec = ETLConstants.ONE;
+				logger.info("inside while loop key :: "+Bytes.toString(result.getRow()));
+				
+				for (Cell cell : result.listCells()) {
+					try {
+						String family = Bytes.toString(CellUtil.cloneFamily(cell));
+						String column = Bytes.toString(CellUtil.cloneQualifier(cell));
+						byte[] value = CellUtil.cloneValue(cell);
+						
+						if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_TRIP_ID.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							tripId = Bytes.toString(value);
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_VID.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							vid = Bytes.toString(value);
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_V_TACHOGRAPH_SPEED.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							vTachographSpeed = Integer.valueOf(Bytes.toString(value));
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_V_GROSSWEIGHT_COMBINATION.equals(column)
+								&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+							vGrossWeightCombination = Long.valueOf(Bytes.toString(value));
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_DRIVER2_ID.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							driver2Id = Bytes.toString(value);
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_DRIVER_ID.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							driverId = Bytes.toString(value);
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_JOBNAME.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							jobNm = Bytes.toString(value);
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_INCREMENT.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							increment = Long.valueOf(Bytes.toString(value));
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_VDIST.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value)))
+							vDist = Long.valueOf(Bytes.toString(value));
+						else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+								&& ETLConstants.INDEX_MSG_EVT_DATETIME.equals(column) && null != Bytes.toString(value)
+								&& !"null".equals(Bytes.toString(value))){
+							evtDateTime = TimeFormatter.getInstance().convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT);
+						}
+						
+					} catch (Exception e) {
+						logger.error("Issue while reading Index message data for prefix filter :: " +rowPrefixFilter + " exception is :: "+ e);
+					}
+				}
+
+				logger.info(" Index tripId  :: " + tripId);
+				logger.info("increment: "+increment + " vGrossWeightCombination: "+vGrossWeightCombination + " vGrossWtThreshold : "+vGrossWtThreshold);
+				
+				/*if(vGrossWeightCombination < vGrossWtThreshold){
+					Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 = new Tuple9<>();
+					tuple9.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime, vDist, increment);
+
+					logger.info("increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
+					indexDataList.add(tuple9);
+				}else{
+					logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
+				}*/
+				
+				if (vGrossWtThreshold.compareTo(vGrossWeightCombination) < 0) {
+					logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
+					vGrossWeightCombination = ETLConstants.ZERO_VAL;
+					grossWtRec = ETLConstants.ZERO;
+				}
+				
+				Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple11 = new Tuple11<>();
+				tuple11.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime,
+						vDist, increment, grossWtRec, driverId);
+
+				indexDataList.add(tuple11);
+			}
+			
+			Collections.sort(indexDataList,
+					new Comparator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>>() {
+						@Override
+						public int compare(
+								Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple1,
+								Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple2) {
+							return Long.compare(tuple1.f6, tuple2.f6);
+						}
+					});
+			
+			for(Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String> tuple11 : indexDataList){
+				logger.info("lookup data for trip :: "+tuple11);
+				out.collect(tuple11);
+			}
+		} catch (Exception e) {
+			logger.error("Issue while fetching hbase lookup data "+stsData  );
+			logger.error("Issue while fetching hbase lookup data "+e.getMessage() );
+			e.printStackTrace();
 		}
 
 	}

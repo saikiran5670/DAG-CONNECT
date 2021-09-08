@@ -1,4 +1,6 @@
-﻿using net.atos.daf.ct2.alertservice;
+﻿using System.Collections.Generic;
+using net.atos.daf.ct2.alertservice;
+using net.atos.daf.ct2.pushnotificationservice;
 using net.atos.daf.ct2.vehicleservice;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
 
@@ -537,5 +539,40 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             return alertTimingDetailRequest;
         }
 
+        public AlertMessageData GetAlertMessageEntity(TripAlert tripAlert)
+        {
+            AlertMessageData alertMessageData = new AlertMessageData();
+            alertMessageData.Id = tripAlert.Id;
+            alertMessageData.Name = tripAlert.Name;
+            alertMessageData.Tripid = tripAlert.Tripid;
+            alertMessageData.Alertid = tripAlert.Alertid;
+            alertMessageData.CategoryType = tripAlert.CategoryType;
+            alertMessageData.Type = tripAlert.Type;
+            alertMessageData.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
+            alertMessageData.UrgencyLevelType = tripAlert.UrgencyLevelType;
+            return alertMessageData;
+        }
+
+        public NotificationViewRequest ToNotificationViewRequest(List<PortalAlertEntity.NotificationViewHistory> notificationViewHistory)
+        {
+            NotificationViewRequest notificationViewRequest = new NotificationViewRequest();
+
+            foreach (var item in notificationViewHistory)
+            {
+                NotificationViewMessage notificationViewMessage = new NotificationViewMessage();
+                notificationViewMessage.AccountId = item.AccountId;
+                notificationViewMessage.AlertId = item.AlertId;
+                notificationViewMessage.AlertCategory = item.AlertCategory;
+                notificationViewMessage.AlertType = item.AlertType;
+                notificationViewMessage.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewMessage.OrganizationId = item.OrganizationId;
+                notificationViewMessage.TripAlertId = item.TripAlertId;
+                notificationViewMessage.TripId = item.TripId;
+                notificationViewMessage.Vin = item.Vin;
+                notificationViewMessage.AlertViewTimestamp = item.AlertViewTimestamp;
+                notificationViewRequest.NotificationView.Add(notificationViewMessage);
+            }
+            return notificationViewRequest;
+        }
     }
 }

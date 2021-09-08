@@ -159,4 +159,7 @@ public class ETLQueries {
 			+ ", pto_duration =?, idle_duration =?, heavy_throttle_pedal_duration =?, cruise_control_usage =?, cruise_control_usage_30_50 =?"
 			+ ", cruise_control_usage_50_75 =?, cruise_control_usage_75 = ?, tacho_gross_weight_combination =?, harsh_brake_duration =?, brake_duration =?"
 			+ ", modified_at=?, lastest_processed_message_time_stamp =?,  gross_weight_combination_count=?, trip_acceleration_time =? ";
+	
+	public static final String TRIP_INDEX_READ_STATEMENT = "select trip_id, vin, tachograph_speed, gross_weight_combination"
+				+ ", driver2_id, driver1_id, jobname, increment, distance, event_datetime, event_id from livefleet.index_message_data where trip_id = ? ";
 }

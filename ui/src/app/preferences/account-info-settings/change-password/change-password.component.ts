@@ -23,15 +23,14 @@ export class ChangePasswordComponent implements OnInit {
     accountInfo: any
   }, private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private accountService: AccountService) {
     this.changePasswordForm = this.fb.group({
-      'currentPassword': [null, Validators.compose([Validators.required])],
-      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(256)])],
-      'confirmPassword': [null, Validators.compose([Validators.required])],
+      'currentPassword': [null, [Validators.required]],
+      'newPassword': [null, [Validators.required, Validators.minLength(10), Validators.maxLength(256)]],
+      'confirmPassword': [null, [Validators.required]],
     },{
       validator : [
         CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')
       ]
     });
-    
     if(data.translationData.lblcharactersmin)
       this.minCharacterTxt = data.translationData.lblcharactersmin.replace('$', '10');
     else

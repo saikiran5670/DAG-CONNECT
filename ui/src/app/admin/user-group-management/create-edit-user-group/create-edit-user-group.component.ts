@@ -17,7 +17,9 @@ import { Router, NavigationExtras  } from '@angular/router';
 export class CreateEditUserGroupComponent implements OnInit {
   OrgId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
-  displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
+  displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
+  columnCodes = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
+  columnLabels = ['All', 'Name', 'Email ID', 'Role', 'Account Group'];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -33,10 +35,13 @@ export class CreateEditUserGroupComponent implements OnInit {
   groupTypeList: any = [];
   showUserList: boolean = true;
   isUserGroupExist: boolean = false;
+  tableDataList: any;
+  showLoadingIndicator: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService, private router: Router) { }
 
   ngOnInit() {
+    this.showLoadingIndicator=true;
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
@@ -116,6 +121,8 @@ export class CreateEditUserGroupComponent implements OnInit {
       if (accGrpTxt != '') {
         accGrpTxt = accGrpTxt.slice(0, -1);
       }
+      if(roleTxt == '') roleTxt ='-';
+      if(accGrpTxt == '') accGrpTxt ='-';
       initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
@@ -150,6 +157,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       this.displayedColumns = ['firstName', 'emailId', 'roles', 'accountGroups'];
     }
     this.updateDataSource(tableData);
+    this.tableDataList = tableData;
     if(this.actionType == 'edit' ){
       this.selectTableRows();
     }
@@ -168,6 +176,7 @@ export class CreateEditUserGroupComponent implements OnInit {
         });
        }
     });
+    this.showLoadingIndicator=false;
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {

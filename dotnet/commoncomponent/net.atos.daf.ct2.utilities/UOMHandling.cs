@@ -13,12 +13,6 @@ namespace net.atos.daf.ct2.utilities
             {
                 switch (expectedUnit)
                 {
-                    case "H":
-                        expectedThresholdValue = actualValue / 3600;
-                        break;
-                    case "T":
-                        expectedThresholdValue = actualValue / 60;
-                        break;
                     case "K":
                         expectedThresholdValue = actualValue / 1000;
                         break;
@@ -37,8 +31,28 @@ namespace net.atos.daf.ct2.utilities
                     default:
                         break;
                 }
-                decimal calVal = decimal.Truncate(Convert.ToDecimal(expectedThresholdValue));
-                expectedThresholdValue = Convert.ToDouble(calVal);
+            }
+            return Math.Round(expectedThresholdValue, 2, MidpointRounding.AwayFromZero);
+        }
+        public static string GetConvertedTimeBasedThreshold(double actualValue, string expectedUnit)
+        {
+            string expectedThresholdValue = "0";
+            TimeSpan timespan = TimeSpan.FromSeconds(actualValue);
+            switch (expectedUnit)
+            {
+                case "H":
+                    expectedThresholdValue = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                            timespan.Hours,
+                            timespan.Minutes,
+                            timespan.Seconds);
+                    break;
+                case "T":
+                    expectedThresholdValue = string.Format("{0:D2}m:{1:D2}s",
+                           (timespan.Hours * 60) + timespan.Minutes,
+                            timespan.Seconds);
+                    break;
+                default:
+                    break;
             }
             return expectedThresholdValue;
         }

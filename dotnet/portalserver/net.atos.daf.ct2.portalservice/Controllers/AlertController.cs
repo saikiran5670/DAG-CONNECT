@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -208,10 +209,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //check duplicate recipient label in UI list
-                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
-                if (result.Count() > 0)
+
+                if (request.Notifications.Count() > 0)
                 {
-                    return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                    foreach (var item in request.Notifications)
+                    {
+                        var result = item.NotificationRecipients.GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+                        if (result.Count() > 0)
+                        {
+                            return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                        }
+                    }
                 }
 
                 var alertRequest = new AlertRequest();
@@ -308,10 +316,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //check duplicate recipient label in UI list
-                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
-                if (result.Count() > 0)
+                if (request.Notifications.Count() > 0)
                 {
-                    return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                    foreach (var item in request.Notifications)
+                    {
+                        var result = item.NotificationRecipients.GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+                        if (result.Count() > 0)
+                        {
+                            return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
+                        }
+                    }
                 }
 
                 var alertRequest = new AlertRequest();
@@ -474,6 +488,51 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
+
+        #region
+        [HttpPost]
+        [Route("insertviewnotification")]
+        public async Task<IActionResult> InsertViewedNotifications(List<PortalAlertEntity.NotificationViewHistory> request)
+        {
+            try
+            {
+                var notificationRequest = new NotificationViewRequest();
+                notificationRequest = _mapper.ToNotificationViewRequest(request);
+                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest);
+
+                if (notiResponse != null && notiResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, AlertConstants.VIEWED_NOTIFICATION_INSERT_FAILED_MSG);
+                }
+                else if (notiResponse != null && notiResponse.Code == ResponseCode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                    AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "CreateAlert", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
+                    _userDetails);
+                    return Ok(notiResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(500, AlertConstants.VIEWED_NOTIFICATION_INSERT_FAILED_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "CreateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                // check for fk violation
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
+                {
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         #endregion
     }
 }

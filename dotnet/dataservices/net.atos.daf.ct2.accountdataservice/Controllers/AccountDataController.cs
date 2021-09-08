@@ -13,15 +13,16 @@ using Newtonsoft.Json;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.entity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.accountdataservice.CustomAttributes;
-using net.atos.daf.ct2.driver.entity;
-using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.driver;
 using System.Text;
 using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.identity.Common;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
@@ -38,6 +39,9 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
+
+        private readonly Dictionary<string, string> _vehicleDisplayOptions;
+
         public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
         {
             _accountManager = accountManager;
@@ -48,6 +52,8 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
+
+            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
         }
 
         #region Driver Lookup
@@ -76,7 +82,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Driver Lookup request.", ex);
+                _logger.Error("Error occurred while processing Account API - Driver Lookup request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -103,10 +109,27 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is OkObjectResult)
                 {
-                    var identity = (string)(result as ObjectResult).Value;
-                    //var response = await _driverManager.RegisterDriver(MapRequest(request, identity));
+                    var resultObj = (result as ObjectResult).Value as dynamic;
+                    var response = await _accountManager.RegisterDriver(new RegisterDriverDataServiceRequest
+                    {
+                        AccountEmail = resultObj.Email,
+                        Password = resultObj.Password,
+                        DriverId = request.DriverId,
+                        OrganisationId = resultObj.OrgId,
+                        IsLoginSuccessful = resultObj.IsLoginSuccessful
+                    });
 
-                    return Ok();
+                    if (response.StatusCode == HttpStatusCode.OK)
+                        return Ok();
+                    else if (response.StatusCode == HttpStatusCode.Conflict)
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: nameof(request.DriverId));
+                    else if (response.StatusCode == HttpStatusCode.Forbidden)
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: nameof(request.Authorization));
+                    else
+                    {
+                        _logger.Error($"Account API - Register Driver request was unsuccessful. { response.StatusCode } - { response.Message }");
+                        return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
+                    }
                 }
                 else
                 {
@@ -115,7 +138,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Register Driver request.", ex);
+                _logger.Error("Error occurred while processing Account API - Register Driver request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(RegisterDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Register driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -142,10 +165,10 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is OkObjectResult)
                 {
-                    var identity = (string)(result as ObjectResult).Value;
-                    //var response = await _driverManager.ValidateDriver(MapRequest(request, identity));
+                    var resultObj = (result as ObjectResult).Value as dynamic;
+                    var response = await _accountManager.ValidateDriver(resultObj.Email, resultObj.OrgId);
 
-                    return Ok();
+                    return Ok(response);
                 }
                 else
                 {
@@ -154,7 +177,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Register Driver request.", ex);
+                _logger.Error("Error occurred while processing Account API - Validate Driver request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ValidateDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Validate driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -166,7 +189,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
         [HttpPost]
         [Route("password/change")]
-        public async Task<IActionResult> ChangePassword([FromQuery] ChangePasswordRequest request)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             try
             {
@@ -181,9 +204,17 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is OkObjectResult)
                 {
-                    //var response = await _driverManager.GetCurrentDriver(MapRequest(request, (int)(result as ObjectResult).Value));
-
-                    return Ok();
+                    var identity = (string)(result as ObjectResult).Value;
+                    Account account = new Account();
+                    account.EmailId = identity.Split(":")[0];
+                    account.Password = identity.Split(":")[1];
+                    var identityResult = await _accountManager.ChangePassword(account);
+                    if (identityResult.StatusCode == HttpStatusCode.NoContent)
+                        return Ok();
+                    else if (identityResult.StatusCode == HttpStatusCode.BadRequest || identityResult.StatusCode == HttpStatusCode.Forbidden)
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", nameof(request.NewAuthorization));
+                    else
+                        return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
                 }
                 else
                 {
@@ -192,15 +223,15 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Change password request.", ex);
+                _logger.Error("Error occurred while processing Account API - Change password request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ChangePassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Change password in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("password/reset")]
-        public async Task<IActionResult> ResetPassword([FromQuery] ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             try
             {
@@ -212,21 +243,18 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
-                var result = await ValidateParameters(request);
-                if (result is NoContentResult)
-                {
-                    //var response = await _driverManager.GetDriverList(MapRequest(request));
+                var response = await _accountManager.ResetPasswordInitiate(request.AccountId);
 
-                    return Ok();
-                }
-                else
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return result;
+                    _logger.Error("Account API - Reset password request was unsuccessful. " + JsonConvert.SerializeObject(response));
                 }
+
+                return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Reset password request.", ex);
+                _logger.Error("Error occurred while processing Account API - Reset password request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ResetPassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Reset password in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -251,11 +279,12 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 }
 
                 var result = await ValidateParameters(request);
-                if (result is NoContentResult)
+                if (result is OkObjectResult)
                 {
-                    //var response = await _driverManager.GetCurrentDriver(MapRequest(request));
+                    var orgId = (int)(result as ObjectResult).Value;
+                    var response = await _accountManager.GetAccountPreferences(request.AccountId, orgId);
 
-                    return Ok();
+                    return Ok(response);
                 }
                 else
                 {
@@ -264,7 +293,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Get preferences request.", ex);
+                _logger.Error("Error occurred while processing Account API - Get preferences request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetPreferences), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get preferences in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -287,8 +316,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is NoContentResult)
                 {
-                    //var response = await _driverManager.GetDriverList(MapRequest(request));
-
+                    await _accountManager.UpdateAccountPreferences(MapRequest(request));
                     return Ok();
                 }
                 else
@@ -298,7 +326,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account - Update preferences request.", ex);
+                _logger.Error("Error occurred while processing Account API - Update preferences request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(UpdatePreferences), AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Update preferences in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -331,11 +359,29 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
 
             var email = identity.Split(":")[0].Trim();
-            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, request.OrganisationId, email);
+            var password = identity.Split(":")[1].Trim();
+
+            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[""''!*@#$%^&+=~`^()\\/-_;:<>|{}\[\]]).{10,256})"), password))
+            {
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: nameof(request.Authorization));
+            }
+
+            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+
+            var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+
+            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, org?.Id ?? 0, email);
             if (!isExists)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
 
-            return new OkObjectResult(identity);
+            return new OkObjectResult(
+                new
+                {
+                    Email = email,
+                    Password = password,
+                    OrgId = org?.Id ?? 0,
+                    IsLoginSuccessful = (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
+                });
         }
 
         private async Task<IActionResult> ValidateParameters(DriverValidateRequest request)
@@ -361,11 +407,19 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
 
             var email = identity.Split(":")[0].Trim();
-            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, request.OrganisationId, email);
-            if (!isExists)
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.DriverId));
+            var password = identity.Split(":")[1].Trim();
 
-            return new OkObjectResult(identity);
+            var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+
+            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, org?.Id ?? 0, email);
+            if (!isExists)
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
+
+            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+            if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
+
+            return new OkObjectResult(new { Email = email, OrgId = org?.Id ?? 0 });
         }
 
         private async Task<IActionResult> ValidateParameters(ChangePasswordRequest request)
@@ -390,12 +444,6 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_FIELD", parameter: nameof(request.Authorization));
             }
 
-            var email = identity.Split(":")[0].Trim();
-            var password = identity.Split(":")[1].Trim();
-            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
-            if (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
-
             string newIdentity;
             try
             {
@@ -416,16 +464,21 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_FIELD", parameter: nameof(request.NewAuthorization));
             }
 
+            var email = identity.Split(":")[0].Trim();
+            var password = identity.Split(":")[1].Trim();
+
+            if (email.ToLower().Equals(newIdentity.Split(":")[0].Trim().ToLower()))
+            {
+                var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+                if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
+            }
+            else
+            {
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_FIELD", parameter: nameof(request.NewAuthorization));
+            }
+
             return new OkObjectResult(newIdentity);
-        }
-
-        private async Task<IActionResult> ValidateParameters(ResetPasswordRequest request)
-        {
-            var account = await _accountManager.GetAccountByEmailId(request.AccountId);
-            if (account == null)
-                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.AccountId));
-
-            return NoContent();
         }
 
         private async Task<IActionResult> ValidateParameters(GetPreferencesRequest request)
@@ -437,7 +490,15 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             if (string.IsNullOrEmpty(account.DriverId) || (!string.IsNullOrEmpty(account.DriverId) && !account.DriverId.Equals(request.DriverId)))
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.DriverId));
 
-            return NoContent();
+            var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+            if (org == null)
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.OrganisationId));
+
+            var orgs = await _accountManager.GetAccountOrg(account.Id);
+            if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.AccountId));
+
+            return new OkObjectResult(org.Id);
         }
 
         private async Task<IActionResult> ValidateParameters(UpdatePreferencesRequest request)
@@ -454,27 +515,30 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
         #endregion
 
-        #region Map Requests
+        #region Map Request
 
-        private RegisterDriverDataServiceRequest MapRequest(DriverRegisterRequest request, string identity)
+        private UpdatePreferencesDataServiceRequest MapRequest(UpdatePreferencesRequest request)
         {
-            return new RegisterDriverDataServiceRequest
+            return new UpdatePreferencesDataServiceRequest
             {
-                OrganisationId = request.OrganisationId,
+                AccountEmail = request.AccountId,
                 DriverId = request.DriverId,
-                Username = identity.Split(":")[0],
-                Password = identity.Split(":")[1]
+                Language = request.Language,
+                DateFormat = request.DateFormat,
+                TimeFormat = request.TimeFormat,
+                TimeZone = request.TimeZone,
+                UnitDisplay = request.UnitDisplay,
+                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
             };
         }
 
-        private RegisterDriverDataServiceRequest MapRequest(DriverValidateRequest request, string identity)
+        private Dictionary<string, string> PrepareUnitDisplayOptions()
         {
-            return new RegisterDriverDataServiceRequest
+            return new Dictionary<string, string>()
             {
-                OrganisationId = request.OrganisationId,
-                DriverId = request.DriverId,
-                Username = identity.Split(":")[0],
-                Password = identity.Split(":")[1]
+                { "vin", "Vehicle Identification Number" },
+                { "name", "Vehicle Name" },
+                { "regno", "Vehicle Registration Number" }
             };
         }
 

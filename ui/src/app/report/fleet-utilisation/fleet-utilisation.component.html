@@ -188,7 +188,7 @@
                         <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }}</span>
                     </div>
                 </div>
                 <div *ngIf='idleDurationStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -240,7 +240,7 @@
             </canvas>
         </div>
         </div>
-        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding: 10px;border: 1px solid #ddd;">
+        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding:10px 20px;border: 1px solid #ddd;">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;margin-bottom: 10px;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div  *ngIf = "activeVehicleChartType" class="chart-wrapper">
             <canvas baseChart 
@@ -434,7 +434,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="stopTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm:ss' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
           </ng-container>
@@ -444,19 +444,19 @@
             <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageWeight">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'ton') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeightperTrip || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{ translationData.lblton || 'ton' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageDistancePerDay">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceWeightperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceWeightperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="odometer">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }}
                <span style="font-weight: normal;">
-                ({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})
+                ({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles')  }})
               </span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>

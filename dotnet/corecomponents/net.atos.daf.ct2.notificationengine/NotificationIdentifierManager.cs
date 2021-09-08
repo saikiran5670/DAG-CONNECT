@@ -135,12 +135,34 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.AlertCategoryEnum = generatedAlertForVehicle.Select(c => c.CategoryType).FirstOrDefault();
                         notificationHistory.AlertTypeKey = generatedAlertForVehicle.Select(c => c.AlertTypeKey).FirstOrDefault();
                         notificationHistory.AlertTypeEnum = generatedAlertForVehicle.Select(c => c.Type).FirstOrDefault();
-                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Select(c => c.UrgencyTypeKey).FirstOrDefault();
-                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Select(c => c.UrgencyLevelType).FirstOrDefault();
-                        string unitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
-                        notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, unitEnum);
-                        notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(unitEnum);
-                        notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, unitEnum);
+                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyTypeKey).FirstOrDefault();
+                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Where(x => x.UrgencyLevelType == tripAlert.UrgencyLevelType).Select(c => c.UrgencyLevelType).FirstOrDefault();
+                        notificationHistory.ThresholdUnitEnum = await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum);
+                        if (notificationHistory.ThresholdUnitEnum == "H" || notificationHistory.ThresholdUnitEnum == "T")
+                        {
+                            notificationHistory.TimeBasedThresholdValue = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        }
+                        else
+                        {
+                            notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, notificationHistory.ThresholdUnitEnum);
+                        }
+                        notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(notificationHistory.ThresholdUnitEnum);
+                        if (notificationHistory.AlertTypeEnum == "S" && notificationHistory.AlertCategoryEnum == "L")
+                        {
+                            long valueAtTimemilisecond = Convert.ToInt64(tripAlert.ValueAtAlertTime * 1000);
+                            notificationHistory.ValueAtAlertTimeForHoursofServices = UTCHandling.GetConvertedDateTimeFromUTC(valueAtTimemilisecond, "UTC", "yyyy-MM-ddTHH:mm:ss.fffz");
+                        }
+                        else
+                        {
+                            if (notificationHistory.ThresholdUnitEnum == "H" || notificationHistory.ThresholdUnitEnum == "T")
+                            {
+                                notificationHistory.TimeBasedValueAtAlertTime = UOMHandling.GetConvertedTimeBasedThreshold(tripAlert.ValueAtAlertTime, notificationHistory.ThresholdUnitEnum);
+                            }
+                            else
+                            {
+                                notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, notificationHistory.ThresholdUnitEnum);
+                            }
+                        }
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;
                         notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
@@ -169,6 +191,10 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<string> GetLanguageCodePreference(string emailId)
         {
             return await _notificationIdentifierRepository.GetLanguageCodePreference(emailId);
+        }
+        public async Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity)
+        {
+            return await _notificationIdentifierRepository.GetEligibleAccountForAlert(alertMessageEntity);
         }
     }
 }

@@ -1,31 +1,67 @@
 package net.atos.daf.ct2.app;
 
+import net.atos.daf.ct2.cache.kafka.KafkaCdcStreamV2;
+import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
+import net.atos.daf.ct2.cache.postgres.TableStream;
+import net.atos.daf.ct2.cache.postgres.impl.JdbcFormatTableStream;
 import net.atos.daf.ct2.models.Alert;
+import net.atos.daf.ct2.models.Payload;
+import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
+import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Status;
+import net.atos.daf.ct2.props.AlertConfigProp;
+import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
+import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
+import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
+import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
+import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.state.MapState;
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.io.jdbc.JDBCOutputFormat;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
 import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
 import org.apache.flink.connector.jdbc.JdbcSink;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.types.Row;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.Utils.*;
 
 public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
@@ -36,105 +72,58 @@ public class TripBasedTest implements Serializable {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         logger.info("TripBasedTest started with properties :: {}", parameterTool.getProperties());
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
-        env.getConfig().setGlobalJobParameters(propertiesParamTool);
-        logger.info("PropertiesParamTool :: {}", parameterTool.getProperties());
+        logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
-//        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
-        Properties kafkaTopicProp = new Properties();
-        kafkaTopicProp.put("bootstrap.servers", "localhost:9092");
-        kafkaTopicProp.put("client.id", "alertsprocessing_client");
-        kafkaTopicProp.put("group.id", "alertsprocessing_grp");
-        kafkaTopicProp.put("group.id", "alertsprocessing_grp");
-        kafkaTopicProp.put("auto.offset.reset", "earliest");
+        /**
+         * RealTime functions defined
+         */
+        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+            		fuelIncreaseDuringStopFun,
+                    fuelDecreaseDuringStopFun
+            ));
+        }};
+        
+     
+        
+      
+        /**
+         *  Booting cache
+         */
+        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
+        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
 
-        Alert alert = Alert.builder()
-                .tripid("s03bf625a-cce7-42b8-a712-7a5a161b1d003")
-                .vin("XLR0998HGFFT76657")
-                .categoryType("L")
-                .type("G")
-                .alertid("367")
-                .alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
-                .thresholdValue("2000")
-                .thresholdValueUnitType("M")
-                .valueAtAlertTime("25433")
-                .urgencyLevelType("A")
-                .build();
+        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
+        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
-        FlinkKafkaConsumer<String> kafkaContiMessageConsumer = new FlinkKafkaConsumer<>(propertiesParamTool.get(KAFKA_DAF_STATUS_MSG_TOPIC), new SimpleStringSchema(), kafkaTopicProp);
+        SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
+                .returns(Index.class);
 
-        SingleOutputStreamOperator<Alert> alertKafkaStream = env.addSource(kafkaContiMessageConsumer)
-                .map(json -> alert)
-                .returns(Alert.class);
+        /*SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                propertiesParamTool, env)
+        .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+        .returns(Index.class);*/
+        
+        
 
+        /**
+         * Excessive Fuel during stop
+         */
+        KeyedStream<Index, String> fuelDuringStopStream = indexStringStream
+        		.filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
+                .returns(Index.class)
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
+                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
-
-
-
-        String jdbcInsertUrl = new StringBuilder("jdbc:postgresql://")
-                .append("localhost")
-                .append(":" + "5432" + "/")
-                .append("postgres")
-                .append("?user=" + "postgres")
-                .append("&password=" + "root")
-                .toString();
-
-        String query = "INSERT INTO public.tripalert(trip_id, vin, category_type, type, alert_id, alert_generated_time, created_at, urgency_level_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-//        env
-//                .fromElements(alert)
-
-
-//        JDBCOutputFormat jdbcOutput = JDBCOutputFormat.buildJDBCOutputFormat()
-//                .setDrivername("org.postgresql.Driver")
-//                .setDBUrl(jdbcInsertUrl)
-//                .setQuery(query)
-//                .finish();
-//
-//        DataStream<Row> rows = alertKafkaStream.map((MapFunction<Alert, Row>) a -> {
-//            Row row = new Row(8);
-//            /*row.setField(0, aCase.getId());
-//            row.setField(1, aCase.getTraceHash());*/
-//            row.setField(0, a.getTripid());
-//            row.setField(1, a.getVin());
-//            row.setField(2, a.getCategoryType());
-//            row.setField(3, a.getType());
-//            row.setField(4, Long.valueOf(a.getAlertid()));
-//            row.setField(5, Long.valueOf(a.getAlertGeneratedTime()));
-//            row.setField(6, Long.valueOf(a.getAlertGeneratedTime()));
-//            row.setField(7, a.getUrgencyLevelType());
-//            return row;
-//        });
-
-        alertKafkaStream.print();
-
-//        rows.writeUsingOutputFormat(jdbcOutput);
-
-
-        alertKafkaStream
-                .addSink(JdbcSink.sink(
-                        query,
-                        (ps, a) -> {
-                            ps.setString(1, a.getTripid());
-                            ps.setString(2, a.getVin());
-                            ps.setString(3, a.getCategoryType());
-                            ps.setString(4, a.getType());
-                            ps.setLong(5, Long.valueOf(a.getAlertid()));
-                            ps.setLong(6, Long.valueOf(a.getAlertGeneratedTime()));
-                            ps.setLong(7, Long.valueOf(a.getAlertGeneratedTime()));
-                            ps.setString(8, a.getUrgencyLevelType());
-                        },
-                        JdbcExecutionOptions.builder()
-                                .withMaxRetries(0)
-                                .withBatchSize(1)
-                                .build(),
-                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                                .withUrl(jdbcInsertUrl)
-                                .withDriverName(propertiesParamTool.get("driver.class.name"))
-                                .build())
-                );
-
+        /**
+         * Process indexWindowKeyedStream for Excessive Under Utilization
+         */
+        IndexMessageAlertService.processIndexKeyStream(fuelDuringStopStream,
+                env,propertiesParamTool,fuelDuringStopFunConfigMap);
 
         env.execute("TripBasedTest");
+
 
     }
 }

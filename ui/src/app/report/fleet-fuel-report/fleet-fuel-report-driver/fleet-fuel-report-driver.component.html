@@ -595,9 +595,9 @@
           <ng-container matColumnDef="driverID">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_driverid')">{{ translationData.lblDriverID || 'Driver ID' }}
               </mat-header-cell>
-              <!-- <mat-cell *matCellDef="let row">
-              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
-            </mat-cell> -->
+              <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID != '' ? row.driverID : '-' }}</span>
+            </mat-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_driverid')">
                 <span>{{row.driverID}}</span>
               </mat-cell>
@@ -609,12 +609,12 @@
   
               </mat-header-cell>
   
-             <!-- <mat-cell *matCellDef="let row">
+             <mat-cell *matCellDef="let row">
   
-                <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}
+                <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}
                 </span>
   
-              </mat-cell>-->
+              </mat-cell>
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vehiclename')">
   
@@ -795,7 +795,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">
   
-                <span>{{row.convertedFuelConsumption}}</span>
+                <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>
   
               </mat-cell>
   

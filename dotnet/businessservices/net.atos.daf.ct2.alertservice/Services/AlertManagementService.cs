@@ -480,6 +480,34 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
         }
         #endregion
+
+
+        #region Portal Notification 
+        public override async Task<NotificationViewResponse> InsertViewNotification(NotificationViewRequest request, ServerCallContext context)
+        {
+            try
+            {
+                List<NotificationViewHistory> notificationViewHistories = new List<NotificationViewHistory>();
+                notificationViewHistories = _mapper.GetNotificationViewHistoryEntity(request);
+                int id = await _alertManager.InsertViewNotification(notificationViewHistories);
+                return await Task.FromResult(new NotificationViewResponse
+                {
+                    Message = id > 0 ? $"Data saved successful" : $"Data saved  failed",
+                    Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new NotificationViewResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed
+                });
+            }
+        }
+        #endregion
+
     }
 }
 

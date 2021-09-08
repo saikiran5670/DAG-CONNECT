@@ -34,4 +34,10 @@ namespace net.atos.daf.ct2.group
             OrganizationId = orgnizationId;
         }
     }
+
+    public class GroupDetails
+    {
+        public string GroupType { get; set; }
+        public string FunctionEnum { get; set; }
+    }
 }

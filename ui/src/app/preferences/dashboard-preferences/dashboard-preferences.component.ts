@@ -53,7 +53,35 @@ export class DashboardPreferencesComponent implements OnInit {
     let languageCode = JSON.parse(localStorage.getItem('language')).code;
     this.translationService.getPreferences(languageCode).subscribe((res) => { this.generalPreferences = res; this.getUnits() }
     )
+    this.translationUpdate();
+  }
 
+  translationUpdate(){
+    this.translationData = {
+      rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
+      rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
+      rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
+      rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
+      rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
+      rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
+      rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
+      rp_db_dashboard_todaylivevehicle_distance: 'Distance',
+      rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
+      rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
+      rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
+      rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
+      rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+      rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
+      rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+      rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
+      rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
+      rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
+      rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
+      rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
+      rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
+      rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
+      rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
+    }
   }
 
   upperLowerDD: any = [
@@ -213,11 +241,11 @@ export class DashboardPreferencesComponent implements OnInit {
             _data.translatedName = this.getName(element.name);
             //console.log("translated name1....", _data.translatedName);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('fleetkpi_drivingtime') || element.key.includes('fleetkpi_idlingtime')) {
-            let secondscalc = (element.thresholdValue)/1000;
+            let secondscalc = (element.thresholdValue); // removed as time is in seconds
             let hms = this.secondsToHms(secondscalc);
             let hrs = '';
             let mins = '';
@@ -250,7 +278,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.todayLiveVehicleColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('todaylivevehicle_timebasedutilizationrate')) {
@@ -280,7 +308,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
           
           if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {          
@@ -314,7 +342,7 @@ export class DashboardPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name);
           }
-          _data.translatedName = this.getName(element.name);
+          // _data.translatedName = this.getName(element.name);
           this.alertLast24HoursColumnData.push(_data);
         }
       });
@@ -344,6 +372,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   masterToggle(section) {
+    console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
     if (this.isAllSelected(section)) {
       this["selectionFor" + section + "Columns"].clear();
     } else {
@@ -368,13 +397,18 @@ export class DashboardPreferencesComponent implements OnInit {
       let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType'])?.value || '';
       let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType'])?.value || '';
       let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue'])?.value || 0;
-      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')) {
+      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') ) { // separated as time is in seconds
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000 });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs });
       }
-
+      else if(element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')){
+        let thresholdValuehrs = thresholdValue * 3600;
+        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
+        let totalsecs: number = thresholdValuehrs + thresholdValuemin;
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000});
+      }
       else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
         
         let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609.344 : thresholdValue * 1000;
@@ -384,8 +418,8 @@ export class DashboardPreferencesComponent implements OnInit {
       }
       else if(element.key.includes('fleetkpi_fuelconsumption'))
       {
-        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? this.reportMapService.convertFuelConsumptionMpgToL100km(thresholdValue): thresholdValue;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres });
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? this.reportMapService.convertFuelConsumptionMpgToMlm(thresholdValue): this.reportMapService.convertFuelConsumptionLtr100kmToMlm(thresholdValue);
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseFloat(totalmililitres) });
       }
       else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
         let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 3785.41 : thresholdValue * 1000;

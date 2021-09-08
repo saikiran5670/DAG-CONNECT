@@ -35,7 +35,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   chartsLabelsdefined: any = [];
   barChartOptions: any = {
     responsive: true,
-    legend: {
+      legend: {
       position: 'bottom',
       display: false,
       labels: {
@@ -61,18 +61,27 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         }
       ],
       xAxes: [{
-        barPercentage: 0.4,
+        title: "time",
+        ticks:{ min : '',
+              max : '',
+
+              },
+      
+                stacked:true,
+                gridLines: {
+                    display: false,
+                },
         type:'time',
         time:
         {
-          unit: 'week',
+          unit: 'day',
           displayFormats: {      
             day: this.dateFormats.display.dateInput,            
            },             
         },  
-        ticks: {           
-          fontSize: 8,  
-      },          
+      //   ticks: {           
+      //     fontSize: 8,  
+      // },          
       scaleLabel: {
         display: true,
         labelString: 'Dates'   
@@ -82,6 +91,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   };
   barChartOptions2: any = {
     responsive: true,
+    showLine: true,
     legend: {
       position: 'bottom',
       display: false,
@@ -106,22 +116,22 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         }
       ],
       xAxes: [{
-        barPercentage: 0.4,
-        type:'time',
-        time:
-        {
-          unit: 'week',
-          displayFormats: {      
-            day: this.dateFormats.display.dateInput,            
-           },             
-        },  
-        ticks: {           
-          fontSize: 8,  
-      },          
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'   
-      }      
+        
+          barPercentage: 0.9,
+          categoryPercentage: 0.55,
+          type: "time",
+          distribution: "linear",
+          time: {
+           unit: "day",
+          },
+          ticks:{ min : '',
+              max : '',
+              fontSize: 8, 
+              },
+          scaleLabel: {
+           display: true,
+           labelString: "Date",
+          },  
     }]
     }
   };
@@ -165,21 +175,22 @@ lineChartOptions = {
     }],
     xAxes: [{
       type:'time',
-          time:
-          {
-            unit: 'week',
-            displayFormats: {      
-              day: this.dateFormats.display.dateInput,            
-             },             
-          },   
-        ticks: {
-            //fontColor: "red", // this here   
-            fontSize: 8,    
-        } ,
-        scaleLabel: {
-          display: true,
-          labelString: 'Dates'   
-        }      
+      time:
+      {
+        tooltipFormat: '',
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day: this.dateFormats.display.dateInput,            
+         },             
+      }, 
+      ticks: {           
+        fontSize: 8,  
+    },           
+    scaleLabel: {
+      display: true,
+      labelString: 'Dates'   
+    }      
   }]
   }
 };
@@ -213,7 +224,9 @@ lineChartOptions2 = {
       type:'time',
           time:
           {
-            unit: 'week',
+            tooltipFormat: '',
+            unit: 'day',
+            stepSize:1,
             displayFormats: {      
               day: this.dateFormats.display.dateInput,            
              },             
@@ -263,7 +276,7 @@ public doughnut_barOptions: ChartOptions = {
   legend: {
     position: 'bottom',
   },
-  cutoutPercentage: 50,
+  cutoutPercentage: 70,
 };
 //pie chart
 public pieChartOptions: ChartOptions = {
@@ -303,6 +316,8 @@ alertPieChartColors: Color[] = [
   },
 ];
 vehicleUtilisationData: any;
+vehicleUtilisationLength: number = 0;
+
 distance = [];
 calenderDate = [];
 vehiclecount = [];
@@ -332,7 +347,7 @@ totalActiveVehicles : any = 0;
 chartLabelDateFormat :any;
 alert24: any;
 displayPiechart: boolean = true;
-
+subscriberOn : boolean = false;
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
@@ -340,26 +355,29 @@ displayPiechart: boolean = true;
               private dataInterchangeService : DataInterchangeService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private messageService: MessageService) {
-                if(this._fleetTimer){
-                  this.messageService.getMessage().subscribe(message => {
-                    if (message.key.indexOf("refreshData") !== -1) {
-                      this.getVehicleData();
-                    }
-                  });
-                }
-
+               // if(this._fleetTimer){
+                 
+                //}
+                
                 this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
                   if(data){
-                    this.totalActiveVehicles = data['fleetKpis']['vehicleCount'];
+                    this.totalActiveVehicles = data['fleetKpis']?.vehicleCount;
                   }
                 })
-               }
+    }
 
   ngOnInit(): void {
 
     this.setInitialPref(this.prefData,this.preference);
+    this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshData") !== -1) {         
+        this.subscriberOn = true;                             
+        this.getVehicleData(); // subscribed after pref are set
+
+      }
+    });
     // this.setChartData();
-    this.selectionTimeRange('lastweek');     
+    //this.selectionTimeRange('lastweek');
   }
 
   setInitialPref(prefData,preference){
@@ -382,13 +400,13 @@ displayPiechart: boolean = true;
   selectionTimeRange(selection: any){
     // this.internalSelection = true;
     this.clickButton = true;
-    switch(selection){
+    switch(selection){      
       case 'lastweek': {
         this.selectionTab = 'lastweek';
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
-      }
+      } 
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
@@ -402,13 +420,24 @@ displayPiechart: boolean = true;
         break;
       }
     }
-    if(this._fleetTimer){
-      this.messageService.sendMessage('refreshData');
+    this.messageService.sendMessage('refreshTimer'); 
 
+    if(this.subscriberOn){
+      this.messageService.sendMessage('refreshData'); 
     }
     else{
       this.getVehicleData();
     }
+    
+
+    //this.getVehicleData();
+
+    // if(this._fleetTimer){
+    //   this.messageService.sendMessage('refreshData'); 
+    // }
+    // else{
+    //  this.getVehicleData();
+    //}
 
   }
 
@@ -490,10 +519,11 @@ displayPiechart: boolean = true;
   }
 
   getVehicleData(){
-
-    let startDate = Util.convertDateToUtc(this.startDateValue);
-    let endDate = Util.convertDateToUtc(this.endDateValue);
-    let _vehiclePayload = {
+    let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);  // timezone included to get details 
+    let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+  //let startDate = Util.convertDateToUtc(this.startDateValue);
+  //let endDate = Util.convertDateToUtc(this.endDateValue);
+  let _vehiclePayload = {
       "startDateTime": startDate,
       "endDateTime": endDate,
       "viNs": this.finalVinList
@@ -501,7 +531,11 @@ displayPiechart: boolean = true;
   this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
     if(vehicleData["fleetutilizationcharts"].length > 0){
        this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+       this.vehicleUtilisationLength = vehicleData["fleetutilizationcharts"].length;
        this.setChartData();
+    }
+    else{
+      this.vehicleUtilisationLength = 0;
     }
  });
 
@@ -715,106 +749,63 @@ if(this.prefTimeFormat == 12){
 
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-        if(this.selectionTab == 'lastweek'){
+        // let startDate = Util.convertDateToUtc(this.startDateValue-1);
+        // let endDate = Util.convertDateToUtc(this.endDateValue); 
+        let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+        let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);    
+          this.calenderDate=[ startDate, endDate ]
         this.barChartOptions2.scales={
-          yAxes: [
-            {
-          id: "y-axis-1",
-          position: 'left',
-          type: 'linear',
-          ticks: {
-            beginAtZero:true,
-            fontSize: 8, 
-          },
-          scaleLabel: {
-            display: true,
-            labelString: label1   
-          }
-        }],
-        xAxes: [
-          {
-            type:'time',
-            time:
-            {
-              unit: 'day',             
-              displayFormats: {        
-                day: this.chartLabelDateFormat, // This is the default
-               },
-            }, 
-            ticks: {           
-              fontSize: 8,  
-          },           
-          scaleLabel: {
-            display: true,
-            labelString: 'Dates'   
-          }
-          },
-        ] 
-      }
-    }
-    else if(this.selectionTab == 'lastmonth' || this.selectionTab == 'last3month'){ 
-      this.barChartOptions2.scales={
-        yAxes: [
-          {
-        id: "y-axis-1",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          beginAtZero:true,
-          fontSize: 8, 
-        },
-        scaleLabel: {
-          display: true,
-          labelString: label1   
-        }
-      }],
-      xAxes: [
-        {
-          type:'time',
-          time:
-          {
-            unit: 'week',
-            displayFormats: {        
-              day: this.chartLabelDateFormat, // This is the default
-             },
-          },  
-          ticks: {           
-            fontSize: 8,  
-        },          
-        scaleLabel: {
-          display: true,
-          labelString: 'Dates'   
-        }
-        },
-      ] 
-    }
-    }
-    this.barChartLabels1= this.calenderDate;
-    this.barChartData1= [
-      { data: this.distance ,label: label1, backgroundColor: '#7BC5EC',
-      hoverBackgroundColor: '#7BC5EC',}
-    ];    
+                yAxes: [
+                  {
+                id: "y-axis-1",
+                position: 'left',
+                type: 'linear',
+                ticks: {
+                  beginAtZero:true,
+                  fontSize: 8, 
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: label1   
+                }
+              }],
+              xAxes: [
+              {   
+                  type: "time",
+                  distribution: "linear",  
+                  time: {
+                  tooltipFormat: this.chartLabelDateFormat,
+                  unit: "day",
+                  stepSize:1,
+                  displayFormats: {
+                    day: this.chartLabelDateFormat
+                  },          
+                  },
+                  ticks:{
+                  //  min : '"'+startDate+'"',
+                  //  max :  '"'+endDate+'"',
+                  fontSize: 8, 
+                  },
+                  scaleLabel: {
+                   display: true,
+                   labelString: "Date",
+                  },
+                 },
+              ] 
+            }
+          this.barChartLabels1= this.calenderDate;
+          this.barChartData1= [
+            { data: this.distance ,label: label1, backgroundColor: '#7BC5EC',
+            hoverBackgroundColor: '#7BC5EC',}
+          ];  
 }
 
  else{
     let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-    // this.lineChartOptions2.scales.yAxes= [{
-    //   id: "y-axis-1",
-    //   position: 'left',
-    //   type: 'linear',
-    //   ticks: {
-    //     steps: 10,
-    //     stepSize: 1,
-    //     beginAtZero: false,
-    //   },
-    //   scaleLabel: {
-    //     display: true,
-    //     labelString: label1   
-    //   }
-    // }];
-    if(this.selectionTab == 'lastweek'){
-     
-      this.lineChartOptions2.scales={
+    let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    this.calenderDate=[ startDate, endDate ] 
+    this.lineChartOptions2.scales={
         yAxes: [
           {
             id: "y-axis-1",
@@ -832,65 +823,27 @@ if(this.prefTimeFormat == 12){
         ],
         xAxes: [
           {         
-            type:'time',
-            time:
-            {
-              unit: 'day',              
-              displayFormats: {  
-                day: this.chartLabelDateFormat,
-               },
-            }, 
-            ticks: {           
-              fontSize: 8,  
-          },  
-          scaleLabel: {
-            display: true,
-            labelString: 'Dates'   
-          }
+            type: "time",
+            time: {
+            tooltipFormat: this.chartLabelDateFormat,
+            unit: "day",
+            stepSize:1,
+            displayFormats: {
+              day: this.chartLabelDateFormat
+            },          
+            },
+            ticks:{
+            fontSize: 8, 
+            },
+            scaleLabel: {
+             display: true,
+             labelString: "Date",
+            },
           },
         ]
       }
-    }
-    else if(this.selectionTab == 'lastmonth' || this.selectionTab == 'last3month'){
-      this.lineChartOptions2.scales={
-        yAxes: [
-          {
-            id: "y-axis-1",
-              position: 'left',
-              type: 'linear',
-              ticks: {               
-                beginAtZero: false,
-                fontSize: 8, 
-              },
-              scaleLabel: {
-                display: true,
-                labelString: label1   
-              }
-          },
-        ],
-        xAxes: [
-          {         
-            type:'time',
-            time:
-            {
-              unit: 'week',            
-              displayFormats: {        
-               day: this.chartLabelDateFormat, // This is the default            
-               },
-            }, 
-            ticks: {           
-              fontSize: 8,  
-          },  
-          scaleLabel: {
-            display: true,
-            labelString: 'Dates'   
-          }
-          },
-        ]
-      }
-    }
   
-  
+    this.lineChartLabels1= this.calenderDate;
     this.lineChartData1= [
       { data: this.distance,label: label1,
         lineTension: 0, 
@@ -898,7 +851,7 @@ if(this.prefTimeFormat == 12){
       pointBackgroundColor: "white", // wite point fill
       pointBorderWidth: 2,},
     ];
-    this.lineChartLabels1= this.calenderDate;
+   
     this.lineChartColors= [
       {
         borderColor: '#7BC5EC',
@@ -910,8 +863,9 @@ if(this.prefTimeFormat == 12){
   //for vehicle per day chart
  if(this.vehicleChartType == 'line'){
   let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-     
-  if(this.selectionTab == 'lastweek'){
+  let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+  let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);    
+  this.calenderDate=[ startDate, endDate ]
     this.lineChartOptions.scales={   
         yAxes: [{
           id: "y-axis-1",
@@ -929,60 +883,25 @@ if(this.prefTimeFormat == 12){
           }
         }],
         xAxes: [{
-          type:'time',
-              time:
-              {
-                unit: 'day',
-                displayFormats: {      
-                  day: this.chartLabelDateFormat,              
-                 },             
-              },    
-              ticks: {           
-                fontSize: 8,  
-            },      
-            scaleLabel: {
-              display: true,
-              labelString: 'Dates'   
-            }      
+          type: "time",
+          time: {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: "day",
+          stepSize:1,
+          displayFormats: {
+            day: this.chartLabelDateFormat
+          },          
+          },
+          ticks:{
+          fontSize: 8, 
+          },
+          scaleLabel: {
+           display: true,
+           labelString: "Date",
+          },     
       }]      
   }
-}
-else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){ 
-  this.lineChartOptions.scales={
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'left',
-      type: 'linear',
-      ticks: { 
-        steps: 10,
-        stepSize: 1,           
-        beginAtZero: true,
-        fontSize: 8, 
-      },
-      scaleLabel: {
-        display: true,
-        labelString: 'Vehicles'    
-      }
-    }],
-    xAxes: [{
-      type:'time',
-          time:
-          {
-            unit: 'week',
-            displayFormats: {      
-              day:  this.chartLabelDateFormat,              
-             },             
-          }, 
-        ticks: {           
-            fontSize: 8,  
-        },       
-        scaleLabel: {
-          display: true,
-          labelString: 'Dates'   
-        }      
-  }] 
-}
-}
+  this.lineChartLabels2= this.calenderDate;
     this.lineChartData2= [
       { data: this.vehiclecount, label: 'Vehicles',
         lineTension: 0, 
@@ -990,7 +909,7 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       pointBackgroundColor: "white", 
       pointBorderWidth: 2,},
     ];
-   // this.lineChartLabels2= this.calenderDate;
+   
     this.lineChartColors= [
       {
         borderColor: '#7BC5EC',
@@ -999,10 +918,11 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
     ];
   }
   else{
-   // this.barChartLabels2= this.calenderDate;
+   
    let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
-     
-   if(this.selectionTab == 'lastweek'){
+   let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+   let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+   this.calenderDate=[ startDate, endDate ]
      this.barChartOptions.scales={
       yAxes: [{
         id: "y-axis-1",
@@ -1021,63 +941,28 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
         }
       ],
       xAxes: [{
-        barPercentage: 0.4,
-        type:'time',
-        time:
-        {
-          unit: 'day',
-          displayFormats: {      
-            day: this.chartLabelDateFormat,            
-           },             
-        },   
-        ticks: {           
-          fontSize: 8,  
-      },           
-      scaleLabel: {
-        display: true,
-        labelString: 'Dates'
-      }      
+        type: "time",
+        distribution: "linear",  
+        time: {
+        tooltipFormat: this.chartLabelDateFormat,
+        unit: "day",
+        stepSize:1,
+        displayFormats: {
+          day: this.chartLabelDateFormat
+        },          
+        },
+        ticks:{
+        //  min : '"'+startDate+'"',
+        //  max :  '"'+endDate+'"',
+        fontSize: 8, 
+        },
+        scaleLabel: {
+         display: true,
+         labelString: "Date",
+        },            
     }]
    }
- }
- else if(this.selectionTab == 'lastmonth' || this.selectionTab == 'last3month'){ 
-   this.barChartOptions.scales={
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'left',
-      type: 'linear',
-      ticks: {        
-        steps: 10,
-        stepSize: 1,
-        beginAtZero:true,
-        fontSize: 8, 
-      },
-      scaleLabel: {
-        display: true,
-        labelString: 'Vehicles'    
-      }
-      }
-    ],
-    xAxes: [{
-      barPercentage: 0.4,
-      type:'time',
-      time:
-      {
-        unit: 'week',
-        displayFormats: {      
-          day: this.chartLabelDateFormat,           
-         },             
-      }, 
-       ticks: {           
-            fontSize: 8,  
-        },             
-    scaleLabel: {
-      display: true,
-      labelString: 'Dates'  
-    }      
-  }]
- }
- }
+    this.barChartLabels2= this.calenderDate;
     this.barChartData2= [
       { data: this.vehiclecount, label: 'Vehicles' , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
@@ -1143,7 +1028,7 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       },
         }
     }
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -1170,7 +1055,7 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
+    this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
@@ -1231,7 +1116,7 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
     label3 = 'Miles'
   }
   if(this.mileageDChartType =='doughnut'){
-    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.doughnutChartData2 = [percentage2, 0];
     }
@@ -1258,7 +1143,7 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       },
         }
       }
-    this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+    this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.mileagePieChartData = [percentage2, 0];
     }

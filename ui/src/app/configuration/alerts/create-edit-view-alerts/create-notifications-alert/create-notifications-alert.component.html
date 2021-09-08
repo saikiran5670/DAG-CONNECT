@@ -3,25 +3,29 @@
     <!-- <div  formArrayName="FormArrayItems"> -->
     <!-- <div  [formGroupName]="i"> -->
 
-    <div *ngIf="(alert_category_selected === 'L') && (alert_type_selected === 'Y')" class="areaWidth min-width-30-per"
+    <div *ngIf="(alert_category_selected + alert_type_selected === 'LU') || (alert_category_selected + alert_type_selected === 'LD') ||
+                (alert_category_selected + alert_type_selected === 'LG') || (alert_category_selected + alert_type_selected === 'LH') ||
+                (alert_category_selected + alert_type_selected === 'FA') || (alert_category_selected + alert_type_selected === 'FI') ||
+                (alert_category_selected + alert_type_selected === 'FF') || (alert_category_selected + alert_type_selected === 'FP') ||
+                (alert_category_selected + alert_type_selected === 'FL') || (alert_category_selected + alert_type_selected === 'FT')" class="areaWidth min-width-30-per"
         fxLayout="column" fxLayoutAlign="left">
         <div class="full-width filter-direction margin-bottom-sm" fxLayout="row" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
         </div>
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="isCriticalLevelSelected" [disabled]="!isCriticalLevelSelected"
-                    (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical
+                <mat-checkbox [checked]="criticalLevel" [disabled]="!criticalLevel"
+                    (change)="onChangeCriticalLevel($event)">Critical
                 </mat-checkbox>
             </div>
             <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="isWarningLevelSelected" [disabled]="!isWarningLevelSelected"
-                    (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning
+                <mat-checkbox [checked]="warningLevel" [disabled]="!warningLevel"
+                    (change)="onChangeWarningLevel($event)">Warning
                 </mat-checkbox>
             </div>
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="isAdvisoryLevelSelected" [disabled]="!isAdvisoryLevelSelected"
-                    (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory
+                <mat-checkbox [checked]="advisoryLevel" [disabled]="!advisoryLevel"
+                    (change)="onChangeAdvisoryLevel($event)">Advisory
                 </mat-checkbox>
             </div>
         </div>
@@ -30,6 +34,9 @@
     <div fxLayout="row" *ngIf="actionType != 'view'" fxLayoutAlign="space-between"
         class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-error *ngIf="isMaxRecipientLabelsReached">
+                {{translationData.lblMaxTenRecipientLabelsAreAllowed || 'Max 10 Recipient Labels Are Allowed' }}
+            </mat-error>
             <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }} <span
                     class='mandatoryColor'>*</span></mat-label>
             <div class="ng-autocomplete">
@@ -136,22 +143,29 @@
                                 <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                                     <mat-label>{{ translationData.lblEmailAddress || 'Email Address' }} <span
                                             class='mandatoryColor'>*</span>
+                                            <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                                     </mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <input
                                             placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}"
-                                            matInput formControlName="emailAddress">
+                                            matInput formControlName="emailAddress" (focusout)="validateRecipientEmails($event.target.value)">
                                     </mat-form-field>
-                                    <!-- <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
-                            with comma (;) separated' }}</mat-hint> -->
+                                    <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
+                            with (;) separated' }}</mat-hint>
                                     <mat-error
                                         *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').touched">
                                         {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                     </mat-error>
-                                    <mat-error
+                                    <!-- <mat-error
                                         *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('email')">
                                         {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email
                                         address' }}
+                                    </mat-error> -->
+                                    <mat-error *ngIf="only10Emails">
+                                        {{ translationData.lblOnly10EmailIdsAreAllowed || 'Only 10 Email Ids Are Allowed' }}
+                                    </mat-error>
+                                    <mat-error *ngIf="isInvalidEmail">
+                                      {{ translationData.lblInvalidEmail || 'Invalid Email' }} : {{invalidEmail}}
                                     </mat-error>
                                 </div>
                                 <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -674,14 +688,14 @@
                             <span style='font-weight: 500!important;'>{{translationData.lblHours ||
                                 'Hours' }}</span>
                         </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
                             <span style='font-weight: 500!important;'>{{translationData.lblDays ||
                                 'Days' }}</span>
                         </div>
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
                             <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
                                 'Weeks' }}</span>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -756,14 +770,14 @@
                             <span style='font-weight: 500!important;'>{{translationData.lblHours ||
                                 'Hours' }}</span>
                         </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
                             <span style='font-weight: 500!important;'>{{translationData.lblDays ||
                                 'Days' }}</span>
                         </div>
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
                             <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
                                 'Weeks' }}</span>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -835,14 +849,14 @@
                             <span style='font-weight: 500!important;'>{{translationData.lblHours ||
                                 'Hours' }}</span>
                         </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
                             <span style='font-weight: 500!important;'>{{translationData.lblDays ||
                                 'Days' }}</span>
                         </div>
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
                             <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
                                 'Weeks' }}</span>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -858,9 +872,10 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
     fxLayoutGap="10px">
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-        <a class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;"> Advanced Filter <mat-icon
+        <a *ngIf="actionType != 'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;"> Advanced Filter <mat-icon
                 class='font-size-20' style="position: absolute;"> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
                 'keyboard_arrow_down' }}</mat-icon></a>
+        <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter || 'Advanced Filter' }}</span>
     </div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>

@@ -64,6 +64,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleCreate Received vehicle Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
                 char org_status = await GetOrganisationStatusofVehicle(Convert.ToInt32(vehicle.Organization_Id));
                 vehicle.Opt_In = VehicleStatusType.Inherit;
                 vehicle.Is_Ota = false;
@@ -75,7 +76,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicle.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
                 }
 
-                var QueryStatement = @"INSERT INTO master.vehicle
+                var queryStatement = @"INSERT INTO master.vehicle
                                       (
                                        organization_id
                                        ,name 
@@ -160,7 +161,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@fuel_type", vehicle.Fuel);
                 parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 vehicle.ID = vehicleID;
 
 
@@ -177,6 +178,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
 
                 return vehicle;
+                _log.Info("VehicleCreate Newly Created vehicle object" + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle) + " Vehicle DataMart Insert ");
             }
             catch (Exception)
             {
@@ -187,7 +189,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter)
         {
 
-            var QueryStatement = @"select id
+            var queryStatement = @"select id
                                    ,organization_id 
                                    ,name 
                                    ,vin 
@@ -218,42 +220,38 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.VehicleId > 0)
             {
                 parameter.Add("@id", vehiclefilter.VehicleId);
-                QueryStatement = QueryStatement + " and id=@id";
-
+                queryStatement = queryStatement + " and id=@id";
             }
             // organization id filter
             if (vehiclefilter.OrganizationId > 0)
             {
                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
-                QueryStatement = QueryStatement + " and organization_id=@organization_id";
-
+                queryStatement = queryStatement + " and organization_id=@organization_id";
             }
 
             // VIN Id Filter
             if (vehiclefilter.VIN != null && Convert.ToInt32(vehiclefilter.VIN.Length) > 0)
             {
                 parameter.Add("@vin", "%" + vehiclefilter.VIN + "%");
-                QueryStatement = QueryStatement + " and vin LIKE @vin";
-
+                queryStatement = queryStatement + " and vin LIKE @vin";
             }
 
             // Vehicle Id list Filter
             if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
             {
-                List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
-                QueryStatement = QueryStatement + " and id  = ANY(@VehicleIds)";
-                parameter.Add("@VehicleIds", VehicleIds);
+                List<int> vehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
+                queryStatement = queryStatement + " and id  = ANY(@VehicleIds)";
+                parameter.Add("@VehicleIds", vehicleIds);
             }
 
             if (vehiclefilter.Status != VehicleStatusType.None && vehiclefilter.Status != 0)
             {
                 parameter.Add("@status", (char)vehiclefilter.Status);
-                QueryStatement = QueryStatement + " and status=@status";
-
+                queryStatement = queryStatement + " and status=@status";
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -285,8 +283,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.Is_Tcu_Register = record.is_tcu_register ?? false;
             if (record.reference_date != null)
                 vehicle.Reference_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.reference_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
-            vehicle.Oem_id = record.oem_id;
-            vehicle.Oem_Organisation_id = record.oem_organisation_id;
+            vehicle.Oem_id = record.oem_id ?? 0;
+            vehicle.Oem_Organisation_id = record.oem_organisation_id ?? 0;
             if (record.is_ota != null)
                 vehicle.Is_Ota = record.is_ota;
             if (record.opt_in != null)
@@ -303,10 +301,13 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> Update(Vehicle vehicle)
         {
+            _log.Info("VehicleUpdate Received vehicle Object  " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string")
             {
+                _log.Info("VehicleUpdate TCU check if");
                 vehicle = await VehicleNameExists(vehicle);
-                vehicle = await VehicleLicensePlateNumberExists(vehicle);
+                //commenting as PersistenceStatus bug 6239
+                //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 
                 // duplicate vehicle Name
                 if (vehicle.VehicleNameExists)
@@ -320,7 +321,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     return vehicle;
                 }
 
-                var QueryStatement = @" UPDATE master.vehicle
+                var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                          name=@name                                        
         	                            ,license_plate_number=@license_plate_number
@@ -337,7 +338,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 // parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
                 // parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 VehicleDataMart vehicleDataMart = new VehicleDataMart();
                 vehicleDataMart.VIN = await _dataAccess.QuerySingleAsync<string>("SELECT vin FROM master.vehicle where id=@id", new { id = vehicle.ID });
@@ -345,15 +346,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicleDataMart.Name = vehicle.Name;
                 vehicleDataMart.Vid = "";
                 await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
-
+                _log.Info("VehicleUpdate UpdateComplete tcuchec" + vehicleID.ToString() + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             }
             else
             {
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
                 await CheckUnknownOEM(vehicle.VIN);
-
-                var QueryStatement = @" UPDATE master.vehicle
+                _log.Info("VehicleUpdate else");
+                var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         vid=@vid
                                       ,tcu_id=@tcu_id
@@ -376,13 +377,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                 parameter.Add("@vin", vehicle.VIN);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                string VIN = await _dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
+                string VIN = await _dataAccess.ExecuteScalarAsync<string>(queryStatement, parameter);
 
 
                 VehicleDataMart vehicleDataMart = new VehicleDataMart();
                 vehicleDataMart.VIN = vehicle.VIN;
                 vehicleDataMart.Vid = vehicle.Vid;
                 await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
+
+                _log.Info("VehicleUpdate UpdatedObject " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
 
 
                 //    transactionScope.Complete();
@@ -394,10 +397,10 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut)
         {
             var parameter = new DynamicParameters();
-            var QueryStatement = string.Empty;
+            var queryStatement = string.Empty;
             if ((char)vehicleOptInOptOut.Type == 'V')
             {
-                QueryStatement = @" UPDATE master.vehicle
+                queryStatement = @" UPDATE master.vehicle
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
@@ -410,7 +413,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             if ((char)vehicleOptInOptOut.Type == 'O')
             {
-                QueryStatement = @" UPDATE master.vehicle
+                queryStatement = @" UPDATE master.vehicle
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
@@ -431,7 +434,9 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 parameter.Add("@termination_date", null);
             }
-            int vehiclepropertyId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehiclepropertyId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateStatus UpdateComplete " + vehiclepropertyId);
+
             if (vehiclepropertyId > 0)
             {
                 var InsertQueryStatement = @"INSERT INTO master.vehicleoptinoptout
@@ -456,6 +461,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
 
                 int Id = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
+                _log.Info("VehicleUpdateStatus InsertComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleOptInOptOut));
+
             }
             return vehicleOptInOptOut;
         }
@@ -463,7 +470,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
         {
 
-            var QueryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount, true as isgroup from 
+            var queryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount, true as isgroup from 
                                    (select grp.id as vehiclegroupid,grp.name as VehicleGroupName,grp.object_type
                                     ,count(distinct vgrpref.ref_id) as vehicleCount 
                                     ,agrpref.ref_id as account
@@ -484,7 +491,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
 
             parameter.Add("@organization_id", OrganizationId);
-            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupRequest>(QueryStatement, parameter);
+            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupRequest>(queryStatement, parameter);
             return OrgVehicleGroupDetails;
         }
 
@@ -492,7 +499,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var QueryStatement = @"select id
+                var queryStatement = @"select id
                                    ,organization_id 
                                    ,name 
                                    ,vin 
@@ -523,9 +530,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (Vehicle_Id > 0)
                 {
                     parameter.Add("@id", Vehicle_Id);
-                    QueryStatement = QueryStatement + " id=@id";
+                    queryStatement = queryStatement + " id=@id";
                 }
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
                 Vehicle vehicle = new Vehicle();
                 foreach (dynamic record in result)
                 {
@@ -541,6 +548,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
         {
+            _log.Info("VehicleUpdateOrgVehicleDetails Received Obj " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
             _dataAccess.Connection.Open();
             var transaction = _dataAccess.Connection.BeginTransaction();
             try
@@ -613,7 +621,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
 
                 transaction.Commit();
+                _log.Info("VehicleUpdateOrgVehicleDetails UpdateComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
+
                 return vehicle;
+
             }
             catch (Exception)
             {
@@ -636,65 +647,43 @@ namespace net.atos.daf.ct2.vehicle.repository
             return await _dataAccess.QuerySingleAsync<VehicleDetails>("SELECT id, organization_id as OrganizationId FROM master.vehicle where vin=@vin", new { vin = vin });
         }
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int organizationId)
         {
-
-            var QueryStatement = @"select distinct orm.relationship_id
-	                               ,veh.id
-	                               ,orm.target_org_id
-                                   ,veh.organization_id
-	                               ,veh.vin
-	                               ,veh.license_plate_number
-	                               ,veh.name	                               
-                                   ,veh.status 
-                                   ,veh.status_changed_date 
-                                   ,veh.termination_date 
-                                   ,veh.vid 
-                                   ,veh.type 
-                                   ,veh.tcu_id 
-                                   ,veh.tcu_serial_number 
-                                   ,veh.tcu_brand 
-                                   ,veh.tcu_version 
-                                   ,veh.is_tcu_register 
-                                   ,veh.reference_date 
-                                   ,veh.vehicle_property_id                                   
-                                   ,veh.created_at 
-                                   ,veh.model_id
-                                   ,veh.opt_in
-                                   ,veh.is_ota
-                                   ,veh.oem_id
-                                   ,veh.oem_organisation_id
-	                               from master.vehicle veh
-                            Inner join master.orgrelationshipmapping  orm
-                            on orm.vehicle_id=veh.id
-                            Inner join master.orgrelationship ors
-                            on ors.id=orm.relationship_id
-                            where  1=1
-                            and ors.state='A'
-                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                            else COALESCE(end_date,0) =0 end ";
+            var queryStatement = @"
+                        -- Owned vehicles
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+                        UNION
+                        -- Visible vehicles of type S/G
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+                        UNION
+                        -- Visible vehicles of type D, method O
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
             var parameter = new DynamicParameters();
-
-
-            // organization id filter
-            if (OrganizationId > 0)
-            {
-                parameter.Add("@organization_id", OrganizationId);
-                QueryStatement = QueryStatement + @" AND ((orm.owner_org_id=@organization_id AND ors.code='Owner')
-                                                        OR(orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')))";
-
-            }
-
-            // RelationShip Id Filter
-            if (RelationShipId > 0)
-            {
-                parameter.Add("@id", RelationShipId);
-                QueryStatement = QueryStatement + " and ors.id=@id";
-
-            }
+            parameter.Add("@organization_id", organizationId);
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -702,62 +691,35 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicles.AsEnumerable();
         }
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int organizationId)
         {
-            var QueryStatement = @"select distinct 
-	                               orm.relationship_id
-	                               ,veh.id
-	                               ,orm.target_org_id
-                                   ,veh.organization_id
-	                               ,veh.vin
-	                               ,veh.license_plate_number
-	                               ,veh.name	                               
-                                   ,veh.status 
-                                   ,veh.status_changed_date 
-                                   ,veh.termination_date 
-                                   ,veh.vid 
-                                   ,veh.type 
-                                   ,veh.tcu_id 
-                                   ,veh.tcu_serial_number 
-                                   ,veh.tcu_brand 
-                                   ,veh.tcu_version 
-                                   ,veh.is_tcu_register 
-                                   ,veh.reference_date 
-                                   ,veh.vehicle_property_id                                   
-                                   ,veh.created_at 
-                                   ,veh.model_id
-                                   ,veh.opt_in
-                                   ,veh.is_ota
-                                   ,veh.oem_id
-                                   ,veh.oem_organisation_id
-	                               from master.vehicle veh
-                            Inner join master.orgrelationshipmapping  orm
-                            on orm.vehicle_id=veh.id
-                            Inner join master.orgrelationship ors
-                            on ors.id=orm.relationship_id
-                            where 1=1
-                            and ors.state='A'
-                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                            else COALESCE(end_date,0) =0 end ";
+            var queryStatement = @"
+                        -- Visible vehicles of type S/G
+                        SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+
+                        UNION
+                        -- Visible vehicles of type D, method O
+                        SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
             var parameter = new DynamicParameters();
-
-            // Organization Id filter
-            if (OrganizationId > 0)
-            {
-                parameter.Add("@organization_id", OrganizationId);
-                QueryStatement = QueryStatement + " and orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')";
-            }
-
-            // RelationShip Id Filter
-            if (RelationShipId > 0)
-            {
-                parameter.Add("@id", RelationShipId);
-                QueryStatement = QueryStatement + " and ors.id=@id";
-
-            }
+            parameter.Add("@organization_id", organizationId);
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -765,66 +727,22 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicles.AsEnumerable();
         }
 
-        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int organizationId)
         {
-
-            var QueryStatement = @"select distinct 
-	                               orm.relationship_id
-	                               ,veh.id
-	                               ,orm.target_org_id
-                                   ,veh.organization_id
-	                               ,veh.vin
-	                               ,veh.license_plate_number
-	                               ,veh.name	                               
-                                   ,veh.status 
-                                   ,veh.status_changed_date 
-                                   ,veh.termination_date 
-                                   ,veh.vid 
-                                   ,veh.type 
-                                   ,veh.tcu_id 
-                                   ,veh.tcu_serial_number 
-                                   ,veh.tcu_brand 
-                                   ,veh.tcu_version 
-                                   ,veh.is_tcu_register 
-                                   ,veh.reference_date 
-                                   ,veh.vehicle_property_id                                   
-                                   ,veh.created_at 
-                                   ,veh.model_id
-                                   ,veh.opt_in
-                                   ,veh.is_ota
-                                   ,veh.oem_id
-                                   ,veh.oem_organisation_id
-	                               from master.vehicle veh
-                            Left join master.orgrelationshipmapping  orm
-                            on orm.vehicle_id=veh.id
-                            Inner join master.orgrelationship ors
-                            on ors.id=orm.relationship_id
-                             where 1=1  
-                            and ors.state='A'
-                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                            else COALESCE(end_date,0) =0 end ";
-
+            var queryStatement = @"
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
 
             var parameter = new DynamicParameters();
-
-            // Organization Id filter
-            if (OrganizationId > 0)
-            {
-                parameter.Add("@organization_id", OrganizationId);
-                QueryStatement = QueryStatement + " and (orm.owner_org_id=@organization_id AND ors.code='Owner' AND veh.organization_id=@organization_id)";
-
-            }
-
-            // RelationShip Id Filter
-            if (RelationShipId > 0)
-            {
-                parameter.Add("@id", RelationShipId);
-                QueryStatement = QueryStatement + " and ors.id=@id";
-
-            }
+            parameter.Add("@organization_id", organizationId);
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -836,7 +754,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             var parameter = new DynamicParameters();
             parameter.Add("@vehicleGroupId", vehicleGroupId);
-            var QueryStatement = @"select 
+            var queryStatement = @"select 
 	                               veh.id
                                    ,veh.organization_id
 	                               ,veh.vin
@@ -865,7 +783,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                             WHERE veh.oem_organisation_id=grp.organization_id";
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -962,6 +880,11 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicles.AsEnumerable();
         }
 
+        /// <summary>
+        /// VEHICLE_QUERY 
+        /// </summary>
+        /// <param name="organizationId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int organizationId)
         {
             try
@@ -970,7 +893,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 // Fetch Visible vehicles of type S/G/D with method Owned(O).
                 // TODO : Include visible vehicles of type D with Visible(V)
                 var queryStatement
-                    = @"SELECT true as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                    = @"
+                        -- Owned vehicles
+                        SELECT true as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
@@ -979,11 +904,11 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
-
+                        -- Visible vehicles of type G
                         SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
                         FROM master.vehicle v
-                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
                         WHERE 
@@ -991,7 +916,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
-
+                        -- Visible vehicles of type D, method O
                         SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
@@ -1020,8 +945,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                             (select distinct grp.name
                                             from master.vehicle veh 
                                             left join master.groupref gref on veh.id= gref.ref_id 
-                                            inner join master.group grp on (gref.group_id=grp.id OR grp.ref_id=veh.id OR grp.group_type='D') 
-                                                and grp.object_type='V'";
+                                            inner join master.group grp on (gref.group_id=grp.id OR (grp.group_type='D' and grp.organization_id=veh.organization_id)) 
+                                            and grp.object_type='V'";
                 var parameter = new DynamicParameters();
 
                 // Vehicle Id Filter
@@ -1132,7 +1057,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                //       var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
+                //       var queryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
                 //                           from master.group grp 
                 //inner join master.groupref vgrpref
                 //on  grp.id=vgrpref.group_id and grp.object_type='V'                                    
@@ -1146,7 +1071,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 //on  grp.id=vgrpref.group_id
                 //where vgrpref.ref_id=@accountid)";
 
-                var QueryStatement = @"select distinct grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin,veh.license_plate_number as RegNo,
+                var queryStatement = @"select distinct grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin,veh.license_plate_number as RegNo,
                                     (CASE WHEN sub.vehicle_id >0 AND sub.state='A' THEN true ELSE false END )as SubcriptionStatus
 									from master.vehicle veh
                                     left join master.groupref vgrpref
@@ -1172,7 +1097,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@orgnizationid", orgnizationid);
 
 
-                IEnumerable<VehicleGroupList> vehiclegrouplist = await _dataAccess.QueryAsync<VehicleGroupList>(QueryStatement, parameter);
+                IEnumerable<VehicleGroupList> vehiclegrouplist = await _dataAccess.QueryAsync<VehicleGroupList>(queryStatement, parameter);
 
                 return vehiclegrouplist;
             }
@@ -1192,72 +1117,69 @@ namespace net.atos.daf.ct2.vehicle.repository
                 // org filter
                 if (organizationId > 0 && is_vehicle)
                 {
-                    query = @"select distinct id,name,count,true as is_group from (
-	                                     select vg.id,vg.name,
-			                                    case when (vg.group_type ='D' and vg.function_enum='A') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    Inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                                    or (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-				                                     when (vg.group_type ='D' and vg.function_enum='V') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-				                                    when (vg.group_type ='D' and vg.function_enum='O') then 
-						                                    (select count(veh.id) 
-									                                    from master.vehicle veh 
-									                                    inner join master.orgrelationshipmapping org 
-									                                    on veh.id=org.vehicle_id 
-									                                    inner join master.orgrelationship ors
-									                                     on ors.id=org.relationship_id
-									                                    and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
-									                                    and ors.state='A'
-									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                                    else COALESCE(end_date,0) =0 end)
-		                                    --	else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
-			                                    else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
-			                                    from master.group vg 
-			                                    left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-			                                    left join master.orgrelationship as os on om.relationship_id=os.id 
-			                                    left join master.vehicle v on vg.organization_id=v.organization_id
-			                                    where (vg.organization_id=@organization_id or om.target_org_id=@organization_id)
-			                                    and vg.object_type='V' and vg.group_type in ('G','D')
-			                                    ) vehicleGroup";
+                    query = @"-- Owned vehicles G/D
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.vehicle v
+                              LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                              INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.group_type='D') AND grp.object_type='V'
+                              INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                              INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                              WHERE 
+	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name
+                              
+                              UNION
+                              
+                              -- Visible vehicles of type G
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.vehicle v
+                              INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                              INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
+                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                              WHERE 
+	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name
+
+                              UNION
+
+                              -- Visible vehicles of type D with method O
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              FROM master.group grp
+                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
+                                          AND orm.owner_org_id=grp.organization_id 
+                                          AND orm.target_org_id=@organization_id
+                                          AND grp.group_type='D' AND grp.object_type='V'
+                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                              INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                              WHERE 
+	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              ELSE COALESCE(end_date,0) = 0 END
+                              GROUP BY grp.id, grp.name";
                 }
                 else
                 {
-                    query = @"select distinct id,name,0 as count,true as is_group from (
-                                select vg.id,vg.name
-                                from master.group vg
-								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-								inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM'))))  and vg.object_type='V' and vg.group_type in ('G','D') 
-                                ) vehicleGroup";
+                    query = @"SELECT DISTINCT id,name,0 as count,true as is_group 
+                              FROM (
+                                SELECT vg.id,vg.name
+                                FROM master.group vg
+								INNER JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+								INNER JOIN master.orgrelationship as os on om.relationship_id=os.id 
+                                WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) 
+                                    and vg.object_type='V' and vg.group_type in ('G','D') 
+                              ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
                 IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                 response = accessRelationship.ToList();
-                VehicleFilter vehiclefilter = new VehicleFilter();
-                vehiclefilter.OrganizationId = organizationId;
-                IEnumerable<Vehicle> vehicles = await GetRelationshipVehicles(vehiclefilter);
+
+                IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId);
                 foreach (var item in vehicles.ToList())
                 {
                     AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
-                    accountVehicleEntity.Id = item.ID;
+                    accountVehicleEntity.Id = item.Id;
                     accountVehicleEntity.Name = item.Name;
                     accountVehicleEntity.Count = 0;
                     accountVehicleEntity.Is_group = false;
@@ -1281,6 +1203,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleUpdateInterface Property Received object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
                 Vehicle objVeh = new Vehicle();
                 var InsertQueryStatement = string.Empty;
                 var UpdateQueryStatement = string.Empty;
@@ -1343,6 +1266,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,type_id = @type_id
                                       WHERE id = @id
                                       RETURNING id";
+                    _log.Info("VehicleUpdateInterface Property updateComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
                 }
                 else
                 {
@@ -1412,6 +1336,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,@chasis_side_collar 
                                         ,@width
                                         ,@type_id) RETURNING id";
+                    _log.Info("VehicleUpdateInterface Property insertComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleproperty));
+
 
                 }
 
@@ -1468,6 +1394,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
                     objVeh.ID = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;
+                    _log.Info("VehicleUpdateInterface Property updateComplete vehicle" + vehicleproperty);
+
                 }
                 else if (vehicleId == 0)
                 {
@@ -1475,6 +1403,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
+                    _log.Info("VehicleUpdateInterface Property createRequest vehicle" + vehicleproperty);
+
                 }
                 else
                 {
@@ -1521,12 +1451,13 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             bool is_result = false;
             int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            _log.Info("VehicleUpdateInterface ExcelInfo Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleaxelinfo));
 
             if (VehicleId > 0)
             {
                 await DeleteVehicleAxelInformation(vehicleId);
             }
-            var QueryStatement = @"INSERT INTO master.vehicleaxleproperties
+            var queryStatement = @"INSERT INTO master.vehicleaxleproperties
                                       (
                                         vehicle_id 
                                        ,axle_type 
@@ -1561,9 +1492,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@ratio", axelInfo.Ratio);
                 parameter.Add("@is_wheel_tire_size_replaced", axelInfo.Is_Wheel_Tire_Size_Replaced);
                 parameter.Add("@size", axelInfo.Size);
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 is_result = true;
             }
+            _log.Info("VehicleUpdateInterface ExcelInfo Inserted Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicleaxelinfo));
 
             return is_result;
         }
@@ -1571,18 +1503,21 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<int> DeleteVehicleAxelInformation(int vehicleId)
         {
 
-            var QueryStatement = @"DELETE FROM master.vehicleaxleproperties
+            var queryStatement = @"DELETE FROM master.vehicleaxleproperties
                                     Where vehicle_id= @vehicle_id
                                     RETURNING vehicle_id";
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateInterface ExcelInfo DeleteId" + vehicleID);
 
             return vehicleID;
         }
 
         public async Task<bool> CreateVehicleFuelTank(List<VehicleFuelTankProperties> vehiclefuelTank, int vehicleId)
         {
+            _log.Info("VehicleUpdateInterface FuelTank Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehiclefuelTank));
+
             bool is_result = false;
             int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
 
@@ -1590,7 +1525,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 await DeleteVehicleFuelTank(vehicleId);
             }
-            var QueryStatement = @"INSERT INTO master.vehiclefueltankproperties
+            var queryStatement = @"INSERT INTO master.vehiclefueltankproperties
                                       (
                                         vehicle_id 
                                        ,chasis_fuel_tank_number 
@@ -1609,21 +1544,22 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@chasis_fuel_tank_number", fuelTank.Chassis_Tank_Nr);
                 parameter.Add("@chasis_fuel_tank_volume", fuelTank.Chassis_Tank_Volume);
 
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                fuelTank.VehicleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 is_result = true;
             }
-
+            _log.Info("VehicleUpdateInterface FuelTank Inserted Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehiclefuelTank));
             return is_result;
         }
 
         public async Task<int> DeleteVehicleFuelTank(int vehicleId)
         {
-            var QueryStatement = @"DELETE FROM master.vehiclefueltankproperties
+            var queryStatement = @"DELETE FROM master.vehiclefueltankproperties
                                     Where vehicle_id= @vehicle_id
                                     RETURNING vehicle_id";
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            _log.Info("VehicleUpdateInterface FuelTank Delete " + vehicleId);
 
             return vehicleID;
         }
@@ -1631,14 +1567,14 @@ namespace net.atos.daf.ct2.vehicle.repository
         private async Task<dynamic> GetOEM_Id(string vin)
         {
             string vin_prefix = vin.Substring(0, 3);
-            var QueryStatement = @"SELECT id, oem_organisation_id
+            var queryStatement = @"SELECT id, oem_organisation_id
 	                             FROM master.oem
                                  where vin_prefix=@vin_prefix";
 
             var parameter = new DynamicParameters();
             parameter.Add("@vin_prefix", vin_prefix);
 
-            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
             if (((System.Collections.Generic.List<object>)result).Count == 0)
             {
@@ -1695,7 +1631,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
         {
 
-            var QueryStatement = @"select veh.id,grp.id as group_id,grp.name 
+            var queryStatement = @"select veh.id,grp.id as group_id,grp.name 
                                     from master.vehicle veh left join
                                     master.groupref gref on veh.id= gref.ref_id Left join 
                                     master.group grp on grp.id= gref.group_id
@@ -1706,16 +1642,16 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehicleId > 0)
             {
                 parameter.Add("@id", vehicleId);
-                QueryStatement = QueryStatement + " and veh.id  = @id";
+                queryStatement = queryStatement + " and veh.id  = @id";
             }
             // organization id filter
             if (organizationId > 0)
             {
                 parameter.Add("@organization_id", organizationId);
-                QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
+                queryStatement = queryStatement + " and veh.organization_id = @organization_id";
             }
 
-            IEnumerable<VehicleGroup> result = await _dataAccess.QueryAsync<VehicleGroup>(QueryStatement, parameter);
+            IEnumerable<VehicleGroup> result = await _dataAccess.QueryAsync<VehicleGroup>(queryStatement, parameter);
             return result;
         }
 
@@ -1723,14 +1659,14 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             dynamic result;
             string VehVIN = string.Empty;
-            var QueryStatement = @" select oem.id,oem.oem_organisation_id from master.vehicle veh
+            var queryStatement = @" select oem.id,oem.oem_organisation_id from master.vehicle veh
                                     Inner join master.oem oem
                                     on veh.oem_id=oem.id
                                     where veh.vin=@vin
                                     and LOWER(oem.name)=LOWER('Unknown')";
             var parameter = new DynamicParameters();
             parameter.Add("@vin", VIN);
-            result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
             if (((System.Collections.Generic.List<object>)result).Count > 0)
             {
@@ -1767,7 +1703,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             if (OTABck)
             {
-                var QueryStatement = @" UPDATE master.vehicle
+                var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         is_ota=@is_ota                                        
         	                           ,modified_by=@modified_by
@@ -1778,7 +1714,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@id", Vehicle_Id);
                 parameter.Add("@is_ota", Is_Ota);
                 parameter.Add("@modified_by", Modified_By);
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 if (vehicleID > 0)
                 {
 
@@ -1802,7 +1738,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<bool> VehicleOptInOptOutHistory(int VehicleId)
         {
-            var QueryStatement = @" INSERT INTO master.vehicleoptinoptout(
+            var queryStatement = @" INSERT INTO master.vehicleoptinoptout(
 	                                status
 	                                ,organization_id
 	                                ,vehicle_id
@@ -1826,7 +1762,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             var parameter = new DynamicParameters();
             parameter.Add("@id", VehicleId);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
             if (vehicleID > 0)
             {
                 return true;
@@ -1844,7 +1780,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             if (terminate)
             {
-                var QueryStatement = @" UPDATE master.vehicle
+                var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         status=@status                                        
         	                           ,modified_by=@modified_by
@@ -1857,7 +1793,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status", (char)VehicleCalculatedStatus.Terminate);
                 parameter.Add("@modified_by", Modified_By);
                 parameter.Add("@termination_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
             }
             return true;
@@ -1868,7 +1804,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             await VehicleOptInOptOutHistory(Vehicle_Id);
 
-            var QueryStatement = @" UPDATE master.vehicle
+            var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         opt_in=@opt_in                                        
         	                           ,modified_by=@modified_by
@@ -1881,7 +1817,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@opt_in", Is_OptIn);
             parameter.Add("@modified_by", Modified_By);
             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
             if (vehicleID > 0)
             {
                 bool Is_Ota = await _dataAccess.QuerySingleAsync<bool>("select coalesce((SELECT is_ota FROM master.vehicle where id=@id), false)", new { id = Vehicle_Id });
@@ -1900,7 +1836,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<bool> SetConnectionStatus(char Status, int vehicle_Id)
         {
-            var QueryStatement = @" UPDATE master.vehicle
+            var queryStatement = @" UPDATE master.vehicle
                                         SET 
                                         status= @status                                        
         	                           ,modified_by= @modified_by
@@ -1912,7 +1848,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@id", vehicle_Id);
             parameter.Add("@status", Status);
             parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
             if (vehicleID > 0)
             {
 
@@ -1932,8 +1868,10 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                _log.Info("VehicleUpdateDataMart Received Object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 int VehicleDataMartID = await _dataMartdataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicledatamart.VIN });
-                var QueryStatement = "";
+                var queryStatement = "";
                 bool isNameOrRegUpdated = false;
                 var parameter = new DynamicParameters();
 
@@ -1948,7 +1886,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 if (VehicleDataMartID == 0)
                 {
-                    QueryStatement = @"INSERT INTO master.vehicle
+                    queryStatement = @"INSERT INTO master.vehicle
                                       (
                                         vin
                                        ,name
@@ -1970,6 +1908,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,@created_modified_at
                                        ,@created_modified_at
                                       ) RETURNING id";
+                    _log.Info("VehicleUpdateDataMart Created object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == true)
                 {
@@ -1983,7 +1923,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     if (string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) && !string.IsNullOrEmpty(vehicledatamart.Registration_No))
                         isNameOrRegUpdated = true;
 
-                    QueryStatement = @" UPDATE master.vehicle
+                    queryStatement = @" UPDATE master.vehicle
                                         SET                                  
                                         registration_no=@registration_no
                                         ,type=@type
@@ -1991,6 +1931,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,model_type=@model_type
                                             WHERE id = @id
                                             RETURNING id;";
+                    _log.Info("VehicleUpdateDataMart Update " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == false && vehicledatamart.Vid == "")
                 {
@@ -2010,7 +1952,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 #pragma warning restore IDE0048 // Add parentheses for clarity
                         isNameOrRegUpdated = true;
 
-                    QueryStatement = @"UPDATE master.vehicle
+                    queryStatement = @"UPDATE master.vehicle
                                         SET registration_no=@registration_no, name=@name
                                         WHERE id = @id RETURNING id;";
                 }
@@ -2018,12 +1960,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     //TCU condition
                     parameter.Add("@id", VehicleDataMartID);
-                    QueryStatement = @"UPDATE master.vehicle
+                    queryStatement = @"UPDATE master.vehicle
                                          SET vid=@vid
                                          WHERE id = @id RETURNING id;";
+                    _log.Info("VehicleUpdateDataMart Update TCUCondition " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
+
                 }
 
-                int vehicleID = await _dataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 if (isNameOrRegUpdated)
                     await _dataMartdataAccess.ExecuteScalarAsync<int>(
@@ -2048,7 +1992,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var QueryStatement = @"select 
+                var queryStatement = @"select 
                                          id                                       
                                         ,modified_at 
                                         ,evt_timestamp
@@ -2064,10 +2008,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter = new DynamicParameters();
                     parameter.Add("@start_at", startDate);
                     parameter.Add("@end_at", endDate);
-                    QueryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
+                    queryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
-                IEnumerable<DtoVehicleMileage> mileageData = await _dataMartdataAccess.QueryAsync<DtoVehicleMileage>(QueryStatement, parameter);
+                IEnumerable<DtoVehicleMileage> mileageData = await _dataMartdataAccess.QueryAsync<DtoVehicleMileage>(queryStatement, parameter);
 
                 return mileageData;
             }
@@ -2077,34 +2021,6 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        //public async Task<string> GetVehicleVin(int vehicle_id)
-        //{
-        //    try
-        //    {
-        //       string vin = await DataMartdataAccess.QuerySingleAsync<string>("select coalesce((select vin FROM master.vehicle where id=@id))", new { id = vehicle_id });
-        //       return vin;
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //private Vehicles MapMileage(dynamic record)
-        //{
-        //    string sTimezone = "UTC";
-        //    string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";          
-
-        //    Vehicles vehicles=new Vehicles();
-        //    vehicles.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.evt_timestamp, sTimezone, targetdateformat); 
-        //    vehicles.VIN =record.vin;
-        //    vehicles.TachoMileage =record.odo_distance;
-        //    vehicles.GPSMileage =record.real_distance;
-        //    vehicles.RealMileage =record.real_distance;
-        //    vehicles.RealMileageAlgorithmVersion ="1.2";
-        //    return vehicles;
-        //}
-
         #endregion
 
         #region Vehicle Namelist Data
@@ -2112,7 +2028,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var QueryStatement = @"select 
+                var queryStatement = @"select 
                                          vin 
                                         ,name
                                         ,registration_no as regno
@@ -2124,10 +2040,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter = new DynamicParameters();
                     parameter.Add("@start_at", startDate);
                     parameter.Add("@end_at", endDate);
-                    QueryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
+                    queryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
-                IEnumerable<DtoVehicleNamelist> namelistData = await _dataMartdataAccess.QueryAsync<DtoVehicleNamelist>(QueryStatement, parameter);
+                IEnumerable<DtoVehicleNamelist> namelistData = await _dataMartdataAccess.QueryAsync<DtoVehicleNamelist>(queryStatement, parameter);
 
                 return namelistData;
             }
@@ -2161,32 +2077,44 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicAllVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicAllVehicleForVisibility(int organizationId)
         {
             try
             {
-                var QueryStatement = @"select distinct veh.id, veh.vin	                               
-	                                from master.vehicle veh
-                                    Inner join master.orgrelationshipmapping  orm
-                                    on orm.vehicle_id=veh.id
-                                    Inner join master.orgrelationship ors
-                                    on ors.id=orm.relationship_id
-                                    where  1=1
-                                    and ors.state='A'
-                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                                    else COALESCE(end_date,0) =0 end ";
+                var queryStatement = @"
+                        -- Owned vehicles
+                        SELECT v.id, v.vin
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+                        UNION
+                        -- Visible vehicles of type S/G
+                        SELECT v.id, v.vin
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+                        UNION
+                        -- Visible vehicles of type D, method O
+                        SELECT v.id, v.vin
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
                 var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
 
-                // organization id filter
-                if (OrganizationId > 0)
-                {
-                    parameter.Add("@organization_id", OrganizationId);
-                    QueryStatement += @" AND ((orm.owner_org_id=@organization_id AND ors.code='Owner')
-                                                        OR(orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')))";
-
-                }
-
-                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(queryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2194,30 +2122,37 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicVisibleVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicVisibleVehicleForVisibility(int organizationId)
         {
             try
             {
-                var QueryStatement = @"select distinct veh.id, veh.vin	                               
-	                               from master.vehicle veh
-                                    Inner join master.orgrelationshipmapping  orm
-                                    on orm.vehicle_id=veh.id
-                                    Inner join master.orgrelationship ors
-                                    on ors.id=orm.relationship_id
-                                    where 1=1
-                                    and ors.state='A'
-                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                                    else COALESCE(end_date,0) =0 end ";
+                var queryStatement = @"
+                        -- Visible vehicles of type S/G
+                        SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
+
+                        UNION
+                        -- Visible vehicles of type D, method O
+                        SELECT false as hasOwned, v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
+
                 var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
 
-                // Organization Id filter
-                if (OrganizationId > 0)
-                {
-                    parameter.Add("@organization_id", OrganizationId);
-                    QueryStatement += " and orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')";
-                }
-
-                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(queryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2225,32 +2160,23 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int organizationId)
         {
             try
             {
-                var QueryStatement = @"select distinct veh.id, veh.vin
-	                                    from master.vehicle veh
-                                        Left join master.orgrelationshipmapping  orm
-                                        on orm.vehicle_id=veh.id
-                                        Inner join master.orgrelationship ors
-                                        on ors.id=orm.relationship_id
-                                            where 1=1  
-                                        and ors.state='A'
-                                        and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                                        else COALESCE(end_date,0) =0 end ";
+                var queryStatement = @"
+                        SELECT v.id, v.vin
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
 
                 var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
 
-                // Organization Id filter
-                if (OrganizationId > 0)
-                {
-                    parameter.Add("@organization_id", OrganizationId);
-                    QueryStatement += " and ((orm.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)";
-
-                }
-
-                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(queryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2264,12 +2190,12 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
-                var QueryStatement = @"select veh.id, veh.vin	                               
+                var queryStatement = @"select veh.id, veh.vin	                               
 	                                   from master.vehicle veh
                                        INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                        WHERE veh.oem_organisation_id=grp.organization_id";
 
-                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(queryStatement, parameter);
             }
             catch (Exception)
             {

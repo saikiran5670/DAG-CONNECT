@@ -125,4 +125,28 @@ export class ReportSchedulerService {
       );
   }
 
+  getUnsubscribeForSingle(id: any, emailId: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/UnSubscribe?RecipentId=${id}&EmailId=${emailId}`
+          )
+      .pipe(catchError(this.handleError));
+  }
+
+  getUnsubscribeForAll(emailId: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/Unsubscribeall?EmailId=${emailId}`
+          )
+      .pipe(catchError(this.handleError));
+  }
+
 }

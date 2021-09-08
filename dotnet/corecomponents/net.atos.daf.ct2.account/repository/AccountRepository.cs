@@ -577,6 +577,85 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        private async Task<int?> GetAccountPreferenceId(string emailId, int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (orgId > 0)
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgId", orgId);
+
+                        orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
+                    return orgPreferenceId;
+                }
+                return accountPreferenceId;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<AccountPreferenceResponse> GetAccountPreferencesById(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT 
+                        l.name as Language,
+	                    df.name as DateFormat,
+	                    tz.name as TimeZone,
+	                    tf.name as TimeFormat,
+	                    u.name as UnitDisplay,
+	                    vd.name as VehicleDisplay
+                    FROM master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id
+                    INNER JOIN master.dateformat df ON ap.id = @preferenceId AND ap.date_format_id=df.id
+                    INNER JOIN master.timezone tz ON ap.id = @preferenceId AND ap.timezone_id=tz.id
+                    INNER JOIN master.timeformat tf ON ap.id = @preferenceId AND ap.time_format_id=tf.id
+                    INNER JOIN master.unit u ON ap.id = @preferenceId AND ap.unit_id=u.id
+                    INNER JOIN master.vehicledisplay vd ON ap.id = @preferenceId AND ap.vehicle_display_id=vd.id";
+
+                return await _dataAccess.QueryFirstOrDefaultAsync<AccountPreferenceResponse>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays)
         {
             try
@@ -813,108 +892,161 @@ namespace net.atos.daf.ct2.account
                     if (filter.OrganizationId > 0 && is_vehicleGroup)
                     {
                         // vehicles and vehicle groups
-                        query = @"select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
-                                            select vg.id,vg.name,ar.access_type,
-                                            case when (vg.group_type ='D' and vg.function_enum='A') then 
-						                (select count(veh.id) 
-									                from master.vehicle veh 
-									                inner join master.orgrelationshipmapping org 
-									                on veh.id=org.vehicle_id 
-									                inner join master.orgrelationship ors
-									                 on ors.id=org.relationship_id
-									                and ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                or (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
-									                and ors.state='A'
-									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                else COALESCE(end_date,0) =0 end)
-				                 when (vg.group_type ='D' and vg.function_enum='V') then 
-						                (select count(veh.id) 
-									                from master.vehicle veh 
-									                inner join master.orgrelationshipmapping org 
-									                on veh.id=org.vehicle_id 
-									                inner join master.orgrelationship ors
-									                 on ors.id=org.relationship_id
-									                and (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
-									                and ors.state='A'
-									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                else COALESCE(end_date,0) =0 end)
-				                when (vg.group_type ='D' and vg.function_enum='O') then 
-						                (select count(veh.id) 
-									                from master.vehicle veh 
-									                inner join master.orgrelationshipmapping org 
-									                on veh.id=org.vehicle_id 
-									                inner join master.orgrelationship ors
-									                 on ors.id=org.relationship_id
-									                and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
-									                and ors.state='A'
-									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-									                else COALESCE(end_date,0) =0 end)
-							else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count,
-                            case when (a.id is NULL) then ag.id else a.id end as group_id,
-                            case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
-                            case when (a.id is NULL) then true else false end as is_ag_vg_group
-                            from master.group vg 
-                            inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
-                            and vg.object_type='V' and vg.group_type in('G','D')
-                            inner join master.group ag on ag.id = ar.account_group_id 
-                            and ag.organization_id=@organization_id and ag.object_type='A'                             
-                            left outer join master.account a on a.id = ag.ref_id 
-							left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-							left join master.orgrelationship as os on om.relationship_id=os.id 
-                            where vg.organization_id=@organization_id
-                            order by vg.id desc ) vehiclegroup
-                            union all
-                            select id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
-                            select v.id,v.name,ar.access_type,0 as count,
-                            case when (a.id is NULL) then ag.id else a.id end as group_id,
-                            case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
-                            case when (a.id is NULL) then true else false end as is_ag_vg_group
-                            from master.group vg 
-                            inner join master.vehicle v on v.id=vg.ref_id 
-                            and vg.organization_id=@organization_id and vg.group_type='S' and vg.object_type='V'
-                            inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
-                            inner join master.group ag on ag.id = ar.account_group_id 
-                            and ag.organization_id=@organization_id and ag.object_type='A'
-                            left outer join master.account a on a.id = ag.ref_id where vg.ref_id > 0
-                            order by v.id desc) vehicles";
+                        query = @"SELECT id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group 
+                                FROM (
+                                    SELECT vg.id,vg.name,ar.access_type,
+                                     CASE WHEN (vg.group_type ='D' and vg.function_enum='A') 
+						                  THEN (
+                                                -- Fetch Owned+Visible vehicles from vehicle group type 'D'
+                                                -- Fetch Owned vehicles from vehicle group type 'D'
+                                                SELECT COUNT(id)
+                                                FROM
+                                                (
+                                                    SELECT veh.id
+									                FROM master.vehicle veh 
+									                INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
+									                INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
+									                            AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                            AND ors.state='A'
+									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+                                                    UNION
+                                                    SELECT v.id
+                                                        FROM master.vehicle v
+                                                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        WHERE 
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        else COALESCE(end_date,0) = 0 end
+
+                                                        UNION
+                                                        -- Visible vehicles of type D, method O
+                                                        SELECT v.id
+                                                        FROM master.group grp
+                                                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                                                        WHERE 
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        else COALESCE(end_date,0) = 0 end
+                                                 ) owned_visible_vehicles
+                                                )
+				                          WHEN (vg.group_type ='D' and vg.function_enum='V')
+                                          THEN (
+                                                -- Fetch Visible vehicles from vehicle group type 'D'
+						                        -- Visible vehicles of type G
+                                                SELECT COUNT(id)
+                                                FROM
+                                                (
+                                                    SELECT v.id
+                                                    FROM master.vehicle v
+                                                    INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                                    INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    WHERE 
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    else COALESCE(end_date,0) = 0 end
+
+                                                    UNION
+                                                    -- Visible vehicles of type D, method O
+                                                    SELECT v.id
+                                                    FROM master.group grp
+                                                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                                                    WHERE 
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    else COALESCE(end_date,0) = 0 end
+                                                ) visible_vehicles
+                                               )
+				                          WHEN (vg.group_type ='D' and vg.function_enum='O') 
+						                  THEN (
+                                                -- Fetch Owned vehicles from vehicle group type 'D'
+                                                SELECT count(veh.id) 
+									            FROM master.vehicle veh 
+									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
+									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
+									                        AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                        AND ors.state='A'
+									                        AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+                                               )
+							              ELSE (
+                                                -- Fetch Owned vehicles from vehicle group type 'G'
+                                                SELECT count(gr.group_id) 
+                                                FROM master.groupref gr 
+                                                WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
+                                                      and om.owner_org_id=@organization_id and os.code='Owner'
+                                               )
+                                          END as count,
+                                        CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
+                                        CASE WHEN (a.id is NULL) THEN ag.name ELSE a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
+                                        CASE WHEN (a.id is NULL) THEN true ELSE false END as is_ag_vg_group
+                                    FROM master.group vg 
+                                    INNER JOIN master.accessrelationship ar on ar.vehicle_group_id=vg.id and vg.object_type='V' and vg.group_type in('G','D')
+                                    INNER JOIN master.group ag on ag.id = ar.account_group_id and ag.organization_id=@organization_id and ag.object_type='A'                             
+                                    LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
+							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
+                                    WHERE vg.organization_id=@organization_id
+                                    ORDER BY vg.id desc 
+                                ) vehiclegroup
+
+                            UNION ALL
+
+                            SELECT id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group 
+                            FROM (
+                                    SELECT v.id,v.name,ar.access_type,0 as count,
+                                        CASE WHEN (a.id is NULL) then ag.id else a.id end as group_id,
+                                        CASE WHEN (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
+                                        CASE WHEN (a.id is NULL) then true else false end as is_ag_vg_group
+                                    FROM master.group vg 
+                                    INNER JOIN master.vehicle v on v.id=vg.ref_id and vg.organization_id=@organization_id and vg.group_type='S' and vg.object_type='V'
+                                    INNER JOIN master.accessrelationship ar on ar.vehicle_group_id=vg.id 
+                                    INNER JOIN master.group ag on ag.id = ar.account_group_id and ag.organization_id=@organization_id and ag.object_type='A'
+                                    LEFT OUTER JOIN master.account a on a.id = ag.ref_id where vg.ref_id > 0
+                                    ORDER BY v.id desc
+                                 ) vehicles";
                     }
                     else
                     {
                         // account and account groups
-                        query = @" select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group  from (
-                         select ag.id,ag.name,ar.access_type, 
-                         case when (ag.group_type ='D') then 
-                         (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id 
-                         and g.organization_id=@organization_id)
-                         else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count,
-                         case when (v.id is NULL) then vg.id else v.id end as group_id,
-                         case when (v.id is NULL) then vg.name else v.name end as group_name,
-                         case when (v.id is NULL) then true else false end as is_ag_vg_group                         
-                         from master.group ag 
-                         inner join master.accessrelationship ar on ar.account_group_id=ag.id 
-                         and ag.organization_id=@organization_id and ag.object_type='A' and ag.group_type in('G','D')
-                         inner join master.group vg on vg.id = ar.vehicle_group_id 
-                         and vg.organization_id=@organization_id and vg.object_type='V' 
-                         left outer join master.vehicle v on v.id = vg.ref_id 
-                         where vg.organization_id=@organization_id 
-                         order by ag.id desc
-                        ) accountgroup
+                        query = @"
+                            SELECT id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group
+                            FROM (
+                                 SELECT ag.id,ag.name,ar.access_type, 
+                                     case when (ag.group_type ='D') then 
+                                     (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id 
+                                     and g.organization_id=@organization_id)
+                                     else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count,
+                                     case when (v.id is NULL) then vg.id else v.id end as group_id,
+                                     case when (v.id is NULL) then vg.name else v.name end as group_name,
+                                     case when (v.id is NULL) then true else false end as is_ag_vg_group                         
+                                 FROM master.group ag 
+                                 INNER JOIN master.accessrelationship ar on ar.account_group_id=ag.id and ag.organization_id=@organization_id and ag.object_type='A' and ag.group_type in('G','D')
+                                 INNER JOIN master.group vg on vg.id = ar.vehicle_group_id and vg.organization_id=@organization_id and vg.object_type='V' 
+                                 LEFT OUTER JOIN master.vehicle v on v.id = vg.ref_id 
+                                 WHERE vg.organization_id=@organization_id 
+                                 ORDER BY ag.id desc
+                                ) accountgroup
+
                          -- accounts
-                         union all
-                         select id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
-                         select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
-                         ar.access_type,0 as count,
-                         case when (v.id is NULL) then vg.id else v.id end as group_id,
-                         case when (v.id is NULL) then vg.name else v.name end as group_name,
-                         case when (v.id is NULL) then true else false end as is_ag_vg_group
-                          from master.group ag 
-                         inner join master.account a on a.id=ag.ref_id 
-                         and ag.organization_id=@organization_id and ag.object_type='A'
-                         inner join master.accessrelationship ar on ar.account_group_id=ag.id 
-                         inner join master.group vg on vg.id = ar.vehicle_group_id 
-                         and vg.organization_id=@organization_id 
-                         left outer join master.vehicle v on v.id = vg.ref_id where ag.ref_id >0
-                         order by a.id desc) accounts";
+                         UNION ALL
+
+                         SELECT id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group
+                         FROM (
+                                 SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name, ar.access_type,0 as count,
+                                     case when (v.id is NULL) then vg.id else v.id end as group_id,
+                                     case when (v.id is NULL) then vg.name else v.name end as group_name,
+                                     case when (v.id is NULL) then true else false end as is_ag_vg_group
+                                 FROM master.group ag 
+                                 INNER JOIN master.account a on a.id=ag.ref_id and ag.organization_id=@organization_id and ag.object_type='A'
+                                 INNER JOIN master.accessrelationship ar on ar.account_group_id=ag.id 
+                                 INNER JOIN master.group vg on vg.id = ar.vehicle_group_id and vg.organization_id=@organization_id 
+                                 LEFT OUTER JOIN MASTER.vehicle v on v.id = vg.ref_id where ag.ref_id > 0
+                                 ORDER BY a.id desc
+                              ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
                     IEnumerable<AccountAccessRelationshipEntity> accessRelationship = await _dataAccess.QueryAsync<AccountAccessRelationshipEntity>(query, parameter);
@@ -1018,38 +1150,43 @@ namespace net.atos.daf.ct2.account
                     if (filter.OrganizationId > 0 && is_account)
                     {
                         query = @"-- account group
-                                        select id,name,count,true as is_group from (
-                                        select ag.id,ag.name,
-                                        case when (ag.group_type ='D') then 
-	                                        (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id
-                                            and g.organization_id=@organization_id)
-	                                        else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count
-                                        from master.group ag 
-                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
-                                         and length(ag.name) > 0
-                                        ) accountGroup
-                                        union all
-                                        select id,name,count,false as is_group from (
-                                        select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
-                                        from master.account a inner join master.accountorg ar on ar.account_id=a.id 
-                                        where ar.organization_id=@organization_id and length(a.first_name) > 0
-                                        ) accounts";
+                                SELECT id,name,count,true as is_group 
+                                FROM (
+                                    SELECT ag.id,ag.name,
+                                    CASE WHEN (ag.group_type ='D') 
+                                         THEN (SELECT count(gr.group_id) 
+                                                FROM master.groupref gr 
+                                                INNER JOIN master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+	                                     ELSE (SELECT count(gr.group_id) FROM master.groupref gr WHERE gr.group_id=ag.id ) END as count
+                                    FROM master.group ag 
+                                    WHERE ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
+                                        and length(ag.name) > 0
+                                ) accountGroup
+                                UNION ALL
+                                SELECT id,name,count,false as is_group 
+                                FROM (
+                                    SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
+                                    FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                ) accounts";
                     }
                     else
                     {
                         query = @"-- account group
-                                        select id,name,0 as count,true as is_group from (
-                                        select ag.id,ag.name                                         
-                                        from master.group ag 
-                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
+                                SELECT id,name,0 as count,true as is_group 
+                                FROM (
+                                    SELECT ag.id,ag.name
+                                    FROM master.group ag 
+                                    WHERE ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
                                         and length(ag.name) > 0
-                                        ) accountGroup
-                                        union all
-                                        select id,name,count,false as is_group from (
-                                        select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
-                                        from master.account a inner join master.accountorg ar on ar.account_id=a.id 
-                                        where ar.organization_id=@organization_id and length(a.first_name) > 0
-                                        ) accounts";
+                                ) accountGroup
+                                UNION ALL
+                                SELECT id,name,count,false as is_group 
+                                FROM (
+                                    SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
+                                    FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
                     IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
@@ -1276,6 +1413,23 @@ namespace net.atos.daf.ct2.account
             }
             return keyValueList;
         }
+
+        private async Task<IEnumerable<OrganizationKeyValue>> GetAccountOrgs(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+                var query = @"select o.org_id as OrgCode, o.name as Name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
+
+                return await _dataAccess.QueryAsync<OrganizationKeyValue>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<AccountOrgRole>> GetAccountRole(int accountId)
         {
             List<AccountOrgRole> AccountOrgRoleList = null;
@@ -1629,9 +1783,142 @@ namespace net.atos.daf.ct2.account
                 throw;
             }
         }
+
         #endregion
 
+        public async Task<AccountPreferenceResponse> GetAccountPreferences(string accountEmail, int organisationId)
+        {
+            try
+            {
+                var prefId = await GetAccountPreferenceId(accountEmail, organisationId);
 
+                return await GetAccountPreferencesById(prefId ?? 0) ?? new AccountPreferenceResponse();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request)
+        {
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
+            try
+            {
+                int result = 0;
+                var parameter = new DynamicParameters();
+                parameter.Add("@AccountEmail", request.AccountEmail.ToLower());
+
+                var query = @"SELECT preference_id FROM master.account WHERE lower(email) = @AccountEmail";
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(query, parameter);
+
+                parameter = new DynamicParameters();
+                parameter.Add("@Language", request.Language.ToLower().Trim());
+                parameter.Add("@TimeZone", request.TimeZone.ToLower().Trim());
+                parameter.Add("@TimeFormat", request.TimeFormat.ToLower().Trim());
+                parameter.Add("@UnitDisplay", request.UnitDisplay.ToLower().Trim());
+                parameter.Add("@VehicleDisplay", request.VehicleDisplay.ToLower().Trim());
+                parameter.Add("@DateFormat", request.DateFormat.ToLower().Trim());
+
+                if (accountPreferenceId.HasValue)
+                {
+                    parameter.Add("@PreferenceId", accountPreferenceId.Value);
+                    query = @"UPDATE master.accountpreference 
+                              SET
+                                language_id = (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                date_format_id = (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
+                                timezone_id = (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay)
+                              WHERE id = @PreferenceId RETURNING id";
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                else
+                {
+                    query = @"INSERT INTO master.accountpreference
+                                (type, state, icon_id, page_refresh_time, currency_id, landing_page_display_id, language_id, timezone_id,
+                                 unit_id, vehicle_display_id, date_format_id, time_format_id) 
+                              VALUES ('A', 'A', NULL, 2, 
+                                       (SELECT id FROM master.currency WHERE lower(name) like 'euro%'),
+                                       (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
+                                       (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                       (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
+                                       (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
+                                       (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),                                       
+                                       (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat)) RETURNING id";
+                    var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                    parameter = new DynamicParameters();
+                    parameter.Add("@PreferenceId", preferenceId);
+                    parameter.Add("@AccountEmail", request.AccountEmail.ToLower());
+
+                    result = await _dataAccess.ExecuteScalarAsync<int>("UPDATE master.account SET preference_id=@PreferenceId WHERE lower(email) = @AccountEmail RETURNING id", parameter);
+                }
+
+                transaction.Commit();
+                return result > 0;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
+        }
+
+        public async Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@OrganisationId", organisationId);
+                parameter.Add("@AccountEmail", accountEmail);
+
+                var account = await GetAccountByEmailId(accountEmail);
+                var accountOrgs = await GetAccountOrgs(account.Id);
+
+                var preferenceId = await GetAccountPreferenceId(accountEmail, organisationId);
+
+                var response = await GetAccountPreferencesById(preferenceId ?? 0);
+
+                var finalResponse = new ValidateDriverResponse
+                {
+                    AccountID = accountEmail,
+                    AccountName = $"{ account.FirstName } { account.LastName }",
+                    DateFormat = response?.DateFormat,
+                    TimeFormat = response?.TimeFormat,
+                    TimeZone = response?.TimeZone,
+                    UnitDisplay = response?.UnitDisplay,
+                    VehicleDisplay = response?.VehicleDisplay,
+                    Language = response?.Language,
+                    Organisations = accountOrgs.Select(x => new ValidateDriverOrganisation { Id = x.OrgCode, Name = x.Name }).ToList()
+                };
+                return finalResponse;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> GetDriverRoleId()
+        {
+            try
+            {
+                var query = @"SELECT id FROM master.role WHERE organization_id IS NULL AND code='DRIVER'";
+
+                return await _dataAccess.ExecuteScalarAsync<int>(query, null);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
-
 }

@@ -260,8 +260,6 @@ namespace net.atos.daf.ct2.accountpreference
         {
             try
             {
-
-
                 var parameter = new DynamicParameters();
                 List<AccountPreference> entity = new List<AccountPreference>();
                 parameter.Add("@id", filter.Id);

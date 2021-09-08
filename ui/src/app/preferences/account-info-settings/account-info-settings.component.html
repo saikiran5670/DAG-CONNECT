@@ -89,7 +89,7 @@
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per"  style="width:34%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
-              <mat-label class='custom-font'>
+              <mat-label class='custom-font1'>
                 {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
               </mat-label>
             </div>
@@ -181,7 +181,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
-                </mat-label>
+                </mat-label>              
                 <mat-form-field appearance="outline" class="full-width">
                   <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput 
                     formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
@@ -291,7 +291,7 @@
           <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{ uploadLogo != '' ? uploadLogo : '--' }} -->
-            <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; margin: auto; width: 30px; height: 30px;" />
+            <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="width: 30px; height: 30px;" />
           </mat-label>
         </div>
       </div>
@@ -406,16 +406,16 @@
           </div>
           <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
-            <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+            <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px" fxLayoutAlign="center center" >
               <div class="areaWidth min-width-15-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
-                <button *ngIf="this.uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon>cancel</mat-icon>
                 </button>
                 <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
               </div>
               <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                  <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
+                  <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="{{ translationData.lblUploadLogo || 'Upload Logo' }}" ></ngx-mat-file-input>
                   <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
                 </mat-form-field>
                 <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>

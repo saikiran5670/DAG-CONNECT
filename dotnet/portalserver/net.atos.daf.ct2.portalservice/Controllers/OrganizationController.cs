@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly AccountPrivilegeChecker _privilegeChecker;
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
@@ -44,7 +45,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
-                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor,
+                                      SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._organizationClient = organizationClient;
@@ -231,16 +233,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
-
+                var level = await GetUserPrivilegeLevel();
                 var levelCode = new RelationshipLevelCode();
-                levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
+                var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
                      .Select(t => new Level
                      {
                          Id = ((int)t),
                          Name = t.ToString()
                      }).ToList();
+
+                levelCode.Levels = relationshipLevels.Where(x => x.Id >= level).ToList();
 
                 levelCode.Codes = Enum.GetValues(typeof(RelationshipCode))
                      .Cast<RelationshipCode>()
@@ -744,17 +747,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.Allow_chain;
                 objRelationship.Isconfirmed = request.IsConfirm;
-                var CreateResponce = await _organizationClient.CreateOrgRelationshipAsync(objRelationship);
-                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
+                var createResponse = await _organizationClient.CreateOrgRelationshipAsync(objRelationship);
+                if (createResponse.Code == OrganizationBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                    return Ok(CreateResponce);
+                    return Ok(createResponse);
                 }
-                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Conflict)
+                if (createResponse.Code == OrganizationBusinessService.Responcecode.Conflict)
                 {
-                    return StatusCode(409, CreateResponce);
+                    return StatusCode(409, createResponse);
                 }
                 else
                 {

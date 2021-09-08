@@ -6,7 +6,6 @@ using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.response;
-using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.rfms.repository
 {
@@ -17,12 +16,12 @@ namespace net.atos.daf.ct2.rfms.repository
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly RfmsVehicleStatusMapper _rfmsVehicleStatusMapper;
+        private readonly RfmsVehicleMapper _rfmsVehicleStatusMapper;
         public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
         {
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
-            _rfmsVehicleStatusMapper = new RfmsVehicleStatusMapper();
+            _rfmsVehicleStatusMapper = new RfmsVehicleMapper();
         }
         public async Task<RfmsVehicles> GetVehicles(string visibleVins, int lastVinId)
         {
@@ -40,7 +39,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         ,VP.ENGINE_EMISSION_LEVEL AS EMISSIONLEVEL
 										,VP.TYPE_ID AS CHASSISTYPE
                                         ,(SELECT COUNT(*) FROM MASTER.VEHICLEAXLEPROPERTIES WHERE VEHICLE_ID = V.ID) AS NOOFAXLES
-                                        ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID) AS TOTALFUELTANKVOLUME
+                                        ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID and CHASIS_FUEL_TANK_VOLUME ~ '^[0-9.]+$') AS TOTALFUELTANKVOLUME
                                         ,VP.TRANSMISSION_GEARBOX_TYPE AS GEARBOXTYPE
                                         FROM MASTER.VEHICLE V 
                                         LEFT OUTER JOIN MASTER.VEHICLEPROPERTIES VP ON VP.ID = V.VEHICLE_PROPERTY_ID";
@@ -64,7 +63,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
                 foreach (dynamic record in result)
                 {
-                    vehicles.Add(Map(record));
+                    vehicles.Add(_rfmsVehicleStatusMapper.Map(record));
                 }
                 rfmsVehicles.Vehicles = vehicles;
                 return rfmsVehicles;
@@ -82,7 +81,7 @@ namespace net.atos.daf.ct2.rfms.repository
             try
             {
                 string queryStatement = string.Empty;
-                if (rfmsVehiclePositionRequest.LatestOnly)
+                if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                 {
                     queryStatement = @"SELECT Id, 
                                         T1.vin,
@@ -154,21 +153,21 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     List<string> lstVisibleVins = visibleVins.Split(',').ToList();
                     parameter.Add("@visibleVins", lstVisibleVins);
-                    if (rfmsVehiclePositionRequest.LatestOnly)
+                    if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                         queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
                     else
                         queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
                 }
 
                 //If Not Latest Only Check
-                if (!rfmsVehiclePositionRequest.LatestOnly)
+                if (!rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                 {
                     //Parameter add for starttime
-                    if (rfmsVehiclePositionRequest.StartTime != null)
+                    if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime != null)
                     {
-                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StartTime));
+                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
 
-                        if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                        if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Type == DateType.Created.ToString())
                         {
                             queryStatement = queryStatement + " and created_datetime > @start_time";
                         }
@@ -179,11 +178,11 @@ namespace net.atos.daf.ct2.rfms.repository
                     }
 
                     //Parameter add for starttime
-                    if (rfmsVehiclePositionRequest.StopTime != null)
+                    if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StopTime != null)
                     {
-                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StopTime));
+                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StopTime));
 
-                        if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                        if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Type == DateType.Created.ToString())
                         {
                             queryStatement = queryStatement + " and created_datetime < @stop_time";
                         }
@@ -194,7 +193,7 @@ namespace net.atos.daf.ct2.rfms.repository
                     }
                 }
                 //Parameter add for TriggerFilter
-                if (Int32.TryParse(rfmsVehiclePositionRequest.TriggerFilter, out int triggerFilter))
+                if (Int32.TryParse(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.TriggerFilter, out int triggerFilter))
                 {
                     parameter.Add("@triggerFilter", triggerFilter);
                     queryStatement += " AND vehicle_msg_trigger_type_id = @triggerFilter";
@@ -202,11 +201,11 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 if (lastVinId > 0)
                 {
-                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StartTime));
-                    if (!rfmsVehiclePositionRequest.LatestOnly)
+                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
+                    if (!rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                         queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
                 }
-                if (rfmsVehiclePositionRequest.LatestOnly)
+                if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                 {
                     queryStatement += " ORDER BY T1.received_datetime";
                 }
@@ -225,7 +224,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 foreach (dynamic record in result)
                 {
-                    lstVehiclePosition.Add(MapVehiclePositions(record));
+                    lstVehiclePosition.Add(_rfmsVehicleStatusMapper.MapVehiclePositions(record));
                 }
 
                 vehiclePositionResponse.VehiclePositions = lstVehiclePosition;
@@ -240,227 +239,6 @@ namespace net.atos.daf.ct2.rfms.repository
             }
 
 
-        }
-
-        private VehiclePosition MapVehiclePositions(dynamic record)
-        {
-            VehiclePosition vehiclePosition = new VehiclePosition();
-            vehiclePosition.RecordId = record.id;
-            vehiclePosition.Vin = record.vin;
-
-            TriggerType triggerType = new TriggerType();
-            triggerType.Context = record.context;
-            triggerType.Type = Convert.ToString(record.triggertype);
-
-            List<string> listTriggerInfo = new List<string>();
-            listTriggerInfo.Add(record.triggerinfo);
-
-            triggerType.TriggerInfo = listTriggerInfo;
-
-            DriverId driverId = new DriverId();
-
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
-
-            OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
-            oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
-            oemDriverIdentification.IdType = record.oemidtype;
-
-            driverId.TachoDriverIdentification = tachoDriverIdentification;
-            driverId.OemDriverIdentification = oemDriverIdentification;
-
-            triggerType.DriverId = driverId;
-            triggerType.PtoId = record.ptoid;
-
-            TellTaleInfo tellTaleInfo = new TellTaleInfo();
-            tellTaleInfo.OemTellTale = record.oemtelltale;
-            tellTaleInfo.State = Convert.ToString(record.state);
-            tellTaleInfo.TellTale = Convert.ToString(record.telltale);
-
-            triggerType.TellTaleInfo = tellTaleInfo;
-
-            vehiclePosition.TriggerType = triggerType;
-
-            if (record.createddatetime != null)
-            {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehiclePosition.CreatedDateTime = createdDateTime;
-            }
-
-            if (record.receiveddatetime != null)
-            {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehiclePosition.ReceivedDateTime = receivedDateTime;
-            }
-
-            GnssPosition gnssPosition = new GnssPosition();
-            if (record.altitude != null)
-            {
-                gnssPosition.Altitude = Convert.ToInt32(record.altitude);
-            }
-
-            if (record.heading != null)
-            {
-                gnssPosition.Heading = Convert.ToInt32(record.heading);
-            }
-
-            if (record.latitude != null)
-            {
-                gnssPosition.Latitude = Convert.ToDouble(record.latitude);
-            }
-
-            if (record.longitude != null)
-            {
-                gnssPosition.Longitude = Convert.ToDouble(record.longitude);
-            }
-
-            if (record.positiondatetime != null)
-            {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime positionDateTime);
-                gnssPosition.PositionDateTime = positionDateTime;
-            }
-
-            if (record.speed != null)
-            {
-                gnssPosition.Speed = Convert.ToDouble(record.speed);
-            }
-            vehiclePosition.GnssPosition = gnssPosition;
-
-            if (record.tachographspeed != null)
-            {
-                vehiclePosition.TachographSpeed = Convert.ToDouble(record.tachographspeed);
-            }
-
-            if (record.wheelbasespeed != null)
-            {
-                vehiclePosition.WheelBasedSpeed = Convert.ToDouble(record.wheelbasespeed);
-            }
-
-            return vehiclePosition;
-        }
-
-        private VehicleStatus MapVehicleStatus(dynamic record)
-        {
-            VehicleStatus vehicleStatus = new VehicleStatus();
-            //vehicleStatus.RecordId = record.id;
-            vehicleStatus.Vin = record.vin;
-
-            TriggerType triggerType = new TriggerType();
-            triggerType.Context = record.context;
-            triggerType.Type = Convert.ToString(record.triggertype);
-
-            List<string> listTriggerInfo = new List<string>();
-            listTriggerInfo.Add(record.triggerinfo);
-
-            triggerType.TriggerInfo = listTriggerInfo;
-
-            DriverId driverId = new DriverId();
-
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
-
-            OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
-            oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
-            oemDriverIdentification.IdType = record.oemidtype;
-
-            driverId.TachoDriverIdentification = tachoDriverIdentification;
-            driverId.OemDriverIdentification = oemDriverIdentification;
-
-            triggerType.DriverId = driverId;
-            triggerType.PtoId = record.ptoid;
-
-            TellTaleInfo tellTaleInfo = new TellTaleInfo();
-            tellTaleInfo.OemTellTale = record.oemtelltale;
-            tellTaleInfo.State = Convert.ToString(record.state);
-            tellTaleInfo.TellTale = Convert.ToString(record.telltale);
-
-            triggerType.TellTaleInfo = tellTaleInfo;
-
-            vehicleStatus.TriggerType = triggerType;
-
-            if (record.createddatetime != null)
-            {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehicleStatus.CreatedDateTime = createdDateTime;
-            }
-
-            if (record.receiveddatetime != null)
-            {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehicleStatus.ReceivedDateTime = receivedDateTime;
-            }
-
-
-            if (record.HrTotalVehicleDistance != null)
-            {
-                vehicleStatus.HrTotalVehicleDistance = Convert.ToString(record.HrTotalVehicleDistance);
-            }
-
-            if (record.totalEngineHours != null)
-            {
-                vehicleStatus.TotalEngineHours = Convert.ToString(record.totalEngineHours);
-            }
-            if (record.totalFuelUsedGaseous != null)
-            {
-                vehicleStatus.TotalFuelUsedGaseous = Convert.ToString(record.totalFuelUsedGaseous);
-            }
-            if (record.grossCombinationVehicleWeight != null)
-            {
-                vehicleStatus.GrossCombinationVehicleWeight = Convert.ToString(record.GrossCombinationVehicleWeight);
-            }
-            if (record.status2OfDoors != null)
-            {
-                vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
-            }
-            vehicleStatus.AccumulatedData = _rfmsVehicleStatusMapper.MapAccumuatedData();
-            vehicleStatus.SnapshotData = _rfmsVehicleStatusMapper.MapSnapShotData();
-            vehicleStatus.UptimeData = _rfmsVehicleStatusMapper.MapUptimeData();
-            return vehicleStatus;
-        }
-
-        private Vehicle Map(dynamic record)
-        {
-            string targetdateformat = "MM/DD/YYYY";
-            Vehicle vehicle = new Vehicle();
-            string possibleFuelTypes = record.possible_fuel_type;
-            vehicle.Vin = record.vin;
-            vehicle.CustomerVehicleName = record.customer_vehicle_name;
-            vehicle.Brand = record.brand;
-            if (record.production_date != null)
-            {
-                DateTime dtProdDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.production_date, "UTC", targetdateformat));
-                ProductionDate pd = new ProductionDate();
-                pd.Day = dtProdDate.Day;
-                pd.Month = dtProdDate.Month;
-                pd.Year = dtProdDate.Year;
-                vehicle.ProductionDate = pd;
-            }
-            vehicle.Type = record.type;
-            vehicle.Model = record.model;
-            vehicle.ChassisType = record.chassistype;
-            if (!string.IsNullOrEmpty(possibleFuelTypes))
-                vehicle.PossibleFuelType = possibleFuelTypes.Split(",").ToList();
-            vehicle.EmissionLevel = record.emissionlevel;
-            if (!string.IsNullOrEmpty(Convert.ToString(record.noofaxles)))
-                vehicle.NoOfAxles = Convert.ToInt32(record.noofaxles);
-            else
-                vehicle.NoOfAxles = 0;
-
-            if (!string.IsNullOrEmpty(Convert.ToString(record.totalfueltankvolume)))
-                vehicle.TotalFuelTankVolume = Convert.ToInt32(record.totalfueltankvolume);
-            else
-                vehicle.TotalFuelTankVolume = 0;
-
-            vehicle.GearboxType = record.gearboxtype;
-            return vehicle;
         }
 
         public async Task<string> GetRFMSFeatureRate(string emailId, string featureName)
@@ -533,7 +311,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 //parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
                 // To do rfms vehicle status....
                 string queryStatement = string.Empty;
-                if (rfmsVehicleStatusRequest.LatestOnly)
+                if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
                     queryStatement = @"SELECT Id, 
                                     vin as vin,
@@ -593,21 +371,21 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     List<string> lstVisibleVins = visibleVins.Split(',').ToList();
                     parameter.Add("@visibleVins", lstVisibleVins);
-                    if (rfmsVehicleStatusRequest.LatestOnly)
+                    if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                         queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
                     else
                         queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
                 }
 
                 //If Not Latest Only Check
-                if (!rfmsVehicleStatusRequest.LatestOnly)
+                if (!rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
                     //Parameter add for starttime
-                    if (rfmsVehicleStatusRequest.StartTime != null)
+                    if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime != null)
                     {
-                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StartTime));
+                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
 
-                        if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                        if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Type == DateType.Created.ToString())
                         {
                             queryStatement = queryStatement + " and created_datetime > @start_time";
                         }
@@ -618,11 +396,11 @@ namespace net.atos.daf.ct2.rfms.repository
                     }
 
                     //Parameter add for starttime
-                    if (rfmsVehicleStatusRequest.StopTime != null)
+                    if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StopTime != null)
                     {
-                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StopTime));
+                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StopTime));
 
-                        if (rfmsVehicleStatusRequest.Type == DateType.Created)
+                        if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Type == DateType.Created.ToString())
                         {
                             queryStatement = queryStatement + " and created_datetime < @stop_time";
                         }
@@ -641,7 +419,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 //}
 
                 //Parameter add for TriggerFilter
-                if (Int32.TryParse(rfmsVehicleStatusRequest.TriggerFilter, out int triggerFilter))
+                if (Int32.TryParse(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.TriggerFilter, out int triggerFilter))
                 {
                     parameter.Add("@triggerFilter", triggerFilter);
                     queryStatement += " AND vehicle_msg_trigger_type_id = @triggerFilter";
@@ -649,11 +427,11 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 if (lastVinId > 0)
                 {
-                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.StartTime));
-                    if (!rfmsVehicleStatusRequest.LatestOnly)
+                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
+                    if (!rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                         queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
                 }
-                if (rfmsVehicleStatusRequest.LatestOnly)
+                if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
                     queryStatement += " ORDER BY T1.received_datetime";
                 }
@@ -672,7 +450,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(MapVehicleStatus(record)); // mapper need to implement
+                    lstVehicleStatus.Add(_rfmsVehicleStatusMapper.MapVehicleStatus(record));
                 }
 
 

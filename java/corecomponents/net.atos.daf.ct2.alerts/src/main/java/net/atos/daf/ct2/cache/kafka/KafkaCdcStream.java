@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.io.Serializable;
 import java.util.List;
-
+@Deprecated
 public abstract class KafkaCdcStream implements Serializable {
 
     protected StreamExecutionEnvironment env;
@@ -33,7 +33,15 @@ public abstract class KafkaCdcStream implements Serializable {
     protected abstract SingleOutputStreamOperator<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> flatternCdcStream(SingleOutputStreamOperator<List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>> listPayloadStream);
 
 
+    @Deprecated
     public SingleOutputStreamOperator<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> cdcStream(){
+        KeyedStream<AlertCdc, String> keyedStream = init();
+        SingleOutputStreamOperator<List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>> payloadStream = processCdcPayload(keyedStream);
+        return flatternCdcStream(payloadStream);
+    }
+
+
+    public SingleOutputStreamOperator<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>> cdcStreamV2(){
         KeyedStream<AlertCdc, String> keyedStream = init();
         SingleOutputStreamOperator<List<Payload<Tuple2<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema>>>> payloadStream = processCdcPayload(keyedStream);
         return flatternCdcStream(payloadStream);

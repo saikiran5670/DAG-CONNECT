@@ -9,10 +9,6 @@ import java.util.Map;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple11;
@@ -33,6 +29,7 @@ import net.atos.daf.ct2.etl.common.bo.TripStatusAggregation;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.hbase.TripIndexData;
 import net.atos.daf.ct2.etl.common.postgre.TripCo2Emission;
+import net.atos.daf.ct2.etl.common.postgre.TripGranularData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
 import net.atos.daf.postgre.bo.EcoScore;
@@ -47,10 +44,10 @@ public class TripAggregations implements Serializable{
 	private static Logger logger = LoggerFactory.getLogger(TripAggregations.class);
 
 	
-	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
+	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
 	{
 		Map<String, List<String>> tripIndxClmns = getTripIndexColumns();
-		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = hbaseStsData
+		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData = hbaseStsData
 				.keyBy(value -> value.getTripId())
 				.flatMap(new TripIndexData(envParams.get(ETLConstants.INDEX_TABLE_NM), tripIndxClmns, null));
 
@@ -59,6 +56,13 @@ public class TripAggregations implements Serializable{
 			.name("writeIndexDataToFile");*/
 
 		return indxData;
+	}
+	
+	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> getTripGranularData(SingleOutputStreamOperator<TripStatusData> tripStatusData)
+	{
+		return tripStatusData
+				.keyBy(value -> value.getTripId())
+				.flatMap(new TripGranularData());
 	}
 	
 	private Map<String, List<String>> getTripIndexColumns() {
@@ -75,12 +79,13 @@ public class TripAggregations implements Serializable{
 		indxClmns.add(ETLConstants.INDEX_MSG_INCREMENT);
 		indxClmns.add(ETLConstants.INDEX_MSG_VDIST);
 		indxClmns.add(ETLConstants.INDEX_MSG_EVT_DATETIME);
+		indxClmns.add(ETLConstants.INDEX_MSG_VEVT_ID);
 		tripIndxClmns.put(ETLConstants.INDEX_MSG_COLUMNFAMILY_T, indxClmns);
 
 		return tripIndxClmns;
 	}
 	
-	private DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli)
+	private DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli)
 	{
 
 		tableEnv.createTemporaryView("indexData", indxData);
@@ -102,7 +107,7 @@ public class TripAggregations implements Serializable{
 		return tableEnv.toRetractStream(indxTblAggrResult, Row.class).map(new MapRowToTuple());
 	}
 		
-	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
+	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Long, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
 		DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
 		
@@ -165,13 +170,18 @@ public class TripAggregations implements Serializable{
 						 * 
 						 */
 						private static final long serialVersionUID = 1L;
-						private transient ValueState<Tuple2<String, Long>> prevVDistState ;
+						//private transient ValueState<Tuple2<String, Long>> prevVDistState ;
 
+						long vDistDiff = 0;
+						long prevVDist = 0;
+						String prevTrip = "";
 						
 						@Override
 						public Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> map(
 								Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String> row)
 								throws Exception {
+							
+							/*
 							Tuple2<String, Long> currentTripVDist = prevVDistState.value();
 							long vDistDiff = 0;
 							long prevVDist = 0;
@@ -207,15 +217,62 @@ public class TripAggregations implements Serializable{
 									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
 									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
 									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);
+						*/
+												
+							/*if(prevVDist == 0){
+								prevVDist = (Long) (row.getField(6));
+								logger.info("prevVDist is 0 so setting data "+ prevVDist);
+							}else{
+								vDistDiff = (Long) (row.getField(6)) - prevVDist ;
+								prevVDist = (Long) (row.getField(6));
+							}*/
+							
+							if(!prevTrip.equals((String) (row.getField(0)))){
+								prevVDist = 0 ;
+								vDistDiff = 0 ;
+								logger.info(" reseting prevDist as prevTrip :: "+prevTrip +" current trip :: "+(String) (row.getField(0)));
+								prevTrip = (String) (row.getField(0));
+							}
+							
+							if(prevVDist != 0)
+								vDistDiff = (Long) (row.getField(6)) - prevVDist ;
+							
+							if(vDistDiff == 0)
+								vDistDiff = 1;
+								
+							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
+							Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> grossObj = new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
+									(String) (row.getField(0)), (String) (row.getField(1)),
+									(String) (row.getField(2)), (Integer) (row.getField(3)),
+									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
+									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);
+
+							logger.info(" GrossWt Info :: "+grossObj);
+							
+							prevVDist = (Long) (row.getField(6));
+							
+							logger.info(" vDistDiff :"+vDistDiff +" row.getField(4): "+((Double) (row.getField(4))) );
+							
+							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
+							/*return new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
+									(String) (row.getField(0)), (String) (row.getField(1)),
+									(String) (row.getField(2)), (Integer) (row.getField(3)),
+									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
+									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);*/
+							
+							return grossObj;
+						
 						}
 						
 						@Override
 					public void open(org.apache.flink.configuration.Configuration config) {
-						ValueStateDescriptor<Tuple2<String, Long>> descriptor = new ValueStateDescriptor<Tuple2<String, Long>>(// the state name
+						/*ValueStateDescriptor<Tuple2<String, Long>> descriptor = new ValueStateDescriptor<Tuple2<String, Long>>(// the state name
 								"tripPrevVDist", TypeInformation.of(new TypeHint<Tuple2<String, Long>>() {
 								}));
 						prevVDistState = getRuntimeContext().getState(descriptor);
-						logger.info("Created the value state for tripStreaming Job ");
+						logger.info("Created the value state for tripStreaming Job ");*/
 					}
 					});
 	}
@@ -229,6 +286,11 @@ public class TripAggregations implements Serializable{
 		public Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long> map(Tuple2<Boolean, Row> tuple2) throws Exception {
 
 			Row row = tuple2.f1;
+			
+			logger.info("final look up data for trip :: "+new Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>((String) (row.getField(0)),
+					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
+					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)), (String) (row.getField(8)), (Long) (row.getField(9))));
+			
 			return new Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>((String) (row.getField(0)),
 					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
 					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)), (String) (row.getField(8)), (Long) (row.getField(9)));

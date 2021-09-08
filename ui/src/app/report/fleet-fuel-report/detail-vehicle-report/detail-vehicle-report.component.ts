@@ -894,8 +894,10 @@ createEndMarker(){
   public ngAfterViewInit() { }
 
   loadfleetFuelDetails(_vinData: any){
-    let _startTime = Util.convertDateToUtc(this.startDateValue);
-    let _endTime = Util.convertDateToUtc(this.endDateValue);
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    // let _startTime = Util.convertDateToUtc(this.startDateValue);
+    // let _endTime = Util.convertDateToUtc(this.endDateValue);
     let getFleetFuelObj = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
@@ -1215,9 +1217,13 @@ createEndMarker(){
       this.DurationChartType= 'Line';
     }
     // this.resetChartData(); // reset chart data
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+   
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+  
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
          _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
@@ -1801,9 +1807,10 @@ getLast3MonthDate(){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-
-    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
-    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
