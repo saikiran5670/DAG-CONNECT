@@ -23,6 +23,8 @@ public class Index extends net.atos.daf.ct2.pojo.standard.Index  implements Seri
     private String vin;
     private BigDecimal vFuelStopPrevVal;
     private Integer EvtId;
+    private Double averageSpeed;
+    private Long idleDuration;
     private List<net.atos.daf.ct2.pojo.standard.Index> indexList = new ArrayList<>();
     
 }

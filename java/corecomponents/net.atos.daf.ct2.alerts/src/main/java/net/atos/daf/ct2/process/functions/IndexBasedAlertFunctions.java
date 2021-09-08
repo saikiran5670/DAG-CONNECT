@@ -62,17 +62,20 @@ public class IndexBasedAlertFunctions implements Serializable {
     };
 
     public static AlertLambdaExecutor<Message, Target> excessiveAverageSpeedFun = (Message s) -> {
-        Index index = (Index) s.getPayload().get();
+    	net.atos.daf.ct2.models.Index idx = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+    	Index index=idx.getIndexList().get(0);
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveAverageSpeed");
         List<String> priorityList = Arrays.asList("C", "W", "A");
+       
         try {
+        	
             for (String priority : priorityList) {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                        if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
-                            logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, index.getVDist());
+                        if (idx.getAverageSpeed() > Double.valueOf(schema.getThresholdValue())) {
+                            logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), idx);
+                            return getTarget(index, schema, idx.getAverageSpeed());
                         }
                     }
                 }
@@ -84,7 +87,9 @@ public class IndexBasedAlertFunctions implements Serializable {
     };
     
     public static AlertLambdaExecutor<Message, Target> excessiveIdlingFun = (Message s) -> {
-        Index index = (Index) s.getPayload().get();
+    	net.atos.daf.ct2.models.Index idx = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+    	Index index=idx.getIndexList().get(0);
+    	
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveIdling");
         List<String> priorityList = Arrays.asList("C", "W", "A");
@@ -94,9 +99,9 @@ public class IndexBasedAlertFunctions implements Serializable {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                     	
-                        if (index.getVIdleDuration() > Double.valueOf(schema.getThresholdValue())) {
-                            logger.info("alert found excessiveIdling ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, convertDateToMillis(index.getEvtDateTime()));
+                        if (idx.getIdleDuration() > Double.valueOf(schema.getThresholdValue())) {
+                            logger.info("alert found excessiveIdling ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), idx);
+                            return getTarget(index, schema, idx.getIdleDuration());
                         }
                     }
                 }
@@ -190,7 +195,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveUnderUtilizationInHours");
-        List<String> priorityList = Arrays.asList("C", "W", "A");
+        List<String> priorityList = Arrays.asList("A", "W", "C");
         logger.info("Checking excessiveUnderUtilizationInHours for vin:: {}, threshold::{}",index.getVin(),urgencyLevelRefSchemas);
         try {
             for (String priority : priorityList) {
@@ -215,7 +220,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                                 long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - schema.getThresholdValue().longValue();
                                 long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
                                 if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
-                                    logger.info("alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
+                                    logger.info("Alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , urgency {} index {}", schema.getAlertType(), schema.getThresholdValue(), schema.getUrgencyLevelType(), index);
                                     return getTarget(index, schema, eventTimeInSeconds);
                                 }
                             }

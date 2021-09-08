@@ -133,7 +133,7 @@ public class JdbcFormatTableStream extends TableStream<Row> implements Serializa
                         new JoinFunction<VehicleAlertRefSchema, AlertUrgencyLevelRefSchema, Payload>() {
                             @Override
                             public Payload join(VehicleAlertRefSchema vehicleAlertRefSchema, AlertUrgencyLevelRefSchema alertUrgencyLevelRefSchema) throws Exception {
-                                logger.info("alert and vin joined from database entity :: {}",vehicleAlertRefSchema);
+                                logger.trace("alert and vin joined from database entity :: {}",vehicleAlertRefSchema);
                                 return Payload.builder().data(Optional.of(Tuple2.of(vehicleAlertRefSchema,alertUrgencyLevelRefSchema))).build();
                             }
                         }

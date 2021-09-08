@@ -99,23 +99,18 @@ public class UtilsTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
-        String gpsStartDateTime = "2021-09-07T08:55:39.555Z";
-//        String gpsEndDateTime   = "2021-03-29T12:49:47.000Z";
-//
-//        LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
-//        LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
-//        Duration duration = Duration.between(startTime, endTime);
+//        String gpsStartDateTime = "2021-09-07T09:48:39.000Z";
+
         String currentTime = Utils.convertMillisecondToDateTime(System.currentTimeMillis());
         System.out.println("current time : "+currentTime);
-        long custome = millisecondsToSeconds(System.currentTimeMillis());
-        long eventTimeInMillis = convertDateToMillis(gpsStartDateTime);
-        long eventTimeInSeconds = millisecondsToSeconds(eventTimeInMillis);
-        long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - 28800L;
-        long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
-        if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
+        String gpsStartDateTime = "2021-09-07T08:40:39.555Z";
+        long eventTimeInMillis = Utils.convertDateToMillis(gpsStartDateTime);
+        long eventTimeInSeconds = Utils.millisecondsToSeconds(eventTimeInMillis);
+        long fromTimeInSeconds = Utils.millisecondsToSeconds(System.currentTimeMillis()) - 28800L;
+        long endTimeInSeconds = Utils.millisecondsToSeconds(System.currentTimeMillis());
+        if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds) {
             System.out.println("Critical");
         }
-       
     }
 
     @Test

@@ -67,6 +67,14 @@ public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
 
+    /**
+     * RealTime functions defined
+     */
+    public static Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
+        put("functions", Arrays.asList(
+                excessiveUnderUtilizationInHoursFun
+        ));
+    }};
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -74,19 +82,6 @@ public class TripBasedTest implements Serializable {
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
-        /**
-         * RealTime functions defined
-         */
-        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
-            put("functions", Arrays.asList(
-            		fuelIncreaseDuringStopFun,
-                    fuelDecreaseDuringStopFun
-            ));
-        }};
-        
-     
-        
-      
         /**
          *  Booting cache
          */
@@ -96,31 +91,33 @@ public class TripBasedTest implements Serializable {
         AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
+
         SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);
 
-        /*SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
-                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
-                propertiesParamTool, env)
-        .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-        .returns(Index.class);*/
-        
-        
-
-        /**
-         * Excessive Fuel during stop
-         */
-        KeyedStream<Index, String> fuelDuringStopStream = indexStringStream
-        		.filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
-                .returns(Index.class)
+        long WindowTimeExcessiveUnderUtilization = Long.valueOf(propertiesParamTool.get("index.excessive.under.utilization.window.seconds","1800"));
+        WindowedStream<Index, String, TimeWindow> windowedExcessiveUnderUtilizationStream = indexStringStream
+                .assignTimestampsAndWatermarks(
+                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
+                            @Override
+                            public long extractTimestamp(Index index) {
+                                return convertDateToMillis(index.getEvtDateTime());
+                            }
+                        }
+                )
                 .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
-                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+                .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
+
+        KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
+                .process(new ExcessiveUnderUtilizationProcessor())
+                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
         /**
          * Process indexWindowKeyedStream for Excessive Under Utilization
          */
-        IndexMessageAlertService.processIndexKeyStream(fuelDuringStopStream,
-                env,propertiesParamTool,fuelDuringStopFunConfigMap);
+        IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
+                env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
+
 
         env.execute("TripBasedTest");
 

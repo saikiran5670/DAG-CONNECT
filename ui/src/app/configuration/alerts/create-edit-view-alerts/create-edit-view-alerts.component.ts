@@ -398,15 +398,15 @@ proceedStep(prefData: any, preference: any){
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);
     }
-    if(this.actionType != 'view'){
-      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
-    }
     
     //Render vehicle group and vehicle dropdowns based on alert type
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    this.getVehicleGroupsForAlertType(alertTypeObj);
-    this.getVehiclesForAlertType(alertTypeObj);
     this.alertTypeObject = alertTypeObj;
+    if(this.actionType != 'view'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+      this.getVehicleGroupsForAlertType(alertTypeObj);
+      this.getVehiclesForAlertType(alertTypeObj);
+    }
 
     
     //----------------------------------------------------------------------------------------------------------
