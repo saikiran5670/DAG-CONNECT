@@ -434,7 +434,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="stopTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm:ss' }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
           </ng-container>
