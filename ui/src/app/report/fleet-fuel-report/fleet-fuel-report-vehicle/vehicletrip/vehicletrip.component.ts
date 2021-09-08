@@ -333,11 +333,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Minutes'   
-      }      
+        }    
     }] 
     }
   };
@@ -375,11 +371,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'values()'   
-      }      
+        }   
     }] 
     }
   };
@@ -417,11 +409,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'meter'   
-      }      
+        }  
     }] 
     }
   };
@@ -459,11 +447,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'ltr'   
-      }      
+        }    
     }] 
     }
   };
@@ -501,11 +485,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'ton'   
-      }      
+        }  
     }] 
     }
   };
@@ -543,11 +523,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: ''   
-      }      
+        }    
     }] 
     }
   };
@@ -592,11 +568,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString:  'Number of Trips'
-      }      
+        }    
     }]
   }       
   };
@@ -631,15 +603,150 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Values (ltr)'  
-      }      
+        }    
     }]  
   }
   };
-
+  barChartOptions2= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ], xAxes: [{   
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },   
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }]  
+  }
+  };
+  barChartOptions4= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ], xAxes: [{   
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },   
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }]  
+  }
+  };
+  barChartOptions5= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ], xAxes: [{   
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },   
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }]  
+  }
+  };
+  barChartOptions1= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ], xAxes: [{   
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },   
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }]  
+  }
+  };
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData2: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData3: ChartDataSets[] = [{ data: [], label: '' },];
@@ -1564,7 +1671,19 @@ createEndMarker(){
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;   
     if(this.ConsumedChartType == 'Bar'){
-      this.barChartOptions3.scales.xAxes= [{ 
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
+      this.barChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data1    
+        }
+      }]; this.barChartOptions3.scales.xAxes= [{ 
           barThickness: 6,
           gridLines: {
             drawOnChartArea: false
@@ -1578,15 +1697,11 @@ createEndMarker(){
             displayFormats: {      
               day:  this.chartLabelDateFormat,            
              },             
-          },        
-        scaleLabel: {
-          display: true,
-          labelString:  'Values ()'
-        } 
+          }
       }]; 
     this.barChartData1= [
       { data: this.fuelConsumedChart,
-        label: 'Values ()',
+        label: data1,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1605,11 +1720,7 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString:  'Number of Trips'
-    } 
+      }
   }]; 
     this.barChartData2= [
       { data: this.barData,
@@ -1618,7 +1729,19 @@ createEndMarker(){
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.Co2ChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
+    let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+     this.barChartOptions4.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data2    
+      }
+    }]; this.barChartOptions4.scales.xAxes= [{ 
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
@@ -1632,20 +1755,29 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'
-    } 
+      }
   }]; 
     this.barChartData3= [
       { data: this.co2Chart,
-        label: 'Values ()',
+        label:data2,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DistanceChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
+    let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+    this.barChartOptions2.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data3    
+      }
+    }];
+     this.barChartOptions2.scales.xAxes= [{ 
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
@@ -1659,20 +1791,28 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'
-    } 
+      }
   }]; 
     this.barChartData4= [
       { data: this.distanceChart,
-        label: 'Values ()',
+        label: data3,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.DurationChartType == 'Bar'){
-    this.barChartOptions3.scales.xAxes= [{ 
+    this.barChartOptions1.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'Minutes'   
+      }
+    }];
+    this.barChartOptions1.scales.xAxes= [{ 
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
@@ -1686,20 +1826,29 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'
-    } 
+      }
   }]; 
-    this.barChartData5= [
+    this.barChartData6= [
       { data: this.fuelConsumptionChart,
-        label: 'Values ()',
+        label: 'Minutes',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  if(this.ConsumedChartType == 'Bar'){
-    this.barChartOptions.scales.xAxes= [{ 
+  if(this.ConsumptionChartType == 'Bar'){
+    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+    this.barChartOptions5.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data4   
+      }
+    }];
+     this.barChartOptions5.scales.xAxes= [{ 
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
@@ -1713,15 +1862,11 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: 'Values ()'
-    } 
+      }
   }]; 
-    this.barChartData6= [
+    this.barChartData5= [
       { data: this.idleDuration,
-        label: 'Values ()',
+        label: data4,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1752,11 +1897,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data1
-      } 
+        }
     }]; 
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
@@ -1772,19 +1913,14 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'No Of Trips'
-      } 
+        }
     }]; 
     this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-      let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
-      
-      this.lineChartOptions4.scales.yAxes= [{
+     let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+     this.lineChartOptions4.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
       type: 'linear',
@@ -1806,11 +1942,7 @@ createEndMarker(){
         displayFormats: {      
           day:  this.chartLabelDateFormat,            
          },             
-      },        
-    scaleLabel: {
-      display: true,
-      labelString: data2
-    } 
+      }
   }]; 
 
     this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
@@ -1840,11 +1972,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data3
-      } 
+        }
     }]; 
     this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
@@ -1873,16 +2001,24 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: data4
-      } 
+        }
     }]; 
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
     if(this.DurationChartType == 'Line')
     {
+      this.lineChartOptions1.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Minutes'   
+        }
+      }];
       this.lineChartOptions1.scales.xAxes= [{
         type:'time',
         time:
@@ -1893,11 +2029,7 @@ createEndMarker(){
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        },        
-      scaleLabel: {
-        display: true,
-        labelString: 'Minutes'
-      } 
+        }
     }]; 
     this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
