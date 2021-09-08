@@ -190,7 +190,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveUnderUtilizationInHours");
-        List<String> priorityList = Arrays.asList("C", "W", "A");
+        List<String> priorityList = Arrays.asList("A", "W", "C");
         logger.info("Checking excessiveUnderUtilizationInHours for vin:: {}, threshold::{}",index.getVin(),urgencyLevelRefSchemas);
         try {
             for (String priority : priorityList) {
@@ -215,7 +215,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                                 long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - schema.getThresholdValue().longValue();
                                 long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
                                 if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
-                                    logger.info("alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
+                                    logger.info("Alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , urgency {} index {}", schema.getAlertType(), schema.getThresholdValue(), schema.getUrgencyLevelType(), index);
                                     return getTarget(index, schema, eventTimeInSeconds);
                                 }
                             }
