@@ -51,8 +51,9 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                                FROM
                                                                    tripdetail.trip_statistics
                                                                WHERE
-                                                                   is_ongoing_trip = false AND (end_time_stamp BETWEEN @FromDate and @ToDate) AND  
-                                                        		vin=ANY(@Vins)
+                                                                   is_ongoing_trip = false 
+                                                  AND (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate)
+                                                  AND vin=ANY(@Vins)
                                                         	GROUP BY   vin, is_ongoing_trip 
                                                            )
                                                         SELECT
