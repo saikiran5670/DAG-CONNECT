@@ -22,6 +22,7 @@ public class ExcessiveAverageSpeedService extends ProcessWindowFunction<Index, I
 	public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
 			Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
 		try {
+
 			List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false).collect(Collectors.toList());
 			if (!indexList.isEmpty()) {
 				logger.info("list size :{}", indexList.size());
