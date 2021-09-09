@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                  		  , SUM(fuel_consumption)                                                  as fuel_consumption
+                                                  		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
                                                           , SUM(idle_duration) as idle_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
@@ -203,12 +203,12 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , count(trip_id)                                                         as numberoftrips
                                                		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                               		  , SUM(etl_gps_distance)                                              as veh_message_distance
+                                               		  , SUM(etl_gps_distance)                                                  as veh_message_distance
                                                		  , AVG(average_speed)                                                     as average_speed
                                                		  , MAX(max_speed)                                                         as max_speed
                                                		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                               		  , SUM(fuel_consumption)                                                  as fuel_consumption
+                                               		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
                                                		  , SUM(co2_emission)                                                      as co2_emission
                                                       , SUM(idle_duration) as idle_duration
                                                		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
@@ -309,20 +309,20 @@ namespace net.atos.daf.ct2.reports.repository
                         select
                         date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
                         count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
-						Count(distinct v.vin) as vehiclecount,
-						Count(distinct trip_id) as tripcount,
-                        sum(etl_gps_distance) as totaldistance,
-                        sum(idle_duration) as totalidleduration,
-						sum(fuel_consumption) as fuelconsumption,
-                        sum(etl_gps_fuel_consumed) as fuelconsumed,
-						sum(co2_emission) as co2emission						
+						Count(distinct v.vin)                               as vehiclecount,
+						Count(distinct trip_id)                             as tripcount,
+                        sum(etl_gps_distance)                               as totaldistance,
+                        sum(idle_duration)                                  as totalidleduration,
+						(sum(etl_gps_distance)/ sum(etl_gps_fuel_consumed)) as fuelconsumption,
+                        sum(etl_gps_fuel_consumed)                          as fuelconsumed,
+						sum(co2_emission)                                   as co2emission
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))
                         )
                         select
                         '' as VIN,
@@ -361,13 +361,13 @@ namespace net.atos.daf.ct2.reports.repository
                         select
                         date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
                         count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
-						Count(distinct v.vin) as vehiclecount,
-						Count(distinct trip_id) as tripcount,
-                        sum(etl_gps_distance) as totaldistance,
-                        sum(idle_duration) as totalidleduration,
-						sum(fuel_consumption) as fuelconsumption,
-                        sum(etl_gps_fuel_consumed) as fuelconsumed,
-						sum(co2_emission) as co2emission						
+						Count(distinct v.vin)                                   as vehiclecount,
+						Count(distinct trip_id)                                 as tripcount,
+                        sum(etl_gps_distance)                                   as totaldistance,
+                        sum(idle_duration)                                      as totalidleduration,
+						(sum(etl_gps_distance)/ sum(etl_gps_fuel_consumed))     as fuelconsumption,
+                        sum(etl_gps_fuel_consumed)                              as fuelconsumed,
+						sum(co2_emission)                                       as co2emission	
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin
@@ -376,7 +376,7 @@ namespace net.atos.daf.ct2.reports.repository
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))  
                         )
                         select
                         '' as VIN,
@@ -385,12 +385,12 @@ namespace net.atos.daf.ct2.reports.repository
                        	totalworkingdays,
 						vehiclecount,
                         tripcount as NumberofTrips,
-                        CAST((totaldistance / totalworkingdays) as float) as Distance,
-                        CAST((totalidleduration / totalworkingdays) as float) as IdleDuration ,
-                        CAST((fuelconsumption / totalworkingdays) as float) as FuelConsumtion ,
-                        CAST((co2emission / totalworkingdays) as float) as Co2Emission,
-                        CAST((fuelconsumed / totalworkingdays) as float) as FuelConsumed  
-                        --CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
+                        CAST((totaldistance / totalworkingdays) as float)                   as Distance,
+                        CAST((totalidleduration / totalworkingdays) as float)               as IdleDuration ,
+                        CAST((fuelconsumption / totalworkingdays) as float)                 as FuelConsumtion ,
+                        CAST((co2emission / totalworkingdays) as float)                     as Co2Emission,
+                        CAST((fuelconsumed / totalworkingdays) as float)                    as FuelConsumed  
+                        --CAST((totalaverageweightperprip / totalworkingdays) as float)     as Averageweight
                         from cte_workingdays";
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
