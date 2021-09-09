@@ -1124,7 +1124,7 @@ message LogbookDetails{
          double Latitude =14;
          double Longitude =15;
          string AlertGeolocationAddress =16;
-         int32 ThresholdValue =17;
+         double ThresholdValue =17;
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;

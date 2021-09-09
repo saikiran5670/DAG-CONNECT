@@ -39,14 +39,15 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                            (
                                                                SELECT
                                                                    vin
-                                                                 , is_ongoing_trip                                        as isongoingtrip
-                                                                 , SUM(co2_emission)                                      as co2emission
-                                                                 , SUM(etl_gps_distance)                                  as distance
-                                                                 , SUM(etl_gps_driving_time)                              as drivingtime
-                                                                 , SUM(fuel_consumption)                                  as fuelconsumption 
-                                                                 , SUM(etl_gps_fuel_consumed)                             as fuelconsumed
-                                                                 , SUM(idling_consumption)                                as idlingfuelconsumption
-                                                                 , SUM(idle_duration)                                     as idlingtime
+                                                                 , is_ongoing_trip            as isongoingtrip
+                                                                 , Round(SUM(co2_emission),2) as co2emission
+															     --,SUM(co2_emission)         as co2emission
+                                                                 , SUM(etl_gps_distance)      as distance
+                                                                 , SUM(etl_gps_driving_time)  as drivingtime
+                                                                 , SUM(fuel_consumption)      as fuelconsumption 
+                                                                 , SUM(etl_gps_fuel_consumed) as fuelconsumed
+                                                                 , SUM(idling_consumption)    as idlingfuelconsumption
+                                                                 , SUM(idle_duration)         as idlingtime
                                                                FROM
                                                                    tripdetail.trip_statistics
                                                                WHERE
@@ -56,8 +57,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                            )
                                                         SELECT
                                                             isongoingtrip
-                                                          , count(vin)			       as vehiclecount
-                                                          , Round(SUM(co2emission),2)                   as co2emission
+                                                          , count(vin)			                        as vehiclecount
+                                                          , sum(co2emission)                            as co2emission
                                                           , Round(SUM(distance),2)                      as distance
                                                           , Round(SUM(drivingtime),2)                   as drivingtime
                                                           , Round(SUM(idlingfuelconsumption),2)         as idlingfuelconsumption
