@@ -132,6 +132,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -170,6 +172,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize: 5,      
           beginAtZero:true
         },
         scaleLabel: {
@@ -363,6 +367,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize: 5,      
           beginAtZero:true
         },
         scaleLabel: {
@@ -399,6 +405,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -800,7 +808,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     } 
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+   this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
     });    
@@ -1076,6 +1084,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
       position: 'left',
       type: 'linear',
       ticks: {
+        steps: 10,
+        stepSize: 5,      
         beginAtZero:true
       },
       scaleLabel: {
@@ -1135,6 +1145,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
       position: 'left',
       type: 'linear',
       ticks: {
+        steps: 10,
+        stepSize:1,
         beginAtZero:true
       },
       scaleLabel: {
