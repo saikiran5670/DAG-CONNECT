@@ -85,38 +85,14 @@ public class TripBasedTest implements Serializable {
         /**
          *  Booting cache
          */
-        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
-        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
-
-        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
-        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
 
         SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);
 
-        long WindowTimeExcessiveUnderUtilization = Long.valueOf(propertiesParamTool.get("index.excessive.under.utilization.window.seconds","1800"));
-        WindowedStream<Index, String, TimeWindow> windowedExcessiveUnderUtilizationStream = indexStringStream
-                .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
-                            @Override
-                            public long extractTimestamp(Index index) {
-                                return convertDateToMillis(index.getEvtDateTime());
-                            }
-                        }
-                )
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
-                .window(TumblingEventTimeWindows.of(Time.seconds(WindowTimeExcessiveUnderUtilization)));
+        indexStringStream.print();
 
-        KeyedStream<Index, String> excessiveUnderUtilizationProcessStream = windowedExcessiveUnderUtilizationStream
-                .process(new ExcessiveUnderUtilizationProcessor())
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
-        /**
-         * Process indexWindowKeyedStream for Excessive Under Utilization
-         */
-        IndexMessageAlertService.processIndexKeyStream(excessiveUnderUtilizationProcessStream,
-                env,propertiesParamTool,excessiveUnderUtilizationFunConfigMap);
 
 
         env.execute("TripBasedTest");

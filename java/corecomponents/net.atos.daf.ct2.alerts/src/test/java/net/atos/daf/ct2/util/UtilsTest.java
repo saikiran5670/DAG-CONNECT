@@ -99,7 +99,7 @@ public class UtilsTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
         String gpsStartDateTime = "2021-03-28T12:00:00.000Z";
-        String gpsEndDateTime   = "2021-03-28T12:08:30.000Z";
+        String gpsEndDateTime   = "2021-03-28T22:08:30.000Z";
 
         LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
         LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
