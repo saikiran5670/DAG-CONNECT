@@ -32,8 +32,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly SessionHelper _sessionHelper;
         private readonly HeaderObj _userDetails;
         private static int _pkId = 1;
+        private readonly AuditHelper _auditHelper;
 
-        public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper)
+        public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AuditHelper auditHelper)
         {
             _pushNotofocationServiceClient = pushNotofocationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -45,6 +46,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             _httpContextAccessor = httpContextAccessor;
             _sessionHelper = sessionHelper;
             _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
+            _auditHelper = auditHelper;
         }
         public async Task NotifyAlert(string someTextFromClient)
         {
@@ -189,6 +191,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
                                 CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
                             };
+                            await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                       AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                       string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "ReadKafkaMessages", AlertConstants.NOTIFICATION_HUB_MSG), notificationAlertMessages.AlertId, notificationAlertMessages.AlertId, JsonConvert.SerializeObject(tripAlert),
+                       _userDetails);
                             // match session values with clientID & created by 
                             //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
                             IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == _userDetails.AccountId).Select(clients => clients.HubClientId).ToList();
@@ -200,13 +206,17 @@ namespace net.atos.daf.ct2.portalservice.hubs
             }
             catch (RpcException ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("Error in ReadKafkaMessages method", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                 AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
+                  _userDetails);
                 _ = ex.Message + test;
-                _logger.Error(null, ex);
+                _logger.Error("Error in ReadKafkaMessages method", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
         }
