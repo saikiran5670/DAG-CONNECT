@@ -7,11 +7,11 @@ import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 
 @Component({
-  selector: 'app-signalralertnotification',
-  templateUrl: './signalralertnotification.component.html',
-  styleUrls: ['./signalralertnotification.component.less']
+  selector: 'app-signalr-alert-notification',
+  templateUrl: './signalr-alert-notification.component.html',
+  styleUrls: ['./signalr-alert-notification.component.less']
 })
-export class SignalralertnotificationComponent implements OnInit {
+export class SignalrAlertNotificationComponent implements OnInit {
 notificationData: any = [
   {
     icons:'unarchive',
