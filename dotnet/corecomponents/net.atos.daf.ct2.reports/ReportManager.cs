@@ -742,8 +742,8 @@ namespace net.atos.daf.ct2.reports
             if (fuelConsumptionCalculation != null)
             {
                 var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
-                fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
-                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+                fuelBenchmarkDetails.NumberOfActiveVehicles = vehicleRanking.Count();
+                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
                 fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
                 fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
                 fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;

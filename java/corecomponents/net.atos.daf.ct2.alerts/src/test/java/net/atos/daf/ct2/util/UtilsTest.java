@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.TUESDAY;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
-import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
-import static net.atos.daf.ct2.util.Utils.millisecondsToSeconds;
+import static net.atos.daf.ct2.util.Utils.*;
 import static org.junit.Assert.*;
 
 public class UtilsTest {
@@ -99,9 +98,21 @@ public class UtilsTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
-//        String gpsStartDateTime = "2021-09-07T09:48:39.000Z";
+        String gpsStartDateTime = "2021-03-28T12:00:00.000Z";
+        String gpsEndDateTime   = "2021-03-28T12:08:30.000Z";
 
-        String currentTime = Utils.convertMillisecondToDateTime(System.currentTimeMillis());
+        LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
+        LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
+        Duration duration = Duration.between(startTime, endTime);
+
+        long diffBetweenDatesInSeconds = timeDiffBetweenDates(gpsStartDateTime, gpsEndDateTime);
+        long diffSeconds = diffBetweenDatesInSeconds - 0;
+        System.out.println(diffSeconds);
+        if (diffSeconds > 28800) {
+            System.out.println("Alert found");
+        }
+
+       /* String currentTime = Utils.convertMillisecondToDateTime(System.currentTimeMillis());
         System.out.println("current time : "+currentTime);
         String gpsStartDateTime = "2021-09-07T08:40:39.555Z";
         long eventTimeInMillis = Utils.convertDateToMillis(gpsStartDateTime);
@@ -110,7 +121,7 @@ public class UtilsTest {
         long endTimeInSeconds = Utils.millisecondsToSeconds(System.currentTimeMillis());
         if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds) {
             System.out.println("Critical");
-        }
+        }*/
     }
 
     @Test
