@@ -19,7 +19,7 @@ using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -104,8 +104,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 {
                     AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
                     {
-                        AccountId = 187,// _userDetails.AccountId,
-                        OrganizationId = 36,//_userDetails.OrgId,
+                        AccountId = _userDetails.AccountId,
+                        OrganizationId = _userDetails.OrgId,
                         HubClientId = Context.ConnectionId
                     };
                     _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
@@ -116,6 +116,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             catch (Exception err)
             {
                 Console.WriteLine(err.StackTrace);
+                _logger.Error("Error in OnConnectedAsync method", err);
             }
         }
         public override async Task OnDisconnectedAsync(Exception ex)
@@ -138,6 +139,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             catch (Exception err)
             {
                 Console.WriteLine(err.StackTrace);
+                _logger.Error("Error in OnDisconnectedAsync method", err);
             }
         }
         public async Task ReadKafkaMessages(string test)
@@ -197,7 +199,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                        _userDetails);
                             // match session values with clientID & created by 
                             //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
-                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == _userDetails.AccountId).Select(clients => clients.HubClientId).ToList();
+                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                             await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
 
                         }
@@ -217,84 +219,6 @@ namespace net.atos.daf.ct2.portalservice.hubs
                   _userDetails);
                 _ = ex.Message + test;
                 _logger.Error("Error in ReadKafkaMessages method", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
-            }
-        }
-        public async Task GetMessages(string someTextFromClient)
-        {
-            try
-            {
-                while (true)
-                {
-                    Thread.Sleep(2000);
-
-                    confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
-                    {
-                        BrokerList = _kafkaConfiguration.EH_FQDN,
-                        ConnString = _kafkaConfiguration.EH_CONNECTION_STRING,
-                        Topic = _kafkaConfiguration.EH_NAME,
-                        Cacertlocation = _kafkaConfiguration.CA_CERT_LOCATION,
-                        Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
-                    };
-                    //Pushing message to kafka topic
-                    ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
-                    TripAlert tripAlert = new TripAlert();
-                    if (response != null)
-                    {
-                        Console.WriteLine(response.Message.Value);
-                        tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
-                        tripAlert.LandmarkName = this.Context.ConnectionId;
-                        tripAlert.ModifiedAt = _userDetails.AccountId;
-                        tripAlert.LandmarkThresholdValueUnitType = _userDetails.OrgId.ToString();
-
-                        if (tripAlert != null && tripAlert.Alertid > 0)
-                        {
-                            AlertMesssageProp alertMesssageProp = new AlertMesssageProp();
-                            alertMesssageProp.VIN = tripAlert.Vin;
-                            alertMesssageProp.AlertId = tripAlert.Alertid;
-                            AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
-
-                            NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
-                            {
-                                TripAlertId = tripAlert.Id,
-                                TripId = tripAlert.Tripid,
-                                Vin = tripAlert.Vin,
-                                AlertCategory = tripAlert.CategoryType,
-                                AlertType = tripAlert.Type,
-                                AlertId = tripAlert.Alertid,
-                                AlertGeneratedTime = tripAlert.AlertGeneratedTime,
-                                VehicleGroupId = objAlertVehicleDetails.VehicleGroupId,
-                                VehicleGroupName = objAlertVehicleDetails.VehicleGroupName,
-                                VehicleName = objAlertVehicleDetails.VehicleName,
-                                VehicleLicencePlate = objAlertVehicleDetails.VehicleRegNo,
-                                AlertCategoryKey = tripAlert.AlertCategoryKey,
-                                AlertTypeKey = tripAlert.AlertTypeKey,
-                                UrgencyTypeKey = tripAlert.UrgencyTypeKey,
-                                UrgencyLevel = tripAlert.UrgencyLevelType
-                            };
-                            // match session values with clientID & created by 
-                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == tripAlert.CreatedAt && pre.AccountId == _userDetails.AccountId).Select(clients => clients.HubClientId).ToList();
-                            await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
-                        }
-                    }
-                    if (_pkId > 1000)
-                    {
-                        _pkId = 1;
-                    }
-                    _pkId++;
-
-                }
-
-            }
-            catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
-            {
-                _logger.Error(null, ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _ = ex.Message + someTextFromClient;
-                _logger.Error(null, ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
         }
