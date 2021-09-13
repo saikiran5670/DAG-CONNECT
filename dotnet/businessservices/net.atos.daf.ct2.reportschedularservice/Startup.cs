@@ -20,6 +20,8 @@ using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 
 namespace net.atos.daf.ct2.reportschedulerservice
 {
@@ -46,9 +48,14 @@ namespace net.atos.daf.ct2.reportschedulerservice
             }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
+            });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.AddTransient<IReportSchedulerManager, ReportSchedulerManager>();
             services.AddTransient<IReportSchedulerRepository, ReportSchedulerRepository>();
@@ -60,6 +67,8 @@ namespace net.atos.daf.ct2.reportschedulerservice
             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -50,6 +51,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetReportSchedulerParameter", 1, 2, Convert.ToString(accountId),
                   _userDetails);
+
                 ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
 
                 if (response == null)
@@ -80,7 +82,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
                 request.OrganizationId = GetContextOrgId();
                 if (request.ScheduledReportVehicleRef.Count > 0)
                 {
@@ -89,7 +90,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         var scheduledReportVehicleRef = request.ScheduledReportVehicleRef;
                         request.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
-                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId });
+
+                        Metadata headers = new Metadata();
+                        headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId }, headers);
                         if (vehicleandVehicleGroupId.VehicleIdList.Count > 0)
                         {
                             foreach (var item in vehicleandVehicleGroupId.VehicleIdList)

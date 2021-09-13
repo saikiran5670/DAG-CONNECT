@@ -8,6 +8,8 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportservice.Services;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 
@@ -37,19 +39,21 @@ namespace net.atos.daf.ct2.reportservice
 
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            string DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.AddTransient<IReportManager, ReportManager>();
             services.AddTransient<IReportRepository, ReportRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
             services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
