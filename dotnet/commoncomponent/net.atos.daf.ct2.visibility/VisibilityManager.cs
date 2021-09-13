@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.visibility
                 vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
 
-            return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray());
+            return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray(), accountId);
         }
 
         public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
