@@ -139,7 +139,7 @@ public class IndexBasedAlertFunctions implements Serializable {
     						//1 when fuelIncreaseDiff > threshold
     						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
     							logger.info("Raising alert for fuelIncreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelIncreaseDiff,schema.getThresholdValue());
-    							return getTarget(index, schema, fuelIncreaseDiff);
+    							return getTarget(originalIdxMsg, schema, fuelIncreaseDiff);
     						}
     					}
                     }
@@ -179,7 +179,7 @@ public class IndexBasedAlertFunctions implements Serializable {
     						//1 when fuelIncreaseDiff > threshold
     						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
     							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
-    							return getTarget(index, schema, fuelDecreaseDiff);
+    							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
     						}
     					}
                     }

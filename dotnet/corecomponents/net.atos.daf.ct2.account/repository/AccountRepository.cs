@@ -977,7 +977,7 @@ namespace net.atos.daf.ct2.account
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
                                                 WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and om.owner_org_id=@organization_id and lower(ors.code)='owner'
+                                                      and om.owner_org_id=@organization_id and lower(os.code)='owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,

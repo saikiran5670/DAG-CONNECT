@@ -135,6 +135,7 @@ export class TranslationDataUploadComponent implements OnInit {
   } 
 
   uploadTranslationData(){ 
+    this.showLoadingIndicator=true;
     let languageData = [];
     //TODO : Read file, parse into JSON and send to API
     this.filelist.forEach(element => {
@@ -165,8 +166,9 @@ export class TranslationDataUploadComponent implements OnInit {
         this.updatedCount= data["translationupload"].updated;
         this.loadInitData();
       }
+      this.showLoadingIndicator=false;
     }, (error) => {
-      
+      this.showLoadingIndicator=false;
     });
     
     
