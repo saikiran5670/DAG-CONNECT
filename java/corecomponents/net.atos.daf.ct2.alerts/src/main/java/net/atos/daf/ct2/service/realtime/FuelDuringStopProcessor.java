@@ -37,7 +37,7 @@ public class FuelDuringStopProcessor extends ProcessFunction<Index, Index> imple
 			    net.atos.daf.ct2.models.Index index1 = new net.atos.daf.ct2.models.Index();
 			    index1.setVid(index.getVid());
 			    index1.setVin(index.getVin());
-			    index1.setVEvtID(index.getVEvtID());
+			    index1.setEvtId(index.getVEvtID());
 			    index1.setVFuelStopPrevVal(fuelPrevState);
 			    index1.getIndexList().add(index);
 			    if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){

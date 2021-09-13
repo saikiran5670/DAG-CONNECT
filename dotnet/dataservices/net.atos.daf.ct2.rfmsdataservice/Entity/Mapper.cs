@@ -31,10 +31,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 Entity.TachoDriverIdentification tachoDriverIdentification = new Entity.TachoDriverIdentification()
                 {
                     DriverIdentification = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverIdentification,
-                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState,
-                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex,
+                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState ?? string.Empty,
+                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex ?? string.Empty,
                     CardReplacementIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardReplacementIndex,
-                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment
+                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment ?? string.Empty
                 };
 
                 Entity.OemDriverIdentification oemDriverIdentification = new Entity.OemDriverIdentification()
