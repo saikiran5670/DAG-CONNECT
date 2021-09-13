@@ -12,7 +12,7 @@ namespace SignalRClient
             try
             {
                 var connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:5001/NotificationHub")
+                .WithUrl("https://localhost:44300/NotificationHub")
                 .Build();
 
                 //var connection = new HubConnectionBuilder()

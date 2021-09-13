@@ -98,6 +98,10 @@ namespace net.atos.daf.ct2.utilities
             {
                 sConverteddateTime = dtzone.ToString("yyyy-MM-ddTHH:mm:ss.fffz");
             }
+            else if (dateformat == "yyyy-MM-ddThh:mm:ss.fffZ")  //2021-04-26T05:44:42.341+0
+            {
+                sConverteddateTime = dtzone.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            }
             else
             {
                 sConverteddateTime = dtzone.ToString();

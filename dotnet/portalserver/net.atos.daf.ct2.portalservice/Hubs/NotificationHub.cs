@@ -43,7 +43,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new Entity.KafkaConfiguration();
-            configuration.Bind(_podComsumerGroupMapSettings);
+            //configuration.Bind(_podComsumerGroupMapSettings);
+            _podComsumerGroupMapSettings.PodConsumerGroupMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(configuration["PodConsumerGroupMap"]);
             configuration.GetSection("PushAlertKafkaConfiguration").Bind(_kafkaConfiguration);
             _kafkaConfiguration.CONSUMER_GROUP = GetConsumerGroupFmHostName(_podComsumerGroupMapSettings.PodConsumerGroupMap, Dns.GetHostName().ToLower());
             _mapper = new Entity.Alert.Mapper();

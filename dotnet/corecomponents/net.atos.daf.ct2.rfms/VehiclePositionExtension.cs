@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.rfms
         {
             rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(thresholdValue).ToList();
             string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
-            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime;//.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
             if (!rfmsVehiclePosition.MoreDataAvailable)
             {
                 rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?LatestOnly=true&lastVin=" + lastVin;
@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.rfms
         {
             rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(thresholdValue).ToList();
             string lastVin = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().Vin;
-            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime;//.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
             rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
             rfmsVehiclePosition.MoreDataAvailable = true;
         }
