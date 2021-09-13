@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
+using net.atos.daf.ct2.portalservice.Entity.Hub;
 using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.portalservice.hubs
@@ -33,21 +35,44 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly HeaderObj _userDetails;
         private static int _pkId = 1;
         private readonly AuditHelper _auditHelper;
-
+        private readonly PodConsumerGroupMapSettings _podComsumerGroupMapSettings = new PodConsumerGroupMapSettings();
         public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AuditHelper auditHelper)
         {
+            _auditHelper = auditHelper;
             _pushNotofocationServiceClient = pushNotofocationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new Entity.KafkaConfiguration();
+            //configuration.Bind(_podComsumerGroupMapSettings);
+            _podComsumerGroupMapSettings.PodConsumerGroupMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(configuration["PodConsumerGroupMap"]);
             configuration.GetSection("PushAlertKafkaConfiguration").Bind(_kafkaConfiguration);
+            _kafkaConfiguration.CONSUMER_GROUP = GetConsumerGroupFmHostName(_podComsumerGroupMapSettings.PodConsumerGroupMap, Dns.GetHostName().ToLower());
             _mapper = new Entity.Alert.Mapper();
             _accountSignalRClientsMappingList = accountSignalRClientsMappingList;
             _httpContextAccessor = httpContextAccessor;
             _sessionHelper = sessionHelper;
             _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
-            _auditHelper = auditHelper;
         }
+
+        private string GetConsumerGroupFmHostName(Dictionary<string, string> podConsumerGroupMap, string hostName)
+        {
+            string consumerGroup = string.Empty;
+            try
+            {
+                _ = _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", "ex.message"), 0, 0, JsonConvert.SerializeObject(podConsumerGroupMap),
+                 new HeaderObj { AccountId = 1, OrgId = 2, AccountEmailId = "test", RoleId = 3, ContextOrgId = 4 }).Result;
+                consumerGroup = podConsumerGroupMap.Where(w => w.Key.ToLower() == hostName).FirstOrDefault().Value;
+                if (string.IsNullOrEmpty(consumerGroup)) _logger.Error($"Error in GetCusumerGroupFmHostName - {hostName} not found in disctionory");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error in GetCusumerGroupFmHostName", ex);
+            }
+            return consumerGroup;
+        }
+
         public async Task NotifyAlert(string someTextFromClient)
         {
             try
@@ -57,7 +82,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
                     {
                         TripAlertId = _pkId,
-                        TripId = Convert.ToString(Guid.NewGuid()),
+                        TripId = Dns.GetHostName() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
                         Vin = "XLR0998HGFFT76657",
                         AlertCategory = "L",
                         AlertType = "G",
@@ -86,13 +111,13 @@ namespace net.atos.daf.ct2.portalservice.hubs
             }
             catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
             {
-                _logger.Error(null, ex);
+                _logger.Error("Error in NotifyAlert.RpcException", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
             catch (Exception ex)
             {
                 _ = ex.Message + someTextFromClient;
-                _logger.Error(null, ex);
+                _logger.Error("Error in NotifyAlert", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
         }

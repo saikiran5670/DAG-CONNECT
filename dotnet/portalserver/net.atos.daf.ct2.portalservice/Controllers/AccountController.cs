@@ -1949,5 +1949,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname2")]
+        public async Task<IActionResult> GetHostName2()
+        {
+            return Ok("testing");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname")]
+        public async Task<IActionResult> GetHostName()
+        {
+            _logger.Error("gethostname started");
+            return Ok(Dns.GetHostName().ToLower());
+        }
     }
 }
