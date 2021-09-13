@@ -481,9 +481,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "Please provide organization ID.");
                 }
 
-                //Context org is not required here
+                //Context org id is not required here
                 //idRequest.Id = GetContextOrgId();
 
+                idRequest.Id = organizationId;
                 OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
 
                 return Ok(orgResponse);

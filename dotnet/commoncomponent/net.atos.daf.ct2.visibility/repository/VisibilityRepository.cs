@@ -459,14 +459,19 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetails(int[] vehicleIds)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetails(int[] vehicleIds, int accountId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@VehicleIds", vehicleIds);
+                parameter.Add("@AccountId", accountId);
 
-                var queryStatement = @"SELECT DISTINCT v.id as VehicleId, v.name as VehicleName, vin as Vin, license_plate_number as RegistrationNo, grp.id as VehicleGroupId, grp.group_type as GroupType
+                var queryStatement = @"SELECT DISTINCT @AccountId as AccountId, v.id as VehicleId, v.name as VehicleName, vin as Vin, license_plate_number as RegistrationNo, 
+                                            grp.id as VehicleGroupId, grp.group_type as GroupType,
+                                            object_type as ObjectType, v.organization_id as OrganizationId,
+		                                    case when function_enum is null then '' else function_enum end as FunctionEnum,
+                                            case when grp.name is null or group_type = 'S' then '' else grp.name end as VehicleGroupName
                                     FROM master.vehicle v
                                     LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                                     INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V'
