@@ -266,7 +266,7 @@ export class CurrentFleetComponent implements OnInit {
       "healthStatus": ["all"],
       "otherFilter": ["all"],
       "driverId": ["all"],
-      "days": 90,
+      "days": 0,
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {

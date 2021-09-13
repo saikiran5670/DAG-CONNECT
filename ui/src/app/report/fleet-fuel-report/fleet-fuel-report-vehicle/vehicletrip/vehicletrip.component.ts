@@ -316,6 +316,8 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -333,7 +335,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }    
+        }   
     }] 
     }
   };
@@ -354,11 +356,13 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize: 5,
           beginAtZero:true
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'No of Trips'    
         }
       }],
       xAxes: [{       
@@ -396,7 +400,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'meter'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
         }
       }],
       xAxes: [{       
@@ -409,7 +413,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }  
+        }   
     }] 
     }
   };
@@ -434,7 +438,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'ltr'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'    
         }
       }],
       xAxes: [{       
@@ -447,7 +451,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }    
+        }  
     }] 
     }
   };
@@ -472,10 +476,10 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'ton'    
+          labelString: 'Ton'    
         }
       }],
-      xAxes: [{       
+       xAxes: [{       
         type:'time',
         time:
         {
@@ -485,7 +489,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }  
+        }    
     }] 
     }
   };
@@ -510,10 +514,10 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: ''    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
         }
       }],
-      xAxes: [{       
+       xAxes: [{       
         type:'time',
         time:
         {
@@ -523,7 +527,7 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }    
+        }  
     }] 
     }
   };
@@ -538,7 +542,77 @@ tripTraceArray: any = [];
   lineChartType = 'line';
   barChartOptions= {
     responsive: true,
-    legend: {
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {    
+          steps: 10,
+          stepSize: 5,      
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Number of Trips'    
+        }}
+      ],
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }] 
+    },
+  };
+  barChartOptions1= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize:1,
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes'       
+        }}
+      ],
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }   
+    }] 
+    },
+  };
+  barChartOptions2= {
+    responsive: true,
+      legend: {
       position: 'bottom',
     },
     scales: {
@@ -551,14 +625,11 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Number of Trips'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  
         }}
       ],
-      xAxes: [{   
+      xAxes: [{
         barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
         type:'time',
         time:
         {
@@ -569,8 +640,74 @@ tripTraceArray: any = [];
             day:  this.chartLabelDateFormat,            
            },             
         }    
-    }]
-  }       
+    }] 
+    },
+  };
+  barChartOptions4= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Ton'    
+        }}
+      ],
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }    
+    }] 
+    },
+  };
+  barChartOptions5= {
+    responsive: true,
+      legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+            beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,           
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
+        }}
+      ],
+      xAxes: [{
+        barThickness: 6,
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }   
+    }] 
+    },
   };
   barChartOptions3= {
     responsive: true,
@@ -587,13 +724,11 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Values (ltr)'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon' 
         }}
-      ], xAxes: [{   
+      ],    
+      xAxes: [{
         barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
         type:'time',
         time:
         {
@@ -603,149 +738,9 @@ tripTraceArray: any = [];
           displayFormats: {      
             day:  this.chartLabelDateFormat,            
            },             
-        }    
-    }]  
-  }
-  };
-  barChartOptions2= {
-    responsive: true,
-    legend: {
-      position: 'bottom',
-    },
-    scales: {
-      yAxes: [{
-        id: "y-axis-1",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          beginAtZero:true
-        },
-        scaleLabel: {
-          display: true,
-          labelString: 'Values (ltr)'    
-        }}
-      ], xAxes: [{   
-        barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
-        type:'time',
-        time:
-        {
-          tooltipFormat:  this.chartLabelDateFormat,
-          unit: 'day',
-          stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }]  
-  }
-  };
-  barChartOptions4= {
-    responsive: true,
-    legend: {
-      position: 'bottom',
-    },
-    scales: {
-      yAxes: [{
-        id: "y-axis-1",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          beginAtZero:true
-        },
-        scaleLabel: {
-          display: true,
-          labelString: 'Values (ltr)'    
-        }}
-      ], xAxes: [{   
-        barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
-        type:'time',
-        time:
-        {
-          tooltipFormat:  this.chartLabelDateFormat,
-          unit: 'day',
-          stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }]  
-  }
-  };
-  barChartOptions5= {
-    responsive: true,
-    legend: {
-      position: 'bottom',
-    },
-    scales: {
-      yAxes: [{
-        id: "y-axis-1",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          beginAtZero:true
-        },
-        scaleLabel: {
-          display: true,
-          labelString: 'Values (ltr)'    
-        }}
-      ], xAxes: [{   
-        barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
-        type:'time',
-        time:
-        {
-          tooltipFormat:  this.chartLabelDateFormat,
-          unit: 'day',
-          stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }]  
-  }
-  };
-  barChartOptions1= {
-    responsive: true,
-    legend: {
-      position: 'bottom',
-    },
-    scales: {
-      yAxes: [{
-        id: "y-axis-1",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          beginAtZero:true
-        },
-        scaleLabel: {
-          display: true,
-          labelString: 'Values (ltr)'    
-        }}
-      ], xAxes: [{   
-        barThickness: 6,
-        gridLines: {
-          drawOnChartArea: false
-        },   
-        type:'time',
-        time:
-        {
-          tooltipFormat:  this.chartLabelDateFormat,
-          unit: 'day',
-          stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }]  
-  }
+        }  
+    }]      
+    }
   };
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData2: ChartDataSets[] = [{ data: [], label: '' },];
@@ -1684,10 +1679,7 @@ createEndMarker(){
           labelString: data1    
         }
       }]; this.barChartOptions3.scales.xAxes= [{ 
-          barThickness: 6,
-          gridLines: {
-            drawOnChartArea: false
-          },   
+          barThickness: 6,            
           type:'time',
           time:
           {
@@ -1707,10 +1699,7 @@ createEndMarker(){
   }
   if(this.TripsChartType == 'Bar'){
     this.barChartOptions.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },   
+      barThickness: 6,      
       type:'time',
       time:
       {
@@ -1742,10 +1731,7 @@ createEndMarker(){
         labelString: data2    
       }
     }]; this.barChartOptions4.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },   
+      barThickness: 6,    
       type:'time',
       time:
       {
@@ -1778,10 +1764,7 @@ createEndMarker(){
       }
     }];
      this.barChartOptions2.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },   
+      barThickness: 6,     
       type:'time',
       time:
       {
@@ -1805,6 +1788,8 @@ createEndMarker(){
       position: 'left',
       type: 'linear',
       ticks: {
+        steps: 10,
+        stepSize:1,
         beginAtZero:true
       },
       scaleLabel: {
@@ -1813,10 +1798,7 @@ createEndMarker(){
       }
     }];
     this.barChartOptions1.scales.xAxes= [{ 
-      barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },   
+      barThickness: 6,       
       type:'time',
       time:
       {
@@ -1850,9 +1832,6 @@ createEndMarker(){
     }];
      this.barChartOptions5.scales.xAxes= [{ 
       barThickness: 6,
-      gridLines: {
-        drawOnChartArea: false
-      },   
       type:'time',
       time:
       {
@@ -2012,6 +1991,8 @@ createEndMarker(){
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {

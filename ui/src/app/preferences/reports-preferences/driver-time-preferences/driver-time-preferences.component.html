@@ -56,7 +56,7 @@
                 (change)='$event ? selectionForAllDriver.toggle(allDriverTableData[4]) : null; allDriverCheckboxClicked($event, allDriverTableData[4])'
                 [checked]="selectionForAllDriver.isSelected(allDriverTableData[4])"
                 [aria-label]='checkboxLabelForColumns(allDriverTableData[4])' class='custom-checkbox'><span>{{
-                    allDriverTableData.length > 0 ? allDriverTableData[4].translatedName : 'Drive Time' }}</span>
+                    allDriverTableData.length > 0 ? allDriverTableData[4].translatedName : 'Drive Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
@@ -64,7 +64,7 @@
                 (change)='$event ? selectionForAllDriver.toggle(allDriverTableData[5]) : null; allDriverCheckboxClicked($event, allDriverTableData[5])'
                 [checked]="selectionForAllDriver.isSelected(allDriverTableData[5])"
                 [aria-label]='checkboxLabelForColumns(allDriverTableData[5])' class='custom-checkbox'><span>{{
-                    allDriverTableData.length > 0 ? allDriverTableData[5].translatedName : 'Work Time' }}</span>
+                    allDriverTableData.length > 0 ? allDriverTableData[5].translatedName : 'Work Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
     </div>
@@ -74,7 +74,7 @@
                 (change)='$event ? selectionForAllDriver.toggle(allDriverTableData[6]) : null; allDriverCheckboxClicked($event, allDriverTableData[6])'
                 [checked]="selectionForAllDriver.isSelected(allDriverTableData[6])"
                 [aria-label]='checkboxLabelForColumns(allDriverTableData[6])' class='custom-checkbox'><span>{{
-                    allDriverTableData.length > 0 ? allDriverTableData[6].translatedName : 'Available Time' }}</span>
+                    allDriverTableData.length > 0 ? allDriverTableData[6].translatedName : 'Available Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
@@ -82,7 +82,7 @@
                 (change)='$event ? selectionForAllDriver.toggle(allDriverTableData[7]) : null; allDriverCheckboxClicked($event, allDriverTableData[7])'
                 [checked]="selectionForAllDriver.isSelected(allDriverTableData[7])"
                 [aria-label]='checkboxLabelForColumns(allDriverTableData[7])' class='custom-checkbox'><span>{{
-                    allDriverTableData.length > 0 ? allDriverTableData[7].translatedName : 'Rest Time' }}</span>
+                    allDriverTableData.length > 0 ? allDriverTableData[7].translatedName : 'Rest Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
@@ -90,7 +90,7 @@
                 (change)='$event ? selectionForAllDriver.toggle(allDriverTableData[8]) : null; allDriverCheckboxClicked($event, allDriverTableData[8])'
                 [checked]="selectionForAllDriver.isSelected(allDriverTableData[8])"
                 [aria-label]='checkboxLabelForColumns(allDriverTableData[8])' class='custom-checkbox'><span>{{
-                    allDriverTableData.length > 0 ? allDriverTableData[8].translatedName : 'Service Time' }}</span>
+                    allDriverTableData.length > 0 ? allDriverTableData[8].translatedName : 'Service Time (hh:mm)' }}</span>
             </mat-checkbox> 
         </div>
     </div>
@@ -156,7 +156,7 @@
                 (change)='$event ? selectionForDriver.toggle(specificDriverData[1]) : null; checkboxClicked($event, specificDriverData[1])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[1])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[1])' class='custom-checkbox'><span>{{
-                    specificDriverData.length > 0 ? specificDriverData[1].translatedName : 'Drive Time' }}</span>
+                    specificDriverData.length > 0 ? specificDriverData[1].translatedName : 'Drive Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
     </div>
@@ -166,7 +166,7 @@
                 (change)='$event ? selectionForDriver.toggle(specificDriverData[2]) : null; checkboxClicked($event, specificDriverData[2])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[2])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[2])' class='custom-checkbox'><span>{{
-                    specificDriverData.length > 0 ? specificDriverData[2].translatedName : 'Work Time' }}</span>
+                    specificDriverData.length > 0 ? specificDriverData[2].translatedName : 'Work Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
@@ -174,7 +174,7 @@
                 (change)='$event ? selectionForDriver.toggle(specificDriverData[3]) : null; checkboxClicked($event, specificDriverData[3])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[3])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[3])' class='custom-checkbox'><span>{{
-                    specificDriverData.length > 0 ? specificDriverData[3].translatedName : 'Available Time' }}</span>
+                    specificDriverData.length > 0 ? specificDriverData[3].translatedName : 'Available Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
     </div>
@@ -184,7 +184,7 @@
                 (change)='$event ? selectionForDriver.toggle(specificDriverData[4]) : null; checkboxClicked($event, specificDriverData[4])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[4])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[4])' class='custom-checkbox'><span>{{
-                    specificDriverData.length > 0 ? specificDriverData[4].translatedName : 'Rest Time' }}</span>
+                    specificDriverData.length > 0 ? specificDriverData[4].translatedName : 'Rest Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
@@ -192,7 +192,7 @@
                 (change)='$event ? selectionForDriver.toggle(specificDriverData[5]) : null; checkboxClicked($event, specificDriverData[5])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[5])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[5])' class='custom-checkbox'><span>{{
-                    specificDriverData.length > 0 ? specificDriverData[5].translatedName : 'Service Time' }}</span>
+                    specificDriverData.length > 0 ? specificDriverData[5].translatedName : 'Service Time (hh:mm)' }}</span>
             </mat-checkbox>
         </div>
     </div>

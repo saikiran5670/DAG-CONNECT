@@ -91,6 +91,7 @@ export class DriverTimePreferencesComponent implements OnInit {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
+            let txt: any;
             if(item.key.includes('rp_dtm_report_chart_')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
@@ -99,17 +100,19 @@ export class DriverTimePreferencesComponent implements OnInit {
               }
               this.chartData.push(_data);
             }else if(item.key.includes('rp_dtm_report_alldetails_')){
-              if(this.translationData[item.key]){
-                _data.translatedName = this.translationData[item.key];  
+              if(item.key == 'rp_dtm_report_alldetails_drivetime' || item.key == 'rp_dtm_report_alldetails_worktime' || item.key == 'rp_dtm_report_alldetails_availabletime' || item.key == 'rp_dtm_report_alldetails_resttime' || item.key == 'rp_dtm_report_alldetails_servicetime'){
+                txt = this.translationData.lblhhmm || 'hh:mm';
+                _data.translatedName = this.getTranslatedValues(item, 18, txt);
               }else{
-                _data.translatedName = this.getName(item.name, 18);   
+                _data.translatedName = this.getTranslatedValues(item, 18);
               }
               this.allDriverTableData.push(_data);
             }else if(item.key.includes('rp_dtm_report_bydriver_')){
-              if(this.translationData[item.key]){
-                _data.translatedName = this.translationData[item.key];  
+              if(item.key == 'rp_dtm_report_bydriver_drivetime' || item.key == 'rp_dtm_report_bydriver_worktime' || item.key == 'rp_dtm_report_bydriver_availabletime' || item.key == 'rp_dtm_report_bydriver_resttime' || item.key == 'rp_dtm_report_bydriver_servicetime'){
+                txt = this.translationData.lblhhmm || 'hh:mm';
+                _data.translatedName = this.getTranslatedValues(item, 16, txt);
               }else{
-                _data.translatedName = this.getName(item.name, 16);   
+                _data.translatedName = this.getTranslatedValues(item, 16);
               }
               this.specificDriverData.push(_data);
             }
@@ -118,6 +121,16 @@ export class DriverTimePreferencesComponent implements OnInit {
       });
       this.setColumnCheckbox();
     }
+  }
+
+  getTranslatedValues(item: any, number: any, text?: any){
+    let _retVal: any;
+    if(this.translationData[item.key]){
+      _retVal = (text && text != '') ? `${this.translationData[item.key]} (${text})` : `${this.translationData[item.key]}`;  
+    }else{
+      _retVal = (text && text != '') ? `${this.getName(item.name, number)} (${text})` : `${this.getName(item.name, number)}`;   
+    }
+    return _retVal;
   }
 
   getName(name: any, index: any) {
