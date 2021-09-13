@@ -72,14 +72,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     Heading = vehicle.GnssPosition.Heading,
                     Latitude = vehicle.GnssPosition.Latitude,
                     Longitude = vehicle.GnssPosition.Longitude,
-                    PositionDateTime = vehicle.GnssPosition.PositionDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    PositionDateTime = vehicle.GnssPosition.PositionDateTime,// "yyyy-MM-ddThh:mm:ss.fffZ"),
                     Speed = vehicle.GnssPosition.Speed
                 };
 
                 VehiclePositions vehiclePosition = new VehiclePositions()
                 {
-                    CreatedDateTime = vehicle.CreatedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    ReceivedDateTime = vehicle.ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    CreatedDateTime = vehicle.CreatedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
+                    ReceivedDateTime = vehicle.ReceivedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
                     TachographSpeed = vehicle.TachographSpeed,
                     WheelBasedSpeed = vehicle.WheelBasedSpeed,
                     TriggerType = triggerObject,
