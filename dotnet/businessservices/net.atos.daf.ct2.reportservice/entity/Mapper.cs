@@ -510,7 +510,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 objKPI.LimitValue = dataAttribute.LimitValue;
                 objKPI.TargetValue = dataAttribute.TargetValue;
                 if (kpiName == OverallPerformance.EcoScore.ToString())
-                    objKPI.Score = String.Format("{0:0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+                    objKPI.Score = String.Format("{0:00}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
                 else
                     objKPI.Score = String.Format("{0:0.0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
             }
