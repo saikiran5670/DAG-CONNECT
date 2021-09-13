@@ -213,6 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("gethostname")]
         public async Task<IActionResult> GetHostName()
         {
+            _logger.Error("gethostname -- started");
             return Ok(Dns.GetHostName().ToLower());
         }
     }
