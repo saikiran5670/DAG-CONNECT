@@ -63,7 +63,7 @@ spec:
         ports:
           - containerPort: 8080
       - name: filebeatservice-container
-        image: acraksoxvoiq64cpv6y.azurecr.io/filebeat
+        image: #{acrurl}#/filebeat
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
