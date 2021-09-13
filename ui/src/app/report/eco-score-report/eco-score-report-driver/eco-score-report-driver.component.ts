@@ -978,7 +978,12 @@ export class EcoScoreReportDriverComponent implements OnInit {
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.621371).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return (282.481/(val)).toFixed(2);
+            let num = Number(val);
+            if(num > 0) {
+              return (282.481/(val)).toFixed(2);
+            } else {
+              return (num).toFixed(2);
+            }
           }
         }
     }
@@ -1167,9 +1172,11 @@ public barChartOptionsPerformance = {
       display: true
     },
     tooltips: {
+      mode: 'label',
       callbacks: {
         title: function(tooltipItem, data) {
-          return (data['labels'][tooltipItem[0]['index']]).toString();
+          var datasetLabel = data['datasets'][0].data[data['datasets'][0].data.length-1];     //Vehicle Name
+          return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
         },
         label: function(tooltipItem, data) {
         	var dataset = data.datasets[tooltipItem.datasetIndex];
@@ -1198,10 +1205,13 @@ public barChartOptionsPerformance = {
 
   public pieChartLabelsPerformance: Label[] = [];
   public pieChartDataPerformance: SingleDataSet = [];
+  public pieCharDatatLabelPerformance: SingleDataSet = [];
 
   loadPieChartPerformance(index){
     if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
       this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
+      this.pieCharDatatLabelPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
+      this.pieChartDataPerformance.push(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label);
       this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
   }
