@@ -1750,7 +1750,6 @@ namespace net.atos.daf.ct2.accountservice
 
         public async override Task<AccountRoleResponse> RemoveRoles(AccountRoleDeleteRequest request, ServerCallContext context)
         {
-
             try
             {
                 AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();

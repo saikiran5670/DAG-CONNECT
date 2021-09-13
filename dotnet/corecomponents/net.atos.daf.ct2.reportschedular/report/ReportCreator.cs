@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
             }
             var vinData = string.Join(',', vehicleList.Select(s => s.VIN).ToArray());
-            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId);
+            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId, ReportSchedulerData.OrganizationId);
             if (vehicleAssociationList == null || vehicleAssociationList.Count() == 0)
             {
                 throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);

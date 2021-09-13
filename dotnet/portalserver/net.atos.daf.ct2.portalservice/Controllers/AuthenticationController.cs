@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -205,6 +206,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname")]
+        public async Task<IActionResult> GetHostName()
+        {
+            return Ok(Dns.GetHostName().ToLower());
         }
     }
 }

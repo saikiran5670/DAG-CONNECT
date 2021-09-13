@@ -55,8 +55,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Info("Get GetFuelBenchmarkByTimePeriod report by time period");
                 if (request.VINs.Count() == 0)
                 {
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                     var vehicleDeatilsWithAccountVisibility =
-                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                     if (vehicleDeatilsWithAccountVisibility.Count() > 0)
                     {
@@ -110,10 +112,11 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
                 AssociatedVehicleResponse response = new AssociatedVehicleResponse();
 
                 if (vehicleDetailsAccountVisibilty.Any())

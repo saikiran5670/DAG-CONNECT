@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.visibility.entity;
 using net.atos.daf.ct2.visibility.repository;
 
@@ -9,30 +11,47 @@ namespace net.atos.daf.ct2.visibility
     public class VisibilityManager : IVisibilityManager
     {
         private readonly IVisibilityRepository _visibilityRepository;
+        private readonly IVehicleManager _vehicleManager;
 
-        public VisibilityManager(IVisibilityRepository visibilityRepository)
+        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager)
         {
             _visibilityRepository = visibilityRepository;
+            _vehicleManager = vehicleManager;
         }
 
-        public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int organizationId) => _visibilityRepository.GetVehicleByAccountVisibility(accountId, organizationId);
-        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId, int roleId,
-                                                                                                string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, organizationId, roleId, featureName);
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId)
+        {
+            List<VisibilityVehicle> vehicles;
+            //If context switched then find vehicle visibility for the organization
+            if (orgId != contextOrgId)
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+            }
+            else
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            }
 
-        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int organizationId, int roleId,
+            return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray());
+        }
+
+        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
+                                                                                                string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
+
+        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                            IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, string featureName = "Alert")
         {
             try
             {
                 var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeature>();
-                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, organizationId);
+                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, orgId, contextOrgId);
 
                 if (!vehicleByVisibility.Any())
                 {
                     return await Task.FromResult(new List<VehicleDetailsVisibiltyAndFeature>());
                 }
 
-                var vehicleByFeature = await GetVehicleByFeatureAndSubscription(accountId, organizationId, roleId, featureName);
+                var vehicleByFeature = await GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
                 if (!vehicleByFeature.Any())
                 {

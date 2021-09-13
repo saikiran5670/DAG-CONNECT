@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -466,10 +467,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int orgnizationid = GetUserSelectedOrgId();
+                int orgnizationid = GetContextOrgId();
                 if (accountId == 0 || orgnizationid == 0 || roleid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
 
-                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid }, headers);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == ResponseCode.Success)
