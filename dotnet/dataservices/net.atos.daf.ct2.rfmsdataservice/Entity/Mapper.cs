@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 TellTaleObject tellTaleObject = new TellTaleObject()
                 {
                     State = vehicle.TriggerType.TellTaleInfo.State,
-                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale,
+                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale ?? string.Empty,
                     OemTellTale = vehicle.TriggerType.TellTaleInfo.OemTellTale
                 };
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     PtoId = vehicle.TriggerType.PtoId,
                     TriggerInfo = vehicle.TriggerType.TriggerInfo,
                     DriverId = driverIdObject,
-                    TriggerType = vehicle.TriggerType.Type,
+                    TriggerType = vehicle.TriggerType.Type ?? string.Empty,
                     TellTaleInfo = tellTaleObject
                 };
 
