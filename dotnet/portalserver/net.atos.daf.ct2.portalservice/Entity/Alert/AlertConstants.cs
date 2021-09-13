@@ -38,5 +38,7 @@
         public const string OFFLINE_NOTI_ACCOUNT_ID_NOT_NULL_MSG = "Account id cannot be null.";
         public const string OFFLINE_NOTI_GET_FAILED_MSG = "There is an error while getting offline notifications.";
         public const string OFFLINE_NOTI_NOT_FOUND_MSG = "Offline notifications are not found.";
+        public const string NOTIFICATION_HUB_MSG = "Notification hub.";
+        public const string NOTIFICATION_SERVICE_NAME = "Notification service";
     }
 }

@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 ReportParameter reportparameter = await _reportSchedulerManager.GetReportParameter(request.AccountId, request.OrganizationId, request.ContextOrgId, request.RoleId);
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId, request.ContextOrgId);
                 ReportParameterResponse response = new ReportParameterResponse();
                 //Get Report Type 
                 if (reportparameter.ReportType.Any())
@@ -282,9 +282,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
                 VehicleandVehicleGroupIdResponse response = new VehicleandVehicleGroupIdResponse();
                 if (vehicleDetailsAccountVisibilty.Any())
                 {

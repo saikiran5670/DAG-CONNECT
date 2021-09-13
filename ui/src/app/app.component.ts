@@ -21,9 +21,8 @@ import { NavigationExtras } from '@angular/router';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
-import * as signalR from '@aspnet/signalr';
-import { SignalRService } from './services/sampleService/signalR.service';
 import { HttpClient } from '@angular/common/http';
+import { SignalRService } from './services/sampleService/signalR.service';
 
 @Component({
   selector: 'app-root',
@@ -44,13 +43,12 @@ export class AppComponent {
   dirValue = 'ltr'; //rtl
   public subpage: string = '';
   public currentTitle: string = '';
-  showNotificationAlerts: boolean = false;
+  showAlertNotifications: boolean = false;
   public menuCollapsed: boolean = false;
   public pageName: string = '';
   public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
   menuPages: any;
-  // newData: any = {};
   languages = [];
   languageSelection: any  = [];
   openUserRoleDialog = false;
@@ -86,58 +84,6 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
-  // notificationData: any = [
-  //   {
-  //     icons:'unarchive',
-  //     name: 'Entering Geofence',
-  //     // data: 1628072950000,
-  //     data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
-  //     vehName: 'Veh data',
-  //     vin: 'test 01',
-  //     regNo: 'XLRTEM4100G041999858',
-  //     alertLevel: 'A',
-  //     alertType: 'U',
-  //     alertCat: 'L',
-  //   },
-  //   {
-  //     icons:'unarchive',
-  //     name: 'Fuel Driver Performance',
-  //     data: 1628072950000,
-  //     vehName: 'Veh 2 data',
-  //     vin: 'test 02',
-  //     regNo: 'XLRTEM4100G041999',
-  //     alertLevel: 'C',
-  //     alertType: 'S',
-  //     alertCat: 'F'
-  //   },
-  //   {
-  //     icons:'unarchive',
-  //     name: 'Time & Move',
-  //     data: 1627986550000,
-  //     vehName: 'Veh 3 data',
-  //     vin: 'test 03',
-  //     regNo: 'XLRTEM4100G041999',
-  //     alertLevel: 'W',
-  //     alertType: 'U',
-  //     alertCat: 'R'
-  //   },
-  //   {
-  //     icons:'unarchive',
-  //     name: 'Time & Move 4',
-  //     data: 1627986550000,
-  //     vehName: 'Veh 4 data',
-  //     vin: 'test 04',
-  //     regNo: 'XLRTEM4100G041999'
-  //   },
-  //   {
-  //     icons:'unarchive',
-  //     name: 'Time & Move 5',
-  //     data: 1627986550000,
-  //     vehName: 'Veh 5  data',
-  //     vin: 'test 05',
-  //     regNo: 'XLRTEM4100G041999'
-  //   },
-  // ];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
@@ -346,7 +292,7 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  public signalRService: SignalRService, private http: HttpClient) {
+  private http: HttpClient, public signalRService: SignalRService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -979,25 +925,14 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
-    //Signal R*********************
-//     this.signalRService.startConnection();
-// setTimeout(() => {
-//   this.signalRService.askServerListenerForNotifyAlert();
-//   this.signalRService.askServerForNotifyAlert();
-// }, 5000);
+
+    this.signalRService.startConnection();
+    setTimeout(() => {
+      this.signalRService.askServerListenerForNotifyAlert();
+      this.signalRService.askServerForNotifyAlert();
+    }, 5000);
   }
 
-  // getDateAndTime(){
-  //   this.notificationData.forEach(element => {
-  //   this.startDateValue = element.data;
-  //   let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
-  //   element.date = dateTimeObj[0];
-  //   element.time = dateTimeObj[1];
-  //   this.setPrefFormatTime(element.date,element.time);
-  //   element.time =this.selectedStartTime;
-  // });
-  // console.log(this.notificationData);
-  // }
 
   proceedStep(prefData: any, preference: any){
     this.prefData = prefData;
@@ -1301,25 +1236,6 @@ export class AppComponent {
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
-//    gotoLogBook(item: any){
-//   const navigationExtras: NavigationExtras = {
-//     state: {
-//       fromAlertsNotifications: true,
-//       data: [item]
-//     }
-//   };
-//   this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-// }
-
-// gotoLogBookForMoreAlerts(){
-//   const navigationExtras: NavigationExtras = {
-//     state: {
-//       fromMoreAlerts: true
-//     }
-//   };
-//   this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-// }
-
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){
     switch(this.prefDateFormat){
@@ -1350,90 +1266,8 @@ export class AppComponent {
     }
   }
 
-  // _get12Time(_sTime: any){
-  //   let _x = _sTime.split(':');
-  //   let _yy: any = '';
-  //   if(_x[0] >= 12){ // 12 or > 12
-  //     if(_x[0] == 12){ // exact 12
-  //       _yy = `${_x[0]}:${_x[1]} PM`;
-  //     }else{ // > 12
-  //       let _xx = (_x[0] - 12);
-  //       _yy = `${_xx}:${_x[1]} PM`;
-  //     }
-  //   }else{ // < 12
-  //     _yy = `${_x[0]}:${_x[1]} AM`;
-  //   }
-  //   return _yy;
-  // }
-
-  // get24Time(_time: any){
-  //   let _x = _time.split(':');
-  //   let _y = _x[1].split(' ');
-  //   let res: any = '';
-  //   if(_y[1] == 'PM'){ // PM
-  //     let _z: any = parseInt(_x[0]) + 12;
-  //     res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]} PM`;
-  //   }else{ // AM
-  //     res = `${_x[0]}:${_y[0]} AM`;
-  //   }
-  //   return res;
-  // }
-
-  // setPrefFormatTime(date, time){
-  //       if(this.prefTimeFormat == 12){ // 12
-  //         this.selectedStartTime = this._get12Time(time);
-  //       }else{ // 24
-  //         time = this._get12Time(time);
-  //         this.selectedStartTime = this.get24Time(time); 
-  //       }
-  // }
-
-/*********************Signal R *******************************************/
-// hubConnection:signalR.HubConnection;
-
-// startConnection = () => {
-//   this.hubConnection = new signalR.HubConnectionBuilder()
-//   .withUrl('https://api.dev1.ct2.atos.net/notificationhub', {
-//       skipNegotiation: true,
-//       transport: signalR.HttpTransportType.WebSockets
-//   })
-//   .build();
-
-//   this.hubConnection
-//   .start()
-//   .then(() => {
-//       console.log('Hub Connection Started!');
-//       this.AlertNotifcaionList.push('Hub Connection Started!');
-//   })
-//   .catch(err => 
-//     { 
-//       console.log('Error while starting connection: ' + err);
-//       this.AlertNotifcaionList.push('Error while starting connection: ' + err);
-//      })
-// }
-// askServerForNotifyAlert() {
-//   this.hubConnection.invoke("NotifyAlert", "hey")
-//       .catch(err => 
-//         { 
-//             console.error(err);
-//             this.AlertNotifcaionList.push(err);
-//        });
-// }
-
-// askServerListenerForNotifyAlert(){
-//    this.hubConnection.on("NotifyAlertResponse", (notificationMessgae) => {
-//       console.log(notificationMessgae);
-//       this.AlertNotifcaionList.push(notificationMessgae);
-//       console.log("Notification Alert List=" +this.AlertNotifcaionList);
-//   })
-// }
-
-// ngOnDestroy() {
-// this.hubConnection.off("NotifyAlertResponse");
-// this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
-// }
 
 notificationClicked(){
-  this.showNotificationAlerts = true;
+  this.showAlertNotifications = true;
 }
 }

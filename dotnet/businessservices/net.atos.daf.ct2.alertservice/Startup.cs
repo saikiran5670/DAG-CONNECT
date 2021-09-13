@@ -10,6 +10,8 @@ using net.atos.daf.ct2.alertservice.Services;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 
@@ -53,8 +55,8 @@ namespace net.atos.daf.ct2.alertservice
             services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
-            //services.AddTransient<IVehicleManager, VehicleManager>();
-            //services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
             //services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             //services.AddTransient<IAuditTraillib, AuditTraillib>();
         }

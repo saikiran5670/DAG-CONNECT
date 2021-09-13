@@ -43,7 +43,7 @@ import { DownloadReportModule } from './download-report/download-report.module';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { SignalralertnotificationComponent } from './signalralertnotification/signalralertnotification.component';
+import { SignalrAlertNotificationComponent } from './signalr-alert-notification/signalr-alert-notification.component';
 
 
 
@@ -54,7 +54,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
 
 @NgModule({
     declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
-      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent, SignalralertnotificationComponent],
+      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent, SignalrAlertNotificationComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

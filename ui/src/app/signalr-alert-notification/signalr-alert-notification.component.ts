@@ -5,13 +5,14 @@ import { Util } from '../shared/util';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { SignalRService } from '../services/sampleService/signalR.service';
 
 @Component({
-  selector: 'app-signalralertnotification',
-  templateUrl: './signalralertnotification.component.html',
-  styleUrls: ['./signalralertnotification.component.less']
+  selector: 'app-signalr-alert-notification',
+  templateUrl: './signalr-alert-notification.component.html',
+  styleUrls: ['./signalr-alert-notification.component.less']
 })
-export class SignalralertnotificationComponent implements OnInit {
+export class SignalrAlertNotificationComponent implements OnInit {
 notificationData: any = [
   {
     icons:'unarchive',
@@ -78,7 +79,7 @@ prefData : any;
   orgId: any;
   vehicleDisplayPreference: any;
 
-  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats) { }
+  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats,public signalRService: SignalRService) { }
 
   ngOnInit(): void {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
@@ -109,6 +110,13 @@ prefData : any;
     this.getDateAndTime();
 
     });
+
+        //Signal R*********************
+//     this.signalRService.startConnection();
+// setTimeout(() => {
+//   this.signalRService.askServerListenerForNotifyAlert();
+//   this.signalRService.askServerForNotifyAlert();
+// }, 5000);
 
   }
 

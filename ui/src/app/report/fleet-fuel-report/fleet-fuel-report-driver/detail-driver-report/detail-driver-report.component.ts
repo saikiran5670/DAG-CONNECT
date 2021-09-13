@@ -322,6 +322,8 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -360,6 +362,8 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize: 5,      
           beginAtZero:true
         },
         scaleLabel: {
@@ -553,6 +557,8 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize: 5,      
           beginAtZero:true
         },
         scaleLabel: {
@@ -589,6 +595,8 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -1769,6 +1777,8 @@ createEndMarker(){
       position: 'left',
       type: 'linear',
       ticks: {
+        steps: 10,
+        stepSize: 5,      
         beginAtZero:true
       },
       scaleLabel: {
@@ -1828,6 +1838,8 @@ createEndMarker(){
       position: 'left',
       type: 'linear',
       ticks: {
+        steps: 10,
+        stepSize:1,
         beginAtZero:true
       },
       scaleLabel: {
