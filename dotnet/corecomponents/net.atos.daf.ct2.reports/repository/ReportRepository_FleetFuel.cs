@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , vh.registration_no                                   as VehicleRegistrationNo
                                                   		  , round ( fd.etl_gps_distance,2)                       as Distance
                                                   		  , case when totalworkingdays>0 then round ((fd.veh_message_distance/totalworkingdays),2) else 0 end as AverageDistancePerDay
-                                                  		  , round (fd.average_speed,5)                           as AverageSpeed
+                                                  		  , round (fd.average_speed,7)                           as AverageSpeed
                                                   		  , max_speed                                            as MaxSpeed
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
@@ -243,7 +243,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , fd.DriverId
                                                		  , round ( fd.etl_gps_distance,2)                         as Distance
                                                		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
-                                               		  , round (fd.average_speed,5)                             as AverageSpeed
+                                               		  , round (fd.average_speed,7)                             as AverageSpeed
                                                		  , max_speed                                              as MaxSpeed
                                                		  , numberoftrips                                          as NumberOfTrips
                                                		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
@@ -464,7 +464,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , vh.registration_no as VehicleRegistrationNo
 				  , round(fd.etl_gps_distance, 2) as Distance
 				  , round((fd.veh_message_distance), 2) as AverageDistancePerDay
-				  , round(fd.average_speed, 5) as AverageSpeed
+				  , round(fd.average_speed, 7) as AverageSpeed
 				  , max_speed as MaxSpeed
 				  , numberoftrips as NumberOfTrips
 				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
@@ -608,7 +608,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , fd.DriverId
 				  , round ( fd.etl_gps_distance,2)                       as Distance
 				  , round ((fd.veh_message_distance),2) as AverageDistancePerDay
-				  , round (fd.average_speed,5)                           as AverageSpeed
+				  , round (fd.average_speed,7)                           as AverageSpeed
 				  , max_speed                                            as MaxSpeed
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb

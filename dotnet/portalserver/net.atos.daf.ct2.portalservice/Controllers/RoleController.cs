@@ -126,7 +126,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             //}
             //context org id is only set when role id is different
             //Assign context orgId
-            roleMaster.OrganizationId = AssignOrgContextByRoleId(roleMaster.RoleId);
+            roleMaster.OrganizationId = GetContextOrgId();
 
             try
             {

@@ -474,17 +474,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
-
-                _logger.Info("Organization get details function called ");
+                IdRequest idRequest = new IdRequest();
 
                 if (organizationId < 1)
                 {
-                    return StatusCode(400, "Please provide organization ID:");
+                    return StatusCode(400, "Please provide organization ID.");
                 }
-                //Assign context orgId
-                idRequest.Id = GetContextOrgId();
-                OrganizationBusinessService.OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
+
+                //Context org is not required here
+                //idRequest.Id = GetContextOrgId();
+
+                OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
 
                 return Ok(orgResponse);
             }
