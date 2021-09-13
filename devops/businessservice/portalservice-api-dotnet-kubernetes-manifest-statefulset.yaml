@@ -37,7 +37,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: portalservicerest-container
-        image: acraksoxvoiq64cpv6y.azurecr.io/portalservicerest
+        image: #{acrurl}#/portalservicerest
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
