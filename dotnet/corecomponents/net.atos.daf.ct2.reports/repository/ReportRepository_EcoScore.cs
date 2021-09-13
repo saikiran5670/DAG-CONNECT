@@ -866,7 +866,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 NumberOfVehicles as 
                                 (
-                                    select eco.driver1_id, COUNT (eco.vin) as NumberOfVehicles
+                                    select eco.driver1_id, COUNT (distinct eco.vin) as NumberOfVehicles
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1193,7 +1193,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 NumberOfVehicles as 
                                 (
-                                    select eco.driver1_id, COUNT (eco.vin) as NumberOfVehicles
+                                    select eco.driver1_id, COUNT (distinct eco.vin) as NumberOfVehicles
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1485,7 +1485,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 NumberOfVehicles as 
                                 (
-                                    select eco.organization_id ,  COUNT (eco.vin) as NumberOfVehicles
+                                    select eco.organization_id ,  COUNT (distinct eco.vin) as NumberOfVehicles
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1779,7 +1779,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 NumberOfVehicles as 
                                 (
-                                    select eco.vin,  COUNT (eco.vin) as NumberOfVehicles
+                                    select eco.vin,  COUNT (distinct eco.vin) as NumberOfVehicles
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2076,7 +2076,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 NumberOfVehicles as 
                                 (
-                                    select eco.organization_id ,eco.vin,   COUNT (eco.vin) as NumberOfVehicles
+                                    select eco.organization_id ,eco.vin,   COUNT (distinct eco.vin) as NumberOfVehicles
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
