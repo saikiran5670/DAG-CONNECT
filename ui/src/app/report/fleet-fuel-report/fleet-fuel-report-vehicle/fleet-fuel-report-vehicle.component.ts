@@ -137,6 +137,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -175,7 +177,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
-            beginAtZero:true
+          steps: 10,
+          stepSize: 5,
+          beginAtZero:true
         },
         scaleLabel: {
           display: true,
@@ -368,7 +372,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {          
+        ticks: {    
+          steps: 10,
+          stepSize: 5,      
           beginAtZero:true
         },
         scaleLabel: {
@@ -402,6 +408,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+          steps: 10,
+          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -501,7 +509,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
-          beginAtZero:true
+            beginAtZero:true
         },
         scaleLabel: {
           display: true,           
@@ -1002,12 +1010,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;   
-    if(this.ConsumedChartType == 'Bar'){     
+    if(this.ConsumedChartType == 'Bar'){   
       this.barChartOptions3.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
+        ticks: {     
           beginAtZero:true
         },
         scaleLabel: {
@@ -1283,7 +1291,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
+        ticks: {         
           beginAtZero:true
         },
         scaleLabel: {

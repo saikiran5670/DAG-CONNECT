@@ -419,7 +419,7 @@
             <mat-cell *matCellDef="let row">{{ row.numberOfTrips != '' ? row.numberOfTrips : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="tripTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'TripTime' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'Trip Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedTripTime != '' ? row.convertedTripTime : '-' }}</mat-cell>
           </ng-container>

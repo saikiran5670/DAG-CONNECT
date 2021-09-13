@@ -112,11 +112,11 @@ prefData : any;
     });
 
         //Signal R*********************
-    this.signalRService.startConnection();
-setTimeout(() => {
-  this.signalRService.askServerListenerForNotifyAlert();
-  this.signalRService.askServerForNotifyAlert();
-}, 5000);
+//     this.signalRService.startConnection();
+// setTimeout(() => {
+//   this.signalRService.askServerListenerForNotifyAlert();
+//   this.signalRService.askServerForNotifyAlert();
+// }, 5000);
 
   }
 

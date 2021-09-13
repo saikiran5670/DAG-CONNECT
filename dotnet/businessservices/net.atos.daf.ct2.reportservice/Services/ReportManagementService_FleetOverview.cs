@@ -19,9 +19,12 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var response = new FleetOverviewFilterResponse();
+
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -40,7 +43,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, loggedInOrgId, request.OrganizationId,
                                                                                        request.RoleId, vehicleDetailsAccountVisibilty,
                                                                                        ReportConstants.FLEETOVERVIEW_FEATURE_NAME);
 
@@ -109,8 +112,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("Get GetFleetOverviewDetails ");
                 FleetOverviewDetailsResponse response = new FleetOverviewDetailsResponse();
+
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {
@@ -208,8 +214,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("Get GetVehicleHealthStatusReport Called");
                 VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
+
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDeatilsWithAccountVisibility =
-                              await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                              await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0 || !vehicleDeatilsWithAccountVisibility.Any(x => x.Vin == request.VIN))
                 {

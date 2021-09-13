@@ -53,13 +53,13 @@ namespace net.atos.daf.ct2.visibility.repository
         }
 
         public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
-                                                                                               int OrganizationId)
+                                                                                               int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
-                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@organization_id", organizationId);
                 // Added and veh.opt_in != 'U' to avoide opt out vehicle in below query for bug no. 15983
                 #region Query Select Vehicle By Account Visibility
                 var query = @"WITH cte_account_visibility_for_vehicle
@@ -197,11 +197,11 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
-	                            on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
-	                            or (orm.target_org_id= du1.Organization_Id and ors.code NOT IN ('Owner','OEM')))
+	                            on ((orm.owner_org_id = du1.Organization_Id and lower(ors.code)='owner') 
+	                            or (orm.target_org_id= du1.Organization_Id and lower(ors.code) NOT IN ('owner','oem')))
 	                            and du1.function_enum='A'
 	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
-	                            --on orm.target_org_id=du2.Organization_Id and ors.code NOT IN ('Owner','OEM') and du2.function_enum='A'
+	                            --on orm.target_org_id=du2.Organization_Id and lower(ors.code) NOT IN ('owner','oem') and du2.function_enum='A'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
-	                            on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
+	                            on ((orm.owner_org_id=du1.Organization_Id and lower(ors.code)='owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            and ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
-	                            and ors.code NOT IN ('Owner','OEM')
+	                            and lower(ors.code) NOT IN ('owner','oem')
                             )
                             --select * from cte_account_vehicle_DynamicVisible
                             ,
@@ -330,127 +330,149 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId, int roleId,
+        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                     string featureName = "Alert")
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
-                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@organization_id", orgId);
+                parameter.Add("@context_org_id", contextOrgId);
                 parameter.Add("@role_id", roleId);
                 parameter.Add("@feature_name", featureName + "%");
                 #region Query Get Vehicle By Feature And Subsction
                 var query = @"
                              with org_veh_subscriptions
-as (
-select distinct fea.id as featureid
-       ,fea.name
-       ,fea.key
-       ,fea.level
-       ,fea.type as featuretype
-       ,pac.id as packageid
-       ,pac.packagecode
-       ,sub.id as subscriptionid
-       ,sub.organization_id as organizationid
-       ,sub.type as subscriptiontype
-       ,sub.subscription_end_date as subscriptionenddate
-       ,sub.subscription_start_date as subscriptionstartdate
-       ,sub.is_zuora_package
-       ,sub.vehicle_id as vehicleid 
-	   ,feasetfea.feature_set_id as featuresetid 
-from master.subscription sub
-inner join master.package pac
-on sub.package_id=pac.id and sub.state='A' and pac.state='A' and sub.organization_id in(@organization_id) 
-inner join master.featuresetfeature feasetfea
-on pac.feature_set_id=feasetfea.feature_set_id
-inner join master.feature fea
-on feasetfea.feature_id=fea.id and fea.state='A' and fea.type='F'
-where sub.organization_id in(@organization_id)
-and 
-fea.name like @feature_name
-and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
-    else COALESCE(subscription_end_date,0) =0 end
-order by 1
-)
---select * from org_veh_subscriptions
-,
- org_subscriptions
- as (
-     select * from  org_veh_subscriptions where subscriptiontype='O'
- )
- -- select * from org_subscriptions
- ,
- veh_subscriptions
- as (
-     select * from  org_veh_subscriptions where subscriptiontype='V'
- )
--- select * from veh_subscriptions
-,
-matching_org_veh_features
-as
-(
-	select featureid,key,name,organizationid,featuresetid from org_subscriptions
-	intersect
-	select featureid,key,name,organizationid,featuresetid from veh_subscriptions 
-)
---select * from matching_org_veh_features
-,
-veh_features_not_in_org
-as
-(
-	select *  
-	from veh_subscriptions 
-	where featureid not in ( select featureid from matching_org_veh_features) 	
-)
---select * from veh_features_not_in_org
-,
-org_veh_subscribe_features
-as
-(
-	select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype
-	--case when featuresetid is null then '0' else featuresetid end as featuresetid 
-	from matching_org_veh_features movf
-	union
-	select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype
-	--case when featuresetid is null then 0 else featuresetid end as featuresetid 
-	from  veh_features_not_in_org
-	union
-	select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype
-	--,case when featuresetid is null then 0 else featuresetid end as featuresetid  
-	from  org_subscriptions
-)
-,user_specific_features
-as
-(
-select FSF.feature_id as FeatureId
-FROM master.Account acc
-INNER JOIN master.AccountRole accrol ON acc.id = accrol.account_id AND acc.id = @account_id  AND accrol.organization_id = @organization_id AND accrol.role_id = @role_id AND acc.state = 'A'
-INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
-INNER JOIN master.FeatureSetFeature FSF on FSF.feature_set_id=rol.feature_set_id
---INNER join org_veh_subscribe_features ovsf ON FSF.feature_id=ovsf.featureid
---left join translation.enumtranslation enutra
---on   ovsf.featureid = enutra.feature_id
---and enutra.type='T'
---order by 1 desc
-)
-select distinct ovsf.featureid as FeatureId, 
-case when ovsf.key is null  then '' else ovsf.key end as key,
-case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
-case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
-case when enutra.key is null then '' else enutra.key end as FeatureEnum   from org_veh_subscribe_features ovsf
-inner join
-user_specific_features usf
-on ovsf.FeatureId=usf.FeatureId
-left join translation.enumtranslation enutra
-on   ovsf.featureid = enutra.feature_id
-and enutra.type='T'
-order by 1 desc
-";
+                            as (
+                            select distinct fea.id as featureid
+                                   ,fea.name
+                                   ,fea.key
+                                   ,fea.level
+                                   ,fea.type as featuretype
+                                   ,pac.id as packageid
+                                   ,pac.packagecode
+                                   ,sub.id as subscriptionid
+                                   ,sub.organization_id as organizationid
+                                   ,sub.type as subscriptiontype
+                                   ,sub.subscription_end_date as subscriptionenddate
+                                   ,sub.subscription_start_date as subscriptionstartdate
+                                   ,sub.is_zuora_package
+                                   ,sub.vehicle_id as vehicleid 
+	                               ,feasetfea.feature_set_id as featuresetid 
+                            from master.subscription sub
+                            inner join master.package pac
+                            on sub.package_id=pac.id and sub.state='A' and pac.state='A' and sub.organization_id in(@context_org_id) 
+                            inner join master.featuresetfeature feasetfea
+                            on pac.feature_set_id=feasetfea.feature_set_id
+                            inner join master.feature fea
+                            on feasetfea.feature_id=fea.id and fea.state='A' and fea.type='F'
+                            where sub.organization_id in(@context_org_id)
+                            and 
+                            fea.name like @feature_name
+                            and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
+                                else COALESCE(subscription_end_date,0) =0 end
+                            order by 1
+                            )
+                            --select * from org_veh_subscriptions
+                            ,
+                             org_subscriptions
+                             as (
+                                 select * from  org_veh_subscriptions where subscriptiontype='O'
+                             )
+                             -- select * from org_subscriptions
+                             ,
+                             veh_subscriptions
+                             as (
+                                 select * from  org_veh_subscriptions where subscriptiontype='V'
+                             )
+                            -- select * from veh_subscriptions
+                            ,
+                            matching_org_veh_features
+                            as
+                            (
+	                            select featureid,key,name,organizationid,featuresetid from org_subscriptions
+	                            intersect
+	                            select featureid,key,name,organizationid,featuresetid from veh_subscriptions 
+                            )
+                            --select * from matching_org_veh_features
+                            ,
+                            veh_features_not_in_org
+                            as
+                            (
+	                            select *  
+	                            from veh_subscriptions 
+	                            where featureid not in ( select featureid from matching_org_veh_features) 	
+                            )
+                            --select * from veh_features_not_in_org
+                            ,
+                            org_veh_subscribe_features
+                            as
+                            (
+	                            select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype
+	                            --case when featuresetid is null then '0' else featuresetid end as featuresetid 
+	                            from matching_org_veh_features movf
+	                            union
+	                            select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype
+	                            --case when featuresetid is null then 0 else featuresetid end as featuresetid 
+	                            from  veh_features_not_in_org
+	                            union
+	                            select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype
+	                            --,case when featuresetid is null then 0 else featuresetid end as featuresetid  
+	                            from  org_subscriptions
+                            )
+                            ,user_specific_features
+                            as
+                            (
+                            select FSF.feature_id as FeatureId
+                            FROM master.Account acc
+                            INNER JOIN master.AccountRole accrol ON acc.id = accrol.account_id AND acc.id = @account_id  AND accrol.organization_id = @organization_id AND accrol.role_id = @role_id AND acc.state = 'A'
+                            INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
+                            INNER JOIN master.FeatureSetFeature FSF on FSF.feature_set_id=rol.feature_set_id
+                            --INNER join org_veh_subscribe_features ovsf ON FSF.feature_id=ovsf.featureid
+                            --left join translation.enumtranslation enutra
+                            --on   ovsf.featureid = enutra.feature_id
+                            --and enutra.type='T'
+                            --order by 1 desc
+                            )
+                            select distinct ovsf.featureid as FeatureId, 
+                            case when ovsf.key is null  then '' else ovsf.key end as key,
+                            case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
+                            case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
+                            case when enutra.key is null then '' else enutra.key end as FeatureEnum   from org_veh_subscribe_features ovsf
+                            inner join
+                            user_specific_features usf
+                            on ovsf.FeatureId=usf.FeatureId
+                            left join translation.enumtranslation enutra
+                            on   ovsf.featureid = enutra.feature_id
+                            and enutra.type='T'
+                            order by 1 desc
+                            ";
                 #endregion
 
                 var list = _dataAccess.QueryAsync<VehicleDetailsFeatureAndSubsction>(query, parameter);
                 return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetails(int[] vehicleIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@VehicleIds", vehicleIds);
+
+                var queryStatement = @"SELECT DISTINCT v.id as VehicleId, v.name as VehicleName, vin as Vin, license_plate_number as RegistrationNo, grp.id as VehicleGroupId, grp.group_type as GroupType
+                                    FROM master.vehicle v
+                                    LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                                    INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V'
+                                    WHERE v.organization_id=grp.organization_id AND v.id = ANY(@VehicleIds)";
+
+                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(queryStatement, parameter);
             }
             catch (Exception)
             {

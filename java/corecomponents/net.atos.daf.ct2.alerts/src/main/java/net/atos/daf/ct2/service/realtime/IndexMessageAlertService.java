@@ -17,7 +17,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
@@ -66,13 +65,13 @@ public class IndexMessageAlertService implements Serializable {
                 .getSideOutput(OUTPUT_TAG);
 
 
-//        alertFoundStream.addSink(alertProducerTopic);
+        alertFoundStream.addSink(alertProducerTopic);
 
         /**
          * Store into alert db
          */
         TableStream tableStream = new JdbcFormatTableStream(env, propertiesParamTool);
-//        tableStream.saveAlertIntoDB(alertFoundStream);
+        tableStream.saveAlertIntoDB(alertFoundStream);
     }
 
 

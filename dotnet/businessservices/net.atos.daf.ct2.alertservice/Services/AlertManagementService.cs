@@ -433,9 +433,11 @@ namespace net.atos.daf.ct2.alertservice.Services
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
 
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -447,7 +449,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, loggedInOrgId, request.OrganizationId,
                                                                                        request.RoleId, vehicleDetailsAccountVisibilty,
                                                                                        AlertConstants.ALERT_FEATURE_NAME);
 

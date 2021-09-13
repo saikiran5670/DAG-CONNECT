@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -133,18 +134,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
                         {
+                            _logger.Error($"Login failed with status code - { response.Code } and message - {response.Message}");
                             return StatusCode(403, "Unable to process the request.");
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
                         {
+                            _logger.Error($"Login failed with status code - { response.Code } and message - {response.Message}");
                             return StatusCode(404, "Unable to process the request.");
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                         {
+                            _logger.Error($"Login failed with status code - { response.Code } and message - {response.Message}");
                             return StatusCode(500, "Error occurred while processing the request.");
                         }
                         else
                         {
+                            _logger.Error($"Login failed with status code - { response.Code } and message - {response.Message}");
                             return StatusCode(500, "Error occurred while processing the request.");
                         }
                     }
@@ -201,6 +206,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname")]
+        public async Task<IActionResult> GetHostName()
+        {
+            return Ok(Dns.GetHostName().ToLower());
         }
     }
 }

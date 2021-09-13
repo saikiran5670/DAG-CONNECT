@@ -43,7 +43,7 @@ import { DownloadReportModule } from './download-report/download-report.module';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { SignalrAlertNotificationComponent } from './signalralertnotification/signalr-alert-notification.component';
+import { SignalrAlertNotificationComponent } from './signalr-alert-notification/signalr-alert-notification.component';
 
 
 

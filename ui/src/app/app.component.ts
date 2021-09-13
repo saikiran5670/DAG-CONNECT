@@ -22,6 +22,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
+import { SignalRService } from './services/sampleService/signalR.service';
 
 @Component({
   selector: 'app-root',
@@ -291,7 +292,7 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient) {
+  private http: HttpClient, public signalRService: SignalRService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -924,6 +925,12 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
+
+    this.signalRService.startConnection();
+    setTimeout(() => {
+      this.signalRService.askServerListenerForNotifyAlert();
+      this.signalRService.askServerForNotifyAlert();
+    }, 5000);
   }
 
 

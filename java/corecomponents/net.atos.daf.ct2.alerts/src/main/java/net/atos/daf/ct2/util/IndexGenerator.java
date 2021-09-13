@@ -49,12 +49,12 @@ public class IndexGenerator implements SourceFunction<Index> {
             // 4.3 hours 15480000  -> advisory
             // 5.3 hours 19080000  -> warning
             // 6.3 hours 22680000  -> critical
-            idx.setEvtDateTime(convertMillisecondToDateTime(currentTimeMillis - 19080000));
+            idx.setEvtDateTime(convertMillisecondToDateTime(currentTimeMillis));
             sourceContext.collect(idx);
             logger.info("DATA SEND :: {}" , Utils.writeValueAsString(idx));
             counter+=1L;
             // Sleep for 1 second -> 1000 , 1 minute -> 60000
-            Thread.sleep(1000);
+            Thread.sleep(60000);
 
         }
 

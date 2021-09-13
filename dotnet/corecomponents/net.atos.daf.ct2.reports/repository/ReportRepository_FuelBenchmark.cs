@@ -18,9 +18,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var param = new DynamicParameters();
                 string query = @"Select
-                                trips.vin,
-                                veh.name as VehicleName,
-                                 Round(SUM(trips.fuel_consumption),2) as FuelConsumption
+                                 trips.vin,
+                                 veh.name as VehicleName,
+                                 Round((SUM(trips.etl_gps_fuel_consumed)/SUM(trips.etl_gps_distance)),4) as FuelConsumption
                                 From
                                 tripdetail.trip_statistics as trips
                                 Left JOIN master.vehicle as veh
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 @totalActiveVehicle as numbersofactivevehicle                                                  		 
                                 , SUM(etl_gps_distance) as totalmileage
                                 , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
-                                , Round(SUM(fuel_consumption)/ @totalActiveVehicle,2) as averagefuelconsumption
+                                , Round((SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))/ @totalActiveVehicle,4) as averagefuelconsumption
                                 From
                                 tripdetail.trip_statistics 
                                 WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
