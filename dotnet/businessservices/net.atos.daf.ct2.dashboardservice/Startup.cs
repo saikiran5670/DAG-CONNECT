@@ -13,6 +13,8 @@ using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
@@ -55,6 +57,8 @@ namespace net.atos.daf.ct2.dashboardservice
 
             services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -178,8 +179,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(DashboardConstant.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(DashboardConstant.ORGANIZATION_REQUIRED_MSG);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
                 var response = await _dashboardServiceClient.GetVisibleVinsAsync(
-                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId });
+                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId }, headers);
 
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
