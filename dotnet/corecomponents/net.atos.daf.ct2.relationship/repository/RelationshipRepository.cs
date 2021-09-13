@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.relationship.repository
             {
                 var parameter = new DynamicParameters();
                 var defaultLevelCode = 30;
-                var defaultCode = "Owner";
+                var defaultCode = "OWNER";
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", relationship.OrganizationId);
                 var query = @"SELECT id FROM master.organization where id=@org_id";
