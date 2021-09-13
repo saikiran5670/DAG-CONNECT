@@ -38,6 +38,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly PodConsumerGroupMapSettings _podComsumerGroupMapSettings = new PodConsumerGroupMapSettings();
         public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AuditHelper auditHelper)
         {
+            _auditHelper = auditHelper;
             _pushNotofocationServiceClient = pushNotofocationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
@@ -50,7 +51,6 @@ namespace net.atos.daf.ct2.portalservice.hubs
             _httpContextAccessor = httpContextAccessor;
             _sessionHelper = sessionHelper;
             _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
-            _auditHelper = auditHelper;
         }
 
         private string GetConsumerGroupFmHostName(Dictionary<string, string> podConsumerGroupMap, string hostName)
@@ -58,6 +58,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
             string consumerGroup = string.Empty;
             try
             {
+                _ = _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", "ex.message"), 0, 0, JsonConvert.SerializeObject(podConsumerGroupMap),
+                 new HeaderObj { AccountId = 1, OrgId = 2, AccountEmailId = "test", RoleId = 3, ContextOrgId = 4 }).Result;
                 consumerGroup = podConsumerGroupMap.Where(w => w.Key.ToLower() == hostName).FirstOrDefault().Value;
                 if (string.IsNullOrEmpty(consumerGroup)) _logger.Error($"Error in GetCusumerGroupFmHostName - {hostName} not found in disctionory");
             }
