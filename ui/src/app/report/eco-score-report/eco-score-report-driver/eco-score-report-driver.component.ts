@@ -1068,9 +1068,13 @@ public barChartOptions = {
   },
   tooltips: {
     callbacks: {
-        label: function(tooltipItem, data) {
-            return tooltipItem.yLabel + ' %';
-        }
+      title: function(tooltipItem, data) {
+        var datasetLabel = data['datasets'][tooltipItem[0].datasetIndex].label;     //Vehicle Name
+        return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
+      },
+      label: function(tooltipItem, data) {
+          return tooltipItem.yLabel + ' %';
+      }
     }
   },
   animation: {
@@ -1132,6 +1136,10 @@ public barChartOptionsPerformance = {
   },
   tooltips: {
     callbacks: {
+      title: function(tooltipItem, data) {
+        var datasetLabel = data['datasets'][tooltipItem[0].datasetIndex].label;     //Vehicle Name
+        return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
+      },
         label: function(tooltipItem, data) {
             return tooltipItem.yLabel + ' %';
         }
@@ -1199,18 +1207,19 @@ public barChartOptionsPerformance = {
   loadPieChart(index){
     if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
       this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
+      this.pieChartData.push(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].label);
       this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
     }
   }
 
   public pieChartLabelsPerformance: Label[] = [];
   public pieChartDataPerformance: SingleDataSet = [];
-  public pieCharDatatLabelPerformance: SingleDataSet = [];
+  // public pieCharDatatLabelPerformance: SingleDataSet = [];
 
   loadPieChartPerformance(index){
     if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
       this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
-      this.pieCharDatatLabelPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
+      // this.pieCharDatatLabelPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
       this.pieChartDataPerformance.push(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label);
       this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
