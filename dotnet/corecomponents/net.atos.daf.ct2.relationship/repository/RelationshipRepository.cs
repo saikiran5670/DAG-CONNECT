@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 parameter.Add("@owner_org_id", organizationID);
 
                 string query = @"select relationship_id,vehicle_group_id,
-                     owner_org_id,created_org_id,target_org_id from master.orgrelationshipmapping where owner_org_id=@owner_org_id";
+                     owner_org_id,created_org_id,target_org_id, start_date, end_date from master.orgrelationshipmapping where owner_org_id=@owner_org_id";
                 var relationships = await _dataAccess.QueryAsync<OrganizationRelationShip>(query, parameter);
                 return relationships;
             }

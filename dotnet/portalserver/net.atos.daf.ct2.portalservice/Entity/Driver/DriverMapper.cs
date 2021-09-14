@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Driver
         {
             diverReturns = new List<driverservice.DriverReturns>();
             net.atos.daf.ct2.driverservice.DriverImportRequest objReturn = new net.atos.daf.ct2.driverservice.DriverImportRequest();
-            var driverIdValidation = new Regex(@"^[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}$");
+            var driverIdValidation = new Regex(@"^[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}$");
             foreach (DriverRequest item in drivers)
             {
                 int OrganizationId = item.OrganizationId;
