@@ -585,7 +585,7 @@ export class DriverManagementComponent implements OnInit {
 
   driveIdValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
-    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
+    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = this.translationData.lblDriverIDismandatoryinput || 'Driver ID is mandatory input';

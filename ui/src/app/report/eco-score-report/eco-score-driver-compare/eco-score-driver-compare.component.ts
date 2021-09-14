@@ -372,6 +372,10 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         else if(key.indexOf('75') !== -1)
           value += ' >45 mph ';
         value += '(%)';
+      } else if(key.indexOf('rp_averagegrossweight') !== -1){
+        value += ' (ton) ';
+      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+        value += ' (mile) ';
       }
     }  else if(this.prefUnitFormat === 'dunit_Metric'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
@@ -386,6 +390,10 @@ export class EcoScoreDriverCompareComponent implements OnInit {
           else if(key.indexOf('75') !== -1)
            value += ' >75 km/h ';
           value += '(%)';
+        } else if(key.indexOf('rp_averagegrossweight') !== -1){
+          value += ' (tonne) ';
+        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+          value += ' (km) ';
         }
     }
     const gridOptions = grid.getOptions() as GridOption;

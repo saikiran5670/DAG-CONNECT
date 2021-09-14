@@ -40,9 +40,9 @@
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100" placeholder="{{ translationData.lblEmailId || 'Email Id' }}" matInput formControlName="emailId" pattern="[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}">
             </mat-form-field>
-            <!-- <mat-error *ngIf="driverFormGroup.get('emailId').hasError('required')">
+            <mat-error *ngIf="driverFormGroup.get('emailId').hasError('required')">
               {{ translationData.lblPleaseenteremailID || 'Please enter email ID' }}
-            </mat-error> -->
+            </mat-error>
             <mat-error *ngIf="driverFormGroup.get('emailId').hasError('email')">
               {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
             </mat-error>
@@ -75,18 +75,21 @@
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName">
             </mat-form-field>
-            <!-- <mat-error *ngIf="driverFormGroup.get('firstName').hasError('required')">
+            <mat-error *ngIf="driverFormGroup.get('firstName').hasError('required')">
               {{ translationData.lblPleaseenterFirstName || 'Please enter First Name' }}
-            </mat-error> -->
+            </mat-error>
             <mat-error *ngIf="driverFormGroup.get('firstName').hasError('specialCharsNotAllowed')">
               {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
             <mat-error *ngIf="driverFormGroup.get('firstName').hasError('numberNotAllowed')">
               {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
             </mat-error>
-            <mat-error *ngIf="driverFormGroup.get('firstName').hasError('whitespace')">
+            <mat-error *ngIf="!driverFormGroup.get('firstName').hasError('required') && driverFormGroup.get('firstName').hasError('whitespace')">
               {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
-             </mat-error>
+            </mat-error>
+            <!-- <mat-error *ngIf="driverFormGroup.get('firstName').hasError('whitespace')">
+              {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
+             </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ driverData.firstName != '' ? driverData.firstName : '--' }}</span>
@@ -98,18 +101,21 @@
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName">
             </mat-form-field>
-            <!-- <mat-error *ngIf="driverFormGroup.get('lastName').hasError('required')">
+            <mat-error *ngIf="driverFormGroup.get('lastName').hasError('required')">
               {{ translationData.lblPleaseenterLastName || 'Please enter Last Name' }}
-            </mat-error> -->
+            </mat-error>
+            <mat-error *ngIf="!driverFormGroup.get('lastName').hasError('required') && driverFormGroup.get('lastName').hasError('whitespace')">
+              {{ translationData.lblLastNamecannotcontainonlywhitespace || 'Last Name cannot contain only whitespace' }}
+            </mat-error>
             <mat-error *ngIf="driverFormGroup.get('lastName').hasError('specialCharsNotAllowed')">
               {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
             <mat-error *ngIf="driverFormGroup.get('lastName').hasError('numberNotAllowed')">
               {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
             </mat-error>
-            <mat-error *ngIf="driverFormGroup.get('lastName').hasError('whitespace')">
+            <!-- <mat-error *ngIf="driverFormGroup.get('lastName').hasError('whitespace')">
               {{ translationData.lblLastNamecannotcontainonlywhitespace || 'Last Name cannot contain only whitespace' }}
-             </mat-error>
+             </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ driverData.lastName != '' ? driverData.lastName : '--' }}</span>
