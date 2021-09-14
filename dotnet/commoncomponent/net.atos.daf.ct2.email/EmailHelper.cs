@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.email
 {
     public class EmailHelper
     {
-        private static async Task<bool> SendEmail(MessageRequest messageRequest)
+        private static async Task<Response> SendEmail(MessageRequest messageRequest)
         {
             var apiKey = messageRequest.Configuration.ApiKey;
             var client = new SendGridClient(apiKey);
@@ -22,9 +22,7 @@ namespace net.atos.daf.ct2.email
 
             BuildMessageParameters(msg, messageRequest);
 
-            var response = await client.SendEmailAsync(msg);
-
-            return response.IsSuccessStatusCode;
+            return await client.SendEmailAsync(msg);
         }
 
         private static void BuildMessageParameters(SendGridMessage msg, MessageRequest messageRequest)
@@ -53,7 +51,7 @@ namespace net.atos.daf.ct2.email
             msg.AddContent(mimeType, content);
         }
 
-        public static async Task<bool> SendEmail(MessageRequest messageRequest, EmailTemplate emailTemplate)
+        public static async Task<Response> SendEmail(MessageRequest messageRequest, EmailTemplate emailTemplate)
         {
             var emailContent = string.Empty;
             try
@@ -64,7 +62,7 @@ namespace net.atos.daf.ct2.email
                 var emailTemplateContent = GetEmailContent(emailTemplate);
 
                 if (string.IsNullOrEmpty(emailTemplateContent))
-                    return false;
+                    return null;
 
                 switch (emailTemplate.EventType)
                 {
@@ -106,15 +104,15 @@ namespace net.atos.daf.ct2.email
 
                 if (emailTemplate.EventType == EmailEventType.ScheduledReportEmail)
                 {
-                    bool isEmailSend = false;
                     var emailList = messageRequest.ToAddressList;
+                    Response response = null;
                     foreach (var item in emailList)
                     {
                         messageRequest.ToAddressList = new Dictionary<string, string>();
                         messageRequest.ToAddressList.Add(item.Key, item.Value);
-                        isEmailSend = await SendEmail(messageRequest);
+                        response = await SendEmail(messageRequest);
                     }
-                    return isEmailSend;
+                    return response;
                 }
                 else
                 {
