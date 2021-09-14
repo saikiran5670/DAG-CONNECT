@@ -37,4 +37,11 @@
 
         public bool Subscribe { get; set; }
     }
+
+    public class VehicleDetailsVisibiltyAndFeatureTemp
+    {
+        public int VehicleId { get; set; }
+        public string FeatureKey { get; set; }
+        public string SubscriptionType { get; set; }
+    }
 }

@@ -119,5 +119,32 @@ namespace net.atos.daf.ct2.visibility
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetVehicleByVisibilityAndFeatureTemp(int accountId, int orgId, int contextOrgId, int roleId,
+                                                                                                           string featureName = "Alert")
+        {
+            try
+            {
+                var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeatureTemp>();
+
+                var vehicleByFeature = await GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
+
+                foreach (var item in vehicleByFeature)
+                {
+                    vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeatureTemp
+                    {
+                        VehicleId = item.VehicleId,
+                        FeatureKey = item.Name.ToLower().Contains("alerts.") == true ? item.FeatureEnum : item.Key,
+                        SubscriptionType = item.SubscriptionType
+                    });
+                }
+
+                return await Task.FromResult(vehicleByVisibilityAndFeature);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
     }
 }

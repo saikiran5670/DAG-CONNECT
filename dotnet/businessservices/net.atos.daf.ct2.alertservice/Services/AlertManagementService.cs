@@ -449,9 +449,8 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, loggedInOrgId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
-                                                                                       AlertConstants.ALERT_FEATURE_NAME);
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
 
                     res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
                     response.AlertCategoryFilterRequest.AddRange(

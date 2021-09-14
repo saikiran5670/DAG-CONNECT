@@ -12,5 +12,7 @@ namespace net.atos.daf.ct2.visibility
 
         Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int orgId, int contextOrgId, int roleId, IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, string featureName);
 
+        Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetVehicleByVisibilityAndFeatureTemp(int accountId, int orgId, int contextOrgId, int roleId,
+                                                                                                           string featureName = "Alert");
     }
 }
