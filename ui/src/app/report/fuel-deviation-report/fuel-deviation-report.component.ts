@@ -24,13 +24,15 @@ import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { DatePipe } from '@angular/common';
 
 declare var H: any;
 
 @Component({
   selector: 'app-fuel-deviation-report',
   templateUrl: './fuel-deviation-report.component.html',
-  styleUrls: ['./fuel-deviation-report.component.less']
+  styleUrls: ['./fuel-deviation-report.component.less'],
+  providers: [DatePipe]
 })
 
 export class FuelDeviationReportComponent implements OnInit {
@@ -100,9 +102,11 @@ export class FuelDeviationReportComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
+  chartLabelDateFormat:any ='MM/DD/YYYY';
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   internalSelection: boolean = false;
+  fuelDeviationChartLabels=[];
   prefMapData: any = [
     {
       key: 'rp_fd_details_averageweight',
@@ -239,7 +243,7 @@ export class FuelDeviationReportComponent implements OnInit {
   _xIncLine: any = [];
   _yIncLine: any = [];
   fuelIncLineChartData: ChartDataSets[] = [];
-  fuelIncLineChartLabels: Label[] = this._xIncLine;
+  fuelIncLineChartLabels: Label[] = this.fuelDeviationChartLabels;
   fuelIncLineChartOptions = {
     responsive: true,
     legend: {
@@ -261,7 +265,19 @@ export class FuelDeviationReportComponent implements OnInit {
           display: true,
           labelString: 'Values(Fuel Increase Events)'    
         }
-      }]
+      }],
+      xAxes: [{
+      type:'time',       
+      time:
+      {
+        tooltipFormat: this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }   
+     }]
     }
   };
   fuelIncLineChartColors: Color[] = [
@@ -278,7 +294,7 @@ export class FuelDeviationReportComponent implements OnInit {
   _xDecLine: any = [];
   _yDecLine: any = [];
   fuelDecLineChartData: ChartDataSets[] = [];
-  fuelDecLineChartLabels: Label[] = this._xDecLine;
+  fuelDecLineChartLabels: Label[] = this.fuelDeviationChartLabels;
   fuelDecLineChartOptions = {
     responsive: true,
     legend: {
@@ -300,7 +316,18 @@ export class FuelDeviationReportComponent implements OnInit {
           display: true,
           labelString: 'Values(Fuel Decrease Events)'    
         }
-      }]
+      }], xAxes: [{
+        type:'time',       
+        time:
+        {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }  
+     }]
     }
   };
   fuelDecLineChartColors: Color[] = [
@@ -335,19 +362,26 @@ export class FuelDeviationReportComponent implements OnInit {
             display: true,
             labelString: 'Values (Fuel Increase Events)'    
           }
-        }
-      ],
-      xAxes:[
+        }],
+      xAxes: [{
+        barThickness: 2,
+        gridLines: {
+          drawOnChartArea: false
+        },
+        type:'time',       
+        time:
         {
-          barThickness: 2,
-          gridLines: {
-            drawOnChartArea: false
-          }
-        }
-      ]
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }   
+     }]
     }
   };
-  fuelIncBarChartLabels: Label[] = [];
+  fuelIncBarChartLabels: Label[] = this.fuelDeviationChartLabels;
   fuelIncBarChartType: ChartType = 'bar';
   fuelIncBarChartLegend = true;
   fuelIncBarChartPlugins = [];
@@ -375,25 +409,32 @@ export class FuelDeviationReportComponent implements OnInit {
             display: true,
             labelString: 'Values (Fuel Decrease Events)'    
           }
-        }
-      ],
-      xAxes:[
-        {
-          barThickness: 2,
+        }],
+      xAxes: [{
+        barThickness: 2,
           gridLines: {
             drawOnChartArea: false
-          }
+          },
+        type:'time',       
+        time:
+        {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
         }
-      ]
+     }]
     }
   };
-  fuelDecBarChartLabels: Label[] = [];
+  fuelDecBarChartLabels: Label[] = this.fuelDeviationChartLabels;
   fuelDecBarChartType: ChartType = 'bar';
   fuelDecBarChartLegend = true;
   fuelDecBarChartPlugins = [];
   fuelDecBarChartData: any[] = [];
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -835,22 +876,27 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.chartLabelDateFormat='DD/MM/YYYY';
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.chartLabelDateFormat='MM/DD/YYYY';
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.chartLabelDateFormat='DD-MM-YYYY';
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.chartLabelDateFormat='MM-DD-YYYY';
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.chartLabelDateFormat='MM/DD/YYYY';
       }
     }
   }
@@ -1129,26 +1175,79 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     if(_chartData && _chartData.data && _chartData.data.length > 0){
       _chartData.data.forEach(element => {
         let _d = this.reportMapService.getStartTime(element.date, this.prefDateFormat, this.prefTimeZone, this.prefTimeZone, false);
-        this._xIncLine.push(_d);
-        this._xDecLine.push(_d);
-        this._yIncLine.push(element.increaseEvent);
-        this._yDecLine.push(element.decreaseEvent);
+        // this._xIncLine.push(_d);
+        // this._xDecLine.push(_d);
+        // this._yIncLine.push(element.increaseEvent);
+        // this._yDecLine.push(element.decreaseEvent);
+        let resultDate =  this.datePipe.transform(element.date,'MM/dd/yyyy'); 
+        this._yIncLine.push( { x:resultDate , y:element.increaseEvent});
+        this._yDecLine.push( { x:resultDate , y:element.decreaseEvent});
       });
       this.assignDataToCharts();
     }
   }
 
   assignDataToCharts(){
-    this.fuelIncLineChartLabels = this._xIncLine;
-    this.fuelDecLineChartLabels = this._xDecLine;
-    this.fuelIncBarChartLabels = this._xIncLine;
-    this.fuelDecBarChartLabels = this._xDecLine;
+       // this.fuelIncLineChartLabels = this._xIncLine;
+    // this.fuelDecLineChartLabels = this._xDecLine;
+    // this.fuelIncBarChartLabels = this._xIncLine;
+    // this.fuelDecBarChartLabels = this._xDecLine;
+  
+    let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+    this.fuelDeviationChartLabels=[ startDate, endDate ];
+    this.fuelIncLineChartLabels = this.fuelDeviationChartLabels;
+    this.fuelDecLineChartLabels = this.fuelDeviationChartLabels;
+    this.fuelIncBarChartLabels = this.fuelDeviationChartLabels;
+    this.fuelDecBarChartLabels = this.fuelDeviationChartLabels;
+  
+    if(this.fuelIncLineChartType=='line'){
+    this.fuelIncLineChartOptions.scales.xAxes= [{      
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }    
+    }];     
     this.fuelIncLineChartData = [
       { data: this._yIncLine, label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' },
     ];
+  }
+  if(this.fuelDecLineChartType == 'line'){
+    this.fuelDecLineChartOptions.scales.xAxes= [{      
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }    
+    }];   
     this.fuelDecLineChartData = [
       { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' },
     ];
+  }
+  if(this.fuelIncBarChartType == 'bar'){
+    this.fuelIncBarChartOptions.scales.xAxes= [{      
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }    
+    }];   
     this.fuelIncBarChartData = [
       {
         label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events',
@@ -1159,18 +1258,32 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         data: this._yIncLine
       }
     ];
+  }
+  if( this.fuelDecBarChartType == 'bar'){
+    this.fuelDecBarChartOptions.scales.xAxes= [{      
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }    
+    }];   
     this.fuelDecBarChartData = [
       {
         label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events',
         type: 'bar',
         backgroundColor: '#F4AF85',
         hoverBackgroundColor: '#F4AF85',
-        yAxesID: "y-axis",
+        yAxesID: "y-axis",      
         data: this._yDecLine
       }
     ];
   }
-
+}
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';

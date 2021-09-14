@@ -79,7 +79,7 @@
                 </div>
             </div>
         </mat-card>
-        <mat-card class='mat-elevation-z'>
+        <mat-card class='mat-elevation-z' *ngIf="!showLoadingIndicator">
             <!-- <form [formGroup]= 'consentFormGroup'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
