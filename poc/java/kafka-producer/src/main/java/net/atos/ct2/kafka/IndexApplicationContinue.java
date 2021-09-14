@@ -69,7 +69,7 @@ public class IndexApplicationContinue {
         System.out.println("Init data ::"+mapper.writeValueAsString(index1));
 
         Integer msgLimit = Integer.valueOf(env.getProperty("index.set.msg.limit", "30"));
-        Long inival=1000L;
+        Long inival=3L;
         for(int i=0; i < msgLimit; i++){
             long timeMillis = System.currentTimeMillis();
             index1.setEvtDateTime(Utils.convertMillisecondToDateTime(timeMillis));
@@ -79,11 +79,8 @@ public class IndexApplicationContinue {
             System.out.println("Data Send ::"+mapper.writeValueAsString(index1));
             long sleepTime = Long.valueOf(env.getProperty("index.set.system.event.time.sleep", "1000"));
             Thread.sleep(sleepTime);
-            inival = inival+1000;
+            inival = inival+3;
         }
-
-
-
 
     }
 }
