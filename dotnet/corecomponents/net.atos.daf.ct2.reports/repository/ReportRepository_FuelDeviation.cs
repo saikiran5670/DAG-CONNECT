@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.end_time_stamp as EndTimeStamp
 	                    , trpst.etl_gps_distance as Distance
 	                    , trpst.idle_duration as IdleDuration
-	                    , ROUND(trpst.average_speed,5) as AverageSpeed
+	                    , ROUND(trpst.average_speed,7) as AverageSpeed
 	                    , ROUND(trpst.average_weight,5) as AverageWeight
                         , startgeoaddr.id AS StartPositionId
                         , endgeoaddr.id AS EndPositionId

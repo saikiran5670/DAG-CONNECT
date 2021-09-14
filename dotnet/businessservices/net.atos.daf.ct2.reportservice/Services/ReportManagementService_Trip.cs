@@ -17,8 +17,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             var response = new VehicleListAndDetailsResponse();
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {

@@ -38,18 +38,20 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
-            if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
-              // redirect to the login route or show a modal
-              const options = {
-                title: 'Session Time Out',
-                message:
-                  'Your sessoin has been expired. Kindly login again to continue.',
-                confirmText: 'Ok',
-              };
-              localStorage.setItem("sessionFlag", "false");
-              if(localStorage.getItem("sessionFlag") == 'false'){
-                this.dialogService.SessionModelOpen(options);
-                localStorage.setItem("sessionFlag", "true");
+            if(localStorage.length !== 0) {
+              if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
+                // redirect to the login route or show a modal
+                const options = {
+                  title: 'Session Time Out',
+                  message:
+                    'Your session has been expired. Kindly login again to continue.',
+                  confirmText: 'Ok',
+                };
+                localStorage.setItem("sessionFlag", "false");
+                if(localStorage.getItem("sessionFlag") == 'false'){
+                  this.dialogService.SessionModelOpen(options);
+                  localStorage.setItem("sessionFlag", "true");
+                }
               }
             }
           } else if (err instanceof ErrorEvent) {

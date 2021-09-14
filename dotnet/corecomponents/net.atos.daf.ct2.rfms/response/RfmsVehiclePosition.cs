@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.rfms.response
         public int Heading { get; set; }
         public int Altitude { get; set; }
         public double Speed { get; set; }
-        public DateTime PositionDateTime { get; set; }
+        public string PositionDateTime { get; set; }
     }
 
     public class VehiclePosition
@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.rfms.response
         public int RecordId { get; set; }
         public string Vin { get; set; }
         public TriggerType TriggerType { get; set; }
-        public DateTime CreatedDateTime { get; set; }
-        public DateTime ReceivedDateTime { get; set; }
+        public string CreatedDateTime { get; set; }
+        public string ReceivedDateTime { get; set; }
         public GnssPosition GnssPosition { get; set; }
         public double WheelBasedSpeed { get; set; }
         public double TachographSpeed { get; set; }

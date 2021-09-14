@@ -31,10 +31,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 Entity.TachoDriverIdentification tachoDriverIdentification = new Entity.TachoDriverIdentification()
                 {
                     DriverIdentification = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverIdentification,
-                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState,
-                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex,
+                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState ?? string.Empty,
+                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex ?? string.Empty,
                     CardReplacementIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardReplacementIndex,
-                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment
+                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment ?? string.Empty
                 };
 
                 Entity.OemDriverIdentification oemDriverIdentification = new Entity.OemDriverIdentification()
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 TellTaleObject tellTaleObject = new TellTaleObject()
                 {
                     State = vehicle.TriggerType.TellTaleInfo.State,
-                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale,
+                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale ?? string.Empty,
                     OemTellTale = vehicle.TriggerType.TellTaleInfo.OemTellTale
                 };
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     PtoId = vehicle.TriggerType.PtoId,
                     TriggerInfo = vehicle.TriggerType.TriggerInfo,
                     DriverId = driverIdObject,
-                    TriggerType = vehicle.TriggerType.Type,
+                    TriggerType = vehicle.TriggerType.Type ?? string.Empty,
                     TellTaleInfo = tellTaleObject
                 };
 
@@ -72,14 +72,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     Heading = vehicle.GnssPosition.Heading,
                     Latitude = vehicle.GnssPosition.Latitude,
                     Longitude = vehicle.GnssPosition.Longitude,
-                    PositionDateTime = vehicle.GnssPosition.PositionDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    PositionDateTime = vehicle.GnssPosition.PositionDateTime,// "yyyy-MM-ddThh:mm:ss.fffZ"),
                     Speed = vehicle.GnssPosition.Speed
                 };
 
                 VehiclePositions vehiclePosition = new VehiclePositions()
                 {
-                    CreatedDateTime = vehicle.CreatedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    ReceivedDateTime = vehicle.ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    CreatedDateTime = vehicle.CreatedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
+                    ReceivedDateTime = vehicle.ReceivedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
                     TachographSpeed = vehicle.TachographSpeed,
                     WheelBasedSpeed = vehicle.WheelBasedSpeed,
                     TriggerType = triggerObject,

@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.Audittrail.test
 
             _dataAccess = new PgSQLDataAccess(connectionString);
             _visibilityRepository = new VisibilityRepository(_dataAccess);
-            _visibilityManager = new VisibilityManager(_visibilityRepository);
+            _visibilityManager = new VisibilityManager(_visibilityRepository, null);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByAccountVisibility(51, 93);
+                                    .GetVehicleByAccountVisibility(51, 93, 93);
             Assert.IsTrue(result.Count() > 0);
         }
 
@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByFeatureAndSubscription(51, 93, 160, "Alert");
+                                    .GetVehicleByFeatureAndSubscription(51, 93, 93, 160, "Alert");
             Assert.IsTrue(result.Count() > 0);
         }
 
@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByVisibilityAndFeature(51, 93, 160, null, "Alert");
+                                    .GetVehicleByVisibilityAndFeature(51, 93, 93, 160, null, "Alert");
             Assert.IsTrue(result.Count() > 0);
         }
     }

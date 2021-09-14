@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.utilities;
@@ -53,14 +54,15 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (record.createddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehiclePosition.CreatedDateTime = createdDateTime;
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"), out DateTime createdDateTime);
+                vehiclePosition.CreatedDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");// createdDateTime;
+
             }
 
             if (record.receiveddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehiclePosition.ReceivedDateTime = receivedDateTime;
+                // DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"), out DateTime receivedDateTime);
+                vehiclePosition.ReceivedDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");// receivedDateTime;
             }
 
             GnssPosition gnssPosition = new GnssPosition();
@@ -87,7 +89,7 @@ namespace net.atos.daf.ct2.rfms.response
             if (record.positiondatetime != null)
             {
                 DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime positionDateTime);
-                gnssPosition.PositionDateTime = positionDateTime;
+                gnssPosition.PositionDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //positionDateTime;
             }
 
             if (record.speed != null)
@@ -377,7 +379,7 @@ namespace net.atos.daf.ct2.rfms.response
                     Heading = 30,
                     Altitude = 32,
                     Speed = 54.5,
-                    PositionDateTime = DateTime.UtcNow//2021-08-23T08=07=40.446Z
+                    PositionDateTime = DateTime.UtcNow.ToString()//2021-08-23T08=07=40.446Z
                 },
                 WheelBasedSpeed = 54.3,
                 TachographSpeed = 54.4,

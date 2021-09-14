@@ -906,7 +906,7 @@ namespace net.atos.daf.ct2.account
 									                FROM master.vehicle veh 
 									                INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									                INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                            AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                            AND ((org.owner_org_id=@organization_id AND lower(ors.code)='owner') or veh.organization_id=@organization_id)
 									                            AND ors.state='A'
 									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
                                                     UNION
@@ -915,7 +915,7 @@ namespace net.atos.daf.ct2.account
                                                         INNER JOIN master.groupref gref ON v.id=gref.ref_id
                                                         INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                                                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                         WHERE 
 	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
 	                                                        else COALESCE(end_date,0) = 0 end
@@ -925,7 +925,7 @@ namespace net.atos.daf.ct2.account
                                                         SELECT v.id
                                                         FROM master.group grp
                                                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
-                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                                                         WHERE 
 	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
@@ -944,7 +944,7 @@ namespace net.atos.daf.ct2.account
                                                     INNER JOIN master.groupref gref ON v.id=gref.ref_id
                                                     INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                                                     INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                     WHERE 
 	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
 	                                                    else COALESCE(end_date,0) = 0 end
@@ -954,7 +954,7 @@ namespace net.atos.daf.ct2.account
                                                     SELECT v.id
                                                     FROM master.group grp
                                                     INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
-                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                     INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                                                     WHERE 
 	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
@@ -968,7 +968,7 @@ namespace net.atos.daf.ct2.account
 									            FROM master.vehicle veh 
 									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                        AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                        AND ((org.owner_org_id=@organization_id AND lower(ors.code)='owner') or veh.organization_id=@organization_id)
 									                        AND ors.state='A'
 									                        AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
                                                )
@@ -977,7 +977,7 @@ namespace net.atos.daf.ct2.account
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
                                                 WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and om.owner_org_id=@organization_id and os.code='Owner'
+                                                      and om.owner_org_id=@organization_id and lower(os.code)='owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
