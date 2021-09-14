@@ -21,7 +21,7 @@ using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -179,55 +179,75 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     Cacertlocation = _kafkaConfiguration.CA_CERT_LOCATION,
                     Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
                 };
+                int alertId = 0;
                 while (true)
                 {
-                    //Pushing message to kafka topic
-                    Thread.Sleep(2000);
-                    ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
-                    TripAlert tripAlert = new TripAlert();
-                    if (response != null)
+                    try
                     {
-                        Console.WriteLine(response.Message.Value);
-                        tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
-                        if (tripAlert != null && tripAlert.Alertid > 0)
+                        //Pushing message to kafka topic
+                        Thread.Sleep(2000);
+                        ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
+                        TripAlert tripAlert = new TripAlert();
+                        if (response != null)
                         {
-                            AlertMesssageProp alertMesssageProp = new AlertMesssageProp();
-                            alertMesssageProp.VIN = tripAlert.Vin;
-                            alertMesssageProp.AlertId = tripAlert.Alertid;
-                            alertMesssageProp.AlertCategory = tripAlert.CategoryType;
-                            alertMesssageProp.AlertType = tripAlert.Type;
-                            alertMesssageProp.AlertUrgency = tripAlert.UrgencyLevelType ?? "";
-
-                            AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
-                            NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
+                            Console.WriteLine(response.Message.Value);
+                            tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
+                            if (tripAlert != null && tripAlert.Alertid > 0)
                             {
-                                TripAlertId = tripAlert.Id,
-                                TripId = tripAlert.Tripid,
-                                Vin = tripAlert.Vin,
-                                AlertCategory = tripAlert.CategoryType,
-                                AlertType = tripAlert.Type,
-                                AlertId = tripAlert.Alertid,
-                                UrgencyLevel = tripAlert.UrgencyLevelType,
-                                AlertGeneratedTime = tripAlert.AlertGeneratedTime,
-                                VehicleGroupId = objAlertVehicleDetails.VehicleGroupId,
-                                VehicleGroupName = objAlertVehicleDetails.VehicleGroupName,
-                                VehicleName = objAlertVehicleDetails.VehicleName,
-                                VehicleLicencePlate = objAlertVehicleDetails.VehicleRegNo,
-                                AlertCategoryKey = objAlertVehicleDetails.AlertCategoryKey,
-                                AlertTypeKey = objAlertVehicleDetails.AlertTypeKey,
-                                UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
-                                CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
-                            };
-                            await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                       AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                       string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "ReadKafkaMessages", AlertConstants.NOTIFICATION_HUB_MSG), notificationAlertMessages.AlertId, notificationAlertMessages.AlertId, JsonConvert.SerializeObject(tripAlert),
-                       _userDetails);
-                            // match session values with clientID & created by 
-                            //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
-                            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
-                            await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
+                                alertId = tripAlert.Alertid;
+                                AlertMesssageProp alertMesssageProp = new AlertMesssageProp();
+                                alertMesssageProp.VIN = tripAlert.Vin;
+                                alertMesssageProp.AlertId = tripAlert.Alertid;
+                                alertMesssageProp.AlertCategory = tripAlert.CategoryType;
+                                alertMesssageProp.AlertType = tripAlert.Type;
+                                alertMesssageProp.AlertUrgency = tripAlert.UrgencyLevelType ?? "";
 
+                                AlertVehicleDetails objAlertVehicleDetails = await _pushNotofocationServiceClient.GetEligibleAccountForAlertAsync(alertMesssageProp);
+                                NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
+                                {
+                                    TripAlertId = tripAlert.Id,
+                                    TripId = tripAlert.Tripid,
+                                    Vin = tripAlert.Vin,
+                                    AlertCategory = tripAlert.CategoryType,
+                                    AlertType = tripAlert.Type,
+                                    AlertId = tripAlert.Alertid,
+                                    UrgencyLevel = tripAlert.UrgencyLevelType,
+                                    AlertGeneratedTime = tripAlert.AlertGeneratedTime,
+                                    VehicleGroupId = objAlertVehicleDetails.VehicleGroupId,
+                                    VehicleGroupName = objAlertVehicleDetails.VehicleGroupName,
+                                    VehicleName = objAlertVehicleDetails.VehicleName,
+                                    VehicleLicencePlate = objAlertVehicleDetails.VehicleRegNo,
+                                    AlertCategoryKey = objAlertVehicleDetails.AlertCategoryKey,
+                                    AlertTypeKey = objAlertVehicleDetails.AlertTypeKey,
+                                    UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
+                                    CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
+                                };
+                                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                           AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                           string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "ReadKafkaMessages", AlertConstants.NOTIFICATION_HUB_MSG), notificationAlertMessages.AlertId, notificationAlertMessages.AlertId, JsonConvert.SerializeObject(tripAlert),
+                           _userDetails);
+                                // match session values with clientID & created by 
+                                //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
+                                IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
+                                await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
+
+                            }
                         }
+                    }
+                    catch (RpcException ex)
+                    {
+                        _logger.Error($"Error in ReadKafkaMessages - AlertID: {alertId}", ex);
+                        await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                         AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                         string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
+                          _userDetails);
+                        _ = ex.Message + test;
+                        _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}", ex);
+                        await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
                     }
                 }
             }

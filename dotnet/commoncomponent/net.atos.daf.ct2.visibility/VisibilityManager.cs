@@ -35,6 +35,22 @@ namespace net.atos.daf.ct2.visibility
             return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray(), accountId);
         }
 
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId)
+        {
+            List<VisibilityVehicle> vehicles;
+            //If context switched then find vehicle visibility for the organization
+            if (orgId != contextOrgId)
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+            }
+            else
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            }
+
+            return await _visibilityRepository.GetVehicleVisibilityDetailsTemp(vehicles.Select(x => x.Id).ToArray());
+        }
+
         public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
@@ -96,6 +112,33 @@ namespace net.atos.daf.ct2.visibility
                         }
                     }
                 }
+                return await Task.FromResult(vehicleByVisibilityAndFeature);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetVehicleByVisibilityAndFeatureTemp(int accountId, int orgId, int contextOrgId, int roleId,
+                                                                                                           string featureName = "Alert")
+        {
+            try
+            {
+                var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeatureTemp>();
+
+                var vehicleByFeature = await GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
+
+                foreach (var item in vehicleByFeature)
+                {
+                    vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeatureTemp
+                    {
+                        VehicleId = item.VehicleId,
+                        FeatureKey = item.Name.ToLower().Contains("alerts.") == true ? item.FeatureEnum : item.Key,
+                        SubscriptionType = item.SubscriptionType
+                    });
+                }
+
                 return await Task.FromResult(vehicleByVisibilityAndFeature);
             }
             catch (System.Exception)
