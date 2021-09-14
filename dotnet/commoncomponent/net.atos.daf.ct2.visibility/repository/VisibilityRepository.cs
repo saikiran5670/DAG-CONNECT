@@ -484,5 +484,29 @@ namespace net.atos.daf.ct2.visibility.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetailsTemp(int[] vehicleIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@VehicleIds", vehicleIds);
+
+                var queryStatement = @"SELECT DISTINCT v.id as VehicleId, v.name as VehicleName, vin as Vin, license_plate_number as RegistrationNo, 
+                                            v.organization_id as OrganizationId,
+		                                    string_agg(concat(grp.id::text,'~',grp.name::text,'~',grp.group_type::text), ',') as VehicleGroupDetails
+                                    FROM master.vehicle v
+                                    LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                                    INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V'
+                                    WHERE v.organization_id=grp.organization_id AND v.id = ANY(@VehicleIds)
+                                    GROUP BY v.id,v.name,v.vin, v.organization_id, v.license_plate_number";
+
+                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
