@@ -18,6 +18,7 @@ import 'jspdf-autotable';
 import { OrganizationService } from '../../services/organization.service';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-eco-score-report',
@@ -260,6 +261,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.isSearched=MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR;
     this.ecoScoreForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -307,6 +309,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
        });
     });
+    this.isSearched=true;
   }
 
   proceedStep(prefData: any, preference: any){
