@@ -14,6 +14,7 @@
         public string VehicleName { get; set; } = string.Empty;
         public string Vin { get; set; }
         public string RegistrationNo { get; set; } = string.Empty;
+        public string VehicleGroupDetails { get; set; } = string.Empty;
     }
 
     public class VehicleDetailsVisibiltyAndFeature
@@ -35,5 +36,12 @@
         public string FeatureKey { get; set; }
 
         public bool Subscribe { get; set; }
+    }
+
+    public class VehicleDetailsVisibiltyAndFeatureTemp
+    {
+        public int VehicleId { get; set; }
+        public string FeatureKey { get; set; }
+        public string SubscriptionType { get; set; }
     }
 }

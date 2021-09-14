@@ -210,7 +210,7 @@ namespace net.atos.daf.ct2.organizationservice
                 else
                 {
                     response.Code = Responcecode.Conflict;
-                    response.Message = "Relationship cannot be deleted as it is mapped with organiztion.";
+                    response.Message = "Relationship cannot be deleted as it is mapped with organization.";
 
                 }
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Relationship Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Delete", 1, 2, request.Id.ToString());
@@ -243,7 +243,8 @@ namespace net.atos.daf.ct2.organizationservice
                     {
                         foreach (var vehgroup in request.VehicleGroupID)
                         {
-                            if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup && i.Relationship_id == request.RelationShipId))
+                            if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup &&
+                                                       i.Relationship_id == request.RelationShipId && !i.End_date.HasValue))
                             {
                                 relationsCount++;
                                 response.Code = Responcecode.Conflict;
@@ -264,7 +265,8 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.Created_org_id = request.CreatedOrgId;
                         objRelationship.Target_org_id = organization;
                         objRelationship.Allow_chain = request.AllowChain;
-                        if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id && i.Relationship_id == objRelationship.Relationship_id))
+                        if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id &&
+                                                   i.Relationship_id == objRelationship.Relationship_id && !i.End_date.HasValue))
                         {
                             OrgRelationshipMappingGetRequest presetRelationships = new OrgRelationshipMappingGetRequest();
                             presetRelationships.RelationShipId = request.RelationShipId;
@@ -378,9 +380,9 @@ namespace net.atos.daf.ct2.organizationservice
                                          RelationShipId = x.Relationship_id,
                                          TargetOrgId = x.Target_org_id,
                                          CreatedOrgId = x.Created_org_id,
-                                         StartDate = x.Start_date,
+                                         StartDate = x.Start_date.Value,
                                          CreatedAt = x.Created_at,
-                                         EndDate = x.End_date,
+                                         EndDate = x.End_date.Value,
                                          AllowChain = x.Allow_chain,
                                          OrganizationName = x.OrganizationName,
                                          VehicleGroupID = x.Vehicle_group_id,

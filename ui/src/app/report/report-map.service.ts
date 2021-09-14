@@ -1884,8 +1884,8 @@ export class ReportMapService {
     return ft.toFixed(2); 
   }
 
-  convertTimeToMinutes(milisec: any){
-    let newMin = milisec / 60000;
+  convertTimeToMinutes(seconds: any){
+    let newMin = seconds / 60;
     return newMin.toFixed(2);
   }
 }

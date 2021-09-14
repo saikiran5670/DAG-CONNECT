@@ -10,8 +10,8 @@
         public int Owner_org_id { get; set; }
         public int Created_org_id { get; set; }
         public int Target_org_id { get; set; }
-        public long Start_date { get; set; }
-        public long End_date { get; set; }
+        public long? Start_date { get; set; }
+        public long? End_date { get; set; }
         public bool Allow_chain { get; set; }
         public bool IsFirstRelation { get; set; }
         public long Created_at { get; set; }

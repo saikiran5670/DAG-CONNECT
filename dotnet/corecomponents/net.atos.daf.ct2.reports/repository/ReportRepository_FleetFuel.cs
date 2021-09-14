@@ -134,8 +134,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , max_speed                                            as MaxSpeed
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                                  		  , round(fd.fuel_consumed,7)                            As FuelConsumed
-                                                  		  , round(fd.fuel_consumption,7)                         As FuelConsumption
+                                                  		  , round(fd.fuel_consumed,2)                            As FuelConsumed
+                                                  		  , round(fd.fuel_consumption,2)                         As FuelConsumption
                                                   		  , round(fd.co2_emission,2)                             As CO2Emission
                                                   		  , round(fd.idle_duration,2)                                     as IdleDuration
                                                           , round(fd.idle_duration_percentage,2)                          as IdleDurationPercentage

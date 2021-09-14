@@ -1373,8 +1373,8 @@ miliLitreToGallon(_data: any){
   }
   
 
-  convertTimeToMinutes(milisec: any){
-    let newMin = milisec / 60000;
+  convertTimeToMinutes(seconds: any){
+    let newMin = seconds / 60;
     return newMin;
   }
 
@@ -2493,6 +2493,8 @@ setVehicleGroupAndVehiclePreSelection() {
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
         let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
+        console.log("idleDuration", element.idleDuration);
+        console.log("convertedDuration", convertedDuration);
         sum += parseFloat(convertedDuration);
         //  sum += parseFloat(element.idleDuration);
         });
