@@ -38,7 +38,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
-            if(localStorage.length !== 0) {
+            if(localStorage.length !== 0 && (!localStorage.getItem("sessionFlag"))) {
               if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
                 // redirect to the login route or show a modal
                 const options = {
