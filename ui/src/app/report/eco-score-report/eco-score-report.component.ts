@@ -765,8 +765,8 @@ let finalGroupDataList = [];
       }
       }
       this.vehicleListData = finalVINDataList;
-      // if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
-      // this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
+      this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
     }
     }
     if(this.onLoadData.driverList.length > 0){
