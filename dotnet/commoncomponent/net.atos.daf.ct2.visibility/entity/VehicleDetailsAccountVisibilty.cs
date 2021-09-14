@@ -14,6 +14,7 @@
         public string VehicleName { get; set; } = string.Empty;
         public string Vin { get; set; }
         public string RegistrationNo { get; set; } = string.Empty;
+        public string VehicleGroupDetails { get; set; } = string.Empty;
     }
 
     public class VehicleDetailsVisibiltyAndFeature

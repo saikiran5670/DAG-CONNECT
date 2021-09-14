@@ -35,6 +35,22 @@ namespace net.atos.daf.ct2.visibility
             return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray(), accountId);
         }
 
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId)
+        {
+            List<VisibilityVehicle> vehicles;
+            //If context switched then find vehicle visibility for the organization
+            if (orgId != contextOrgId)
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+            }
+            else
+            {
+                vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            }
+
+            return await _visibilityRepository.GetVehicleVisibilityDetailsTemp(vehicles.Select(x => x.Id).ToArray());
+        }
+
         public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
