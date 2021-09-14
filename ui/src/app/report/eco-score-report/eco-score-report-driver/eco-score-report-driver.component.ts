@@ -142,7 +142,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
        })
      });
     this.driverDetails = this.ecoScoreDriverDetails.singleDriver;
-    this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_") !== -1);
+    this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_Driver") !== -1);
     let vins=[];
     this.driverDetails.forEach(element => {
       vins.push(element.vin);
@@ -911,6 +911,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
         else if(key.indexOf('75') !== -1)
           value += ' >45 mph ';
         value += '(%)';
+      } else if(key.indexOf('rp_averagegrossweight') !== -1){
+        value += ' (ton) ';
+      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+        value += ' (mile) ';
       }
     }  else if(this.prefUnitFormat === 'dunit_Metric'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
@@ -925,6 +929,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
           else if(key.indexOf('75') !== -1)
            value += ' >75 km/h ';
           value += '(%)';
+        } else if(key.indexOf('rp_averagegrossweight') !== -1){
+          value += ' (tonne) ';
+        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+          value += ' (km) ';
         }
     }
     
