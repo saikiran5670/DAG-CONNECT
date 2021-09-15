@@ -4,6 +4,7 @@ import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excess
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDuringTripFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
 //import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
@@ -11,15 +12,14 @@ import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_INDEX_MSG_TOPI
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import net.atos.daf.ct2.service.realtime.ExcessiveAverageSpeedService;
+import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -29,11 +29,9 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +42,11 @@ import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.ExcessiveAverageSpeedService;
 import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
+import net.atos.daf.ct2.service.realtime.FuelDuringTripProcessor;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
-import net.atos.daf.ct2.util.Utils;
 
 public class IndexBasedAlertProcessing implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
@@ -61,7 +60,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Creating param tool from given property
          */
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
-
+        env.getConfig().setGlobalJobParameters(propertiesParamTool);
         logger.info("PropertiesParamTool :: {}", parameterTool.getProperties());
 
         /**
@@ -101,6 +100,14 @@ public class IndexBasedAlertProcessing implements Serializable {
             ));
         }};
 
+        /**
+         * RealTime functions defined
+         */
+        Map<Object, Object> fuelDuringTripFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+            		fuelDuringTripFun
+            ));
+        }};
         /**
          *  Booting cache
          */
@@ -222,6 +229,36 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         IndexMessageAlertService.processIndexKeyStream(indexStringKeyedStream,
                 env,propertiesParamTool,fuelDuringStopFunConfigMap);
+        
+        /**
+         * Excessive Fuel during trip 
+         */
+        KeyedStream<Index, String> fuelDuringTripStream = indexStringStream
+        		 .assignTimestampsAndWatermarks(
+        					WatermarkStrategy.<Index>forBoundedOutOfOrderness(Duration.ofSeconds(Long.parseLong(
+        							propertiesParamTool.get(AlertConfigProp.ALERT_WATERMARK_TIME_WINDOW_SECONDS))))
+        							.withTimestampAssigner(new SerializableTimestampAssigner<Index>() {
+
+        								private static final long serialVersionUID = 1L;
+
+        								@Override
+        								public long extractTimestamp(Index element, long recordTimestamp) {
+        									return convertDateToMillis(element.getEvtDateTime());
+        								}
+        							}))
+				.filter(index -> Objects.nonNull(index.getDocument().getTripID())).returns(Index.class)
+				.keyBy(index -> index.getDocument().getTripID())
+				.window(TumblingEventTimeWindows.of(Time
+						.seconds(Long.parseLong(propertiesParamTool.get(AlertConfigProp.ALERT_TIME_WINDOW_SECONDS)))))
+				.process(new FuelDuringTripProcessor())
+				.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        /*
+         * Process fuelDuringTripStream for fuel deviation during trip
+        */
+        IndexMessageAlertService.processIndexKeyStream(fuelDuringTripStream,
+                env,propertiesParamTool,fuelDuringTripFunConfigMap);
+        
 
 
 
