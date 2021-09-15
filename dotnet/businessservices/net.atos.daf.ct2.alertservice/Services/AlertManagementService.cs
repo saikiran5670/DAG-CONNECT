@@ -396,9 +396,9 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
 
-                IEnumerable<NotificationRecipient> NotificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
+                IEnumerable<NotificationRecipient> notificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
                 NotificationRecipientResponse response = new NotificationRecipientResponse();
-                foreach (var item in NotificationRecipientResponseList)
+                foreach (var item in notificationRecipientResponseList)
                 {
                     response.NotificationRecipient.Add(_mapper.MapNotificationRecipientEntity(item));
                 }
