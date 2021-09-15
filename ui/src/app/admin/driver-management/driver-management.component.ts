@@ -776,24 +776,26 @@ export class DriverManagementComponent implements OnInit {
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe(res => {
-      // if(res.tableData && res.tableData.length > 0){
-        this.selectedConsentType = 'All';
-        this.setConsentDropdown();
-        // this.initData = res.tableData;
-        this.loadDriverData();
-        // this.updateGridData(this.initData);
-      // }
-      if(res.consentMsg) { 
-        if(dialogConfig.data.consentType=='H' || dialogConfig.data.consentType=='I') {
-          var msg = res.tableData.length + " drivers were successfully Opted-In.";
-        } else if(dialogConfig.data.consentType=='U') {
-          var msg = res.tableData.length + " drivers were successfully Opted-Out.";
+      if(res){
+        // if(res.tableData && res.tableData.length > 0){
+          this.selectedConsentType = 'All';
+          this.setConsentDropdown();
+          // this.initData = res.tableData;
+          this.loadDriverData();
+          // this.updateGridData(this.initData);
+        // }
+        if(res.consentMsg) { 
+          if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
+            var msg = res.tableData.length + " drivers were successfully Opted-In.";
+          } else if(dialogConfig.data.consentType == 'U') {
+            var msg = res.tableData.length + " drivers were successfully Opted-Out.";
+          }
         }
+        this.successMsgBlink(msg);
+        // if(res.consentMsg && res.consentMsg != ''){
+        //   this.successMsgBlink(res.consentMsg);
+        // }
       }
-      this.successMsgBlink(msg);
-      // if(res.consentMsg && res.consentMsg != ''){
-      //   this.successMsgBlink(res.consentMsg);
-      // }
     });
   }
 
