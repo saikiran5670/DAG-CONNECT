@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.utilities
             }
             else if (dateformat == "yyyy-MM-ddThh:mm:ss.fffZ")  //2021-04-26T05:44:42.341+0
             {
-                sConverteddateTime = dtzone.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                sConverteddateTime = dtzone.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             }
             else
             {
