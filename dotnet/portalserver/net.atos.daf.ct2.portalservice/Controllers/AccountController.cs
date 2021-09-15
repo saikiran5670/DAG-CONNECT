@@ -1923,8 +1923,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 AccountBusinessService.RequestCountry requestCountry = new AccountBusinessService.RequestCountry();
-                requestCountry.Code = countryFilter.Code;
-                requestCountry.RegionType = countryFilter.RegionType;
+                requestCountry.Code = countryFilter.Code.ToUpper();
+                requestCountry.RegionType = countryFilter.RegionType.ToUpper();
+                requestCountry.DialCode = countryFilter.DialCode;
                 AccountBusinessService.ResponseCountry responseCountry = await _accountClient.GetCountryDetailAsync(requestCountry);
 
 

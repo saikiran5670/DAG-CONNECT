@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.singlesignonservice.CustomAttributes;
 using net.atos.daf.ct2.singlesignonservice.Entity;
@@ -51,6 +49,8 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                             details.TimeZone = result.Details.TimeZone;
                             details.UnitDisplay = result.Details.UnitDisplay;
                             details.VehicleDisplay = result.Details.VehicleDisplay;
+                            details.TimeFormat = result.Details.TimeFormat;
+                            details.Language = result.Details.Language;
 
                             return Ok(details);
                         }

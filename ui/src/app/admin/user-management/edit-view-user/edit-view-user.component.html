@@ -175,7 +175,7 @@
                   <div class="areaWidth min-width-30-per"style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput value="DAF Connect" formControlName="organization">
+                      <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput formControlName="organization">
                     </mat-form-field>
                   </div>
                   <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>

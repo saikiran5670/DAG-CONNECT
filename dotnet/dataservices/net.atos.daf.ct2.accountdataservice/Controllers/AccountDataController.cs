@@ -40,8 +40,6 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
 
-        private readonly Dictionary<string, string> _vehicleDisplayOptions;
-
         public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
         {
             _accountManager = accountManager;
@@ -52,8 +50,6 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
-
-            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
         }
 
         #region Driver Lookup
@@ -528,17 +524,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
-            };
-        }
-
-        private Dictionary<string, string> PrepareUnitDisplayOptions()
-        {
-            return new Dictionary<string, string>()
-            {
-                { "vin", "Vehicle Identification Number" },
-                { "name", "Vehicle Name" },
-                { "regno", "Vehicle Registration Number" }
+                VehicleDisplay = request.VehicleDisplay.ToLower()
             };
         }
 

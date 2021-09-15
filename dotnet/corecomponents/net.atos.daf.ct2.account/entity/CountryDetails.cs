@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.account.entity
         public int ID { get; set; }
         public string RegionType { get; set; }
         public string Code { get; set; }
-        public int DailingCode { get; set; }
+        public string DialCode { get; set; }
         public string Name { get; set; }
     }
 }

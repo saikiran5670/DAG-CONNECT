@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
     {
         public string RegionType { get; set; }
         public string Code { get; set; }
-        //public int DailingCode { get; set; }
+        public string DialCode { get; set; }
     }
 }
