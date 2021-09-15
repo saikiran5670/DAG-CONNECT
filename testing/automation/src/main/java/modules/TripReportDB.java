@@ -1,6 +1,6 @@
 package modules;
 import static executionEngine.DriverScript.TestStep;
-
+//Test
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ public class TripReportDB extends CommonFunctionLib{
 			String Startdatetime ="2021.08.23 13:02:02"; 
 			  String User = "'ulka.pate@atos.net'";
 			  String Enddatetime ="2021.08.23 13:10:18";
-			  String Vehicle = "XLRAE75PC0E348696";
+			  String Vehicle = " XLR0998HGFFT74611";
 			  String EField = "TotalTrip";
-			String ExpField = verifyTripData(EField, Startdatetime, Enddatetime, User, EField);
+			String ExpField = verifyTripData(EField, Startdatetime, Enddatetime, User, Vehicle);
 			
 		}catch (Exception e) {
 			test.log(LogStatus.FAIL, e.getMessage());
@@ -69,7 +69,13 @@ public class TripReportDB extends CommonFunctionLib{
 			  System.out.println(NoVeh);
 			  String NoVehicles = CommonFunctionLib.connectToDatamart(NoVeh);
 			  System.out.println("Number of vehicles are " + NoVehicles);
-			 			  			  
+
+			  //calculate number of days
+			  String NOD="SELECT count(distinct CAST(to_timestamp(end_time_stamp/1000)as DATE)) FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= '" + Long.toString(TripStartTime) +"' and end_time_stamp <= '"+ Long.toString(TripEndTime)+ "' and vin in ("+ temp +")";
+			  System.out.println(NOD);
+			  String NoOfDays = CommonFunctionLib.connectToDatamart(NOD);
+			  System.out.println("Number of days are " + NoOfDays);	
+			  
 			//Total Trip count
 			 String Tripcount="SELECT count(trip_id) FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= "
 			  + Long.toString(TripStartTime) +" and end_time_stamp <= "+ Long.toString(TripEndTime); 
@@ -80,8 +86,33 @@ public class TripReportDB extends CommonFunctionLib{
 			  String TripId ="SELECT trip_id FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= "
 			  + Long.toString(TripStartTime) +" and end_time_stamp <= " + Long.toString(TripEndTime); 
 			  ArrayList TTrip = CommonFunctionLib.connectToDM(TripId); 			  
-			  double TotalDistance = 0,TotalFuel = 0,TotalIdleDuration =0; 
+			  double TotalDistance = 0,TotalFuel = 0,TotalIdleDuration =0, TotalDriveTime=0; 
 			  System.out.println("Total Trip id's " + TTrip.size()); 
+			  
+			  //get max speed fro all trips			  
+			  String Mspeed="SELECT MAX(max_speed) FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= "
+					  + Long.toString(TripStartTime) +" and end_time_stamp <= "+ Long.toString(TripEndTime); 
+			  String MaxSpeed1 = CommonFunctionLib.connectToDatamart(Mspeed);
+			  double MaxSpeed =(Double.parseDouble(MaxSpeed1)*3600)/1000;
+			  System.out.println("Max speed is " + MaxSpeed);	 
+			  
+			  //Average Gross Weight Comb 
+			  String AGWC="SELECT SUM(average_gross_weight_comb) FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= '" + Long.toString(TripStartTime) +"' and end_time_stamp <= '"+ Long.toString(TripEndTime)+ "' and vin in ("+ temp +")";
+			  System.out.println(AGWC);
+			  String TAGWC = CommonFunctionLib.connectToDatamart(AGWC);
+			  System.out.println("Number of days are " + TAGWC);
+			  double AvgGrossWgt = Double.parseDouble(TAGWC)/1000; 
+				 String AvgGrossWeight = df.format(AvgGrossWgt); 
+				 System.out.println(AvgGrossWeight); 
+			  
+				  //CO2 Emission CO2Emission, AvgGrossWeight
+				  String Co2e="SELECT SUM(co2_emission) FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= '" + Long.toString(TripStartTime) +"' and end_time_stamp <= '"+ Long.toString(TripEndTime)+ "' and vin in ("+ temp +")";
+				  System.out.println(Co2e);
+				  String Co2eme = CommonFunctionLib.connectToDatamart(Co2e);
+				  System.out.println("Number of days are " + Co2eme);
+				  double TCo2eme = Double.parseDouble(Co2eme)/1000; 
+					 String CO2Emission = df.format(TCo2eme); 
+					 System.out.println(CO2Emission); 
 			  
 			  //Verifying distance, driving time, idle duration, average speed and Fuel Consumed
 			  for(int i = 0; i< TTrip.size(); i++){
@@ -101,6 +132,8 @@ public class TripReportDB extends CommonFunctionLib{
 			 System.out.println(" Drive time for Trip id "+ TTrip.get(i)+ " is "+DriveTime); 
 			String DriveT = ConvertSecondsInHHMM(Integer.parseInt(DriveTime));
 			System.out.println(" Drive time in HH:MM format for Trip id "+ TTrip.get(i)+ " is "+DriveT);
+			TotalDriveTime =TotalDriveTime + Double.parseDouble(DriveTime);
+			
 			 String IdTime ="SELECT idle_duration FROM tripdetail.trip_statistics where trip_id=" +"'"+TTrip.get(i)+"'"; 
 			 String IdealTime = CommonFunctionLib.connectToDatamart(IdTime);
 			 System.out.println(" Ideal time for Trip id "+ TTrip.get(i)+ " is "+ IdealTime);
@@ -130,23 +163,53 @@ public class TripReportDB extends CommonFunctionLib{
 			  case "TotalTrip":				  
 				  System.out.println("Total Trips are "+ TCount);
 				  Returnf =TCount;
+				  break;
 			  case "TotalDistance":	
 				  System.out.println("Total Distance of this vehicle is "+ df.format(TotalDistance)+ " in Kilometer");	
 				  Returnf = df.format(TotalDistance);
+				  break;
 			  case "TotalFuel":
 				  System.out.println("Total Fuel consumed by this vehicle is "+ df.format(TotalFuel) + " in litter");
 				  Returnf =df.format(TotalFuel);
+				  break;
 			  case "TotalIdleDuration":
 				  String TIdleDuration = ConvertSecondsInHHMM((int) TotalIdleDuration);
 				  System.out.print("Total idle_duration of this Vehicle is "+ TIdleDuration);
 				  Returnf =TIdleDuration;
+				  break;
 			  case "FuelConsumption":
 				  System.out.println("Total Fuel Consumption by this Vehicle is "+(TotalFuel/TotalDistance)*100);
 				  Returnf =df.format((TotalFuel/TotalDistance)*100);
+				  break;
 			  case "NoVehicles":				  
 				  System.out.println("Number of vehicles are " + NoVehicles);
 				  Returnf =NoVehicles;
+				  break;
+			  case "AverageDistancePerDay":				  
+				  System.out.println("Average distance per day is" + df.format(TotalDistance/Double.parseDouble(NoOfDays)));
+				  Returnf =NoVehicles;
+				  break;
+			  case "TripTime":
+				  double TTTime =  TotalDriveTime + TotalIdleDuration;
+				  String TotalTripTime = ConvertSecondsInHHMM((int) TTTime);	 
+				  System.out.println("Total Trip time of this Vehicle is "+ TotalTripTime);
+				  Returnf =TotalTripTime;
+				  break;
+			  case "MaxSpeed":	  
+				  System.out.println("Max speed is " + df.format(MaxSpeed));
+				  Returnf = String.valueOf(MaxSpeed);
+				  break;
+			  case "Co2Emission":	  
+				  System.out.println("CO2 Emission is " +CO2Emission);
+				  Returnf =CO2Emission;
+				  break;
+			  case "AverageGrossWeightcombo":
+				  System.out.println("Average Gross Weight combo is " + AvgGrossWeight);
+				  Returnf =AvgGrossWeight;
+				  break;
+					 
 			  }
+			 System.out.println(Returnf);
 			  return Returnf;
 		}catch (Exception e) {
 			test.log(LogStatus.FAIL, e.getMessage());
@@ -162,16 +225,16 @@ public class TripReportDB extends CommonFunctionLib{
 	//*********************Verify Single Trip distance**************************************************************
 	
 	public static void verifyTripDistance() throws Exception {		
-		try {
-	long St = getTripStartTime("2021.08.23 13:02:02");
-	long Et = getTripEndTime("2021.08.23 13:10:18");
-	String Vin = "'XLRAE75PC0E348696'";
-	String TripIdInput ="SELECT trip_id FROM tripdetail.trip_statistics where vin = "+ Vin +" and start_time_stamp >= "
+		try {//08/30/2021 13:58:01
+	long St = getTripStartTime("2021.08.30 13:58:01");
+	long Et = getTripEndTime("2021.08.30 14:02:51");
+	String Vin = "vin = 'XLR0998HGFFT74611' and";//"'XLRAE75PC0E348696'";
+	String TripIdInput ="SELECT trip_id FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= "
 			  + Long.toString(St) +" and end_time_stamp <= " + Long.toString(Et);
 	String TripId = CommonFunctionLib.connectToDatamart(TripIdInput);
 	
 	//Distance (km)
-	String TripDistance ="SELECT etl_gps_distance FROM tripdetail.trip_statistics where vin = 'XLRAE75PC0E348696' and start_time_stamp >= "+ Long.toString(St) +" and end_time_stamp <= "+ Long.toString(Et);
+	String TripDistance ="SELECT etl_gps_distance FROM tripdetail.trip_statistics where "+ Vin +" start_time_stamp >= "+ Long.toString(St) +" and end_time_stamp <= "+ Long.toString(Et);
 	String dist = CommonFunctionLib.connectToDatamart(TripDistance);
 	double SingelTD = Double.parseDouble(dist)/1000;
 	System.out.println(df.format(SingelTD));
@@ -218,6 +281,43 @@ public class TripReportDB extends CommonFunctionLib{
 	 test.log(LogStatus.INFO, Fuel + " Database value of Fuel Consumed (ltr)");
 	 Log.info(Fuel + " Database value of Fuel Consumed (ltr)");
 	 CommonFunctionLib.verifyDBDataInTable(Fuel,"Fuel Consumed (ltr)");
+	 
+	 //verify start and end date
+	 //Start date
+	 String StmtStamp="SELECT start_time_stamp FROM tripdetail.trip_statistics where trip_id=" +"'"+TripId+"'";  
+	 String STimeStamp = CommonFunctionLib.connectToDatamart(StmtStamp); 
+	 String Sdate = CommonFunctionLib.MilisecondtoDate(STimeStamp, "'ulka.pate@atos.net'");
+	 System.out.println(Sdate + " Database value of Start date"); 
+	 test.log(LogStatus.INFO, Sdate + " Database value of Start date");
+	 Log.info(Sdate + " Database value of Start date");
+	 CommonFunctionLib.verifyDBDataInTable(Sdate,"Start Date ");
+	 //End date
+	 String EtmtStamp="SELECT end_time_stamp FROM tripdetail.trip_statistics where trip_id=" +"'"+TripId+"'";  
+	 String ETimeStamp = CommonFunctionLib.connectToDatamart(EtmtStamp); 
+	 String Edate = CommonFunctionLib.MilisecondtoDate(ETimeStamp,"'ulka.pate@atos.net'");	 
+	 System.out.println(Edate + " Database value of End date"); 
+	 test.log(LogStatus.INFO, Edate + " Database value of End date");
+	 Log.info(Edate + " Database value of End date");
+	 CommonFunctionLib.verifyDBDataInTable(Edate,"End Date ");
+	 
+	 //verify Alert count for trip
+	 String AlertSQL="SELECT no_of_alerts FROM tripdetail.trip_statistics where trip_id=" +"'"+TripId+"'";  
+	 String NoOfAlerts = CommonFunctionLib.connectToDatamart(AlertSQL); 	 
+	 System.out.println(NoOfAlerts + " Database value of Alters"); 
+	 test.log(LogStatus.INFO, NoOfAlerts + " Database value of Alters");
+	 Log.info(NoOfAlerts + " Database value of Alters");
+	 CommonFunctionLib.verifyDBDataInTable(NoOfAlerts,"Alerts ");
+	 
+	 //verify Odometer value for trip
+	 String Odo="SELECT last_odometer FROM tripdetail.trip_statistics where trip_id=" +"'"+TripId+"'";  
+	 String Odometer1 = CommonFunctionLib.connectToDatamart(Odo); 	
+	 double odm = Double.parseDouble(Odometer1)/1000;
+	 System.out.println(df.format(odm));
+	 String Odometer =df.format(odm);
+	 System.out.println(Odometer + " Database value of Odometer"); 
+	 test.log(LogStatus.INFO, Odometer + " Database value of Odometer");
+	 Log.info(Odometer + " Database value of Odometer");
+	 CommonFunctionLib.verifyDBDataInTable(df.format(odm),"Odometer (km)");	
 
 		}catch (Exception e) {
 			test.log(LogStatus.FAIL, e.getMessage());
