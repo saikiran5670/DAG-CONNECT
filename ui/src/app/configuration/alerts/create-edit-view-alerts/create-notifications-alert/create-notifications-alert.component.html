@@ -14,17 +14,17 @@
         </div>
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="criticalLevel" [disabled]="!criticalLevel"
+                <mat-checkbox [checked]="criticalLevel" [disabled]="criticalLevel == false"
                     (change)="onChangeCriticalLevel($event)">Critical
                 </mat-checkbox>
             </div>
             <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="warningLevel" [disabled]="!warningLevel"
+                <mat-checkbox [checked]="warningLevel" [disabled]="warningLevel == false"
                     (change)="onChangeWarningLevel($event)">Warning
                 </mat-checkbox>
             </div>
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-checkbox [checked]="advisoryLevel" [disabled]="!advisoryLevel"
+                <mat-checkbox [checked]="advisoryLevel" [disabled]="advisoryLevel == false"
                     (change)="onChangeAdvisoryLevel($event)">Advisory
                 </mat-checkbox>
             </div>
