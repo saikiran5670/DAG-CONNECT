@@ -636,6 +636,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
                 {
                     NotificationDisplayResponse notificationDisplayResponse = new NotificationDisplayResponse();
                     notificationDisplayResponse.AlertId = item.AlertId;
+                    notificationDisplayResponse.AlertName = item.AlertName;
                     notificationDisplayResponse.AlertCategory = item.AlertCategory;
                     notificationDisplayResponse.AlertCategoryKey = item.AlertCategoryKey;
                     notificationDisplayResponse.AlertType = item.AlertType;
