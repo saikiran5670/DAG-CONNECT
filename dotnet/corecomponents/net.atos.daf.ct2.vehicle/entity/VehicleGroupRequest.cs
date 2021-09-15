@@ -8,4 +8,10 @@ namespace net.atos.daf.ct2.vehicle.entity
         public int UserCount { get; set; }
         public bool IsGroup { get; set; }
     }
+
+    public class VehicleGroupForOrgRelMapping
+    {
+        public int VehicleGroupId { get; set; }
+        public string VehicleGroupName { get; set; }
+    }
 }
