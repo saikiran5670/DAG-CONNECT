@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.accountdataservice.CustomAttributes
                     break;
             }
 
-            if (values.Contains(((string)value).ToLower()))
+            if (values.Contains(((string)value ?? string.Empty).ToLower()))
             {
                 return ValidationResult.Success;
             }
