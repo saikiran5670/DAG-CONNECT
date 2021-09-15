@@ -85,17 +85,30 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
+        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long organizationId)
         {
             try
             {
-                return await _vehicleRepository.GetOrganizationVehicleGroupdetails(OrganizationId);
+                return await _vehicleRepository.GetOrganizationVehicleGroupdetails(organizationId);
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehicleGroupForOrgRelMapping>> GetVehicleGroupsForOrgRelationshipMapping(long organizationId)
+        {
+            try
+            {
+                return await _vehicleRepository.GetVehicleGroupsForOrgRelationshipMapping(organizationId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
         {
             try
