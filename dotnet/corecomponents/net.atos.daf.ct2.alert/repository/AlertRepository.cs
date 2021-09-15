@@ -1550,7 +1550,7 @@ namespace net.atos.daf.ct2.alert.repository
                                     , triale.vin as Vin
                                     , triale.category_type as AlertCategory
                                     , triale.type as AlertType
-                                    , triale.name as AlertName
+                                    , coalesce(triale.name,'') as AlertName
                                     , triale.alert_id as AlertId
                                     , triale.alert_generated_time as AlertGeneratedTime
                                     , triale.urgency_level_type as UrgencyLevel
