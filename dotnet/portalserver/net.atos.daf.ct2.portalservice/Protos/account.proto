@@ -529,21 +529,20 @@ string Message = 3;
 }
 // end - vehicle-account access relatioship
 
-
 message RequestCountry
 {
    string RegionType =1;
    string Code = 2;
-   //int32 DailingCode = 3; 
+   string DialCode = 3; 
 }
 
 message Country{
-
-    string Name = 1;
-    string RegionType =2;
-    string Code = 3;
-    //int32 DailingCode =4;
-    int32 id =4;
+    int32 Id =1;
+    string Name = 2;
+    string RegionType =3;
+    string Code = 4;
+    string DialCode =5;
+    
 }
 message ResponseCountry
 {
