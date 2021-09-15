@@ -699,7 +699,7 @@ export class RouteCalculatingComponent implements OnInit {
       },(error)=>{
           if(error.status === 409){
             this.duplicateError = true;
-            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
+            this.duplicateErrorMsg = this.getDuplicateMsgEdit(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
@@ -717,6 +717,13 @@ export class RouteCalculatingComponent implements OnInit {
       return this.translationData.lblDuplicateMsg.replace('$', name);
     else
       return ("Corridor '$' already exists.").replace('$', name);
+  }
+
+  getDuplicateMsgEdit(name: any) {
+    if (this.translationData.lblDuplicateMsgEdit)
+      return this.translationData.lblDuplicateMsgEdit.replace('$', name);
+    else
+      return ("Corridor '$' does not exist to update.").replace('$', name);
   }
 
   backToCorridorList(){
