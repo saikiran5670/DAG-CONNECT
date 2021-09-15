@@ -930,7 +930,7 @@ export class AppComponent {
     setTimeout(() => {
       this.signalRService.askServerListenerForNotifyAlert();
       this.signalRService.askServerForNotifyAlert();
-    }, 5000);
+    }, 8000);
   }
 
 
