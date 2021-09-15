@@ -1227,11 +1227,12 @@ namespace net.atos.daf.ct2.alert.repository
                                 , recipient_id as RecipientId
 	                                FROM master.notificationlimit
                                     where state=@state
-                                    and recipient_id=@recipient_id";
+                                    and recipient_id=@recipient_id and id=@id";
                 parameter.Add("@state", Convert.ToChar(AlertState.Active));
                 parameter.Add("@recipient_id", notificationLimit.RecipientId);
+                parameter.Add("@id", notificationLimit.Id);
 
-                NotificationLimit notificationLimitDb = await _dataAccess.QuerySingleAsync<NotificationLimit>(query, parameter);
+                NotificationLimit notificationLimitDb = await _dataAccess.QueryFirstOrDefaultAsync<NotificationLimit>(query, parameter);
                 if (notificationLimitDb != null)
                 {
                     if (notificationLimit.RecipientId == notificationLimitDb.RecipientId
@@ -1264,8 +1265,8 @@ namespace net.atos.daf.ct2.alert.repository
 	                                    , notification_period_type=@notification_period_type
 	                                    , period_limit=@period_limit
 	                                    , modified_at=@modified_at
-	                                    WHERE recipient_id=@recipient_id ";
-                //parameter.Add("@notification_id", notificationLimit.NotificationId);
+	                                    WHERE id=@id and recipient_id=@recipient_id ";
+                parameter.Add("@id", notificationLimit.Id);
                 parameter.Add("@recipient_id", notificationLimit.RecipientId);
                 parameter.Add("@notification_mode_type", notificationLimit.NotificationModeType);
                 parameter.Add("@max_limit", notificationLimit.MaxLimit);

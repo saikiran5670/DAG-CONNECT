@@ -1835,7 +1835,8 @@ export class ReportMapService {
         break;
       }
     }
-    return distance.toFixed(2); 
+    // return distance.toFixed(2); 
+    return Math.round(distance);
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
@@ -1852,7 +1853,7 @@ export class ReportMapService {
         break;
       }
     }
-    return parseFloat(speed.toFixed(2)); 
+    return parseFloat(speed.toFixed(6)); 
   }
 
   getConvertedSpeed(val ,unit){
@@ -1869,19 +1870,21 @@ export class ReportMapService {
         break;
       }
     }
-    return speed.toFixed(2); 
+    // return speed.toFixed(2); 
+    return Math.round(speed);
   }
 
   convertFtToMeters(length){
     let meter;
     meter = length * 0.3048;
-    return parseFloat(meter.toFixed(2));
+    return parseFloat(meter.toFixed(6));
   }
 
   convertMetersToFt(length){
     let ft;
     ft = length * 3.28084;
-    return ft.toFixed(2); 
+    // return ft.toFixed(2); 
+    Math.round(ft);
   }
 
   convertTimeToMinutes(seconds: any){

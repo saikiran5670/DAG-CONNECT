@@ -41,6 +41,8 @@ export class SubscriptionManagementComponent implements OnInit {
   initData: any = [];
   vehicleData: any = [];
   accountOrganizationId: any = 0;
+  contextOrgId: any =0;
+  organizationId: any = 0;
   localStLanguage: any;
   dataSource: any; 
   orgID: any;
@@ -170,6 +172,8 @@ export class SubscriptionManagementComponent implements OnInit {
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     // this.organisationData = this.accountDetails["organization"];    
+    this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
   
     let translationObj = {
@@ -188,8 +192,8 @@ export class SubscriptionManagementComponent implements OnInit {
   }
 
   loadSubscriptionData(){
-    this.showLoadingIndicator = true;
-    this.subscriptionService.getSubscriptions(this.accountOrganizationId).subscribe((data : any) => {
+    this.showLoadingIndicator = true;  
+    this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
       this.hideloader();

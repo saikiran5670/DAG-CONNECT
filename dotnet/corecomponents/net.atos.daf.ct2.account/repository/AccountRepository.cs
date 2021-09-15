@@ -1928,8 +1928,8 @@ namespace net.atos.daf.ct2.account
 
                 var parameter = new DynamicParameters();
                 var queryStatement = @"SELECT id,name,
-                                        region_type as RegionType, code 
-                                       --dailing_code 
+                                        region_type as RegionType, code, 
+                                       dial_code as DialCode
 	                                   FROM master.country where 1=1";
 
                 if (!string.IsNullOrEmpty(countryFilter.Code))
@@ -1943,19 +1943,19 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@region_type", countryFilter.RegionType);
                     queryStatement = queryStatement + " and region_type = @region_type";
                 }
-                //dailing code yet not added in db.
-                //if (countryFilter.DailingCode > 0)
-                //{
-                //    parameter.Add("@dailing_code", countryFilter.DailingCode);
-                //    queryStatement = queryStatement + "and dailing_code = @dailingCode";
 
-                //}
+                if (!string.IsNullOrEmpty(countryFilter.DialCode))
+                {
+                    parameter.Add("@dialCode", countryFilter.DialCode);
+                    queryStatement = queryStatement + " and dial_code = @dialCode";
+
+                }
                 return await _dataAccess.QueryAsync<CountryDetails>(queryStatement, parameter);
             }
 
             catch (Exception ex)
             {
-                throw (ex);
+                throw;
             }
         }
     }
