@@ -20,6 +20,7 @@ service VehicleService {
   rpc GetGroupDetails (GroupFilterRequest) returns (VehicleGroupRefResponce);
   rpc GetVehiclesByVehicleGroup (VehicleGroupIdRequest) returns (VehicleGroupRefResponce);
   rpc GetOrganizationVehicleGroupdetails (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
+  rpc GetVehicleGroupsForOrgRelationshipMapping (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
   rpc GetVehicleGroup (OrgvehicleIdRequest) returns (VehicleGroupDetailsResponse);
   rpc GetVehiclesByAccountGroup (OrgAccountIdRequest) returns (VehicleGroupRefResponce);
   rpc SetOTAStatus (VehicleOtaRequest) returns (VehicleGroupDeleteResponce);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { of } from 'rxjs';
 import { delay, catchError } from 'rxjs/internal/operators';
-import * as signalR from '@aspnet/signalr';
+import * as signalR from '@microsoft/signalr';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -22,9 +22,10 @@ export class SignalRService {
   startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl('https://api.dev1.ct2.atos.net/notificationhub', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
-    })
+         skipNegotiation: true,
+         transport: signalR.HttpTransportType.WebSockets
+     }
+    )
     .build();
   
     this.hubConnection
@@ -40,6 +41,7 @@ export class SignalRService {
        })
   }
   
+
   askServerForNotifyAlert() {
     this.hubConnection.invoke("NotifyAlert", "hey")
         .catch(err => 

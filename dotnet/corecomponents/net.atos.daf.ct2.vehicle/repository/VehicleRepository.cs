@@ -467,32 +467,50 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicleOptInOptOut;
         }
 
-        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
+        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long organizationId)
         {
+            var queryStatement =
+                @"SELECT vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount, true as isgroup 
+                FROM 
+                (
+                    SELECT grp.id as vehiclegroupid,grp.name as VehicleGroupName,grp.object_type
+                        ,count(distinct vgrpref.ref_id) as vehicleCount 
+                        ,agrpref.ref_id as account
+                    FROM master.group grp 
+                    LEFT JOIN master.groupref vgrpref ON grp.id=vgrpref.group_id and grp.object_type='V'
+                    LEFT JOIN master.accessrelationship accrel ON accrel.vehicle_group_id=grp.id
+                    LEFT JOIN master.groupref agrpref ON accrel.account_group_id=agrpref.group_id
+                    WHERE grp.organization_id = @organization_id and grp.object_type='V'
+                    GROUP BY grp.id,grp.name,accrel.account_group_id,agrpref.ref_id,grp.object_type
+                ) vdetail
+                GROUP BY vehiclegroupid,VehicleGroupName,vehicleCount,object_type 
 
-            var queryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount, true as isgroup from 
-                                   (select grp.id as vehiclegroupid,grp.name as VehicleGroupName,grp.object_type
-                                    ,count(distinct vgrpref.ref_id) as vehicleCount 
-                                    ,agrpref.ref_id as account
-                                    from master.group grp 
-                                    Left join master.groupref vgrpref
-                                    on  grp.id=vgrpref.group_id and grp.object_type='V'
-                                    left join master.accessrelationship accrel
-                                    on  accrel.vehicle_group_id=grp.id
-                                    left join master.groupref agrpref
-                                    on  accrel.account_group_id=agrpref.group_id
-                                    where grp.organization_id = @organization_id and grp.object_type='V'
-                                    group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id,grp.object_type) vdetail
-                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type 
-                                    union all 
-									select id as vehiclegroupid, name as VehicleGroupName,0 as vehicleCount, 0 as usercount,false as isgroup
-									 from master.vehicle where organization_id=@organization_id";
+                UNION ALL 
+
+				SELECT id as vehiclegroupid, name as VehicleGroupName,0 as vehicleCount, 0 as usercount,false as isgroup
+				FROM master.vehicle 
+                WHERE organization_id=@organization_id";
 
             var parameter = new DynamicParameters();
 
-            parameter.Add("@organization_id", OrganizationId);
-            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupRequest>(queryStatement, parameter);
-            return OrgVehicleGroupDetails;
+            parameter.Add("@organization_id", organizationId);
+            IEnumerable<VehicleGroupRequest> orgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupRequest>(queryStatement, parameter);
+            return orgVehicleGroupDetails;
+        }
+
+        public async Task<IEnumerable<VehicleGroupForOrgRelMapping>> GetVehicleGroupsForOrgRelationshipMapping(long organizationId)
+        {
+            var queryStatement =
+                @"SELECT DISTINCT grp.id as VehicleGroupId,grp.name as VehicleGroupName
+                    FROM master.group grp 
+                    WHERE grp.organization_id = @organization_id and grp.object_type='V' 
+					and (grp.group_type = 'G' or (grp.group_type = 'D' and grp.function_enum = 'O'))";
+
+            var parameter = new DynamicParameters();
+
+            parameter.Add("@organization_id", organizationId);
+            IEnumerable<VehicleGroupForOrgRelMapping> orgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupForOrgRelMapping>(queryStatement, parameter);
+            return orgVehicleGroupDetails;
         }
 
         public async Task<Vehicle> GetVehicle(int Vehicle_Id)
