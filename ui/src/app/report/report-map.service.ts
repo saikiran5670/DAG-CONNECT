@@ -1601,6 +1601,28 @@ export class ReportMapService {
     }
     return _fuelConsumed; 
   }
+  //Fuel Consumption in Summary Section
+  getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
+    console.log("This function works well"); 
+    let _fuelConsumption: any = 0;
+
+    switch(unitFormat){
+      case 'dunit_Metric':{
+        _fuelConsumption = (FuelConsumpt/dt)*100;
+        break;
+      }
+      
+      case 'dunit_Imperial':{
+        _fuelConsumption = (dt/FuelConsumpt);
+        break;
+      }
+      default:{
+        _fuelConsumption = (FuelConsumpt/dt)*100;
+      }
+    }
+    return _fuelConsumption;
+}
+
 
   getDistance(distance: any, unitFormat: any){
     // distance in meter
