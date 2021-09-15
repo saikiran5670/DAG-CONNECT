@@ -488,9 +488,10 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
+                var loggedInAccountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accountid")).FirstOrDefault()?.Value ?? "0");
                 List<NotificationViewHistory> notificationViewHistories = new List<NotificationViewHistory>();
                 notificationViewHistories = _mapper.GetNotificationViewHistoryEntity(request);
-                int id = await _alertManager.InsertViewNotification(notificationViewHistories);
+                int id = await _alertManager.InsertViewNotification(notificationViewHistories, loggedInAccountId);
                 return await Task.FromResult(new NotificationViewResponse
                 {
                     Message = id > 0 ? $"Data saved successful" : $"Data saved  failed",

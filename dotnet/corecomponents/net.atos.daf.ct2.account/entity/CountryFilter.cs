@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.account.entity
     {
         public string RegionType { get; set; }
         public string Code { get; set; }
-        public int DailingCode { get; set; }
+        public string DialCode { get; set; }
     }
 }

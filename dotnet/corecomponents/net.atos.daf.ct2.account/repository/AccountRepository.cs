@@ -634,12 +634,12 @@ namespace net.atos.daf.ct2.account
 
                 string query =
                     @"SELECT 
-                        l.name as Language,
+                        l.code as Language,
 	                    df.name as DateFormat,
 	                    tz.name as TimeZone,
-	                    tf.name as TimeFormat,
-	                    u.name as UnitDisplay,
-	                    vd.name as VehicleDisplay
+	                    tf.code as TimeFormat,
+	                    u.code as UnitDisplay,
+	                    vd.code as VehicleDisplay
                     FROM master.accountpreference ap
                     INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id
                     INNER JOIN master.dateformat df ON ap.id = @preferenceId AND ap.date_format_id=df.id
@@ -1743,8 +1743,10 @@ namespace net.atos.daf.ct2.account
                                 AS (
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
-		                                ,_unit.name AS UnitDisplay
-                                        ,_vehicledisplay.name as VehicleDisplay
+		                                ,_unit.code AS UnitDisplay
+                                        ,_vehicledisplay.code as VehicleDisplay
+                                        ,_timeformat.code as TimeFormat
+                                        ,_language.code as Language
 		                                ,actp.id AS accountpreferenceid
 		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
@@ -1755,6 +1757,8 @@ namespace net.atos.daf.ct2.account
 	                                INNER JOIN master.unit _unit ON _unit.id = actp.unit_id
 									INNER JOIN master.DATEFORMAT _dateformat ON _dateformat.id = actp.date_format_id
 									INNER JOIN master.vehicledisplay _vehicledisplay ON _vehicledisplay.id = actp.vehicle_display_id
+                                    INNER JOIN master.timeformat _timeformat ON _timeformat.id = actp.time_format_id
+                                    INNER JOIN translation.language _language ON _language.id = actp.language_id
                             )
                             SELECT cte_act.accountid
                             ,cte_act.accountname
@@ -1767,6 +1771,8 @@ namespace net.atos.daf.ct2.account
                             ,cte_actp.DATEFORMAT
                             ,cte_actp.unitdisplay
                             ,cte_actp.vehicledisplay
+                            ,cte_actp.TimeFormat
+                            ,cte_actp.Language
                             FROM cte_actpreference cte_actp
                             RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid";
                     //}
@@ -1826,12 +1832,12 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@PreferenceId", accountPreferenceId.Value);
                     query = @"UPDATE master.accountpreference 
                               SET
-                                language_id = (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                language_id = (SELECT id FROM translation.language WHERE lower(code) = @Language),
                                 date_format_id = (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
                                 timezone_id = (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
-                                unit_id = (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay)
+                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(code) = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE lower(code) = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(code) = @VehicleDisplay)
                               WHERE id = @PreferenceId RETURNING id";
                     result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
@@ -1843,12 +1849,12 @@ namespace net.atos.daf.ct2.account
                               VALUES ('A', 'A', NULL, 2, 
                                        (SELECT id FROM master.currency WHERE lower(name) like 'euro%'),
                                        (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
-                                       (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                       (SELECT id FROM translation.language WHERE lower(code) = @Language),
                                        (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                       (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                       (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
+                                       (SELECT id FROM master.unit WHERE lower(code) = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE lower(code) = @VehicleDisplay),
                                        (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),                                       
-                                       (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat)) RETURNING id";
+                                       (SELECT id FROM master.timeformat WHERE lower(code) = @TimeFormat)) RETURNING id";
                     var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     parameter = new DynamicParameters();
@@ -1928,8 +1934,8 @@ namespace net.atos.daf.ct2.account
 
                 var parameter = new DynamicParameters();
                 var queryStatement = @"SELECT id,name,
-                                        region_type as RegionType, code 
-                                       --dailing_code 
+                                        region_type as RegionType, code, 
+                                       dial_code as DialCode
 	                                   FROM master.country where 1=1";
 
                 if (!string.IsNullOrEmpty(countryFilter.Code))
@@ -1943,19 +1949,19 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@region_type", countryFilter.RegionType);
                     queryStatement = queryStatement + " and region_type = @region_type";
                 }
-                //dailing code yet not added in db.
-                //if (countryFilter.DailingCode > 0)
-                //{
-                //    parameter.Add("@dailing_code", countryFilter.DailingCode);
-                //    queryStatement = queryStatement + "and dailing_code = @dailingCode";
 
-                //}
+                if (!string.IsNullOrEmpty(countryFilter.DialCode))
+                {
+                    parameter.Add("@dialCode", countryFilter.DialCode);
+                    queryStatement = queryStatement + " and dial_code = @dialCode";
+
+                }
                 return await _dataAccess.QueryAsync<CountryDetails>(queryStatement, parameter);
             }
 
             catch (Exception ex)
             {
-                throw (ex);
+                throw;
             }
         }
     }
