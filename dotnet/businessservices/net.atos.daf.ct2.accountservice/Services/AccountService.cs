@@ -1961,7 +1961,8 @@ namespace net.atos.daf.ct2.accountservice
                 account.entity.CountryFilter countryRequest = new account.entity.CountryFilter
                 {
                     Code = request.Code,
-                    RegionType = request.RegionType
+                    RegionType = request.RegionType,
+                    DialCode = request.DialCode
 
                 };
 
