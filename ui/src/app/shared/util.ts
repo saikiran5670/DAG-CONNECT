@@ -27,7 +27,10 @@ export class Util {
             _timezone = _t[1].trim();
         }
         let date: any = moment().tz(_timezone ? _timezone : prefTimezone).format();
-      
+        if(date.includes('Z'))
+        {
+            date= date.replace('Z','+00:00');
+        }      
         let _date= date.split("T")[0];
         let _time= (date.split("T")[1]).slice(0, -6);
          date=new Date();

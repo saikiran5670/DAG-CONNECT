@@ -396,9 +396,9 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
 
-                IEnumerable<NotificationRecipient> NotificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
+                IEnumerable<NotificationRecipient> notificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
                 NotificationRecipientResponse response = new NotificationRecipientResponse();
-                foreach (var item in NotificationRecipientResponseList)
+                foreach (var item in notificationRecipientResponseList)
                 {
                     response.NotificationRecipient.Add(_mapper.MapNotificationRecipientEntity(item));
                 }
@@ -488,9 +488,10 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
+                var loggedInAccountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accountid")).FirstOrDefault()?.Value ?? "0");
                 List<NotificationViewHistory> notificationViewHistories = new List<NotificationViewHistory>();
                 notificationViewHistories = _mapper.GetNotificationViewHistoryEntity(request);
-                int id = await _alertManager.InsertViewNotification(notificationViewHistories);
+                int id = await _alertManager.InsertViewNotification(notificationViewHistories, loggedInAccountId);
                 return await Task.FromResult(new NotificationViewResponse
                 {
                     Message = id > 0 ? $"Data saved successful" : $"Data saved  failed",
