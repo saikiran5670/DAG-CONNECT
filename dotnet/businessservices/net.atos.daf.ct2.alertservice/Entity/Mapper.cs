@@ -109,6 +109,19 @@ namespace net.atos.daf.ct2.alertservice.Entity
 
             if (request.Notifications.Count > 0)
             {
+                IEnumerable<List<NotificationRecipient>> notificationRecepobj = null;
+                notificationRecepobj = request.Notifications.Select(x => x.NotificationRecipients);
+                if (notificationRecepobj.Count() > 1)
+                {
+                    foreach (var item in request.Notifications)
+                    {
+                        if (!item.NotificationRecipients.Any())
+                        {
+                            item.NotificationRecipients = notificationRecepobj.FirstOrDefault();
+                        }
+                    }
+                }
+
                 foreach (var item in request.Notifications)
                 {
                     alert.Notifications.Add(MapNotificationEntity(item));
@@ -303,7 +316,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             {
                 foreach (var item in request.NotificationRecipients)
                 {
-                    notification.NotificationRecipients.Add(MapNotificationRecipientEntity(item));
+                    notification.NotificationRecipients.Add(MapNotificationRecipientMultiEntity(item, notification.Id));
                 }
             }
             if (request.AlertTimingDetails.Count > 0)
@@ -376,6 +389,43 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     foreach (var item in request.NotificationLimits)
                     {
                         notificationRecipient.NotificationLimits.Add(MapNotificationLimitEntity(item));
+                    }
+                }
+            }
+            return notificationRecipient;
+        }
+
+        public NotificationRecipientRequest MapNotificationRecipientMultiEntity(NotificationRecipient request, int notificationId)
+        {
+            NotificationRecipientRequest notificationRecipient = new NotificationRecipientRequest();
+            notificationRecipient.Id = request.Id;
+            notificationRecipient.NotificationId = request.NotificationId;
+            notificationRecipient.RecipientLabel = request.RecipientLabel;
+            notificationRecipient.AccountGroupId = request.AccountGroupId;
+            notificationRecipient.NotificationModeType = request.NotificationModeType;
+            notificationRecipient.PhoneNo = string.IsNullOrEmpty(request.PhoneNo) ? string.Empty : request.PhoneNo;
+            notificationRecipient.Sms = string.IsNullOrEmpty(request.Sms) ? string.Empty : request.Sms;
+            notificationRecipient.EmailId = string.IsNullOrEmpty(request.EmailId) ? string.Empty : request.EmailId;
+            notificationRecipient.EmailSub = string.IsNullOrEmpty(request.EmailSub) ? string.Empty : request.EmailSub;
+            notificationRecipient.EmailText = string.IsNullOrEmpty(request.EmailText) ? string.Empty : request.EmailText; ;
+            notificationRecipient.WsUrl = string.IsNullOrEmpty(request.WsUrl) ? string.Empty : request.WsUrl; ;
+            notificationRecipient.WsType = string.IsNullOrEmpty(request.WsType) ? string.Empty : request.WsType; ;
+            notificationRecipient.WsText = string.IsNullOrEmpty(request.WsText) ? string.Empty : request.WsText; ;
+            notificationRecipient.WsLogin = string.IsNullOrEmpty(request.WsLogin) ? string.Empty : request.WsLogin; ;
+            notificationRecipient.WsPassword = string.IsNullOrEmpty(request.WsPassword) ? string.Empty : request.WsPassword; ;
+            notificationRecipient.State = request.State;
+            notificationRecipient.CreatedAt = request.CreatedAt;
+            notificationRecipient.ModifiedAt = request.ModifiedAt;
+            if (request.NotificationLimits != null)
+            {
+                if (request.NotificationLimits.Count > 0)
+                {
+                    foreach (var item in request.NotificationLimits)
+                    {
+                        if (item.NotificationId == notificationId)
+                        {
+                            notificationRecipient.NotificationLimits.Add(MapNotificationLimitEntity(item));
+                        }
                     }
                 }
             }
