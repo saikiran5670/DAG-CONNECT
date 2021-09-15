@@ -640,8 +640,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
                 OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
-                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicleManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
-                foreach (var item in ObjOrgVehicleGroupList)
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> objOrgVehicleGroupList = await _vehicleManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
+                foreach (var item in objOrgVehicleGroupList)
                 {
                     if (string.IsNullOrEmpty(item.VehicleGroupName))
                     {
@@ -654,6 +654,33 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 response.Message = "Organization vehicle Group details fetched.";
                 return await Task.FromResult(response);
 
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+
+                return await Task.FromResult(new OrgVehicleGroupListResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<OrgVehicleGroupListResponse> GetVehicleGroupsForOrgRelationshipMapping(OrganizationIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
+                var objOrgVehicleGroupList = await _vehicleManager.GetVehicleGroupsForOrgRelationshipMapping(request.OrganizationId);
+                foreach (var item in objOrgVehicleGroupList)
+                {
+                    response.OrgVehicleGroupList.Add(_mapper.ToOrgVehicleGroup(item));
+                }
+
+                response.Code = Responcecode.Success;
+                response.Message = "Organization vehicle Group details fetched.";
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {

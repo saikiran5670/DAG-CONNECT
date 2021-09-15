@@ -44,6 +44,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> excessiveUnderUtilizationInHoursAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> fuelIncreaseDuringStopFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> fuelDecreaseDuringStopFunAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> fuelDuringTripFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveIdlingAlertDef = new ArrayList<>();
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
@@ -68,6 +69,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("L")) {
                     	fuelDecreaseDuringStopFunAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("T")) {
+                    	fuelDuringTripFunAlertDef.add(schema);
+                    }
                 }
             }
         }
@@ -78,6 +82,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("excessiveIdling", excessiveIdlingAlertDef);
         functionThresh.put("fuelIncreaseDuringStopFunAlertDef", fuelIncreaseDuringStopFunAlertDef);
         functionThresh.put("fuelDecreaseDuringStopFunAlertDef", fuelDecreaseDuringStopFunAlertDef);
+        functionThresh.put("fuelDuringTripFunAlertDef", fuelDuringTripFunAlertDef);
         //
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)

@@ -222,10 +222,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
-    if(this.actionType === 'edit'){
-      this.corridorFormGroup.controls.label.disable();
-      
-    }
+    // if(this.actionType === 'edit'){
+    //   this.corridorFormGroup.controls.label.disable(); //Bug 9699
+    // }
 
     this.landmarkCategoryService.getCategoryWisePOI(this.organizationId).subscribe((poiData: any) => {
       this.userPOIList = poiData;
@@ -700,7 +699,7 @@ export class RouteCalculatingComponent implements OnInit {
       },(error)=>{
           if(error.status === 409){
             this.duplicateError = true;
-            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
+            this.duplicateErrorMsg = this.getDuplicateMsgEdit(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
@@ -718,6 +717,13 @@ export class RouteCalculatingComponent implements OnInit {
       return this.translationData.lblDuplicateMsg.replace('$', name);
     else
       return ("Corridor '$' already exists.").replace('$', name);
+  }
+
+  getDuplicateMsgEdit(name: any) {
+    if (this.translationData.lblDuplicateMsgEdit)
+      return this.translationData.lblDuplicateMsgEdit.replace('$', name);
+    else
+      return ("Corridor '$' does not exist to update.").replace('$', name);
   }
 
   backToCorridorList(){
