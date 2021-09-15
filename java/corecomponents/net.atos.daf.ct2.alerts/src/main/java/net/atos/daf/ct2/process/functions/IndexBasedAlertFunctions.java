@@ -190,6 +190,49 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
+    
+
+    public static AlertLambdaExecutor<Message, Target> fuelDuringTripFun = (Message s) -> {
+        net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDuringTripFunAlertDef");
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        Index originalIdxMsg = index.getIndexList().get(0);
+        BigDecimal vFuelPrevVal = index.getVFuelStopPrevVal();
+        BigDecimal currentFuelVal = null;
+
+        try {
+        	
+        	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
+        		currentFuelVal = BigDecimal.valueOf(originalIdxMsg.getDocument().getVFuelLevel1());
+            
+        	for (String priority : priorityList) {
+                for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                      
+                    	if(Objects.nonNull(vFuelPrevVal) && Objects.nonNull(currentFuelVal)){
+                    	//if (vFuelTripObj.getVFuelLevel() != null && vFuelPrevTripRecData.getVFuelLevel() != null) {
+							BigDecimal fuelDecreaseDiff = vFuelPrevVal
+									.subtract(currentFuelVal);
+							
+							logger.info("Fuel decrease during Trip, vFuelPrevVal: {}, currentFuelVal: {}, fuelDecreaseDiff:{} ", vFuelPrevVal, currentFuelVal, fuelDecreaseDiff);
+
+							if (fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0
+									&& fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0) {
+
+								logger.info("Raising alert for fuelDecreaseDuringTrip fuelDecreadeDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
+    							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
+							} 
+						}
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error while calculating fuelDuringTripFun:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
 
     public static AlertLambdaExecutor<Message, Target> excessiveUnderUtilizationInHoursFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
