@@ -503,7 +503,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var notificationRequest = new NotificationViewRequest();
                 notificationRequest = _mapper.ToNotificationViewRequest(request);
-                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accountid", Convert.ToString(_userDetails.AccountId));
+                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest, headers);
 
                 if (notiResponse != null && notiResponse.Code == ResponseCode.Failed)
                 {
