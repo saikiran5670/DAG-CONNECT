@@ -104,6 +104,7 @@ export class DriverManagementComponent implements OnInit {
       lblDriverID: "Driver ID",
       lblDriverName: "Driver Name",
       lblEmailID: "Email ID",
+      lblEmail: "E-mail",
       lblUserGroup: "User Group",
       lblOptInAll: "Opt-In All",
       lblOptOutAll: "Opt-Out All",
@@ -140,11 +141,9 @@ export class DriverManagementComponent implements OnInit {
       lblErrordeletingdriver: "Error deleting driver",
       lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
       lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'",
-      lblExcelDriverID: 'DriverID',
-      lblExcelFirstName: 'FirstName',
-      lblExcelLastName: 'LastName',
-      lblExcelEmail: 'Email',
-      lblExcelHintMsgNew: `Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
+      lblDriverIDCountryCode: 'Driver ID Country Code', 
+      lblDriverIDNumber: 'Driver ID Number',
+      lblExcelHintMsgNew: `    Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
       Driver ID Number: number of the tacho driver card (16 characters)
       E-mail: e-mail address of the driver
       First Name: name of the driver
@@ -813,14 +812,14 @@ export class DriverManagementComponent implements OnInit {
   }
 
   downloadDriverTemplate(){
-    let excelHintMsg = this.translationData.lblExcelHintMsgNew || `Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
+    let excelHintMsg = this.translationData.lblExcelHintMsgNew || `    Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
     Driver ID Number: number of the tacho driver card (16 characters)
     E-mail: e-mail address of the driver
     First Name: name of the driver
     Last Name: name of the driver
     
     All fields are mandatory!`;
-    const header = [this.translationData.lblExcelDriverIDCountryCode || 'DriverIDCountryCode', this.translationData.lblExcelDriverIDNumber || 'DriverIDNumber', this.translationData.lblExcelEmail || 'Email', this.translationData.lblExcelFirstName || 'FirstName', this.translationData.lblExcelLastName || 'LastName', excelHintMsg];
+    const header = [this.translationData.lblDriverIDCountryCode || 'Driver ID Country Code', this.translationData.lblDriverIDNumber || 'Driver ID Number', this.translationData.lblEmail || 'E-mail', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', excelHintMsg];
     const data = [
       ['B  ', 'B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""]
     ];
