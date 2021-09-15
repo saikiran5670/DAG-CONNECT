@@ -718,7 +718,8 @@ proceedStep(prefData: any, preference: any){
       this.getVehiclesForAlertType(alertTypeObj);
     }
     else{
-      this.vehicle_group_selected= value;
+      //converted vehicle group selection into int val.
+      this.vehicle_group_selected= parseInt(value);
 
       let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
       if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
