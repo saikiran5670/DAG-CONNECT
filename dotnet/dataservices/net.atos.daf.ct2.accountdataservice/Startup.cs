@@ -25,6 +25,8 @@ using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.accountdataservice.CustomAttributes;
 using net.atos.daf.ct2.driver;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 
 namespace net.atos.daf.ct2.accountdataservice
 {
@@ -41,6 +43,7 @@ namespace net.atos.daf.ct2.accountdataservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
@@ -119,7 +122,7 @@ namespace net.atos.daf.ct2.accountdataservice
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache memoryCache, IDataAccess dataAccess)
         {
             if (env.IsDevelopment())
             {
@@ -133,6 +136,9 @@ namespace net.atos.daf.ct2.accountdataservice
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            //Load cache elements for the first time
+            LoadMasterData(memoryCache, dataAccess);
 
             app.UseEndpoints(endpoints =>
             {
@@ -149,6 +155,21 @@ namespace net.atos.daf.ct2.accountdataservice
                 c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
                 c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
+        }
+
+        private static void LoadMasterData(IMemoryCache memoryCache, IDataAccess dataAccess)
+        {
+            // Set cache options.
+            var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(100));
+
+            var languageCodes = dataAccess.QueryAsync<string>("select lower(code) from translation.language").Result;
+            memoryCache.Set(CacheConstants.LanguageCodeKey, languageCodes.ToArray(), cacheEntryOptions);
+
+            var timeZones = dataAccess.QueryAsync<string>("select lower(name) from master.timezone").Result;
+            memoryCache.Set(CacheConstants.TimeZoneKey, timeZones.ToArray(), cacheEntryOptions);
+
+            var dateFormatNames = dataAccess.QueryAsync<string>("select lower(name) from master.dateformat").Result;
+            memoryCache.Set(CacheConstants.DateFormatKey, dateFormatNames.ToArray(), cacheEntryOptions);
         }
 
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)

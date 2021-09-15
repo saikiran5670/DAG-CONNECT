@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
-        [ValueWithinCheck(values: new string[] { "dd/mm/yyyy", "mm/dd/yyyy", "dd-mm-yyyy", "mm-dd-yyyy" }, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(ErrorMessage = "INVALID_FIELD")]
         public string DateFormat { get; set; }
 
         [Required(ErrorMessage = "MISSING_FIELD")]
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.accountdataservice.Entity
 
         [Required(ErrorMessage = "MISSING_FIELD")]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "INVALID_FIELD")]
-        [ValueWithinCheck(values: new string[] { "12 hours", "24 hours" }, ErrorMessage = "INVALID_FIELD")]
+        [ValueWithinCheck(values: new string[] { "12h", "24h" }, ErrorMessage = "INVALID_FIELD")]
         public string TimeFormat { get; set; }
     }
 }
