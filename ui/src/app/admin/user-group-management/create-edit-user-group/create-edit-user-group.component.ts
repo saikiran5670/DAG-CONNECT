@@ -275,7 +275,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       }
       const updateAccGrpNameInput = updateAccGrpObj.name.trim().toLowerCase();
       let existingUserGroupName = this.userGroupData.filter(response => (response.accountGroupName).toLowerCase() == updateAccGrpNameInput);
-      if (existingUserGroupName.length > 0) {
+      if (existingUserGroupName.length > 0 && this.userGroupForm.controls.userGroupName.value !== this.selectedRowData.name ) {
         this.isUserGroupExist = true;       
         this.duplicateEmailMsg = true;
       }
