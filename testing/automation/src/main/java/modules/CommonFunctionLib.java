@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2512,14 +2513,16 @@ try{
 	String[] tz = Temp.split(" ");
 	String[] time = tz[1].split(":");
 	if(time[0].startsWith("+")) {
-		//Hrs = time[0].replace("+", "-");
-		Hrs = time[0].replace("+", "+");
-		Min = time[1];
+		Hrs = time[0].replace("+", "-");
+		//Hrs = time[0].replace("+", "+");
+		Min = "-".concat(time[1]);
+		//Min = time[1];
 	}
 	if(time[0].startsWith("-")) {
-		//Hrs = time[0].replace("-", "");
-		Hrs = time[0].replace("-", "-");
-		Min = "-".concat(time[1]);
+		Hrs = time[0].replace("-", "");
+		//Hrs = time[0].replace("-", "-");
+		//Min = "-".concat(time[1]);
+		Min = time[1];
 	}
 
 	//String Rptdate = //"2021.08.17 09:21:26";
@@ -2572,6 +2575,55 @@ try{
    	  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
    	  DriverScript.bResult = false;
    	return 0;
+     }
+
+}
+
+//********************* Convert milliseconds to date**************************************************************
+public static String MilisecondtoDate(String Milis, String UserEmail)
+{
+try{
+	String Ms = Milis;
+	DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	SimpleDateFormat DateFormat =new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+	long milliSeconds= Long.parseLong(Ms);
+	System.out.println(milliSeconds);
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTimeInMillis(milliSeconds);
+	System.out.println(formatter.format(calendar.getTime()));
+	String strDate = DateFormat.format(calendar.getTime());  
+	String sql;
+	String Hrs = null,Min = null;
+	sql ="SELECT ut_coff_set FROM master.timezone TZ,master.accountpreference AP,master.account A where A.email ="+UserEmail+" AND AP.id=A.preference_id AND TZ.id=AP.timezone_id";
+	String Temp = connectToMaster(sql);
+	System.out.println("Mast: " + Temp);
+	String[] tz = Temp.split(" ");
+	String[] time = tz[1].split(":");
+	if(time[0].startsWith("+")) {
+		Hrs = time[0].replace("+", "");
+		Min = time[1];
+	}
+	if(time[0].startsWith("-")) {
+		Hrs = time[0].replace("-", "-");
+		Min = "-".concat(time[1]);
+	}
+	Date date = DateFormat.parse(strDate);
+	Calendar c = Calendar.getInstance();
+    c.setTime(date);
+	// Perform addition/subtraction	       
+    c.add(Calendar.HOUR, Integer.parseInt(Hrs));
+    c.add(Calendar.MINUTE, Integer.parseInt(Min));        
+    System.out.println(formatter.format(c.getTime()));
+	String TstrDate = formatter.format(c.getTime()); 
+	return TstrDate;
+	
+}catch (Exception e)
+    {
+   	  test.log(LogStatus.FAIL, e.getMessage());
+   	  Log.error("Not able to click on Webelement..." + e.getMessage());	  
+   	  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+   	  DriverScript.bResult = false;
+   	return null;
      }
 
 }
@@ -2817,9 +2869,9 @@ try{
 			int p2 = (int) (Seconds / 60);
 			int p3 = p2 % 60;
 			p2 = p2 / 60;
-			System.out.print("Time in "+ "HH:MM:SS - " +p2 + ":" + p3 + ":" + p1);
+			System.out.print("Time in "+ "HH:MM - " +p2 + ":" + p3);
 			System.out.print("\n");
-			time = "HH:MM:SS - " +p2 + ":" + p3 + ":" + p1;
+			time = "HH:MM- " +p2 + ":" + p3;
 	  }else {
 		  int hours = Seconds / 3600;
 		    int minutes = (Seconds % 3600) / 60;
@@ -2937,24 +2989,30 @@ if(column.equals("Vehicle Group")||column.equals("Vehicle Group/Vehicle")) {
 }
 //@@@@@@@@@@
 String rowvalue = rowvalueF.trim();
+System.out.println(rowvalue +" UI Value Of " + Col);
+test.log(LogStatus.INFO,  rowvalue +" UI Value Of " + Col);
+Log.info(rowvalue +" UI Value Of " + Col);	
+
 if (rowvalue.equals(value.trim())) 
 {
-	System.out.println(rowvalue +" UI Value Of " + Col);
-	test.log(LogStatus.INFO,  rowvalue +" UI Value Of " + Col);
-	Log.info(rowvalue +" UI Value Of " + Col);	
-//System.out.println(value);
-//System.out.println(rowvalue);
 	System.out.println(value +" Value Matched");
 	test.log(LogStatus.PASS,  value +" Value Matched");
 	Log.info(value +" Value Matched");	
 temp = true;
 return temp;
+
 }
 }
 }
 driver.findElement(getLocator("NEXT_PAGINATION")).click();
 }
+break;
 }
+}
+if(!temp) {
+	System.out.println(value +" Value Not Matched");
+	test.log(LogStatus.FAIL,  value +" Value Not Matched");
+	Log.info(value +" Value Not Matched");	
 }
 return temp;
 }catch (Exception e){
