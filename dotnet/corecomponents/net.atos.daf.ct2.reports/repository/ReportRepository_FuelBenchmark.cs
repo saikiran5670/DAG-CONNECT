@@ -48,12 +48,12 @@ namespace net.atos.daf.ct2.reports.repository
                 var param = new DynamicParameters();
                 int totalActiveVehicle = 0;
                 totalActiveVehicle = fuelBenchmarkFilter.VINs.Count();
-
+                //Query change for bug no.16325
                 string query = @"Select
                                 @totalActiveVehicle as numbersofactivevehicle                                                  		 
                                 , SUM(etl_gps_distance) as totalmileage
                                 , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
-                                , Round((SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))/ @totalActiveVehicle,4) as averagefuelconsumption
+                                , Round((SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance)),4) as averagefuelconsumption
                                 From
                                 tripdetail.trip_statistics 
                                 WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
