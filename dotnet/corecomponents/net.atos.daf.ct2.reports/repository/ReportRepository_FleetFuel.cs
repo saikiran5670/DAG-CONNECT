@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
                                                   		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-                                                  		  , round(fd.cc_fuel_consumption,2)                          as CCFuelConsumption
+                                                  		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
                                                   		  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     as IdlingConsumption
                                                   		  , dpa_score                                              as DPAScore
@@ -259,7 +259,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
                                                		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
                                                		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-                                               		  , round(fd.cc_fuel_consumption)                          as CCFuelConsumption 
+                                               		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
                                                		  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
                                                		  , idling_consumption                                     as IdlingConsumption
                                                		  , dpa_score                                              as DPAScore
@@ -480,7 +480,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance50_75
 				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
 				  , round(fd.average_traffic_classification) as AverageTrafficClassification
-				  , round(fd.cc_fuel_consumption) as CCFuelConsumption
+				  , round(fd.cc_fuel_consumption,5) as CCFuelConsumption
 				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactivesx
 				  , idling_consumption as IdlingConsumption
 				  , dpa_score as DPAScore
@@ -624,7 +624,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
 				  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-				  , round(fd.cc_fuel_consumption)                          as CCFuelConsumption 
+				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
