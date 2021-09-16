@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.reports.entity
         public double PTODuration { get; set; }
         public double HarshBrakeDuration { get; set; }
         public double HeavyThrottleDuration { get; set; }
-        public double CruiseControlDistance30_50 { get; set; }
-        public double CruiseControlDistance50_75 { get; set; }
+        public double CruiseControlDistance3050 { get; set; }
+        public double CruiseControlDistance5075 { get; set; }
         public double CruiseControlDistance75 { get; set; }
         public double AverageTrafficClassification { get; set; }
         public string AverageTrafficClassificationValue { get; set; } = string.Empty;
