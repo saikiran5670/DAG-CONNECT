@@ -53,7 +53,6 @@
                         <mat-menu #menu="matMenu"  class="notificationList" yPosition="below" > 
                                 <app-signalr-alert-notification *ngIf="showAlertNotifications" 
                                 [notificationData]="notificationDetails"
-                                [notificationList] = 'notificationList'
                                 (sendCountToAppComponent)='sendAlertNotificationCount($event)'>
                                 </app-signalr-alert-notification>
                         </mat-menu>
