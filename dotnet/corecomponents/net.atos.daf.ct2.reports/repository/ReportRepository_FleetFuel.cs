@@ -142,8 +142,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.pto_duration,2)                             as PTODuration
                                                   		  , round(fd.harsh_brake_duration,2)                     As HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration,2)                  As HeavyThrottleDuration
-                                                  		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance30_50
-                                                  		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
+                                                  		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
+                                                  		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
                                                   		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
                                                   		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
@@ -255,8 +255,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , round(fd.pto_duration,2)                               as PTODuration
                                                		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
                                                		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
-                                               		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance30_50
-                                               		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
+                                               		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
+                                               		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
                                                		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
                                                		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
                                                		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
@@ -476,8 +476,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.pto_duration, 2) as PTODuration
 				  , round((fd.harsh_brake_duration), 2)    As HarshBrakeDuration
                    , round((fd.heavy_throttle_duration), 2)    As HeavyThrottleDuration
-                    , round(fd.cruise_control_distance_30_50, 2)                as CruiseControlDistance30_50
-				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance50_75
+                    , round(fd.cruise_control_distance_30_50, 2)                as CruiseControlDistance3050
+				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
 				  , round(fd.average_traffic_classification) as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5) as CCFuelConsumption
@@ -620,8 +620,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.pto_duration,2)                             as PTODuration
 				  , round((fd.harsh_brake_duration),2)    As HarshBrakeDuration
 				  , round((fd.heavy_throttle_duration),2)    As HeavyThrottleDuration
-				  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance30_50
-				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
+				  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
+				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
 				  , round(fd.average_traffic_classification)               as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
