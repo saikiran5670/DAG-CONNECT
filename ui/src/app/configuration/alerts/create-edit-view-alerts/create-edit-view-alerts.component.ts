@@ -658,6 +658,9 @@ proceedStep(prefData: any, preference: any){
        });
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
+     this.vehicleGroupList.forEach(element => {
+       element.vehicleGroupId = parseInt(element.vehicleGroupId);
+     });
   }
 
   getVehiclesForAlertType(alertTypeObj: any){
