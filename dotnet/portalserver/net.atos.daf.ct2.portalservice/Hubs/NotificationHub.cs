@@ -21,7 +21,7 @@ using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -75,8 +75,22 @@ namespace net.atos.daf.ct2.portalservice.hubs
 
         public async Task NotifyAlert(string someTextFromClient)
         {
+            var list = someTextFromClient.Split(',');
+            int accountId = Convert.ToInt32(list[0]);
+            int orgId = Convert.ToInt32(list[1]);
+
             try
             {
+                if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
+                {
+                    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                    {
+                        AccountId = accountId,
+                        OrganizationId = orgId,
+                        HubClientId = this.Context.ConnectionId
+                    };
+                    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                }
                 while (true)
                 {
                     NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
@@ -98,9 +112,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         UrgencyLevel = "C"
                     };
                     //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
-                    await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
-                    //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Select(clients => clients.HubClientId).ToList();
-                    //await Clients.Clients(connectionIds).SendAt5sync("NotifyAlertResponse", JsonConvert.SerializeObject(tripAlert));
+                    //await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
+                    IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
+                    await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages)));
                     if (_pkId > 1000)
                     {
                         _pkId = 1;
@@ -127,13 +141,16 @@ namespace net.atos.daf.ct2.portalservice.hubs
             {
                 if (Context?.ConnectionId != null)
                 {
-                    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                    if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == _userDetails.AccountId && a.HubClientId == Context.ConnectionId))
                     {
-                        AccountId = _userDetails.AccountId,
-                        OrganizationId = _userDetails.OrgId,
-                        HubClientId = Context.ConnectionId
-                    };
-                    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                        AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                        {
+                            AccountId = _userDetails.AccountId,
+                            OrganizationId = _userDetails.OrgId,
+                            HubClientId = Context.ConnectionId
+                        };
+                        _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                    }
                     //ConnectedUser.Ids.Add(Context.ConnectionId);
                 }
                 await base.OnConnectedAsync();
@@ -167,10 +184,20 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 _logger.Error("Error in OnDisconnectedAsync method", err);
             }
         }
-        public async Task ReadKafkaMessages(string test)
+        public async Task ReadKafkaMessages(int accountId, int orgId)
         {
             try
             {
+                if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
+                {
+                    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                    {
+                        AccountId = accountId,
+                        OrganizationId = orgId,
+                        HubClientId = this.Context.ConnectionId
+                    };
+                    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                }
                 confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -182,6 +209,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 int alertId = 0;
                 while (true)
                 {
+                    IReadOnlyList<string> connectionIds = new List<string> { this.Context.ConnectionId };
                     try
                     {
                         //Pushing message to kafka topic
@@ -190,7 +218,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         TripAlert tripAlert = new TripAlert();
                         if (response != null)
                         {
-                            Console.WriteLine(response.Message.Value);
+                            //Console.WriteLine(response.Message.Value);
                             tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
                             if (tripAlert != null && tripAlert.Alertid > 0)
                             {
@@ -228,16 +256,15 @@ namespace net.atos.daf.ct2.portalservice.hubs
                            _userDetails);
                                 // match session values with clientID & created by 
                                 //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
-                                IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
+                                connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                 await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
-
                             }
                         }
                     }
                     catch (RpcException ex)
                     {
                         _logger.Error($"Error in ReadKafkaMessages - AlertID: {alertId}", ex);
-                        await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
                     }
                     catch (Exception ex)
                     {
@@ -245,9 +272,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
                          AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                          string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
                           _userDetails);
-                        _ = ex.Message + test;
+                        _ = ex.Message;
                         _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}", ex);
-                        await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
                     }
                 }
             }
@@ -262,7 +289,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                  AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
                   _userDetails);
-                _ = ex.Message + test;
+                _ = ex.Message;
                 _logger.Error("Error in ReadKafkaMessages method", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
             }
