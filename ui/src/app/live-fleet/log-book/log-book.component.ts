@@ -562,6 +562,14 @@ ngOnDestroy(){
   }
   if(this._state.fromMoreAlerts == true){
     this.selectionTab ='';
+    let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+    let moreStartDate = new Date( startDate +' UTC');
+    moreStartDate.toString();
+    let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+    let moreEndDate = new Date( endDate +' UTC');
+    moreEndDate.toString();
+    this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
   }
 }
 }
@@ -926,6 +934,14 @@ ngOnDestroy(){
     }
     if(this._state.fromMoreAlerts == true){
       this.selectionTab = '';
+      let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+      let moreStartDate = new Date( startDate +' UTC');
+      moreStartDate.toString();
+      let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+      let moreEndDate = new Date( endDate +' UTC');
+      moreEndDate.toString();
+      this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
     }
   }
   }

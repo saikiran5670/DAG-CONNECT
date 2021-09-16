@@ -71,6 +71,7 @@ selectedStartTime: any = '00:00';
 localStLanguage: any;
 accountPrefObj: any;
 prefData : any;
+logbookData: any = [];
   preference : any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -195,9 +196,16 @@ prefData : any;
   }
   
   gotoLogBookForMoreAlerts(){
+        //sorting dates in ascending order
+        let sortedDates = this.notificationData;
+        let obj = sortedDates.sort((x,y) => x.data-y.data);
+        this.logbookData.startDate = obj[0].data;
+        this.logbookData.endDate = obj[obj.length - 1].data;
+    
     const navigationExtras: NavigationExtras = {
       state: {
-        fromMoreAlerts: true
+        fromMoreAlerts: true,
+        data: this.logbookData
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
