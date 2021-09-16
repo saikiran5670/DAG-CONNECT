@@ -693,8 +693,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@organization_id", organizationId);
 
-                bool isSubReport = await CheckIfSubReportExist(reportId);
-
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAttributeId, d.name as Name, ra.key as Key, ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType,
 					                 CASE WHEN rp.state IS NULL THEN 'A' ELSE rp.state END as State, rp.chart_type as ChartType, rp.type as ReportPreferenceType, 
@@ -704,18 +702,7 @@ namespace net.atos.daf.ct2.reports.repository
                             LEFT JOIN master.reportpreference rp ON rp.reportattribute_id = ra.id and 
 										                            rp.account_id = @account_id and rp.organization_id = @organization_id and 
 										                            rp.report_id = ra.report_id
-                            WHERE ra.report_id = ";
-
-
-                if (isSubReport)
-                {
-                    query += "ANY( SELECT sub_report_id FROM master.subreport WHERE report_id = @report_id )";
-                }
-                else
-                {
-                    query += "@report_id";
-                }
-
+                            WHERE ra.report_id = @report_id";
 
                 #endregion
 
@@ -733,16 +720,8 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameter = new DynamicParameters();
-                IEnumerable<SubReport> subReports = await GetSubReportFeatureId(reportId);
-                if (subReports.Count() > 0)
-                {
-                    var subRportids = subReports.Select(rpt => rpt.SubReportId);
-                    parameter.Add("@report_id", subRportids.ToList());
-                }
-                else
-                {
-                    parameter.Add("@report_id", reportId);
-                }
+
+                parameter.Add("@report_id", reportId);
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@role_id", roleId);
                 parameter.Add("@organization_id", organizationId);
@@ -752,7 +731,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
                                               ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
                               FROM master.reportattribute ra
-                              INNER JOIN master.dataattribute d ON ra.report_id = ANY(@report_id) and d.id = ra.data_attribute_id 
+                              INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
                               INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id
                               INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' 
                               INNER JOIN

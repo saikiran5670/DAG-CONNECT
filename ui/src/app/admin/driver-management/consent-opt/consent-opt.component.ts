@@ -251,7 +251,7 @@ export class ConsentOptComponent implements OnInit {
       optIn: this.data.consentType,
       modifiedBy: this.accountId //0
     }
-    console.log(objData);    
+    //console.log(objData);    
     this.closePopup = false;
     this.mdDialogRef.close(event);
   }  
