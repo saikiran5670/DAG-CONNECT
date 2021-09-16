@@ -40,6 +40,9 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId);
         Task<IEnumerable<int>> GetReportFeatureId(int reportId);
+        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds);
+        Task<bool> CheckIfSubReportExist(int reportId);
+        Task<IEnumerable<SubReport>> GetSubReportFeatureId(int reportId);
         Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request);
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
         Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriver(EcoScoreReportSingleDriverRequest request);
