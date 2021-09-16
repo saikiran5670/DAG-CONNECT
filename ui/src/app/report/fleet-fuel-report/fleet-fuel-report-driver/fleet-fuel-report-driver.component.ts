@@ -732,8 +732,20 @@ export class FleetFuelReportDriverComponent implements OnInit {
   resetPref(){
 
   }
+  resetCharts(){
+    this.tripData = [];
+    this.vehicleListData = [];
+    this.FuelData =[];
+    this.tableInfoObj = [];
+    this.detailSummaryObj =[];    
+    this.displayData =[];
+    this.updateDataSource(this.tripData);
+    this.driverSelected= false;
+    this.filterDateData();
+  }
 
   onSearch(){
+    this.resetCharts();
     this.isChartsOpen = true;
     if (this.reportPrefData.length != 0) {
       let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
