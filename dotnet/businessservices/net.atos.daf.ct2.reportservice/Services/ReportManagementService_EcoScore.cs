@@ -650,10 +650,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //userPreferences = await GetReportUserPreferencesOld(request, context);
 
                 // New implementation considering Functional feature mapping with attribute
-                //userPreferences = await GetReportUserPreferences_New(request);
+                userPreferences = await GetReportUserPreferences_New(request);
 
                 // New Sub Report approach for report preferences functionality
-                userPreferences = await GetReportUserPreferences_NewSubReort(request);
+                //userPreferences = await GetReportUserPreferences_NewSubReort(request);
 
                 try
                 {
