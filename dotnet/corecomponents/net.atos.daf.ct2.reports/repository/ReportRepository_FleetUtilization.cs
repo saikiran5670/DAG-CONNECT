@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                       , fd.totalworkingdays            as VehicleActiveDays
                                             		  , round (fd.etl_gps_distance,2)  as Distance
                                             		  , fd.etl_gps_driving_time        as DrivingTime
-                                            		  , fd.idle_duration               as IdleDuration
+                                            		  , round(fd.idle_duration,2)      as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),7)   as AverageSpeed
                                             		  ,case when numoftripswithavgweight>0 then round (fd.average_weight/numoftripswithavgweight, 3) 

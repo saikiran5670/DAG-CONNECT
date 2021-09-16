@@ -1809,6 +1809,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
 
+                    //Add role level to session
+                    int level = await _privilegeChecker.GetLevelByRoleId(request.OrgId, request.RoleId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.AccountRoleLevelKey, level);
+
                     _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                       "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
