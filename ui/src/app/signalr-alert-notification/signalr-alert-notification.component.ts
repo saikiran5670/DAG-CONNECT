@@ -1,11 +1,10 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import { NavigationExtras, Router } from '@angular/router';
 import { Util } from '../shared/util';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { SignalRService } from '../services/sampleService/signalR.service';
 
 @Component({
   selector: 'app-signalr-alert-notification',
@@ -14,6 +13,8 @@ import { SignalRService } from '../services/sampleService/signalR.service';
 })
 export class SignalrAlertNotificationComponent implements OnInit {
   @Input() notificationData: any;
+  @Input() notificationList: any;
+  @Output() sendCountToAppComponent = new EventEmitter<any>();
 // notificationData: any = [
 //   {
 //     icons:'unarchive',
@@ -72,6 +73,8 @@ localStLanguage: any;
 accountPrefObj: any;
 prefData : any;
 logbookData: any = [];
+alertNotificationCount: any;
+alertNotificationArray: any =[];
   preference : any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -81,7 +84,7 @@ logbookData: any = [];
   orgId: any;
   vehicleDisplayPreference: any;
 
-  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats,public signalRService: SignalRService) { }
+  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
   ngOnInit(): void {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
@@ -120,6 +123,22 @@ logbookData: any = [];
 //   this.signalRService.askServerForNotifyAlert();
 // }, 5000);
 
+  }
+
+  displayAlertNotifications(message){
+    if(this.notificationData.length < 5){
+      this.notificationData.push(message);
+    }
+    else{
+      this.notificationData.shift();
+      this.notificationData.push(message);
+    }
+      this.alertNotificationCount++;
+      let emitObj = {
+        stepFlag: false,
+        count: this.alertNotificationCount,
+      }
+      this.sendCountToAppComponent.emit(emitObj);
   }
 
   setInitialPref(prefData,preference){
