@@ -23,6 +23,7 @@ import { Util } from '../app/shared/util';
 import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/sampleService/signalR.service';
+import { AlertService } from './services/alert.service';
 
 @Component({
   selector: 'app-root',
@@ -84,6 +85,8 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
+  notificationCount= 0;
+  notificationDetails: any= [];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
@@ -292,7 +295,7 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService) {
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -378,6 +381,8 @@ export class AppComponent {
           }
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
+          this.getOfflineNotifications();
+          this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -926,11 +931,7 @@ export class AppComponent {
     //     this.filterLanguages();
     //   });
 
-    this.signalRService.startConnection();
-    setTimeout(() => {
-      this.signalRService.askServerListenerForNotifyAlert();
-      this.signalRService.askServerForNotifyAlert();
-    }, 8000);
+    
   }
 
 
@@ -1266,8 +1267,50 @@ export class AppComponent {
     }
   }
 
+getOfflineNotifications(){
+  this.alertService.getOfflineNotifications().subscribe(data => {
+    if(data){
+      this.notificationCount= data["notificationResponse"].length;
+      this.notificationDetails= data["notificationResponse"];
+    }
+
+  },
+  error => {
+
+  })
+}
+
+connectWithSignalR(){
+  this.signalRService.startConnection();
+  setTimeout(() => {
+    this.signalRService.askServerListenerForNotifyAlert();
+    this.signalRService.askServerForNotifyAlert();
+  }, 8000);
+}
 
 notificationClicked(){
   this.showAlertNotifications = true;
+  if(this.notificationCount > 0){
+    let notificationData= [];
+    this.notificationDetails.forEach(element => {
+      let notificationObj= {
+        "tripId": element.tripId,
+        "vin": element.vin,
+        "alertCategory": element.alertCategory,
+        "alertType": element.alertType,
+        "alertGeneratedTime": element.alertGeneratedTime,
+        "organizationId": element.organizationId,
+        "tripAlertId": element.tripAlertId,
+        "alertId": element.alertId,
+        "accountId": element.accountId,
+        "alertViewTimestamp": 0
+      }
+      notificationData.push(notificationObj);
+    });
+    
+    this.alertService.addViewedNotifications(notificationData).subscribe(data => {
+      this.notificationCount= 0;
+    })
+  }
 }
 }
