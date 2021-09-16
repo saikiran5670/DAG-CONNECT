@@ -1,11 +1,10 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import { NavigationExtras, Router } from '@angular/router';
 import { Util } from '../shared/util';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { SignalRService } from '../services/sampleService/signalR.service';
 
 @Component({
   selector: 'app-signalr-alert-notification',
@@ -13,63 +12,69 @@ import { SignalRService } from '../services/sampleService/signalR.service';
   styleUrls: ['./signalr-alert-notification.component.less']
 })
 export class SignalrAlertNotificationComponent implements OnInit {
-notificationData: any = [
-  {
-    icons:'unarchive',
-    name: 'Entering Geofence',
-    // data: 1628072950000,
-    data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
-    vehName: 'Veh data',
-    vin: 'test 01',
-    regNo: 'XLRTEM4100G041999858',
-    alertLevel: 'A',
-    alertType: 'U',
-    alertCat: 'L',
-  },
-  {
-    icons:'unarchive',
-    name: 'Fuel Driver Performance',
-    data: 1628072950000,
-    vehName: 'Veh 2 data',
-    vin: 'test 02',
-    regNo: 'XLRTEM4100G041999',
-    alertLevel: 'C',
-    alertType: 'S',
-    alertCat: 'F'
-  },
-  {
-    icons:'unarchive',
-    name: 'Time & Move',
-    data: 1627986550000,
-    vehName: 'Veh 3 data',
-    vin: 'test 03',
-    regNo: 'XLRTEM4100G041999',
-    alertLevel: 'W',
-    alertType: 'U',
-    alertCat: 'R'
-  },
-  {
-    icons:'unarchive',
-    name: 'Time & Move 4',
-    data: 1627986550000,
-    vehName: 'Veh 4 data',
-    vin: 'test 04',
-    regNo: 'XLRTEM4100G041999'
-  },
-  {
-    icons:'unarchive',
-    name: 'Time & Move 5',
-    data: 1627986550000,
-    vehName: 'Veh 5  data',
-    vin: 'test 05',
-    regNo: 'XLRTEM4100G041999'
-  },
-];
-startDateValue: any;
+  @Input() notificationData: any;
+  @Input() notificationList: any;
+  @Output() sendCountToAppComponent = new EventEmitter<any>();
+// notificationData: any = [
+//   {
+//     icons:'unarchive',
+//     name: 'Entering Geofence',
+//     // data: 1628072950000,
+//     data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
+//     vehName: 'Veh data',
+//     vin: 'test 01',
+//     regNo: 'XLRTEM4100G041999858',
+//     alertLevel: 'A',
+//     alertType: 'U',
+//     alertCat: 'L',
+//   },
+//   {
+//     icons:'unarchive',
+//     name: 'Fuel Driver Performance',
+//     data: 1628072950000,
+//     vehName: 'Veh 2 data',
+//     vin: 'test 02',
+//     regNo: 'XLRTEM4100G041999',
+//     alertLevel: 'C',
+//     alertType: 'S',
+//     alertCat: 'F'
+//   },
+//   {
+//     icons:'unarchive',
+//     name: 'Time & Move',
+//     data: 1627986550000,
+//     vehName: 'Veh 3 data',
+//     vin: 'test 03',
+//     regNo: 'XLRTEM4100G041999',
+//     alertLevel: 'W',
+//     alertType: 'U',
+//     alertCat: 'R'
+//   },
+//   {
+//     icons:'unarchive',
+//     name: 'Time & Move 4',
+//     data: 1627986550000,
+//     vehName: 'Veh 4 data',
+//     vin: 'test 04',
+//     regNo: 'XLRTEM4100G041999'
+//   },
+//   {
+//     icons:'unarchive',
+//     name: 'Time & Move 5',
+//     data: 1627986550000,
+//     vehName: 'Veh 5  data',
+//     vin: 'test 05',
+//     regNo: 'XLRTEM4100G041999'
+//   },
+// ];
+// startDateValue: any;
 selectedStartTime: any = '00:00';
 localStLanguage: any;
 accountPrefObj: any;
 prefData : any;
+logbookData: any = [];
+alertNotificationCount: any;
+alertNotificationArray: any =[];
   preference : any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -79,7 +84,7 @@ prefData : any;
   orgId: any;
   vehicleDisplayPreference: any;
 
-  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats,public signalRService: SignalRService) { }
+  constructor(private router: Router,private translationService: TranslationService,private organizationService: OrganizationService,@Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
   ngOnInit(): void {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
@@ -118,6 +123,22 @@ prefData : any;
 //   this.signalRService.askServerForNotifyAlert();
 // }, 5000);
 
+  }
+
+  displayAlertNotifications(message){
+    if(this.notificationData.length < 5){
+      this.notificationData.push(message);
+    }
+    else{
+      this.notificationData.shift();
+      this.notificationData.push(message);
+    }
+      this.alertNotificationCount++;
+      let emitObj = {
+        stepFlag: false,
+        count: this.alertNotificationCount,
+      }
+      this.sendCountToAppComponent.emit(emitObj);
   }
 
   setInitialPref(prefData,preference){
@@ -173,8 +194,8 @@ prefData : any;
 
   getDateAndTime(){
     this.notificationData.forEach(element => {
-    this.startDateValue = element.data;
-    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
+    let startDateValue = element.alertGeneratedTime;
+    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(startDateValue, this.prefTimeZone,this.alertDateFormat); 
     element.date = dateTimeObj[0];
     element.time = dateTimeObj[1];
     this.setPrefFormatTime(element.date,element.time);
@@ -194,9 +215,16 @@ prefData : any;
   }
   
   gotoLogBookForMoreAlerts(){
+        //sorting dates in ascending order
+        let sortedDates = this.notificationData;
+        let obj = sortedDates.sort((x,y) => x.data-y.data);
+        this.logbookData.startDate = obj[0].data;
+        this.logbookData.endDate = obj[obj.length - 1].data;
+    
     const navigationExtras: NavigationExtras = {
       state: {
-        fromMoreAlerts: true
+        fromMoreAlerts: true,
+        data: this.logbookData
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);

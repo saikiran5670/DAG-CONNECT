@@ -9,6 +9,10 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { SignalrAlertNotificationComponent } from 'src/app/signalr-alert-notification/signalr-alert-notification.component';
+import { TranslationService } from '../translation.service';
+import { OrganizationService } from '../organization.service';
+import { Router } from '@angular/router';
 
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
@@ -43,20 +47,44 @@ export class SignalRService {
   
 
   askServerForNotifyAlert() {
-    this.hubConnection.invoke("NotifyAlert", "hey")
-        .catch(err => 
-          { 
-              console.log(err);
-              this.AlertNotifcaionList.push(err);
-         });
+    //Actual method to get notifications
+    // this.hubConnection.invoke("ReadKafkaMessages", "Hello")
+    // .catch(err => 
+    //   { 
+    //       console.log(err);
+    //       this.AlertNotifcaionList.push(err);
+    //   });
+
+    //Mock method to get notifications
+    this.hubConnection.invoke("NotifyAlert", "Hello")
+    .catch(err => 
+      { 
+          console.log(err);
+          this.AlertNotifcaionList.push(err);
+      });
   }
   
   askServerListenerForNotifyAlert(){
-     this.hubConnection.on("NotifyAlertResponse", (notificationMessgae) => {
-        console.log(notificationMessgae);
-        this.AlertNotifcaionList.push(notificationMessgae);
+    let router: Router;
+    let translationService: TranslationService;
+    let organizationService: OrganizationService;
+    let dateFormats;
+    let signalRComponentObj = new SignalrAlertNotificationComponent(router,translationService,organizationService,dateFormats);
+
+     this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+        console.log(notificationMessage);
+        this.AlertNotifcaionList.push(notificationMessage);
         console.log("Notification Alert List=" +this.AlertNotifcaionList);
+      signalRComponentObj.displayAlertNotifications(notificationMessage);
     })
+
+    //For error response
+    this.hubConnection.on("askServerResponse", (errorMessage) => {
+      console.log(errorMessage);
+      this.AlertNotifcaionList.push(errorMessage);
+      console.log("Notification Alert List=" +this.AlertNotifcaionList);
+  })
+
   }
   
   ngOnDestroy() {

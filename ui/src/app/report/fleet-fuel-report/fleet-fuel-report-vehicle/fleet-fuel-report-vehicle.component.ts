@@ -136,9 +136,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
-          steps: 10,
-          stepSize:1,
+        ticks: {        
           beginAtZero:true
         },
         scaleLabel: {
@@ -407,9 +405,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
-          steps: 10,
-          stepSize:1,
+        ticks: {          
           beginAtZero:true
         },
         scaleLabel: {
@@ -2492,21 +2488,25 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-        let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
-        console.log("idleDuration", element.idleDuration);
-        console.log("convertedDuration", convertedDuration);
-        sum += parseFloat(convertedDuration);
+        // let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
+        // console.log("idleDuration", element.idleDuration);
+        // console.log("convertedDuration", convertedDuration);
+        sum += parseFloat(element.idleDuration); // 16059 - time mismatch with dashboard.
         //  sum += parseFloat(element.idleDuration);
         });
-        sum=sum.toFixed(2)*1;
+        sum=Util.getHhMmTime(sum);
         // sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
         break;
     }
     case 'fuelConsumption': { 
-      let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumption);
-      });
-      sum= sum.toFixed(2)*1;
+      // let s = this.displayData.forEach(element => {
+      // sum += parseFloat(element.convertedFuelConsumption);
+      // });
+      // sum= sum.toFixed(2)*1;
+      let fuelConsumed = this.sumOfColumns('fuelconsumed');
+      let distance = this.sumOfColumns('distance');
+      let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
+      sum= convertedConsumption.toFixed(2)*1;
       break;
     }
     case 'co2emission': { 

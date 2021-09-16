@@ -782,6 +782,27 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_ids", reportIds);
+
+                #region Query RoleBasedDataColumn
+                var query = @"SELECT DISTINCT d.id as DataAttributeId, ra.report_id, d.name as Name, ra.key as Key, 'A' as state,
+                                              ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
+                              FROM master.reportattribute ra
+                              INNER JOIN master.dataattribute d ON  d.id = ra.data_attribute_id and ra.report_id = ANY(@report_ids)";
+                #endregion
+
+                return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
         {
@@ -795,6 +816,44 @@ namespace net.atos.daf.ct2.reports.repository
                 #endregion
 
                 return await _dataAccess.QueryAsync<int>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckIfSubReportExist(int reportId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+
+                #region Query Select User Preferences
+                var query = @"SELECT EXISTS ( SELECT 1 FROM master.subreport WHERE report_id = @report_id )";
+                #endregion
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<SubReport>> GetSubReportFeatureId(int reportId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+
+                #region Query RoleBasedDataColumn
+                var query = @"SELECT DISTINCT sub_report_id AS SubReportId, feature_id AS FeatureId FROM master.subreport WHERE report_id = @report_id";
+                #endregion
+
+                return await _dataAccess.QueryAsync<SubReport>(query, parameter);
             }
             catch (Exception)
             {

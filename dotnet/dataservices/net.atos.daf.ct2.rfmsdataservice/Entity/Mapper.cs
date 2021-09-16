@@ -31,10 +31,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 Entity.TachoDriverIdentification tachoDriverIdentification = new Entity.TachoDriverIdentification()
                 {
                     DriverIdentification = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverIdentification,
-                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState ?? string.Empty,
-                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex ?? string.Empty,
+                    CardIssuingMemberState = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardIssuingMemberState,
+                    CardRenewalIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardRenewalIndex,
                     CardReplacementIndex = vehicle.TriggerType.DriverId.TachoDriverIdentification.CardReplacementIndex,
-                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment ?? string.Empty
+                    DriverAuthenticationEquipment = vehicle.TriggerType.DriverId.TachoDriverIdentification.DriverAuthenticationEquipment
                 };
 
                 Entity.OemDriverIdentification oemDriverIdentification = new Entity.OemDriverIdentification()
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 TellTaleObject tellTaleObject = new TellTaleObject()
                 {
                     State = vehicle.TriggerType.TellTaleInfo.State,
-                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale ?? string.Empty,
+                    TellTale = vehicle.TriggerType.TellTaleInfo.TellTale,
                     OemTellTale = vehicle.TriggerType.TellTaleInfo.OemTellTale
                 };
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     PtoId = vehicle.TriggerType.PtoId,
                     TriggerInfo = vehicle.TriggerType.TriggerInfo,
                     DriverId = driverIdObject,
-                    TriggerType = vehicle.TriggerType.Type ?? string.Empty,
+                    TriggerType = vehicle.TriggerType.Type,
                     TellTaleInfo = tellTaleObject
                 };
 

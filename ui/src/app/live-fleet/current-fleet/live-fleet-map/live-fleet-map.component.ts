@@ -98,7 +98,7 @@ export class LiveFleetMapComponent implements OnInit {
 
       }
       else{
-        this.tripTraceArray.push(vehicleResponse.data);
+        this.tripTraceArray = vehicleResponse.data; //1665 - data wasn't mapped correctly 
         this.showIcons = false;
 
       }

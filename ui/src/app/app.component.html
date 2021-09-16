@@ -47,11 +47,14 @@
                             <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
                                 [matMenuTriggerFor]="menu" (click) ="notificationClicked()">
                                 notifications_none</mat-icon>
-                            <span class="badge">0</span>
+                            <span class="badge">{{ notificationCount }}</span>
                         </a>
 
                         <mat-menu #menu="matMenu"  class="notificationList" yPosition="below" > 
-                                <app-signalr-alert-notification *ngIf="showAlertNotifications">
+                                <app-signalr-alert-notification *ngIf="showAlertNotifications" 
+                                [notificationData]="notificationDetails"
+                                [notificationList] = 'notificationList'
+                                (sendCountToAppComponent)='sendAlertNotificationCount($event)'>
                                 </app-signalr-alert-notification>
                         </mat-menu>
                         

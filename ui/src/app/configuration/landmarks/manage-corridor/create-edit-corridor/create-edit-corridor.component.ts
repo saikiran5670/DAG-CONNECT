@@ -56,6 +56,8 @@ export class CreateEditCorridorComponent implements OnInit {
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
       this.vehicleGroupList= vehicleGroup;
+      this.showLoadingIndicator = false;
+
       // console.log(this.vehicleGroupList)
     });
   }
