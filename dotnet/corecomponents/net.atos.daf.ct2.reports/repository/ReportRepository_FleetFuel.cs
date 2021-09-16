@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
                                                   		  , round(fd.fuel_consumed,2)                            As FuelConsumed
-                                                  		  , round(fd.fuel_consumption,2)                         As FuelConsumption
+                                                  		  , round(fd.fuel_consumption,5)                         As FuelConsumption
                                                   		  , round(fd.co2_emission,2)                             As CO2Emission
                                                   		  , round(fd.idle_duration,2)                                     as IdleDuration
                                                           , round(fd.idle_duration_percentage,2)                          as IdleDurationPercentage
@@ -248,7 +248,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , numberoftrips                                          as NumberOfTrips
                                                		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
                                                		  , round(fd.fuel_consumed,2)                              As FuelConsumed
-                                               		  , round(fd.fuel_consumption,2)                           As FuelConsumption
+                                               		  , round(fd.fuel_consumption,5)                           As FuelConsumption
                                                		  , round(fd.co2_emission,2)                               As CO2Emission
                                                		  , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
                                                       , round(fd.idle_duration,2)                                       as IdleDuration
@@ -313,7 +313,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                             as tripcount,
                         sum(etl_gps_distance)                               as totaldistance,
                         sum(idle_duration)                                  as totalidleduration,
-						(sum(etl_gps_distance)/ sum(etl_gps_fuel_consumed)) as fuelconsumption,
+						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance)) as fuelconsumption,                        
                         sum(etl_gps_fuel_consumed)                          as fuelconsumed,
 						sum(co2_emission)                                   as co2emission
                         FROM tripdetail.trip_statistics CT
@@ -365,7 +365,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                                 as tripcount,
                         sum(etl_gps_distance)                                   as totaldistance,
                         sum(idle_duration)                                      as totalidleduration,
-						(sum(etl_gps_distance)/ sum(etl_gps_fuel_consumed))     as fuelconsumption,
+						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))     as fuelconsumption,
                         sum(etl_gps_fuel_consumed)                              as fuelconsumed,
 						sum(co2_emission)                                       as co2emission	
                         FROM tripdetail.trip_statistics CT
