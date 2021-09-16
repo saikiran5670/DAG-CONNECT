@@ -2492,13 +2492,13 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-        let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
-        console.log("idleDuration", element.idleDuration);
-        console.log("convertedDuration", convertedDuration);
-        sum += parseFloat(convertedDuration);
+        // let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
+        // console.log("idleDuration", element.idleDuration);
+        // console.log("convertedDuration", convertedDuration);
+        sum += parseFloat(element.idleDuration); // 16059 - time mismatch with dashboard.
         //  sum += parseFloat(element.idleDuration);
         });
-        sum=sum.toFixed(2)*1;
+        sum=Util.getHhMmTime(sum);
         // sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
         break;
     }
