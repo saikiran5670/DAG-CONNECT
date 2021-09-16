@@ -352,12 +352,15 @@ getLevelValues(){
     this.selectedRowData.notifications.forEach(element => {
       if(element.alertUrgencyLevelType == 'C'){
         this.criticalLevel = true;
+        this.criticalFlag = true;
       }
       if(element.alertUrgencyLevelType == 'W'){
         this.warningLevel = true;
+        this.warningFlag = true;
       }
       if(element.alertUrgencyLevelType == 'A'){
         this.advisoryLevel = true;
+        this.advisoryFlag = true;
       }
     });
     if (this.FormWebArray && this.FormWebArray.length != 0) {
@@ -1187,56 +1190,54 @@ getLevelValues(){
       ]
     }
 
-    // if(this.criticalFlag){
-    //   let objData = 
-    //     {
-    //       "alertUrgencyLevelType": "C",
-    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
-    //       "frequencyThreshholdValue": 0,
-    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
-    //       "createdBy": this.selectedRowData.createdBy,
-    //       "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-    //       "alertId": this.selectedRowData.id,
-    //       "modifiedBy": this.accountId,
-    //       "notificationRecipients": this.notificationReceipients,
-    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
-    //     }
-    //     this.notifications.push(objData);
-    // }
-
-    // if(this.warningFlag){
-    //   let objData = 
-    //     {
-    //       "alertUrgencyLevelType": "W",
-    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
-    //       "frequencyThreshholdValue": 0,
-    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
-    //       "createdBy": this.selectedRowData.createdBy,
-    //       "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-    //       "alertId": this.selectedRowData.id,
-    //       "modifiedBy": this.accountId,
-    //       "notificationRecipients": this.notificationReceipients,
-    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
-    //     }
-    //     this.notifications.push(objData);
-    // }
-
-    // if(this.advisoryFlag){
-    //   let objData = 
-    //     {
-    //       "alertUrgencyLevelType": "A",
-    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
-    //       "frequencyThreshholdValue": 0,
-    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
-    //       "createdBy": this.selectedRowData.createdBy,
-    //       "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-    //       "alertId": this.selectedRowData.id,
-    //       "modifiedBy": this.accountId,
-    //       "notificationRecipients": this.notificationReceipients,
-    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
-    //     }
-    //     this.notifications.push(objData);
-    // }
+    if(this.criticalFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "C",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+    if(this.warningFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "W",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+    if(this.advisoryFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "A",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
 
     }
     if(!this.isMobileValdate || !this.isWebValidate || !this.isEmailValidate || !this.isValidityAlwaysCustom){
