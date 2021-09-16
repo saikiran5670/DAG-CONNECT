@@ -138,7 +138,9 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     prdDate.Day = item.ProductionDate.Day;
                     prdDate.Month = item.ProductionDate.Month;
                     prdDate.Year = item.ProductionDate.Year;
-                    vehicleObj.ProductionDate = prdDate;
+                    if (prdDate.Day != 0 && prdDate.Month != 0 && prdDate.Year != 0)
+                        vehicleObj.ProductionDate = prdDate;
+                    else vehicleObj.ProductionDate = null;
                 }
                 //Below commented fields as due to no db mapping provided by database team and is currently seeks clarification from DAF
                 vehicleObj.Type = item.Type;
