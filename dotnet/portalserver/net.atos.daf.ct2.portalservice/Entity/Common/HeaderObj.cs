@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Common
         public int OrgId { get; set; }
         public int ContextOrgId { get; set; }
         public SessionFeature[] UserFeatures { get; set; }
+        public int RoleLevel { get; set; }
 
         public override string ToString()
         {
