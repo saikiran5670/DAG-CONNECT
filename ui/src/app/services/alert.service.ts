@@ -138,5 +138,29 @@ export class AlertService {
        .pipe(catchError(this.handleError));
    }
 
+   getOfflineNotifications(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/getofflinenotification`,headers)
+       .pipe(catchError(this.handleError));
+   }
 
+   addViewedNotifications(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/insertviewnotification`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
 }

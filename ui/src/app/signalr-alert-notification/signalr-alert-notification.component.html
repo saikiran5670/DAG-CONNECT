@@ -3,10 +3,19 @@
         <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
         fxLayoutGap="1px">
         <div fxLayout="column" class="areaWidth min-width-10-per">
-            <mat-icon class="line3">{{item.icons}}</mat-icon>
+            <!-- <mat-icon class="line3">{{item.icons}}</mat-icon> -->
+            <span *ngIf="item.alertUrgency == 'C'">
+                <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
+              </span> 
+              <span *ngIf="item.alertUrgency == 'W'">
+                <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
+              </span>
+              <span *ngIf="item.alertUrgency == 'A'">
+                <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
+              </span>
         </div>
         <div fxLayout="column" class="areaWidth min-width-50-per line3">
-            <span>{{item.name}}</span>
+            <span>{{item.alertName}}</span>
         </div>
         <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
             <span class="demo1">{{item.date}}</span>
@@ -17,9 +26,9 @@
         <div class="line">
             <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
             fxLayoutGap="1px">
-            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
+            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehicleName}} </span>
             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
-            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
+            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.vehicleLicencePlate ? item.vehicleLicencePlate : item.vehicleName}} </span>
         </div>
     </div>
 </mat-card>

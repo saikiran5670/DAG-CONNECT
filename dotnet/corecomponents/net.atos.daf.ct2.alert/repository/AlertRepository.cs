@@ -118,6 +118,7 @@ namespace net.atos.daf.ct2.alert.repository
                     }
                 }
                 int recordCnt = 0;
+                int alertNotificationRecipientId = 0;
                 foreach (var notification in alert.Notifications)
                 {
                     notification.AlertId = alertId;
@@ -139,7 +140,6 @@ namespace net.atos.daf.ct2.alert.repository
                         NotificationRecipientRef notificationRecipientRef = new NotificationRecipientRef();
                         notificationRecipientRef.NotificationId = notificationId;
                         notificationRecipientRef.AlertId = alertId;
-                        int alertNotificationRecipientId = 0;
                         if (notificationRecipient.Id > 0)
                         {
                             NotificationRecipient recipients = await CheckRecipientdetailsExists(notificationRecipient, alert.OrganizationId);
@@ -153,6 +153,7 @@ namespace net.atos.daf.ct2.alert.repository
                             {
                                 alertNotificationRecipientId = await CreateNotificationrecipient(notificationRecipient);
                             }
+
                             notificationRecipientRef.RecipientId = alertNotificationRecipientId;
                             await CreateNotificationRecipientRef(notificationRecipientRef);
                         }
@@ -1458,7 +1459,7 @@ namespace net.atos.daf.ct2.alert.repository
                 {
                     int id = 0;
                     var parameter = new DynamicParameters();
-                    await _dataMartdataAccess.ExecuteAsync("DELETE From tripdetail.notificationviewhistory where account_id=@account_id", new { account_id = accountId});
+                    await _dataMartdataAccess.ExecuteAsync("DELETE From tripdetail.notificationviewhistory where account_id=@account_id", new { account_id = accountId });
                     foreach (NotificationViewHistory item in notificationViewHistories)
                     {
                         parameter.Add("@trip_id", item.TripId);

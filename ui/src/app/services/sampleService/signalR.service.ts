@@ -43,20 +43,37 @@ export class SignalRService {
   
 
   askServerForNotifyAlert() {
-    this.hubConnection.invoke("NotifyAlert", "hey")
-        .catch(err => 
-          { 
-              console.log(err);
-              this.AlertNotifcaionList.push(err);
-         });
+    //Actual method to get notifications
+    // this.hubConnection.invoke("ReadKafkaMessages", "Hello")
+    // .catch(err => 
+    //   { 
+    //       console.log(err);
+    //       this.AlertNotifcaionList.push(err);
+    //   });
+
+    //Mock method to get notifications
+    this.hubConnection.invoke("NotifyAlert", "Hello")
+    .catch(err => 
+      { 
+          console.log(err);
+          this.AlertNotifcaionList.push(err);
+      });
   }
   
   askServerListenerForNotifyAlert(){
-     this.hubConnection.on("NotifyAlertResponse", (notificationMessgae) => {
-        console.log(notificationMessgae);
-        this.AlertNotifcaionList.push(notificationMessgae);
+     this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+        console.log(notificationMessage);
+        this.AlertNotifcaionList.push(notificationMessage);
         console.log("Notification Alert List=" +this.AlertNotifcaionList);
     })
+
+    //For error response
+    this.hubConnection.on("askServerResponse", (errorMessage) => {
+      console.log(errorMessage);
+      this.AlertNotifcaionList.push(errorMessage);
+      console.log("Notification Alert List=" +this.AlertNotifcaionList);
+  })
+
   }
   
   ngOnDestroy() {
