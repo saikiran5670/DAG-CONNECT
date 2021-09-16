@@ -502,7 +502,7 @@ removeDuplicates(originalArray, prop) {
        }
       });    
      this.categoryList = this.removeDuplicates(newAlertCat, "value");
-     console.log(newAlertCat);    
+     //console.log(newAlertCat);    
       this.vehicleListData = data;     
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
