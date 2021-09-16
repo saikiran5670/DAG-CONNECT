@@ -9,6 +9,10 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { SignalrAlertNotificationComponent } from 'src/app/signalr-alert-notification/signalr-alert-notification.component';
+import { TranslationService } from '../translation.service';
+import { OrganizationService } from '../organization.service';
+import { Router } from '@angular/router';
 
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
@@ -61,10 +65,17 @@ export class SignalRService {
   }
   
   askServerListenerForNotifyAlert(){
+    let router: Router;
+    let translationService: TranslationService;
+    let organizationService: OrganizationService;
+    let dateFormats;
+    let signalRComponentObj = new SignalrAlertNotificationComponent(router,translationService,organizationService,dateFormats);
+
      this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
         console.log(notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
         console.log("Notification Alert List=" +this.AlertNotifcaionList);
+      signalRComponentObj.displayAlertNotifications(notificationMessage);
     })
 
     //For error response

@@ -39,6 +39,7 @@ export class AppComponent {
   // public isMobilevar = false;
   // public isTabletvar = false;
   // public isDesktopvar = false;
+  notificationList: any;
   loggedInUser: string = 'admin';
   translationData: any;
   dirValue = 'ltr'; //rtl
@@ -275,7 +276,6 @@ export class AppComponent {
   messages: any[] = [];
   subscription: Subscription;
   showTimer: boolean = false;
-
 
     /** list of banks */
    // protected banks: Bank[] = BANKS;
@@ -1270,7 +1270,7 @@ export class AppComponent {
 getOfflineNotifications(){
   this.alertService.getOfflineNotifications().subscribe(data => {
     if(data){
-      this.notificationCount= data["notificationResponse"].length;
+      this.notificationCount= data["notAccResponse"].notificationCount;
       this.notificationDetails= data["notificationResponse"];
     }
 
@@ -1283,9 +1283,13 @@ getOfflineNotifications(){
 connectWithSignalR(){
   this.signalRService.startConnection();
   setTimeout(() => {
-    this.signalRService.askServerListenerForNotifyAlert();
+    this.notificationList = this.signalRService.askServerListenerForNotifyAlert();
     this.signalRService.askServerForNotifyAlert();
   }, 8000);
+}
+
+sendAlertNotificationCount(item: any) {
+  this.notificationCount = item.count;
 }
 
 notificationClicked(){
