@@ -132,8 +132,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
-          steps: 10,
-          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -405,8 +403,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
-          steps: 10,
-          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -1145,8 +1141,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
       position: 'left',
       type: 'linear',
       ticks: {
-        steps: 10,
-        stepSize:1,
         beginAtZero:true
       },
       scaleLabel: {
@@ -2352,24 +2346,10 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-        //sum += parseFloat(element.idleDuration);
-        let convertedDuration:any = this.reportMapService.convertTimeToMinutes(element.idleDuration);
-        sum += parseFloat(convertedDuration);
-        });
-        sum=sum.toFixed(2)*1;
-        //sum = this.reportMapService.getHhMmTime(sum);
-        break;
-      //  let s = this.tripData.forEach(element => {
-      //    let time: any = 0;
-      //    time += (element.idleDuration);
-      //    let data: any = "00:00";
-      //    let hours = Math.floor(time / 3600);
-      //    time %= 3600;
-      //    let minutes = Math.floor(time / 60);
-      //    let seconds = time % 60;
-      //    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-      //    sum = data;
-      //  });
+        sum += parseFloat(element.idleDuration);       
+        });            
+        sum=Util.getHhMmTime(sum);
+        break;     
     }
     case 'fuelConsumption': { 
       // let s = this.displayData.forEach(element => {

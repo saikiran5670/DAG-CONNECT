@@ -322,8 +322,6 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
-          steps: 10,
-          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -595,8 +593,6 @@ tripTraceArray: any = [];
         position: 'left',
         type: 'linear',
         ticks: {
-          steps: 10,
-          stepSize:1,
           beginAtZero:true
         },
         scaleLabel: {
@@ -1838,8 +1834,6 @@ createEndMarker(){
       position: 'left',
       type: 'linear',
       ticks: {
-        steps: 10,
-        stepSize:1,
         beginAtZero:true
       },
       scaleLabel: {
@@ -3035,12 +3029,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      // sum += parseFloat(element.idleDuration);
-      let convertedDuration:any = this.reportMapService.convertTimeToMinutes(element.idleDuration);
-      sum += parseFloat(convertedDuration);
-      });
-      sum=sum.toFixed(2)*1;
-      //sum = this.reportMapService.getHhMmTime(sum);
+      sum += parseFloat(element.idleDuration);
+      });          
+      sum=Util.getHhMmTime(sum);
       break;
     }
     case 'fuelConsumption': { 
