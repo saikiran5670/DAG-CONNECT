@@ -277,6 +277,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       "profileId": this.selectedProfile,
       "name": this.ecoScoreProfileForm.controls.profileName.value,
       "description": this.ecoScoreProfileForm.controls.profileDescription.value,
+      "isDAFStandard": this.isSelected,
       "profileKPIs": this.changedKPIData
       }
       this.reportService.updateEcoScoreProfile(manageParams).subscribe(()=>{
@@ -375,7 +376,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   onChange(event){
-    this.isDAFStandard = event.checked;
+    if(this.actionType === 'create'){
+      this.isDAFStandard = event.checked;
+    } else {
+      console.log(event.checked);
+      this.isSelected = event.checked;
+    }
   }
 
   onChangeOption(event){

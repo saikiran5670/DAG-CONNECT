@@ -136,9 +136,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
-          steps: 10,
-          stepSize:1,
+        ticks: {        
           beginAtZero:true
         },
         scaleLabel: {
@@ -407,9 +405,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
-          steps: 10,
-          stepSize:1,
+        ticks: {          
           beginAtZero:true
         },
         scaleLabel: {
