@@ -301,6 +301,21 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetReportFeatureId(reportId);
         }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds)
+        {
+            return await _reportRepository.GetReportDataAttributes(reportIds);
+        }
+
+        public async Task<bool> CheckIfSubReportExist(int reportId)
+        {
+            return await _reportRepository.CheckIfSubReportExist(reportId);
+        }
+
+        public async Task<IEnumerable<SubReport>> GetSubReportFeatureId(int reportId)
+        {
+            return await _reportRepository.GetSubReportFeatureId(reportId);
+        }
         #endregion
 
         #region Eco Score Report Compare Drivers
