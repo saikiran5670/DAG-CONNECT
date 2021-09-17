@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.reports.entity
     public class UserPreferenceAttribute
     {
         public int DataAttributeId { get; set; }
+        public int ReportId { get; set; }
         public ReportUserPreferenceState State { get; set; }
         public ReportPreferenceType Type { get; set; }
         public ReportPreferenceChartType? ChartType { get; set; }
