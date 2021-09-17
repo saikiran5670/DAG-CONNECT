@@ -39,9 +39,11 @@ namespace net.atos.daf.ct2.rfms.repository
                                         ,VP.ENGINE_EMISSION_LEVEL AS EMISSIONLEVEL
 										,VP.TYPE_ID AS CHASSISTYPE
                                         ,(SELECT COUNT(*) FROM MASTER.VEHICLEAXLEPROPERTIES WHERE VEHICLE_ID = V.ID) AS NOOFAXLES
-                                        ,(SELECT case when (SELECT COUNT(CHASIS_FUEL_TANK_VOLUME) FROM MASTER.VEHICLEFUELTANKPROPERTIES   where  VEHICLE_ID =  V.ID  and
-				                        (CHASIS_FUEL_TANK_VOLUME !~ '^[0-9.]+$')) = 0 then (SELECT  COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) 
-                                        FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID =  V.ID ) end as TOTALFUELTANKVOLUME)
+                                        ,(SELECT case when (((SELECT COUNT(CHASIS_FUEL_TANK_VOLUME) FROM MASTER.VEHICLEFUELTANKPROPERTIES
+                                         where  VEHICLE_ID =  V.ID  and (CHASIS_FUEL_TANK_VOLUME !~ '^[0-9.]+$')) = 0)
+                                         and (select exists(select CHASIS_FUEL_TANK_VOLUME from master.vehiclefueltankproperties where VEHICLE_ID=V.ID)))
+                                         then (SELECT  COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) 
+                                         FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID =  V.ID ) end as TOTALFUELTANKVOLUME)
                                         -- ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID and CHASIS_FUEL_TANK_VOLUME ~ '^[0-9.]+$') AS TOTALFUELTANKVOLUME
                                         ,VP.TRANSMISSION_GEARBOX_TYPE AS GEARBOXTYPE
                                         FROM MASTER.VEHICLE V 
@@ -169,14 +171,18 @@ namespace net.atos.daf.ct2.rfms.repository
                     if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime != null)
                     {
                         parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
-
+                        if (lastVinId > 0)
+                        {
+                            var second = 1;
+                            parameter.Add("@start_time", utilities.UTCHandling.RfmsGetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime, second));
+                        }
                         if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Type == DateType.Created.ToString())
                         {
-                            queryStatement = queryStatement + " and created_datetime > @start_time";
+                            queryStatement = queryStatement + " and created_datetime >= @start_time";
                         }
                         else
                         {
-                            queryStatement = queryStatement + " and received_datetime > @start_time";
+                            queryStatement = queryStatement + " and received_datetime >= @start_time";
                         }
                     }
 
@@ -207,6 +213,7 @@ namespace net.atos.daf.ct2.rfms.repository
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
                     if (!rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                         queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                    //require to confirm from Anirudha
                 }
                 if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
                 {

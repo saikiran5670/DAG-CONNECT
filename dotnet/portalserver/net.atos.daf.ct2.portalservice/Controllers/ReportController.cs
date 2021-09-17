@@ -797,12 +797,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     var sessionFeatures = GetUserSubscribeFeatures();
                     var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.SubReportFeature)?.Select(x => x.Name)?.FirstOrDefault();
 
-                    var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName));
-                    if (!string.IsNullOrEmpty(featureName) && requiredFeatures.Count() > 0)
+                    if (!string.IsNullOrEmpty(featureName))
                     {
-                        string strFeature = JsonConvert.SerializeObject(requiredFeatures);
-                        objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
-                        if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                        var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
+                        var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+
+                        if (requiredFeatures.Count() > 0)
+                        {
+                            string strFeature = JsonConvert.SerializeObject(requiredFeatures);
+                            objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                            if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                        }
                     }
                 }
 
