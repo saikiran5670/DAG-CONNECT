@@ -975,8 +975,23 @@ ngOnDestroy(){
 
   }
 
-  onVehicleGroupChange(event: any){
-   
+  onVehicleGroupChange(value){
+    this.vehicleDD=[];
+    let newVehicleList=[];
+    if(value == 'all'){
+     this.vehicleDD = this.vehicleListData;
+    }
+    else{
+      let vehicle_group_selected:any = parseInt(value);
+      this.vehicleGrpDD.forEach(element => {
+       let vehicle= this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
+      //  let vehicle= element.filter(item => item.vehicleId == value);
+       if(vehicle.length > 0){
+        this.vehicleDD.push(vehicle[0]);
+        }
+      });
+      this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
+    }   
   }
 
   onVehicleChange(event: any){
@@ -1396,30 +1411,62 @@ let prepare = []
       }
     }
 
-    this.vehicleGroupListData = finalVINDataList;
-    if(this.vehicleGroupListData.length > 0){   
-      this.alertTyp = alertTypeList;
-      this.alertCtgry = categoryList;
-      this.alertLvl =   levelListData;
-      let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
-      if(_s.length > 0){
-        _s.forEach(element => {
-          let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
-          if(count.length > 0){
-            this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
-          }
-        });
-      }    
-    }
-    this.vehicleDD = this.vehicleListData;
-    if(this.vehicleDD.length > 0){
-     this.resetLogFormControlValue();
-    }
-    this.setVehicleGroupAndVehiclePreSelection();
-    if(this.showBack){
-      this.onSearch();
-    }
+    if(this.vehicleGroupListData.length > 0){  
+      this.getVehicleGroups(); 
+       this.alertTyp = alertTypeList;
+       this.alertCtgry = categoryList;
+       this.alertLvl =   levelListData;
+       // let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+       // if(_s.length > 0){
+       //   _s.forEach(element => {
+       //     let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+       //     if(count.length > 0){
+       //       this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+       //     }
+       //   });
+       // }    
+     }
+     this.vehicleDD = this.vehicleListData;
+     if(this.vehicleDD.length > 0){
+      this.resetLogFormControlValue();
+     }
+     this.setVehicleGroupAndVehiclePreSelection();
+     if(this.showBack){
+       this.onSearch();
+     }
   }
+
+  getVehicleGroups(){
+    this.vehicleGroupListData.forEach(element => {
+      let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+      vehicleGroupDetails.forEach(item => {
+         let vehicleGroupObj= {
+           "vehicleGroupId" : item.split("~")[0],
+           "vehicleGroupName" : item.split("~")[1],
+           "vehicleId" : element.vehicleId
+         }
+         this.vehicleGrpDD.push(vehicleGroupObj);       
+      });
+    });
+    this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
+    this.vehicleGrpDD.forEach(element => {
+      element.vehicleGroupId = parseInt(element.vehicleGroupId);
+    });
+ }
+
+ getUnique(arr, comp) {
+
+  // store the comparison  values in array
+  const unique =  arr.map(e => e[comp])
+
+    // store the indexes of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
+
+    // eliminate the false indexes & return unique objects
+  .filter((e) => arr[e]).map(e => arr[e]);
+
+  return unique;
+}
 
   resetFilterValues(){
     this.logBookForm.get('vehicle').setValue('');

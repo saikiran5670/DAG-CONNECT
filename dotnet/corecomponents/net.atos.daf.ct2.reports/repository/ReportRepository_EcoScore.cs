@@ -707,12 +707,27 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId)
+        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId, int[] featureIds)
         {
             try
             {
+                string strReportIds = string.Empty;
                 var parameter = new DynamicParameters();
-                parameter.Add("@report_id", reportId);
+
+                var reportIds = featureIds.Count() > 0 ? await GetSubReportIds(featureIds) : new int[] { };
+
+                if (reportIds.Count() > 0)
+                {
+                    parameter.Add("@report_ids", reportIds.ToArray());
+
+                    strReportIds = "ANY(@report_ids)";
+                }
+                else
+                {
+                    parameter.Add("@report_id", reportId);
+                    strReportIds = "@report_id";
+                }
+
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@organization_id", organizationId);
 
@@ -720,11 +735,11 @@ namespace net.atos.daf.ct2.reports.repository
                 var query = @"SELECT EXISTS 
                             (
                                 SELECT 1 FROM master.reportpreference 
-                                WHERE account_id = @account_id and organization_id = @organization_id and report_id = @report_id
+                                WHERE account_id = @account_id and organization_id = @organization_id and report_id = {0}
                             )";
                 #endregion
 
-                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<bool>(string.Format(query, strReportIds), parameter);
             }
             catch (Exception)
             {
@@ -733,12 +748,26 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId,
-                                                                                             int organizationId)
+                                                                                             int organizationId, int[] featureIds)
         {
             try
             {
+                string strReportIds = string.Empty;
                 var parameter = new DynamicParameters();
-                parameter.Add("@report_id", reportId);
+
+                var reportIds = featureIds.Count() > 0 ? await GetSubReportIds(featureIds) : new int[] { };
+
+                if (reportIds.Count() > 0)
+                {
+                    parameter.Add("@report_ids", reportIds.ToArray());
+
+                    strReportIds = "ANY(@report_ids)";
+                }
+                else
+                {
+                    parameter.Add("@report_id", reportId);
+                    strReportIds = "@report_id";
+                }
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@organization_id", organizationId);
 
@@ -751,11 +780,11 @@ namespace net.atos.daf.ct2.reports.repository
                             INNER JOIN master.dataattribute d ON ra.data_attribute_id = d.id
                             LEFT JOIN master.reportpreference rp ON rp.reportattribute_id = ra.id and 
 										                            rp.account_id = @account_id and rp.organization_id = @organization_id
-                            WHERE rp.report_id = @report_id";
+                            WHERE rp.report_id = {0}";
 
                 #endregion
 
-                return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
+                return await _dataAccess.QueryAsync<ReportUserPreference>(string.Format(query, strReportIds), parameter);
             }
             catch (Exception)
             {

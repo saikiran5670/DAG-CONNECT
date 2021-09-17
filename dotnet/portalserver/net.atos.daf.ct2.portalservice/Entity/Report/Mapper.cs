@@ -152,6 +152,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 objRequest.Attributes.Add(new reportservice.UserPreferenceAttribute()
                 {
                     DataAttributeId = attribute.DataAttributeId,
+                    ReportId = attribute.ReportId,
                     State = (int)attribute.State.ToCharArray().First(),
                     Type = (int)attribute.PreferenceType.ToCharArray().First(),
                     ChartType = !string.IsNullOrEmpty(attribute.ChartType) ? (int)attribute.ChartType.ToCharArray().First() : 0,
