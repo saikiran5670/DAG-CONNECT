@@ -292,9 +292,9 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId, featureId);
         }
-        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId)
         {
-            return await _reportRepository.GetReportDataAttributes(featureIds);
+            return await _reportRepository.GetReportDataAttributes(featureIds, reportId);
         }
 
         public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)

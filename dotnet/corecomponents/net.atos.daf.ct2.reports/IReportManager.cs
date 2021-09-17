@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.reports
         Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId, int[] featureId);
-        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds);
+        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId);
         Task<IEnumerable<int>> GetReportFeatureId(int reportId);
         Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds);
         Task<int> CheckIfSubReportExist(int reportId);

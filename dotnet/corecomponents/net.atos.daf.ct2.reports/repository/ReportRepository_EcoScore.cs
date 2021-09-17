@@ -779,23 +779,36 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId)
         {
             try
             {
-
-                var reportIds = await GetSubReportIds(featureIds);
+                string strReportIds = string.Empty;
                 var parameter = new DynamicParameters();
-                parameter.Add("@report_ids", reportIds.ToArray());
+
+                var reportIds = featureIds.Count() > 0 ? await GetSubReportIds(featureIds) : new int[] { };
+
+                if (reportIds.Count() > 0)
+                {
+                    parameter.Add("@report_ids", reportIds.ToArray());
+
+                    strReportIds = "ANY(@report_ids)";
+                }
+                else
+                {
+                    parameter.Add("@report_id", reportId);
+                    strReportIds = "@report_id";
+                }
+
 
                 #region Query RoleBasedDataColumn
                 var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
                                               ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
                               FROM master.reportattribute ra
-                              INNER JOIN master.dataattribute d ON ra.report_id = ANY(@report_ids) and d.id = ra.data_attribute_id";
+                              INNER JOIN master.dataattribute d ON ra.report_id = {0} and d.id = ra.data_attribute_id";
                 #endregion
 
-                return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
+                return await _dataAccess.QueryAsync<ReportUserPreference>(string.Format(query, strReportIds), parameter);
             }
             catch (Exception)
             {

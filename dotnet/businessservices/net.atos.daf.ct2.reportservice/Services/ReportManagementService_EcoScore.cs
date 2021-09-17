@@ -716,7 +716,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             else
             {
                 // Get all attributes from reportattribute table
-                userPreferences = await _reportManager.GetReportDataAttributes(request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
+                userPreferences = await _reportManager.GetReportDataAttributes(request.UserFeatures.Select(uf => uf.FeatureId).ToArray(), request.ReportId);
             }
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
