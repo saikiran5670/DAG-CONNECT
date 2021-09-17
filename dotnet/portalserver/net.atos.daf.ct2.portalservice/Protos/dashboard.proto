@@ -163,11 +163,12 @@ message DashboardUserPreferenceCreateResponse{
 
 message DashboardUserPreferenceAttribute {
     int32 DataAttributeId = 1;
-    int32 State = 2;
-    int32 Type = 3;
-    int32 ChartType = 4;
-    int32 ThresholdType = 5;
-    double ThresholdValue = 6;
+    int32 ReportId = 2;
+    int32 State = 3;
+    int32 Type = 4;
+    int32 ChartType = 5;
+    int32 ThresholdType = 6;
+    double ThresholdValue = 7;
 }
 //End ReportUserPreference
 
