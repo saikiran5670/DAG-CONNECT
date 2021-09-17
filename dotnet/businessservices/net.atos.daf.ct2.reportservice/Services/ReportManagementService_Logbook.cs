@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -49,19 +49,19 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, loggedInOrgId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId,
                                                                                        ReportConstants.LOGBOOK_FEATURE_NAME);
                     var vehicleByVisibilityAndAlertFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, loggedInOrgId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId,
                                                                                        ReportConstants.ALERT_FEATURE_NAME);
 
 
-                    var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.Vin).Intersect(vehicleByVisibilityAndFeature.Select(x => x.Vin));
-                    var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.Vin));
-                    result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.Vin == x.Vin));
+                    var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.VehicleId).Intersect(vehicleByVisibilityAndFeature.Select(x => x.VehicleId));
+                    var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.VehicleId));
+                    result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.VehicleId == x.VehicleId));
                     res = JsonConvert.SerializeObject(result);
                     response.LogbookSearchParameter.AlertTypeFilterRequest.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res,
