@@ -210,7 +210,7 @@ public class ContiMessageProcessing implements Serializable {
         new EgressCorruptMessages().egressCorruptMessages(contiStreamValiditySts, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
 
-        contiValidInputStream.print();
+        //contiValidInputStream.print();
 
         new MessageProcessing<String, VehicleStatusSchema, Index>()
                 .consumeContiMessage(
