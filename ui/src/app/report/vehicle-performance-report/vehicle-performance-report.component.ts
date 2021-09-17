@@ -390,9 +390,9 @@ export class VehiclePerformanceReportComponent implements OnInit {
         this.pieChartColors.push(this.colorToLegends[pieLabel]);
       }
     }
-    if(this.searchResult.performanceType != 'E') {
-      this.updateDataPercent(pieData);
-    }
+   // if(this.searchResult.performanceType != 'E') {
+   //   this.updateDataPercent(pieData);
+  //  }
   }
 
   updateDataPercent(pieData) {
