@@ -699,7 +699,7 @@ export class RouteCalculatingComponent implements OnInit {
       },(error)=>{
           if(error.status === 409){
             this.duplicateError = true;
-            this.duplicateErrorMsg = this.getDuplicateMsgEdit(this.corridorFormGroup.controls.label.value);
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
