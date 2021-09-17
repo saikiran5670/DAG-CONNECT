@@ -28,6 +28,7 @@ rpc GetFleetFuelDetailsForDriverGraphs(FleetFuelFilterRequest) returns (FleetFue
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
+rpc CheckIfSubReportExist (CheckIfSubReportExistRequest) returns (CheckIfSubReportExistResponse);
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsByDriverResponse);
@@ -199,7 +200,6 @@ message GetReportUserPreferenceRequest {
 }
 message SessionFeatures {
     int32 FeatureId=1;
-    string Name=2;
 }
 message GetReportUserPreferenceResponse {
     ReportUserPreference UserPreference = 1;
@@ -210,13 +210,15 @@ message GetReportUserPreferenceResponse {
 
 message ReportUserPreference{
     int32 DataAttributeId=1;
-    string Name=2;
-    string Key=3;
-    string State=4;
-    string ChartType=5;
-    string ThresholdType=6;
-    double ThresholdValue=7;
-    repeated ReportUserPreference SubReportUserPreferences=8;
+    int32 ReportId=2;
+    string Name=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    double ThresholdValue=8;
+    repeated ReportUserPreference SubReportUserPreferences=9;
+    
 }
 
 message ReportUserPreferenceCreateRequest{
@@ -242,16 +244,27 @@ message Atribute{
 
 message UserPreferenceAttribute {
     int32 DataAttributeId = 1;
-    int32 State = 2;
-    int32 Type = 3;
-    int32 ChartType = 4;
-    int32 ThresholdType = 5;
-    double ThresholdValue = 6;
+    int32 ReportId = 2;
+    int32 State = 3;
+    int32 Type = 4;
+    int32 ChartType = 5;
+    int32 ThresholdType = 6;
+    double ThresholdValue = 7;
 }
 
 message UserPreferenceCreateResponse{
     Responsecode Code = 1;
     string Message = 2;
+}
+
+message CheckIfSubReportExistRequest {
+    int32 ReportId = 1;
+}
+
+message CheckIfSubReportExistResponse {
+    Responsecode Code = 1;
+    string Message = 2;
+    int32 SubReportFeature = 3;
 }
 
 message VehicleFilterRequest{
@@ -644,6 +657,7 @@ message AssociatedVehicleRequest {
          string VehicleName =  4;
          string Vin =  5;
          string RegistrationNo =  6;
+         string VehicleGroupDetails =  7;
 }
 
 message FilterResponse {
