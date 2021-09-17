@@ -356,7 +356,7 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="max-width-10-per">
                 <mat-checkbox (click)='$event.stopPropagation()'
-                  (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
+                  (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event.checked, row)' [checked]='selectedTrip.isSelected(row)'
                   [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblClicktoviewonmap || 'Click to view on map' }}">
                 </mat-checkbox>
               </mat-cell>

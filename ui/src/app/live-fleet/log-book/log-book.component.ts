@@ -28,6 +28,7 @@ import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { treeExportFormatter } from 'angular-slickgrid';
 
 
 declare var H: any;
@@ -283,7 +284,9 @@ ngOnDestroy(){
           this.selectionTimeRange('today');}
                    
           if(this._state.fromAlertsNotifications == true){
-            this.fromAlertsNotifications = true;}
+            this.fromAlertsNotifications = true;
+            this.showMapPanel = true;
+          }
             
           // if(this._state.fromMoreAlerts == true){
           //   this.selectionTimeRange('today');}
@@ -549,10 +552,12 @@ ngOnDestroy(){
   //for alerts & notification individual alert click
   if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
-    let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+    // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+    let sdate = this._state.data[0].alertGeneratedTime + ' ' + '00:00:00 AM';
     let startDate = new Date( sdate +' UTC');
     startDate.toString();
-    let newDate = new Date(this._state.data[0].date + 'UTC');
+    let newDate = new Date(this._state.data[0].alertGeneratedTime + 'UTC');
+    // let newDate = new Date(this._state.data[0].date + 'UTC');
     newDate.toString();
     this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
@@ -646,7 +651,12 @@ ngOnDestroy(){
     //////console.log("process translationData:: ", this.translationData)
   }
 
-  public ngAfterViewInit() { }
+  public ngAfterViewInit() { 
+    this.showMapPanel = true;
+    setTimeout(() => {
+      this.initMap();
+    }, 10);
+  }
 
   onSearch(){
     this.tripTraceArray = [];
@@ -694,10 +704,18 @@ ngOnDestroy(){
           "end_time": _endTime     
         }
     
-
+// if(this.fromAlertsNotifications){
+//         setTimeout(() => {
+//           this.initMap();
+//         }, 0);
+//       }
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
+        let newLogbookData = [];
         logbookData.forEach(element => {
+          if(this.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
+            newLogbookData.push(element);
+          }
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
@@ -726,6 +744,14 @@ ngOnDestroy(){
           element.alertLevel = alertLevelName[0].name;
                  }
         });
+        if(this.fromAlertsNotifications){
+          logbookData = newLogbookData;
+          logbookData.forEach(element => {
+          this.selectedTrip.select(element);
+          this.tripCheckboxClicked(true,element);
+          });
+          this.showMap = true;
+        }
         this.initData = logbookData;
         this.setTableInfo();
         this.updateDataSource(this.initData);
@@ -916,13 +942,16 @@ ngOnDestroy(){
     if(this._state.fromDashboard == true && this._state.repairFlag == true){
       this.logBookForm.get('alertCategory').setValue("R");
     }
+  }
       //for alerts & notification individual alert click
-    if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    if(this.fromAlertsNotifications == true && this._state.data.length > 0){
       this.selectionTab = '';
-      let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+      let sdate = this._state.data[0].alertGeneratedTime + ' ' + '00:00:00 AM';
       let startDate = new Date( sdate +' UTC');
       startDate.toString();
-      let newDate = new Date(this._state.data[0].date + 'UTC');
+      // let newDate = new Date(this._state.data[0].date + 'UTC');
+      let newDate = new Date(this._state.data[0].alertGeneratedTime + 'UTC');
       newDate.toString();
       this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
@@ -943,7 +972,7 @@ ngOnDestroy(){
       this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
     }
-  }
+
   }
 
   onVehicleGroupChange(event: any){
@@ -962,16 +991,20 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
-    this.showMap = false;
+    if(!this.fromAlertsNotifications){
     this.selectedTrip.clear();
+    this.showMap = false;
+    }
     if(this.initData.length > 0){
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
+        // setTimeout(() => {
+        //   this.initMap();
+        // }, 0);
       }else{
+        if(!this.fromAlertsNotifications){
         this.clearRoutesFromMap();
+        }
       }
     }
     else{
@@ -1153,7 +1186,7 @@ let prepare = []
 
   tripCheckboxClicked(event: any, row: any) {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
-    if(event.checked){ //-- add new marker
+    if(event){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
       this.drawAlerts(this.tripTraceArray);
@@ -1626,7 +1659,9 @@ let prepare = []
   }
 
   drawAlerts(_alertArray){
+    if(!this.fromAlertsNotifications){
     this.clearRoutesFromMap();
+    }
     _alertArray.forEach(elem => {
       let  markerPositionLat = elem.latitude;
       let  markerPositionLng = elem.longitude;
