@@ -47,7 +47,7 @@ public class MonitorDataProcess {
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			DataStream<KafkaRecord<Monitor>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			consumerStream.print();
+			//consumerStream.print();
 
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
 			
