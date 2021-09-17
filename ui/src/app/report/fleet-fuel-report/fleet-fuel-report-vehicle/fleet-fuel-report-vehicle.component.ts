@@ -748,8 +748,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.FuelData =[];
     this.tableInfoObj = []; 
     this.displayData =[];
-    this.vehicleSelected = false;
-    this.showRanking = true;
     this.updateDataSource(this.tripData);
     this.filterDateData();
   }
