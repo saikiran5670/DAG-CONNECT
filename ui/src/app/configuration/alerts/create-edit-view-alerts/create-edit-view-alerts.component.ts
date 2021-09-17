@@ -2497,9 +2497,12 @@ PoiCheckboxClicked(event: any, row: any) {
 }
 
 keyPressNumbers(event) {    
-  var limit = parseInt(event.max);
+  var limit = parseInt(event.currentTarget.maxLength);
+  var max = parseInt(event.currentTarget.max);
+  var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
-  if (event.value.length == limit) event.preventDefault();
+  var value = Number.parseFloat(event.target.value + '' + event.key);
+  if(event.key=='-' || value < min || value > max || (value).toString().length == limit) event.preventDefault();
 return true;   
 }
 

@@ -703,6 +703,7 @@ namespace net.atos.daf.ct2.reports.repository
 										                            rp.account_id = @account_id and rp.organization_id = @organization_id and 
 										                            rp.report_id = ra.report_id
                             WHERE ra.report_id = @report_id";
+
                 #endregion
 
                 return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
@@ -719,6 +720,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameter = new DynamicParameters();
+
                 parameter.Add("@report_id", reportId);
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@role_id", roleId);

@@ -1283,7 +1283,7 @@ getOfflineNotifications(){
 connectWithSignalR(){
   this.signalRService.startConnection();
   setTimeout(() => {
-    this.notificationList = this.signalRService.askServerListenerForNotifyAlert();
+    this.signalRService.askServerListenerForNotifyAlert();
     this.signalRService.askServerForNotifyAlert();
   }, 8000);
 }

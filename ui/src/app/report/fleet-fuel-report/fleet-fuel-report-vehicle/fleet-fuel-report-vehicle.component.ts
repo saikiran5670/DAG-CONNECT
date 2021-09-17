@@ -742,7 +742,20 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   }
 
+  resetCharts(){
+    this.tripData = [];
+    this.vehicleListData = [];
+    this.FuelData =[];
+    this.tableInfoObj = []; 
+    this.displayData =[];
+    this.vehicleSelected = false;
+    this.showRanking = true;
+    this.updateDataSource(this.tripData);
+    this.filterDateData();
+  }
+
   onSearch(){
+    this.resetCharts();
     this.isChartsOpen = true;
     if (this.reportPrefData.length != 0) {
       let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));

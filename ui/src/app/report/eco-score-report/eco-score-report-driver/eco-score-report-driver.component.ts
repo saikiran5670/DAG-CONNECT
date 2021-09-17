@@ -1083,7 +1083,10 @@ public barChartOptions = {
       label: function(tooltipItem, data) {
           return tooltipItem.yLabel + ' %';
       }
-    }
+    },
+    backgroundColor: '#000000',
+    enabled: true,
+    titleFontColor: "white"
   },
   animation: {
     duration: 0,

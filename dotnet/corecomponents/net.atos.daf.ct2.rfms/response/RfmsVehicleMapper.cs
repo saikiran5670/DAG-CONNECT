@@ -228,8 +228,8 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (!string.IsNullOrEmpty(Convert.ToString(record.totalfueltankvolume)))
                 vehicle.TotalFuelTankVolume = Convert.ToInt32(record.totalfueltankvolume);
-            else
-                vehicle.TotalFuelTankVolume = 0;
+           // else
+              //  vehicle.TotalFuelTankVolume = 0;
 
             vehicle.GearboxType = record.gearboxtype;
             return vehicle;
