@@ -178,7 +178,7 @@
                 <ng-template #topLeftElements let-gridData='rowData'>
                     <div class='areaWidth' fxLayoutAlign="center center">
                         <mat-form-field appearance="outline" class='margin-right-xxlg'>
-                            <mat-select [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
+                            <mat-select [(ngModel)]='selectedConsentType' [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
                                 placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
                                 <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
                                     {{ rer.name }}
