@@ -69,7 +69,8 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} </mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
+                <!-- <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle"> -->
+                 <mat-select [disabled]="vehicleGrpDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                       {{ rer.vehicleName }}
