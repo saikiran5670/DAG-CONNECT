@@ -18,18 +18,19 @@ import { Router } from '@angular/router';
 export class SignalRService {
     AlertNotifcaionList: any[] = [];
     hubConnection:signalR.HubConnection;
-
+    signalRServiceURL: string= "";
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-      
+    this.signalRServiceURL = config.getSettings("foundationServices").signalRServiceURL;   
   }
 
   startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl('https://api.dev1.ct2.atos.net/notificationhub', {
+    .withUrl(this.signalRServiceURL, {
          skipNegotiation: true,
-         transport: signalR.HttpTransportType.WebSockets
+         transport: signalR.HttpTransportType.WebSockets,
+         
      }
-    )
+    ).withAutomaticReconnect()
     .build();
   
     this.hubConnection
@@ -82,7 +83,7 @@ export class SignalRService {
     this.hubConnection.on("askServerResponse", (errorMessage) => {
       console.log(errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
-      console.log("Notification Alert List=" +this.AlertNotifcaionList);
+      // console.log("Notification Alert List=" +this.AlertNotifcaionList);
   })
 
   }

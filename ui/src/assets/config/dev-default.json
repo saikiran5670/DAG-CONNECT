@@ -21,7 +21,8 @@
     "authZuoraSSOServiceURL": "https://api.dev1.ct2.atos.net/account/sso",
     "reportRESTServiceURL": "https://api.dev1.ct2.atos.net/report",
     "reportSchedulerRESTServiceURL" : "https://api.dev1.ct2.atos.net/reportscheduler",
-    "dashboardRESTServiceURL": "https://api.dev1.ct2.atos.net/dashboard"
+    "dashboardRESTServiceURL": "https://api.dev1.ct2.atos.net/dashboard",
+    "signalRServiceURL": "https://api.dev1.ct2.atos.net/notificationhub"
 
   },
   "hereMap":{
