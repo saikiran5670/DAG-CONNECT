@@ -28,6 +28,7 @@ rpc GetFleetFuelDetailsForDriverGraphs(FleetFuelFilterRequest) returns (FleetFue
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
+rpc CheckIfSubReportExist (CheckIfSubReportExistRequest) returns (CheckIfSubReportExistResponse);
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsByDriverResponse);
@@ -201,7 +202,6 @@ message GetReportUserPreferenceRequest {
 
 message SessionFeatures {
     int32 FeatureId=1;
-    string Name=2;
 }
 
 message GetReportUserPreferenceResponse {
@@ -213,13 +213,14 @@ message GetReportUserPreferenceResponse {
 
 message ReportUserPreference{
     int32 DataAttributeId=1;
-    string Name=2;
-    string Key=3;
-    string State=4;
-    string ChartType=5;
-    string ThresholdType=6;
-    double ThresholdValue=7;
-    repeated ReportUserPreference SubReportUserPreferences=8;
+    int32 ReportId=2;
+    string Name=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    double ThresholdValue=8;
+    repeated ReportUserPreference SubReportUserPreferences=9;
 }
 
 message ReportUserPreferenceCreateRequest{
@@ -257,6 +258,15 @@ message UserPreferenceCreateResponse{
     string Message = 2;
 }
 
+message CheckIfSubReportExistRequest {
+    int32 ReportId = 1;
+}
+
+message CheckIfSubReportExistResponse {
+    Responsecode Code = 1;
+    string Message = 2;
+    int32 SubReportFeature = 3;
+}
 message VehicleFilterRequest{
 int64 FromDate = 1;
 int64 ToDate = 2;

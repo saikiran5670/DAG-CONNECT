@@ -12,6 +12,7 @@ rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationR
 rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
 rpc GetDashboardUserPreference(DashboardUserPreferenceRequest) returns (DashboardUserPreferenceResponse);
+rpc CheckIfSubReportExist (CheckIfSubReportExistRequest) returns (CheckIfSubReportExistResponse);
 }
 
 enum Responsecode{
@@ -181,7 +182,6 @@ message DashboardUserPreferenceRequest {
 }
 message SessionFeatures {
     int32 FeatureId=1;
-    string Name=2;
 }
 message DashboardUserPreferenceResponse {
     DashboardUserPreference UserPreference = 1;
@@ -192,12 +192,22 @@ message DashboardUserPreferenceResponse {
 
 message DashboardUserPreference{
     int32 DataAttributeId=1;
-    string Name=2;
-    string Key=3;
-    string State=4;
-    string ChartType=5;
-    string ThresholdType=6;
-    double ThresholdValue=7;
-    repeated DashboardUserPreference SubReportUserPreferences=8;
+    int32 ReportId=2;
+    string Name=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    double ThresholdValue=8;
+    repeated DashboardUserPreference SubReportUserPreferences=9;
+}
+message CheckIfSubReportExistRequest {
+    int32 ReportId = 1;
+}
+
+message CheckIfSubReportExistResponse {
+    Responsecode Code = 1;
+    string Message = 2;
+    int32 SubReportFeature = 3;
 }
 //END Get User Dashboard Preferences
