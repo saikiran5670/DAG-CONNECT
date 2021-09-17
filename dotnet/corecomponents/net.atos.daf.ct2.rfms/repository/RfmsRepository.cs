@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
                     if (!rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
-                        queryStatement = queryStatement + " AND received_datetime >= (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
                     //require to confirm from Anirudha
                 }
                 if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
