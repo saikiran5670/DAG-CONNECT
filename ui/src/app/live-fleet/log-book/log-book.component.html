@@ -58,7 +58,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event.value)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
