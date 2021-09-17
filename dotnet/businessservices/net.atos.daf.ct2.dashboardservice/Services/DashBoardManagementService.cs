@@ -305,11 +305,14 @@ namespace net.atos.daf.ct2.dashboardservice
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
-            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
+                                                                                                request.OrganizationId,
+                                                                                                request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
-                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             }
             else
             {
