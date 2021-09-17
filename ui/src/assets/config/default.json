@@ -21,7 +21,8 @@
       "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
       "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
       "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler",
-      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard"
+      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard",
+      "signalRServiceURL": "#{AUTHENTICATIONSERVICEURL}#/notificationhub"
 
     },
     "hereMap":{

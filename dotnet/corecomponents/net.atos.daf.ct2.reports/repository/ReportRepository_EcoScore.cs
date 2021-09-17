@@ -610,17 +610,42 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request)
         {
+            bool isSubReportExist = request.Attributes.Select(rpt => rpt.ReportId).Distinct().Count() > 1;
+
+            #region Queries
+
             string queryInsert = @"INSERT INTO master.reportpreference
-                                   (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value,reportattribute_id)
-                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at,@modified_at,@threshold_type,@threshold_value,
-                                   (SELECT id from master.reportattribute WHERE report_id=@report_id AND data_attribute_id=@data_attribute_id))";
+                                        (organization_id, account_id, report_id, type, data_attribute_id, state, chart_type, created_at
+                                            , modified_at, threshold_limit_type, threshold_value, reportattribute_id
+                                        )
+                                        VALUES
+                                        (@organization_id
+                                          , @account_id
+                                          , @report_id
+                                          , @type
+                                          , @data_attribute_id
+                                          , @state
+                                          , @chart_type
+                                          , @created_at
+                                          , @modified_at
+                                          , @threshold_type
+                                          , @threshold_value
+                                          , (SELECT id from master.reportattribute 
+                                                    WHERE report_id =@report_id AND data_attribute_id=@data_attribute_id)
+                                         )";
 
             string queryDelete = @"DELETE FROM master.reportpreference
-                                  WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
+                                   WHERE
+                                       organization_id=@organization_id
+                                       AND account_id =@account_id
+                                       AND report_id  =@report_id";
+
+            #endregion
 
             var userPreference = new DynamicParameters();
+
+
             userPreference.Add("@account_id", request.AccountId);
-            userPreference.Add("@report_id", request.ReportId);
             userPreference.Add("@organization_id", request.OrganizationId);
             userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
@@ -630,16 +655,40 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 try
                 {
-                    await _dataAccess.ExecuteAsync(queryDelete, userPreference);
-                    foreach (var attribute in request.Attributes)
+                    if (!isSubReportExist)
                     {
-                        userPreference.Add("@data_attribute_id", attribute.DataAttributeId);
-                        userPreference.Add("@state", (char)attribute.State);
-                        userPreference.Add("@type", (char)attribute.Type);
-                        userPreference.Add("@chart_type", attribute.ChartType.HasValue ? (char)attribute.ChartType : new char?());
-                        userPreference.Add("@threshold_type", attribute.ThresholdType.HasValue ? (char)attribute.ThresholdType : new char?());
-                        userPreference.Add("@threshold_value", attribute.ThresholdValue);
-                        await _dataAccess.ExecuteAsync(queryInsert, userPreference);
+
+                        // It is direct report so use requested report id
+                        userPreference.Add("@report_id", request.ReportId);
+                        await _dataAccess.ExecuteAsync(queryDelete, userPreference);
+
+                        foreach (var attribute in request.Attributes)
+                        {
+                            userPreference.Add("@data_attribute_id", attribute.DataAttributeId);
+                            userPreference.Add("@state", (char)attribute.State);
+                            userPreference.Add("@type", (char)attribute.Type);
+                            userPreference.Add("@chart_type", attribute.ChartType.HasValue ? (char)attribute.ChartType : new char?());
+                            userPreference.Add("@threshold_type", attribute.ThresholdType.HasValue ? (char)attribute.ThresholdType : new char?());
+                            userPreference.Add("@threshold_value", attribute.ThresholdValue);
+                            await _dataAccess.ExecuteAsync(queryInsert, userPreference);
+                        }
+                    }
+                    else
+                    {
+                        // In case of sub report exist use attrubute level report id
+                        foreach (var attribute in request.Attributes)
+                        {
+                            userPreference.Add("@report_id", attribute.ReportId);
+                            await _dataAccess.ExecuteAsync(queryDelete, userPreference);
+
+                            userPreference.Add("@data_attribute_id", attribute.DataAttributeId);
+                            userPreference.Add("@state", (char)attribute.State);
+                            userPreference.Add("@type", (char)attribute.Type);
+                            userPreference.Add("@chart_type", attribute.ChartType.HasValue ? (char)attribute.ChartType : new char?());
+                            userPreference.Add("@threshold_type", attribute.ThresholdType.HasValue ? (char)attribute.ThresholdType : new char?());
+                            userPreference.Add("@threshold_value", attribute.ThresholdValue);
+                            await _dataAccess.ExecuteAsync(queryInsert, userPreference);
+                        }
                     }
                     transactionScope.Commit();
                 }
@@ -803,7 +852,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 #region Query RoleBasedDataColumn
                 var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
-                                              ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
+                                              ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType, ra.report_id as ReportId
                               FROM master.reportattribute ra
                               INNER JOIN master.dataattribute d ON ra.report_id = {0} and d.id = ra.data_attribute_id";
                 #endregion
@@ -864,7 +913,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@report_id", reportId);
 
                 #region Query Select User Preferences
-                var query = @"SELECT feature_id FROM master.report WHERE report_id = @report_id and sub_report = 'Y'";
+                var query = @"SELECT feature_id FROM master.report WHERE id = @report_id and sub_report = 'Y'";
                 #endregion
 
                 return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -883,7 +932,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@feature_id", featureIds);
 
                 #region Query RoleBasedDataColumn
-                var query = @"SELECT DISTINCT report_id AS ReportId FROM master.report WHERE report_id = ANY (@feature_id)";
+                var query = @"SELECT DISTINCT id AS ReportId FROM master.report WHERE feature_id = ANY (@feature_id)";
                 #endregion
 
                 return await _dataAccess.QueryAsync<int>(query, parameter);

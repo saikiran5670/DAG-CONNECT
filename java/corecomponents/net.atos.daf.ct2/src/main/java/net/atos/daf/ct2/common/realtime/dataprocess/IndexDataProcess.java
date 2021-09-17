@@ -60,7 +60,7 @@ public class IndexDataProcess {
 			env.getConfig().setGlobalJobParameters(envParams);
 			//final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			consumerStream.print();
+			//consumerStream.print();
 			//DataStream<String>d1s=consumerStream.map(a ->{System.out.println("Record With OLD POJOS ---  "+a.getValue());return a.getValue().toString();});
 			//d1s.print();
 			/*

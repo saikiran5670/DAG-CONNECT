@@ -113,7 +113,7 @@ public class TripStreamingUnitTesting {
 		//DataStream<Trip> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, env.fromElements(Tuple3.of(0.00082, 42.7, 74.3)), 5000L, tableEnv );
 		DataStream<TripAggregatedData> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, 5000L, tableEnv );
 		
-		finalTripData.print();
+		//finalTripData.print();
 		
 		//finalTripData.map(rec ->{System.out.println("TripCalDist :: "+rec.getTripCalDist()); return rec;});
 		finalTripData.addSink(new CollectSink());
