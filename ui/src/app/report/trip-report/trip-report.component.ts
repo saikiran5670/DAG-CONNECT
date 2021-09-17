@@ -905,11 +905,11 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       margin: {
         bottom: 30,
-        top: 60
+        top: 75
       }
     });
     
-    let fileWidth = 220;
+    let fileWidth = 390;
     let fileHeight = canvas.height * fileWidth / canvas.width;
     
     const FILEURI = canvas.toDataURL('image/png');
