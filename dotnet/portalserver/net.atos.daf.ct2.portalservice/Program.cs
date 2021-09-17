@@ -22,6 +22,8 @@ namespace net.atos.daf.ct2.portalservice
                 .UseStartup<Startup>();
             }).ConfigureLogging(builder =>
                         {
+                            builder.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+                            builder.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
                             builder.SetMinimumLevel(LogLevel.Trace);
                             builder.AddLog4Net("log4net.config");
                         });

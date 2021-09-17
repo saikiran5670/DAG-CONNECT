@@ -31,6 +31,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
         //User Preference create
         public const string USER_PREFERENCE_CREATE_SUCCESS_MSG = "User preferences Saved successfully for account Id:- {0} and for report Id:- {1}.";
         public const string USER_PREFERENCE_CREATE_FAILURE_MSG = "Saving User Preference failed for account Id:- {0} and for report Id:- {1}.";
+        public const string CHECK_SUB_REPORT_EXIST_SUCCESS_MSG = "Sub report fetched successfully.";
 
     }
 }

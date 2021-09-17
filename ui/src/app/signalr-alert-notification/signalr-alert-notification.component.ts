@@ -13,7 +13,6 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 })
 export class SignalrAlertNotificationComponent implements OnInit {
   @Input() notificationData: any;
-  @Input() notificationList: any;
   @Output() sendCountToAppComponent = new EventEmitter<any>();
 // notificationData: any = [
 //   {
@@ -126,6 +125,7 @@ alertNotificationArray: any =[];
   }
 
   displayAlertNotifications(message){
+    console.log("From SignalR component = "+message);
     if(this.notificationData.length < 5){
       this.notificationData.push(message);
     }

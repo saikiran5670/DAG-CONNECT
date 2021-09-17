@@ -671,7 +671,7 @@ export class AppComponent {
         this.userOrg = userOrg[0].name;
       }
       this.organizationDropdown = this.accountInfo.organization;
-      this.roleDropdown = this.accountInfo.role;
+      this.roleDropdown = this.accountInfo.role;     
       this.setDropdownValues();
       if (this.accountInfo.accountDetail.blobId != 0) {
         this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
@@ -685,7 +685,7 @@ export class AppComponent {
 
   setDropdownValues() {
     this.landingPageForm.get("organization").setValue(parseInt(localStorage.getItem("accountOrganizationId")));
-    this.selectedRoles = this.roleDropdown;
+    this.selectedRoles = this.roleDropdown.filter(item=> item.organization_Id == localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
 
@@ -1283,7 +1283,7 @@ getOfflineNotifications(){
 connectWithSignalR(){
   this.signalRService.startConnection();
   setTimeout(() => {
-    this.notificationList = this.signalRService.askServerListenerForNotifyAlert();
+    this.signalRService.askServerListenerForNotifyAlert();
     this.signalRService.askServerForNotifyAlert();
   }, 8000);
 }

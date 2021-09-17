@@ -1139,7 +1139,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                               SELECT grp.id, grp.name, count(v.id) as count, true as is_group
                               FROM master.vehicle v
                               LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                              INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.group_type='D') AND grp.object_type='V'
+                              INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.group_type='D') AND grp.object_type='V' AND grp.organization_id=@organization_id
                               INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                               INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                               WHERE 
@@ -1185,7 +1185,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                 FROM master.group vg
 								INNER JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 								INNER JOIN master.orgrelationship as os on om.relationship_id=os.id 
-                                WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and lower(os.code)='owner') or (om.target_org_id=@organization_id and lower(os.code) NOT IN ('owner','oem')))) 
+                                WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and lower(os.code)='owner'))) 
                                     and vg.object_type='V' and vg.group_type in ('G','D') 
                               ) vehicleGroup";
                 }

@@ -216,7 +216,7 @@ export class DriverManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   loadDriverData(){
@@ -231,7 +231,7 @@ export class DriverManagementComponent implements OnInit {
       // this.updateGridData(this.initData);
       // this.onConsentChange(this.selectedConsentType);
     }, (error) => {
-      console.log("error:: ", error);
+      //console.log("error:: ", error);
       this.initData = [];
       this.selectedConsentType = 'All';
       this.hideloader();
@@ -327,7 +327,7 @@ export class DriverManagementComponent implements OnInit {
       this.validateExcelFileField(clearInput);
       this.excelEmptyMsg = false;
     }else{
-      console.log("Empty Excel File...");
+      //console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
       clearInput.clear();
     }
@@ -339,7 +339,7 @@ export class DriverManagementComponent implements OnInit {
     this.filelist.map((item: any) => {
       let _txt: any = {};
       for (const [key, value] of Object.entries(item)) {
-        console.log(`${key}: ${value}`);
+        //console.log(`${key}: ${value}`);
         switch(key){
           case 'Driver ID Country Code':
             _txt.countryCode = value;
@@ -360,11 +360,11 @@ export class DriverManagementComponent implements OnInit {
       }
       driverAPIData.push(_txt);
     });
-    console.log("Parse excel driver:: ", driverAPIData)
+    //console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
     this.rejectedDriverList = finalList.invalidDriverList;
     this.newDriverCount = 0;
-    console.log("Validated driver:: ", finalList)
+    //console.log("Validated driver:: ", finalList)
     if(finalList.validDriverList.length > 0){
       let objData = [
         {
@@ -411,7 +411,7 @@ export class DriverManagementComponent implements OnInit {
       let lname: any;
       let email: any
       for (const [key, value] of Object.entries(item)) {
-        //console.log(`${key}: ${value}`);
+        ////console.log(`${key}: ${value}`);
         switch(key){
           case "countryCode":{
             let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code');  
@@ -724,7 +724,7 @@ export class DriverManagementComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
-        //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
+        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
         var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
         this.filelist = [];
         this.filelist = arraylist;    
@@ -829,7 +829,7 @@ export class DriverManagementComponent implements OnInit {
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
     headerRow.eachCell((cell, number) => {
-      //console.log(cell)
+      ////console.log(cell)
       if(number != 6){
         cell.fill = {
           type: 'pattern',

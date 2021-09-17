@@ -157,9 +157,9 @@ public class IndexBasedAlertFunctions implements Serializable {
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDecreaseDuringStopFunAlertDef");
         List<String> priorityList = Arrays.asList("C", "W", "A");
         Index originalIdxMsg = index.getIndexList().get(0);
-        BigDecimal vFuelStartVal = index.getVFuelStopPrevVal();
+        BigDecimal vFuelEndVal = index.getVFuelStopPrevVal();
         BigDecimal currentFuelVal = null;
-        Integer tripEnd = Integer.valueOf(5) ;
+        Integer tripstart = Integer.valueOf(4) ;
         try {
         	
         	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
@@ -169,16 +169,16 @@ public class IndexBasedAlertFunctions implements Serializable {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                       
-                    	if(Objects.nonNull(vFuelStartVal) && Objects.nonNull(currentFuelVal)){
+                    	if(Objects.nonNull(vFuelEndVal) && Objects.nonNull(currentFuelVal)){
     						BigDecimal fuelDecreaseDiff = BigDecimal.ZERO;
     						
-    						if(tripEnd == originalIdxMsg.getVEvtID())
-    							fuelDecreaseDiff = vFuelStartVal.subtract(currentFuelVal);
-    						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelStartVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelStartVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
+    						if(tripstart == originalIdxMsg.getVEvtID())
+    							fuelDecreaseDiff = vFuelEndVal.subtract(currentFuelVal);
+    						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelEndVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelEndVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
 
     						//1 when fuelIncreaseDiff > threshold
     						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
-    							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
+    							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff, schema.getThresholdValue());
     							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
     						}
     					}
@@ -200,6 +200,8 @@ public class IndexBasedAlertFunctions implements Serializable {
         Index originalIdxMsg = index.getIndexList().get(0);
         BigDecimal vFuelPrevVal = index.getVFuelStopPrevVal();
         BigDecimal currentFuelVal = null;
+        
+        logger.info("Inside fuelDuringTripFun urgencyLevelRefSchemas:{} , index:{} ",urgencyLevelRefSchemas, index);
 
         try {
         	
