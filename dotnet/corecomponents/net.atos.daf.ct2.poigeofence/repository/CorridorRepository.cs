@@ -294,7 +294,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             parameterduplicate.Add("@name", corridorName);
             parameterduplicate.Add("@type", type);
             parameterduplicate.Add("@id", id);
-            var queryduplicate = @"SELECT id FROM master.landmark where id=@id and organization_id=@organization_id and name=@name and type = @type and state in ('A','I');";
+            var queryduplicate = @"SELECT id FROM master.landmark where id != @id and organization_id=@organization_id and name=@name and type = @type and state in ('A','I');";
 
             int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
