@@ -288,13 +288,13 @@ namespace net.atos.daf.ct2.reports
         }
 
         public async Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId,
-                                                                                       int organizationId, int contextOrgId)
+                                                                                       int organizationId, int contextOrgId, int[] featureId)
         {
-            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
+            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId, featureId);
         }
-        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds)
         {
-            return await _reportRepository.GetReportDataAttributes(reportId);
+            return await _reportRepository.GetReportDataAttributes(featureIds);
         }
 
         public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
@@ -307,15 +307,11 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetReportDataAttributes(reportIds);
         }
 
-        public async Task<bool> CheckIfSubReportExist(int reportId)
+        public async Task<int> CheckIfSubReportExist(int reportId)
         {
             return await _reportRepository.CheckIfSubReportExist(reportId);
         }
 
-        public async Task<IEnumerable<SubReport>> GetSubReportFeatureId(int reportId)
-        {
-            return await _reportRepository.GetSubReportFeatureId(reportId);
-        }
         #endregion
 
         #region Eco Score Report Compare Drivers
