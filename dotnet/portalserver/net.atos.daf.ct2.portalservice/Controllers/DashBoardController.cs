@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -227,10 +228,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 userPrefRequest.OrganizationId = GetUserSelectedOrgId();
                 userPrefRequest.ContextOrgId = GetContextOrgId();
 
-                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
-                SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                var subReportResponse = await _dashboardServiceClient.CheckIfSubReportExistAsync(new CheckIfSubReportExistRequest { ReportId = reportId });
 
-                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                // Send sub report features from session to find attributes of related reports
+                SessionFeatures[] objUserFeatures;
+                if (subReportResponse.SubReportFeature > 0)
+                {
+                    var sessionFeatures = GetUserSubscribeFeatures();
+                    var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.SubReportFeature)?.Select(x => x.Name)?.FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(featureName))
+                    {
+                        var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
+                        var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+
+                        if (requiredFeatures.Count() > 0)
+                        {
+                            string strFeature = JsonConvert.SerializeObject(requiredFeatures);
+                            objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                            if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                        }
+                    }
+                }
 
                 var response = await _dashboardServiceClient.GetDashboardUserPreferenceAsync(userPrefRequest);
                 if (response.Code == Responsecode.Success)

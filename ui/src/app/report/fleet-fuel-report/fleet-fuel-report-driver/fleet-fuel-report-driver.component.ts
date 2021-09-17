@@ -739,8 +739,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.tableInfoObj = [];
     this.detailSummaryObj =[];    
     this.displayData =[];
-    this.updateDataSource(this.tripData);
-    this.driverSelected= false;
+    this.updateDataSource(this.tripData); 
     this.filterDateData();
   }
 

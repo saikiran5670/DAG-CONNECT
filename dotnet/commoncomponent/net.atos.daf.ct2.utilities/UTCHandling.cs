@@ -132,6 +132,12 @@ namespace net.atos.daf.ct2.utilities
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();
             return dtunixTime;
         }
+        public static long RfmsGetUTCFromDateTime(string sourceDateTime, double second)
+        {
+            DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime), TimeZoneInfo.Local.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
+            long dtunixTime = utcTime.AddSeconds(second).ToUnixTimeMilliseconds();
+            return dtunixTime;
+        }
 
         /// <summary>
         /// This methid is used to get UTC values from datetime string and timezone mame as input parameters

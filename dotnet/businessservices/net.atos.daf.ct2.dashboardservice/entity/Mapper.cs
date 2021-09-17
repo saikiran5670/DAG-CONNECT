@@ -65,6 +65,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
                         var preference = new DashboardUserPreference
                         {
                             DataAttributeId = item.DataAttributeId,
+                            ReportId = item.ReportId,
                             Name = item.Name ?? string.Empty,
                             Key = item.Key ?? string.Empty,
                             State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),

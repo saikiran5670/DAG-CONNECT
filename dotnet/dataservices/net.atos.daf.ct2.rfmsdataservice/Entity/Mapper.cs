@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 //vehicleObj.TellTaleCode = item.TellTaleCode;
                 vehicleObj.ChassisType = item.ChassisType;
                 vehicleObj.NoOfAxles = item.NoOfAxles;
-                vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume == 0 ? null : item.TotalFuelTankVolume;
+                vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume ;
 
                 //vehicleObj.TachographType = item.TachographType;
                 vehicleObj.GearboxType = item.GearboxType;
