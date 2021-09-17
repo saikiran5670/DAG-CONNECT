@@ -885,8 +885,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
-    .then(canvas => {  
-
+    .then(canvas => { 
     (doc as any).autoTable({
       styles: {
         cellPadding: 0.5,
@@ -905,7 +904,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       margin: {
         bottom: 30,
-        top: 75
+        top: 80
       }
     });
     
@@ -914,7 +913,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     
     const FILEURI = canvas.toDataURL('image/png');
     let position = 0;
-    doc.addImage(FILEURI, 'PNG', 15, 42, fileWidth, fileHeight) ;
+    doc.addImage(FILEURI, 'PNG', 15, 42,fileWidth, fileHeight) ;
 
 
 
