@@ -246,7 +246,7 @@ export class UserManagementComponent implements OnInit {
    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
-      this.userGrpData = allAccountGroupData;
+      this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
         this.orgPreference = data;
         this.orgPreference.landingPageDisplay = this.defaultSetting.landingPageDisplayDropdownData[0].id; //-- set landing page value for org
@@ -275,7 +275,7 @@ export class UserManagementComponent implements OnInit {
   this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
-      this.userGrpData = allAccountGroupData;
+      this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.selectedRoleData = element.roles;
       this.userDataForEdit = element;
       let reflectArray: any = [];
