@@ -650,10 +650,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //userPreferences = await GetReportUserPreferencesOld(request, context);
 
                 // New implementation considering Functional feature mapping with attribute
-                //userPreferences = await GetReportUserPreferences_New(request);
+                userPreferences = await GetReportUserPreferences_New(request);
 
                 // New Sub Report approach for report preferences functionality
-                userPreferences = await GetReportUserPreferences_NewSubReort(request);
+                //userPreferences = await GetReportUserPreferences_NewSubReort(request);
 
                 try
                 {
@@ -750,6 +750,8 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
+            bool isSubReport = await _reportManager.CheckIfSubReportExist(request.ReportId);
+
             var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId,
                 request.AccountId, request.OrganizationId);
             IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.
@@ -764,7 +766,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             else
             {
                 IEnumerable<reports.entity.ReportUserPreference> reportDataAttribute;
-                bool isSubReport = await _reportManager.CheckIfSubReportExist(request.ReportId);
+
                 if (isSubReport)
                 {
                     // Get Sub report data attributes

@@ -12,15 +12,11 @@ import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.TripStatisticsPojo;
 
 public class LivefleetCurrentTripStatisticsDao implements Serializable {
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	private Connection connection;
 
-	/** SQL statement for insert. */
 	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? AND trip_id IS NOT NULL ORDER BY id DESC limit 1";
 	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id , vin , start_time_stamp , end_time_stamp , "
 			+ "driver1_id , trip_distance , driving_time , fuel_consumption , vehicle_driving_status_type , odometer_val , distance_until_next_service , latest_received_position_lattitude , "
@@ -28,13 +24,6 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			+ "start_geolocation_address_id , latest_processed_message_time_stamp , vehicle_health_status_type , latest_warning_class , latest_warning_number , latest_warning_type , latest_warning_timestamp , "
 			+ "latest_warning_position_latitude , latest_warning_position_longitude , latest_warning_geolocation_address_id , created_at , modified_at ) "
 			+ "VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?  )";
-//	private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET trip_id = ? , vin = ? , start_time_stamp = ? , "
-//			+ "end_time_stamp = ? , driver1_id = ? , trip_distance = ? , driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , "
-//			+ "distance_until_next_service = ? , latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , "
-//			+ "latest_geolocation_address_id = ? , start_position_lattitude = ? , start_position_longitude = ? , start_position_heading = ? , start_geolocation_address_id = ? , " 
-//			+ "latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? , latest_warning_number = ? , latest_warning_type = ? , "
-//			+ "latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ? , latest_warning_geolocation_address_id = ? , "
-//			+ "created_at = ? , modified_at = ? WHERE trip_id = ? ";
 	private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET end_time_stamp = ? , driver1_id = ? , trip_distance = ? , "
 			+ "driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , distance_until_next_service = ? , latest_received_position_lattitude = ? , "
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
@@ -368,10 +357,10 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				
 				System.out.println("rs_trip "+rs_trip);
 				
-				currentTripdata = new CurrentTrip();
-				currentTripdata.setTrip_id(tripId);
-
 				while(rs_trip.next()){
+					
+					currentTripdata = new CurrentTrip();
+					currentTripdata.setTrip_id(tripId);
 	
 					currentTripdata.setStart_time_stamp(rs_trip.getLong("start_time_stamp"));
 					currentTripdata.setEnd_time_stamp(rs_trip.getLong("end_time_stamp"));

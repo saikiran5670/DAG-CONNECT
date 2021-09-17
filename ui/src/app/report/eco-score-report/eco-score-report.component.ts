@@ -528,34 +528,50 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     console.log(this.translationData);
   }
 
+  vehicleDD = [];
   onVehicleGroupChange(event: any){
-    if(event.value){
-      this.internalSelection = true; 
+    // if(event.value){
+    this.internalSelection = true; 
     this.ecoScoreForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.ecoScoreForm.get('driver').setValue(''); //- reset vehicle dropdown
-    this.driverListData = this.finalDriverList;
-    this.vehicleListData = this.finalVehicleList;
+    // this.driverListData = this.finalDriverList;
+    // this.vehicleListData = this.finalVehicleList;
     
     if(parseInt(event.value) == 0){ //-- all group
       this.ecoScoreForm.get('vehicle').setValue(0);
       this.ecoScoreForm.get('driver').setValue(0);
-
+      this.vehicleDD = this.vehicleListData;
     }else{
-
-      this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
+      let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      if(search.length > 0){
+        this.vehicleDD = [];
+        search.forEach(element => {
+          this.vehicleDD.push(element);  
+        });
+      }
+      // this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
-  }else {
-    this.ecoScoreForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
-    this.ecoScoreForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
-  }
+  // }else {
+  //   this.ecoScoreForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
+  //   this.ecoScoreForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+  // }
   }
 
+  driverDD = [];
   onVehicleChange(event: any){
     if(event.value==0){
-      this.driverListData = this.finalDriverList;
+      this.driverDD = this.driverListData;
+      // this.driverListData = this.finalDriverList;
     }else{
-      let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
-      this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+      // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
+      // this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+      let search = this.driverListData.filter(i => i.driverID == parseInt(event.value));
+      if(search.length > 0){
+        this.driverDD = [];
+        search.forEach(element => {
+          this.driverDD.push(element);  
+        });
+      }
     }
     
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
@@ -734,67 +750,131 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let finalDriverList : any = [];
     let currentStartTime =  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); //_last3m.getTime();
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); // _yesterday.getTime();
-   
-let groupIdArray = [];
-let finalGroupDataList = [];
-    if(this.onLoadData.vehicleDetailsWithAccountVisibiltyList.length > 0){
-      groupIdArray  = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vehicleGroupId);
-    if(groupIdArray.length > 0){
-      distinctGroupId = groupIdArray.filter((value, index, self) => self.indexOf(value) === index);
+    let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    let filteredDriverList = [];
+    let filteredVehicleList = [];
+    let filteredVehicleGroupList = [];
+    let vehicleGroupList = []
+    let vinList = []
+    let finalVehicleList = []
+    
+    let distinctVin = [];
+    this.driverDD = [];
+    this.vehicleDD = [];
+    this.vehicleGroupListData=[];
 
-      if(distinctGroupId.length > 0){
-        distinctGroupId.forEach(element => {
-          let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vehicleGroupId === element); 
-          if(_item.length > 0){
-            finalGroupDataList.push(_item[0])
+    let distinctDriver;
+    if( driverList && driverList.length > 0){
+      distinctDriver = driverList.filter((value, index, self) => self.indexOf(value) === index);
+      distinctDriver = distinctDriver.filter(i => i !== "")
+      if(distinctDriver.length > 0){
+        distinctDriver.forEach(element => {
+          vinList= this.onLoadData.driverList.filter(i => i.driverID === element).map(data=>data.vin);
+          let _item = this.onLoadData.driverList.filter(i => i.driverID === element)
+          let _namePresent =  this.checkIfNamePresent(_item);
+          if(_item.length > 0 && _namePresent){
+            filteredDriverList.push(_item[0]); //-- unique VIN data added 
+            _item.forEach(element => {
+              finalDriverList.push(element)
+            });
           }
         });
-        this.vehicleGroupListData = finalGroupDataList;
       }
-        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.finalVehicleList = [];
-      this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
-      this.vehicleListData =[];
-      let vinList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vin);
-      if(vinList.length>0){
-        let distinctVIN = vinList.filter((value, index, self) => self.indexOf(value) === index);
-        if(distinctVIN.length > 0){
-          distinctVIN.forEach(element => {
-            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+
+      if(vinList.length > 0){
+        distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
+        if(distinctVin && distinctVin.length>0){
+          distinctVin.forEach(element => {
+           // filteredVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element)
             if(_item.length > 0){
-              finalVINDataList.push(_item[0])
+              filteredVehicleList.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                finalVehicleList.push(element)
+              });
             }
+            
           });
+        }
       }
+
+      this.driverListData = filteredDriverList;
+      this.vehicleListData = filteredVehicleList;
+      this.vehicleGroupListData = finalVehicleList;
+      if(this.vehicleGroupListData.length >0){
+        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       }
-      this.vehicleListData = finalVINDataList;
       if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
-      this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-    }
-    }
-    if(this.onLoadData.driverList.length > 0){
-      let driverIds: any = this.onLoadData.driverList.map(data=> data.vin);
-      if(driverIds.length > 0){
-          distinctDriverId = driverIds.filter((value, index, self) => self.indexOf(value) === index);
-          
-      if(distinctDriverId.length > 0){
-        distinctDriverId.forEach(element => {
-          let _item = this.onLoadData.driverList.filter(i => i.vin === element); 
-          if(_item.length > 0){
-            finalDriverList.push(_item[0])
-          }
-        });
-        this.driverListData = finalDriverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime));
-      
+        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      if(this.driverListData.length>1){
         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
-        this.finalDriverList = this.driverListData;
       }
-      }
+      this.vehicleDD = this.vehicleListData;
+      this.driverDD = this.driverListData;
+
+      this.ecoScoreForm.get('vehicleGroup').setValue(0);
     }
-    this.resetEcoScoreFormControlValue();
-    this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
-    if(this.vehicleListData.length >0)
-    this.selectedVehicle = this.vehicleListData[0].vehicleName;   
+   
+// let groupIdArray = [];
+// let finalGroupDataList = [];
+//     if(this.onLoadData.vehicleDetailsWithAccountVisibiltyList.length > 0){
+//       groupIdArray  = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vehicleGroupId);
+//     if(groupIdArray.length > 0){
+//       distinctGroupId = groupIdArray.filter((value, index, self) => self.indexOf(value) === index);
+
+//       if(distinctGroupId.length > 0){
+//         distinctGroupId.forEach(element => {
+//           let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vehicleGroupId === element); 
+//           if(_item.length > 0){
+//             finalGroupDataList.push(_item[0])
+//           }
+//         });
+//         this.vehicleGroupListData = finalGroupDataList;
+//       }
+//         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+//       this.finalVehicleList = [];
+//       this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
+//       this.vehicleListData =[];
+//       let vinList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vin);
+//       if(vinList.length>0){
+//         let distinctVIN = vinList.filter((value, index, self) => self.indexOf(value) === index);
+//         if(distinctVIN.length > 0){
+//           distinctVIN.forEach(element => {
+//             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+//             if(_item.length > 0){
+//               finalVINDataList.push(_item[0])
+//             }
+//           });
+//       }
+//       }
+//       this.vehicleListData = finalVINDataList;
+//       if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
+//       this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+//     }
+//     }
+//     if(this.onLoadData.driverList.length > 0){
+//       let driverIds: any = this.onLoadData.driverList.map(data=> data.vin);
+//       if(driverIds.length > 0){
+//           distinctDriverId = driverIds.filter((value, index, self) => self.indexOf(value) === index);
+          
+//       if(distinctDriverId.length > 0){
+//         distinctDriverId.forEach(element => {
+//           let _item = this.onLoadData.driverList.filter(i => i.vin === element); 
+//           if(_item.length > 0){
+//             finalDriverList.push(_item[0])
+//           }
+//         });
+//         this.driverListData = finalDriverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime));
+      
+//         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+//         this.finalDriverList = this.driverListData;
+//       }
+//       }
+//     }
+//     this.resetEcoScoreFormControlValue();
+//     this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
+//     if(this.vehicleListData.length >0)
+//     this.selectedVehicle = this.vehicleListData[0].vehicleName;   
   }
 
   setGeneralDriverValue(){
@@ -809,6 +889,13 @@ let finalGroupDataList = [];
     this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips || 'Short Trips') + ' ';
     this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ?  (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
     this.selectedDriverOption += ' ' + (this.translationData.lblMinDriverTotDist || 'Minimum Driver Total Distance');
+  }
+
+  checkIfNamePresent(_item){
+    if(_item[0].firstName != "" || _item[0].lastName != ""){
+      return true;
+    }
+    return false;
   }
 
   updateDataSource(tableData: any) {
