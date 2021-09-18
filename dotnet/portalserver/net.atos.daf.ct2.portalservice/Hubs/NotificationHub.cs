@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -19,6 +20,8 @@ using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.portalservice.Entity.Hub;
 using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 namespace net.atos.daf.ct2.portalservice.hubs
 {
     //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
@@ -114,7 +117,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
                     //await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
                     IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
-                    await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages)));
+                    _logger.Info($"\n\rNotifyAlertKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                    await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
                     if (_pkId > 1000)
                     {
                         _pkId = 1;
@@ -141,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             {
                 if (Context?.ConnectionId != null)
                 {
-                    if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == _userDetails.AccountId && a.HubClientId == Context.ConnectionId))
+                    if (_userDetails.AccountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == _userDetails.AccountId && a.HubClientId == Context.ConnectionId))
                     {
                         AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
                         {
@@ -188,7 +192,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
         {
             try
             {
-                if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
+                if (accountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
                 {
                     AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
                     {
@@ -196,6 +200,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         OrganizationId = orgId,
                         HubClientId = this.Context.ConnectionId
                     };
+                    _logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
+                    //await File.AppendAllTextAsync("_accountClientMapperList.txt", JsonConvert.SerializeObject(accountSignalRClientMapper));
                     _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
                 }
                 confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
@@ -257,7 +263,9 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 // match session values with clientID & created by 
                                 //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
                                 connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
-                                await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
+                                _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                                //await File.AppendAllTextAsync("NotifyAlertResponse.txt", $"\n\rReadKafka2019 - {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}--- {this.Context.ConnectionId} - {_kafkaConfiguration.CONSUMER_GROUP} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                                await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
                             }
                         }
                     }
