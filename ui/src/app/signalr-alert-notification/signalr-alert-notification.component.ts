@@ -13,67 +13,11 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 })
 export class SignalrAlertNotificationComponent implements OnInit {
   @Input() notificationData: any;
-  @Output() sendCountToAppComponent = new EventEmitter<any>();
-// notificationData: any = [
-//   {
-//     icons:'unarchive',
-//     name: 'Entering Geofence',
-//     // data: 1628072950000,
-//     data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
-//     vehName: 'Veh data',
-//     vin: 'test 01',
-//     regNo: 'XLRTEM4100G041999858',
-//     alertLevel: 'A',
-//     alertType: 'U',
-//     alertCat: 'L',
-//   },
-//   {
-//     icons:'unarchive',
-//     name: 'Fuel Driver Performance',
-//     data: 1628072950000,
-//     vehName: 'Veh 2 data',
-//     vin: 'test 02',
-//     regNo: 'XLRTEM4100G041999',
-//     alertLevel: 'C',
-//     alertType: 'S',
-//     alertCat: 'F'
-//   },
-//   {
-//     icons:'unarchive',
-//     name: 'Time & Move',
-//     data: 1627986550000,
-//     vehName: 'Veh 3 data',
-//     vin: 'test 03',
-//     regNo: 'XLRTEM4100G041999',
-//     alertLevel: 'W',
-//     alertType: 'U',
-//     alertCat: 'R'
-//   },
-//   {
-//     icons:'unarchive',
-//     name: 'Time & Move 4',
-//     data: 1627986550000,
-//     vehName: 'Veh 4 data',
-//     vin: 'test 04',
-//     regNo: 'XLRTEM4100G041999'
-//   },
-//   {
-//     icons:'unarchive',
-//     name: 'Time & Move 5',
-//     data: 1627986550000,
-//     vehName: 'Veh 5  data',
-//     vin: 'test 05',
-//     regNo: 'XLRTEM4100G041999'
-//   },
-// ];
-// startDateValue: any;
-selectedStartTime: any = '00:00';
-localStLanguage: any;
-accountPrefObj: any;
-prefData : any;
-logbookData: any = [];
-alertNotificationCount: any;
-alertNotificationArray: any =[];
+  selectedStartTime: any = '00:00';
+  localStLanguage: any;
+  accountPrefObj: any;
+  prefData : any;
+  logbookData: any = [];
   preference : any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -88,7 +32,6 @@ alertNotificationArray: any =[];
   ngOnInit(): void {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    console.log("notificationData" +this.notificationData);
     this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
       if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
         this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -112,20 +55,14 @@ alertNotificationArray: any =[];
       }  
       
     this.getDateAndTime();
-
     });
-
-        //Signal R*********************
-//     this.signalRService.startConnection();
-// setTimeout(() => {
-//   this.signalRService.askServerListenerForNotifyAlert();
-//   this.signalRService.askServerForNotifyAlert();
-// }, 5000);
 
   }
 
   displayAlertNotifications(message){
-    console.log("From SignalR component = "+message);
+    if(!this.notificationData){
+      this.notificationData= [];
+    }
     if(this.notificationData.length < 5){
       this.notificationData.push(message);
     }
@@ -133,12 +70,7 @@ alertNotificationArray: any =[];
       this.notificationData.shift();
       this.notificationData.push(message);
     }
-      this.alertNotificationCount++;
-      let emitObj = {
-        stepFlag: false,
-        count: this.alertNotificationCount,
-      }
-      this.sendCountToAppComponent.emit(emitObj);
+    
   }
 
   setInitialPref(prefData,preference){
@@ -201,7 +133,6 @@ alertNotificationArray: any =[];
     this.setPrefFormatTime(element.date,element.time);
     element.time =this.selectedStartTime;
   });
-  console.log(this.notificationData);
   }
 
   gotoLogBook(item: any){

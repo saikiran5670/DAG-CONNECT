@@ -17,8 +17,11 @@ import { Router } from '@angular/router';
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
     AlertNotifcaionList: any[] = [];
+    notificationCount= 0;
     hubConnection:signalR.HubConnection;
     signalRServiceURL: string= "";
+    accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.signalRServiceURL = config.getSettings("foundationServices").signalRServiceURL;   
   }
@@ -49,15 +52,16 @@ export class SignalRService {
 
   askServerForNotifyAlert() {
     //Actual method to get notifications
-    // this.hubConnection.invoke("ReadKafkaMessages", "Hello")
+    //  this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId);
     // .catch(err => 
     //   { 
     //       console.log(err);
     //       this.AlertNotifcaionList.push(err);
     //   });
 
+    
     //Mock method to get notifications
-    this.hubConnection.invoke("NotifyAlert", "Hello")
+    this.hubConnection.invoke("NotifyAlert", "187,36")
     .catch(err => 
       { 
           console.log(err);
@@ -74,23 +78,22 @@ export class SignalRService {
 
      this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
        notificationMessage= JSON.parse(notificationMessage);
-        console.log(notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
-        // console.log("Notification Alert List=" +this.AlertNotifcaionList);
-      signalRComponentObj.displayAlertNotifications(notificationMessage);
+        signalRComponentObj.displayAlertNotifications(notificationMessage);
+        this.notificationCount++;
     })
 
     //For error response
     this.hubConnection.on("askServerResponse", (errorMessage) => {
       console.log(errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
-      // console.log("Notification Alert List=" +this.AlertNotifcaionList);
   })
 
   }
   
   ngOnDestroy() {
   this.hubConnection.off("NotifyAlertResponse");
+  this.hubConnection.stop();
   this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
   }
 
