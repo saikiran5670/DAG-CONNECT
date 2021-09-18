@@ -117,6 +117,7 @@ userPOIList: any = [];
 herePOIList: any = [];
 displayPOIList: any = [];
 internalSelection: boolean = false;
+fromMoreAlertsFlag: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
@@ -287,6 +288,9 @@ ngOnDestroy(){
             this.fromAlertsNotifications = true;
             this.showMapPanel = true;
           }
+          if(this._state.fromMoreAlerts == true){
+            this.fromMoreAlertsFlag = true; 
+          }         
             
           // if(this._state.fromMoreAlerts == true){
           //   this.selectionTimeRange('today');}
@@ -565,7 +569,7 @@ ngOnDestroy(){
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
   }
-  if(this._state.fromMoreAlerts == true){
+  if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
     let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
     let moreStartDate = new Date( startDate +' UTC');
@@ -913,7 +917,7 @@ ngOnDestroy(){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
       if(this._state){
         if(this.vehicleDD.length > 0){
-          if(this.fromAlertsNotifications == false  && this._state.fromMoreAlerts == false){
+          if(this.fromAlertsNotifications == false  && this.fromMoreAlertsFlag == false){
             let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
             if(_v.length > 0){
               let id =_v[0].vehicleId;
@@ -960,8 +964,9 @@ ngOnDestroy(){
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
       // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
       // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
-    }
-    if(this._state.fromMoreAlerts == true){
+    }    
+   
+    if(this.fromMoreAlertsFlag == true){
       this.selectionTab = '';
       let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
       let moreStartDate = new Date( startDate +' UTC');
@@ -1406,11 +1411,11 @@ let prepare = []
           });
         }
       }else{
-        if(this.fromAlertsNotifications == false && this._state.fromMoreAlerts == false){
+        if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
         this.resetFilterValues();}
       }
     }
-
+    this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){  
       this.getVehicleGroups(); 
        this.alertTyp = alertTypeList;

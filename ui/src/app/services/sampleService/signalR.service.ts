@@ -73,9 +73,10 @@ export class SignalRService {
     let signalRComponentObj = new SignalrAlertNotificationComponent(router,translationService,organizationService,dateFormats);
 
      this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+       notificationMessage= JSON.parse(notificationMessage);
         console.log(notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
-        console.log("Notification Alert List=" +this.AlertNotifcaionList);
+        // console.log("Notification Alert List=" +this.AlertNotifcaionList);
       signalRComponentObj.displayAlertNotifications(notificationMessage);
     })
 
