@@ -1053,7 +1053,7 @@ calendarOptions: CalendarOptions = {
       let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
       this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
       let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
-      this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData });
+      this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData.toFixed(2) });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
       this.calendarSelectedValues(e);   
