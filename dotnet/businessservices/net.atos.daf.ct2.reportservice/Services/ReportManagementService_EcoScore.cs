@@ -686,11 +686,13 @@ namespace net.atos.daf.ct2.reportservice.Services
         private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferencesOld(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
-            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
+                                                                                                request.OrganizationId, request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId, request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             if (userPreferencesExists)
             {
-                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
 
                 //Filter out preferences based on Account role and org package subscription
                 userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
@@ -707,11 +709,13 @@ namespace net.atos.daf.ct2.reportservice.Services
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
             var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
-                                                                                                     request.OrganizationId);
+                                                                                                     request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
-                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             }
             else
             {
