@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -707,21 +708,37 @@ namespace net.atos.daf.ct2.reportservice.Services
         private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+            var featureIds = request.UserFeatures.Select(uf => uf.FeatureId).ToArray();
 
             var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
-                                                                                                     request.OrganizationId,
-                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
+                                                                                               request.OrganizationId, featureIds);
+
+            // Get all attributes from reportattribute table
+            var userPreferencesAll = await _reportManager.GetReportDataAttributes(featureIds, request.ReportId);
+
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
-                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
-                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
+                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId, featureIds);
+
+                if (userPreferences.Count() > userPreferencesAll.Count())
+                {
+                    // Features are removed
+                    // If features are removed, it would not be shown
+                    userPreferences = userPreferences.Intersect(userPreferencesAll, new ReportPreferenceComparer());
+                }
+                else
+                {
+                    // Features are added
+                    // If more features are added, it would be shown checked by default
+                    userPreferences = userPreferences.Union(userPreferencesAll, new ReportPreferenceComparer());
+                }
             }
             else
             {
-                // Get all attributes from reportattribute table
-                userPreferences = await _reportManager.GetReportDataAttributes(request.UserFeatures.Select(uf => uf.FeatureId).ToArray(), request.ReportId);
+                userPreferences = userPreferencesAll;
             }
+
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
 
@@ -747,5 +764,31 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #endregion
+    }
+    internal class ReportPreferenceComparer : IEqualityComparer<reports.entity.ReportUserPreference>
+    {
+        public bool Equals(reports.entity.ReportUserPreference x, reports.entity.ReportUserPreference y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (x is null || y is null)
+            {
+                return false;
+            }
+            return x.DataAttributeId == y.DataAttributeId && x.ReportId == y.ReportId;
+        }
+
+        public int GetHashCode([DisallowNull] reports.entity.ReportUserPreference obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+            int dataAttributeIdHashCode = obj.DataAttributeId.GetHashCode();
+            int reportIdHashCode = obj.ReportId.GetHashCode();
+            return dataAttributeIdHashCode ^ reportIdHashCode;
+        }
     }
 }
