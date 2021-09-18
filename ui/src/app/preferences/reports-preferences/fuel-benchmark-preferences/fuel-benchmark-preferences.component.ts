@@ -144,7 +144,34 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     if (!this.requestSent) {
       this.requestSent = true;
       let temp_attr = [];
+      let parentAttr = [];
+      parentAttr.push({ dataAttributeId: this.getReportPreferenceResponse.dataAttributeId,
+        state: "A",
+        preferenceType: "D",
+        chartType: '',
+        thresholdType: "",
+        thresholdValue: 0,
+        reportId: this.getReportPreferenceResponse.reportId });
+
       for (let section of this.getReportPreferenceResponse.subReportUserPreferences) {
+        if(section.name.includes('Report.Chart')){
+          parentAttr.push({ dataAttributeId: section.dataAttributeId,
+            state: "A",
+            preferenceType: "C",
+            chartType: '',
+            thresholdType: "",
+            thresholdValue: 0,
+            reportId: section.reportId });           
+        }        
+        else if(section.name.includes('Report.Component')){
+          parentAttr.push({ dataAttributeId: section.dataAttributeId,
+            state: "A",
+            preferenceType: "D",
+            chartType: '',
+            thresholdType: "",
+            thresholdValue: 0,
+            reportId:section.reportId });
+        }       
         for (let field of section.subReportUserPreferences) {
           let testObj;
           if (field.key == "rp_fb_chart_fuelconsumption") {
@@ -177,7 +204,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
       }
       let benchmarkObject = {
         reportId: this.reportId,
-        attributes: temp_attr
+        attributes: [...temp_attr, ...parentAttr]
       }
 
       this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
