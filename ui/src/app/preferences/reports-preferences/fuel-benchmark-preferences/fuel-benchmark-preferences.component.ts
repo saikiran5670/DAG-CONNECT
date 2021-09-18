@@ -154,7 +154,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
               preferenceType: "C",
               chartType: this.fuelBenchmarkForm.get([field.key]).value,
               thresholdType: "",
-              thresholdValue: 0
+              thresholdValue: 0,
+              reportId: field.reportId 
             }
           }
           else {
@@ -164,7 +165,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
               preferenceType: "C",
               chartType: field.chartType,
               thresholdType: "",
-              thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value)
+              thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value),
+              reportId: field.reportId 
               //thresholdValue:4
             }
           }

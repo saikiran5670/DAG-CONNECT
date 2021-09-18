@@ -878,8 +878,7 @@ namespace net.atos.daf.ct2.reports.repository
                     strReportIds = "@report_id";
                 }
 
-
-                #region Query RoleBasedDataColumn
+                #region Query FeatureBasedDataAttributes
                 var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
                                               ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType, ra.report_id as ReportId
                               FROM master.reportattribute ra
