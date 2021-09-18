@@ -43,17 +43,16 @@
                                 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
                         </a>
                         <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
-                        <a class="navIcon">
+                        <a class="navIcon" (click) ="notificationClicked()">
                             <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
-                                [matMenuTriggerFor]="menu" (click) ="notificationClicked()">
+                                [matMenuTriggerFor]="menu">
                                 notifications_none</mat-icon>
-                            <span class="badge">{{ notificationCount }}</span>
+                            <span class="badge">{{ signalRService.notificationCount }}</span>
                         </a>
 
-                        <mat-menu #menu="matMenu"  class="notificationList" yPosition="below" > 
-                                <app-signalr-alert-notification *ngIf="showAlertNotifications" 
-                                [notificationData]="notificationDetails"
-                                (sendCountToAppComponent)='sendAlertNotificationCount($event)'>
+                        <mat-menu #menu="matMenu" (closed)="notificationsClosed()"  class="notificationList" yPosition="below" > 
+                                <app-signalr-alert-notification
+                                [notificationData]="notificationDetails">
                                 </app-signalr-alert-notification>
                         </mat-menu>
                         
