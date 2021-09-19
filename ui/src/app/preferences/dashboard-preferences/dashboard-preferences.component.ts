@@ -454,12 +454,53 @@ export class DashboardPreferencesComponent implements OnInit {
     let _vehicleUtilizationArr: any = [];
     let _todayLiveVehicleArr: any = [];
     let _alertLast24HoursArr: any = [];
+    let _parentArr: any = [];
 
     _fleetKPIArr = this.getSaveObject('fleetKPIColumnData', 'selectionForFleetKPIColumns');
     _todayLiveVehicleArr = this.getSaveObject('todayLiveVehicleColumnData', 'selectionForTodayLiveVehicleColumns');
     _vehicleUtilizationArr = this.getSaveObject('vehicleUtilizationColumnData', 'selectionForVehicleUtilizationColumns');
 
     _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
+    
+    _parentArr.push({ dataAttributeId:  this.getDashboardPreferenceResponse.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: this.getDashboardPreferenceResponse.reportId  })
+ 
+     this.getDashboardPreferenceResponse.subReportUserPreferences.forEach(element => {     
+      if(element.name.includes("Dashboard.FleetKPI")){
+        if(this.selectionForFleetKPIColumns.selected.length == this.fleetKPIColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }       
+      }else if(element.name.includes("Dashboard.TodayLiveVehicle")){
+        if(this.selectionForTodayLiveVehicleColumns.selected.length == this.todayLiveVehicleColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+       }else if(element.name.includes("Dashboard.VehicleUtilization")){
+        if(this.selectionForVehicleUtilizationColumns.selected.length == this.vehicleUtilizationColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+      
+      }else if(element.name.includes("Dashboard.AlertLast24Hours")){
+        if(this.selectionForAlertLast24HoursColumns.selected.length == this.alertLast24HoursColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+      }
+
+    });
 
     //console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
     // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
@@ -467,7 +508,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
     let objData: any = {
       reportId: this.reportId,
-      attributes: [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr] //-- merge data
+      attributes: [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr, ..._parentArr] //-- merge data
     }
     if(!this.responseFlag)
     {

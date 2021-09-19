@@ -626,14 +626,13 @@ namespace net.atos.daf.ct2.alert.repository
                                     limit.Id = alertNotificationLimitId;
                                 }
                             }
-                            recordCnt += 1;
-
                         }
+                        recordCnt += 1;
                     }
                 }
                 transactionScope.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 transactionScope.Rollback();
                 throw;
