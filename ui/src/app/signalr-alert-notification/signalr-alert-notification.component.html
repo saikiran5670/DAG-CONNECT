@@ -1,4 +1,4 @@
-   <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
+   <div  *ngFor="let item of signalRService.notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
         <mat-card class="card1" (click)="gotoLogBook(item)">
         <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
         fxLayoutGap="1px">
@@ -26,14 +26,14 @@
         <div class="line">
             <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
             fxLayoutGap="1px">
-            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehicleName}} </span>
-            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
-            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.vehicleLicencePlate ? item.vehicleLicencePlate : item.vehicleName}} </span>
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehicleName}} </span>
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.vehicleLicencePlate ? item.vehicleLicencePlate : item.vehicleName}} </span>
         </div>
     </div>
 </mat-card>
 </div>
-<div *ngIf="notificationData.length == 0" style="text-align: center;">
+<div *ngIf="signalRService.notificationData.length == 0" style="text-align: center;">
     <span > No notifications available </span>
 </div>
-<a *ngIf="notificationData.length > 0" class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
+<a *ngIf="signalRService.notificationData.length > 0" class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
