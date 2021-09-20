@@ -29,6 +29,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
   selectionForVehicleDetailsColumns = new SelectionModel(true, []);
   selectionForSingleVehicleDetailsColumns = new SelectionModel(true, []);
   fleetFuelForm = new FormGroup({});
+  reportData:any;
   unitId;
 
   lineBarDD: any = [{
@@ -64,7 +65,8 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   loadFleetFuelPreferences() {
     this.reportId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
-    this.reportService.getReportUserPreference(this.reportId).subscribe((res) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((res:any) => {
+      this.reportData = res.userPreferences;
       if (this.tabName == 'Vehicle') {
         this.initData = res['userPreferences']['subReportUserPreferences'].filter((item) => item.name.includes('Vehicle'));
       } else {
@@ -237,12 +239,51 @@ export class FleetFuelPreferencesComponent implements OnInit {
     let _chartsArr: any = [];
     let _vehicleDetailsArr: any = [];
     let _singleVehicleDetailsArr: any = [];
+    let parentArr=[];
 
     _summaryArr = this.getSaveObject('summaryColumnData', 'selectionForSummaryColumns');
     _vehicleRankingArr = this.getSaveObject('vehicleRankingColumnData', 'selectionForVehicleRankingColumns');
     _vehicleDetailsArr = this.getSaveObject('vehicleDetailsColumnData', 'selectionForVehicleDetailsColumns');
     _singleVehicleDetailsArr = this.getSaveObject('singleVehicleDetailsColumnData', 'selectionForSingleVehicleDetailsColumns');
-
+    
+    if (this.tabName == 'Vehicle') {
+      parentArr.push({ dataAttributeId: this.reportData.dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: this.reportData.reportId  })
+    }
+    parentArr.push({ dataAttributeId: this.initData[0].dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: this.initData[0].reportId  })
+    this.initData[0].subReportUserPreferences.forEach(element => {
+         if(element.name.includes('Report.Driver.Summary') || element.name.includes('Report.Vehicle.Summary') ){
+          if(this.selectionForSummaryColumns.selected.length == this.summaryColumnData.length){
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }else{
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }
+         }else if(element.name.includes('Report.Driver.Chart') || element.name.includes('Report.Vehicle.Chart') ){
+          if(this.selectionForChartsColumns.selected.length == this.chartsColumnData.length){
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "C", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }else{
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "C", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }
+         }else if(element.name.includes('Report.Driver.VehicleDetails') || element.name.includes('Report.Vehicle.VehicleDetails') ){
+          if(this.selectionForVehicleDetailsColumns.selected.length == this.vehicleDetailsColumnData.length){
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }else{
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }
+         }else if(element.name.includes('Report.Driver.SingleVehicleDetails') || element.name.includes('Report.Vehicle.SingleVehicleDetails') ){
+          if(this.selectionForSingleVehicleDetailsColumns.selected.length == this.singleVehicleDetailsColumnData.length){
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }else{
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }
+        }
+        else if(element.name.includes('Report.Vehicle.VehicleRanking') ){
+          if(this.selectionForVehicleRankingColumns.selected.length == this.vehicleRankingColumnData.length){
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }else{
+            parentArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: '', thresholdType: "", thresholdValue: 0, reportId: element.reportId  })
+          }
+        }
+    });
     this.chartsColumnData.forEach((element, index) => {
       let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(cSearch.length > 0){
@@ -251,8 +292,8 @@ export class FleetFuelPreferencesComponent implements OnInit {
         _chartsArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "C", chartType: this.fleetFuelForm.get([element.key]).value, thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
       }
     });
-    console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr])
-    return [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr];
+   // console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr, ...parentArr])
+    return [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr, ...parentArr];
   }
 
   getUnits(key) {

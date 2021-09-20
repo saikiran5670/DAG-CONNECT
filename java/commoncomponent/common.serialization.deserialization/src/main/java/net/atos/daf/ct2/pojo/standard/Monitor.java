@@ -38,6 +38,8 @@ public class Monitor implements Serializable {
     private String vid;
     @JsonProperty(value = "VIN")
     private String vin;
+    @JsonProperty(value = "FuelType")
+    private String fuelType;
     @JsonProperty(value = "kafkaProcessingTS")
     private String kafkaProcessingTS;
 
