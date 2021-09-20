@@ -477,24 +477,24 @@ namespace net.atos.daf.ct2.alert.repository
                 }
 
                 // duplicate recipients label
-                if (alert.Notifications.Count() > 0)
-                {
-                    int cntDupliReclabel = 0;
-                    foreach (var notification in alert.Notifications)
-                    {
-                        foreach (var notificationRecipient in notification.NotificationRecipients)
-                        {
-                            if (RecipientLabelExists(notificationRecipient, alert.OrganizationId).Result.Exists)
-                            {
-                                cntDupliReclabel = +1;
-                            }
-                        }
-                    }
-                    if (cntDupliReclabel > 0)
-                    {
-                        return alert;
-                    }
-                }
+                //if (alert.Notifications.Count() > 0)
+                //{
+                //    int cntDupliReclabel = 0;
+                //    foreach (var notification in alert.Notifications)
+                //    {
+                //        foreach (var notificationRecipient in notification.NotificationRecipients)
+                //        {
+                //            if (RecipientLabelExists(notificationRecipient, alert.OrganizationId).Result.Exists)
+                //            {
+                //                cntDupliReclabel = +1;
+                //            }
+                //        }
+                //    }
+                //    if (cntDupliReclabel > 0)
+                //    {
+                //        return alert;
+                //    }
+                //}
 
                 var QueryStatement = @" UPDATE master.alert
                                         SET 
@@ -601,9 +601,14 @@ namespace net.atos.daf.ct2.alert.repository
                                 }
                                 else
                                 {
-                                    if (recordCnt == 0)
+                                    int notiReceipt = await _dataAccess.QueryFirstOrDefaultAsync<int>("SELECT id FROM master.notificationrecipient where recipient_label=@recipient_label", new { recipient_label = notificationRecipient.RecipientLabel });
+                                    if (notiReceipt == 0)
                                     {
                                         alertNotificationRecipientId = await CreateNotificationrecipient(notificationRecipient);
+                                    }
+                                    else
+                                    {
+                                        alertNotificationRecipientId = notiReceipt;
                                     }
                                     notificationRecipientRef.RecipientId = alertNotificationRecipientId;
                                     await CreateNotificationRecipientRef(notificationRecipientRef);
@@ -628,11 +633,12 @@ namespace net.atos.daf.ct2.alert.repository
                             }
                         }
                         recordCnt += 1;
+
                     }
                 }
                 transactionScope.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transactionScope.Rollback();
                 throw;
