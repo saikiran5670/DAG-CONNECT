@@ -29,12 +29,12 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(EcoScoreSink.class);
 
-	private PreparedStatement statement;
+	//private PreparedStatement statement;
 	private Connection connection;
 	private List<EcoScore> queue;
 	private List<EcoScore> synchronizedCopy;
 	EcoScoreDao ecoScoreDao;
-	private PreparedStatement ecoScoreQry;
+	private PreparedStatement ecoScoreQryStmt;
 
 	@Override
 	public void invoke(EcoScore rec) throws Exception {
@@ -48,7 +48,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 					synchronizedCopy = new ArrayList<EcoScore>(queue);
 					queue.clear();
 					for (EcoScore tripData : synchronizedCopy) {
-						ecoScoreDao.insert(tripData, ecoScoreQry);
+						ecoScoreDao.insert(tripData, ecoScoreQryStmt);
 						logger.info("EcoScore records inserted to ecoscore table :: "+tripData.getTripId());
 					}
 				}
@@ -85,7 +85,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 			
 			logger.info("In EcoScore sink connection done" + connection);
 			ecoScoreDao.setConnection(connection);
-			ecoScoreQry = connection.prepareStatement(ETLQueries.ECOSCORE_INSERT_STATEMENT);
+			ecoScoreQryStmt = connection.prepareStatement(ETLQueries.ECOSCORE_INSERT_STATEMENT);
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job EcoScore Sink :: " + e);
@@ -100,8 +100,8 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 	@Override
 	public void close() throws Exception {
 		super.close();
-		if (statement != null) {
-			statement.close();
+		if (ecoScoreQryStmt != null) {
+			ecoScoreQryStmt.close();
 		}
 		logger.info("In close() of EcoScoreSink :: ");
 
