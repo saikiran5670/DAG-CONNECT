@@ -118,25 +118,25 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     //await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
                     IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
                     _logger.Info($"\n\rNotifyAlertKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
-                    await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
+                    await Clients.Clients(connectionIds).SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
                     if (_pkId > 1000)
                     {
                         _pkId = 1;
                     }
                     _pkId = _pkId + 1;
-                    Thread.Sleep(1000);
+                    Thread.Sleep(60000);//1 minute 
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
             {
                 _logger.Error("Error in NotifyAlert.RpcException", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
             }
             catch (Exception ex)
             {
                 _ = ex.Message + someTextFromClient;
                 _logger.Error("Error in NotifyAlert", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
             }
         }
         public override async Task OnConnectedAsync()
