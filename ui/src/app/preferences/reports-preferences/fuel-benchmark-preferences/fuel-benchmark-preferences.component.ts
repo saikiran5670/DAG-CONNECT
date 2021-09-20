@@ -209,12 +209,19 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
 
       this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
         this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("fuelbenchmarking")) {
+          this.reloadCurrentComponent();
+        }
         this.requestSent = false;
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
       });
     }
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   onDonutPieDDChange(event: any) {

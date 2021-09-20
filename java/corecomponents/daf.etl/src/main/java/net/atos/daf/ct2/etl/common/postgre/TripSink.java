@@ -35,7 +35,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 	private List<Trip> queue;
 	private List<Trip> synchronizedCopy;
 	TripSinkDao tripDao;
-	private PreparedStatement tripStatisticQry;
+	//private PreparedStatement tripStatisticQry;
 
 	@Override
 	public void invoke(Trip rec) throws Exception {
@@ -51,7 +51,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 					for (Trip tripData : synchronizedCopy) {
 						logger.info(
 								"tripId :: " + tripData.getTripId() + " co2Emi ::" + tripData.getTripCalC02Emission());
-						tripDao.insert(tripData, tripStatisticQry);
+						tripDao.insert(tripData, statement);
 						logger.info("Trip records inserted to trip table :: "+tripData.getTripId());
 					}
 				}
@@ -88,7 +88,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 			
 			logger.info("In trip sink connection done" + connection);
 			tripDao.setConnection(connection);
-			tripStatisticQry = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
+			statement = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
