@@ -8,6 +8,8 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.TimeUnit;
+import org.apache.flink.api.common.time.Time;
 
 import net.atos.daf.ct2.common.realtime.dataprocess.MonitorDataProcess;
 
@@ -107,10 +109,26 @@ public class FlinkUtil {
 				// TODO  enable only in QA and Prod
 				logger.info("RESTART_FLAG :: "+envParams.get(DafConstants.RESTART_FLAG));
 				if("true".equals(envParams.get(DafConstants.RESTART_FLAG))){
-					env.setRestartStrategy(
-							RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), //no of restart attempts
-									Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
-								);			
+					if("true".equals(envParams.get(DafConstants.FIXED_RESTART_FLAG))){
+					/*
+					 * env.setRestartStrategy(
+					 * RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(
+					 * DafConstants.RESTART_ATTEMPS)), //no of restart attempts
+					 * Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in
+					 * milliseconds between restarts );
+					 */	
+					
+					 env.setRestartStrategy(
+		                        RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), //no of restart attempts
+		                                Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
+		                            );   
+		            }else{
+		                env.setRestartStrategy(RestartStrategies.failureRateRestart(
+		                          Integer.parseInt(envParams.get(DafConstants.RESTART_FAILURE_RATE)), // max failures per interval
+		                          Time.of(Long.parseLong(envParams.get(DafConstants.RESTART_FAILURE_INTERVAL)), TimeUnit.MILLISECONDS), //time interval for measuring failure rate
+		                          Time.of(Long.parseLong(envParams.get(DafConstants.RESTART_FAILURE_DELAY)), TimeUnit.MILLISECONDS) // delay
+		                        ));
+				} 
 				}else{
 					env.setRestartStrategy(RestartStrategies.noRestart());
 				}

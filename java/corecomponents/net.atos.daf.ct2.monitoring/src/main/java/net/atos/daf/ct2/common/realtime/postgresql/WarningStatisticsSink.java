@@ -348,10 +348,14 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 	@Override
 	public void close() throws Exception {
 
-		connection.close();
-		logger.error("Error");
+		super.close();
 
-		logger.info("In Close");
+		logger.info("In close() of Warning :: ");
+
+		if (connection != null) {
+			logger.info("Releasing connection from Warning job");
+			connection.close();
+		}
 
 	}
 }
