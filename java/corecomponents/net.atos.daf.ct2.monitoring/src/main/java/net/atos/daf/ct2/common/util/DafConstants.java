@@ -16,6 +16,11 @@ public class DafConstants {
 
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
+	
+	public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
 
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
 	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";
