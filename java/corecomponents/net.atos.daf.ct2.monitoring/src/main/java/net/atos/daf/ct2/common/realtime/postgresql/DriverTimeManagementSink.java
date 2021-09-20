@@ -311,5 +311,17 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		return driverActivity;
 
 	}
+	
+	@Override
+	public void close() throws Exception {
+
+		connection.close();
+		masterConnection.close();
+
+		logger.error("Error");
+
+		logger.info("In Close");
+
+	}
 
 }
