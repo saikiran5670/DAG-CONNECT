@@ -810,6 +810,7 @@ export class AppComponent {
           console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
+            this.filteredOrganizationList.next(this.organizationList);
             this.organizationList.sort(this.compare);
             let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
             let _orgId: any;

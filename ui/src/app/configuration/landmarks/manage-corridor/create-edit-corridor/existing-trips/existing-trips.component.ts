@@ -21,6 +21,7 @@ declare var H: any;
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MapFunctionsService } from '../../map-functions.service';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-existing-trips',
@@ -172,6 +173,8 @@ export class ExistingTripsComponent implements OnInit {
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
 
+  public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private here: HereService,
     private _formBuilder: FormBuilder, private translationService: TranslationService,
@@ -207,6 +210,7 @@ export class ExistingTripsComponent implements OnInit {
     if(this.vinList.length > 0){
       this.vinList.unshift(this.translationData.lblAll || 'All' );     
     };
+    this.filteredVehicleList.next(this.vinList);
     
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -222,7 +226,7 @@ export class ExistingTripsComponent implements OnInit {
       viaroute1: [''],
       viaroute2: [''],
       vehicleGroup: ['', [Validators.required]],
-      vehicle: ['', [Validators.required]],
+      vehicle: [this.vinList.length > 0 ? this.vinList[0].id : '', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -963,6 +967,21 @@ export class ExistingTripsComponent implements OnInit {
     this.setCorridorData();
   }
 
+  filterVehicles(search) {
+    if (!search) {
+      this.resetVehicleSearch();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredVehicleList.next(
+      this.vinList.filter(item => item.toLowerCase().indexOf(search) > -1)
+    );
+   }
+
+   resetVehicleSearch() {
+    this.filteredVehicleList.next(this.vinList.slice());
+  }
 
   resetValues() {
     if (this.actionType === 'create') {

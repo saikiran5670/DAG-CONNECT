@@ -43,6 +43,7 @@ import { BreakingScoreComponent } from './eco-score-profile-management/breaking-
 import { MaxTargetScoreComponent } from './eco-score-profile-management/max-target-score/max-target-score.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { TimeRangeSliderComponent } from './eco-score-profile-management/time-range-slider/time-range-slider.component';
 
 @NgModule({
@@ -90,7 +91,8 @@ import { TimeRangeSliderComponent } from './eco-score-profile-management/time-ra
     NgxMaterialTimepickerModule,
     NgxSliderModule,
     BsDropdownModule.forRoot(),
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    NgxMatSelectSearchModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [
