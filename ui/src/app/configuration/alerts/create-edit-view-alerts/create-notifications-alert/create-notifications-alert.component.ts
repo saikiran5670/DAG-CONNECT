@@ -1173,6 +1173,7 @@ getLevelValues(){
     }
     }
     else if (this.actionType == 'edit') {
+      this.notifications = [];
       if(!this.criticalFlag && !this.warningFlag && !this.advisoryFlag){
       this.notifications = [
         {

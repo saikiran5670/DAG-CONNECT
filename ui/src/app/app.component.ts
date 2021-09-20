@@ -86,7 +86,6 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
-  notificationCount= 0;
   notificationDetails: any= [];
   private pagetTitles = {
     dashboard: 'Dashboard',
@@ -382,7 +381,7 @@ export class AppComponent {
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
           this.getOfflineNotifications();
-          this.connectWithSignalR();
+          // this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -1270,13 +1269,18 @@ export class AppComponent {
 getOfflineNotifications(){
   this.alertService.getOfflineNotifications().subscribe(data => {
     if(data){
-      this.notificationCount= data["notAccResponse"].notificationCount;
+      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
       this.notificationDetails= data["notificationResponse"];
     }
+    setTimeout(() => {
+      this.getOfflineNotifications();
+    }, 180000);
 
   },
   error => {
-
+    setTimeout(() => {
+      this.getOfflineNotifications();
+    }, 180000);
   })
 }
 
@@ -1285,16 +1289,16 @@ connectWithSignalR(){
   setTimeout(() => {
     this.signalRService.askServerListenerForNotifyAlert();
     this.signalRService.askServerForNotifyAlert();
-  }, 8000);
+  }, 5000);
 }
 
-sendAlertNotificationCount(item: any) {
-  this.notificationCount = item.count;
+notificationsClosed(){
+  this.notificationDetails=[];
 }
 
 notificationClicked(){
   this.showAlertNotifications = true;
-  if(this.notificationCount > 0){
+  if(this.signalRService.notificationCount > 0){
     let notificationData= [];
     this.notificationDetails.forEach(element => {
       let notificationObj= {
@@ -1313,7 +1317,7 @@ notificationClicked(){
     });
     
     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
-      this.notificationCount= 0;
+      this.signalRService.notificationCount= 0;
     })
   }
 }

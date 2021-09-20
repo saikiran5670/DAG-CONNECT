@@ -33,5 +33,7 @@
     </div>
 </mat-card>
 </div>
-
-<a class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
+<div *ngIf="notificationData.length == 0" style="text-align: center;">
+    <span > No notifications available </span>
+</div>
+<a *ngIf="notificationData.length > 0" class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
