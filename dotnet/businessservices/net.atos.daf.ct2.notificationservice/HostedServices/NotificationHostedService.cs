@@ -166,13 +166,13 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                                 AlertLevelCls = GetAlertTypeCls(urgencyTypeValue),
                                 DefinedThreshold = (item.ThresholdUnitEnum == "H" || item.ThresholdUnitEnum == "T")
                                                     ? item.TimeBasedThresholdValue
-                                                    : item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
+                                                    : item.ThresholdValue == 0 ? "NA" : item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
                                 ActualThresholdValue = item.AlertTypeEnum == "S" && item.AlertCategoryEnum == "L"
                                                         ? item.ValueAtAlertTimeForHoursofServices
                                                         : (
                                                             (item.ThresholdUnitEnum == "H" || item.ThresholdUnitEnum == "T")
                                                             ? item.TimeBasedValueAtAlertTime
-                                                            : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType
+                                                            : item.ValueAtAlertTime == 0 ? "NA" : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType
                                                            ),
                                 AlertCategory = alertCategoryValue,
                                 VehicleGroup = item.Vehicle_group_vehicle_name,
