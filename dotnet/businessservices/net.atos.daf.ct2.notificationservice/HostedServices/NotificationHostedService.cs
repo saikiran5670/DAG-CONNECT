@@ -289,7 +289,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             else
             {
                 string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
-                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
+                thresholdNum = notificationHistorySMS.ThresholdValue == 0 ? "NA" : thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
             }
             if (notificationHistorySMS.ThresholdUnitEnum == "H" || notificationHistorySMS.ThresholdUnitEnum == "T")
             {
@@ -300,7 +300,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 string[] valueAtAlerttimeSplit = notificationHistorySMS.ValueAtAlertTime.ToString().Split('.');
                 valueAtAlertTime = notificationHistorySMS.AlertTypeEnum == "S" && notificationHistorySMS.AlertCategoryEnum == "L"
                                           ? notificationHistorySMS.ValueAtAlertTimeForHoursofServices
-                                          : (valueAtAlerttimeSplit.Count() > 1)
+                                          : notificationHistorySMS.ValueAtAlertTime == 0 ? "NA" : (valueAtAlerttimeSplit.Count() > 1)
                                             ? (valueAtAlerttimeSplit[1].Length > 3)
                                                 ? notificationHistorySMS.ValueAtAlertTime.ToString("#.0000")
                                                 : notificationHistorySMS.ValueAtAlertTime.ToString()
@@ -335,7 +335,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             else
             {
                 string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
-                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
+                thresholdNum = notificationHistoryWS.ThresholdValue == 0 ? "NA" : thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
             }
             if (notificationHistoryWS.ThresholdUnitEnum == "H" || notificationHistoryWS.ThresholdUnitEnum == "T")
             {
@@ -346,7 +346,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 string[] valueAtAlerttimeSplit = notificationHistoryWS.ValueAtAlertTime.ToString().Split('.');
                 valueAtAlertTime = notificationHistoryWS.AlertTypeEnum == "S" && notificationHistoryWS.AlertCategoryEnum == "L"
                                     ? notificationHistoryWS.ValueAtAlertTimeForHoursofServices
-                                    : valueAtAlerttimeSplit.Count() > 1
+                                    : notificationHistoryWS.ValueAtAlertTime == 0 ? "NA" : valueAtAlerttimeSplit.Count() > 1
                                         ? valueAtAlerttimeSplit[1].Length > 3
                                             ? notificationHistoryWS.ValueAtAlertTime.ToString("#.0000") + " " + notificationHistoryWS.ThresholdValueUnitType
                                             : notificationHistoryWS.ValueAtAlertTime.ToString() + " " + notificationHistoryWS.ThresholdValueUnitType
