@@ -1180,6 +1180,8 @@ export class ExistingTripsComponent implements OnInit {
 
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
+    if(vinSelectedValue.value=='All')
+      this.vinListSelectedValue = this.vinList;
     // console.log("------vins selection--", this.vinListSelectedValue)
   }
 
