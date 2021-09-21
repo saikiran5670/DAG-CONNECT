@@ -37,6 +37,12 @@
         }
     }
 
+    public class SubReportDto
+    {
+        public int FeatureId { get; set; }
+        public string HasSubReports { get; set; }
+    }
+
     public enum ReportAttributeType
     {
         Simple = 'S',

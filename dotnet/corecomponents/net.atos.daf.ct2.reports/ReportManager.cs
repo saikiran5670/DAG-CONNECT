@@ -307,7 +307,7 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetReportDataAttributes(reportIds);
         }
 
-        public async Task<int> CheckIfSubReportExist(int reportId)
+        public async Task<SubReportDto> CheckIfSubReportExist(int reportId)
         {
             return await _reportRepository.CheckIfSubReportExist(reportId);
         }
