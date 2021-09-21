@@ -18,6 +18,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         [Required]
         public int DataAttributeId { get; set; }
         [Required]
+        public int ReportId { get; set; }
+        [Required]
         public string State { get; set; }
         [Required]
         [StringLength(1, MinimumLength = 1)]

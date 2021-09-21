@@ -3,6 +3,7 @@ package net.atos.daf.ct2.etl.common.postgre;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -22,7 +23,7 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 	private static final long serialVersionUID = 1L;
 	private Connection masterConnection;
 	private Co2MasterDao cmDao;
-	PreparedStatement co2CoEfficientQry;
+	PreparedStatement co2CoEfficientStmt;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -38,7 +39,7 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
 			cmDao = new Co2MasterDao();
 			cmDao.setConnection(masterConnection);
-			co2CoEfficientQry = masterConnection.prepareStatement(ETLQueries.CO2_COEFFICIENT_QRY);
+			co2CoEfficientStmt = masterConnection.prepareStatement(ETLQueries.CO2_COEFFICIENT_QRY);
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -56,7 +57,7 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			Collector<TripStatusData> out){
 
 		try {
-			double co2CoEfficient = cmDao.read(co2CoEfficientQry, stsData.getVin());
+			double co2CoEfficient = cmDao.read(co2CoEfficientStmt, stsData.getVin());
 			double co2Emission = 0;
 			if (co2CoEfficient != 0 && stsData.getVUsedFuel() != null)
 				co2Emission = (stsData.getVUsedFuel() * co2CoEfficient) / 1000000;
@@ -73,6 +74,10 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 	@Override
 	public void close() throws Exception{
 		try {
+			super.close();
+			
+			if(Objects.nonNull(co2CoEfficientStmt))
+				co2CoEfficientStmt.close();
 			
 			if (masterConnection != null) {
 				masterConnection.close();

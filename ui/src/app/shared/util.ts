@@ -27,7 +27,10 @@ export class Util {
             _timezone = _t[1].trim();
         }
         let date: any = moment().tz(_timezone ? _timezone : prefTimezone).format();
-      
+        if(date.includes('Z'))
+        {
+            date= date.replace('Z','+00:00');
+        }      
         let _date= date.split("T")[0];
         let _time= (date.split("T")[1]).slice(0, -6);
          date=new Date();
@@ -213,27 +216,48 @@ export class Util {
   }
    
     public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
-        //    console.log("_date", _date)
-        let _dateWithoutMiliSeconds = new Date(_date.setMilliseconds(0));
-        //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
-        //    console.log("_date", moment(_date).millisecond(0))
+        let _dateWithoutMiliSeconds: any = new Date(_date.setMilliseconds(0));
         let _t = prefTimezone.split(') ');
         let _timezone: any;
         if (_t.length > 0) {
             _timezone = _t[1].trim();
         }
-        let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();
-        // console.log("gmtTimeDiff", gmtTimeDiff)  
-        let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff);
-        // console.log("_gmt", _gmt)
-        //let localeToGmtTz:any = _date.getTimezoneOffset();
-        let localeToPrefTz: any = moment().tz(_timezone).utcOffset();
-        // console.log("localeToPrefTz", localeToPrefTz)  
-        let UtcValToSendToAPI = moment(_gmt).utcOffset(localeToPrefTz);
-        let _convertedUtc = UtcValToSendToAPI['_d'].getTime();
-        // console.log('_convertedUtc==' + _convertedUtc);
+        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
+        let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
+        let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
         return _convertedUtc;
     }
+
+    // public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
+        
+    //     // //    console.log("_date", _date)
+    //      let _dateWithoutMiliSeconds:any = new Date(_date.setMilliseconds(0));
+    //     // //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
+    //     // //    console.log("_date", moment(_date).millisecond(0))
+    //     let _t = prefTimezone.split(') ');
+    //     let _timezone: any;
+    //     if (_t.length > 0) {
+    //         _timezone = _t[1].trim();
+    //     }
+    //     let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();// +5.30 diff
+    //      console.log("gmtTimeDiff", gmtTimeDiff)  
+    //     //let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff); // gmt time of selected from locale
+    //     // console.log(" gmt time of selected from locale", _gmt)
+    //     //let localeToGmtTz:any = _date.getTimezoneOffset();
+    //     let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref 
+        
+    //     console.log("diff selected timezone pref ", PrefTzToGMT);
+
+    //     let PrefTimeAsPerSelected =  moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
+
+    //     console.log("PrefTimeAsPerSelected ", PrefTimeAsPerSelected);
+
+    //    // let UtcValToSendToAPI = moment(_gmt).utcOffset(PrefTzToGMT);
+    //     let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
+    //     console.log('_convertedUtc==' + _convertedUtc);
+    //     return _convertedUtc;
+
+   // }
 
   public static convertUtcToDateAndTimeFormat(_utc: any, timeZone: any, timeFormat? :any){
     let _t = timeZone.split(')');

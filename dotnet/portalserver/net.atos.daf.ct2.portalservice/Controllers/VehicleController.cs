@@ -351,22 +351,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("group/getvehiclelist")]
-        public async Task<IActionResult> GetVehiclesByVehicleGroup([FromQuery] int GroupId)
+        public async Task<IActionResult> GetVehiclesByVehicleGroup([FromQuery] int groupId)
         {
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
-                if (Convert.ToInt32(GroupId) <= 0)
+                if (Convert.ToInt32(groupId) <= 0)
                 {
                     return StatusCode(401, "invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
 
 
-                VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
-                VehicleGroupIdRequest.GroupId = GroupId;
+                VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
+                vehicleGroupIdRequest.GroupId = groupId;
 
-                VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
+                VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
 
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -377,7 +377,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle details are found.");
+                        return StatusCode(404, "Vehicle details are not found.");
                     }
                 }
                 else

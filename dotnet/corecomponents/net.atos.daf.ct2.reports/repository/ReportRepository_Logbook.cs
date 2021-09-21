@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
                                 left join livefleet.livefleet_current_trip_statistics ts
-                                on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
+                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id 
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)

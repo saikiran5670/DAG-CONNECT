@@ -46,7 +46,7 @@ public class StatusDataProcess {
 			env.getConfig().setGlobalJobParameters(envParams);
 			//DataStream<StatusMessage> consumerStream = FlinkKafkaStatusConsumer.connectToKafkaTopic(params, env);
 			DataStream<KafkaRecord<Status>> consumerStream = FlinkKafkaStatusConsumer.connectToKafkaTopic(envParams, env);
-			consumerStream.print();
+			//consumerStream.print();
 			
 			consumerStream.addSink(new StatusDataHbaseSink()); //Writing into HBase Table
 			//System.out.println("after addsink");

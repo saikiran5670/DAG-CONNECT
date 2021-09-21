@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                da.activity_date ActivityDateTime
                                             FROM livefleet.livefleet_trip_driver_activity da
                                             Left join master.driver d on d.driver_id=da.driver_id
-                                            WHERE (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
+                                            where da.is_driver1 = true and (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
                                             GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date
                                             ORDER BY da.driver_id DESC ";
 

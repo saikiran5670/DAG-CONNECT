@@ -21,6 +21,9 @@ import { NavigationExtras } from '@angular/router';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
+import { HttpClient } from '@angular/common/http';
+import { SignalRService } from './services/sampleService/signalR.service';
+import { AlertService } from './services/alert.service';
 
 @Component({
   selector: 'app-root',
@@ -29,22 +32,25 @@ import { element } from 'protractor';
 })
 
 export class AppComponent {
+  AlertNotifcaionList: any[] = [];
   appUrlLink: any = '';
   public deviceInfo = null;
+  menu : any;
   // public isMobilevar = false;
   // public isTabletvar = false;
   // public isDesktopvar = false;
+  notificationList: any;
   loggedInUser: string = 'admin';
   translationData: any;
   dirValue = 'ltr'; //rtl
   public subpage: string = '';
   public currentTitle: string = '';
+  showAlertNotifications: boolean = false;
   public menuCollapsed: boolean = false;
   public pageName: string = '';
   public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
   menuPages: any;
-  // newData: any = {};
   languages = [];
   languageSelection: any  = [];
   openUserRoleDialog = false;
@@ -80,74 +86,7 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
-  notificationData: any = [
-    {
-      icons:'unarchive',
-      name: 'Entering Geofence',
-      // data: 1628072950000,
-      data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
-      vehName: 'Veh data',
-      vin: 'test 01',
-      regNo: 'XLRTEM4100G041999858',
-      alertLevel: 'A',
-      alertType: 'U',
-      alertCat: 'L',
-    },
-    {
-      icons:'unarchive',
-      name: 'Fuel Driver Performance',
-      data: 1628072950000,
-      vehName: 'Veh 2 data',
-      vin: 'test 02',
-      regNo: 'XLRTEM4100G041999',
-      alertLevel: 'C',
-      alertType: 'S',
-      alertCat: 'F'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move',
-      data: 1627986550000,
-      vehName: 'Veh 3 data',
-      vin: 'test 03',
-      regNo: 'XLRTEM4100G041999',
-      alertLevel: 'W',
-      alertType: 'U',
-      alertCat: 'R'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 4',
-      data: 1627986550000,
-      vehName: 'Veh 4 data',
-      vin: 'test 04',
-      regNo: 'XLRTEM4100G041999'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 5',
-      data: 1627986550000,
-      vehName: 'Veh 5  data',
-      vin: 'test 05',
-      regNo: 'XLRTEM4100G041999'
-    },
-    // {
-    //   icons:'unarchive',
-    //   name: 'Time & Move 6',
-    //   data: 1627986550000,
-    //   vehName: 'Veh 6 data',
-    //   vin: 'test 06',
-    //   regNo: 'XLRTEM4100G041999'
-    // },
-    // {
-    //   icons:'unarchive',
-    //   name: 'Time & Move 7',
-    //   data: 1627986550000,
-    //   vehName: 'Veh 7 data',
-    //   vin: 'test 07',
-    //   regNo: 'XLRTEM4100G041999'
-    // }
-  ];
+  // notificationDetails: any= [];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
@@ -337,7 +276,6 @@ export class AppComponent {
   subscription: Subscription;
   showTimer: boolean = false;
 
-
     /** list of banks */
    // protected banks: Bank[] = BANKS;
 
@@ -349,12 +287,14 @@ export class AppComponent {
   
      /** list of banks filtered by search keyword */
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
     /** Subject that emits when the component has been destroyed. */
     protected _onDestroy = new Subject<void>();
 
 
-  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,) {
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -440,6 +380,8 @@ export class AppComponent {
           }
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
+          this.getOfflineNotifications();
+          this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -728,7 +670,7 @@ export class AppComponent {
         this.userOrg = userOrg[0].name;
       }
       this.organizationDropdown = this.accountInfo.organization;
-      this.roleDropdown = this.accountInfo.role;
+      this.roleDropdown = this.accountInfo.role;     
       this.setDropdownValues();
       if (this.accountInfo.accountDetail.blobId != 0) {
         this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
@@ -742,7 +684,7 @@ export class AppComponent {
 
   setDropdownValues() {
     this.landingPageForm.get("organization").setValue(parseInt(localStorage.getItem("accountOrganizationId")));
-    this.selectedRoles = this.roleDropdown;
+    this.selectedRoles = this.roleDropdown.filter(item=> item.organization_Id == localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
 
@@ -868,6 +810,7 @@ export class AppComponent {
           console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
+            this.filteredOrganizationList.next(this.organizationList);
             this.organizationList.sort(this.compare);
             let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
             let _orgId: any;
@@ -899,6 +842,10 @@ export class AppComponent {
 
   resetLanguageFilter() {
     this.filteredLanguages.next(this.languages.slice());
+  }
+
+  resetContextSettingFilter() {
+    this.filteredOrganizationList.next(this.organizationList.slice());
   }
 
   compare(a, b) {
@@ -955,7 +902,7 @@ export class AppComponent {
         if(this.prefData) {
           this.setInitialPref(this.prefData,this.preference);
         }
-        this.getDateAndTime();
+        // this.getDateAndTime();
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
           let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
@@ -983,20 +930,10 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
+
     
   }
 
-  getDateAndTime(){
-    this.notificationData.forEach(element => {
-    this.startDateValue = element.data;
-    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
-    element.date = dateTimeObj[0];
-    element.time = dateTimeObj[1];
-    this.setPrefFormatTime(element.date,element.time);
-    element.time =this.selectedStartTime;
-  });
-  console.log(this.notificationData);
-  }
 
   proceedStep(prefData: any, preference: any){
     this.prefData = prefData;
@@ -1268,6 +1205,22 @@ export class AppComponent {
     }
   }
 
+  filterContextSettings(search) {
+    if (!this.languages) {
+      return;
+    }
+    if (!search) {
+      this.resetContextSettingFilter();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredOrganizationList.next(
+      this.organizationList.filter(item => item.name.toLowerCase().indexOf(search) > -1)
+    );
+    console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
+   }
+
   filterLanguages(search) {
     if (!this.languages) {
       return;
@@ -1283,25 +1236,6 @@ export class AppComponent {
     );
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
-
-   gotoLogBook(item: any){
-  const navigationExtras: NavigationExtras = {
-    state: {
-      fromAlertsNotifications: true,
-      data: [item]
-    }
-  };
-  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-}
-
-gotoLogBookForMoreAlerts(){
-  const navigationExtras: NavigationExtras = {
-    state: {
-      fromMoreAlerts: true
-    }
-  };
-  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-}
 
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){
@@ -1333,42 +1267,55 @@ gotoLogBookForMoreAlerts(){
     }
   }
 
-  _get12Time(_sTime: any){
-    let _x = _sTime.split(':');
-    let _yy: any = '';
-    if(_x[0] >= 12){ // 12 or > 12
-      if(_x[0] == 12){ // exact 12
-        _yy = `${_x[0]}:${_x[1]} PM`;
-      }else{ // > 12
-        let _xx = (_x[0] - 12);
-        _yy = `${_xx}:${_x[1]} PM`;
+getOfflineNotifications(){
+  this.alertService.getOfflineNotifications().subscribe(data => {
+    if(data){
+      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+      this.signalRService.notificationData= data["notificationResponse"];
+    }
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
+
+  },
+  error => {
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
+  })
+}
+
+connectWithSignalR(){
+  this.signalRService.startConnection();
+}
+
+notificationsClosed(){
+  this.signalRService.notificationData=[];
+  this.signalRService.notificationCount= 0;
+}
+
+notificationClicked(){
+  this.showAlertNotifications = true;
+  if(this.signalRService.notificationCount > 0){
+    let notificationData= [];
+    this.signalRService.notificationData.forEach(element => {
+      let notificationObj= {
+        "tripId": element.tripId,
+        "vin": element.vin,
+        "alertCategory": element.alertCategory,
+        "alertType": element.alertType,
+        "alertGeneratedTime": element.alertGeneratedTime,
+        "organizationId": element.organizationId,
+        "tripAlertId": element.tripAlertId,
+        "alertId": element.alertId,
+        "accountId": element.accountId,
+        "alertViewTimestamp": 0
       }
-    }else{ // < 12
-      _yy = `${_x[0]}:${_x[1]} AM`;
-    }
-    return _yy;
+      notificationData.push(notificationObj);
+    });
+    
+    this.alertService.addViewedNotifications(notificationData).subscribe(data => {
+    })
   }
-
-  get24Time(_time: any){
-    let _x = _time.split(':');
-    let _y = _x[1].split(' ');
-    let res: any = '';
-    if(_y[1] == 'PM'){ // PM
-      let _z: any = parseInt(_x[0]) + 12;
-      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]} PM`;
-    }else{ // AM
-      res = `${_x[0]}:${_y[0]} AM`;
-    }
-    return res;
-  }
-
-  setPrefFormatTime(date, time){
-        if(this.prefTimeFormat == 12){ // 12
-          this.selectedStartTime = this._get12Time(time);
-        }else{ // 24
-          time = this._get12Time(time);
-          this.selectedStartTime = this.get24Time(time); 
-        }
-  }
-
+}
 }

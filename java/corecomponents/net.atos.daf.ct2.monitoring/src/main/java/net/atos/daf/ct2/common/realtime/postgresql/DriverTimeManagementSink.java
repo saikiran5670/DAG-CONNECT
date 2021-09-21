@@ -72,10 +72,10 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
 		Monitor row = monitor.getValue();
-		if("abcd".equalsIgnoreCase(row.getDocument().getTripID())) {
+		if ("abcd".equalsIgnoreCase(row.getDocument().getTripID())) {
 			System.out.println("findigs--" + row);
 		}
-		
+
 		Integer value = new Integer(7);
 		if (value.equals(row.getMessageType())) {
 			// if (row.getMessageType().equals(7)) {
@@ -92,7 +92,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 					synchronized (synchronizedCopy) {
 						synchronizedCopy = new ArrayList<Monitor>(queue);
 						queue.clear();
-						int i=0;
+						int i = 0;
 						/*
 						 * for (Monitor monitorData : synchronizedCopy) { if
 						 * (("driver1").equalsIgnoreCase(monitorData.getDocument().getDriverID())) {
@@ -102,7 +102,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 						 * 
 						 * }
 						 */
-					
+
 						for (Monitor monitorData : synchronizedCopy) {
 							Long currentEndTime = null;
 
@@ -111,23 +111,22 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 										monitorData.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
-								logger.error("Error in Live fleet position- error in parsing event Date Time" + e.getMessage());
+								logger.error("Error in Live fleet position- error in parsing event Date Time"
+										+ e.getMessage());
 								e.printStackTrace();
 							}
 
 							// -----**** DRIVER 1
 
 							logger.info("Read Driver details from previous row");
-							TwoMinuteRulePojo previousDriverOneDetails=null;
-							if(null!=monitorData.getDocument().getDriver1WorkingState()) {
-								 previousDriverOneDetails = driverDAO.driver_read(
+							TwoMinuteRulePojo previousDriverOneDetails = null;
+							if (null != monitorData.getDocument().getDriver1WorkingState()) {
+								previousDriverOneDetails = driverDAO.driver_read(
 										monitorData.getDocument().getDriverID(),
 										monitorData.getDocument().getDriver1WorkingState().toString());
 							} else {
 								break;
 							}
-							
-
 
 							if (previousDriverOneDetails != null) {
 								Long driverOneStartTime = previousDriverOneDetails.getStart_time();
@@ -138,13 +137,13 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 								if (previousCode1.equalsIgnoreCase("2") && duration1 <= 120000) {
 									logger.info("Two minute rule calculation");
 									String logicalCode = monitorData.getDocument().getDriver1WorkingState().toString();
-									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime, duration1,
-											logicalCode);
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime,
+											duration1, logicalCode);
 									logger.info("Driver1 records updated in driver table with twoMinuiteRule :: ");
 
 								} else {
-									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime, duration1,
-											previousCode1);
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime,
+											duration1, previousCode1);
 									logger.info("Driver1 records updated in driver table :: ");
 								}
 								DriverActivityPojo DriverDetailsD1 = driverActivityCalculation(monitorData, true);
@@ -157,7 +156,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 								driverDAO.driver_insert(DriverDetailsD1);
 								logger.info("Driver1 new records inserted in driver table :: ");
 							}
-							
+
 							// --------** DRIVER 2
 
 							TwoMinuteRulePojo previousDriver2Details = driverDAO.driver_read(
@@ -165,7 +164,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 									monitorData.getDocument().getDriver2WorkingState().toString());
 
 							if (previousDriver2Details != null) {
-								
+
 								Long driverTwoStartTime = previousDriver2Details.getStart_time();
 								String previousDriverTwoCode = previousDriver2Details.getCode();
 
@@ -185,24 +184,19 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 									 * duration2,monitorData.getDocument().getDriver2WorkingState().toString());
 									 */
 
-									
-
 									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), currentEndTime,
 											duration2, previousDriverTwoCode);
 									logger.info("Driver2 record updated in driver table :: ");
 								}
 
-								DriverActivityPojo DriverDetailsD2 = driverActivityCalculation(monitorData,false);
+								DriverActivityPojo DriverDetailsD2 = driverActivityCalculation(monitorData, false);
 
-								
 								driverDAO.driver_insert(DriverDetailsD2);
 								logger.info("Driver2 record inserted in driver table :: ");
 
 							} else {
 
 								DriverActivityPojo DriverDetailsD2 = driverActivityCalculation(monitorData, false);
-
-								
 
 								driverDAO.driver_insert(DriverDetailsD2);
 								logger.info("Driver2 new record inserted in driver table :: ");
@@ -261,7 +255,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 			// TODO Auto-generated catch block
 			logger.error("Error in Live fleet position, ActivityDate calculation" + e.getMessage());
 			e.printStackTrace();
-		} 
+		}
 
 		if (driverIdentification == true) {
 			// Driver 1
@@ -309,6 +303,23 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		driverActivity.setVin(row.getVin());
 		System.out.println("in driver activity sink class---" + row.getVin());
 		return driverActivity;
+
+	}
+
+	@Override
+	public void close() throws Exception {
+		super.close();
+
+		logger.info("In close() of DriverActivity :: ");
+
+		if (connection != null) {
+			logger.info("Releasing connection from DriverActivity job");
+			connection.close();
+		}
+		if (masterConnection != null) {
+			logger.info("Releasing connection from DriverActivity job");
+			masterConnection.close();
+		}
 
 	}
 

@@ -474,17 +474,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
-
-                _logger.Info("Organization get details function called ");
+                IdRequest idRequest = new IdRequest();
 
                 if (organizationId < 1)
                 {
-                    return StatusCode(400, "Please provide organization ID:");
+                    return StatusCode(400, "Please provide organization ID.");
                 }
-                //Assign context orgId
-                idRequest.Id = GetContextOrgId();
-                OrganizationBusinessService.OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
+
+                //Context org id is not required here
+                //idRequest.Id = GetContextOrgId();
+
+                idRequest.Id = organizationId;
+                OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
 
                 return Ok(orgResponse);
             }
@@ -866,67 +867,51 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("orgrelationship/Getorgrelationdetails")]
-        public async Task<IActionResult> GetOrganizationDetails(int OrganizationId)
+        public async Task<IActionResult> GetOrganizationDetails(int organizationId)
         {
             try
             {
-                //if (OrganizationId == 0)
-                //{
-                //    return StatusCode(400, "Select atleast 1 organization");
-                //}
-
-                //get vehicle group
-                //VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
-                //orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
-                //orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
-                //VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
-                VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
-                OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
-                VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
-
+                organizationId = GetContextOrgId();
+                VehicleBusinessService.OrganizationIdRequest organizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
+                organizationIdRequest.OrganizationId = Convert.ToInt32(organizationId);
+                VehicleBusinessService.OrgVehicleGroupListResponse vehicleResponse = await _vehicleClient.GetVehicleGroupsForOrgRelationshipMappingAsync(organizationIdRequest);
 
                 //get Organizations List
                 var idRequest = new IdRequest();
                 idRequest.Id = 0;
-                var OrganizationList = await _organizationClient.GetAllAsync(idRequest);
-
+                var organizationList = await _organizationClient.GetAllAsync(idRequest);
 
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
-                var RelationList = await _organizationClient.GetRelationshipAsync(request);
-
-                //var result = _relationshipMapper.MaprelationData(RelationList.RelationshipList, response, OrganizationList.OrganizationList);
+                var relationList = await _organizationClient.GetRelationshipAsync(request);
 
                 RelationShipMappingDetails details = new RelationShipMappingDetails();
                 details.VehicleGroup = new List<VehileGroupData>();
                 details.OrganizationData = new List<OrganizationData>();
                 details.RelationShipData = new List<RelationshipData>();
-                foreach (var item in Vehicleresponse.OrgVehicleGroupList.Where(I => I.IsGroup == true))
+                foreach (var item in vehicleResponse.OrgVehicleGroupList)
                 {
-
                     details.VehicleGroup.Add(new VehileGroupData
                     {
                         VehiclegroupID = Convert.ToInt32(item.VehicleGroupId == null ? 0 : item.VehicleGroupId),
                         GroupName = item.VehicleGroupName
                     });
                 }
-                foreach (var item in OrganizationList.OrganizationList)
+                foreach (var item in organizationList.OrganizationList)
                 {
-
                     details.OrganizationData.Add(new OrganizationData
                     {
                         OrganizationId = Convert.ToInt32(item.Id),
                         OrganizationName = item.Name
                     });
                 }
-                int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                int OEMRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
-                foreach (var item in RelationList.RelationshipList)
+                int ownerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                int oemRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
+                foreach (var item in relationList.RelationshipList)
                 {
 
-                    if (item.Id != OwnerRelationship && item.Id != OEMRelationship)
+                    if (item.Id != ownerRelationship && item.Id != oemRelationship)
                     {
                         details.RelationShipData.Add(new RelationshipData
                         {
@@ -937,7 +922,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 }
                 return Ok(details);
-
             }
             catch (Exception ex)
             {
@@ -950,6 +934,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpGet]
         [Route("orgrelationship/get")]
         public async Task<IActionResult> GetRelationshipMapping([FromQuery] OrganizationMappingFilter filterRequest)

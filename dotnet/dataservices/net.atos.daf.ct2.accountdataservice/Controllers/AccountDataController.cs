@@ -40,8 +40,6 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
 
-        private readonly Dictionary<string, string> _vehicleDisplayOptions;
-
         public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
         {
             _accountManager = accountManager;
@@ -52,8 +50,6 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
-
-            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
         }
 
         #region Driver Lookup
@@ -168,7 +164,23 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     var resultObj = (result as ObjectResult).Value as dynamic;
                     var response = await _accountManager.ValidateDriver(resultObj.Email, resultObj.OrgId);
 
-                    return Ok(response);
+                    if (resultObj.OrgId > 0)
+                    {
+                        return Ok(new
+                        {
+                            AccountID = response.AccountID,
+                            AccountName = response.AccountName,
+                            RoleID = response.RoleID,
+                            DateFormat = response.DateFormat,
+                            TimeFormat = response.TimeFormat,
+                            TimeZone = response.TimeZone,
+                            UnitDisplay = response.UnitDisplay,
+                            VehicleDisplay = response.VehicleDisplay,
+                            Language = response.Language
+                        });
+                    }
+                    else
+                        return Ok(response);
                 }
                 else
                 {
@@ -528,17 +540,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
-            };
-        }
-
-        private Dictionary<string, string> PrepareUnitDisplayOptions()
-        {
-            return new Dictionary<string, string>()
-            {
-                { "vin", "Vehicle Identification Number" },
-                { "name", "Vehicle Name" },
-                { "regno", "Vehicle Registration Number" }
+                VehicleDisplay = request.VehicleDisplay.ToLower()
             };
         }
 

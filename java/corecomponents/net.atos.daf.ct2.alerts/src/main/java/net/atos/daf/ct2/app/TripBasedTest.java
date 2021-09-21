@@ -67,6 +67,14 @@ public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
 
+    /**
+     * RealTime functions defined
+     */
+    public static Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
+        put("functions", Arrays.asList(
+                excessiveUnderUtilizationInHoursFun
+        ));
+    }};
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -75,52 +83,17 @@ public class TripBasedTest implements Serializable {
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
         /**
-         * RealTime functions defined
-         */
-        Map<Object, Object> fuelDuringStopFunConfigMap = new HashMap() {{
-            put("functions", Arrays.asList(
-            		fuelIncreaseDuringStopFun,
-                    fuelDecreaseDuringStopFun
-            ));
-        }};
-        
-     
-        
-      
-        /**
          *  Booting cache
          */
-        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
-        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
 
-        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
-        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
         SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
                 .returns(Index.class);
 
-        /*SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
-                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
-                propertiesParamTool, env)
-        .map(indexKafkaRecord -> indexKafkaRecord.getValue())
-        .returns(Index.class);*/
-        
-        
+        indexStringStream.print();
 
-        /**
-         * Excessive Fuel during stop
-         */
-        KeyedStream<Index, String> fuelDuringStopStream = indexStringStream
-        		.filter( index -> 4 == index.getVEvtID() || 5 == index.getVEvtID() )
-                .returns(Index.class)
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid())
-                .process(new FuelDuringStopProcessor()).keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
-        /**
-         * Process indexWindowKeyedStream for Excessive Under Utilization
-         */
-        IndexMessageAlertService.processIndexKeyStream(fuelDuringStopStream,
-                env,propertiesParamTool,fuelDuringStopFunConfigMap);
+
 
         env.execute("TripBasedTest");
 

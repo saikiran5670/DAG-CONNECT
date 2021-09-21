@@ -25,22 +25,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _privilegeChecker = privilegeChecker;
         }
 
-        protected int AssignOrgContextByAccountId(int requestedAccountId)
-        {
-            //Check if org context to be applied
-            if (requestedAccountId == _userDetails.AccountId)
-                return _userDetails.OrgId;
-            return _userDetails.ContextOrgId;
-        }
-
-        protected int AssignOrgContextByRoleId(int requestedRoleId)
-        {
-            //Check if org context to be applied
-            if (requestedRoleId == _userDetails.RoleId)
-                return _userDetails.OrgId;
-            return _userDetails.ContextOrgId;
-        }
-
         protected int GetContextOrgId()
         {
             return _userDetails.ContextOrgId;

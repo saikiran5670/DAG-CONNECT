@@ -211,17 +211,17 @@ export class TripReportPreferenceComponent implements OnInit {
       this.tripPrefData.forEach(element => {
         let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (search.length > 0) {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         } else {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         }
       });
 
-      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId:this.initData.reportId }); // main parent
       if (this.selectionForTripColumns.selected.length == this.tripPrefData.length) { // parent selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.subReportUserPreferences[0].reportId });
       } else { // parent un-selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.subReportUserPreferences[0].reportId });
       }
 
       let objData: any = {

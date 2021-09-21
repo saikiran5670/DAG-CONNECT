@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
                 Topic = "ingress.atos.alert.poc.json",
                 Cacertlocation = "./cacert.pem",
-                ProducerMessage = @"{ 'id': 1, 'tripid': 'a801403e-ae4c-42cf-bf2d-ae39009c69oi', 'vin': 'XLR0998HGFFT76657', 'categoryType': null, 'type': 'L', 'name': 'G', 'alertid': 328, 'thresholdValue': 1000.0, 'thresholdValueUnitType': 'M', 'valueAtAlertTime': 10000.0, 'latitude': 51.12768896, 'longitude': 4.935644520, 'alertGeneratedTime': 1626965785, 'messageTimestamp': 1626965785, 'createdAt': 1626965785, 'modifiedAt': 1626965785}"
+                ProducerMessage = @"{ 'id': 1, 'tripid': 'a801403e-ae4c-42cf-bf2d-ae39009c69oi', 'vin': 'XLR0998HGFFT70000', 'categoryType': 'F', 'type': 'I', 'name': 'Test01', 'alertid': 596, 'thresholdValue': 1000.0, 'thresholdValueUnitType': 'M', 'valueAtAlertTime': 10000.0, 'latitude': 51.12768896, 'longitude': 4.935644520, 'alertGeneratedTime': 1626965785, 'messageTimestamp': 1626965785, 'createdAt': 1626965785, 'modifiedAt': 1626965785,'UrgencyLevelType':'C'}"
             };
             await KafkaConfluentWorker.Producer(kafkaEntity);
         }
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
                 Topic = "ingress.atos.alert.poc.json",
                 Cacertlocation = "./cacert.pem",
-                Consumergroup = "alertpoccosumer"
+                Consumergroup = "cg2"
             };
             ConsumeResult<string, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
             Assert.IsNotNull(result);

@@ -122,9 +122,15 @@
                 <mat-select [disabled]="vinList.length == 0" (selectionChange)="vinSelection($event)"
                   placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle"
                   required>
-                  <mat-option *ngFor="let vinListData of vinList" [value]="vinListData">
+                    <mat-option>
+                      <ngx-mat-select-search (keyup)="filterVehicles(search.value)"  placeholderLabel="{{ translationData.lblSearchVehicle|| 'Search vehicle' }}" #search>
+                          <mat-icon (click)="resetVehicleSearch()" ngxMatSelectSearchClear>close</mat-icon>
+                      </ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let vinListData of filteredVehicleList| async" [value]="vinListData">
                     {{ vinListData }}
                   </mat-option>
+               
                 </mat-select>
               </mat-form-field>
               <mat-error *ngIf="existingTripForm.get('vehicle').hasError('required') && vinList.length > 0">

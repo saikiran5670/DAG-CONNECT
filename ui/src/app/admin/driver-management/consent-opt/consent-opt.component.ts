@@ -123,7 +123,8 @@ export class ConsentOptComponent implements OnInit {
         optoutoptinstatus: this.data.consentType
       };
       this.driverService.updateOptInOptOutDriver(objData).subscribe((drv: any) => {
-        this.getDriverList();
+        //this.getDriverList();
+        this.onClose({ tableData: this.data.driverData, consentMsg: this.getConsentUpdatedMsg() });
       });
     }
     else{ //-- update single
@@ -139,7 +140,7 @@ export class ConsentOptComponent implements OnInit {
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
         // this.getDriverList();
-        this.onClose({ tableData: [], consentMsg: this.getConsentUpdatedMsg() });
+        this.onClose({ tableData: [drv], consentMsg: this.getConsentUpdatedMsg() });
       });
     }
   }
@@ -250,7 +251,7 @@ export class ConsentOptComponent implements OnInit {
       optIn: this.data.consentType,
       modifiedBy: this.accountId //0
     }
-    console.log(objData);    
+    //console.log(objData);    
     this.closePopup = false;
     this.mdDialogRef.close(event);
   }  

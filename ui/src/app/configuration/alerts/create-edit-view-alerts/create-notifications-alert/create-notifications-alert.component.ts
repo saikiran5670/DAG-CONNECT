@@ -203,9 +203,9 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    let d =this.criticalLevel;
-    let e = this.isWarningLevelSelected;
-    let f = this.advisoryLevel;
+    // let d =this.criticalLevel;
+    // let e = this.isWarningLevelSelected;
+    // let f = this.advisoryLevel;
     for (const d in changes) {
       const chng1 = changes[d];
       // const cur1  = JSON.stringify(chng1.currentValue);
@@ -239,7 +239,7 @@ getLevelValues(){
     this.criticalFlag = false;
     this.criticalThreshold = '';
   }
-  else if(this.isCriticalLevelSelected && this.criticalThreshold != ''){
+  else if(this.isCriticalLevelSelected && this.criticalThreshold > 0){
     this.criticalLevel = true;
     this.criticalFlag = true;
   }
@@ -248,7 +248,7 @@ getLevelValues(){
     this.warningFlag = false;
     this.warningThreshold = '';
   }
-  else if(this.isWarningLevelSelected && this.warningThreshold != ''){
+  else if(this.isWarningLevelSelected && this.warningThreshold > 0){
     this.warningLevel = true;
     this.warningFlag = true;
   } 
@@ -258,7 +258,7 @@ getLevelValues(){
     this.advisoryFlag = false;
     this.advisoryThreshold = '';
   } 
-  else if(this.isAdvisoryLevelSelected && this.advisoryThreshold != ''){
+  else if(this.isAdvisoryLevelSelected && this.advisoryThreshold > 0){
     this.advisoryLevel = true;
     this.advisoryFlag = true;
   } 
@@ -349,6 +349,20 @@ getLevelValues(){
 
 
   setDefaultValues() {
+    this.selectedRowData.notifications.forEach(element => {
+      if(element.alertUrgencyLevelType == 'C'){
+        this.criticalLevel = true;
+        this.criticalFlag = true;
+      }
+      if(element.alertUrgencyLevelType == 'W'){
+        this.warningLevel = true;
+        this.warningFlag = true;
+      }
+      if(element.alertUrgencyLevelType == 'A'){
+        this.advisoryLevel = true;
+        this.advisoryFlag = true;
+      }
+    });
     if (this.FormWebArray && this.FormWebArray.length != 0) {
       for (let i = 0; i < this.FormWebArray.length; i++) {
         this.deleteWebNotificationRow(i);
@@ -599,8 +613,7 @@ getLevelValues(){
     this.invalidEmail = '';
     this.recipientEmailList = value.split(";");
     if(this.recipientEmailList.length <= 10){
-      // let pattern=/[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/
-      let pattern= /[a-zA-Z0-9\\-_.]{1,}@[a-zA-Z0-9\\-_.]{2,}[.]{1}[a-zA-Z]{2,}/
+      let pattern=/^[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}$/
       this.recipientEmailList.forEach(element => {
       if(!pattern.test(element.trim())){
         this.isInvalidEmail = true;    
@@ -1103,8 +1116,8 @@ getLevelValues(){
     }
     if (this.actionType == 'create' || this.actionType == 'duplicate') {
       this.notifications = [];
-      // if(this.criticalFlag){  // do not remove this line (changes done by chaitali for multiple levels in notification)
-        this.notifications= [ 
+    if(!this.criticalFlag && !this.warningFlag && !this.advisoryFlag){
+      this.notifications= [ 
         {
           "alertUrgencyLevelType": "C",
           "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
@@ -1115,38 +1128,53 @@ getLevelValues(){
           "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
         }
       ]
+    }
+      if(this.criticalFlag){  // do not remove this line (changes done by chaitali for multiple levels in notification)
+       let objData = 
+        {
+          "alertUrgencyLevelType": "C",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+      
       // do not remove below line (changes done by chaitali for multiple levels in notification)
-        // this.notifications.push(objData);
-    // }
+        this.notifications.push(objData);
+    }
     // do not remove below lines (changes done by chaitali for multiple levels in notification)
-    // if(this.warningFlag){
-    //   let objData = 
-    //     {
-    //       "alertUrgencyLevelType": "W",
-    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
-    //       "frequencyThreshholdValue": 0,
-    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
-    //       "createdBy": this.accountId,
-    //       "notificationRecipients": this.notificationReceipients,
-    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
-    //     }
-    //     this.notifications.push(objData);
-    // }
-    // if(this.advisoryFlag){
-    //   let objData = 
-    //     {
-    //       "alertUrgencyLevelType": "A",
-    //       "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
-    //       "frequencyThreshholdValue": 0,
-    //       "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
-    //       "createdBy": this.accountId,
-    //       "notificationRecipients": this.notificationReceipients,
-    //       "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
-    //     }
-    //     this.notifications.push(objData);
-    // }
+    if(this.warningFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "W",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+    if(this.advisoryFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "A",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
     }
     else if (this.actionType == 'edit') {
+      this.notifications = [];
+      if(!this.criticalFlag && !this.warningFlag && !this.advisoryFlag){
       this.notifications = [
         {
           "alertUrgencyLevelType": "C",
@@ -1161,6 +1189,57 @@ getLevelValues(){
           "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
         }
       ]
+    }
+
+    if(this.criticalFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "C",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+    if(this.warningFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "W",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+    if(this.advisoryFlag){
+      let objData = 
+        {
+          "alertUrgencyLevelType": "A",
+          "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
+          "frequencyThreshholdValue": 0,
+          "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
+          "createdBy": this.selectedRowData.createdBy,
+          "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          "alertId": this.selectedRowData.id,
+          "modifiedBy": this.accountId,
+          "notificationRecipients": this.notificationReceipients,
+          "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef : []
+        }
+        this.notifications.push(objData);
+    }
+
     }
     if(!this.isMobileValdate || !this.isWebValidate || !this.isEmailValidate || !this.isValidityAlwaysCustom){
         let emitEmailObj = {

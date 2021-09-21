@@ -188,7 +188,7 @@
                     </canvas>
                   </div>
                   <div *ngIf="Co2ChartType =='Bar'" class="chart-wrapper">
-                    <canvas baseChart [datasets]="barChartData3" [labels]="barChartLabels" [options]="barChartOptions"
+                    <canvas baseChart [datasets]="barChartData3" [labels]="barChartLabels" [options]="barChartOptions4"
                       [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
                     </canvas>
                   </div>
@@ -206,7 +206,7 @@
                     </canvas>
                   </div>
                   <div *ngIf="DistanceChartType =='Bar'" class="chart-wrapper">
-                    <canvas baseChart [datasets]="barChartData4" [labels]="barChartLabels" [options]="barChartOptions"
+                    <canvas baseChart [datasets]="barChartData4" [labels]="barChartLabels" [options]="barChartOptions2"
                       [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
                     </canvas>
                   </div>
@@ -228,7 +228,7 @@
                     </canvas>
                   </div>
                   <div *ngIf="ConsumptionChartType =='Bar'" class="chart-wrapper">
-                    <canvas baseChart [datasets]="barChartData5" [labels]="barChartLabels" [options]="barChartOptions3"
+                    <canvas baseChart [datasets]="barChartData5" [labels]="barChartLabels" [options]="barChartOptions5"
                       [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
                     </canvas>
                   </div>
@@ -246,7 +246,7 @@
                     </canvas>
                   </div>
                   <div *ngIf="DurationChartType =='Bar'" class="chart-wrapper">
-                    <canvas baseChart [datasets]="barChartData6" [labels]="barChartLabels" [options]="barChartOptions"
+                    <canvas baseChart [datasets]="barChartData6" [labels]="barChartLabels" [options]="barChartOptions1"
                       [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
                     </canvas>
                   </div>
@@ -412,7 +412,7 @@
                             ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_maxspeed')">              
-                          <span>{{row.maxSpeed}}</span>             
+                          <span>{{row.convertedMaxSpeed}}</span>             
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="distance">     
@@ -526,7 +526,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Gross Weight Combination(Ton)' }}      
                 </mat-header-cell>     
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">      
-                  <span>{{row.averageGrossWeightComb}}</span>      
+                  <span>{{row.convertedAverageGrossWeightComb}}</span>      
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="averageTrafficClassification">      

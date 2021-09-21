@@ -54,6 +54,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     floor: 0,
     ceil: 100000
   };
+  alertTypeObject: any;
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName', 'address'];
@@ -203,7 +204,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertType: ['', [Validators.required]],
       applyOn: ['G', [Validators.required]],
       // vehicleGroup: [''],
-      vehicleGroup: ['',[Validators.required]],
+      vehicleGroup: [''],
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
@@ -397,14 +398,15 @@ proceedStep(prefData: any, preference: any){
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);
     }
-    if(this.actionType != 'view'){
-      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
-    }
     
     //Render vehicle group and vehicle dropdowns based on alert type
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    this.getVehicleGroupsForAlertType(alertTypeObj);
-    this.getVehiclesForAlertType(alertTypeObj);
+    this.alertTypeObject = alertTypeObj;
+    if(this.actionType != 'view'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+      this.getVehiclesForAlertType(alertTypeObj);
+      this.getVehicleGroupsForAlertType(alertTypeObj);
+    }
 
     
     //----------------------------------------------------------------------------------------------------------
@@ -609,28 +611,75 @@ proceedStep(prefData: any, preference: any){
     } 
   }
 
-  getVehicleGroupsForAlertType(alertTypeObj: any){
-    alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
-    vehicleGroups.forEach(element => {
-      let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
-      if(vehGrp.length > 0 && vehGrp.vehicleGroupId!=0){
-        this.vehicleGroupList.push(vehGrp[0]);
-      }
-    });
-    this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
-  }
-
-  getVehiclesForAlertType(alertTypeObj: any){
+  updateVehiclesList(alertTypeObj: any){
+    this.vehicleByVehGroupList = [];
+    this.vehicleListForTable = [];
     let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleId");
     vehicles.forEach(element => {
-      let veh = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+      let veh = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupId == this.selectedRowData.vehicleGroupId);
       if(veh.length > 0){
         this.vehicleByVehGroupList.push(veh[0]);
       }
     });
-    this.vehicleByVehGroupList = this.getUnique(this.vehicleByVehGroupList, "vehicleId");
+        //subscribed vehicles
+        this.vehicleByVehGroupList.forEach(element => {
+          element["subcriptionStatus"] = true;
+          this.vehicleListForTable.push(element);
+        });
     
+        //non-subscribed vehicles
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+          let isDuplicateVehicle= false;
+          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+                isDuplicateVehicle= true;
+                break;
+            }
+          }
+          if(!isDuplicateVehicle){
+            element["subcriptionStatus"] = false;
+            this.vehicleListForTable.push(element);
+          }
+        });
+        
+        this.updateVehiclesDataSource(this.vehicleListForTable);
+  }
+
+  getVehicleGroupsForAlertType(alertTypeObj: any){
+     this.vehicleByVehGroupList.forEach(element => {
+       let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+       vehicleGroupDetails.forEach(item => {
+          let vehicleGroupObj= {
+            "vehicleGroupId" : item.split("~")[0],
+            "vehicleGroupName" : item.split("~")[1],
+            "vehicleId" : element.vehicleId
+          }
+          this.vehicleGroupList.push(vehicleGroupObj);       
+       });
+     });
+     this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
+     this.vehicleGroupList.forEach(element => {
+       element.vehicleGroupId = parseInt(element.vehicleGroupId);
+     });
+  }
+
+  getVehiclesForAlertType(alertTypeObj: any){
+    this.vehicleByVehGroupList= [];
+    let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
+      this.associatedVehicleData.forEach(element => {        
+          this.vehicleByVehGroupList.push(element);
+      });
+    }
+    else{ //if subscriptionType == 'v'
+      featuresData.forEach(element => {
+        let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+        if(vehicle.length > 0){
+          this.vehicleByVehGroupList.push(vehicle[0]);
+        }
+      });
+    }
+ 
     //subscribed vehicles
     this.vehicleByVehGroupList.forEach(element => {
       element["subcriptionStatus"] = true;
@@ -638,19 +687,21 @@ proceedStep(prefData: any, preference: any){
     });
 
     //non-subscribed vehicles
-    this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
-      let isDuplicateVehicle= false;
-      for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-        if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-            isDuplicateVehicle= true;
-            break;
+    if(featuresData[0].subscriptionType != 'O'){
+      this.associatedVehicleData.forEach(element => {
+        let isDuplicateVehicle= false;
+        for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+          if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+              isDuplicateVehicle= true;
+              break;
+          }
         }
-      }
-      if(!isDuplicateVehicle){
-        element["subcriptionStatus"] = false;
-        this.vehicleListForTable.push(element);
-      }
-    });
+        if(!isDuplicateVehicle){
+          element["subcriptionStatus"] = false;
+          this.vehicleListForTable.push(element);
+        }
+      });
+    }
     
     this.updateVehiclesDataSource(this.vehicleListForTable);
 
@@ -665,22 +716,27 @@ proceedStep(prefData: any, preference: any){
       this.vehicleListForTable = [];
     }
     this.alertForm.get('vehicle').setValue('');    
-  // this.isUnsubscribedVehicle= false;
-  let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
+    let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
     if(value == 'ALL'){
       this.getVehiclesForAlertType(alertTypeObj);
     }
     else{
-      this.vehicle_group_selected= value;
-      let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key && item.vehicleGroupId == this.vehicle_group_selected), "vehicleId");
-      vehicles.forEach(element => {
-        let veh = this.associatedVehicleData.filter(item => (item.vehicleId == element.vehicleId && item.vehicleGroupId == this.vehicle_group_selected));
-        if(veh.length > 0){
-          this.vehicleByVehGroupList.push(veh[0]);
-        }
-      });
-      this.vehicleByVehGroupList = this.getUnique(this.vehicleByVehGroupList, "vehicleId");
-      
+      //converted vehicle group selection into int val.
+      this.vehicle_group_selected= parseInt(value);
+
+      let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
+        this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+      }
+      else{ //if subscriptionType == 'v'
+        featuresData.forEach(element => {
+          let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+          if(vehicle.length > 0){
+            this.vehicleByVehGroupList.push(vehicle[0]);
+          }
+        });
+      }
+
       //subscribed vehicles
       this.vehicleByVehGroupList.forEach(element => {
         element["subcriptionStatus"] = true;
@@ -688,20 +744,21 @@ proceedStep(prefData: any, preference: any){
       });
 
       //non-subscribed vehicles
-      this.associatedVehicleData.filter(item => item.vehicleGroupId == this.vehicle_group_selected).forEach(element => {
-        let isDuplicateVehicle= false;
-        for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-          if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-              isDuplicateVehicle= true;
-              break;
+      if(featuresData[0].subscriptionType != 'O'){  
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+          let isDuplicateVehicle= false;
+          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+                isDuplicateVehicle= true;
+                break;
+            }
           }
-        }
-        if(!isDuplicateVehicle){
-          element["subcriptionStatus"] = false;
-          this.vehicleListForTable.push(element);
-        }
-      });
-      
+          if(!isDuplicateVehicle){
+            element["subcriptionStatus"] = false;
+            this.vehicleListForTable.push(element);
+          }
+        });
+      }
       this.updateVehiclesDataSource(this.vehicleListForTable);
     }
   }
@@ -1587,6 +1644,11 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
+    if(this.selectedApplyOn != 'G'){
+      // this.updateVehiclesList(this.alertTypeObject);
+      this.getVehiclesForAlertType(this.alertTypeObject);
+      this.getVehicleGroupsForAlertType(this.alertTypeObject);
+    }
   }
 
   onClickAdvancedFilter(){
@@ -2435,9 +2497,12 @@ PoiCheckboxClicked(event: any, row: any) {
 }
 
 keyPressNumbers(event) {    
-  var limit = parseInt(event.max);
+  var limit = parseInt(event.currentTarget.maxLength);
+  var max = parseInt(event.currentTarget.max);
+  var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
-  if (event.value.length == limit) event.preventDefault();
+  var value = Number.parseFloat(event.target.value + '' + event.key);
+  if(event.key=='-' || value < min || value > max || (value).toString().length == limit) event.preventDefault();
 return true;   
 }
 

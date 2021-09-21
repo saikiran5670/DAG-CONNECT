@@ -277,30 +277,41 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.CreateReportUserPreference(request);
         }
 
-        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId)
+        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId, int[] featureIds)
         {
-            return await _reportRepository.CheckIfReportUserPreferencesExist(reportId, accountId, organizationId);
+            return await _reportRepository.CheckIfReportUserPreferencesExist(reportId, accountId, organizationId, featureIds);
         }
 
-        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId, int[] featureIds)
         {
-            return await _reportRepository.GetReportUserPreferences(reportId, accountId, organizationId);
+            return await _reportRepository.GetReportUserPreferences(reportId, accountId, organizationId, featureIds);
         }
 
         public async Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId,
-                                                                                       int organizationId, int contextOrgId)
+                                                                                       int organizationId, int contextOrgId, int[] featureId)
         {
-            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
+            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId, featureId);
         }
-        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId)
         {
-            return await _reportRepository.GetReportDataAttributes(reportId);
+            return await _reportRepository.GetReportDataAttributes(featureIds, reportId);
         }
 
         public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
         {
             return await _reportRepository.GetReportFeatureId(reportId);
         }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds)
+        {
+            return await _reportRepository.GetReportDataAttributes(reportIds);
+        }
+
+        public async Task<SubReportDto> CheckIfSubReportExist(int reportId)
+        {
+            return await _reportRepository.CheckIfSubReportExist(reportId);
+        }
+
         #endregion
 
         #region Eco Score Report Compare Drivers
@@ -742,8 +753,8 @@ namespace net.atos.daf.ct2.reports
             if (fuelConsumptionCalculation != null)
             {
                 var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
-                fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
-                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+                fuelBenchmarkDetails.NumberOfActiveVehicles = vehicleRanking.Count();
+                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
                 fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
                 fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
                 fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;

@@ -396,9 +396,9 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
 
-                IEnumerable<NotificationRecipient> NotificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
+                IEnumerable<NotificationRecipient> notificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
                 NotificationRecipientResponse response = new NotificationRecipientResponse();
-                foreach (var item in NotificationRecipientResponseList)
+                foreach (var item in notificationRecipientResponseList)
                 {
                     response.NotificationRecipient.Add(_mapper.MapNotificationRecipientEntity(item));
                 }
@@ -433,9 +433,11 @@ namespace net.atos.daf.ct2.alertservice.Services
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
 
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -447,9 +449,8 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
-                                                                                       AlertConstants.ALERT_FEATURE_NAME);
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
 
                     res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
                     response.AlertCategoryFilterRequest.AddRange(
@@ -487,9 +488,10 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
+                var loggedInAccountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accountid")).FirstOrDefault()?.Value ?? "0");
                 List<NotificationViewHistory> notificationViewHistories = new List<NotificationViewHistory>();
                 notificationViewHistories = _mapper.GetNotificationViewHistoryEntity(request);
-                int id = await _alertManager.InsertViewNotification(notificationViewHistories);
+                int id = await _alertManager.InsertViewNotification(notificationViewHistories, loggedInAccountId);
                 return await Task.FromResult(new NotificationViewResponse
                 {
                     Message = id > 0 ? $"Data saved successful" : $"Data saved  failed",
@@ -506,6 +508,34 @@ namespace net.atos.daf.ct2.alertservice.Services
                 });
             }
         }
+
+        public override async Task<OfflineNotificationResponse> GetOfflinePushNotification(OfflinePushNotiRequest request, ServerCallContext context)
+        {
+            try
+            {
+                OfflinePushNotificationFilter offlinePushNotificationFilter = new OfflinePushNotificationFilter();
+                offlinePushNotificationFilter.AccountId = request.AccountId;
+                offlinePushNotificationFilter.OrganizationId = request.OrganizationId;
+                OfflinePushNotification offlinePushNotification = new OfflinePushNotification();
+                offlinePushNotification = await _alertManager.GetOfflinePushNotification(offlinePushNotificationFilter);
+                OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
+                offlineNotificationResponse = _mapper.ToOfflineNotificationResponse(offlinePushNotification);
+                offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp != null ? $" Offline notification data fetched successful" : $" Offline notification data not found";
+                offlineNotificationResponse.Code = offlinePushNotification.NotificationDisplayProp != null ? ResponseCode.Success : ResponseCode.NotFound;
+                return await Task.FromResult(offlineNotificationResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new OfflineNotificationResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed
+                });
+            }
+        }
+
+
         #endregion
 
     }

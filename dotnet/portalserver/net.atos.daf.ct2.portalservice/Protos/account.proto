@@ -64,6 +64,9 @@ service AccountService
   rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
   rpc GetRoles (AccountRoleDeleteRequest) returns (AccountRoles);
   rpc GenerateSSO (TokenSSORequest) returns (SSOToken);
+  
+  //
+  rpc GetCountryDetail(RequestCountry) returns (ResponseCountry);
 }
 enum AccountType
     {
@@ -525,3 +528,25 @@ Responcecode Code=2;
 string Message = 3; 
 }
 // end - vehicle-account access relatioship
+
+message RequestCountry
+{
+   string RegionType =1;
+   string Code = 2;
+   string DialCode = 3; 
+}
+
+message Country{
+    int32 Id =1;
+    string Name = 2;
+    string RegionType =3;
+    string Code = 4;
+    string DialCode =5;
+    
+}
+message ResponseCountry
+{
+    repeated Country Country =1;
+    Responcecode Code = 2;
+    string Message = 3;
+}

@@ -2419,10 +2419,16 @@ setVehicleGroupAndVehiclePreSelection() {
       // });
     }
     case 'fuelConsumption': { 
-      let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
-      });
-      sum= sum.toFixed(2)*1;
+      // let s = this.displayData.forEach(element => {
+      // sum += parseFloat(element.convertedFuelConsumed100Km);
+      // });
+      // sum= sum.toFixed(2)*1;
+
+      let fuelConsumed = this.sumOfColumns('fuelconsumed');
+      let distance = this.sumOfColumns('distance');
+      let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
+      sum= convertedConsumption.toFixed(2)*1;
+
       break;
     }
     case 'co2emission': { 

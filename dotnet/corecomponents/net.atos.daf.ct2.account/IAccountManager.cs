@@ -48,5 +48,7 @@ namespace net.atos.daf.ct2.account
         Task<bool> UpdateAccountPreferences(UpdatePreferencesDataServiceRequest request);
         Task<RegisterDriverResponse> RegisterDriver(RegisterDriverDataServiceRequest request);
         Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId);
+
+        Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter);
     }
 }

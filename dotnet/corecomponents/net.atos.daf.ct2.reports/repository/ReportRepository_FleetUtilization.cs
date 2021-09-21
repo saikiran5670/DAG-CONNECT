@@ -35,8 +35,9 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(idle_duration)            as idle_duration
                                             		  , SUM(etl_gps_distance)     as veh_message_distance
                                             		  , SUM(average_speed)            as average_speed
-                                            		  , (SUM(average_weight)/count(trip_id))           as average_weight
+                                            		  , SUM(average_weight)           as average_weight
                                             		  , Max(last_odometer)           as last_odometer
+                                                      , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
                                             		FROM
                                             			tripdetail.trip_statistics
                                             		where
@@ -55,12 +56,14 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , vh.registration_no             as RegistrationNumber
                                             		  , fd.etl_gps_trip_time           as TripTime
                                             		  , fd.end_time_stamp              as StopTime
-                                            		  , round ( fd.etl_gps_distance,2) as Distance
-                                            		  , fd.etl_gps_driving_time    as DrivingTime
-                                            		  , fd.idle_duration               as IdleDuration
+                                                      , fd.totalworkingdays            as VehicleActiveDays
+                                            		  , round (fd.etl_gps_distance,2)  as Distance
+                                            		  , fd.etl_gps_driving_time        as DrivingTime
+                                            		  , round(fd.idle_duration,2)      as IdleDuration
                                             		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
-                                            		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),5)   as AverageSpeed
-                                            		  , round (fd.average_weight, 5)    as AverageWeightPerTrip
+                                            		  , round ((fd.etl_gps_distance)/(fd.etl_gps_trip_time),7)   as AverageSpeed
+                                            		  ,case when numoftripswithavgweight>0 then round (fd.average_weight/numoftripswithavgweight, 3) 
+													  else round (fd.average_weight,3) end as AverageWeightPerTrip
                                             		  , round (fd.last_odometer,2)    as Odometer
                                             		FROM
                                             			CTE_FleetDeatils fd

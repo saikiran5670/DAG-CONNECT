@@ -79,6 +79,7 @@ export class EditViewUserComponent implements OnInit {
   @Input() privilegeAccess: any;
   createPrefFlag = false;
   orgDefaultFlag: any;
+  contextOrgName: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
@@ -116,7 +117,8 @@ export class EditViewUserComponent implements OnInit {
         CustomValidators.numberValidationForName('lastName')
       ]
     });
-    this.accountInfoData.organization = localStorage.getItem("organizationName");
+    this.contextOrgName = localStorage.getItem("contextOrgName");
+    this.accountInfoData.organization = this.contextOrgName;
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     else 
@@ -236,7 +238,7 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
       this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : this.userTypeList[0].value);
-      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
+      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : this.contextOrgName);
       this.blobId = this.accountInfoData.blobId ? this.accountInfoData.blobId : 0;
       if(this.blobId != 0){
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
@@ -407,7 +409,7 @@ export class EditViewUserComponent implements OnInit {
     }
     this.accountService.updateAccount(objData).subscribe((data: any)=>{
       this.accountInfoData = data;
-      this.accountInfoData.organization = localStorage.getItem("organizationName");
+      this.accountInfoData.organization = this.contextOrgName;
       this.setDefaultAccountInfo();
       // this.isSelectPictureConfirm = true;
       this.editAccountInfoFlag = false;

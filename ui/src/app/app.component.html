@@ -23,12 +23,19 @@
                             {{ subscribeTimer }}
                         </button>&nbsp;</span> -->
                         <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center; margin-left: 10px;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
+                        
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
-                        (selectionChange)="applyFilterOnOrganization($event.value)">
-                        <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{ options.name }}">
-                            {{options.name}}
-                          </mat-option>
+                            (selectionChange)="applyFilterOnOrganization($event.value)">
+                            <mat-option>
+                                <ngx-mat-select-search (keyup)="filterContextSettings(search.value)"  placeholderLabel="{{ translationData.lblSearchOrganization|| 'Search organization' }}" #search>
+                                    <mat-icon (click)="resetContextSettingFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let options of filteredOrganizationList | async" [value]="options.id" matTooltip="{{ options.name }}">
+                                {{options.name}}
+                            </mat-option>
                         </mat-select>
+
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"
                                 (click)="isFullScreen ? exitFullScreen() : fullScreen()"
@@ -36,50 +43,23 @@
                                 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
                         </a>
                         <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
-                        <a class="navIcon">
+                        <a class="navIcon" (click) ="notificationClicked()">
                             <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
                                 [matMenuTriggerFor]="menu">
                                 notifications_none</mat-icon>
-                            <span class="badge">0</span>
+                            <span class="badge">{{ signalRService.notificationCount }}</span>
                         </a>
 
-                        <mat-menu #menu="matMenu" class="notificationList" yPosition="below"> 
-                            <div  *ngFor="let item of notificationData" style="background-color: #E5E4E2;padding-left: 5%;padding-right: 5%;margin-bottom: 1px;cursor: pointer;"> 
-                                <mat-card class="card1" (click)="gotoLogBook(item)">
-                                <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                fxLayoutGap="1px">
-                                <div fxLayout="column" class="areaWidth min-width-10-per">
-                                    <mat-icon class="line3">{{item.icons}}</mat-icon>
-                                </div>
-                                <div fxLayout="column" class="areaWidth min-width-50-per line3">
-                                    <span>{{item.name}}</span>
-                                </div>
-                                <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
-                                    <span class="demo1">{{item.date}}</span>
-                                    <span class="demo2">{{item.time}}</span>
-                                </div>
-                            </div>
-
-                                <div class="line">
-                                    <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
-                                    fxLayoutGap="1px">
-                                    <!-- <span class="line2">{{item.regNo}}</span> -->
-                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehName}} </span>
-                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
-                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.regNo ? item.regNo : item.vehName}} </span>
-                                </div>
-                            </div>
-                        <!-- <mat-divider style="margin: 5px,5px!important;"></mat-divider> -->
-                    </mat-card>
-                    </div>
-
-                    <a class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>
-                    </mat-menu>
+                        <mat-menu #menu="matMenu" (closed)="notificationsClosed()"  class="notificationList" yPosition="below" > 
+                                <app-signalr-alert-notification>
+                                </app-signalr-alert-notification>
+                        </mat-menu>
+                        
                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
 
                             <mat-option>
-                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search>
+                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search language' }}" #search>
                                     <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                 </ngx-mat-select-search>
                             </mat-option>

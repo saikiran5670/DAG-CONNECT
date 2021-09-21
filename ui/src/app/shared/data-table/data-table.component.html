@@ -1,5 +1,5 @@
 <!-- fxLayoutAlign="space-between" class='margin-bottom-sm' -->
-<div fxLayout="row" fxLayoutGap="10px">
+<div fxLayout="row" fxLayoutGap="10px" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayoutAlign="center center">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)"
@@ -45,7 +45,7 @@
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
                     <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                    <span class="text-truncate" [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
+                    <span class="text-truncate" matTooltip="{{row[column]}}" [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
                 </mat-cell>
             </ng-container>
 

@@ -42,36 +42,27 @@ export class CustomValidators {
         number = /[0-9]/,
         special = /[ !"#$%&'()*+,\-/:;<=>?@[\\\]^_`{|}~]/;
 
-      // let specialCharRequired: boolean = false;
-      // let numberRequired: boolean = false;
-      // let lowercaseRequired: boolean = false;
-      // let uppercaseRequired: boolean = false;
       let customError = {};
-      if (!special.test(NEW_PASSWORD.value)) {//errors.push(special);
-        // specialCharRequired = true;
+      if (!special.test(NEW_PASSWORD.value)) {
         customError['specialCharRequired']=true;
       } else {
         customError['specialCharRequired'] ? delete customError['specialCharRequired'] : '';
       }
       if (!number.test(NEW_PASSWORD.value)) {
-        // numberRequired = true;
         customError['numberRequired']=true;
       } else {
         customError['numberRequired'] ? delete customError['numberRequired'] : '';
       }
       if (!lower.test(NEW_PASSWORD.value)) {
-        // lowercaseRequired = true;
         customError['lowercaseRequired']=true;
       } else {
         customError['lowercaseRequired'] ? delete customError['lowercaseRequired'] : '';
       }
       if (!upper.test(NEW_PASSWORD.value)) {
-        // uppercaseRequired = true;
         customError['uppercaseRequired']=true;
       } else {
         customError['uppercaseRequired'] ? delete customError['uppercaseRequired'] : '';
       }
-      // let customError = { specialCharRequired: specialCharRequired, numberRequired: numberRequired, lowercaseRequired: lowercaseRequired, uppercaseRequired: uppercaseRequired};
       let allErrors = {...NEW_PASSWORD.errors,...customError};
       
       if(Object.keys(allErrors).length==0) {

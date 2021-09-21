@@ -95,11 +95,22 @@ namespace net.atos.daf.ct2.alert
                 throw;
             }
         }
-        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories)
+        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories, int accountId)
         {
             try
             {
-                return await _alertRepository.InsertViewNotification(notificationViewHistories);
+                return await _alertRepository.InsertViewNotification(notificationViewHistories, accountId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter)
+        {
+            try
+            {
+                return await _alertRepository.GetOfflinePushNotification(offlinePushNotificationFilter);
             }
             catch (Exception)
             {

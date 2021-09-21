@@ -1750,7 +1750,6 @@ namespace net.atos.daf.ct2.accountservice
 
         public async override Task<AccountRoleResponse> RemoveRoles(AccountRoleDeleteRequest request, ServerCallContext context)
         {
-
             try
             {
                 AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
@@ -1949,6 +1948,48 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
+        #endregion
+
+        #region Country
+        public override async Task<ResponseCountry> GetCountryDetail(RequestCountry request, ServerCallContext context)
+        {
+            try
+            {
+
+                ResponseCountry response = new ResponseCountry();
+
+                account.entity.CountryFilter countryRequest = new account.entity.CountryFilter
+                {
+                    Code = request.Code,
+                    RegionType = request.RegionType,
+                    DialCode = request.DialCode
+
+                };
+
+                var result = await _accountmanager.GetCountryDetails(countryRequest);
+
+                var resCountry = JsonConvert.SerializeObject(result);
+                response.Country.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<Country>>(resCountry,
+                     new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+
+                response.Code = Responcecode.Success;
+                response.Message = "Country details fetched successfully.";
+
+                return await Task.FromResult(response);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ResponseCountry
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Country details Failed due to - " + ex.Message
+                });
+            }
+        }
         #endregion
     }
 }

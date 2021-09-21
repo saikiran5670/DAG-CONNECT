@@ -20,17 +20,17 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
 
-
                 var enumTranslationList = await _reportManager.GetAlertCategory();
                 foreach (var item in enumTranslationList)
                 {
                     response.LogbookSearchParameter.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
 
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -49,19 +49,19 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId,
                                                                                        ReportConstants.LOGBOOK_FEATURE_NAME);
                     var vehicleByVisibilityAndAlertFeature
                                                 = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                                                                                       request.RoleId,
                                                                                        ReportConstants.ALERT_FEATURE_NAME);
 
 
-                    var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.Vin).Intersect(vehicleByVisibilityAndFeature.Select(x => x.Vin));
-                    var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.Vin));
-                    result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.Vin == x.Vin));
+                    var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.VehicleId).Intersect(vehicleByVisibilityAndFeature.Select(x => x.VehicleId));
+                    var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.VehicleId));
+                    result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.VehicleId == x.VehicleId));
                     res = JsonConvert.SerializeObject(result);
                     response.LogbookSearchParameter.AlertTypeFilterRequest.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res,
@@ -105,8 +105,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("Get GetLogbookDetails ");
                 LogbookDetailsResponse response = new LogbookDetailsResponse();
+
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
                 var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(logbookDetailsRequest.AccountId, logbookDetailsRequest.OrganizationId);
+                                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {

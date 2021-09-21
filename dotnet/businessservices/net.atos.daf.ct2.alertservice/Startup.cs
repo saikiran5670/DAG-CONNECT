@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO.Compression;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ using net.atos.daf.ct2.alertservice.Services;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 
@@ -28,7 +31,13 @@ namespace net.atos.daf.ct2.alertservice
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.MaxReceiveMessageSize = null;
+                options.MaxSendMessageSize = null;
+                options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                options.ResponseCompressionAlgorithm = "gzip";
+            });
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -53,8 +62,8 @@ namespace net.atos.daf.ct2.alertservice
             services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
-            //services.AddTransient<IVehicleManager, VehicleManager>();
-            //services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
             //services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             //services.AddTransient<IAuditTraillib, AuditTraillib>();
         }

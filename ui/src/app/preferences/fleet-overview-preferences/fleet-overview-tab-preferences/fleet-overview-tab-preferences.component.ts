@@ -71,19 +71,20 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
 
    getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
-      prefData.subReportUserPreferences.forEach(element => {
-        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-          element.subReportUserPreferences.forEach(item => {
+      prefData.subReportUserPreferences.forEach(item => {
+        // if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+        //   element.subReportUserPreferences.forEach(item => {
             let _data: any;
-            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
-              _data = item;
-              if(this.translationData[item.key]){
-                _data.translatedName = this.translationData[item.key];  
-              }else{
-                _data.translatedName = this.getName(item.name, 23);   
-              }
-              this.timerPrefData.push(_data);
-            }else if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
+            // if(item.key.includes('rp_fo_fleetoverview_settimer_')){
+            //   _data = item;
+            //   if(this.translationData[item.key]){
+            //     _data.translatedName = this.translationData[item.key];  
+            //   }else{
+            //     _data.translatedName = this.getName(item.name, 23);   
+            //   }
+            //   this.timerPrefData.push(_data);
+            // }else 
+            if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
               _data = item;
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
@@ -93,18 +94,18 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
               this.vehInfoPrefData.push(_data);
             }
           });
-        }
-      });
-      if (this.timerPrefData.length > 0 && this.vehInfoPrefData.length > 0) {
-        this.setDefaultFormValues();
+      //   }
+      // });
+      if (this.vehInfoPrefData.length > 0) {
+        //this.setDefaultFormValues();
         this.setColumnCheckbox();
       }
     }
   }
 
-  setDefaultFormValues() {
-    this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 2): 2);
-  }
+  // setDefaultFormValues() {
+  //   this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 2): 2);
+  // }
 
   getName(name: any, _count: any) {
     let updatedName = name.slice(_count);
@@ -134,12 +135,12 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
    onCancel(){
     this.setFleetOverviewFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
-    this.setDefaultFormValues();
+   // this.setDefaultFormValues();
   }
 
   onReset(){
     this.setColumnCheckbox();
-    this.setDefaultFormValues();
+    //this.setDefaultFormValues();
   }
 
   onConfirm() {
@@ -149,43 +150,44 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       let _vehInfoArr: any = [];
       let parentDataAttr: any = [];
 
-      this.timerPrefData.forEach(element => {
-        let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-        if (sSearch.length > 0) {
-          _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value) });
-        } else {
-          _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value) });
-        }
-      });
+      // this.timerPrefData.forEach(element => {
+      //   let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      //   if (sSearch.length > 0) {
+      //     _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value), reportId: element.reportId });
+      //   } else {
+      //     _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value), reportId: element.reportId });
+      //   }
+      // });
 
       this.vehInfoPrefData.forEach(element => {
         let sSearch = this.selectionForVehInfoColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (sSearch.length > 0) {
-          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         } else {
-          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         }
       });
-
-      if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
-        parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-        this.initData.subReportUserPreferences.forEach(elem => {
-          if (elem.key.includes('rp_fo_fleetoverview_settimer')) {
-            let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
-            if (_val && _val > 0) { // parent selected
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-            } else {
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-            }
-          } else if (elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')) {
-            if (this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length) { // parent selected
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-            } else {
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
-            }
-          }
-        });
-      }
+      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
+      // if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
+      //   parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
+      //   this.initData.subReportUserPreferences.forEach(elem => {
+      //     // if (elem.key.includes('rp_fo_fleetoverview_settimer')) {
+      //     //   let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
+      //     //   if (_val && _val > 0) { // parent selected
+      //     //     parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
+      //     //   } else {
+      //     //     parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
+      //     //   }
+      //     // } else
+      //      if (elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')) {
+      //       if (this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length) { // parent selected
+      //         parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
+      //       } else {
+      //         parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
+      //       }
+      //     }
+      //   });
+      // }
 
       let objData: any = {
         reportId: this.reportId,

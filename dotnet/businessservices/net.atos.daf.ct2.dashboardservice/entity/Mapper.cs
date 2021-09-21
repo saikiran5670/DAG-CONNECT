@@ -25,6 +25,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
                 objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
                 {
                     DataAttributeId = attribute.DataAttributeId,
+                    ReportId = attribute.ReportId,
                     State = (reports.entity.ReportUserPreferenceState)(ReportUserPreferenceState)(char)attribute.State,
                     Type = (reports.entity.ReportPreferenceType)(ReportPreferenceType)(char)attribute.Type,
                     ChartType = (reports.entity.ReportPreferenceChartType?)(attribute.ChartType > 0 ? (ReportPreferenceChartType)(char)attribute.ChartType : new ReportPreferenceChartType?()),
@@ -65,6 +66,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
                         var preference = new DashboardUserPreference
                         {
                             DataAttributeId = item.DataAttributeId,
+                            ReportId = item.ReportId,
                             Name = item.Name ?? string.Empty,
                             Key = item.Key ?? string.Empty,
                             State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),

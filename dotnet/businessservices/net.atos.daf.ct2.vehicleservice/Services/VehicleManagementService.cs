@@ -545,32 +545,67 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
+                VehicleGroupRefResponce objVehicleRes = new VehicleGroupRefResponce();
+                IEnumerable<Vehicle> vehicles = new List<Vehicle>();
 
-                List<Group.GroupRef> vehicleDetails = _groupManager.GetRef(request.GroupId).Result;
-                StringBuilder vehicleIdList = new StringBuilder();
-                foreach (var item in vehicleDetails)
+                var groupFilter = new Group.GroupFilter();
+                groupFilter.Id = request.GroupId;
+                groupFilter.GroupRefCount = false;
+                groupFilter.GroupRef = true;
+                groupFilter.ObjectType = Group.ObjectType.VehicleGroup;
+                groupFilter.GroupType = Group.GroupType.None;
+                groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                var vehicleGroups = await _groupManager.Get(groupFilter);
+                var vehicleGroup = vehicleGroups.FirstOrDefault();
+
+                if (vehicleGroup?.GroupType == Group.GroupType.Group)
                 {
+                    List<Group.GroupRef> vehicleDetails = _groupManager.GetRef(request.GroupId).Result;
+                    StringBuilder vehicleIdList = new StringBuilder();
+                    foreach (var item in vehicleDetails)
+                    {
+                        if (vehicleIdList.Length > 0)
+                        {
+                            vehicleIdList.Append(",");
+                        }
+                        vehicleIdList.Append(item.Ref_Id);
+                    }
+
                     if (vehicleIdList.Length > 0)
                     {
-                        vehicleIdList.Append(",");
+                        VehicleFilter objVehicleFilter = new VehicleFilter();
+                        objVehicleFilter.VehicleIdList = vehicleIdList.ToString();
+                        vehicles = _vehicleManager.Get(objVehicleFilter).Result;
                     }
-                    vehicleIdList.Append(item.Ref_Id);
+                }
+                else
+                {
+                    // Get vehicle details for group of type 'D'
+                    switch (vehicleGroup.FunctionEnum)
+                    {
+                        case Group.FunctionEnum.All:
+                            vehicles = await _vehicleManager.GetDynamicAllVehicle(vehicleGroup?.OrganizationId ?? 0);
+                            break;
+                        case Group.FunctionEnum.OwnedVehicles:
+                            vehicles = await _vehicleManager.GetDynamicOwnedVehicle(vehicleGroup?.OrganizationId ?? 0);
+                            break;
+                        case Group.FunctionEnum.VisibleVehicles:
+                            vehicles = await _vehicleManager.GetDynamicVisibleVehicle(vehicleGroup?.OrganizationId ?? 0);
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
-                VehicleGroupRefResponce objVehicleRes = new VehicleGroupRefResponce();
-                if (vehicleIdList.Length > 0)
+                if (vehicles != null && vehicles.Count() > 0)
                 {
-                    VehicleFilter objVehicleFilter = new VehicleFilter();
-                    objVehicleFilter.VehicleIdList = vehicleIdList.ToString();
-                    IEnumerable<Vehicle> objRetrieveVehicleList = _vehicleManager.Get(objVehicleFilter).Result;
-
-                    foreach (var item in objRetrieveVehicleList)
+                    foreach (var item in vehicles)
                     {
                         VehicleGroupRefDetails objGroupRef = new VehicleGroupRefDetails();
                         objGroupRef.Id = item.ID;
-                        objGroupRef.Name = item.Name ?? "";
-                        objGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
-                        objGroupRef.VIN = item.VIN ?? "";
+                        objGroupRef.Name = item.Name ?? string.Empty;
+                        objGroupRef.LicensePlateNumber = item.License_Plate_Number ?? string.Empty;
+                        objGroupRef.VIN = item.VIN ?? string.Empty;
                         objGroupRef.ModelId = item.ModelId;
                         objVehicleRes.GroupRefDetails.Add(objGroupRef);
                     }
@@ -582,6 +617,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     objVehicleRes.Message = "No vehicle found for vehicle group";
                     objVehicleRes.Code = Responcecode.Success;
                 }
+
                 _logger.Info("GetVehiclesByVehicleGroup method in vehicle service called.");
 
                 return await Task.FromResult(objVehicleRes);
@@ -604,8 +640,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
                 OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
-                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicleManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
-                foreach (var item in ObjOrgVehicleGroupList)
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> objOrgVehicleGroupList = await _vehicleManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
+                foreach (var item in objOrgVehicleGroupList)
                 {
                     if (string.IsNullOrEmpty(item.VehicleGroupName))
                     {
@@ -618,6 +654,33 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 response.Message = "Organization vehicle Group details fetched.";
                 return await Task.FromResult(response);
 
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+
+                return await Task.FromResult(new OrgVehicleGroupListResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<OrgVehicleGroupListResponse> GetVehicleGroupsForOrgRelationshipMapping(OrganizationIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
+                var objOrgVehicleGroupList = await _vehicleManager.GetVehicleGroupsForOrgRelationshipMapping(request.OrganizationId);
+                foreach (var item in objOrgVehicleGroupList)
+                {
+                    response.OrgVehicleGroupList.Add(_mapper.ToOrgVehicleGroup(item));
+                }
+
+                response.Code = Responcecode.Success;
+                response.Message = "Organization vehicle Group details fetched.";
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {

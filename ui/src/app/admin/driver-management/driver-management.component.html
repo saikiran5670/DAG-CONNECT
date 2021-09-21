@@ -79,7 +79,7 @@
                 </div>
             </div>
         </mat-card>
-        <mat-card class='mat-elevation-z'>
+        <mat-card class='mat-elevation-z' *ngIf="!showLoadingIndicator">
             <!-- <form [formGroup]= 'consentFormGroup'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -178,7 +178,7 @@
                 <ng-template #topLeftElements let-gridData='rowData'>
                     <div class='areaWidth' fxLayoutAlign="center center">
                         <mat-form-field appearance="outline" class='margin-right-xxlg'>
-                            <mat-select [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
+                            <mat-select [(ngModel)]='selectedConsentType' [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
                                 placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
                                 <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
                                     {{ rer.name }}

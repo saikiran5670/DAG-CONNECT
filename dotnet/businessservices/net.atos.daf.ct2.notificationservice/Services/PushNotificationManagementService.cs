@@ -93,6 +93,9 @@ namespace net.atos.daf.ct2.notificationservice.services
                 Notificationengine.entity.AlertMessageEntity alertMessageEntity = new Notificationengine.entity.AlertMessageEntity();
                 alertMessageEntity.AlertId = request.AlertId;
                 alertMessageEntity.Vin = request.VIN;
+                alertMessageEntity.AlertCategory = request.AlertCategory;
+                alertMessageEntity.AlertType = request.AlertType;
+                alertMessageEntity.AlertUrgency = request.AlertUrgency;
                 Notificationengine.entity.AlertVehicleEntity alertVehicleEntity = await _notificationIdentifierManager.GetEligibleAccountForAlert(alertMessageEntity);
                 return await Task.FromResult(_mapper.GetAlertVehicleEntity(alertVehicleEntity));
             }

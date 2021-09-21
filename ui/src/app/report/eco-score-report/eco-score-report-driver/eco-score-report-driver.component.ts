@@ -142,7 +142,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
        })
      });
     this.driverDetails = this.ecoScoreDriverDetails.singleDriver;
-    this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_") !== -1);
+    this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_Driver") !== -1);
     let vins=[];
     this.driverDetails.forEach(element => {
       vins.push(element.vin);
@@ -911,6 +911,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
         else if(key.indexOf('75') !== -1)
           value += ' >45 mph ';
         value += '(%)';
+      } else if(key.indexOf('rp_averagegrossweight') !== -1){
+        value += ' (ton) ';
+      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+        value += ' (mile) ';
       }
     }  else if(this.prefUnitFormat === 'dunit_Metric'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
@@ -925,6 +929,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
           else if(key.indexOf('75') !== -1)
            value += ' >75 km/h ';
           value += '(%)';
+        } else if(key.indexOf('rp_averagegrossweight') !== -1){
+          value += ' (tonne) ';
+        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+          value += ' (km) ';
         }
     }
     
@@ -978,7 +986,12 @@ export class EcoScoreReportDriverComponent implements OnInit {
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.621371).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return (282.481/(val)).toFixed(2);
+            let num = Number(val);
+            if(num > 0) {
+              return (282.481/(val)).toFixed(2);
+            } else {
+              return (num).toFixed(2);
+            }
           }
         }
     }
@@ -1063,10 +1076,17 @@ public barChartOptions = {
   },
   tooltips: {
     callbacks: {
-        label: function(tooltipItem, data) {
-            return tooltipItem.yLabel + ' %';
-        }
-    }
+      title: function(tooltipItem, data) {
+        var datasetLabel = data['datasets'][tooltipItem[0].datasetIndex].label;     //Vehicle Name
+        return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
+      },
+      label: function(tooltipItem, data) {
+          return tooltipItem.yLabel + ' %';
+      }
+    },
+    backgroundColor: '#000000',
+    enabled: true,
+    titleFontColor: "white"
   },
   animation: {
     duration: 0,
@@ -1127,6 +1147,10 @@ public barChartOptionsPerformance = {
   },
   tooltips: {
     callbacks: {
+      title: function(tooltipItem, data) {
+        var datasetLabel = data['datasets'][tooltipItem[0].datasetIndex].label;     //Vehicle Name
+        return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
+      },
         label: function(tooltipItem, data) {
             return tooltipItem.yLabel + ' %';
         }
@@ -1167,9 +1191,11 @@ public barChartOptionsPerformance = {
       display: true
     },
     tooltips: {
+      mode: 'label',
       callbacks: {
         title: function(tooltipItem, data) {
-          return (data['labels'][tooltipItem[0]['index']]).toString();
+          var datasetLabel = data['datasets'][0].data[data['datasets'][0].data.length-1];     //Vehicle Name
+          return datasetLabel+" "+(data['labels'][tooltipItem[0]['index']]).toString();
         },
         label: function(tooltipItem, data) {
         	var dataset = data.datasets[tooltipItem.datasetIndex];
@@ -1192,16 +1218,20 @@ public barChartOptionsPerformance = {
   loadPieChart(index){
     if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
       this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
+      this.pieChartData.push(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].label);
       this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
     }
   }
 
   public pieChartLabelsPerformance: Label[] = [];
   public pieChartDataPerformance: SingleDataSet = [];
+  // public pieCharDatatLabelPerformance: SingleDataSet = [];
 
   loadPieChartPerformance(index){
     if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
       this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
+      // this.pieCharDatatLabelPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
+      this.pieChartDataPerformance.push(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label);
       this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
   }

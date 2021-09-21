@@ -29,6 +29,11 @@ export class MapFunctionsService {
   corridorWidthKm: number = 0.1;
   additionalData = [];
   
+  corridorPath : any;
+  polylinePath : any;
+  polyLinePathArray : any = [];
+  organizationId:any;
+  corridorId : any;
   tollRoadChecked = false;
   motorwayChecked = false;
   boatFerriesChecked = false;
@@ -109,6 +114,19 @@ export class MapFunctionsService {
     this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
   }
 
+  // added to remove selected polyline
+  removeCorridor(_id){
+    if(this.polyLinePathArray.length >0){
+      let filteredPolyline = this.polyLinePathArray.filter(elem => elem.id != _id);
+      this.polyLinePathArray = filteredPolyline;
+    }
+    
+  }
+
+  clearPolylines(){
+    this.polyLinePathArray = [];
+  }
+
   group = new H.map.Group();
 
   viaRoutePlottedPoints = [];
@@ -117,7 +135,7 @@ export class MapFunctionsService {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
-    
+    this.organizationId = accountOrganizationId;
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
@@ -142,7 +160,7 @@ export class MapFunctionsService {
           corridorName = _selectedRoutes[i].corridoreName;
           startAddress = _selectedRoutes[i].startPoint;
           endAddress = _selectedRoutes[i].endPoint;
-
+          this.corridorId = _selectedRoutes[i].id;
         } else {
           this.startAddressPositionLat = _selectedRoutes[i].startPositionlattitude;
           this.startAddressPositionLong = _selectedRoutes[i].startPositionLongitude;
@@ -460,7 +478,6 @@ export class MapFunctionsService {
 
   }
 
-  corridorPath : any;
   addTruckRouteShapeToMap(lineWidth?) {
     let pathWidth = this.corridorWidthKm * 10;
 
@@ -477,7 +494,7 @@ export class MapFunctionsService {
           }
         });
         // Create a polyline to display the route:
-        let polylinePath = new H.map.Polyline(linestring, {
+        this.polylinePath = new H.map.Polyline(linestring, {
           style: {
             lineWidth: 3,
             strokeColor: '#436ddc'
@@ -485,9 +502,25 @@ export class MapFunctionsService {
         });
 
          this.polyLineArray.push(this.corridorPath);
+        if(this.organizationId){ // to store all the polylines 16249
+          this.polyLinePathArray.push({
+            'id' : this.corridorId,
+            'corridorPath' : this.corridorPath,
+            'polylinePath' : this.polylinePath
+          })
+        }
+        if(this.polyLinePathArray.length > 0){
+          for(var i in this.polyLinePathArray){
+            this.mapGroup.addObjects([this.polyLinePathArray[i]['corridorPath'], this.polyLinePathArray[i]['polylinePath']]);
 
+          }
+        }
+        else{
+          this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
+
+        }
+        
         // Add the polyline to the map
-        this.mapGroup.addObjects([this.corridorPath, polylinePath]);
         // if (this.viaMarker) {
         //   this.mapGroup.addObject(this.viaMarker);
         // }

@@ -22,6 +22,7 @@ namespace net.atos.daf.ct2.alert.repository
         //Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
         Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
         Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId);
-        Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories);
+        Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories, int accountId);
+        Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter);
     }
 }

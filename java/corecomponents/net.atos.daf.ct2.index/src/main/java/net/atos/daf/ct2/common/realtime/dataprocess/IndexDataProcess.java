@@ -55,7 +55,7 @@ public class IndexDataProcess {
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			consumerStream.print();
+			//consumerStream.print();
 
 			//consumerStream.map(rec -> {System.out.println("Received Index data ::"+rec ); return rec;});
 			/*

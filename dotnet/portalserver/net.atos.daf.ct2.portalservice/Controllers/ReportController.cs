@@ -188,10 +188,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
                 var response = await _reportServiceClient
                                             .GetVinsFromTripStatisticsWithVehicleDetailsAsync
                                             (
-                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId }
+                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId },
+                                              headers
                                             );
 
                 if (response == null)
@@ -375,7 +380,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!(request.AccountId > 0)) { return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG); }
 
                 _logger.Info("GetDriverActivityParameters method in Report API called.");
-                var data = await _reportServiceClient.GetDriverActivityParametersAsync(request);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var data = await _reportServiceClient.GetDriverActivityParametersAsync(request, headers);
 
                 if (data.Code.ToString() == "NotFound")
                 {
@@ -407,7 +416,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!(request.AccountId > 0)) { return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG); }
 
                 _logger.Info("GetReportSearchParameter method in Report API called.");
-                var data = await _reportServiceClient.GetReportSearchParameterAsync(request);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var data = await _reportServiceClient.GetReportSearchParameterAsync(request, headers);
                 if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
@@ -775,10 +788,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 userPrefRequest.OrganizationId = GetUserSelectedOrgId();
                 userPrefRequest.ContextOrgId = GetContextOrgId();
 
-                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
-                SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                var subReportResponse = await _reportServiceClient.CheckIfSubReportExistAsync(new CheckIfSubReportExistRequest { ReportId = reportId });
 
-                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                // Send sub report features from session to find attributes of related reports
+                SessionFeatures[] objUserFeatures;
+                if (subReportResponse != null)
+                {
+                    var sessionFeatures = GetUserSubscribeFeatures();
+                    if (subReportResponse.HasSubReports == "Y" && subReportResponse.FeatureId > 0)
+                    {
+                        var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.FeatureId)?.Select(x => x.Name)?.FirstOrDefault();
+
+                        if (!string.IsNullOrEmpty(featureName))
+                        {
+                            var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
+                            var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+
+                            if (requiredFeatures.Count() > 0)
+                            {
+                                string strFeature = JsonConvert.SerializeObject(requiredFeatures);
+                                objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                            }
+                        }
+                    }
+                    else if (subReportResponse.HasSubReports == "N" && subReportResponse.FeatureId > 0)
+                    {
+                        if (!sessionFeatures.Any(x => x.FeatureId == subReportResponse.FeatureId))
+                            return StatusCode(404, "No data found.");
+                    }
+                }
 
                 var response = await _reportServiceClient.GetReportUserPreferenceAsync(userPrefRequest);
                 if (response.Code == Responsecode.Success)
@@ -887,10 +926,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
                 fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
                 fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                //  fleetOverviewFilterRequest.AccountId = 171;
-                // fleetOverviewFilterRequest.OrganizationId = 36;
-                //  fleetOverviewFilterRequest.RoleId = 61;
-                FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest, headers);
 
                 reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
                 poiservice.POIRequest poiRequest = new poiservice.POIRequest();
@@ -948,7 +988,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // fleetOverviewDetailsRequest.OrganizationId = 36;
                 // fleetOverviewDetailsRequest.RoleId = 61;
                 /* Need to comment End */
-                FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest, headers);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
@@ -1237,7 +1281,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objVehicleHealthStatusRequest.AccountId = _userDetails.AccountId;
                 objVehicleHealthStatusRequest.OrganizationId = GetContextOrgId();
                 _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
-                var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest, headers);
 
                 if (data != null)
                 {
@@ -1402,7 +1450,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // logBookFilterRequest.AccountId = 171;
                 //  logBookFilterRequest.OrganizationId = 36;
                 // logBookFilterRequest.RoleId = 61;
-                LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest, headers);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
 
@@ -1453,7 +1505,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
-                LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest, headers);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
@@ -1559,7 +1614,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FuelBenchmarkTimePeriodRequest objFluelBenchMarkFilter = JsonConvert.DeserializeObject<FuelBenchmarkTimePeriodRequest>(filters);
                 objFluelBenchMarkFilter.AccountId = _userDetails.AccountId;
                 objFluelBenchMarkFilter.OrganizationId = GetContextOrgId();
-                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFluelBenchMarkFilter);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFluelBenchMarkFilter, headers);
                 if (data?.FuelBenchmarkDetails != null)
                 {
                     //Vehicle Group
@@ -1575,7 +1634,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     //Find vehicle group according to time period 
                     else
                     {
-                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetContextOrgId() });
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetContextOrgId() }, headers);
                         if (vehicleGroupResponse.Code == Responsecode.Success)
                         {
                             int vehicleCount = 0;

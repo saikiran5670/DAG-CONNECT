@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var accountResponse = new AccountBusinessService.AccountData();
                 var accountRequest = new AccountBusinessService.AccountRequest();
                 accountRequest = _mapper.ToAccount(request);
-                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.Id);
+                accountRequest.OrganizationId = GetContextOrgId();
 
                 accountResponse = await _accountClient.UpdateAsync(accountRequest);
                 if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
@@ -260,7 +260,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 accountRequest.Id = AccountId;
                 accountRequest.EmailId = EmailId;
-                accountRequest.OrganizationId = AssignOrgContextByAccountId(AccountId);
+                accountRequest.OrganizationId = GetContextOrgId();
                 var response = await _accountClient.DeleteAsync(accountRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -343,7 +343,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountFilter accountFilter = new AccountBusinessService.AccountFilter();
                 accountFilter = _mapper.ToAccountFilter(request);
-                accountFilter.OrganizationId = AssignOrgContextByAccountId(request.Id);
+                accountFilter.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountDataList accountResponse = await _accountClient.GetAsync(accountFilter);
                 List<AccountResponse> response = new List<AccountResponse>();
                 response = _mapper.ToAccounts(accountResponse);
@@ -383,7 +383,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountGroupDetailsRequest accountRequest = new AccountBusinessService.AccountGroupDetailsRequest();
                 accountRequest = _mapper.ToAccountDetailsFilter(request);
-                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+                accountRequest.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountDetailsResponse accountResponse = await _accountClient.GetAccountDetailAsync(accountRequest);
 
                 if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
@@ -1619,7 +1619,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoleRequest roles = new AccountBusinessService.AccountRoleRequest();
 
                 roles = _mapper.ToRole(request);
-                roles.OrganizationId = GetContextOrgId();
+
+                //Context org id is not required here
+                //roles.OrganizationId = GetContextOrgId();
 
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(roles);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
@@ -1663,7 +1665,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
-                request.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+
+                //Context org id is not required here
+                //request.OrganizationId = GetContextOrgId();
 
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.RemoveRolesAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
@@ -1707,7 +1711,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
-                request.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+                request.OrganizationId = GetContextOrgId();
 
                 AccountBusinessService.AccountRoles response = await _accountClient.GetRolesAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
@@ -1804,6 +1808,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
+
+                    //Add role level to session
+                    int level = await _privilegeChecker.GetLevelByRoleId(request.OrgId, request.RoleId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.AccountRoleLevelKey, level);
 
                     _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
@@ -1911,5 +1919,56 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        [Route("getcountrydetails")]
+        public async Task<IActionResult> GetCountryDetail(CountryFilter countryFilter)
+        {
+            try
+            {
+                AccountBusinessService.RequestCountry requestCountry = new AccountBusinessService.RequestCountry();
+                requestCountry.Code = countryFilter.Code.ToUpper();
+                requestCountry.RegionType = countryFilter.RegionType.ToUpper();
+                requestCountry.DialCode = countryFilter.DialCode;
+                AccountBusinessService.ResponseCountry responseCountry = await _accountClient.GetCountryDetailAsync(requestCountry);
+
+
+                if (responseCountry == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (responseCountry.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(responseCountry.Country);
+                else
+                {
+                    return StatusCode(500, responseCountry.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                            "Get Country Details method in Package controller", 0, 0, JsonConvert.SerializeObject(countryFilter),
+                                             _userDetails);
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname2")]
+        public async Task<IActionResult> GetHostName2()
+        {
+            return Ok("testing");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("gethostname")]
+        public async Task<IActionResult> GetHostName()
+        {
+            _logger.Error("gethostname started");
+            return Ok(Dns.GetHostName().ToLower());
+        }
     }
 }

@@ -17,7 +17,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;

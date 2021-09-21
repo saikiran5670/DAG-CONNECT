@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.rfms.response
@@ -22,7 +23,7 @@ namespace net.atos.daf.ct2.rfms.response
         public string TellTaleCode { get; set; }
         public string ChassisType { get; set; }
         public int NoOfAxles { get; set; }
-        public int TotalFuelTankVolume { get; set; }
+        public Nullable<int> TotalFuelTankVolume { get; set; }
         public string TachographType { get; set; }
         public string GearboxType { get; set; }
         public string BodyType { get; set; }

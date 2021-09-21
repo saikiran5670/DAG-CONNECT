@@ -34,7 +34,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("hoursOfService");
         List<String> priorityList = Arrays.asList("C", "W", "A");
         try{
-            if(Objects.nonNull(index) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
+            if(Objects.nonNull(index.getDocument()) && index.getDocument().getVWheelBasedSpeed() <= 0L && index.getDocument().getVEngineSpeed() <= 0L)
                 return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
             for(String priority : priorityList){
                 for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
@@ -61,19 +61,21 @@ public class IndexBasedAlertFunctions implements Serializable {
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
 
-
     public static AlertLambdaExecutor<Message, Target> excessiveAverageSpeedFun = (Message s) -> {
-        Index index = (Index) s.getPayload().get();
+    	net.atos.daf.ct2.models.Index idx = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+    	Index index=idx.getIndexList().get(0);
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveAverageSpeed");
         List<String> priorityList = Arrays.asList("C", "W", "A");
+       
         try {
+        	
             for (String priority : priorityList) {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                        if (index.getVDist() > Double.valueOf(schema.getThresholdValue())) {
-                            logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, millisecondsToSeconds(convertDateToMillis(index.getEvtDateTime())));
+                        if (idx.getAverageSpeed() > Double.valueOf(schema.getThresholdValue())) {
+                            logger.info("alert found excessiveAverageSpeed ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), idx);
+                            return getTarget(index, schema, idx.getAverageSpeed());
                         }
                     }
                 }
@@ -85,7 +87,9 @@ public class IndexBasedAlertFunctions implements Serializable {
     };
     
     public static AlertLambdaExecutor<Message, Target> excessiveIdlingFun = (Message s) -> {
-        Index index = (Index) s.getPayload().get();
+    	net.atos.daf.ct2.models.Index idx = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+    	Index index=idx.getIndexList().get(0);
+    	
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveIdling");
         List<String> priorityList = Arrays.asList("C", "W", "A");
@@ -95,9 +99,9 @@ public class IndexBasedAlertFunctions implements Serializable {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                     	
-                        if (index.getVIdleDuration() > Double.valueOf(schema.getThresholdValue())) {
-                            logger.info("alert found excessiveIdling ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
-                            return getTarget(index, schema, convertDateToMillis(index.getEvtDateTime()));
+                        if (idx.getIdleDuration() > Double.valueOf(schema.getThresholdValue())) {
+                            logger.info("alert found excessiveIdling ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), idx);
+                            return getTarget(index, schema, idx.getIdleDuration());
                         }
                     }
                 }
@@ -107,7 +111,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
-
 
     public static AlertLambdaExecutor<Message, Target> fuelIncreaseDuringStopFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
@@ -136,7 +139,7 @@ public class IndexBasedAlertFunctions implements Serializable {
     						//1 when fuelIncreaseDiff > threshold
     						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
     							logger.info("Raising alert for fuelIncreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelIncreaseDiff,schema.getThresholdValue());
-    							return getTarget(index, schema, fuelIncreaseDiff);
+    							return getTarget(originalIdxMsg, schema, fuelIncreaseDiff);
     						}
     					}
                     }
@@ -147,7 +150,6 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
-    
 
     public static AlertLambdaExecutor<Message, Target> fuelDecreaseDuringStopFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
@@ -155,9 +157,9 @@ public class IndexBasedAlertFunctions implements Serializable {
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDecreaseDuringStopFunAlertDef");
         List<String> priorityList = Arrays.asList("C", "W", "A");
         Index originalIdxMsg = index.getIndexList().get(0);
-        BigDecimal vFuelStartVal = index.getVFuelStopPrevVal();
+        BigDecimal vFuelEndVal = index.getVFuelStopPrevVal();
         BigDecimal currentFuelVal = null;
-        Integer tripEnd = Integer.valueOf(5) ;
+        Integer tripstart = Integer.valueOf(4) ;
         try {
         	
         	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
@@ -167,17 +169,17 @@ public class IndexBasedAlertFunctions implements Serializable {
                 for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
                     if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
                       
-                    	if(Objects.nonNull(vFuelStartVal) && Objects.nonNull(currentFuelVal)){
+                    	if(Objects.nonNull(vFuelEndVal) && Objects.nonNull(currentFuelVal)){
     						BigDecimal fuelDecreaseDiff = BigDecimal.ZERO;
     						
-    						if(tripEnd == originalIdxMsg.getVEvtID())
-    							fuelDecreaseDiff = vFuelStartVal.subtract(currentFuelVal);
-    						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelStartVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelStartVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
+    						if(tripstart == originalIdxMsg.getVEvtID())
+    							fuelDecreaseDiff = vFuelEndVal.subtract(currentFuelVal);
+    						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelEndVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelEndVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
 
     						//1 when fuelIncreaseDiff > threshold
     						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
-    							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
-    							return getTarget(index, schema, fuelDecreaseDiff);
+    							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff, schema.getThresholdValue());
+    							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
     						}
     					}
                     }
@@ -188,14 +190,57 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
+    
 
+    public static AlertLambdaExecutor<Message, Target> fuelDuringTripFun = (Message s) -> {
+        net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("fuelDuringTripFunAlertDef");
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        Index originalIdxMsg = index.getIndexList().get(0);
+        BigDecimal vFuelPrevVal = index.getVFuelStopPrevVal();
+        BigDecimal currentFuelVal = null;
+        
+        logger.info("Inside fuelDuringTripFun urgencyLevelRefSchemas:{} , index:{} ",urgencyLevelRefSchemas, index);
+
+        try {
+        	
+        	if(Objects.nonNull(originalIdxMsg.getDocument()) && Objects.nonNull(originalIdxMsg.getDocument().getVFuelLevel1()))
+        		currentFuelVal = BigDecimal.valueOf(originalIdxMsg.getDocument().getVFuelLevel1());
+            
+        	for (String priority : priorityList) {
+                for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                      
+                    	if(Objects.nonNull(vFuelPrevVal) && Objects.nonNull(currentFuelVal)){
+                    	//if (vFuelTripObj.getVFuelLevel() != null && vFuelPrevTripRecData.getVFuelLevel() != null) {
+							BigDecimal fuelDecreaseDiff = vFuelPrevVal
+									.subtract(currentFuelVal);
+							
+							logger.info("Fuel decrease during Trip, vFuelPrevVal: {}, currentFuelVal: {}, fuelDecreaseDiff:{} ", vFuelPrevVal, currentFuelVal, fuelDecreaseDiff);
+
+							if (fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0
+									&& fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0) {
+
+								logger.info("Raising alert for fuelDecreaseDuringTrip fuelDecreadeDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
+    							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
+							} 
+						}
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error while calculating fuelDuringTripFun:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
 
 
     public static AlertLambdaExecutor<Message, Target> excessiveUnderUtilizationInHoursFun = (Message s) -> {
         net.atos.daf.ct2.models.Index index = (net.atos.daf.ct2.models.Index) s.getPayload().get();
         Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveUnderUtilizationInHours");
-        List<String> priorityList = Arrays.asList("C", "W", "A");
+        List<String> priorityList = Arrays.asList("A", "W", "C");
         logger.info("Checking excessiveUnderUtilizationInHours for vin:: {}, threshold::{}",index.getVin(),urgencyLevelRefSchemas);
         try {
             for (String priority : priorityList) {
@@ -220,7 +265,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                                 long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - schema.getThresholdValue().longValue();
                                 long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
                                 if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
-                                    logger.info("alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , index {}", schema.getAlertType(), schema.getThresholdValue(), index);
+                                    logger.info("Alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , urgency {} index {}", schema.getAlertType(), schema.getThresholdValue(), schema.getUrgencyLevelType(), index);
                                     return getTarget(index, schema, eventTimeInSeconds);
                                 }
                             }

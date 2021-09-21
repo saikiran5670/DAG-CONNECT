@@ -3,17 +3,18 @@
     public class VehicleDetailsAccountVisibilty
     {
         public int VehicleGroupId { get; set; }
-        public int AccountId { get; set; }
-        public string ObjectType { get; set; }
+        public int AccountId { get; set; } = default;
+        public string ObjectType { get; set; } = string.Empty;
         public string GroupType { get; set; }
-        public string FunctionEnum { get; set; }
-        public int OrganizationId { get; set; }
-        public string AccessType { get; set; }
-        public string VehicleGroupName { get; set; }
+        public string FunctionEnum { get; set; } = string.Empty;
+        public int OrganizationId { get; set; } = default;
+        public string AccessType { get; set; } = string.Empty;
+        public string VehicleGroupName { get; set; } = string.Empty;
         public int VehicleId { get; set; }
-        public string VehicleName { get; set; }
+        public string VehicleName { get; set; } = string.Empty;
         public string Vin { get; set; }
-        public string RegistrationNo { get; set; }
+        public string RegistrationNo { get; set; } = string.Empty;
+        public string VehicleGroupDetails { get; set; } = string.Empty;
     }
 
     public class VehicleDetailsVisibiltyAndFeature
@@ -35,5 +36,12 @@
         public string FeatureKey { get; set; }
 
         public bool Subscribe { get; set; }
+    }
+
+    public class VehicleDetailsVisibiltyAndFeatureTemp
+    {
+        public int VehicleId { get; set; }
+        public string FeatureKey { get; set; }
+        public string SubscriptionType { get; set; }
     }
 }
