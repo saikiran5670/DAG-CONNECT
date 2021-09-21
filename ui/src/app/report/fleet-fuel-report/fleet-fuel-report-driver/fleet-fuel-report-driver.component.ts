@@ -740,7 +740,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.detailSummaryObj =[];    
     this.displayData =[];
     this.updateDataSource(this.tripData); 
-    this.filterDateData();
+    // this.filterDateData();
   }
 
   onSearch(){
