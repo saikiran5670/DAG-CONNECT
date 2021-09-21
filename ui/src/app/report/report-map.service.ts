@@ -1300,6 +1300,30 @@ export class ReportMapService {
     return data.toFixed(2);
   }
 
+  convertMaxSpeedUnits(data: any, unitFormat: any){
+    let _data:any;
+    switch(unitFormat){
+
+         case 'dunit_Metric' : {
+            _data = data;//not doing conversion-kmph
+            break;
+         }
+         case 'dunit_Imperial' : {
+           _data = this.convertKmphToMph(data);//mIles per hour
+           break;
+         }
+         default: {
+           _data = data;
+         }
+    }
+    return _data;
+ }
+
+ convertKmphToMph(_data:any){
+  let data = _data * 0.621371;
+  return data.toFixed(2);
+}
+
   convertDistanceUnits(data: any, unitFormat: any){
     let _data: any;
     switch(unitFormat){
@@ -1504,7 +1528,8 @@ export class ReportMapService {
             // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
             // element.dpaScore = parseFloat(element.dpaScore);
             // element.dpaScore = element.dpaScore.toFixed(2)*1;
-            element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+            //element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+            element.convertedMaxSpeed = this.convertMaxSpeedUnits(element.maxSpeed,unitFormat);
             element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
     
   

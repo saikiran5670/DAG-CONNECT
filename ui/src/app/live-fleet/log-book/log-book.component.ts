@@ -557,10 +557,10 @@ ngOnDestroy(){
   if(this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
     // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-    let sdate = this._state.data[0].alertGeneratedTime + ' ' + '00:00:00 AM';
+    let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     let startDate = new Date( sdate +' UTC');
     startDate.toString();
-    let newDate = new Date(this._state.data[0].alertGeneratedTime + 'UTC');
+    let newDate = new Date(this._state.data[0].date + 'UTC');
     // let newDate = new Date(this._state.data[0].date + 'UTC');
     newDate.toString();
     this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
@@ -951,11 +951,11 @@ ngOnDestroy(){
     if(this.fromAlertsNotifications == true && this._state.data.length > 0){
       this.selectionTab = '';
       // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-      let sdate = this._state.data[0].alertGeneratedTime + ' ' + '00:00:00 AM';
+      let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
       let startDate = new Date( sdate +' UTC');
       startDate.toString();
       // let newDate = new Date(this._state.data[0].date + 'UTC');
-      let newDate = new Date(this._state.data[0].alertGeneratedTime + 'UTC');
+      let newDate = new Date(this._state.data[0].date + 'UTC');
       newDate.toString();
       this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');

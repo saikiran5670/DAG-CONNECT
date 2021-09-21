@@ -174,10 +174,10 @@ namespace net.atos.daf.ct2.notificationengine
                 }
                 return identifiedNotificationRec;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                throw ex;
+                throw;
             }
         }
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)

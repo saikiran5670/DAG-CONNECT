@@ -52,7 +52,7 @@ public class MessageProcessing<U,R, T> {
                         .readTree((String) value.getValue())
                         .get("TransID")
                         .asText();
-                logger.info("Filtered Trans ID " + transId);
+                
                 return transId.equalsIgnoreCase(messageType);
               }
             })
@@ -67,12 +67,13 @@ public class MessageProcessing<U,R, T> {
 
 			@Override
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
-                logger.info("map after process record value.getValue() :: {}",value.getValue());
+               // logger.info("map after process record value.getValue() :: {}",value.getValue());
                 try{
                 	 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
                      KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
-                     kafkaRecord.setKey(key);
+                     //kafkaRecord.setKey(key);
+                     kafkaRecord.setKey(value.getKey());
                      kafkaRecord.setValue(record);
                      logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
                      
