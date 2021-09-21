@@ -164,7 +164,22 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     var resultObj = (result as ObjectResult).Value as dynamic;
                     var response = await _accountManager.ValidateDriver(resultObj.Email, resultObj.OrgId);
 
-                    return Ok(response);
+                    if (resultObj.OrgId > 0)
+                    {
+                        return Ok(new
+                        {
+                            AccountID = response.AccountID,
+                            AccountName = response.AccountName,
+                            DateFormat = response.DateFormat,
+                            TimeFormat = response.TimeFormat,
+                            TimeZone = response.TimeZone,
+                            UnitDisplay = response.UnitDisplay,
+                            VehicleDisplay = response.VehicleDisplay,
+                            Language = response.Language
+                        });
+                    }
+                    else
+                        return Ok(response);
                 }
                 else
                 {
