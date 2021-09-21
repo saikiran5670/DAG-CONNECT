@@ -222,12 +222,41 @@ export class Util {
         if (_t.length > 0) {
             _timezone = _t[1].trim();
         }
-        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
+        if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
+        console.log(moment.utc( _date ).valueOf());
+        return _dateWithoutMiliSeconds.getTime(); 
+        }​​​​​​ 
+        else{
+        //let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset() * -1;
+       // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
+
+        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset()* -1;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
+
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
         return _convertedUtc;
+        }
+        // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();     
+        // return gmt_val;
     }
-
+        
+        // let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
+        // let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
+        // let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
+        // return _convertedUtc;
+  
+        // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
+        //     console.log(moment.utc( _date ).valueOf());
+        //    return _dateWithoutMiliSeconds.getTime(); 
+        //    }​​​​​​ 
+       // let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset() * -1;
+            // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
+ 
+            // let PrefTzToGMT: any = moment().tz(_timezone).utcOffset();
+            // let PrefTimeAsPerSelected = moment(gmt['_d']).utcOffset(PrefTzToGMT);
+ 
+            // let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
+            // return gmt['_d'].getTime();
     // public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
         
     //     // //    console.log("_date", _date)
