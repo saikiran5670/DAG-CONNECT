@@ -4,13 +4,13 @@
         fxLayoutGap="1px">
         <div fxLayout="column" class="areaWidth min-width-10-per">
             <!-- <mat-icon class="line3">{{item.icons}}</mat-icon> -->
-            <span *ngIf="item.alertUrgency == 'C'">
+            <span *ngIf="item.alertUrgency == 'C' || item.urgencyLevel == 'C'">
                 <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
               </span> 
-              <span *ngIf="item.alertUrgency == 'W'">
+              <span *ngIf="item.alertUrgency == 'W' || item.urgencyLevel == 'W'">
                 <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
               </span>
-              <span *ngIf="item.alertUrgency == 'A'">
+              <span *ngIf="item.alertUrgency == 'A' || item.urgencyLevel == 'A'">
                 <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
               </span>
         </div>
