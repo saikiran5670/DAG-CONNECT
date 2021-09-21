@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
                     {
                         TripAlertId = _pkId,
-                        TripId = Dns.GetHostName() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
+                        TripId = Dns.GetHostName(),
                         Vin = "XLR0998HGFFT76657",
                         AlertCategory = "L",
                         AlertType = "G",
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         VehicleGroupName = "Fleet",
                         VehicleName = "testKri",
                         VehicleLicencePlate = "testKri",
-                        AlertCategoryKey = _userDetails.AccountId.ToString(),
+                        AlertCategoryKey = _userDetails.AccountId.ToString() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
                         AlertTypeKey = _userDetails.OrgId.ToString(),
                         UrgencyTypeKey = Context.ConnectionId,
                         UrgencyLevel = "C"
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
                     //await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
                     IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
-                    _logger.Info($"\n\rNotifyAlertKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                    //_logger.Info($"\n\rNotifyAlertKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
                     await Clients.Clients(connectionIds).SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
                     if (_pkId > 1000)
                     {
