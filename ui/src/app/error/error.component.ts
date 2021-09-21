@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./error.component.less']
 })
 export class ErrorComponent implements OnInit {
-
+  showLoadingIndicator: any = false;
 
   constructor(public _route: Router, @Inject(MAT_DIALOG_DATA) public data: {
                   confirmText: string,
@@ -25,17 +25,21 @@ export class ErrorComponent implements OnInit {
   }
 
   public close(value: any) {
+    this.showLoadingIndicator = true;
     if(localStorage.length !== 0) {
       localStorage.clear();
       this.authService.signOut().subscribe(()=>{
         //localStorage.clear(); // clear all localstorage
-        this._route.navigate(["/auth/login"]);
+        this.hideloader();
         this.mdDialogRef.close(value);
+        this._route.navigate(["/auth/login"]);
       }, (error) => {
-        this._route.navigate(["/auth/login"]);
+        this.hideloader();
         this.mdDialogRef.close(value);
+        this._route.navigate(["/auth/login"]);
       });
     } else {
+      this.hideloader();
       this.mdDialogRef.close(value);
       this._route.navigate(["/auth/login"]);
     }
@@ -52,6 +56,11 @@ export class ErrorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
   }
 
 }
