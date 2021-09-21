@@ -124,11 +124,11 @@ export class CreateEditViewPoiComponent implements OnInit {
 
   showSearchMarker(markerData: any){
     if(markerData && markerData.lat && markerData.lng){
-      //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
       if(markerData.from && markerData.from == 'search'){
         this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
       }
-      //this.map.addObject(selectedMarker);
+      this.map.addObject(selectedMarker);
     }
   }
 
