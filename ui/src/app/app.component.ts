@@ -1291,6 +1291,7 @@ connectWithSignalR(){
 
 notificationsClosed(){
   this.signalRService.notificationData=[];
+  this.signalRService.notificationCount= 0;
 }
 
 notificationClicked(){
@@ -1314,7 +1315,6 @@ notificationClicked(){
     });
     
     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
-      this.signalRService.notificationCount= 0;
     })
   }
 }

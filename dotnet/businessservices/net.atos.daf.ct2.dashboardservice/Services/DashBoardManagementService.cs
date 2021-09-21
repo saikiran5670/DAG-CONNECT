@@ -326,9 +326,11 @@ namespace net.atos.daf.ct2.dashboardservice
             try
             {
                 CheckIfSubReportExistResponse response = new CheckIfSubReportExistResponse();
-                response.SubReportFeature = await _reportManager.CheckIfSubReportExist(request.ReportId);
+                var subReportResponse = await _reportManager.CheckIfSubReportExist(request.ReportId);
                 response.Code = Responsecode.Success;
                 response.Message = DashboardConstants.CHECK_SUB_REPORT_EXIST_SUCCESS_MSG;
+                response.FeatureId = subReportResponse.FeatureId;
+                response.HasSubReports = subReportResponse.HasSubReports;
                 return response;
 
             }
