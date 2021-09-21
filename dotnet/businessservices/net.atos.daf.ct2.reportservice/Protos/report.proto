@@ -264,7 +264,8 @@ message CheckIfSubReportExistRequest {
 message CheckIfSubReportExistResponse {
     Responsecode Code = 1;
     string Message = 2;
-    int32 SubReportFeature = 3;
+    int32 FeatureId = 3;
+    string HasSubReports = 4;
 }
 
 message VehicleFilterRequest{
