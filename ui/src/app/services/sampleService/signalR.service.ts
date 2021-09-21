@@ -183,8 +183,8 @@ get24Time(_time: any){
     .start()
     .then(() => {
         console.log('Hub Connection Started!');
-          this.askServerListenerForNotifyAlert();
-          this.askServerForNotifyAlert();
+        this.askServerListenerForNotifyAlert();
+        this.askServerForNotifyAlert();
         this.AlertNotifcaionList.push('Hub Connection Started!');
     })
     .catch(err => 
@@ -197,16 +197,17 @@ get24Time(_time: any){
 
   askServerForNotifyAlert() {
     //Actual method to get notifications
-     this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
-    .catch(err => 
-      { 
-          console.log(err);
-          this.AlertNotifcaionList.push(err);
-      });
+    //  this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
+    // .catch(err => 
+    //   { 
+    //       console.log(err);
+    //       this.AlertNotifcaionList.push(err);
+    //   });
 
     
     //Mock method to get notifications
-    this.hubConnection.invoke("NotifyAlert", ""+this.accountId+","+this.accountOrganizationId+"")
+    this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
+    // this.hubConnection.invoke("NotifyAlert", "187,36")
     .catch(err => 
       { 
           console.log(err);
@@ -215,31 +216,42 @@ get24Time(_time: any){
   }
   
   askServerListenerForNotifyAlert(){
-     this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
-       notificationMessage= JSON.parse(notificationMessage);
-        this.AlertNotifcaionList.push(notificationMessage);
+  //    this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+  //      notificationMessage= JSON.parse(notificationMessage);
+  //      this.notificationCount++;
+  //      console.log("notificationMessage = ",notificationMessage);
+  //       this.AlertNotifcaionList.push(notificationMessage);
        
-        if(this.notificationData.length < 5){
-          this.notificationData.push(notificationMessage);
-        }
-        else{
-          this.notificationData.shift();
-          this.notificationData.push(notificationMessage);
-        }
-        this.getDateAndTime();
-        this.notificationCount++;
-    })
+  //       if(this.notificationData.length < 5){
+  //         this.notificationData.push(notificationMessage);
+  //       }
+  //       else{
+  //         this.notificationData.shift();
+  //         this.notificationData.push(notificationMessage);
+  //       }
+  //       this.getDateAndTime();
+  //   })
 
-    //For error response
-    this.hubConnection.on("askServerResponse", (errorMessage) => {
-      console.log(errorMessage);
-      this.AlertNotifcaionList.push(errorMessage);
-  })
+  //   //For error response
+  //   this.hubConnection.on("askServerResponse", (errorMessage) => {
+  //     console.log(errorMessage);
+  //     this.AlertNotifcaionList.push(errorMessage);
+  // })
 
-// 2  methods added for testing(TO check if signalR is working)
   this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
-    notificationMessage= JSON.parse(notificationMessage);
-    console.log(notificationMessage);       
+    notificationMessage= JSON.parse(JSON.parse(notificationMessage));
+    this.notificationCount++;
+    // console.log("TestAlertResponse message = ",notificationMessage);
+    this.AlertNotifcaionList.push(notificationMessage);
+    
+    if(this.notificationData.length < 5){
+      this.notificationData.push(notificationMessage);
+    }
+    else{
+      this.notificationData.shift();
+      this.notificationData.push(notificationMessage);
+    }
+    this.getDateAndTime();
  }​​​​​)
 ​
  this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
