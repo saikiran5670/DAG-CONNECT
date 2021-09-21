@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                         {
                             AccountID = response.AccountID,
                             AccountName = response.AccountName,
-                            Role = response.RoleID,
+                            RoleID = response.RoleID,
                             DateFormat = response.DateFormat,
                             TimeFormat = response.TimeFormat,
                             TimeZone = response.TimeZone,
