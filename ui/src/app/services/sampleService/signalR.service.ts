@@ -197,22 +197,22 @@ get24Time(_time: any){
 
   askServerForNotifyAlert() {
     //Actual method to get notifications
-    //  this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
-    // .catch(err => 
-    //   { 
-    //       console.log(err);
-    //       this.AlertNotifcaionList.push(err);
-    //   });
-
-    
-    //Mock method to get notifications
-    this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
-    // this.hubConnection.invoke("NotifyAlert", "187,36")
+     this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
     .catch(err => 
       { 
           console.log(err);
           this.AlertNotifcaionList.push(err);
       });
+
+    
+    //Mock method to get notifications
+    // this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
+    // // this.hubConnection.invoke("NotifyAlert", "187,36")
+    // .catch(err => 
+    //   { 
+    //       console.log(err);
+    //       this.AlertNotifcaionList.push(err);
+    //   });
   }
   
   askServerListenerForNotifyAlert(){

@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
                     {
                         TripAlertId = _pkId,
-                        TripId = Dns.GetHostName() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
+                        TripId = Dns.GetHostName(),
                         Vin = "XLR0998HGFFT76657",
                         AlertCategory = "L",
                         AlertType = "G",
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         VehicleGroupName = "Fleet",
                         VehicleName = "testKri",
                         VehicleLicencePlate = "testKri",
-                        AlertCategoryKey = _userDetails.AccountId.ToString(),
+                        AlertCategoryKey = _userDetails.AccountId.ToString() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
                         AlertTypeKey = _userDetails.OrgId.ToString(),
                         UrgencyTypeKey = Context.ConnectionId,
                         UrgencyLevel = "C"

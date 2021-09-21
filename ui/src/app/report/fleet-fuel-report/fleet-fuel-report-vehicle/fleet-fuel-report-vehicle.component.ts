@@ -749,7 +749,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.tableInfoObj = []; 
     this.displayData =[];
     this.updateDataSource(this.tripData);
-    this.filterDateData();
+    // this.filterDateData();
   }
 
   onSearch(){

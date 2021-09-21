@@ -959,9 +959,9 @@ ngOnDestroy(){
       newDate.toString();
       this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertLevel);
+      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
-      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCat);
+      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
       // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
       // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
     }    
