@@ -27,6 +27,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         public const string REPORT_REQUIRED_MSG = "Report id is required.";
         public const string ACCOUNT_REQUIRED_MSG = "Account id is required.";
         public const string ORGANIZATION_REQUIRED_MSG = "Organization id is required.";
-        public const string GET_VIN_VISIBILITY_FAILURE_MSG2 = "Error fetching VIN and Vehicla Details for Account Id {0} and Organization Id {1}. With error: {2}.";
+        public const string GET_VIN_VISIBILITY_FAILURE_MSG2 = "Error fetching VIN and Vehicle Details for Account Id {0} and Organization Id {1}. With error: {2}.";
     }
 }

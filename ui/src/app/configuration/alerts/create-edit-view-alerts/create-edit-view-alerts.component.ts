@@ -2498,11 +2498,11 @@ PoiCheckboxClicked(event: any, row: any) {
 
 keyPressNumbers(event) {    
   var limit = parseInt(event.currentTarget.maxLength);
-  var max = parseInt(event.currentTarget.max);
+  // var max = parseInt(event.currentTarget.max);
   var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
   var value = Number.parseFloat(event.target.value + '' + event.key);
-  if(event.key=='-' || value < min || value > max || (value).toString().length == limit) event.preventDefault();
+  if(event.key=='-' || value < min || (value).toString().length == limit) event.preventDefault();
 return true;   
 }
 

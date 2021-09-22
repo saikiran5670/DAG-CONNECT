@@ -106,8 +106,10 @@ namespace net.atos.daf.ct2.driver
                 var queryStatement =
                         @"SELECT EXISTS (SELECT 1
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId and drv.state='A')";
+                            WHERE driver_id_ext = @DriverId and email = @Email and drv.state='A'{0})";
 
+                queryStatement = organisationId > 0 ? string.Format(queryStatement, " and drv.organization_id = @OrganisationId")
+                                                    : string.Format(queryStatement, string.Empty);
                 return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
             }
             catch (Exception)

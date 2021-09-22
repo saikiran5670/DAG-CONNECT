@@ -933,7 +933,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<int> CheckIfSubReportExist(int reportId)
+        public async Task<SubReportDto> CheckIfSubReportExist(int reportId)
         {
             try
             {
@@ -941,10 +941,11 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@report_id", reportId);
 
                 #region Query Select User Preferences
-                var query = @"SELECT feature_id FROM master.report WHERE id = @report_id and sub_report = 'Y'";
+                var query = @"SELECT feature_id as FeatureId, sub_report as HasSubReports 
+                                FROM master.report WHERE id = @report_id";
                 #endregion
 
-                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.QueryFirstOrDefaultAsync<SubReportDto>(query, parameter);
             }
             catch (Exception)
             {
