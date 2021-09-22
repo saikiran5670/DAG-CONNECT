@@ -1569,10 +1569,16 @@ namespace net.atos.daf.ct2.account
 	                    INTERSECT
 	                    --Subscription Route
 	                    SELECT f.id
-	                    FROM master.Subscription s
-	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
-	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
- 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    FROM
+	                    (
+		                    SELECT pkg.feature_set_id
+		                    FROM master.Package pkg
+		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+		                    UNION
+		                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+	                    ) subs
+                        INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
                     ) fsets
                     INNER JOIN master.Feature f ON f.id = fsets.id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
