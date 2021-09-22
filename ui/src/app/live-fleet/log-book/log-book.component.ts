@@ -570,8 +570,8 @@ ngOnDestroy(){
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
-    // this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-    // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+    this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+    this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
   }
   if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
@@ -961,8 +961,8 @@ ngOnDestroy(){
       this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
-      // this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
       // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
     }    
