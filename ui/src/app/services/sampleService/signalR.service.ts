@@ -174,9 +174,11 @@ get24Time(_time: any){
     this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.signalRServiceURL, {
       skipNegotiation: false,
-      transport: signalR.HttpTransportType.LongPolling | signalR.HttpTransportType.ServerSentEvents
+      transport: signalR.HttpTransportType.LongPolling  |  signalR.HttpTransportType.ServerSentEvents
+     
      }
-    ).withAutomaticReconnect()
+    )
+    // .withAutomaticReconnect()
     .build();
   
     this.hubConnection
@@ -196,8 +198,19 @@ get24Time(_time: any){
   
 
   askServerForNotifyAlert() {
+    console.log("askServerForNotifyAlert" +`${this.accountId},${this.accountOrganizationId}`)
+        //Mock method to get notifications
+        // this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
+        // // this.hubConnection.invoke("NotifyAlert", "187,36")
+        // .catch(err => 
+        //   { 
+        //       console.log(err);
+        //       this.AlertNotifcaionList.push(err);
+        //   });
+
     //Actual method to get notifications
      this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
+    //  this.hubConnection.invoke("ReadKafkaMessages", 187, 36)
     .catch(err => 
       { 
           console.log(err);
@@ -205,59 +218,52 @@ get24Time(_time: any){
       });
 
     
-    //Mock method to get notifications
-    // this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
-    // // this.hubConnection.invoke("NotifyAlert", "187,36")
-    // .catch(err => 
-    //   { 
-    //       console.log(err);
-    //       this.AlertNotifcaionList.push(err);
-    //   });
+
   }
   
   askServerListenerForNotifyAlert(){
-  //    this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
-  //      notificationMessage= JSON.parse(notificationMessage);
-  //      this.notificationCount++;
-  //      console.log("notificationMessage = ",notificationMessage);
-  //       this.AlertNotifcaionList.push(notificationMessage);
+     this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+       notificationMessage= JSON.parse(notificationMessage);
+       this.notificationCount++;
+       console.log("notificationMessage = ",notificationMessage);
+        this.AlertNotifcaionList.push(notificationMessage);
        
-  //       if(this.notificationData.length < 5){
-  //         this.notificationData.push(notificationMessage);
-  //       }
-  //       else{
-  //         this.notificationData.shift();
-  //         this.notificationData.push(notificationMessage);
-  //       }
-  //       this.getDateAndTime();
-  //   })
+        if(this.notificationData.length < 5){
+          this.notificationData.push(notificationMessage);
+        }
+        else{
+          this.notificationData.shift();
+          this.notificationData.push(notificationMessage);
+        }
+        this.getDateAndTime();
+    })
 
-  //   //For error response
-  //   this.hubConnection.on("askServerResponse", (errorMessage) => {
-  //     console.log(errorMessage);
-  //     this.AlertNotifcaionList.push(errorMessage);
-  // })
+    //For error response
+    this.hubConnection.on("askServerResponse", (errorMessage) => {
+      console.log(errorMessage);
+      this.AlertNotifcaionList.push(errorMessage);
+  })
 
-  this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
-    notificationMessage= JSON.parse(JSON.parse(notificationMessage));
-    this.notificationCount++;
-    // console.log("TestAlertResponse message = ",notificationMessage);
-    this.AlertNotifcaionList.push(notificationMessage);
+//   this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
+//     notificationMessage= JSON.parse(JSON.parse(notificationMessage));
+//     this.notificationCount++;
+//     // console.log("TestAlertResponse message = ",notificationMessage);
+//     this.AlertNotifcaionList.push(notificationMessage);
     
-    if(this.notificationData.length < 5){
-      this.notificationData.push(notificationMessage);
-    }
-    else{
-      this.notificationData.shift();
-      this.notificationData.push(notificationMessage);
-    }
-    this.getDateAndTime();
- }​​​​​)
-​
- this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
-   console.log(errorMessage);
-   this.AlertNotifcaionList.push(errorMessage);
-}​​​​​)
+//     if(this.notificationData.length < 5){
+//       this.notificationData.push(notificationMessage);
+//     }
+//     else{
+//       this.notificationData.shift();
+//       this.notificationData.push(notificationMessage);
+//     }
+//     this.getDateAndTime();
+//  }​​​​​)
+// ​
+//  this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
+//    console.log(errorMessage);
+//    this.AlertNotifcaionList.push(errorMessage);
+// }​​​​​)
 
 
   }
@@ -266,7 +272,7 @@ get24Time(_time: any){
   this.hubConnection.off("NotifyAlertResponse");
 
   //Added for testing
-  this.hubConnection.off("TestAlertResponse");
+  // this.hubConnection.off("TestAlertResponse");
   //----------------------------------------------------
   this.hubConnection.stop();
   this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
