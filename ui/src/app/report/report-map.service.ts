@@ -1500,7 +1500,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
-      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
+      element.convertedFuelConsumption = this.getTripFuelConsumption(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
@@ -1626,6 +1626,30 @@ export class ReportMapService {
     }
     return _fuelConsumed; 
   }
+
+  //fleet fuel report as fuel consumption coming ltr/100km directly
+  getTripFuelConsumption(fuelConsumption: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
+    let _fuelConsumption: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumption = fuelConsumption;
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumption = this.convertFuelConsumptionLtr100kmToMpg(fuelConsumption);
+        break;
+      }
+      default: {
+        _fuelConsumption = fuelConsumption;
+      }
+    }
+    return _fuelConsumption; 
+  }
+  convertFuelConsumptionLtr100kmToMpg(_data:any){
+    let data: any = (282.481/_data);
+    return (data).toFixed(2);
+  }
+
   //Fuel Consumption in Summary Section
   getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
     console.log("This function works well"); 
