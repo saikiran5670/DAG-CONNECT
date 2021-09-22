@@ -63,4 +63,9 @@
   <ItemGroup>
     <Folder Include="Entity\Role\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="cacert.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

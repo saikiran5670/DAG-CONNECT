@@ -33,10 +33,10 @@ export class SignalrAlertNotificationComponent implements OnInit {
   
   gotoLogBookForMoreAlerts(){
         //sorting dates in ascending order
-        let sortedDates = this.signalRService.notificationData;
-        let obj = sortedDates.sort((x,y) => x.data-y.data);
-        this.logbookData.startDate = obj[0].data;
-        this.logbookData.endDate = obj[obj.length - 1].data;
+        // let sortedDates = this.signalRService.notificationData;
+        // let obj = sortedDates.sort((x,y) => x.data-y.data);
+        // this.logbookData.startDate = obj[0].data;
+        // this.logbookData.endDate = obj[obj.length - 1].data;
     
     const navigationExtras: NavigationExtras = {
       state: {

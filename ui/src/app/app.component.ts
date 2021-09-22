@@ -1268,54 +1268,54 @@ export class AppComponent {
   }
 
 getOfflineNotifications(){
-  this.alertService.getOfflineNotifications().subscribe(data => {
-    if(data){
-      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-      this.signalRService.notificationData= data["notificationResponse"];
-    }
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
+  // this.alertService.getOfflineNotifications().subscribe(data => {
+  //   if(data){
+  //     this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+  //     this.signalRService.notificationData= data["notificationResponse"];
+  //   }
+  //   // setTimeout(() => {
+  //   //   this.getOfflineNotifications();
+  //   // }, 180000);
 
-  },
-  error => {
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
-  })
+  // },
+  // error => {
+  //   // setTimeout(() => {
+  //   //   this.getOfflineNotifications();
+  //   // }, 180000);
+  // })
 }
 
 connectWithSignalR(){
-  this.signalRService.startConnection();
+  // this.signalRService.startConnection();
 }
 
 notificationsClosed(){
-  this.signalRService.notificationData=[];
-  this.signalRService.notificationCount= 0;
+  // this.signalRService.notificationData=[];
+  // this.signalRService.notificationCount= 0;
 }
 
 notificationClicked(){
-  this.showAlertNotifications = true;
-  if(this.signalRService.notificationCount > 0){
-    let notificationData= [];
-    this.signalRService.notificationData.forEach(element => {
-      let notificationObj= {
-        "tripId": element.tripId,
-        "vin": element.vin,
-        "alertCategory": element.alertCategory,
-        "alertType": element.alertType,
-        "alertGeneratedTime": element.alertGeneratedTime,
-        "organizationId": element.organizationId,
-        "tripAlertId": element.tripAlertId,
-        "alertId": element.alertId,
-        "accountId": element.accountId,
-        "alertViewTimestamp": 0
-      }
-      notificationData.push(notificationObj);
-    });
+  // this.showAlertNotifications = true;
+//   if(this.signalRService.notificationCount > 0){
+//     let notificationData= [];
+//     this.signalRService.notificationData.forEach(element => {
+//       let notificationObj= {
+//         "tripId": element.tripId,
+//         "vin": element.vin,
+//         "alertCategory": element.alertCategory,
+//         "alertType": element.alertType,
+//         "alertGeneratedTime": element.alertGeneratedTime,
+//         "organizationId": element.organizationId,
+//         "tripAlertId": element.tripAlertId,
+//         "alertId": element.alertId,
+//         "accountId": element.accountId,
+//         "alertViewTimestamp": 0
+//       }
+//       notificationData.push(notificationObj);
+//     });
     
-    this.alertService.addViewedNotifications(notificationData).subscribe(data => {
-    })
-  }
-}
+//     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
+//     })
+//   }
+ }
 }
