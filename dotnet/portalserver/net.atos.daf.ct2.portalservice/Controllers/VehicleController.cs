@@ -1073,28 +1073,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("TestLog2")]
-        public async Task<IActionResult> TestLog()
-        {
-            int x = 0;
-            int div = 0;
-            try
-            {
-                div = 100 / x;
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
-                                 "Vehicle component Test service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                 $"{ nameof(TestLog) } method Failed. Error : {ex.Message}", 0, 0, "Connection test", _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
-            }
-        }
-
     }
 
 }
