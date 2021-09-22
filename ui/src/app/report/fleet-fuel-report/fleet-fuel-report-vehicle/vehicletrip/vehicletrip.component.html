@@ -457,7 +457,7 @@
                             || ' mpg') }})</span>              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
-                          <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>              
+                          <span>{{row.convertedTripFuelConsumption  | number : '.2-2'}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cO2Emission">              
