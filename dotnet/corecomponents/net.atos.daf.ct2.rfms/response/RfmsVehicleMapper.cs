@@ -413,14 +413,10 @@ namespace net.atos.daf.ct2.rfms.response
             snapshotData.Driver1WorkingState = record.driver1workingstate;
             snapshotData.Driver2Id = new Driver2Id()
             {
-                TachoDriverIdentification = new TachoDriverIdentification()
-                {
-                    DriverIdentification = record.tachodriver2identification,
-                    CardIssuingMemberState = "S",
-                    DriverAuthenticationEquipment = record.driver2authenticationequipment,//MasterMemoryObjectCacheConstants.DRIVER_CARD,
-                    CardReplacementIndex = "0",
-                    CardRenewalIndex = "0"
-                },
+
+                TachoDriverIdentification = GetDriverCardDetails(record),
+
+
                 OemDriverIdentification = new OemDriverIdentification()
                 {
                     IdType = record.driver2oemidtype,
@@ -470,5 +466,23 @@ namespace net.atos.daf.ct2.rfms.response
         }
 
 
+        public TachoDriverIdentification GetDriverCardDetails(dynamic record)
+        {
+            //TachoDriverIdentification tacho = new TachoDriverIdentification();
+            string driverIdentification = record.tachodriver2identification;
+            //string driverid = record.tachodriveridentification;
+            if (driverIdentification != null && driverIdentification.Length == 19)
+                return new TachoDriverIdentification()
+                {
+                    //DriverIdentification = record.tachodriver2identification,
+                    CardIssuingMemberState = driverIdentification.Substring(0, 3).Trim(),//first three with trim
+                    DriverAuthenticationEquipment = record.driver2authenticationequipment,//MasterMemoryObjectCacheConstants.DRIVER_CARD,
+                    CardReplacementIndex = driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
+                    CardRenewalIndex = driverIdentification.Substring(driverIdentification.Length - 2) // last two index
+                };
+
+            else
+                return new TachoDriverIdentification();
+        }
     }
 }
