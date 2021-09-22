@@ -171,38 +171,38 @@ get24Time(_time: any){
 
 
   startConnection = () => {
-    this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(this.signalRServiceURL, {
-      skipNegotiation: false,
-      transport: signalR.HttpTransportType.LongPolling | signalR.HttpTransportType.ServerSentEvents
-     }
-    ).withAutomaticReconnect()
-    .build();
+    // this.hubConnection = new signalR.HubConnectionBuilder()
+    // .withUrl(this.signalRServiceURL, {
+    //   skipNegotiation: false,
+    //   transport: signalR.HttpTransportType.LongPolling | signalR.HttpTransportType.ServerSentEvents
+    //  }
+    // ).withAutomaticReconnect()
+    // .build();
   
-    this.hubConnection
-    .start()
-    .then(() => {
-        console.log('Hub Connection Started!');
-        this.askServerListenerForNotifyAlert();
-        this.askServerForNotifyAlert();
-        this.AlertNotifcaionList.push('Hub Connection Started!');
-    })
-    .catch(err => 
-      { 
-        console.log('Error while starting connection: ' + err);
-        this.AlertNotifcaionList.push('Error while starting connection: ' + err);
-       })
+    // this.hubConnection
+    // .start()
+    // .then(() => {
+    //     console.log('Hub Connection Started!');
+    //     this.askServerListenerForNotifyAlert();
+    //     this.askServerForNotifyAlert();
+    //     this.AlertNotifcaionList.push('Hub Connection Started!');
+    // })
+    // .catch(err => 
+    //   { 
+    //     console.log('Error while starting connection: ' + err);
+    //     this.AlertNotifcaionList.push('Error while starting connection: ' + err);
+    //    })
   }
   
 
   askServerForNotifyAlert() {
     //Actual method to get notifications
-     this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
-    .catch(err => 
-      { 
-          console.log(err);
-          this.AlertNotifcaionList.push(err);
-      });
+    //  this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
+    // .catch(err => 
+    //   { 
+    //       console.log(err);
+    //       this.AlertNotifcaionList.push(err);
+    //   });
 
     
     //Mock method to get notifications
@@ -238,38 +238,38 @@ get24Time(_time: any){
   //     this.AlertNotifcaionList.push(errorMessage);
   // })
 
-  this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
-    notificationMessage= JSON.parse(JSON.parse(notificationMessage));
-    this.notificationCount++;
-    // console.log("TestAlertResponse message = ",notificationMessage);
-    this.AlertNotifcaionList.push(notificationMessage);
+//   this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
+//     notificationMessage= JSON.parse(JSON.parse(notificationMessage));
+//     this.notificationCount++;
+//     // console.log("TestAlertResponse message = ",notificationMessage);
+//     this.AlertNotifcaionList.push(notificationMessage);
     
-    if(this.notificationData.length < 5){
-      this.notificationData.push(notificationMessage);
-    }
-    else{
-      this.notificationData.shift();
-      this.notificationData.push(notificationMessage);
-    }
-    this.getDateAndTime();
- }​​​​​)
-​
- this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
-   console.log(errorMessage);
-   this.AlertNotifcaionList.push(errorMessage);
-}​​​​​)
+//     if(this.notificationData.length < 5){
+//       this.notificationData.push(notificationMessage);
+//     }
+//     else{
+//       this.notificationData.shift();
+//       this.notificationData.push(notificationMessage);
+//     }
+//     this.getDateAndTime();
+//  }​​​​​)
+// ​
+//  this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
+//    console.log(errorMessage);
+//    this.AlertNotifcaionList.push(errorMessage);
+// }​​​​​)
 
 
   }
   
   ngOnDestroy() {
-  this.hubConnection.off("NotifyAlertResponse");
+  // this.hubConnection.off("NotifyAlertResponse");
 
-  //Added for testing
-  this.hubConnection.off("TestAlertResponse");
-  //----------------------------------------------------
-  this.hubConnection.stop();
-  this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
+  // //Added for testing
+  // this.hubConnection.off("TestAlertResponse");
+  // //----------------------------------------------------
+  // this.hubConnection.stop();
+  // this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
   }
 
 }
