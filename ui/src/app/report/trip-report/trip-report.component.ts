@@ -464,8 +464,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       } else {
         this.startTimeDisplay = '12:00:00 AM';
         this.endTimeDisplay = '11:59:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.selectedStartTime = "12:00 AM";
+        this.selectedEndTime = "11:59 PM";   
       }
     }
 
@@ -642,8 +642,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       vehName = vehCount[0].vehicleName;
       vin = vehCount[0].vin;
       plateNo = vehCount[0].registrationNo;
-    }
-    this.tableInfoObj = {
+    }        
+    this.tableInfoObj = {      
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
@@ -662,8 +662,11 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
     let _date: any;
     let _time: any;
-    if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+    if (this.prefTimeFormat == 12 && date.getHours() == 12){
+      _time = ((date.getHours() == 12 || date.getMinutes() > 0 || date.getSeconds() > 0))? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+    }
+   else if (this.prefTimeFormat == 12) {
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0))? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
     } else {
       _time = `${h}:${m}:${s}`;
     }
@@ -1011,16 +1014,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // Setting display of spinner
     this.showLoadingIndicator = false;
   }
-
-  startTimeChanged(selectedTime: any) {
+  
+  startTimeChanged(selectedTime: any) {    
     this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = selectedTime + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
-    }
+       this.startTimeDisplay = selectedTime;
+     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1070,7 +1073,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   selectionTimeRange(selection: any) {
-    this.internalSelection = true;
+    this.internalSelection = true;    
     switch (selection) {
       case 'today': {
         this.selectionTab = 'today';
@@ -1130,11 +1133,21 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      } else {
-        date.setHours(_x);
+     if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
       }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
       date.setMinutes(_y.split(' ')[0]);
     } else {
       date.setHours(_x);

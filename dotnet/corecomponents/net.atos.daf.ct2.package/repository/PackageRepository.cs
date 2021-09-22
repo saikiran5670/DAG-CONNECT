@@ -186,8 +186,11 @@ namespace net.atos.daf.ct2.package.repository
                 var parameter = new DynamicParameters();
                 List<Package> packages = new List<Package>();
                 string query = string.Empty;
-
-                query = @"select id,packagecode,feature_set_id,name,type,description,state,created_at from master.package pkg where id !=1 and state != 'D' ";
+                //commenting id condition as we introdused new package type Platform
+                query = @"select id,packagecode,feature_set_id,name,type,description,state,created_at 
+                            from master.package pkg
+                            where  --id !=1 and
+                            state != 'D' ";
 
                 if (filter != null)
                 {
@@ -225,7 +228,7 @@ namespace net.atos.daf.ct2.package.repository
                         query = query + " and pkg.state=@state";
                     }
 
-                    query = query + " and pkg.type in ('O','V') ORDER BY id ASC; ";
+                    query = query + " and pkg.type in ('O','V','P') ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
