@@ -986,7 +986,7 @@ doughnutDistanceColors: Color[] = [
 
   //****************************** Preference Functions *************************************//
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
@@ -1002,7 +1002,7 @@ doughnutDistanceColors: Color[] = [
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;

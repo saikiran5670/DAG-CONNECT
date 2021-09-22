@@ -23,13 +23,13 @@ export class SignalRService {
   accountPrefObj: any;
   prefData : any;
   preference : any;
-  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeFormat: any= 24; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   alertDateFormat: any;
   orgId: any;
-  vehicleDisplayPreference: any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
   AlertNotifcaionList: any[] = [];
   notificationCount= 0;
   notificationData: any= [];
