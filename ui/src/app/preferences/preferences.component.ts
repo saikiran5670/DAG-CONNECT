@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from '../services/translation.service';
 import { DataInterchangeService } from '.././services/data-interchange.service';
@@ -9,7 +9,7 @@ import { DataInterchangeService } from '.././services/data-interchange.service';
   styleUrls: ['./preferences.component.less']
 })
 
-export class PreferencesComponent implements OnInit {
+export class PreferencesComponent implements OnInit, AfterViewInit {
   translationData: any = [];
   @Input() userPreferencesFlag : boolean;
   public selectedIndex: number = 0;
@@ -24,19 +24,7 @@ export class PreferencesComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    if(this.userPreferencesFlag){
-      let currentComponentUrl: String;
-      currentComponentUrl = this.route.routerState.snapshot.url
-      if(currentComponentUrl == "/dashboard")
-        this.selectedIndex = 1;
-      else if(currentComponentUrl.substr(0, 8) == "/report/" )
-        this.selectedIndex = 2;
-      else if(currentComponentUrl.substr(0, 15) == "/fleetoverview/")
-        this.selectedIndex = 3;
-      else
-        this.selectedIndex = 0;
-    }
+    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));  
 
     let translationObj = {
       id: 0,
@@ -50,6 +38,20 @@ export class PreferencesComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
     });
+  }
+ 
+  ngAfterViewInit(){
+    if(this.userPreferencesFlag){
+      let currentComponentUrl: String;
+      currentComponentUrl = this.route.routerState.snapshot.url;   
+
+      if (currentComponentUrl == "/dashboard") { this.selectedIndex = 1; }
+      else if (currentComponentUrl.substr(0, 8) == "/report/") {
+        this.selectedIndex = 2;
+      }
+      else if (currentComponentUrl.substr(0, 15) == "/fleetoverview/") { this.selectedIndex = 3; }
+      else { this.selectedIndex = 0; }
+    }
   }
 
   processTranslation(transData: any){
