@@ -21,5 +21,6 @@
           <button (click)="confirm()" class='no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
       </div>
   </mat-card-actions>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   </mat-card>
 </div>
