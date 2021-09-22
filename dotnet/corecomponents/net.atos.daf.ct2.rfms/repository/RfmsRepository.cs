@@ -575,7 +575,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
                     if (!rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
-                        queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
                 }
                 if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
