@@ -1500,7 +1500,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
-      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
+      element.convertedFuelConsumption = this.getTripFuelConsumption(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
@@ -1626,6 +1626,30 @@ export class ReportMapService {
     }
     return _fuelConsumed; 
   }
+
+  //fleet fuel report as fuel consumption coming ltr/100km directly
+  getTripFuelConsumption(fuelConsumption: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
+    let _fuelConsumption: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumption = fuelConsumption;
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumption = this.convertFuelConsumptionLtr100kmToMpg(fuelConsumption);
+        break;
+      }
+      default: {
+        _fuelConsumption = fuelConsumption;
+      }
+    }
+    return _fuelConsumption; 
+  }
+  convertFuelConsumptionLtr100kmToMpg(_data:any){
+    let data: any = (282.481/_data);
+    return (data).toFixed(2);
+  }
+
   //Fuel Consumption in Summary Section
   getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
     console.log("This function works well"); 
@@ -1938,4 +1962,78 @@ export class ReportMapService {
     let newMin = seconds / 60;
     return newMin.toFixed(2);
   }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any, prefTimeFormat:any) {
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if (prefTimeFormat == 12) {
+     if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
+      }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
+      date.setMinutes(_y.split(' ')[0]);
+    } else {
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  formStartDate(date: any, prefTimeFormat:any) {
+    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
+    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
+    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
+    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
+    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
+    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if (prefTimeFormat == 12) {
+      if (date.getHours() == 12) {
+        _time = ((date.getHours() == 12 || date.getMinutes() > 0 || date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+      else {
+        _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+    }
+    else {
+      _time = `${h}:${m}:${s}`;
+    }
+    switch (prefTimeFormat) {
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default: {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
 }

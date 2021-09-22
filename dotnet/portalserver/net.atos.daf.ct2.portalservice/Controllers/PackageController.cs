@@ -231,6 +231,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     FeatureSetID = filterRequest.FeatureSetId
                 };
                 var response = await _packageClient.GetAsync(request);
+                int level = _userDetails.RoleLevel;
+
                 response.PacakageList.Where(S => S.FeatureSetID > 0)
                                                 .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.FeatureSetID).Result); return S; }).ToList();
 
@@ -240,12 +242,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.PacakageList != null && response.PacakageList.Count > 0)
                     {
+                        if (level != 10)
+                        {
+                            //platform package should be visible to platform admin only.
+                            //due to readonly proto properties clreared list and added new
+                            var packagelist = response.PacakageList.Where(s => s.Type != "Platform").ToList();
+                            response.PacakageList.Clear();
+                            response.PacakageList.AddRange(packagelist);
+                        }
                         return Ok(response);
                     }
                     else
                     {
                         return StatusCode(404, "Package details are not found.");
                     }
+                }
+                else if (response.Code == Responsecode.Failed)
+                {
+                    return StatusCode(404, "Package details are not found.");
                 }
                 else
                 {

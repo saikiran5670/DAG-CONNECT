@@ -464,8 +464,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       } else {
         this.startTimeDisplay = '12:00:00 AM';
         this.endTimeDisplay = '11:59:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.selectedStartTime = "12:00 AM";
+        this.selectedEndTime = "11:59 PM";   
       }
     }
 
@@ -642,8 +642,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       vehName = vehCount[0].vehicleName;
       vin = vehCount[0].vin;
       plateNo = vehCount[0].registrationNo;
-    }
-    this.tableInfoObj = {
+    }        
+    this.tableInfoObj = {      
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
@@ -654,41 +654,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any) {
-    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
-    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
-    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
-    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
-    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
-    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
-    let _date: any;
-    let _time: any;
-    if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
-    } else {
-      _time = `${h}:${m}:${s}`;
-    }
-    switch (this.prefDateFormat) {
-      case 'ddateformat_dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        break;
-      }
-      default: {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-      }
-    }
-    return _date;
+   return this.reportMapService.formStartDate(date, this.prefTimeFormat)
   }
 
   onReset() {
@@ -1011,16 +977,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // Setting display of spinner
     this.showLoadingIndicator = false;
   }
-
-  startTimeChanged(selectedTime: any) {
+  
+  startTimeChanged(selectedTime: any) {    
     this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = selectedTime + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
-    }
+       this.startTimeDisplay = selectedTime;
+     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1070,7 +1036,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   selectionTimeRange(selection: any) {
-    this.internalSelection = true;
+    this.internalSelection = true;    
     switch (selection) {
       case 'today': {
         this.selectionTab = 'today';
@@ -1127,22 +1093,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      } else {
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    } else {
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
-
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+   return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   setGlobalSearchData(globalSearchFilterData: any) {
