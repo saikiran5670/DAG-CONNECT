@@ -1500,7 +1500,8 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
-      element.convertedFuelConsumption = this.getTripFuelConsumption(element.fuelConsumption, unitFormat,true);
+      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
+      element.convertedTripFuelConsumption = this.getTripFuelConsumption(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
