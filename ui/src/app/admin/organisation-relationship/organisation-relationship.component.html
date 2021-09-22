@@ -79,7 +79,7 @@
               </div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button mat-flat-button color="warn" (click)="deleteOrgRelationship()">
-                    <mat-icon>block_outline</mat-icon> {{ translationData.lblEndRelationship || 'End Relationship'}}
+                    <i class="fa fa-chain-broken mr-1" aria-hidden="true"></i> {{ translationData.lblEndRelationship || 'End Relationship'}}
                 </button>
             </div>
         </div>
@@ -159,10 +159,9 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endRelationship">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblEndOrgRelationship || 'End Relationship' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
                           <mat-cell *matCellDef="let row">
-                            <mat-icon *ngIf = "row.endDate != 0">block_outline</mat-icon>
-                            <mat-icon *ngIf = "row.endDate == 0" (click)="deleteRow(row)">directions_car</mat-icon>                     
+                            <mat-icon *ngIf = "row.endDate == 0" (click)="deleteRow(row)"><i class="fa fa-chain-broken" aria-hidden="true" title="{{translationData.lblEndOrgRelationship || 'End Relationship'}}" style="cursor:pointer"></i></mat-icon>                     
                        </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="orgrelationshipDisplayedColumns"></mat-header-row>
