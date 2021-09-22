@@ -62,10 +62,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
             string consumerGroup = string.Empty;
             try
             {
-                _ = _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", "ex.message"), 0, 0, JsonConvert.SerializeObject(podConsumerGroupMap),
-                 new HeaderObj { AccountId = 1, OrgId = 2, AccountEmailId = "test", RoleId = 3, ContextOrgId = 4 }).Result;
+                //_ = _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
+                //AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                //string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", "ex.message"), 0, 0, JsonConvert.SerializeObject(podConsumerGroupMap),
+                // new HeaderObj { AccountId = 1, OrgId = 2, AccountEmailId = "test", RoleId = 3, ContextOrgId = 4 }).Result;
                 consumerGroup = podConsumerGroupMap.Where(w => w.Key.ToLower() == hostName).FirstOrDefault().Value;
                 if (string.IsNullOrEmpty(consumerGroup)) _logger.Error($"Error in GetCusumerGroupFmHostName - {hostName} not found in disctionory");
             }
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         VehicleGroupName = "Fleet",
                         VehicleName = "testKri",
                         VehicleLicencePlate = "testKri",
-                        AlertCategoryKey = _userDetails.AccountId.ToString() + "---" + _kafkaConfiguration.CONSUMER_GROUP,
+                        AlertCategoryKey = JsonConvert.SerializeObject(_kafkaConfiguration),
                         AlertTypeKey = _userDetails.OrgId.ToString(),
                         UrgencyTypeKey = Context.ConnectionId,
                         UrgencyLevel = "C"
