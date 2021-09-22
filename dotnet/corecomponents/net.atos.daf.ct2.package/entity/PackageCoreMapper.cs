@@ -33,6 +33,9 @@ namespace net.atos.daf.ct2.package.entity
                 case "R":
                     pkgType = PackageType.ORGVIN;
                     break;
+                case "P":
+                    pkgType = PackageType.Platform;
+                    break;
             }
             return pkgType; ;
         }
@@ -77,6 +80,9 @@ namespace net.atos.daf.ct2.package.entity
                 case "ORGVIN":
                     type = 'R';
                     break;
+                case "Platform":
+                    type = 'P';
+                    break;
             }
             return type;
         }
@@ -95,6 +101,9 @@ namespace net.atos.daf.ct2.package.entity
                     break;
                 case "R":
                     ptype = "ORG VIN";
+                    break;
+                case "P":
+                    ptype = "Platform";
                     break;
             }
             return ptype;
