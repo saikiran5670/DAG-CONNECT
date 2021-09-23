@@ -2,6 +2,7 @@ package net.atos.daf.ct2.service.kafka;
 
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
 import net.atos.daf.ct2.util.Utils;
@@ -39,10 +40,23 @@ public class KafkaConnectionService implements Serializable {
 
     public static DataStream<KafkaRecord<Index>> connectIndexObjectTopic(String topicName, ParameterTool parameterTool, StreamExecutionEnvironment env){
         KafkaService<KafkaRecord<Index>> kafkaService = new KafkaService<>();
-        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Status>();
+        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Index>();
         Properties kafkaConnectProperties = Utils.getKafkaConnectProperties(parameterTool);
         kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get(KAFKA_INDEX_SASL_JAAS_CONFIG));
         kafkaConnectProperties.put("bootstrap.servers",parameterTool.get(KAFKA_INDEX_BOOTSTRAP_SERVER));
+        return  kafkaService.connectKafkaTopic(
+                topicName,
+                kafkaConnectProperties,
+                deserializationSchema,
+                env);
+    }
+    
+    public static DataStream<KafkaRecord<Monitor>> connectMoniteringObjectTopic(String topicName, ParameterTool parameterTool, StreamExecutionEnvironment env){
+        KafkaService<KafkaRecord<Monitor>> kafkaService = new KafkaService<>();
+        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Monitor>();
+        Properties kafkaConnectProperties = Utils.getKafkaConnectProperties(parameterTool);
+        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get("monitering.object.sasl.jaas.config"));
+        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get("monitering.object.bootstrap.servers"));
         return  kafkaService.connectKafkaTopic(
                 topicName,
                 kafkaConnectProperties,
