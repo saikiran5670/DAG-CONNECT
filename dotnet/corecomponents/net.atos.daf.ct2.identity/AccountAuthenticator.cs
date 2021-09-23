@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.identity
                 url = url.Replace("{{realm}}", _settings.Realm);
 
                 var httpResponse = await _client.PostAsync(url, querystring);
-                string result = httpResponse.Content.ReadAsStringAsync().Result;
+                string result = await httpResponse.Content.ReadAsStringAsync();
                 response.StatusCode = httpResponse.StatusCode;
                 response.Result = result;
                 return response;

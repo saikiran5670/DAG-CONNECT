@@ -103,7 +103,7 @@
               <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
                 <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
                 <mat-label class='custom-font'>
-                  {{ accountInfo.length > 0 ? accountInfo[0].driverId : '--' }}
+                  {{ accountInfo.length > 0 ? accountInfo[0].driverId != '' ? accountInfo[0].driverId : '--' : '--' }}
                 </mat-label>
              <!-- </span>-->
             </div>
@@ -227,7 +227,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings || 'General Settings' }}
-          ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})
+          (<span>{{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }}</span>)
           <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
       </div>
@@ -254,12 +254,12 @@
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
           <mat-label class='custom-font'>
             {{ !currencyData ? '--' : currencyData.length > 0 ? currencyData[0].value : '--' }}
           </mat-label>
-        </div>
+        </div> -->
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
           <mat-label class='custom-font'>
@@ -272,19 +272,31 @@
             {{ !timeFormatData ? '--' : timeFormatData.length > 0 ? timeFormatData[0].value : '--' }}
           </mat-label>
         </div>
-      </div>
-      <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
           <mat-label class='custom-font'>
             {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
           </mat-label>
         </div>
+      </div>
+      <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
+        <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
+          </mat-label>
+        </div> -->
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
           <mat-label class='custom-font'>
             {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : landingPageDisplayDropdownData[0].value }}
+          </mat-label>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ accountPreferenceData ? (accountPreferenceData.pageRefreshTime ? accountPreferenceData.pageRefreshTime : '--') : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -295,7 +307,7 @@
           </mat-label>
         </div>
       </div>
-      <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
+      <!-- <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
@@ -303,7 +315,7 @@
             {{ accountPreferenceData ? (accountPreferenceData.pageRefreshTime ? accountPreferenceData.pageRefreshTime : '--') : '--' }}
           </mat-label>
         </div>
-      </div>
+      </div> -->
 
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
@@ -352,7 +364,7 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Currency" formControlName="currency" (selectionChange)="onDropdownChange($event, 'currency')">
@@ -361,7 +373,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-          </div>
+          </div> -->
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.dateFormat}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -382,8 +394,6 @@
               </mat-select>
             </mat-form-field>
           </div>
-        </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -394,6 +404,18 @@
               </mat-select>
             </mat-form-field>
           </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+          <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select placeholder="Vehicle Display" formControlName="vehDisplay" (selectionChange)="onDropdownChange($event, 'vehDisplay')">
+                <mat-option *ngFor="let rer of vehicleDisplayDropdownData" [value]="rer.id">
+                  {{ rer.value }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div> -->
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -403,6 +425,27 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
+          </div>
+          <div class="areaWidth min-width-30-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
+            <!-- <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center"> -->
+              <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+            <!-- </div> -->
+            <!-- <div fxLayout="row" fxLayoutAlign="left center"> -->
+              <mat-form-field appearance="outline">
+                <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                <span matSuffix>min</span>   
+              </mat-form-field>
+              <!-- <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span> -->
+            <!-- </div> -->
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('required')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('required')">
+              {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+            </mat-error>
           </div>
           <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
@@ -437,7 +480,7 @@
           </div>
         </div>
 
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
           <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
             <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
               <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
@@ -459,7 +502,7 @@
                 {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
             </mat-error>
           </div>
-        </div>
+        </div> -->
 
         <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"

@@ -176,6 +176,14 @@ vehicleIconMarker : any;
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
+  const navigation = this.router.getCurrentNavigation();
+  this._state = navigation.extras.state as {
+    fromFleetUtilReport: boolean,
+    vehicleData: any
+    fromVehicleDetails: boolean,
+    data: any
+  };
+  this.loadWholeTripData();
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
@@ -187,13 +195,8 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   //   }, 10);
   this.configureAutoSuggest();
   this.defaultTranslation();
-  const navigation = this.router.getCurrentNavigation();
-  this._state = navigation.extras.state as {
-    fromFleetUtilReport: boolean,
-    vehicleData: any
-    fromVehicleDetails: boolean,
-    data: any
-  };
+
+
   if(this._state){
     this.showBack = true;
   }else{
@@ -374,12 +377,12 @@ ngOnDestroy(){
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
-      this.loadWholeTripData();
+      // this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
       this.resetTripPrefData();
       this.setDisplayColumnBaseOnPref();
-      this.loadWholeTripData();
+      // this.loadWholeTripData();
     });
   }
 
@@ -571,7 +574,13 @@ ngOnDestroy(){
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
     this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-    this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+    if(this._state.data[0].vehicleGroupId != 0){
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+      }
+      else{
+        this.logBookForm.get('vehicleGroup').setValue('all');
+      }
+      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
   }
   if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
@@ -595,6 +604,9 @@ ngOnDestroy(){
       //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       this.filterDateData();
       this.loadUserPOI();
+      if(this._state && this._state.fromAlertsNotifications){
+        this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      }
     }, (error)=>{
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
@@ -961,8 +973,13 @@ ngOnDestroy(){
       this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
+      if(this._state.data[0].vehicleGroupId != 0){
       this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      }
+      else{
+        this.logBookForm.get('vehicleGroup').setValue('all');
+      }
+      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
       // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
     }    
@@ -984,6 +1001,17 @@ ngOnDestroy(){
   onVehicleGroupChange(value){
     this.vehicleDD=[];
     let newVehicleList=[];
+    if(value == 0){
+      let vehicleData = this.wholeLogBookData["associatedVehicleRequest"];
+      if(vehicleData.length > 0){
+      vehicleData.forEach(element => {
+        if(this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
+
+          this.logBookForm.get('vehicle').setValue(element.vehicleId);
+      }
+      });
+    }
+    }
     if(value == 'all'){
      this.vehicleDD = this.vehicleListData;
     }

@@ -20,6 +20,7 @@
 	</properties>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>net.atos.daf.ct2</groupId>
 			<artifactId>kafka.common</artifactId>
@@ -53,12 +54,33 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-			
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.10</version>
+			<scope>provided</scope>
 		</dependency>
+
+
+		<dependency>
+
+			<groupId>com.googlecode.json-simple</groupId>
+
+			<artifactId>json-simple</artifactId>
+
+			<version>1.1.1</version>
+
+		</dependency>
+		<!-- <dependency>
+			<groupId>jdk.tools</groupId>
+			<artifactId>jdk.tools</artifactId>
+			<version>1.8.0_291</version>
+			<scope>system</scope>
+			<systemPath>C:/Program Files/Java/jdk1.8.0_291/lib/tools.jar</systemPath>
+		</dependency> -->
+
 	</dependencies>
 	<build>
 		<resources>

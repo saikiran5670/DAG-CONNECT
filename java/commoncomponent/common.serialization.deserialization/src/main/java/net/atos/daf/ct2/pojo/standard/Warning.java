@@ -18,6 +18,9 @@ public class Warning  implements Serializable {
     private Long warningTimestamp;
     @JsonProperty(value = "WarningClass")
     private Integer warningClass;
+    
+    @JsonProperty(value = "WarningNumber")
+    private Integer warningNumber;
     // private JSON WarningNumber;
 
 }

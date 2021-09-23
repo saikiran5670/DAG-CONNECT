@@ -246,7 +246,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         {
                             //platform package should be visible to platform admin only.
                             //due to readonly proto properties clreared list and added new
-                            var packagelist = response.PacakageList.Where(s => s.Type != "Platform");
+                            var packagelist = response.PacakageList.Where(s => s.Type != "Platform").ToList();
                             response.PacakageList.Clear();
                             response.PacakageList.AddRange(packagelist);
                         }

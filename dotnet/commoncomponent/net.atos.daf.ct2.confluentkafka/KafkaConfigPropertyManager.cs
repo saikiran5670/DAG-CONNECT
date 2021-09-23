@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.confluentkafka
                 SaslPassword = kafkaEntity.ConnString,
                 SslCaLocation = kafkaEntity.Cacertlocation,
                 GroupId = kafkaEntity.Consumergroup,
-                AutoOffsetReset = AutoOffsetReset.Earliest,
+                AutoOffsetReset = AutoOffsetReset.Latest,
                 BrokerVersionFallback = BROKERVERSION,
                 EnableAutoCommit = false
                 //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
