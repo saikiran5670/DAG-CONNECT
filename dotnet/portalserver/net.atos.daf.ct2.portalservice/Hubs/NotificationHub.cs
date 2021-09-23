@@ -24,7 +24,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
