@@ -131,8 +131,8 @@ message VehicleDetailsWithAccountVisibilty {
 
 message VehicleFromTripDetails {
     string Vin = 1;
-    int64 StartTimeStamp=2;
-    int64 EndTimeStamp=3;
+  //  int64 StartTimeStamp=2;
+   repeated int64 EndTimeStamp=3;
  }
 
 message VehicleListAndDetailsResponse{

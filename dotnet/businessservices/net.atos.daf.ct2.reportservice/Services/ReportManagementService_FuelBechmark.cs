@@ -67,7 +67,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                           .Select(s => s.Vin).Distinct());
                         if (vinList.Count() > 0)
                         {
-                            var vins = vinList.Where(x => x.StartTimeStamp >= request.StartDateTime && x.EndTimeStamp <= request.EndDateTime).Select(x => x.Vin);
+                            //var vins = vinList.Where(x => x.StartTimeStamp >= request.StartDateTime && x.EndTimeStamp <= request.EndDateTime).Select(x => x.Vin);
+                            //for out of memory exception we are getting array of end time stamp.If it falls in range condition added
+                            var vins = vinList.Where(x => x.EndTimeStamp.Contains(request.EndDateTime)).Select(x => x.Vin);
+
                             foreach (var item in vins)
                             {
                                 request.VINs.Add(item);

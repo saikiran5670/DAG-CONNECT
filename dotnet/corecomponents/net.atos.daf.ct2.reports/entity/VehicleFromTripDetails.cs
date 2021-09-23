@@ -4,6 +4,6 @@
     {
         public string Vin { get; set; }
         public long StartTimeStamp { get; set; }
-        public long EndTimeStamp { get; set; }
+        public long[] EndTimeStamp { get; set; }
     }
 }
