@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByAccountVisibility(51, 93, 93);
+                                    .GetVehicleByAccountVisibility(51, 93, 93, 0);
             Assert.IsTrue(result.Count() > 0);
         }
 
@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByVisibilityAndFeature(51, 93, 93, 160, null, "Alert");
+                                    .GetVehicleByVisibilityAndFeature(51, 93, 93, 160, null, 0, "Alert");
             Assert.IsTrue(result.Count() > 0);
         }
     }

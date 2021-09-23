@@ -56,9 +56,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (request.VINs.Count() == 0)
                 {
                     var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                    var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
                     var vehicleDeatilsWithAccountVisibility =
-                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
+                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
 
                     if (vehicleDeatilsWithAccountVisibility.Count() > 0)
                     {
@@ -113,10 +114,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
                 AssociatedVehicleResponse response = new AssociatedVehicleResponse();
 
                 if (vehicleDetailsAccountVisibilty.Any())
