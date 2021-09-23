@@ -152,7 +152,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       language: flag,
       timeZone: flag,
       unit: flag,
-      currency: flag,
+      //currency: flag,
       dateFormat: flag,
       vehDisplay: flag,
       timeFormat: flag,
@@ -603,10 +603,10 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;
