@@ -1864,12 +1864,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest("Account Id mismatched");
 
                 // check for DAF Admin
-                int level = await _privilegeChecker.GetLevelByRoleId(sOrgId, sRoleId);
-
-                //Add context org id to session
-                if (level >= 30)
+                if (_userDetails.RoleLevel >= 30)
                     return Unauthorized("Unauthorized access");
 
+                //Add context org id to session
                 _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                 //return menu items
