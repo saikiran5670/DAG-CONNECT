@@ -227,7 +227,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings || 'General Settings' }}
-          (<span>{{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }}</span>)
+          (<span style='font-weight: normal;'>{{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }}</span>)
           <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
       </div>
