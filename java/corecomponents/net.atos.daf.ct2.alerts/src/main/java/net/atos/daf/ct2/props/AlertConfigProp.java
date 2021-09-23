@@ -38,6 +38,11 @@ public class AlertConfigProp {
     public static final String KAFKA_DAF_STATUS_MSG_TOPIC = "daf.status.topic";
     public static final String KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC = "daf.alert.produce.topic";
     public static final String KAFKA_EGRESS_INDEX_MSG_TOPIC = "daf.index.topic";
+    
+    public static final String KAFKA_EGRESS_MONITERING_MSG_TOPIC = "daf.monitering.topic";
+    public static final String KAFKA_MONITERING_BOOTSTRAP_SERVER = "monitering.object.bootstrap.servers";
+    public static final String KAFKA_MONITERING_SASL_JAAS_CONFIG = "monitering.object.sasl.jaas.config";
+    
     public static final String KAFKA_INDEX_BOOTSTRAP_SERVER = "index.object.bootstrap.servers";
     public static final String KAFKA_INDEX_SASL_JAAS_CONFIG = "index.object.sasl.jaas.config";
 
@@ -47,6 +52,21 @@ public class AlertConfigProp {
 
     public static final String POSTGRESS_SINGLE_VEHICLE_QUERY="postgres.single.vehicle.fetch.query";
     public static final String POSTGRESS_GROUP_VEHICLE_QUERY="postgres.group.vehicle.fetch.query";
+    
+	//master datamart
+	public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
+	public static final String MASTER_POSTGRE_PORT = "master_postgre_port";
+	public static final String MASTER_POSTGRE_DATABASE_NAME = "master_postgre_database_name";
+	public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
+	public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
+	
+	public static final String DATAMART_POSTGRE_SERVER_NAME = "server_name";
+	public static final String DATAMART_POSTGRE_PORT = "port";
+	public static final String DATAMART_POSTGRE_DATABASE_NAME = "postgres_database_name";
+	public static final String DATAMART_POSTGRE_USER = "userId";
+	public static final String DATAMART_POSTGRE_PASSWORD = "postgresql_password";
+	
+	public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
 
 
     public static final TypeInformation<?>[] ALERT_THRESHOLD_SCHEMA_DEF = new TypeInformation<?>[] {
@@ -60,7 +80,12 @@ public class AlertConfigProp {
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.LONG_TYPE_INFO,
-            BasicTypeInfo.LONG_TYPE_INFO
+            BasicTypeInfo.LONG_TYPE_INFO,
+			BasicTypeInfo.INT_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.INT_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
     };
 
     public static final TypeInformation<?>[] ALERT_MAP_SCHEMA_DEF = new TypeInformation<?>[] {
@@ -89,8 +114,7 @@ public class AlertConfigProp {
     public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
     public static BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream;
     public static BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream;
-    
-    public static final String ALERT_TIME_WINDOW_SECONDS = "alert.time.window.seconds";
+	public static final String ALERT_TIME_WINDOW_SECONDS = "alert.time.window.seconds";
 	public static final String ALERT_WATERMARK_TIME_WINDOW_SECONDS = "alert.watermark.time.window.seconds";
 	public static final String ALERT_MEASUREMENT_MILLISECONDS_VAL = "alert.time.measurement.milli";
 		

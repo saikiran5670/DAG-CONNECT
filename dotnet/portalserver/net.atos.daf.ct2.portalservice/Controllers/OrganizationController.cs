@@ -233,7 +233,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var level = await GetUserPrivilegeLevel();
+                var level = _userDetails.RoleLevel;
                 var levelCode = new RelationshipLevelCode();
                 var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()

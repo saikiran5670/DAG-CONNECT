@@ -555,7 +555,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
                 var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
@@ -583,7 +583,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
                 var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
                 grpcRequest.ProfileId = request.ProfileId;
                 Metadata headers = new Metadata();

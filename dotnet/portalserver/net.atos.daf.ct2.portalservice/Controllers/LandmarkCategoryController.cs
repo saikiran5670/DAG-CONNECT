@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.Organization_Id == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global category.");
                 }
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if (request.Organization_Id == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot edit global category.");
                 }
@@ -165,7 +165,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
 
                 if (request.Id <= 0)
                 {

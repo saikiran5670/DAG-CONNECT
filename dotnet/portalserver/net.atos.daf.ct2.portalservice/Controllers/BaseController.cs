@@ -37,12 +37,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return _userDetails.OrgId;
         }
 
-        protected async Task<bool> HasAdminPrivilege()
+        protected bool HasAdminPrivilege()
         {
             try
             {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
-                return level == 10 || level == 20;
+                return _userDetails.RoleLevel == 10 || _userDetails.RoleLevel == 20;
             }
             catch (Exception)
             {
@@ -50,17 +49,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        protected async Task<int> GetUserPrivilegeLevel()
-        {
-            try
-            {
-                return await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
-            }
-            catch (Exception)
-            {
-                return 999;
-            }
-        }
         protected SessionFeature[] GetUserSubscribeFeatures()
         {
             return _userDetails.UserFeatures;
