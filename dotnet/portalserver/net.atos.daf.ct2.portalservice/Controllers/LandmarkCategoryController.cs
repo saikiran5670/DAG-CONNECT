@@ -26,8 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ILog _logger;
 
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
-            AuditHelper auditHelper, AccountPrivilegeChecker privilegeChecker
-            , IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+            AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;

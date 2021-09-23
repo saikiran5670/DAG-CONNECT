@@ -139,8 +139,9 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
-                var visibleVehicle = await GetVisibleVINDetails(request.AccountId, loggedInOrgId, request.OrganizationId);
+                var visibleVehicle = await GetVisibleVINDetails(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
                 if (visibleVehicle?.Item1?.Count() > 0)
                 {
                     response.VehicleDetailsWithAccountVisibiltyList.AddRange(visibleVehicle.Item1);

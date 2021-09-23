@@ -509,6 +509,23 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
+        public async Task<int> GetReportFeatureId(int reportId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+
+                var query = @"SELECT feature_id FROM master.report WHERE id = @report_id";
+
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid)
         {
             try

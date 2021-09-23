@@ -209,7 +209,7 @@ namespace net.atos.daf.ct2.rfms.response
         public int? EngineCoolantTemperature { get; set; }
         public int? ServiceBrakeAirPressureCircuit1 { get; set; }
         public int? ServiceBrakeAirPressureCircuit2 { get; set; }
-       // public int DurationAtLeastOneDoorOpen { get; set; }
+        // public int DurationAtLeastOneDoorOpen { get; set; }
         public AlternatorInfo AlternatorInfo { get; set; }
         //public int BellowPressureFrontAxleLeft { get; set; }
         //public int BellowPressureFrontAxleRight { get; set; }
@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.rfms.response
         public int? GrossCombinationVehicleWeight { get; set; }
         public int? EngineTotalFuelUsed { get; set; }
         public int? TotalFuelUsedGaseous { get; set; } //optional
-       // public string Status2OfDoors { get; set; }
+        // public string Status2OfDoors { get; set; }
         public AccumulatedData AccumulatedData { get; set; }
         public SnapshotData SnapshotData { get; set; }
         public UptimeData UptimeData { get; set; }

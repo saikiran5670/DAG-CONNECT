@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
