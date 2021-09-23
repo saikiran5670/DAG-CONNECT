@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 _logger.Error("Error in OnDisconnectedAsync method", err);
             }
         }
-
+        [AllowAnonymous]
         public async Task NotifyAlert(string someTextFromClient)
         {
             var list = someTextFromClient.Split(',');
