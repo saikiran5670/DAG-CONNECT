@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.OrganizationId <= 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (request.OrganizationId <= 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
