@@ -4,5 +4,6 @@ namespace net.atos.daf.ct2.vehicle.entity
     {
         public int Id { get; set; }
         public string VIN { get; set; }
+        public bool HasOwned { get; set; }
     }
 }
