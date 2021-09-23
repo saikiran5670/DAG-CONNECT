@@ -12,19 +12,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         protected readonly SessionHelper _sessionHelper;
         protected HeaderObj _userDetails;
-        private readonly AccountPrivilegeChecker _privilegeChecker;
 
         public BaseController(IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper)
         {
             _sessionHelper = sessionHelper;
             _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
-        }
-
-        public BaseController(IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker)
-        {
-            _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
-            _privilegeChecker = privilegeChecker;
         }
 
         protected int GetContextOrgId()
@@ -39,14 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         protected bool HasAdminPrivilege()
         {
-            try
-            {
-                return _userDetails.RoleLevel == 10 || _userDetails.RoleLevel == 20;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return _userDetails.RoleLevel == 10 || _userDetails.RoleLevel == 20;
         }
 
         protected SessionFeature[] GetUserSubscribeFeatures()

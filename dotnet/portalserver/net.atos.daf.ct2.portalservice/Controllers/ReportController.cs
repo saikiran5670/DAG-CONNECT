@@ -37,9 +37,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker,
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient,
                                VehicleService.VehicleServiceClient vehicleClient
-                               ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                               ) : base(httpContextAccessor, sessionHelper)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
