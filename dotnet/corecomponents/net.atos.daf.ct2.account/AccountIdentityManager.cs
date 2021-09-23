@@ -48,15 +48,20 @@ namespace net.atos.daf.ct2.account
 
         }
 
-        public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
+        public async Task<AccountIdentity> Login(Identity user)
         {
             int roleId = 0;
             AccountIdentity accIdentity = new AccountIdentity();
             accIdentity.TokenIdentifier = string.Empty;
             accIdentity.ErrorMessage = "Account is not configured.";
             accIdentity.StatusCode = 1;
-            //IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
+
             Account account = GetAccountByEmail(user.UserName);
+
+            //Do not allow System Accounts to login into CT2.0
+            if (account.AccountType == AccountType.SystemAccount)
+                return new AccountIdentity { StatusCode = 5 };
+
             if (account != null && account.Id > 0)
             {
                 List<AccountOrgRole> accountOrgRoleList = await _accountManager.GetAccountRole(account.Id);
@@ -390,6 +395,7 @@ namespace net.atos.daf.ct2.account
                 IdentityEntity.Response response = await _identityAccountManager.LogOut(identity);
             }
         }
+
         private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account, int roleId)
         {
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
@@ -506,13 +512,13 @@ namespace net.atos.daf.ct2.account
 
             return await Task.FromResult(accToken);
         }
+
         private Account GetAccountByEmail(string email)
         {
             Account account = new Account();
 
             AccountFilter filter = new AccountFilter();
             filter.Email = email;
-            // filter.AccountType = AccountType.PortalAccount;            
             filter.AccountType = AccountType.None;
             IEnumerable<Account> result = _accountManager.Get(filter).Result;
             foreach (var acc in result)

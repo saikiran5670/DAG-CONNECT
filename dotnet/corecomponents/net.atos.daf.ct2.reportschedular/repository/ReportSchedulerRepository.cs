@@ -31,17 +31,35 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, trim(r.key) as Key, r.support_driver_sch_rep as IsDriver
-					                      FROM master.report r						                     
-						                     INNER JOIN master.Feature f ON f.id = r.feature_id AND f.state = 'A' 
-						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
-						                     INNER JOIN master.FeatureSet fset ON fsf.feature_set_id = fset.id AND fset.state = 'A'
-						                     INNER JOIN master.Role ro ON ro.feature_set_id = fset.id AND ro.state = 'A'
-						                     INNER JOIN master.AccountRole ar ON ro.id = ar.role_id and ar.organization_id = @organization_id
-						                     INNER JOIN master.account acc ON acc.id = ar.account_id AND acc.state = 'A' AND acc.id = @account_id
-											 INNER JOIN master.package pack ON pack.feature_set_id = fset.id AND fset.state = 'A' AND pack.state='A'
-											 INNER JOIN master.subscription sub ON sub.package_id = pack.id AND sub.state = 'A' AND pack.state='A'
-	 			                          WHERE acc.id = @account_id AND ar.Organization_id = @organization_id ; ";
+                var queryStatement =
+                    @"SELECT DISTINCT r.id as Id,r.name as ReportName, trim(r.key) as Key, r.support_driver_sch_rep as IsDriver
+                    FROM master.report r
+                    INNER JOIN
+                    (
+	                    --Account Route
+	                    SELECT f.id
+	                    FROM master.Account acc
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND acc.state = 'A'
+	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
+	                    INTERSECT 
+	                    (
+		                    SELECT f.id
+		                    FROM
+		                    (
+			                    SELECT pkg.feature_set_id
+			                    FROM master.Package pkg
+			                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+			                    UNION
+			                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'	--Consider platform type packages
+		                    ) subs
+		                    INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+		                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+		                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
+	                    )    
+                    ) features ON r.feature_id = features.id";
 
                 parameterType.Add("@organization_id", organizationid);
                 parameterType.Add("@account_id", accountid);
@@ -62,24 +80,30 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var queryStatement = @"SELECT distinct rpt.id as Id,rpt.name as ReportName, trim(rpt.key) as Key, rpt.support_driver_sch_rep as IsDriver
                                         from 
                                         (
-	                                                            --Account Route
-	                                                            SELECT f.id
-	                                                            FROM master.Account acc
-	                                                            INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
-	                                                            INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
-	                                                            INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
- 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' 
-			                                                    INNER JOIN master.Report rpt ON rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
-	                                                            INTERSECT
-	                                                            --Subscription Route
-	                                                            SELECT f.id
-	                                                            FROM master.Subscription s
-	                                                            INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id 	AND s.state = 'A' AND pkg.state = 'A'
-	                                                            INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
- 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D'
-			                                                    INNER JOIN master.Report rpt ON  rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
+	                                        --Account Route
+	                                        SELECT f.id
+	                                        FROM master.Account acc
+	                                        INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+	                                        INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                                        INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                        INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                        INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' 
+			                                INNER JOIN master.Report rpt ON rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
+	                                        INTERSECT
+	                                        --Subscription Route
+	                                        SELECT f.id
+	                                        FROM
+	                                        (
+		                                        SELECT pkg.feature_set_id
+		                                        FROM master.Package pkg
+		                                        INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+		                                        UNION
+		                                        SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+	                                        ) subs
+	                                        INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                        INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                        INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D'
+			                                INNER JOIN master.Report rpt ON  rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
                                         ) fsets
                                         INNER JOIN master.Report rpt ON rpt.feature_id = fsets.id ; ";
 

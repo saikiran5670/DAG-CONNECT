@@ -53,11 +53,21 @@ namespace net.atos.daf.ct2.accountservice
             AccountIdentityResponse response = new AccountIdentityResponse();
             try
             {
-                IdentityEntity.Identity account = new IdentityEntity.Identity();
+                Identity account = new Identity();
                 account.UserName = request.UserName.Trim();
                 account.Password = request.Password;
-                AccountComponent.entity.AccountIdentity accIdentity = _accountIdentityManager.Login(account).Result;
-                if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
+                AccountIdentity accIdentity = _accountIdentityManager.Login(account).Result;
+                if (accIdentity != null && accIdentity.StatusCode == 5)
+                {
+                    return Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responcecode.Forbidden,
+                        Message = "System accounts are restricted on the portal.",
+                        TokenIdentifier = string.Empty,
+                    });
+                }
+                else if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
                 {
                     _logger.Info("account is Authenticated");
                     response.TokenIdentifier = accIdentity.TokenIdentifier;
@@ -90,7 +100,7 @@ namespace net.atos.daf.ct2.accountservice
                     }
                     return Task.FromResult(response);
                 }
-                if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
+                else if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
                 {
                     return Task.FromResult(new AccountIdentityResponse
                     {
@@ -102,7 +112,6 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else
                 {
-
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
@@ -406,19 +415,30 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                AccountComponent.entity.Account account = new AccountComponent.entity.Account();
+                var accountType = context.RequestHeaders.Get("account_type").Value;
+
+                Account account = new Account();
                 AccountOrganizationResponse response = new AccountOrganizationResponse();
                 account.Id = request.AccountId;
+                account.AccountType = (AccountComponent.ENUM.AccountType)Convert.ToChar(accountType);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = null;
                 account.EndDate = null;
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 var result = await _accountmanager.AddAccountToOrg(account);
-                // response
-                response.Code = Responcecode.Success;
-                response.Message = "Account Added to organization.";
-                response.AccountOrgId = account.Id;
+
+                if (result == null)
+                {
+                    response.Code = Responcecode.Forbidden;
+                    response.Message = "Multiple organizations cannot be linked to a System Account.";
+                }
+                else
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Account Added to organization.";
+                    response.AccountOrgId = account.Id;
+                }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

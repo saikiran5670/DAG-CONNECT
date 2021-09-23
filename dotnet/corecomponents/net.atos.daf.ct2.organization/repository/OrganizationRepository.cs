@@ -448,9 +448,10 @@ namespace net.atos.daf.ct2.organization.repository
 
                     await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
-                    // Assign base package at ORG lavel if not exist                   
-                    var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // Assign base package at ORG lavel if not exist
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
                 else
                 {
@@ -489,8 +490,9 @@ namespace net.atos.daf.ct2.organization.repository
                     await CreateDefaultGroupsAndAccessRelationship(organizationId);
 
                     // Assign base package at ORG lavel
-                    var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
             }
             catch (Exception ex)

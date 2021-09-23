@@ -7,6 +7,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportService } from 'src/app/services/report.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Util } from '../../../shared/util';
+import { ReportMapService } from '../../report-map.service';
 
 @Component({
   selector: 'app-search-criteria',
@@ -47,7 +48,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -139,25 +140,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    if(date){
-      let _x = timeObj.split(":")[0];
-      let _y = timeObj.split(":")[1];
-      if (this.prefTimeFormat == 12) {
-        if (_y.split(' ')[1] == 'AM' && _x == 12) {
-          date.setHours(0);
-        } else {
-          date.setHours(_x);
-        }
-        date.setMinutes(_y.split(' ')[0]);
-      } else {
-        date.setHours(_x);
-        date.setMinutes(_y);
-      }
-
-      date.setSeconds(type == 'start' ? '00' : '59');
-      return date;
-    }
-  }
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
+   }
 
   setPrefFormatDate() {
     switch (this.prefDateFormat) {
@@ -333,8 +317,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       } else {
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.searchForm.get('startTime').setValue("00:00");
-        this.searchForm.get('endTime').setValue("23:59");
+        this.searchForm.get('startTime').setValue("12:00 AM");
+        this.searchForm.get('endTime').setValue("11:59 PM");
       }
     }
 
@@ -481,42 +465,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  formStartDate(date: any) {
-    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
-    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
-    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
-    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
-    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
-    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
-    let _date: any;
-    let _time: any;
-    if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
-    } else {
-      _time = `${h}:${m}:${s}`;
-    }
-    switch (this.prefDateFormat) {
-      case 'ddateformat_dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        break;
-      }
-      default: {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-      }
-    }
-    return _date;
+  formStartDate(date: any) {    
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
   }
 
   onReset() {

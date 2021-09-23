@@ -184,12 +184,19 @@ namespace net.atos.daf.ct2.account
         {
             return await _repository.Get(filter);
         }
+
         public async Task<int> GetCount(int organization_id)
         {
             return await _repository.GetCount(organization_id);
         }
+
         public async Task<Account> AddAccountToOrg(Account account)
         {
+            if (account.AccountType == AccountType.SystemAccount)
+            {
+                if (await _repository.CheckIfSystemAccAlreadyHasOrgLinked(account.Id))
+                    return null;
+            }
             return await _repository.AddAccountToOrg(account);
         }
 
