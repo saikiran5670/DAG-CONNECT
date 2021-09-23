@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
 
-                //parameter.Add("@id", account.Id);
                 parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
@@ -60,7 +59,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
-                    var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
             catch (Exception)
@@ -248,14 +247,6 @@ namespace net.atos.daf.ct2.account
                         query = query + " and (a.first_name || ' ' || a.last_name) like @name ";
                     }
 
-                    //// account type filter 
-                    //if (((char)filter.AccountType) != ((char)AccountType.None))
-                    //{
-                    //    parameter.Add("@type", (char)filter.AccountType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-
-                    //    query = query + " and a.type=@type";
-                    //}
-
                     // account ids filter                    
                     if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
                     {
@@ -278,7 +269,6 @@ namespace net.atos.daf.ct2.account
 
                     foreach (dynamic record in result)
                     {
-
                         accounts.Add(Map(record));
                     }
                 }
@@ -387,6 +377,33 @@ namespace net.atos.daf.ct2.account
                 query = @"SELECT EXISTS 
                             ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id AND state='A')";
                 return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Check if System Account has organization already linked to disallow linkage with another organization
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckIfSystemAccAlreadyHasOrgLinked(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+
+                string query = @"SELECT COUNT(1) 
+                                FROM master.account acc
+                                INNER JOIN master.accountOrg ao ON acc.id=ao.account_id 
+                                WHERE acc.id=@account_id AND acc.type='S'";
+
+                var linkedOrgCount = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                return linkedOrgCount >= 1;
             }
             catch (Exception)
             {
