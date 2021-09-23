@@ -1,0 +1,74 @@
+[
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 1,
+   "latitude": 46.3703,
+   "longitude": 3.33054,
+   "landmarkId": 92,
+   "landMarkType": "O"
+ },
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 1,
+   "latitude": 52.1528939,
+   "longitude": 23.808697,
+   "landmarkId": 98,
+   "landMarkType": "O"
+ },
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 2,
+   "latitude": 45.6978,
+   "longitude": 7.1094,
+   "landmarkId": 92,
+   "landMarkType": "O"
+ },
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 2,
+   "latitude": 46.24177,
+   "longitude": 21.43102,
+   "landmarkId": 98,
+   "landMarkType": "O"
+ },
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 3,
+   "latitude": 44.9596353,
+   "longitude": 2.5354615,
+   "landmarkId": 92,
+   "landMarkType": "O"
+ },
+ {
+   "alertId": 248,
+   "alertCategory": "L",
+   "alertType": "N",
+   "alertState": "A",
+   "urgencyLevelType": "W",
+   "nodeSeq": 4,
+   "latitude": 52.2080544,
+   "longitude": 35.5909963,
+   "landmarkId": 98,
+   "landMarkType": "O"
+ }
+]

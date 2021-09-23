@@ -47,6 +47,7 @@ public class AlertConfigProp {
 
     public static final String POSTGRESS_SINGLE_VEHICLE_QUERY="postgres.single.vehicle.fetch.query";
     public static final String POSTGRESS_GROUP_VEHICLE_QUERY="postgres.group.vehicle.fetch.query";
+    public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
 
 
     public static final TypeInformation<?>[] ALERT_THRESHOLD_SCHEMA_DEF = new TypeInformation<?>[] {
@@ -60,7 +61,12 @@ public class AlertConfigProp {
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.LONG_TYPE_INFO,
-            BasicTypeInfo.LONG_TYPE_INFO
+            BasicTypeInfo.LONG_TYPE_INFO,
+            BasicTypeInfo.INT_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.INT_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
     };
 
     public static final TypeInformation<?>[] ALERT_MAP_SCHEMA_DEF = new TypeInformation<?>[] {

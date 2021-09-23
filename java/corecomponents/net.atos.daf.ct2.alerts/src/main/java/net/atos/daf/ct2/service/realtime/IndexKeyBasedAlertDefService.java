@@ -1,12 +1,19 @@
 package net.atos.daf.ct2.service.realtime;
 
 import net.atos.daf.ct2.cache.service.CacheService;
+import net.atos.daf.ct2.models.AlertFuelMeasurement;
+import net.atos.daf.ct2.models.LandMarkDetails;
 import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.process.config.AlertConfig;
+import org.apache.flink.api.common.state.MapState;
+import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -19,8 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static net.atos.daf.ct2.props.AlertConfigProp.OUTPUT_TAG;
-import static net.atos.daf.ct2.props.AlertConfigProp.THRESHOLD_CONFIG_DESCRIPTOR;
+import static net.atos.daf.ct2.props.AlertConfigProp.*;
 
 public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index> implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexKeyBasedAlertDefService.class);
@@ -30,6 +36,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
     public IndexKeyBasedAlertDefService(Map<Object, Object> configMap){
         this.configMap=configMap;
     }
+    private MapState<String, String> vehicleGeofenceSateEnteringZone;
 
     @Override
     public void processElement(Tuple2<Index, Payload<Set<Long>>> indexTup2, KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>.ReadOnlyContext readOnlyContext, Collector<Index> collector) throws Exception {
@@ -46,6 +53,8 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> fuelDecreaseDuringStopFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> fuelDuringTripFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveIdlingAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> enteringExitingZoneAlertDef = new ArrayList<>();
+
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
                 List<AlertUrgencyLevelRefSchema> thresholdSet = (List<AlertUrgencyLevelRefSchema>) broadcastState.get(alertId).getData().get();
@@ -72,10 +81,13 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("F") && schema.getAlertType().equalsIgnoreCase("T")) {
                     	fuelDuringTripFunAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("N")) {
+                        enteringExitingZoneAlertDef.add(schema);
+                    }
                 }
             }
         }
-        logger.info("Alert definition from cache for vin :{} alertDef {}", f0.getVin(), hoursOfServiceAlertDef);
+        logger.info("Alert definition from cache for vin :{} alertDef {} {}", f0.getVin(), hoursOfServiceAlertDef,String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
         functionThresh.put("hoursOfService", hoursOfServiceAlertDef);
         functionThresh.put("excessiveAverageSpeed", excessiveAverageSpeedAlertDef);
         functionThresh.put("excessiveUnderUtilizationInHours", excessiveUnderUtilizationInHoursAlertDef);
@@ -83,7 +95,15 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("fuelIncreaseDuringStopFunAlertDef", fuelIncreaseDuringStopFunAlertDef);
         functionThresh.put("fuelDecreaseDuringStopFunAlertDef", fuelDecreaseDuringStopFunAlertDef);
         functionThresh.put("fuelDuringTripFunAlertDef", fuelDuringTripFunAlertDef);
-        //
+        functionThresh.put("enteringAndExitingZoneFun", enteringExitingZoneAlertDef);
+        functionThresh.put("enteringAndExitingZoneVehicleState", vehicleGeofenceSateEnteringZone);
+
+        // Get vehicle sate for geofence
+//        if(vehicleGeofenceSate.contains(f0.getVin())){
+//            f0.setJobName(vehicleGeofenceSate.get(f0.getVin()));
+//        }else{
+//           vehicleGeofenceSate.put(f0.getVin(),"false");
+//        }
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)
                 .process()
@@ -91,10 +111,33 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                 .ifPresent(
                         alerts -> {
                             alerts.stream()
-                                    .forEach(alert -> readOnlyContext.output(OUTPUT_TAG, alert));
+                                    .forEach(alert -> {
+                                        /*if(alert.getType().equalsIgnoreCase("N") && alert.getCategoryType().equalsIgnoreCase("L")){
+                                            // change the state of vehicle for entering zone
+                                            try {
+                                                if(vehicleGeofenceSate.contains(f0.getVin())){
+                                                    vehicleGeofenceSate.put(f0.getVin(),alert.getValueAtAlertTime());
+                                                    if(alert.getValueAtAlertTime().equalsIgnoreCase("true")){
+                                                        logger.info("Alert has benn raised for entering zone :{} {}",alert, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
+                                                        alert.setValueAtAlertTime(""+0.0);
+                                                        readOnlyContext.output(OUTPUT_TAG, alert);
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+                                                logger.error("Error while checking for geofencing vehicle:: {}  {}",e, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
+                                            }
+                                        }
+                                        //Collect alert as it is
+                                        else{
+                                            readOnlyContext.output(OUTPUT_TAG, alert);
+                                        }*/
+
+                                        readOnlyContext.output(OUTPUT_TAG, alert);
+
+                                    });
                         }
                 );
-        logger.info("Alert process for  {} check those alerts {}", f0, functionThresh);
+        logger.info("Alert process for  {} check those alerts {} {}", f0, functionThresh, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
         collector.collect(f0);
     }
 
@@ -104,5 +147,11 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
          * Update threshold alert definition
          */
         CacheService.updateAlertDefinationCache(payload, context);
+    }
+    @Override
+    public void open(org.apache.flink.configuration.Configuration config) {
+        MapStateDescriptor<String, String> descriptor = new MapStateDescriptor("vehicleGeofenceSateEnteringZone",
+                TypeInformation.of(String.class),TypeInformation.of(String.class));
+        vehicleGeofenceSateEnteringZone = getRuntimeContext().getMapState(descriptor);
     }
 }
