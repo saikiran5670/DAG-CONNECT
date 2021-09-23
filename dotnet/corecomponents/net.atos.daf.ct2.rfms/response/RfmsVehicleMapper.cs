@@ -145,8 +145,9 @@ namespace net.atos.daf.ct2.rfms.response
             driverId.OemDriverIdentification = oemDriverIdentification;
 
             triggerType.DriverId = driverId;
-            triggerType.PtoId = record.ptoid;
+            triggerType.PtoId = "1";// record.ptoid = 1; //This is which PTO is activacted, DAF only gives the info on CAN of all PTO together. So always 1.
 
+            vehicleStatus.Driver1Id = new Driver1Id() { OemDriverIdentification = driverId.OemDriverIdentification, TachoDriverIdentification = driverId.TachoDriverIdentification };
             TellTaleInfo tellTaleInfo = new TellTaleInfo();
             tellTaleInfo.OemTellTale = record.oemtelltale;
             tellTaleInfo.State = Convert.ToString(record.state);
@@ -472,14 +473,16 @@ namespace net.atos.daf.ct2.rfms.response
             // record.tachodriver2identification;
             //string driverid = record.tachodriveridentification;
             if (driverIdentification != null && driverIdentification.Length == 19)
+            {
                 return new TachoDriverIdentification()
                 {
                     DriverIdentification = driverIdentification,
-                    CardIssuingMemberState = driverIdentification.Substring(0, 3).Trim(),//first three with trim
+                    CardIssuingMemberState = driverIdentification == "*" ? "*" : driverIdentification.Substring(0, 3).Trim(),//first three with trim
                     DriverAuthenticationEquipment = authenticationEquipment,
-                    CardReplacementIndex = driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
-                    CardRenewalIndex = driverIdentification.Substring(driverIdentification.Length - 2) // last two index
+                    CardReplacementIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
+                    CardRenewalIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring(driverIdentification.Length - 2) // last two index
                 };
+            }
 
             else
                 return new TachoDriverIdentification();
