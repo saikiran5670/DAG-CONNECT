@@ -1,8 +1,4 @@
-using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,12 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
@@ -24,14 +21,14 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.fmsdataservice.Common;
+using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.fmsdataservice.Common;
-using net.atos.daf.ct2.driver;
-using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
+
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -51,12 +48,12 @@ namespace net.atos.daf.ct2.fmsdataservice
             services.AddControllers();
             services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>
-                 {
-                     options.InvalidModelStateResponseFactory = actionContext =>
-                     {
-                         return CustomErrorResponse(actionContext);
-                     };
-                 });
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
@@ -67,14 +64,53 @@ namespace net.atos.daf.ct2.fmsdataservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
+
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
+            services.AddTransient<IOrganizationRepository, OrganizationRepository>();
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+            services.AddTransient<IGroupManager, GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
+            services.AddTransient<Subscription.ISubscriptionManager, Subscription.SubscriptionManager>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+
+            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
+            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
+
+            services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
+            services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
+
+            //services.AddMvc(options =>
+            //{
+            //    options.Filters.Add(new ProducesAttribute("application/json"));
+            //});
 
             services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
-           .AddBasic<BasicAuthenticationService>(options =>
-           {
-               options.ApplicationName = "DAFCT2.0";
-           });
+            .AddBasic<BasicAuthenticationService>(options =>
+            {
+                options.ApplicationName = "DAFCT2.0";
+            });
 
             services.AddAuthorization(options =>
             {
@@ -96,9 +132,12 @@ namespace net.atos.daf.ct2.fmsdataservice
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FMS Data Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "fms Data Service", Version = "v1" });
             });
+
+
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
