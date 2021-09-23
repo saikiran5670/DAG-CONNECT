@@ -20,6 +20,11 @@ public class DAFCT2Constant {
     public static final String INDEX_TRANSID = "index.transid";
     public static final String STATUS_TRANSID = "status.transid";
     public static final String MONITOR_TRANSID = "monitor.transid";
+    
+    public static final String CONTI_INDEX_TRANSID = "conti.index.transid";
+	public static final String CONTI_MONITOR_TRANSID = "conti.monitor.transid";
+	public static final String CONTI_STATUS_TRANSID = "conti.status.transid";
+
 
     public static final String BROADCAST_NAME = "broadcast.name";
 
@@ -67,4 +72,8 @@ public class DAFCT2Constant {
 	public static final String HBASE_MASTER = "hbase.master";
 	public static final String HBASE_REGIONSERVER_PORT = "hbase.regionserver.port";
 	public static final String HBASE_ROOTDIR = "hbase.rootdir";
+	
+	public static final String FILTER_INDEX_TRANSID = "filter.index.transid";
+	public static final String FILTER_MONITOR_TRANSID = "filter.monitor.transid";
+	public static final String FILTER_STATUS_TRANSID = "filter.status.transid";
 }
