@@ -10,5 +10,6 @@
         public static string ContextOrgKey = "context_org_id";
         public static string FeaturesKey = "user_features";
         public static string AccountRoleLevelKey = "role_level";
+        public static string AccountTypeKey = "account_type";
     }
 }

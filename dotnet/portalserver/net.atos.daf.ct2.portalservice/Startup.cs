@@ -162,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice
             //});
             services.AddMemoryCache();
             services.AddControllers();
-            services.AddSingleton<AuditHelper, AuditHelper>();
+            services.AddSingleton<AuditHelper>();
             services.AddSingleton<SessionHelper>();
             services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();

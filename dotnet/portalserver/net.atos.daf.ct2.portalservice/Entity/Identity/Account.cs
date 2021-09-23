@@ -10,5 +10,6 @@
         public string Salutation { get; set; }
         public int? PreferenceId { get; set; }
         public int? BlobId { get; set; }
+        public string Type { get; set; }
     }
 }
