@@ -190,7 +190,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				}
 			} else {
 
-				warningDetail.setVehicleHealthStatusType("");
+				warningDetail.setVehicleHealthStatusType("N");
 			}
 
 			// Vehicle Driving status
