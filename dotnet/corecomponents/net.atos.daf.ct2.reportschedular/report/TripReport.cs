@@ -45,13 +45,13 @@ namespace net.atos.daf.ct2.account.report
         public ReportCreationScheduler ReportSchedulerData { get; private set; }
         public IReportManager ReportManager { get; }
         public string DateTimeFormat { get; private set; }
-
+        public int FeatureId { get; }
 
         public TripReport(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager, int featureId)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.account.report
             _evenType = evenType;
             _contentType = contentType;
             _mapHelper = new reportscheduler.helper.MapHelper(mapManager);
+            FeatureId = featureId;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)

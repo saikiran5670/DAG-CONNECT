@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.props.AlertConfigProp.VIN_ALERT_MAP_STATE;
 
 public class IndexKeyBasedSubscription extends KeyedBroadcastProcessFunction<String, Index, VehicleAlertRefSchema, Tuple2<Index, Payload<Set<Long>>>> implements Serializable {
@@ -22,10 +24,10 @@ public class IndexKeyBasedSubscription extends KeyedBroadcastProcessFunction<Str
 
     @Override
     public void processElement(Index index, KeyedBroadcastProcessFunction<String, Index, VehicleAlertRefSchema, Tuple2<Index, Payload<Set<Long>>>>.ReadOnlyContext readOnlyContext, Collector<Tuple2<Index, Payload<Set<Long>>>> collector) throws Exception {
-        logger.info("Process index message for vim map check:: {}", index);
+        logger.info("Process index message for vim map check:: {} {}", index, String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
         ReadOnlyBroadcastState<String, Payload> vinMapState = readOnlyContext.getBroadcastState(VIN_ALERT_MAP_STATE);
         if (vinMapState.contains(index.getVin())) {
-            logger.info("Vin subscribe for alert status:: {}", index);
+            logger.info("Vin subscribe for alert status:: {} : {}", index, String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
             collector.collect(Tuple2.of(index, vinMapState.get(index.getVin())));
         }
     }

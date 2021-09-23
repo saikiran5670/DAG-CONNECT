@@ -60,11 +60,13 @@ namespace net.atos.daf.ct2.account.report
         public double TotalDistance { get; private set; }
         public double TotalFuelConsumed { get; private set; }
 
+        public int FeatureId { get; }
+
         public FleetFuel(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager, int featureId)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -76,6 +78,7 @@ namespace net.atos.daf.ct2.account.report
             _contentType = contentType;
             _mapManager = mapManager;
             _mapHelper = new reportscheduler.helper.MapHelper(_mapManager);
+            FeatureId = featureId;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)

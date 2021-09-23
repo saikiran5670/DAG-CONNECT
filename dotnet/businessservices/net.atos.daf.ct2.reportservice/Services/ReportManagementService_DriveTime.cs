@@ -111,9 +111,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
                 var vehicleDeatilsWithAccountVisibility =
-                                   await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
+                                   await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() > 0)
                 {
@@ -163,9 +164,9 @@ namespace net.atos.daf.ct2.reportservice.Services
             return await Task.FromResult(response);
         }
 
-        private async Task<Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>> GetVisibleVINDetails(int accountId, int loggedInOrgId, int organizationId)
+        private async Task<Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>> GetVisibleVINDetails(int accountId, int loggedInOrgId, int organizationId, int featureId)
         {
-            IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(accountId, loggedInOrgId, organizationId);
+            IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(accountId, loggedInOrgId, organizationId, featureId);
 
             string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
             ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty> lstVehiclesWithVisiblity = JsonConvert.DeserializeObject<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle);

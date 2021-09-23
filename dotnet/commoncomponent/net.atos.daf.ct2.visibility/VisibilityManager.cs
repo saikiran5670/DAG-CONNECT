@@ -19,7 +19,12 @@ namespace net.atos.daf.ct2.visibility
             _vehicleManager = vehicleManager;
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId)
+        public async Task<int> GetReportFeatureId(int reportId)
+        {
+            return await _visibilityRepository.GetReportFeatureId(reportId);
+        }
+
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
             List<VisibilityVehicle> vehicles;
             //If context switched then find vehicle visibility for the organization
@@ -76,12 +81,12 @@ namespace net.atos.daf.ct2.visibility
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int orgId, int contextOrgId, int roleId,
-                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, string featureName = "Alert")
+                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, int featureId, string featureName = "Alert")
         {
             try
             {
                 var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeature>();
-                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, orgId, contextOrgId);
+                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, orgId, contextOrgId, featureId);
 
                 if (!vehicleByVisibility.Any())
                 {
