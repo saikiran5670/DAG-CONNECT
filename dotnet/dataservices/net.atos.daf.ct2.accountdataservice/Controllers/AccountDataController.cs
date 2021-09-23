@@ -22,7 +22,7 @@ using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity.Common;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
+using IdentityComponent = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
@@ -39,8 +39,12 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
+        private readonly IdentityComponent.IAccountAuthenticator _autheticator;
 
-        public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
+        public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager,
+                                     IOrganizationManager organizationManager, IVehicleManager vehicleManager,
+                                     IAccountIdentityManager accountIdentityManager, IConfiguration configuration,
+                                     IdentityComponent.IAccountAuthenticator autheticator)
         {
             _accountManager = accountManager;
             _accountIdentityManager = accountIdentityManager;
@@ -50,6 +54,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
+            _autheticator = autheticator;
         }
 
         #region Driver Lookup
@@ -378,7 +383,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: nameof(request.Authorization));
             }
 
-            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+            var accountIdentity = await _autheticator.AccessToken(new Identity { UserName = email, Password = password });
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
 
@@ -392,7 +397,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     Email = email,
                     Password = password,
                     OrgId = org?.Id ?? 0,
-                    IsLoginSuccessful = (accountIdentity != null && !string.IsNullOrEmpty(accountIdentity.TokenIdentifier))
+                    IsLoginSuccessful = (accountIdentity != null && accountIdentity.StatusCode == HttpStatusCode.OK)
                 });
         }
 
@@ -427,8 +432,8 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             if (!isExists)
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
-            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
-            if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
+            var accountIdentity = await _autheticator.AccessToken(new Identity { UserName = email, Password = password });
+            if (accountIdentity == null || (accountIdentity != null && accountIdentity.StatusCode != HttpStatusCode.OK))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
             return new OkObjectResult(new { Email = email, OrgId = org?.Id ?? 0 });
@@ -481,8 +486,8 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
             if (email.ToLower().Equals(newIdentity.Split(":")[0].Trim().ToLower()))
             {
-                var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
-                if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
+                var accountIdentity = await _autheticator.AccessToken(new Identity { UserName = email, Password = password });
+                if (accountIdentity == null || (accountIdentity != null && accountIdentity.StatusCode != HttpStatusCode.OK))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
             }
             else

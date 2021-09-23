@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -427,11 +428,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 accountRequest.EndDate = 0;
                 var response = new AccountBusinessService.AccountOrganizationResponse();
-                response = await _accountClient.AddAccountToOrgAsync(accountRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("account_type", _userDetails.AccountType);
+
+                response = await _accountClient.AddAccountToOrgAsync(accountRequest, headers);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                 {
                     return StatusCode(500, "Internal Server Error.(0)");
                 }
+                if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
+                {
+                    return StatusCode(403, response.Message);
+                }
+
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                             "AddAccountOrg  method in Account controller", request.OrganizationId, response.AccountOrgId, JsonConvert.SerializeObject(request),
