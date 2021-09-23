@@ -578,9 +578,9 @@ ngOnDestroy(){
       this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
       }
       else{
-        this.logBookForm.get('all').setValue(this._state.data[0].vehicleGroupId);
+        this.logBookForm.get('vehicleGroup').setValue('all');
       }
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
   }
   if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
@@ -605,7 +605,7 @@ ngOnDestroy(){
       this.filterDateData();
       this.loadUserPOI();
       if(this._state && this._state.fromAlertsNotifications){
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+        this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       }
     }, (error)=>{
       this.hideloader();
@@ -977,9 +977,9 @@ ngOnDestroy(){
       this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
       }
       else{
-        this.logBookForm.get('all').setValue(this._state.data[0].vehicleGroupId);
+        this.logBookForm.get('vehicleGroup').setValue('all');
       }
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
       // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
     }    
