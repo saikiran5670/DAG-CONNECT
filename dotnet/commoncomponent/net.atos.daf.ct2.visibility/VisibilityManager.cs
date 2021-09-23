@@ -31,8 +31,29 @@ namespace net.atos.daf.ct2.visibility
             {
                 vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
+            // vehicle filtering based on features
+            // owned vehicle filtering
+            //feature id condition 
+            if (false)
+            {
+                var subscriptionVehicle = await GetSubcribedVehicleByFeature(30, orgId);
+                if (!subscriptionVehicle.Any(e => e.PackageType == 'O'))
+                {
+                    // getting owned + subscribed vehicle fro visible vehicle list
+                    var vehicleVisible = vehicles.Where(e => e.HasOwned = true
+                     && subscriptionVehicle.FirstOrDefault().VehicleIds.Contains(e.Id)).Select(k => k.Id);
+                    //Removing other vins from owned
+                    vehicles.RemoveAll(e => e.HasOwned = true && !vehicleVisible.Contains(e.Id));
+                }
 
+            }
+            // visible vehicle filtering - todo
             return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray(), accountId);
+        }
+
+        public async Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid)
+        {
+            return await _visibilityRepository.GetSubcribedVehicleByFeature(featureid, organizationid);
         }
 
         public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId)
