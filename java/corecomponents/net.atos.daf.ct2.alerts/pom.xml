@@ -190,7 +190,11 @@
             <scope>test</scope>
         </dependency>
 
-
+ <dependency>
+			<groupId>net.atos</groupId>
+			<artifactId>daf.postgre.connection</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
     </dependencies>
