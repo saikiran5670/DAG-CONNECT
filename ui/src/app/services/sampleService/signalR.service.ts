@@ -171,13 +171,13 @@ get24Time(_time: any){
 
 
   startConnection = () => {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.signalRServiceURL, {
       skipNegotiation: false,
       transport: signalR.HttpTransportType.LongPolling  |  signalR.HttpTransportType.ServerSentEvents
-     
-     }
-    )
+     })
     // .withAutomaticReconnect()
     .build();
   
@@ -212,8 +212,7 @@ get24Time(_time: any){
      this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
     //  this.hubConnection.invoke("ReadKafkaMessages", 187, 36)
     .catch(err => 
-      { 
-          console.log(err);
+      {           console.log("ReadKafkaMessages = ", err);
           this.AlertNotifcaionList.push(err);
       });
 
@@ -225,7 +224,7 @@ get24Time(_time: any){
      this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
        notificationMessage= JSON.parse(notificationMessage);
        this.notificationCount++;
-       console.log("notificationMessage = ",notificationMessage);
+       console.log("NotifyAlertResponse = ",notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
        
         if(this.notificationData.length < 5){
@@ -240,7 +239,7 @@ get24Time(_time: any){
 
     //For error response
     this.hubConnection.on("askServerResponse", (errorMessage) => {
-      console.log(errorMessage);
+      console.log("askServerResponse Error = ", errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
   })
 
