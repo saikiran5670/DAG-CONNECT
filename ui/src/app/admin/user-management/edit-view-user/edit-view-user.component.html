@@ -8,6 +8,15 @@
       <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
   </div>
 </div>
+<div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
+    style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-5'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ userCreatedMsg }}
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+</div>
 <mat-card class='margin-bottom-xlg mat-elevation-z'>
     <mat-card-content>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -217,10 +226,10 @@
             </div>
         </div> 
         <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
                 <mat-label class='custom-font'>{{ !currencyData ? '--' : currencyData.length > 0 ? currencyData[0].value : '--' }}</mat-label>
-            </div>
+            </div> -->
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
                 <mat-label class='custom-font'>{{ !dateFormatData ? '--' : dateFormatData.length > 0 ? dateFormatData[0].value : '--' }}</mat-label>
@@ -228,13 +237,17 @@
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
               <mat-label class='custom-font'>{{ !timeFormatData ? '--' : timeFormatData.length > 0 ? timeFormatData[0].value : '--' }}</mat-label>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
+              <mat-label class='custom-font'>{{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}</mat-label>
             </div>  
         </div> 
         <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
             <mat-label class='custom-font'>{{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}</mat-label>
-          </div>
+          </div> -->
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
             <mat-label class='custom-font'>{{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : defaultSetting.landingPageDisplayDropdownData[0].value }}</mat-label>
@@ -243,7 +256,7 @@
             <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
             <mat-label class='custom-font'>{{ pageRefreshTime ? pageRefreshTime : '--'}}</mat-label>
           </div>
-          <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div> -->
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
         <form [formGroup]="generalSettingForm" *ngIf="editGeneralSettingsFlag">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -279,7 +292,7 @@
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-              <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select (selectionChange)="onDropdownChange($event, 'currency')" placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
@@ -288,7 +301,7 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-              </div>
+              </div> -->
               <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.dateFormat}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
@@ -309,8 +322,6 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-            </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
@@ -321,6 +332,18 @@
                   </mat-select>
                 </mat-form-field>
               </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+              <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select (selectionChange)="onDropdownChange($event, 'vehDisplay')" placeholder="{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}" formControlName="vehDisplay">
+                    <mat-option *ngFor="let rer of defaultSetting.vehicleDisplayDropdownData" [value]="rer.id">
+                      {{ rer.value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
               <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
@@ -347,7 +370,7 @@
                     {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
                 </mat-error>
               </div>
-              <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div> -->
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
             <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width">
               <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple11;
@@ -30,7 +31,7 @@ public class TripGranularData extends RichFlatMapFunction<TripStatusData, Tuple1
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private ReadIndexDataDao tripIdxDao;
-	PreparedStatement tripIndexQry;
+	PreparedStatement tripIndexStmt;
 	private Long vGrossWtThreshold = 0L;
 
 	@Override
@@ -58,7 +59,7 @@ public class TripGranularData extends RichFlatMapFunction<TripStatusData, Tuple1
 			connection = DriverManager.getConnection(dbUrl);
 			tripIdxDao = new ReadIndexDataDao();
 			tripIdxDao.setConnection(connection);
-			tripIndexQry = connection.prepareStatement(ETLQueries.TRIP_INDEX_READ_STATEMENT);
+			tripIndexStmt = connection.prepareStatement(ETLQueries.TRIP_INDEX_READ_STATEMENT);
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -77,7 +78,7 @@ public class TripGranularData extends RichFlatMapFunction<TripStatusData, Tuple1
 
 		try {
 			
-			List<IndexTripData> tripIdxLst = tripIdxDao.read(tripIndexQry, stsData.getTripId());
+			List<IndexTripData> tripIdxLst = tripIdxDao.read(tripIndexStmt, stsData.getTripId());
 			
 			Collections.sort(tripIdxLst,
 					new Comparator<IndexTripData>() {
@@ -120,6 +121,11 @@ public class TripGranularData extends RichFlatMapFunction<TripStatusData, Tuple1
 	@Override
 	public void close() throws Exception{
 		try {
+			
+			super.close();
+			
+			if(Objects.nonNull(tripIndexStmt))
+				tripIndexStmt.close();
 			
 			if (connection != null) {
 				connection.close();

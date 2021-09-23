@@ -345,64 +345,17 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 	}
 
-	/*
-	 * public WarningStastisticsPojo WarningStatisticsCalculationTypeTen(Monitor
-	 * row) { System.out.println("Inside warning calculation");
-	 * 
-	 * WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
-	 * warningDetail.setTripId(row.getDocument().getTripID());
-	 * warningDetail.setVin(row.getVin()); warningDetail.setVid(row.getVid()); try {
-	 * warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
-	 * .convertUTCToEpochMilli(row.getEvtDateTime().toString(),
-	 * DafConstants.DTM_TS_FORMAT)); } catch (ParseException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); }
-	 * 
-	 * warningDetail.setWarningClass(row.getDocument().getVWarningClass());
-	 * warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
-	 * 
-	 * if (row.getGpsLatitude() != null) {
-	 * warningDetail.setLatitude(row.getGpsLatitude().doubleValue()); } else {
-	 * warningDetail.setLatitude(0.0); }
-	 * 
-	 * if (row.getGpsLongitude() != null) {
-	 * warningDetail.setLongitude(row.getGpsLongitude().doubleValue()); } else {
-	 * warningDetail.setLongitude(0.0); }
-	 * 
-	 * if (row.getGpsHeading() != null) {
-	 * warningDetail.setHeading(row.getGpsHeading().doubleValue()); } else {
-	 * warningDetail.setHeading(0.0); }
-	 * 
-	 * if (row.getDocument().getVWarningClass() >= 4 &&
-	 * row.getDocument().getVWarningClass() <= 7) {
-	 * 
-	 * warningDetail.setVehicleHealthStatusType("T");
-	 * 
-	 * } else if (row.getDocument().getVWarningClass() >= 8 &&
-	 * row.getDocument().getVWarningClass() <= 11) {
-	 * 
-	 * warningDetail.setVehicleHealthStatusType("V");
-	 * 
-	 * } else { warningDetail.setVehicleHealthStatusType("N"); }
-	 * 
-	 * warningDetail.setVehicleDrivingStatusType(null);
-	 * 
-	 * if (row.getDocument().getDriverID() != null) {
-	 * warningDetail.setDriverID(row.getDocument().getDriverID()); } else {
-	 * warningDetail.setDriverID("unknown"); }
-	 * 
-	 * if (row.getVEvtID() == 44 || row.getVEvtID() == 46) {
-	 * warningDetail.setWarningType("A"); } else if (row.getVEvtID() == 45) {
-	 * warningDetail.setWarningType("D"); } else {
-	 * warningDetail.setWarningType("Q"); }
-	 * 
-	 * // warningDetail.getDistanceUntilNextService(null); //
-	 * warningDetail.getOdometer(null);
-	 * warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTimeInSec
-	 * ()); // warningDetail.setModifiedAt(null);
-	 * 
-	 * System.out.println("in vehicle warning class---" + row.getVin());
-	 * System.out.println("warning calculation Finished"); return warningDetail;
-	 * 
-	 * }
-	 */
+	@Override
+	public void close() throws Exception {
+
+		super.close();
+
+		logger.info("In close() of Warning :: ");
+
+		if (connection != null) {
+			logger.info("Releasing connection from Warning job");
+			connection.close();
+		}
+
+	}
 }

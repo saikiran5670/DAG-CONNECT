@@ -368,8 +368,8 @@ export class OrganisationRelationshipComponent implements OnInit {
     if(rowData.endDate == 0)
     {
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      title: this.translationData.lblChangeChainingStatus || "Change Chaining Status",
+      message: this.translationData.lblYouwanttoDeactivate || "You want to deactivate the relationship '$'?",
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
       cancelText: this.translationData.lblCancel || "Cancel",

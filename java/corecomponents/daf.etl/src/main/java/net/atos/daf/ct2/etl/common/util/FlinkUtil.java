@@ -1,6 +1,9 @@
 package net.atos.daf.ct2.etl.common.util;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
@@ -59,10 +62,18 @@ public class FlinkUtil {
 		//  enable only in QA and Prod
 		logger.info("RESTART_FLAG :: "+envParams.get(ETLConstants.RESTART_FLAG));
 		if("true".equals(envParams.get(ETLConstants.RESTART_FLAG))){
-			env.setRestartStrategy(
-					RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(ETLConstants.RESTART_ATTEMPS)), //no of restart attempts
-							Long.parseLong(envParams.get(ETLConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
-						);			
+			if("true".equals(envParams.get(ETLConstants.FIXED_RESTART_FLAG))){
+				env.setRestartStrategy(
+						RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(ETLConstants.RESTART_ATTEMPS)), //no of restart attempts
+								Long.parseLong(envParams.get(ETLConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
+							);	
+			}else{
+				env.setRestartStrategy(RestartStrategies.failureRateRestart(
+						  Integer.parseInt(envParams.get(ETLConstants.RESTART_FAILURE_RATE)), // max failures per interval
+						  Time.of(Long.parseLong(envParams.get(ETLConstants.RESTART_FAILURE_INTERVAL)), TimeUnit.MILLISECONDS), //time interval for measuring failure rate
+						  Time.of(Long.parseLong(envParams.get(ETLConstants.RESTART_FAILURE_DELAY)), TimeUnit.MILLISECONDS) // delay
+						));
+			}
 		}else{
 			env.setRestartStrategy(RestartStrategies.noRestart());
 		}

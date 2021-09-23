@@ -508,5 +508,32 @@ namespace net.atos.daf.ct2.visibility.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureid", featureid);
+                parameter.Add("@organizationid", organizationid);
+
+                var queryStatement = @"select p.type, array_agg(distinct coalesce(s.vehicle_id,0)) from master.subscription s
+                                    inner join master.package p on p.id=s.package_id or p.type='P'
+                                    inner join master.featureset fset on fset.id=p.feature_set_id
+                                    inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
+                                    inner join master.feature f on f.id=ff.feature_id
+                                    where s.organization_id=@organizationid and f.id=@featureid and p.type in('O', 'V')
+                                    group by p.type";
+                var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
     }
 }

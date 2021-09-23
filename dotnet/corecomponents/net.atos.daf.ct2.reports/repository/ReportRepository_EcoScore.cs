@@ -838,9 +838,15 @@ namespace net.atos.daf.ct2.reports.repository
                                   INTERSECT
                                   --Subscription Route
                                   SELECT f.id, f.data_attribute_set_id
-                                  FROM master.Subscription s
-                                  INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
-                                  INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+                                  FROM
+	                              (
+		                              SELECT pkg.feature_set_id
+		                              FROM master.Package pkg
+		                              INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+		                              UNION
+		                              SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+	                              ) subs
+                                  INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
                                   INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
                                   INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
                               ) fsets ON fsets.data_attribute_set_id = das.id";
@@ -933,7 +939,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<int> CheckIfSubReportExist(int reportId)
+        public async Task<SubReportDto> CheckIfSubReportExist(int reportId)
         {
             try
             {
@@ -941,10 +947,11 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@report_id", reportId);
 
                 #region Query Select User Preferences
-                var query = @"SELECT feature_id FROM master.report WHERE id = @report_id and sub_report = 'Y'";
+                var query = @"SELECT feature_id as FeatureId, sub_report as HasSubReports 
+                                FROM master.report WHERE id = @report_id";
                 #endregion
 
-                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.QueryFirstOrDefaultAsync<SubReportDto>(query, parameter);
             }
             catch (Exception)
             {

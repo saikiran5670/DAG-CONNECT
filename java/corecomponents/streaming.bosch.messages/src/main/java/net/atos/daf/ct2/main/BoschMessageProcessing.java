@@ -4,11 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,14 +13,13 @@ import org.apache.logging.log4j.Logger;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.processing.ConsumeSourceStream;
-import net.atos.daf.ct2.processing.EgressCorruptMessages;
-import net.atos.daf.ct2.processing.KafkaAuditService;
 import net.atos.daf.ct2.processing.MessageProcessing;
-import net.atos.daf.ct2.processing.ProducerStringSerializationSchema;
-import net.atos.daf.ct2.processing.StoreHistoricalData;
 import net.atos.daf.ct2.processing.ValidateSourceStream;
+import net.atos.daf.ct2.util.MessageParseUtil;
 
 
 public class BoschMessageProcessing {
@@ -40,6 +36,7 @@ public class BoschMessageProcessing {
 		try {
 			properties.load(new FileReader(FILE_PATH));
 			log.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
+			System.out.println("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
 
 		} catch (IOException e) {
 			log.error("Unable to Find the File :: " + FILE_PATH, e);
@@ -56,7 +53,8 @@ public class BoschMessageProcessing {
 			FILE_PATH = args[0];
 
 			properties = configuration();
-			boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job started");
+			System.out.println("properties object ===>" + properties);
+			//boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job started");
 
 			boschMessageProcessing.flinkConnection();
 			boschMessageProcessing.processing(properties);
@@ -64,7 +62,8 @@ public class BoschMessageProcessing {
 			
 		} catch (DAFCT2Exception e) {
 			log.error("Exception: ", e);
-			boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job failed :: "+e.getMessage());
+			System.out.println(e.getMessage());
+			//boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job failed :: "+e.getMessage());
 			e.printStackTrace();
 		} 
 	}
@@ -78,15 +77,20 @@ public class BoschMessageProcessing {
 	}
 
 	public void processing(Properties properties) {
-		
+		log.info("Stage 1. Message processing method " );
 		ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
 		ValidateSourceStream validateSourceStream = new ValidateSourceStream();
+		
 		DataStream<KafkaRecord<String>> boschInputStream = consumeSrcStream.consumeSourceInputStream(
 				streamExecutionEnvironment, DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME, properties);
-
-		DataStream<Tuple2<Integer, KafkaRecord<String>>> boschSourceStreamSts = 
+		log.info("Stage 2. Data Read from kafka topic done ==>" + properties.getProperty(DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME) );
+		
+		//data load in hbase
+		log.info("data loading in hbase process started..");
+		MessageParseUtil.storeDataInHbase(boschInputStream,properties);
+		/*DataStream<Tuple2<Integer, KafkaRecord<String>>> boschSourceStreamSts = 
 				new MessageProcessing<String, Tuple2<Integer, KafkaRecord<String>>>()
-						.boschSourceStreamStatus(boschInputStream);
+						.boschSourceStreamStatus(boschInputStream);*/
 
 		/*boschInputStream.map(new MapFunction<KafkaRecord<String>,KafkaRecord<String>>(){
 
@@ -129,38 +133,65 @@ public class BoschMessageProcessing {
 		/*DataStream<Tuple2<Integer, KafkaRecord<String>>> boschStreamValidSts = validateSourceStream
 				.isValidJSON(boschInputStream);
 		DataStream<KafkaRecord<String>> boschValidInputStream = validateSourceStream
-				.getValidSourceMessages(boschStreamValidSts);*/
-		
+				.getValidSourceMessages(boschStreamValidSts);
+		//TODO 
 
-		new EgressCorruptMessages().egressCorruptMessages(boschSourceStreamSts, properties,
-				properties.getProperty(DAFCT2Constant.BOSCH_CORRUPT_MESSAGE_TOPIC_NAME));
+	/*	new EgressCorruptMessages().egressCorruptMessages(boschSourceStreamSts, properties,
+				properties.getProperty(DAFCT2Constant.BOSCH_CORRUPT_MESSAGE_TOPIC_NAME)); */
 
-		DataStream<KafkaRecord<String>> boschMeasurementInputStream = validateSourceStream
-				.getValidSourceMessages(boschSourceStreamSts, DAFCT2Constant.MEASUREMENT_DATA);
+		/*DataStream<KafkaRecord<String>> boschMeasurementInputStream = validateSourceStream
+				.getValidSourceMessages(boschSourceStreamSts, DAFCT2Constant.MEASUREMENT_DATA);*/
 		
 		//DataStream<KafkaRecord<String>> boschTCUInputStream = 
-		validateSourceStream
+	/*	validateSourceStream
 				.getValidSourceMessages(boschSourceStreamSts, DAFCT2Constant.TCU_DATA)
 				.addSink(new FlinkKafkaProducer<>(properties.getProperty(DAFCT2Constant.SINK_TCU_TOPIC_NAME), 
 						new ProducerStringSerializationSchema(properties.getProperty(DAFCT2Constant.SINK_TCU_TOPIC_NAME)), 
-						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));*/
 				
-
-		//TODO need to check on the 
-		new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMeasurementInputStream,
+		log.info("Stage 3. data filtering as per message type start ");
+		
+		DataStream<KafkaRecord<String>> boschIndexTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_INDEX_TRANSID));
+		//DataStream<KafkaRecord<String>> boschMoniterTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_MONITOR_TRANSID));
+		DataStream<KafkaRecord<String>> boschStatusTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_STATUS_TRANSID));
+		
+		log.info("Stage 4. data filtering as per message type end "); 
+		log.info("Stage 5. data parsing and publishing message on kafka topic start");
+		
+		new MessageProcessing<String, Index>().consumeBoschMessage(boschIndexTCUInputStream,
+				properties.getProperty(DAFCT2Constant.INDEX_TRANSID), "Index",
+				properties.getProperty(DAFCT2Constant.SINK_INDEX_TOPIC_NAME), properties, Index.class);
+		
+//		new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMoniterTCUInputStream,
+//				properties.getProperty(DAFCT2Constant.MONITOR_TRANSID), "Monitor",
+//				properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME), properties, Monitor.class);
+		
+		new MessageProcessing<String, Status>().consumeBoschMessage(boschStatusTCUInputStream,
+				properties.getProperty(DAFCT2Constant.STATUS_TRANSID), "Status",
+				properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME), properties, Status.class);
+		
+		log.info("Stage 6. data parsing and publishing message on kafka topic end");
+		
+	/*	new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMeasurementInputStream,
 				properties.getProperty(DAFCT2Constant.MONITOR_TRANSID), "Monitor",
 				properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME), properties, Monitor.class);
 		
+		new MessageProcessing<String, Status>().consumeBoschMessage(boschMeasurementInputStream,
+				properties.getProperty(DAFCT2Constant.STATUS_TRANSID), "Status",
+				properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME), properties, Status.class);*/
+		
 		//Bosch History
-		boschSourceStreamSts.map(new MapFunction<Tuple2<Integer, KafkaRecord<String>>, KafkaRecord<String>>() {
+		/*boschSourceStreamSts.map(new MapFunction<Tuple2<Integer, KafkaRecord<String>>, KafkaRecord<String>>() {
 
-			/**
+			*//**
 			 * 
-			 */
+			 *//*
 			private static final long serialVersionUID = 1L;
 
 			public KafkaRecord<String> map(Tuple2<Integer, KafkaRecord<String>> rec) throws Exception {
+			
 				return rec.f1;
+				
 			}
 		}).addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
 				properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
@@ -169,9 +200,11 @@ public class BoschMessageProcessing {
 				properties.getProperty(DAFCT2Constant.HBASE_MASTER),
 				properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
 				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_NAME),
-				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));
+				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));*/
 
 	}
+
+
 
 	public StreamExecutionEnvironment getstreamExecutionEnvironment() {
 		return this.streamExecutionEnvironment;
@@ -198,10 +231,10 @@ public class BoschMessageProcessing {
 	
 	public void auditBoschJobDetails(Properties properties, String message){
 		System.out.println("Calling audit service for Bosch :: ");
-		new KafkaAuditService().auditTrail(
+		/*new KafkaAuditService().auditTrail(
 				properties.getProperty(DAFCT2Constant.GRPC_SERVER),
 				properties.getProperty(DAFCT2Constant.GRPC_PORT),
 				DAFCT2Constant.JOB_NAME, 
-				message);
+				message);*/
 	}
 }

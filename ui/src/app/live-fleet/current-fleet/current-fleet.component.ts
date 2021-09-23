@@ -228,14 +228,15 @@ export class CurrentFleetComponent implements OnInit {
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
-        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-          element.subReportUserPreferences.forEach(item => {
-            let _data: any = item;
-            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
-              this.timerPrefData.push(_data);
-            }else if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
+        //if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          //element.subReportUserPreferences.forEach(item => {
+            let _data: any = element;
+            // if(element.key.includes('rp_fo_fleetoverview_settimer_')){
+            //   this.timerPrefData.push(_data);
+            // }else 
+            if(element.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
               let index: any;
-             switch(item.key){
+             switch(element.key){
                case 'rp_fo_fleetoverview_generalvehicleinformation_currentmileage':{
                  index = 0;
                  break;
@@ -251,8 +252,8 @@ export class CurrentFleetComponent implements OnInit {
              }
               this.vehInfoPrefData[index] = _data;
             }
-          });
-        }
+          //});
+        //}
       });
     }
   }

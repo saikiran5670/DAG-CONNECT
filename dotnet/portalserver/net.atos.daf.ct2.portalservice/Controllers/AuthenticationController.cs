@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                         {
                             Identity.Identity accIdentity = new Identity.Identity();
-                            accIdentity.AccountInfo = new Identity.Account(); ;
+                            accIdentity.AccountInfo = new Identity.Account();
                             accIdentity.AccountInfo.Id = response.AccountInfo.Id;
                             accIdentity.AccountInfo.EmailId = response.AccountInfo.EmailId;
                             accIdentity.AccountInfo.Salutation = response.AccountInfo.Salutation;
@@ -67,6 +67,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             accIdentity.AccountInfo.Organization_Id = response.AccountInfo.OrganizationId;
                             accIdentity.AccountInfo.PreferenceId = response.AccountInfo.PreferenceId;
                             accIdentity.AccountInfo.BlobId = response.AccountInfo.BlobId;
+                            accIdentity.AccountInfo.Type = response.AccountInfo.Type;
                             if (response.AccOrganization != null && response.AccOrganization.Count > 0)
                             {
                                 accIdentity.AccountOrganization = new List<Identity.KeyValue>();
@@ -100,6 +101,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                                 HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
                                 HttpContext.Session.SetString(SessionConstants.AccountEmailKey, accIdentity.AccountInfo.EmailId);
+                                HttpContext.Session.SetString(SessionConstants.AccountTypeKey, accIdentity.AccountInfo.Type);
+
                                 _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id } & SessionId - { HttpContext.Session.Id }");
                             }
                             catch (Exception ex)

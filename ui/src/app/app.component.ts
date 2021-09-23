@@ -86,7 +86,7 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
-  notificationDetails: any= [];
+  // notificationDetails: any= [];
   private pagetTitles = {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
@@ -309,6 +309,9 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      if (this.isLogedIn) {
+        this.connectWithSignalR();
+      }
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -810,6 +813,7 @@ export class AppComponent {
           console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
+            this.filteredOrganizationList.next(this.organizationList);
             this.organizationList.sort(this.compare);
             let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
             let _orgId: any;
@@ -1270,37 +1274,34 @@ getOfflineNotifications(){
   this.alertService.getOfflineNotifications().subscribe(data => {
     if(data){
       this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-      this.notificationDetails= data["notificationResponse"];
+      this.signalRService.notificationData= data["notificationResponse"];
     }
-    setTimeout(() => {
-      this.getOfflineNotifications();
-    }, 180000);
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
 
   },
   error => {
-    setTimeout(() => {
-      this.getOfflineNotifications();
-    }, 180000);
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
   })
 }
 
 connectWithSignalR(){
   this.signalRService.startConnection();
-  setTimeout(() => {
-    this.signalRService.askServerListenerForNotifyAlert();
-    this.signalRService.askServerForNotifyAlert();
-  }, 5000);
 }
 
 notificationsClosed(){
-  this.notificationDetails=[];
+  this.signalRService.notificationData=[];
+  this.signalRService.notificationCount= 0;
 }
 
 notificationClicked(){
   this.showAlertNotifications = true;
   if(this.signalRService.notificationCount > 0){
     let notificationData= [];
-    this.notificationDetails.forEach(element => {
+    this.signalRService.notificationData.forEach(element => {
       let notificationObj= {
         "tripId": element.tripId,
         "vin": element.vin,
@@ -1317,7 +1318,6 @@ notificationClicked(){
     });
     
     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
-      this.signalRService.notificationCount= 0;
     })
   }
 }

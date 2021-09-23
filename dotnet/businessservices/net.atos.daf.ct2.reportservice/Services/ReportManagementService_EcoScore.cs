@@ -747,9 +747,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 CheckIfSubReportExistResponse response = new CheckIfSubReportExistResponse();
-                response.SubReportFeature = await _reportManager.CheckIfSubReportExist(request.ReportId);
+                var subReportResponse = await _reportManager.CheckIfSubReportExist(request.ReportId);
                 response.Code = Responsecode.Success;
                 response.Message = entity.ReportConstants.CHECK_SUB_REPORT_EXIST_SUCCESS_MSG;
+                response.FeatureId = subReportResponse.FeatureId;
+                response.HasSubReports = subReportResponse.HasSubReports;
                 return response;
             }
             catch (Exception ex)

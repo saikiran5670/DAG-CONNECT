@@ -27,7 +27,7 @@
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                             (selectionChange)="applyFilterOnOrganization($event.value)">
                             <mat-option>
-                                <ngx-mat-select-search (keyup)="filterContextSettings(search.value)" #search>
+                                <ngx-mat-select-search (keyup)="filterContextSettings(search.value)"  placeholderLabel="{{ translationData.lblSearchOrganization|| 'Search organization' }}" #search>
                                     <mat-icon (click)="resetContextSettingFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                 </ngx-mat-select-search>
                             </mat-option>
@@ -51,8 +51,7 @@
                         </a>
 
                         <mat-menu #menu="matMenu" (closed)="notificationsClosed()"  class="notificationList" yPosition="below" > 
-                                <app-signalr-alert-notification
-                                [notificationData]="notificationDetails">
+                                <app-signalr-alert-notification>
                                 </app-signalr-alert-notification>
                         </mat-menu>
                         
@@ -60,7 +59,7 @@
                             (selectionChange)="onLanguageChange($event.value)">
 
                             <mat-option>
-                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search>
+                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search language' }}" #search>
                                     <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                 </ngx-mat-select-search>
                             </mat-option>

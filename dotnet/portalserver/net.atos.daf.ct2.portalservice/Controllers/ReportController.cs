@@ -792,22 +792,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 // Send sub report features from session to find attributes of related reports
                 SessionFeatures[] objUserFeatures;
-                if (subReportResponse.SubReportFeature > 0)
+                if (subReportResponse != null)
                 {
                     var sessionFeatures = GetUserSubscribeFeatures();
-                    var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.SubReportFeature)?.Select(x => x.Name)?.FirstOrDefault();
-
-                    if (!string.IsNullOrEmpty(featureName))
+                    if (subReportResponse.HasSubReports == "Y" && subReportResponse.FeatureId > 0)
                     {
-                        var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
-                        var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+                        var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.FeatureId)?.Select(x => x.Name)?.FirstOrDefault();
 
-                        if (requiredFeatures.Count() > 0)
+                        if (!string.IsNullOrEmpty(featureName))
                         {
-                            string strFeature = JsonConvert.SerializeObject(requiredFeatures);
-                            objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
-                            if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                            var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
+                            var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+
+                            if (requiredFeatures.Count() > 0)
+                            {
+                                string strFeature = JsonConvert.SerializeObject(requiredFeatures);
+                                objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                            }
                         }
+                    }
+                    else if (subReportResponse.HasSubReports == "N" && subReportResponse.FeatureId > 0)
+                    {
+                        if (!sessionFeatures.Any(x => x.FeatureId == subReportResponse.FeatureId))
+                            return StatusCode(404, "No data found.");
                     }
                 }
 

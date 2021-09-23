@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
 
                 var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId);
+                                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {

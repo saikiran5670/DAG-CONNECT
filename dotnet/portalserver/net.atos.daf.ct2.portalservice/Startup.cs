@@ -38,6 +38,7 @@ using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.dashboardservice;
 using net.atos.daf.ct2.notificationservice;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
+using Microsoft.AspNetCore.Http.Connections;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -161,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice
             //});
             services.AddMemoryCache();
             services.AddControllers();
-            services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddSingleton<AuditHelper>();
             services.AddSingleton<SessionHelper>();
             services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
@@ -330,7 +331,13 @@ namespace net.atos.daf.ct2.portalservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/NotificationHub");
+                endpoints.MapHub<NotificationHub>("/NotificationHub", option =>
+                {
+                    // For trobleshoot purpose.
+                    option.Transports = HttpTransportType.WebSockets |
+                                        HttpTransportType.LongPolling |
+                                        HttpTransportType.ServerSentEvents;
+                });
             });
             app.UseSwagger(c =>
             {

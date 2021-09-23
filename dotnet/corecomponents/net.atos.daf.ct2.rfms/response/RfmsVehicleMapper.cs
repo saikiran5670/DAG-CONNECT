@@ -26,12 +26,13 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, Convert.ToString(record.driverauthenticationequipment));
+            //new TachoDriverIdentification();
+            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
+            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
+            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
+            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
+            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
@@ -114,7 +115,7 @@ namespace net.atos.daf.ct2.rfms.response
         internal VehicleStatus MapVehicleStatus(dynamic record)
         {
             VehicleStatus vehicleStatus = new VehicleStatus();
-            //vehicleStatus.RecordId = record.id;
+            vehicleStatus.RecordId = record.id;
             vehicleStatus.Vin = record.vin;
 
             TriggerType triggerType = new TriggerType();
@@ -128,12 +129,13 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, Convert.ToString(record.driverauthenticationequipment));
+            // new TachoDriverIdentification();
+            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
+            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
+            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
+            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
+            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
@@ -156,14 +158,12 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (record.createddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehicleStatus.CreatedDateTime = createdDateTime;
+                vehicleStatus.CreatedDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //createdDateTime;
             }
 
             if (record.receiveddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehicleStatus.ReceivedDateTime = receivedDateTime;
+                vehicleStatus.ReceivedDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //receivedDateTime;
             }
 
 
@@ -184,17 +184,11 @@ namespace net.atos.daf.ct2.rfms.response
             {
                 vehicleStatus.GrossCombinationVehicleWeight = Convert.ToString(record.GrossCombinationVehicleWeight);
             }
-            if (record.status2OfDoors != null)
-            {
-                vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
-            }
-            if (record.doorStatus != null)
-            {
-                vehicleStatus.DoorStatus = Convert.ToString(record.doorStatus);
-            }
-            vehicleStatus.AccumulatedData = MapAccumuatedData();
-            vehicleStatus.SnapshotData = MapSnapShotData();
-            vehicleStatus.UptimeData = MapUptimeData();
+
+
+            vehicleStatus.AccumulatedData = MapAccumuatedData(record);
+            vehicleStatus.SnapshotData = MapSnapShotData(record);
+            vehicleStatus.UptimeData = MapUptimeData(record);
             return vehicleStatus;
         }
 
@@ -228,31 +222,34 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (!string.IsNullOrEmpty(Convert.ToString(record.totalfueltankvolume)))
                 vehicle.TotalFuelTankVolume = Convert.ToInt32(record.totalfueltankvolume);
-           // else
-              //  vehicle.TotalFuelTankVolume = 0;
+            // else
+            //  vehicle.TotalFuelTankVolume = 0;
 
             vehicle.GearboxType = record.gearboxtype;
             return vehicle;
         }
-        public AccumulatedData MapAccumuatedData()
+        public AccumulatedData MapAccumuatedData(dynamic record)
         {
-
             var accumulatedData = new AccumulatedData()
             {
-                DurationWheelbaseSpeedOverZero = 123456,
-                DistanceCruiseControlActive = 23456,
-                DurationCruiseControlActive = 45678,
-                FuelConsumptionDuringCruiseActive = 987654,
-                DurationWheelbaseSpeedZero = 12345,
-                FuelWheelbaseSpeedZero = 87654,
-                FuelWheelbaseSpeedOverZero = 0,
-                PtoActiveClass = new List<PtoActiveClass> { new PtoActiveClass() {
-               Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
-              Seconds= 12345,
-              Meters= 2345,
-              MilliLitres= 3456} },
-                BrakePedalCounterSpeedOverZero = 12765,
-                DistanceBrakePedalActiveSpeedOverZero = 1456,
+                DurationWheelbaseSpeedOverZero = record.durationWheelbaseSpeedOverZero,
+                DistanceCruiseControlActive = record.distancecruisecontrolactive,
+                DurationCruiseControlActive = record.durationcruisecontrolactive,
+                FuelConsumptionDuringCruiseActive = record.fuelconsumptionduringcruiseactive,
+                DurationWheelbaseSpeedZero = record.durationwheelbasespeedzero,
+                FuelWheelbaseSpeedZero = record.fuelduringwheelbasespeedzero,
+                FuelWheelbaseSpeedOverZero = record.fuelwheelbasespeedoverzero,
+                PtoActiveClass = new List<PtoActiveClass>
+                { new PtoActiveClass()
+                {
+                Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
+                Seconds= 12345,
+                Meters= 2345,
+                MilliLitres= 3456
+                }
+                },
+                BrakePedalCounterSpeedOverZero = record.brakepedalcounterspeedoverzero,
+                DistanceBrakePedalActiveSpeedOverZero = record.distancebrakepedalactivespeedoverzero,
                 AccelerationPedalPositionClass = new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
                     To = 20,
                     Seconds = 23456,
@@ -356,11 +353,6 @@ namespace net.atos.daf.ct2.rfms.response
                     MilliLitres = 3456
                 }
                 },
-                ChairliftCounter = 568,
-                StopRequestCounter = 4567,
-                KneelingCounter = 976,
-                PramRequestCounter = 123
-
 
             };
 
@@ -368,53 +360,79 @@ namespace net.atos.daf.ct2.rfms.response
         }
 
 
-        public SnapshotData MapSnapShotData()
+        public SnapshotData MapSnapShotData(dynamic record)
         {
-            var snapshotData = new SnapshotData()
+
+            GnssPosition gnssPosition = new GnssPosition();
+            if (record.altitude != null)
             {
-                GnssPosition = new GnssPosition()
+                gnssPosition.Altitude = Convert.ToInt32(record.altitude);
+            }
+
+            if (record.heading != null)
+            {
+                gnssPosition.Heading = Convert.ToInt32(record.heading);
+            }
+
+            if (record.latitude != null)
+            {
+                gnssPosition.Latitude = Convert.ToDouble(record.latitude);
+            }
+
+            if (record.longitude != null)
+            {
+                gnssPosition.Longitude = Convert.ToDouble(record.longitude);
+            }
+
+            if (record.positiondatetime != null)
+            {
+                gnssPosition.PositionDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");
+            }
+
+            if (record.speed != null)
+            {
+                gnssPosition.Speed = Convert.ToDouble(record.speed);
+            }
+
+            var snapshotData = new SnapshotData();
+
+
+
+            snapshotData.GnssPosition = gnssPosition;
+            if (record.wheelBasedSpeed != null)
+            {
+                snapshotData.WheelBasedSpeed = Convert.ToDouble(record.wheelBasedSpeed);
+            }
+            if (record.tachographspeed != null)
+            {
+                snapshotData.TachographSpeed = Convert.ToDouble(record.tachographspeed);
+            }
+            snapshotData.EngineSpeed = record.enginespeed;
+            snapshotData.FuelType = record.fuelType = "Diesel"; //Default value as Diesel as per DAf discussion
+            snapshotData.FuelLevel1 = record.fuelLevel1;
+            // FuelLevel2 = 45,
+            snapshotData.CatalystFuelLevel = record.catalystfuellevel;
+            snapshotData.Driver1WorkingState = record.driver1workingstate;
+            snapshotData.Driver2Id = new Driver2Id()
+            {
+
+                TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment),
+                OemDriverIdentification = new OemDriverIdentification()
                 {
-                    Latitude = 57.71727,
-                    Longitude = 11.921161,
-                    Heading = 30,
-                    Altitude = 32,
-                    Speed = 54.5,
-                    PositionDateTime = DateTime.UtcNow.ToString()//2021-08-23T08=07=40.446Z
-                },
-                WheelBasedSpeed = 54.3,
-                TachographSpeed = 54.4,
-                EngineSpeed = 1234,
-                FuelType = "1A",
-                FuelLevel1 = 86,
-                FuelLevel2 = 45,
-                CatalystFuelLevel = 43,
-                Driver1WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
-                Driver2Id = new Driver2Id()
-                {
-                    TachoDriverIdentification = new TachoDriverIdentification()
-                    {
-                        DriverIdentification = "12345678901234",
-                        CardIssuingMemberState = "S",
-                        DriverAuthenticationEquipment = MasterMemoryObjectCacheConstants.DRIVER_CARD,
-                        CardReplacementIndex = "0",
-                        CardRenewalIndex = "0"
-                    },
-                    OemDriverIdentification = new OemDriverIdentification()
-                    {
-                        IdType = "USB",
-                        DriverIdentification = "ABC-123-DEF"
-                    }
-                },
-                Driver2WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
-                AmbientAirTemperature = 23.7,
-                ParkingBrakeSwitch = false,
-                HybridBatteryPackRemainingCharge = 76
+                    IdType = record.driver2oemidtype,
+                    DriverIdentification = record.oemdriver2identification
+                }
             };
+            snapshotData.Driver2WorkingState = record.driver2workingstate;
+            snapshotData.AmbientAirTemperature = record.ambientairtemperature;
+            snapshotData.ParkingBrakeSwitch = null;
+            snapshotData.HybridBatteryPackRemainingCharge = null;
+
             return snapshotData;
 
         }
 
-        public UptimeData MapUptimeData()
+        public UptimeData MapUptimeData(dynamic record)
         {
 
             var uptimeData = new UptimeData()
@@ -422,25 +440,25 @@ namespace net.atos.daf.ct2.rfms.response
 
                 TellTaleInfo = new List<TellTaleInfo>(){ new TellTaleInfo()
                 {
-                    TellTale = MasterMemoryObjectCacheConstants.FUEL_LEVEL,
-                    OemTellTale = MasterMemoryObjectCacheConstants.NO_GPS_SIGNAL,
-                    State = MasterMemoryObjectCacheConstants.YELLOW
+                    TellTale =  Convert.ToString(record.telltale),
+                    OemTellTale =record.oemtelltale,
+                    State = Convert.ToString(record.state)
                 }
                 },
-                ServiceDistance = 100000,
-                EngineCoolantTemperature = 90,
-                ServiceBrakeAirPressureCircuit1 = 512000,
-                ServiceBrakeAirPressureCircuit2 = 534000,
-                DurationAtLeastOneDoorOpen = 0,
+                ServiceDistance = record.serviceDitance,//100000,
+                EngineCoolantTemperature = record.enginecoolanttemperature,
+                ServiceBrakeAirPressureCircuit1 = record.servicebrakeairpressurecircuit1,
+                ServiceBrakeAirPressureCircuit2 = record.servicebrakeairpressurecircuit2,
+                // DurationAtLeastOneDoorOpen = 0,
                 AlternatorInfo = new AlternatorInfo()
                 {
-                    AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
+                    //AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
                     AlternatorNumber = 1
                 },
-                BellowPressureFrontAxleLeft = 234000,
-                BellowPressureFrontAxleRight = 234000,
-                BellowPressureRearAxleLeft = 234000,
-                BellowPressureRearAxleRight = 234000
+                //BellowPressureFrontAxleLeft = 234000,
+                //BellowPressureFrontAxleRight = 234000,
+                //BellowPressureRearAxleLeft = 234000,
+                //BellowPressureRearAxleRight = 234000
             };
             return uptimeData;
 
@@ -448,5 +466,23 @@ namespace net.atos.daf.ct2.rfms.response
         }
 
 
+        public TachoDriverIdentification GetDriverCardDetails(string driverIdentification, string authenticationEquipment)
+        {
+            //TachoDriverIdentification tacho = new TachoDriverIdentification();
+            // record.tachodriver2identification;
+            //string driverid = record.tachodriveridentification;
+            if (driverIdentification != null && driverIdentification.Length == 19)
+                return new TachoDriverIdentification()
+                {
+                    DriverIdentification = driverIdentification,
+                    CardIssuingMemberState = driverIdentification.Substring(0, 3).Trim(),//first three with trim
+                    DriverAuthenticationEquipment = authenticationEquipment,
+                    CardReplacementIndex = driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
+                    CardRenewalIndex = driverIdentification.Substring(driverIdentification.Length - 2) // last two index
+                };
+
+            else
+                return new TachoDriverIdentification();
+        }
     }
 }

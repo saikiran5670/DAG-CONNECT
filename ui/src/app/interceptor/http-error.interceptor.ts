@@ -80,9 +80,9 @@ export class SessionDialogService {
       message: options.message,
       confirmText: options.confirmText
     };
-    if(!this.dialogRefSession) {
+    // if(!this.dialogRefSession) {
       this.dialogRefSession = this.dialog.open(ErrorComponent, dialogConfig);
-    }
+    // }
     
   }
 }
