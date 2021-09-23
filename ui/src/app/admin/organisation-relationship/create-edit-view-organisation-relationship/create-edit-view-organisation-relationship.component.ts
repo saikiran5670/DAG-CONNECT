@@ -37,7 +37,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   vehicleGroupDisplayColumn: string[]= ['select', 'groupName'];
-  organisationNameDisplayColumn: string[]= ['select', 'organizationName'];
+  organisationNameDisplayColumn: string[]= ['select', 'organizationId','organizationName'];
   initData: any;
   selectedOrgRelations = new SelectionModel(true, []);
   selectedOrganisation = new SelectionModel(true, []);
