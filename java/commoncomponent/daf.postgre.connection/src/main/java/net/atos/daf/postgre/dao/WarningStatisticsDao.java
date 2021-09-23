@@ -29,6 +29,9 @@ public class WarningStatisticsDao implements Serializable {
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_FOUR = "UPDATE livefleet.livefleet_current_trip_statistics  SET  distance_until_next_service = ? ,latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? ,latest_processed_message_time_stamp = ? ,  latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ?, vehicle_driving_status_type = ? , trip_distance = ?  WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
 
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ?, vehicle_driving_status_type = ?  WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
+	
+	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select * from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
+	
 
 	public void warning_insert(WarningStastisticsPojo warningDetail) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_warning_statistics;
@@ -44,6 +47,7 @@ public class WarningStatisticsDao implements Serializable {
 
 				stmt_insert_warning_statistics.addBatch();
 				stmt_insert_warning_statistics.executeBatch();
+				System.out.println("data inserted in warning table");
 			}
 		} catch (SQLException e) {
 			// System.out.println("inside catch LiveFleetDriverActivityDao Insert");
@@ -372,4 +376,62 @@ public class WarningStatisticsDao implements Serializable {
 	 * 
 	 * return stmt_insert_warning_statistics; }
 	 */
+	
+	
+	public Long readRepairMaintenamce(Integer messageType, String vin, Integer warningClass, Integer warningNumber) throws TechnicalException, SQLException {
+
+		PreparedStatement stmt_read_warning_statistics = null;
+		ResultSet rs_position = null;
+		Long lastestProcessedMessageTimeStamp = null;
+		String warningType= null;
+
+		try {
+
+			if (null != messageType && null != (connection = getConnection())) {
+
+				stmt_read_warning_statistics = connection.prepareStatement(REPAITM_MAINTENANCE_WARNING_READ);
+
+				
+				stmt_read_warning_statistics.setInt(1, messageType);
+				stmt_read_warning_statistics.setString(2, vin);
+				
+				stmt_read_warning_statistics.setInt(3, warningClass);
+				stmt_read_warning_statistics.setInt(4, warningNumber);
+				
+				rs_position = stmt_read_warning_statistics.executeQuery();
+				System.out.println("query :" + stmt_read_warning_statistics);
+
+				while (rs_position.next()) {
+					
+					warningType=
+							rs_position.getString("warning_type");
+					if(warningType.equals("A")) {
+						lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
+					}
+				}
+
+				rs_position.close();
+			}
+
+		} catch (SQLException e) {
+			logger.error("Error in Warning statistics read method : " + e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error in Warning statistics read method : " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+
+			if (null != rs_position) {
+
+				try {
+					rs_position.close();
+				} catch (SQLException ignore) {
+					/** ignore any errors here */
+				}
+			}
+		}
+
+		return lastestProcessedMessageTimeStamp;
+
+	}
 }
