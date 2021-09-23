@@ -472,7 +472,7 @@ namespace net.atos.daf.ct2.rfms.response
             //TachoDriverIdentification tacho = new TachoDriverIdentification();
             // record.tachodriver2identification;
             //string driverid = record.tachodriveridentification;
-            if (driverIdentification != null && driverIdentification.Length == 19)
+            if (driverIdentification != null && (driverIdentification.Length == 19 || driverIdentification == "*"))
             {
                 return new TachoDriverIdentification()
                 {
