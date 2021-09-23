@@ -1,7 +1,4 @@
-package net.atos.daf.postgre.bo;
-
-
-
+package net.atos.daf.postgre.dao;
 
 import java.io.Serializable;
 import java.sql.Connection;
