@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
-using net.atos.daf.ct2.utilities;
-using System.Collections.Generic;
-using Microsoft.Extensions.Primitives;
-using net.atos.daf.ct2.vehicle;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Http;
 using net.atos.daf.ct2.fmsdataservice.Entity;
 using Newtonsoft.Json;
 
@@ -29,7 +19,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
         private readonly IAuditTraillib _auditTrail;
         public FmsDataServiceController(IAuditTraillib auditTrail, ILogger<FmsDataServiceController> logger, IConfiguration configuration)
         {
-            this._logger = logger;
+            _logger = logger;
             _auditTrail = auditTrail;
             _configuration = configuration;
         }

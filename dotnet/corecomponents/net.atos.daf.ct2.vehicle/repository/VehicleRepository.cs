@@ -2078,7 +2078,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var query = @"select id, vin from master.vehicle where ";
+                var query = @"select id, vin,true as hasowned from master.vehicle where ";
                 var parameter = new DynamicParameters();
 
                 // Vehicle Id 
@@ -2101,7 +2101,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 var queryStatement = @"
                         -- Owned vehicles
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin,true as hasowned
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
@@ -2110,7 +2110,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type S/G
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin, false as hasowned
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
@@ -2121,7 +2121,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type D, method O
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin, false as hasowned
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
@@ -2183,7 +2183,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             try
             {
                 var queryStatement = @"
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin,true as hasowned
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
@@ -2277,7 +2277,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
 
                 string query =
-                                @"select veh.id, veh.vin	                               
+                                @"select veh.id, veh.vin,true as hasowned                               
 	                               from master.vehicle veh 
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";

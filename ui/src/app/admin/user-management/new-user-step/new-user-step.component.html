@@ -195,8 +195,7 @@
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <!-- <mat-label>{{ translationData.lblCurrency }}</mat-label> -->
+            <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'currency')" (selectionChange)="onDropdownChange($event, 'currency')" placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
@@ -205,7 +204,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-            </div>
+            </div> -->
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.dateFormat}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
@@ -226,8 +225,6 @@
                 </mat-select>
               </mat-form-field>
             </div>
-          </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
@@ -238,6 +235,18 @@
                 </mat-select>
               </mat-form-field>
             </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select (openedChange)="onOpenChange($event, 'vehDisplay')" (selectionChange)="onDropdownChange($event, 'vehDisplay')" placeholder="{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}" formControlName="vehDisplay">
+                  <mat-option *ngFor="let rer of defaultSetting.vehicleDisplayDropdownData" [value]="rer.id">
+                    {{ rer.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div> -->
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
@@ -248,7 +257,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per targetSpanIcon" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
@@ -264,8 +273,7 @@
                   {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
               </mat-error>
             </div>
-            
-            <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div> -->
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
           </div>
         </mat-card-content>
       </mat-card>

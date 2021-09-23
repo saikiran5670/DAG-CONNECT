@@ -203,7 +203,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>daf.alerts.logistics.StatusAlertGeneration</mainClass>
+                            <mainClass>net.atos.daf.ct2.app.IndexBasedAlertProcessing</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
