@@ -347,7 +347,7 @@ string RegistrationNo = 12;
 message VehicleFromTripDetails {
 string Vin = 1;
 int64 StartTimeStamp=2;
-int64 EndTimeStamp=3;
+repeated int64 EndTimeStamp=3;
 }
 
 message VehicleListAndDetailsResponse{
@@ -425,7 +425,7 @@ google.protobuf.StringValue Vin = 1;
 google.protobuf.StringValue DriverID=2;
 google.protobuf.StringValue FirstName=3;
 google.protobuf.StringValue LastName=4;
-int64 ActivityDateTime=5;
+repeated int64 ActivityDateTime=5;
 }
 
 message IdRequestForDriverActivity {
