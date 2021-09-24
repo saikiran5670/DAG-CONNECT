@@ -175,14 +175,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
             }
         }
-        //Need to change method names PushNotificationForAlert
-        public async Task ReadKafkaMessages(int accountId, int orgId)
+        public async Task PushNotificationForAlert()
         {
             try
             {
-                // Need to delete 
-                _ = accountId;
-                _ = orgId;
                 //if (accountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
                 //{
                 //    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
@@ -248,33 +244,31 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 };
                                 connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                 _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
-                                //Need to change method names PushNotificationForAlertResponse
-                                await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+                                await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
                             }
                         }
                     }
                     catch (RpcException ex)
                     {
                         _logger.Error($"RpcException Error in ReadKafkaMessages - AlertID: {alertId}", ex);
-                        //Need to change method names PushNotificationForAlertError
-                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
+                        await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                     catch (Exception ex)
                     {
                         _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}", ex);
-                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
+                        await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                 }
             }
             catch (RpcException ex)
             {
                 _logger.Error("RpcException in ReadKafkaMessages method", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.Error("Error in ReadKafkaMessages method", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
         }
     }
