@@ -281,6 +281,7 @@ export class ExistingTripsComponent implements OnInit {
   setDefaultStartEndTime() {
     this.selectedStartTime = "00:00";
     this.selectedEndTime = "23:59";
+    this.setPrefFormatTime();
   }
 
   setPrefFormatTime() {

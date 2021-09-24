@@ -185,6 +185,27 @@ get24Time(_time: any){
     .start()
     .then(() => {
         console.log('Hub Connection Started!');
+        // let a = {alertCategory: "L",
+        // alertCategoryKey: "enumcategory_logisticsalerts",
+        // alertGeneratedTime: 1632202819045,
+        // alertId: 702,
+        // alertName: null,
+        // alertType: "I",
+        // alertTypeKey: "",
+        // createdBy: 143,
+        // date: "09/21/2021",
+        // time: "11:10 AM",
+        // tripAlertId: 0,
+        // tripId: "33f90302-6b78-4bff-830b-a2604a7a821c",
+        // urgencyLevel: "C",
+        // urgencyTypeKey: "enumurgencylevel_critical",
+        // vehicleGroupId: 0,
+        // vehicleGroupName: "",
+        // vehicleLicencePlate: "PLOI098OO1",
+        // vehicleName: "demo",
+        // vin: "XLR0998HGFFT70000"
+        // }
+        //   this.notificationData.push(a)
         this.askServerListenerForNotifyAlert();
         this.askServerForNotifyAlert();
         this.AlertNotifcaionList.push('Hub Connection Started!');
@@ -198,7 +219,6 @@ get24Time(_time: any){
   
 
   askServerForNotifyAlert() {
-    console.log("askServerForNotifyAlert" +`${this.accountId},${this.accountOrganizationId}`)
         //Mock method to get notifications
         // this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
         // // this.hubConnection.invoke("NotifyAlert", "187,36")
@@ -209,10 +229,11 @@ get24Time(_time: any){
         //   });
 
     //Actual method to get notifications
-     this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
+   //   this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
+    this.hubConnection.invoke("PushNotificationForAlert")
     //  this.hubConnection.invoke("ReadKafkaMessages", 187, 36)
     .catch(err => 
-      {           console.log("ReadKafkaMessages = ", err);
+      {           console.log("PushNotificationForAlert = ", err);
           this.AlertNotifcaionList.push(err);
       });
 
@@ -221,10 +242,11 @@ get24Time(_time: any){
   }
   
   askServerListenerForNotifyAlert(){
-     this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+    //  this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
+      this.hubConnection.on("PushNotificationForAlertResponse", (notificationMessage) => {
        notificationMessage= JSON.parse(notificationMessage);
        this.notificationCount++;
-       console.log("NotifyAlertResponse = ",notificationMessage);
+       console.log("PushNotificationForAlertResponse = ",notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
        
         if(this.notificationData.length < 5){
@@ -238,8 +260,9 @@ get24Time(_time: any){
     })
 
     //For error response
-    this.hubConnection.on("askServerResponse", (errorMessage) => {
-      console.log("askServerResponse Error = ", errorMessage);
+     //this.hubConnection.on("askServerResponse", (errorMessage) => {
+     this.hubConnection.on("PushNotificationForAlertError", (errorMessage) => {
+      console.log("PushNotificationForAlertError Error = ", errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
   })
 
@@ -268,13 +291,13 @@ get24Time(_time: any){
   }
   
   ngOnDestroy() {
-  this.hubConnection.off("NotifyAlertResponse");
+  this.hubConnection.off("PushNotificationForAlertResponse");
 
   //Added for testing
   // this.hubConnection.off("TestAlertResponse");
   //----------------------------------------------------
   this.hubConnection.stop();
-  this.AlertNotifcaionList.push('HubConnection off for NotifyAlertResponse');
+  this.AlertNotifcaionList.push('HubConnection off for PushNotificationForAlertResponse');
   }
 
 }

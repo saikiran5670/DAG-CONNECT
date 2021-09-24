@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.service.realtime;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC;
+import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_DAF_ALERT_PRODUCE_NOTIFICATION_MSG_TOPIC;
 import static net.atos.daf.ct2.props.AlertConfigProp.OUTPUT_TAG;
 
 import java.io.Serializable;
@@ -42,8 +43,10 @@ public class MonitorMessageAlertService implements Serializable{
          * Alert produce topic
          */
         String dafAlertProduceTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC);
+        String dafAlertProduceNotificationTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_NOTIFICATION_MSG_TOPIC);
         Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
         FlinkKafkaProducer<Alert> alertProducerTopic = new FlinkKafkaProducer<Alert>(dafAlertProduceTopic, new PojoKafkaSerializationSchema(dafAlertProduceTopic), kafkaTopicProp, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
+        FlinkKafkaProducer<Alert> alertProducerNotificationTopic = new FlinkKafkaProducer<Alert>(dafAlertProduceNotificationTopic, new PojoKafkaSerializationSchema(dafAlertProduceNotificationTopic), kafkaTopicProp, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
 
         /**
          * Process stream
@@ -69,6 +72,7 @@ public class MonitorMessageAlertService implements Serializable{
 
 
         alertFoundStream.addSink(alertProducerTopic);
+        alertFoundStream.addSink(alertProducerNotificationTopic);
 
         /**
          * Store into alert db

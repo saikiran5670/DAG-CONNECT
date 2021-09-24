@@ -95,8 +95,10 @@ public class TripBasedAlertprocessingV2 implements Serializable {
 
 
         String dafAlertProduceTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC);
+        String dafAlertProduceNotificationTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_NOTIFICATION_MSG_TOPIC);
         Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
         FlinkKafkaProducer<Alert> alertProducerTopic = new FlinkKafkaProducer<Alert>(dafAlertProduceTopic, new PojoKafkaSerializationSchema(dafAlertProduceTopic), kafkaTopicProp, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
+        FlinkKafkaProducer<Alert> alertProducerNotificationTopic = new FlinkKafkaProducer<Alert>(dafAlertProduceNotificationTopic, new PojoKafkaSerializationSchema(dafAlertProduceNotificationTopic), kafkaTopicProp, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
 
 
         KeyedStream<net.atos.daf.ct2.pojo.standard.Status, String> statusKeyedStream = KafkaConnectionService.connectStatusObjectTopic(
@@ -193,6 +195,7 @@ public class TripBasedAlertprocessingV2 implements Serializable {
 
 
         alertFoundStream.addSink(alertProducerTopic);
+        alertFoundStream.addSink(alertProducerNotificationTopic);
 
         /**
          * Store into alert db
