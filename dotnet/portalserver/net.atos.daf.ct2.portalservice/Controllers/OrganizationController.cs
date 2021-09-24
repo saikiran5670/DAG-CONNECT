@@ -210,7 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Id = filterRequest.Id,
                     Featuresetid = filterRequest.FeaturesetId,
                     OrganizationId = filterRequest.OrganizationId,
-                    Level = filterRequest.Level,
+                    Level = _userDetails.RoleLevel,
                     Code = filterRequest.Code ?? string.Empty
                 };
 
@@ -883,6 +883,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
+                request.Level = _userDetails.RoleLevel;
                 var relationList = await _organizationClient.GetRelationshipAsync(request);
 
                 RelationShipMappingDetails details = new RelationShipMappingDetails();
