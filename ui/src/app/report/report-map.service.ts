@@ -1993,7 +1993,7 @@ export class ReportMapService {
     return date;
   }
 
-  formStartDate(date: any, prefTimeFormat:any) {
+  formStartDate(date: any, prefTimeFormat: any, prefDateFormat:any) {
     let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
     let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
     let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
@@ -2013,7 +2013,7 @@ export class ReportMapService {
     else {
       _time = `${h}:${m}:${s}`;
     }
-    switch (prefTimeFormat) {
+    switch (prefDateFormat) {
       case 'ddateformat_dd/mm/yyyy': {
         _date = `${_d}/${_m}/${_y} ${_time}`;
         break;

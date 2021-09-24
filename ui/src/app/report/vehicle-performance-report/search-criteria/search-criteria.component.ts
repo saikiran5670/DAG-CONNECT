@@ -474,7 +474,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any) {    
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   onReset() {

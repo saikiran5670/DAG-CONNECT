@@ -1327,7 +1327,7 @@ calendarOptions: CalendarOptions = {
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date,this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date,this.prefTimeFormat, this.prefDateFormat);
   }
 
   selectionTimeRange(selection: any){
@@ -1597,7 +1597,7 @@ getAllSummaryData(){
       });
       numbeOfVehicles = this.initData.length;      
       this.summaryObj = [
-        [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+        [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
           this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
           numberOfTrips, averageDistPerDay.toFixed(2), idleDuration 
         ]

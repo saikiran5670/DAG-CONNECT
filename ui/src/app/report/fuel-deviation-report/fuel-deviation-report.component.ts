@@ -1298,7 +1298,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   updateDataSource(tableData: any) {
@@ -1403,7 +1403,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   excelSummaryData: any = [];
   getAllSummaryData() { 
     this.excelSummaryData = [
-      [ this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [ this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.summarySectionData.totalIncCount, 
         this.summarySectionData.totalDecCount, this.summarySectionData.totalVehCount
       ]

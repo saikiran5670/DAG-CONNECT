@@ -654,7 +654,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any) {
-   return this.reportMapService.formStartDate(date, this.prefTimeFormat)
+   return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat)
   }
 
   onReset() {
@@ -774,7 +774,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     const header = this.getPDFExcelHeader(); 
     const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`];
     let summaryObj = [
-      [this.translationData.lblTripReport || 'Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [this.translationData.lblTripReport || 'Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
       ]
     ];

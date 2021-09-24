@@ -1579,7 +1579,7 @@ createEndMarker(){
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   setChartData(graphData: any){
@@ -2464,7 +2464,7 @@ setVehicleGroupAndVehiclePreSelection() {
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
-           ['Fleet Fuel Vehicle Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+           ['Fleet Fuel Vehicle Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]

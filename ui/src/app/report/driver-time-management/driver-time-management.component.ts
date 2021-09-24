@@ -970,7 +970,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   applyFilter(filterValue: string) {
@@ -986,7 +986,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
   const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
   this.summaryObj=[
-    ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
+    ['Driver Time Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
       this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
       this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
     ]

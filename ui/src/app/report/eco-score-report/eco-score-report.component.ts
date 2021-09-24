@@ -943,7 +943,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   applyFilter(filterValue: string) {
@@ -959,7 +959,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
     let summaryObj=[
-      ['Eco Score Report', new Date(), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup, 
+      ['Eco Score Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup, 
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
       ]
     ];
