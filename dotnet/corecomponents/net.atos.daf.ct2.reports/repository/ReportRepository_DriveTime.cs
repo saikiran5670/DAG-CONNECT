@@ -119,11 +119,12 @@ namespace net.atos.daf.ct2.reports.repository
                                                da.driver_id DriverId,
                                                d.first_name FirstName,
                                                d.last_name LastName,
-                                               da.activity_date ActivityDateTime
+                                               array_agg(distinct da.activity_date) ActivityDateTime
                                             FROM livefleet.livefleet_trip_driver_activity da
                                             Left join master.driver d on d.driver_id=da.driver_id
                                             where da.is_driver1 = true and (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
-                                            GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date
+                                            GROUP BY da.driver_id, da.vin,d.first_name,d.last_name
+                                            --,da.activity_date
                                             ORDER BY da.driver_id DESC ";
 
             List<Driver> lstDriver = (List<Driver>)await _dataMartdataAccess.QueryAsync<Driver>(queryDriversPull, parameterOfReport);
