@@ -325,6 +325,8 @@ namespace net.atos.daf.ct2.rfms.repository
                 //parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
                 // To do rfms vehicle status....
                 string queryStatement = string.Empty;
+                string contentFilterQuery = GetContentFilterQuery(rfmsVehicleStatusRequest.ContentFilter);
+
                 if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
                     queryStatement = @"SELECT t1.Id, 
@@ -353,66 +355,18 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.oem_driver_id_type as oemidtype,
 
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
-                                        t1.total_engine_fuel_used as engineTotalFuelUsed,
-
-                                        t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
-                                        t2.distance_cruise_control_active as distancecruisecontrolactive,
-                                        t2.duration_cruise_control_active as durationcruisecontrolactive,
-                                        t2.fuel_consumption_during_cruise_active as fuelconsumptionduringcruiseactive,
-                                        t2.duration_wheelbase_speed_zero as durationwheelbasespeedzero,
-                                        t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
-                                        t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
-                                        t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
-                                        t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero,
-
-                                        --'ptoActiveClass' as proactiveclass,
-                                        --'accelerationPedalPositionClass' as accelerationPedalPositionClass,
-                                        --'brakePedalPositionClass' as brakePedalPositionClass,
-                                        --'accelerationClass' as accelerationClass,
-                                        --'highAccelerationClass' as highAccelerationClass,
-                                        --'retarderTorqueClass' as retarderTorqueClass,
-                                        --'drivingWithoutTorqueClass' as drivingWithoutTorqueClass,
-                                        --'engineTorqueClass' as engineTorqueClass,
-                                        --'engineTorqueAtCurrentSpeedClass' as engineTorqueAtCurrentSpeedClass,
-                                        --'vehicleSpeedClass' as vehicleSpeedClass,
-                                        --'engineSpeedClass' as engineSpeedClass,
-                                        --'accelerationDuringBrakeClass' as accelerationDuringBrakeClass,
-                                        --'selectedGearClass' as selectedGearClass,
-                                        --'currentGearClass' as currentGearClass,
-
-                                        t1.gps_altitude as altitude,
-                                        t1.gps_heading as heading,
-                                        t1.gps_latitude as latitude,
-                                        t1.gps_longitude as longitude,
-                                        t1.gps_datetime as positiondatetime,
-                                        t1.gps_speed as speed,
-                                        t1.tachgraph_speed as tachographspeed,
-                                        t1.wheelbased_speed as wheelbasespeed,
-                                        t1.fuel_level1 as fuellevel1,
-                                        t1.catalyst_fuel_level as catalystfuellevel,										
-                                        t1.driver1_working_state as driver1workingstate,
-                                        t1.driver2_id as tachodriver2identification,
-                                        t1.driver2_auth_equipment_type_id as driver2authenticationequipment,
-                                        t1.driver2_card_replacement_index as cardreplacementindex,                                     
-                                        t1.oem_driver2_id as oemdriver2identification,
-                                        t1.oem_driver2_id_type as driver2oemidtype,
-                                        t1.driver2_working_state as driver2workingstate,
-                                        t1.ambient_air_temperature as ambientairtemperature,
-
-                                        t1.oem_telltale as oemtelltale,
-                                        t1.telltale_state_id as state,
-                                        t1.telltale_id as telltale,
-                                        t1.distance_until_next_service as serviceDistance,
-                                        t1.engine_coolant_temperature as enginecoolanttemperature,
-                                        t1.service_brake_air_pressure_circuit1 as servicebrakeairpressurecircuit1,
-                                        t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2
-                                        from livefleet.livefleet_position_statistics T1
+                                        t1.total_engine_fuel_used as engineTotalFuelUsed ";
+                    var selectQuery = @" from livefleet.livefleet_position_statistics T1
                                         inner  join tripdetail.trip_statistics t2
                                         on t1.trip_id = t2.trip_id
                                         INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
 										from livefleet.livefleet_position_statistics Group By Vin) T3
 										on T1.created_datetime = T3.lastDate
 										and T1.Vin = T3.Vin";
+
+                    queryStatement += contentFilterQuery + selectQuery;
+
+
                 }
                 else
                 {
@@ -442,63 +396,11 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.oem_driver_id_type as oemidtype,
 
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
-                                        t1.total_engine_fuel_used as engineTotalFuelUsed,
-
-                                        t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
-                                        t2.distance_cruise_control_active as distancecruisecontrolactive,
-                                        t2.duration_cruise_control_active as durationcruisecontrolactive,
-                                        t2.fuel_consumption_during_cruise_active as fuelconsumptionduringcruiseactive,
-                                        t2.duration_wheelbase_speed_zero as durationwheelbasespeedzero,
-                                        t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
-                                        t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
-                                        t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
-                                        t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero,
-
-                                        --'ptoActiveClass' as proactiveclass,
-                                        --'accelerationPedalPositionClass' as accelerationPedalPositionClass,
-                                        --'brakePedalPositionClass' as brakePedalPositionClass,
-                                        --'accelerationClass' as accelerationClass,
-                                        --'highAccelerationClass' as highAccelerationClass,
-                                        --'retarderTorqueClass' as retarderTorqueClass,
-                                        --'drivingWithoutTorqueClass' as drivingWithoutTorqueClass,
-                                        --'engineTorqueClass' as engineTorqueClass,
-                                        --'engineTorqueAtCurrentSpeedClass' as engineTorqueAtCurrentSpeedClass,
-                                        --'vehicleSpeedClass' as vehicleSpeedClass,
-                                        --'engineSpeedClass' as engineSpeedClass,
-                                        --'accelerationDuringBrakeClass' as accelerationDuringBrakeClass,
-                                        --'selectedGearClass' as selectedGearClass,
-                                        --'currentGearClass' as currentGearClass,
-
-                                        t1.gps_altitude as altitude,
-                                        t1.gps_heading as heading,
-                                        t1.gps_latitude as latitude,
-                                        t1.gps_longitude as longitude,
-                                        t1.gps_datetime as positiondatetime,
-                                        t1.gps_speed as speed,
-                                        t1.tachgraph_speed as tachographspeed,
-                                        t1.wheelbased_speed as wheelbasespeed,
-                                        t1.fuel_level1 as fuellevel1,
-                                        t1.catalyst_fuel_level as catalystfuellevel,										
-                                        t1.driver1_working_state as driver1workingstate,
-                                        t1.driver2_id as tachodriver2identification,
-                                        t1.driver2_auth_equipment_type_id as driver2authenticationequipment,
-                                        t1.driver2_card_replacement_index as cardreplacementindex,                                     
-                                        t1.oem_driver2_id as oemdriver2identification,
-                                        t1.oem_driver2_id_type as driver2oemidtype,
-                                        t1.driver2_working_state as driver2workingstate,
-                                        t1.ambient_air_temperature as ambientairtemperature,
-
-                                        t1.oem_telltale as oemtelltale,
-                                        t1.telltale_state_id as state,
-                                        t1.telltale_id as telltale,
-                                        t1.distance_until_next_service as serviceDistance,
-                                        t1.engine_coolant_temperature as enginecoolanttemperature,
-                                        t1.service_brake_air_pressure_circuit1 as servicebrakeairpressurecircuit1,
-                                        t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2
-
-                                        from livefleet.livefleet_position_statistics t1 inner
+                                        t1.total_engine_fuel_used as engineTotalFuelUsed ";
+                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 inner
                                         join tripdetail.trip_statistics t2
                                         on t1.trip_id = t2.trip_id";
+                    queryStatement += contentFilterQuery + selectQuery;
                 }
 
 
@@ -558,11 +460,6 @@ namespace net.atos.daf.ct2.rfms.repository
                 }
                 // Parameter add for content filter
 
-                //if (rfmsVehicleStatusRequest.ContentFilter == ContentType.ACCUMULATED)
-                //{
-
-                //    queryStatement += "@select";
-                //}
 
                 //Parameter add for TriggerFilter
                 if (Int32.TryParse(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.TriggerFilter, out int triggerFilter))
@@ -596,7 +493,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(_rfmsVehicleStatusMapper.MapVehicleStatus(record));
+                    lstVehicleStatus.Add(_rfmsVehicleStatusMapper.MapVehicleStatus(record, rfmsVehicleStatusRequest.ContentFilter));
                 }
 
 
@@ -610,6 +507,61 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 throw;
             }
+
+        }
+
+        private string GetContentFilterQuery(string contentFilter)
+        {
+            var query = string.Empty;
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()))
+            {
+                query += @" ,t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
+                            t2.distance_cruise_control_active as distancecruisecontrolactive,
+                            t2.duration_cruise_control_active as durationcruisecontrolactive,
+                            t2.fuel_consumption_during_cruise_active as fuelconsumptionduringcruiseactive,
+                            t2.duration_wheelbase_speed_zero as durationwheelbasespeedzero,
+                            t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
+                            t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
+                            t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
+                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero
+                            ";
+
+
+            }
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()))
+            {
+                query += @" ,t1.gps_altitude as altitude,
+                            t1.gps_heading as heading,
+                            t1.gps_latitude as latitude,
+                            t1.gps_longitude as longitude,
+                            t1.gps_datetime as positiondatetime,
+                            t1.gps_speed as speed,
+                            t1.tachgraph_speed as tachographspeed,
+                            t1.wheelbased_speed as wheelbasespeed,
+                            t1.fuel_level1 as fuellevel1,
+                            t1.catalyst_fuel_level as catalystfuellevel,										
+                            t1.driver1_working_state as driver1workingstate,
+                            t1.driver2_id as tachodriver2identification,
+                            t1.driver2_auth_equipment_type_id as driver2authenticationequipment,
+                            t1.driver2_card_replacement_index as cardreplacementindex,                                     
+                            t1.oem_driver2_id as oemdriver2identification,
+                            t1.oem_driver2_id_type as driver2oemidtype,
+                            t1.driver2_working_state as driver2workingstate,
+                            t1.ambient_air_temperature as ambientairtemperature";
+
+            }
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()))
+            {
+                query += @" ,t1.oem_telltale as oemtelltale,
+                            t1.telltale_state_id as state,
+                            t1.telltale_id as telltale,
+                            t1.distance_until_next_service as serviceDistance,
+                            t1.engine_coolant_temperature as enginecoolanttemperature,
+                            t1.service_brake_air_pressure_circuit1 as servicebrakeairpressurecircuit1,
+                            t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2";
+
+            }
+            return query;
 
         }
     }
