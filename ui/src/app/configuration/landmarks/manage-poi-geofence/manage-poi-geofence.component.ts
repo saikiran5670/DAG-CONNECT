@@ -469,6 +469,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geoListData: any) => {
       this.geoInitData = geoListData;
       this.geoInitData = this.geoInitData.filter(item => item.type == "C" || item.type == "O");
+      this.geoInitData.sort((userobj1, userobj2)=> parseInt(userobj2.id) - parseInt(userobj1.id));
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
