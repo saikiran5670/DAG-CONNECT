@@ -183,7 +183,9 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
     fromVehicleDetails: boolean,
     data: any
   };
+  setTimeout(() => {
   this.loadWholeTripData();
+  },5);
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
@@ -561,12 +563,10 @@ ngOnDestroy(){
   //for alerts & notification individual alert click
   if(this.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
-    // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     let startDate = new Date( sdate +' UTC');
     startDate.toString();
     let newDate = new Date(this._state.data[0].date + 'UTC');
-    // let newDate = new Date(this._state.data[0].date + 'UTC');
     newDate.toString();
     this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
@@ -580,7 +580,7 @@ ngOnDestroy(){
       else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
-      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
   }
   if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
@@ -961,11 +961,9 @@ ngOnDestroy(){
       //for alerts & notification individual alert click
     if(this.fromAlertsNotifications == true && this._state.data.length > 0){
       this.selectionTab = '';
-      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
       let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
       let startDate = new Date( sdate +' UTC');
       startDate.toString();
-      // let newDate = new Date(this._state.data[0].date + 'UTC');
       let newDate = new Date(this._state.data[0].date + 'UTC');
       newDate.toString();
       this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
@@ -979,9 +977,8 @@ ngOnDestroy(){
       else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
-      // this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
-      // this.logBookForm.get('startDate').setValue(this._state.data[0].date);
-      // this.logBookForm.get('endDate').setValue(this._state.data[0].date);
+      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      this.fromAlertsNotifications = false;
     }    
    
     if(this.fromMoreAlertsFlag == true){

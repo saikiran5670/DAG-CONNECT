@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.service.geofence.RayCasting;
+import org.apache.flink.api.common.state.MapState;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,4 +81,55 @@ public class IndexBasedAlertFunctionsTest {
 
 
     }
+
+
+    @Test
+    public void testVehicleStateForZone(){
+        boolean enterZone = checkVehicleStateForZone(Boolean.FALSE, Boolean.TRUE, "enterZone");
+        System.out.println("Enter zone Test :: "+enterZone);
+        System.out.println("--------------------------------");
+        enterZone = checkVehicleStateForZone(Boolean.TRUE, Boolean.TRUE, "enterZone");
+        System.out.println("Enter zone inside true Test2 :: "+enterZone);
+        System.out.println("--------------------------------");
+        enterZone = checkVehicleStateForZone(Boolean.TRUE, Boolean.FALSE, "enterZone");
+        System.out.println("Enter zone outiside true Test2 :: "+enterZone);
+
+        System.out.println("###########################################");
+        boolean exitZone = checkVehicleStateForZone(Boolean.TRUE, Boolean.FALSE, "exitZone");
+        System.out.println("Exit zone Test :: "+exitZone);
+        System.out.println("--------------------------------");
+        exitZone = checkVehicleStateForZone(Boolean.FALSE, Boolean.TRUE, "exitZone");
+        System.out.println("Exit zone Test outside:: "+exitZone);
+        System.out.println("--------------------------------");
+        exitZone = checkVehicleStateForZone(Boolean.TRUE, Boolean.TRUE, "exitZone");
+        System.out.println("Exit zone Test :: "+exitZone);
+    }
+
+    public static boolean checkVehicleStateForZone(Boolean vehicleState,
+                                                   Boolean inside, String alertType) {
+
+        Boolean enterZoneTrue= !vehicleState && inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean exitZoneTrue = vehicleState &&  !inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean enterZoneFalse = vehicleState &&  !inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean exitZoneFalse= !vehicleState && inside && alertType.equalsIgnoreCase("exitZone");
+
+        if(enterZoneTrue || exitZoneTrue){
+            try {
+                System.out.println("update vehicle state to "+inside.toString());
+            } catch (Exception e) {
+            }
+            System.out.println("genarate alert "+alertType);
+            return true;
+        }
+        // If the state change raise an alert for exiting zone
+        if(enterZoneFalse || exitZoneFalse){
+            try {
+                System.out.println("update vehicle state to "+inside);
+            } catch (Exception e) {
+            }
+        }
+        System.out.println("return false");
+        return false;
+    }
+
 }

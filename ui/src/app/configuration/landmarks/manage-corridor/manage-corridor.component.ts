@@ -261,11 +261,10 @@ export class ManageCorridorComponent implements OnInit {
   }
   masterToggleForCorridor() {
     this.markerArray = [];
+    this.mapFunctions.clearRoutesFromMap();
+
     if(this.isAllSelectedForCorridor()){
       this.selectedCorridors.clear();
-      this.mapFunctions.clearRoutesFromMap();
-      this.mapFunctions.clearPolylines();
-
       this.showMap = false;
     }
     else{
@@ -307,7 +306,6 @@ export class ManageCorridorComponent implements OnInit {
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
-      this.mapFunctions.removeCorridor(row.id);
       }
     this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 

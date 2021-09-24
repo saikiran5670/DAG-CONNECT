@@ -37,6 +37,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         this.configMap=configMap;
     }
     private MapState<String, String> vehicleGeofenceSateEnteringZone;
+    private MapState<String, String> vehicleGeofenceSateExitZone;
 
     @Override
     public void processElement(Tuple2<Index, Payload<Set<Long>>> indexTup2, KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>.ReadOnlyContext readOnlyContext, Collector<Index> collector) throws Exception {
@@ -54,6 +55,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> fuelDuringTripFunAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> excessiveIdlingAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> enteringExitingZoneAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> exitingZoneAlertDef = new ArrayList<>();
 
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
@@ -84,6 +86,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("N")) {
                         enteringExitingZoneAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("X")) {
+                        exitingZoneAlertDef.add(schema);
+                    }
                 }
             }
         }
@@ -96,14 +101,10 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("fuelDecreaseDuringStopFunAlertDef", fuelDecreaseDuringStopFunAlertDef);
         functionThresh.put("fuelDuringTripFunAlertDef", fuelDuringTripFunAlertDef);
         functionThresh.put("enteringAndExitingZoneFun", enteringExitingZoneAlertDef);
+        functionThresh.put("exitingZoneFun", exitingZoneAlertDef);
         functionThresh.put("enteringAndExitingZoneVehicleState", vehicleGeofenceSateEnteringZone);
+        functionThresh.put("exitingZoneVehicleState", vehicleGeofenceSateExitZone);
 
-        // Get vehicle sate for geofence
-//        if(vehicleGeofenceSate.contains(f0.getVin())){
-//            f0.setJobName(vehicleGeofenceSate.get(f0.getVin()));
-//        }else{
-//           vehicleGeofenceSate.put(f0.getVin(),"false");
-//        }
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)
                 .process()
@@ -111,30 +112,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                 .ifPresent(
                         alerts -> {
                             alerts.stream()
-                                    .forEach(alert -> {
-                                        /*if(alert.getType().equalsIgnoreCase("N") && alert.getCategoryType().equalsIgnoreCase("L")){
-                                            // change the state of vehicle for entering zone
-                                            try {
-                                                if(vehicleGeofenceSate.contains(f0.getVin())){
-                                                    vehicleGeofenceSate.put(f0.getVin(),alert.getValueAtAlertTime());
-                                                    if(alert.getValueAtAlertTime().equalsIgnoreCase("true")){
-                                                        logger.info("Alert has benn raised for entering zone :{} {}",alert, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
-                                                        alert.setValueAtAlertTime(""+0.0);
-                                                        readOnlyContext.output(OUTPUT_TAG, alert);
-                                                    }
-                                                }
-                                            } catch (Exception e) {
-                                                logger.error("Error while checking for geofencing vehicle:: {}  {}",e, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
-                                            }
-                                        }
-                                        //Collect alert as it is
-                                        else{
-                                            readOnlyContext.output(OUTPUT_TAG, alert);
-                                        }*/
-
-                                        readOnlyContext.output(OUTPUT_TAG, alert);
-
-                                    });
+                                    .forEach(alert -> readOnlyContext.output(OUTPUT_TAG, alert));
                         }
                 );
         logger.info("Alert process for  {} check those alerts {} {}", f0, functionThresh, String.format(INCOMING_MESSAGE_UUID,f0.getJobName()));
@@ -153,5 +131,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         MapStateDescriptor<String, String> descriptor = new MapStateDescriptor("vehicleGeofenceSateEnteringZone",
                 TypeInformation.of(String.class),TypeInformation.of(String.class));
         vehicleGeofenceSateEnteringZone = getRuntimeContext().getMapState(descriptor);
+
+        MapStateDescriptor<String, String> descriptorExitZone = new MapStateDescriptor("vehicleGeofenceSateExitZone",
+                TypeInformation.of(String.class),TypeInformation.of(String.class));
+        vehicleGeofenceSateExitZone = getRuntimeContext().getMapState(descriptorExitZone);
     }
 }
