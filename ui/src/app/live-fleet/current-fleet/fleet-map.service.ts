@@ -91,6 +91,7 @@ export class FleetMapService {
   clearRoutesFromMap(){
     this.hereMap.removeObjects(this.hereMap.getObjects());
     this.group.removeAll();
+    this.mapGroup.removeAll();
     this.disableGroup.removeAll();
     this.startMarker = null; 
     this.endMarker = null; 
