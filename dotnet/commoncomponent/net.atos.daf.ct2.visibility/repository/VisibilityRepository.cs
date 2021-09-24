@@ -526,20 +526,20 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public async Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid)
+        public async Task<IEnumerable<VehiclePackage>> GetSubscribedVehicleByFeature(int featureId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@featureid", featureid);
-                parameter.Add("@organizationid", organizationid);
+                parameter.Add("@featureid", featureId);
+                parameter.Add("@organizationid", organizationId);
 
                 var queryStatement = @"select p.type, array_agg(distinct coalesce(s.vehicle_id,0)) from master.subscription s
                                     inner join master.package p on p.id=s.package_id or p.type='P'
-                                    inner join master.featureset fset on fset.id=p.feature_set_id
+                                    inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                     inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
-                                    inner join master.feature f on f.id=ff.feature_id
-                                    where s.organization_id=@organizationid and f.id=@featureid and p.type in('O', 'V')
+                                    inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
+                                    where s.organization_id=@organizationid and f.id=@featureid and p.type in('O', 'V') AND s.state = 'A'
                                     group by p.type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
 
@@ -547,10 +547,62 @@ namespace net.atos.daf.ct2.visibility.repository
             }
             catch (Exception)
             {
-
                 throw;
             }
+        }
 
+        public async Task<int[]> GetRelationshipVehiclesByFeature(int featureId, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureid", featureId);
+                parameter.Add("@organizationid", organizationId);
+
+                var queryStatement =
+                    @"with cte_org_rels as 
+                    (
+	                    select distinct orm.owner_org_id, orm.vehicle_group_id, grp.group_type
+	                    from master.orgrelationshipmapping orm
+	                    inner join master.orgrelationship ors on orm.relationship_id = ors.id and orm.target_org_id=@organizationid and lower(ors.code) not in ('owner','oem')
+	                    inner join master.group grp on orm.vehicle_group_id = grp.id and grp.organization_id = orm.owner_org_id
+	                    inner join master.featureset fset on fset.id=ors.feature_set_id
+	                    inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
+	                    inner join master.feature f on f.id=ff.feature_id
+	                    where f.id= @featureid
+	                    group by orm.owner_org_id, orm.vehicle_group_id, grp.group_type
+                    ),
+                    cte_g_vehicles as
+                    (
+	                    select rels.owner_org_id, array_agg(gref.ref_id) as vehicleIds
+	                    from master.group grp
+	                    inner join master.groupref gref on grp.id = gref.group_id and grp.object_type = 'V' and grp.group_type = 'G'
+	                    inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type
+	                    group by rels.owner_org_id
+                    ),
+                    cte_d_vehicles as
+                    (
+	                    select rels.owner_org_id, array_agg(v.id) as vehicleIds
+	                    from master.group grp
+	                    inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type and grp.group_type = 'D'
+	                    inner join master.vehicle v on v.organization_id = rels.owner_org_id
+	                    group by rels.owner_org_id
+                    )
+                    select array_agg(vehicleIds) as vehicleIds
+                    from
+                    (
+	                    select owner_org_id, unnest(vehicleIds) as vehicleIds from cte_g_vehicles
+	                    UNION
+	                    select owner_org_id, unnest(vehicleIds) as vehicleIds from cte_d_vehicles
+                    ) veh
+                    group by veh.owner_org_id";
+
+                return await _dataAccess.ExecuteScalarAsync<int[]>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

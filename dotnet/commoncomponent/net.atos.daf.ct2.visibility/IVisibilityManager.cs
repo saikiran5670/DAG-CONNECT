@@ -16,8 +16,8 @@ namespace net.atos.daf.ct2.visibility
         Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetVehicleByVisibilityAndFeatureTemp(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                            string featureName = "Alert");
         Task<int> GetReportFeatureId(int reportId);
-        Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid);
-        
+        Task<IEnumerable<VehiclePackage>> GetSubscribedVehicleByFeature(int featureId, int organizationId);
+
         Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId);
     }
 }

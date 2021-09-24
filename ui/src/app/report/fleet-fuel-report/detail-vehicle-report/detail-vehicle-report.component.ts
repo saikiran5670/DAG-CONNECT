@@ -2325,7 +2325,8 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     
     let DATA = document.getElementById('charts');
-    html2canvas( DATA)
+    html2canvas((DATA),
+    {scale:2})
     .then(canvas => {  
       (doc as any).autoTable({
         styles: {
@@ -2351,7 +2352,6 @@ setVehicleGroupAndVehiclePreSelection() {
 
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
