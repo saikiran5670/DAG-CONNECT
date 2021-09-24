@@ -547,7 +547,7 @@ namespace net.atos.daf.ct2.rfms.repository
                             t1.oem_driver2_id as oemdriver2identification,
                             t1.oem_driver2_id_type as driver2oemidtype,
                             t1.driver2_working_state as driver2workingstate,
-                            t1.ambient_air_temperature as ambientairtemperature";
+                            t1.ambient_air_temperature as ambientairtemperature ";
 
             }
             if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()))
@@ -558,7 +558,7 @@ namespace net.atos.daf.ct2.rfms.repository
                             t1.distance_until_next_service as serviceDistance,
                             t1.engine_coolant_temperature as enginecoolanttemperature,
                             t1.service_brake_air_pressure_circuit1 as servicebrakeairpressurecircuit1,
-                            t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2";
+                            t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2 ";
 
             }
             return query;
