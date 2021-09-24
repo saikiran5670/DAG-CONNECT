@@ -176,6 +176,10 @@ vehicleIconMarker : any;
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
+  setTimeout(() => {
+    this.initMap();
+    }, 10);
+    
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
     fromFleetUtilReport: boolean,
@@ -191,10 +195,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.platform = new H.service.Platform({
     "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
   });
-  // setTimeout(() => {
-  //   this.initMap();
-      
-  //   }, 10);
+
   this.configureAutoSuggest();
   this.defaultTranslation();
 
@@ -295,6 +296,7 @@ ngOnDestroy(){
             this.setDefaultTodayDate();
           }
           if(this._state.fromMoreAlerts == true){
+            this.showMapPanel = true;
             this.fromMoreAlertsFlag = true; 
             this.setDefaultTodayDate();
           }         
@@ -563,13 +565,13 @@ ngOnDestroy(){
   //for alerts & notification individual alert click
   if(this.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
-    let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-    let startDate = new Date( sdate +' UTC');
-    startDate.toString();
-    let newDate = new Date(this._state.data[0].date + 'UTC');
-    newDate.toString();
-    this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
+    // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+    // let startDate: any = new Date( sdate +'UTC');
+    // startDate.toString();
+    // let newDate: any = new Date(this._state.data[0].date + 'UTC');
+    // newDate.toString();
+    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedEndTime, 'end');
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -584,14 +586,8 @@ ngOnDestroy(){
   }
   if(this.fromMoreAlertsFlag == true){
     this.selectionTab ='';
-    let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
-    let moreStartDate = new Date( startDate +' UTC');
-    moreStartDate.toString();
-    let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
-    let moreEndDate = new Date( endDate +' UTC');
-    moreEndDate.toString();
-    this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
+     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end'); 
   }
 // }
 }
@@ -731,7 +727,7 @@ ngOnDestroy(){
         this.hideloader();
         let newLogbookData = [];
         logbookData.forEach(element => {
-          if(this.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
+          if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
             newLogbookData.push(element);
           }
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
@@ -765,7 +761,7 @@ ngOnDestroy(){
                 }
         });
         
-        if(this.fromAlertsNotifications){
+        if(this._state && this._state.fromAlertsNotifications){
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           this.selectedTrip.select(element);
@@ -961,13 +957,13 @@ ngOnDestroy(){
       //for alerts & notification individual alert click
     if(this.fromAlertsNotifications == true && this._state.data.length > 0){
       this.selectionTab = '';
-      let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-      let startDate = new Date( sdate +' UTC');
-      startDate.toString();
-      let newDate = new Date(this._state.data[0].date + 'UTC');
-      newDate.toString();
-      this.startDateValue = this.setStartEndDateTime(startDate, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(newDate, this.selectedEndTime, 'end');
+      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
+      // let startDate = new Date( sdate +' UTC');
+      // startDate.toString();
+      // let newDate = new Date(this._state.data[0].date + 'UTC');
+      // newDate.toString();
+      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedEndTime, 'end');
       this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -983,14 +979,18 @@ ngOnDestroy(){
    
     if(this.fromMoreAlertsFlag == true){
       this.selectionTab = '';
-      let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
-      let moreStartDate = new Date( startDate +' UTC');
-      moreStartDate.toString();
-      let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
-      let moreEndDate = new Date( endDate +' UTC');
-      moreEndDate.toString();
-      this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
+      // let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+      // let sDate = startDate[0]+ ' ' + '00:00:00 AM';
+      // let moreStartDate = new Date( sDate +' UTC');
+      // moreStartDate.toString();
+      // let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput); 
+      // let eDate = endDate[0]+ ' ' + '00:00:00 AM';
+      // let moreEndDate = new Date( eDate +' UTC');
+      // moreEndDate.toString();
+      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');   
+      // this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
+      // this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end'); 
     }
 
   }
@@ -1002,7 +1002,7 @@ ngOnDestroy(){
       let vehicleData = this.wholeLogBookData["associatedVehicleRequest"];
       if(vehicleData.length > 0){
       vehicleData.forEach(element => {
-        if(this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
+        if(this._state && this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
 
           this.logBookForm.get('vehicle').setValue(element.vehicleId);
       }
@@ -1044,11 +1044,11 @@ ngOnDestroy(){
     if(this.initData.length > 0){
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
+        // setTimeout(() => {
+        //   this.initMap();
+        // }, 0);
       }else{
-        if(!this.fromAlertsNotifications){
+        if(this._state && !this._state.fromAlertsNotifications){
         this.clearRoutesFromMap();
         }
       }
