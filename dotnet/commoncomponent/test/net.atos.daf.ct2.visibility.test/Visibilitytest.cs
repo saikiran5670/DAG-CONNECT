@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetSubcribedVehicleByFeature(51, 36);
+                                    .GetSubscribedVehicleByFeature(51, 36);
             Assert.IsTrue(result.Count() > 0);
         }
 
