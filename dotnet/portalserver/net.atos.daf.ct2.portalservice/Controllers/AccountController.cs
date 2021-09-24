@@ -126,10 +126,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(500, PortalConstants.AccountValidation.ERROR_MESSAGE);
                     }
-                    else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
-                    {
-                        return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
-                    }
+                    //Removed because account creation should not depend on email functionality failure
+                    //else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
+                    //{
+                    //    return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
+                    //}
                     else
                     {
                         return StatusCode(500, string.Format(PortalConstants.ResponseError.INTERNAL_SERVER_ERROR, "01"));
