@@ -729,7 +729,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       "endDateTime":Util.getMillisecondsToUTCDate(defaultEndValue, this.prefTimeZone)
     }
     this.showLoadingIndicator = true;
-    this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
+    this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {
        this.hideloader();
       this.onLoadData = initData;
       this.filterDateData();     
@@ -750,7 +750,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let finalDriverList : any = [];
     let currentStartTime =  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); //_last3m.getTime();
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); // _yesterday.getTime();
-    let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    let driverList = [];
+    this.onLoadData.driverList.forEach(element => {
+      if(element.activityDateTime && element.activityDateTime.length > 0){
+        let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
+        if(search.length > 0){
+          driverList.push(element.driverID);
+        }
+      }
+    });
     let filteredDriverList = [];
     let filteredVehicleList = [];
     let filteredVehicleGroupList = [];

@@ -1118,10 +1118,53 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
     if (this.wholeTripData.vinTripList.length > 0) {
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if (filterVIN.length > 0) {
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
-        ////console.log("distinctVIN:: ", distinctVIN);
+      // this.wholeTripData.vinTripList =[
+      //     {
+      //       "vin": "XLR0998HGFFT74597",
+      //       "endtimestamp": [ 1623841530000, 1623842154000, 1623843982000, 1623844187000, 1624271651000, 1624271875000 ]
+      //     },
+      //     {
+      //       "vin": "XLR0998HGFFT74600",
+      //       "endtimestamp": [ 1625565916000, 1626952663000, 1626952858000, 1627390644000, 1628121622000, 1628121932000, 1628122564000, 1628122848000, 1628127036000 ]
+      //     },
+      //     {
+      //       "vin": "XLRAEF5300G350313",
+      //       "endtimestamp": [ 1625784443000 ]
+      //     },
+      //     {
+      //       "vin": "TCUST000000000004",
+      //       "endtimestamp": [ 1623841856000, 1623841991000, 1623845142000, 1624272793000, 1630322027000, 1630323384000, 1630324971000, 1630327848000, 1630671344000 ]
+      //     }
+      //   ] // needs to remove after api changes
+      
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+
+
+      // let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      // if (filterVIN.length > 0) {
+      //   distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      //   if (distinctVIN.length > 0) {
+      //     distinctVIN.forEach(element => {
+      //       let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+      //       if (_item.length > 0) {
+      //         this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+      //         _item.forEach(element => {
+      //           finalVINDataList.push(element)
+      //         });
+      //       }
+      //     });
+      //   }
+      // }
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);

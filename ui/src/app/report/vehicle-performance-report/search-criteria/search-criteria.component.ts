@@ -231,7 +231,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   loadWholeTripData() {
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripVehicleperformance(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.wholeTripData = tripData;
       this.filterDateData();
     }, (error) => {
@@ -251,9 +251,17 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if (filterVIN.length > 0) {
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
