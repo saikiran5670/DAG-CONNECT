@@ -2320,13 +2320,14 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
     let DATA = document.getElementById('charts');
-    html2canvas( DATA)
-    .then(canvas => {  
+    html2canvas( (DATA),
+    {scale:2})
+    .then(canvas => { 
       (doc as any).autoTable({
         styles: {
             cellPadding: 0.5,
-            fontSize: 12
-        },       
+            fontSize: 12 
+        },    
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
@@ -2355,7 +2356,7 @@ setVehicleGroupAndVehiclePreSelection() {
         doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
+
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
@@ -2370,8 +2371,8 @@ setVehicleGroupAndVehiclePreSelection() {
         //console.log(data.column.index)
       }
     })
-
-    doc.save('fleetFuelByVehicle.pdf');
+    
+      doc.save('fleetFuelByVehicle.pdf');
        
     }); 
     displayHeader.style.display ="block";

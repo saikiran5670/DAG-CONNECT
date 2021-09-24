@@ -180,12 +180,13 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "There is an error creating account.";
                     response.Code = Responcecode.Failed;
                 }
-                else if (account.IsErrorInEmail)
-                {
-                    response.Message = "There is an error while sending account confirmation email to the account user.";
-                    response.Code = Responcecode.Failed;
-                    response.Account = _mapper.ToAccount(account);
-                }
+                //Removed because account creation should not depend on email functionality failure
+                //else if (account.IsErrorInEmail)
+                //{
+                //    response.Message = "There is an error while sending account confirmation email to the account user.";
+                //    response.Code = Responcecode.Failed;
+                //    response.Account = _mapper.ToAccount(account);
+                //}
                 else
                 {
                     response.Code = Responcecode.Success;

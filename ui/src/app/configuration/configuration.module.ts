@@ -45,6 +45,17 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { TimeRangeSliderComponent } from './eco-score-profile-management/time-range-slider/time-range-slider.component';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+
+export const MY_DATE_FORMAT = {
+  display: {
+    dateInput: 'DD MMM YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+}
 
 @NgModule({
   declarations: [
@@ -94,9 +105,18 @@ import { TimeRangeSliderComponent } from './eco-score-profile-management/time-ra
     NgxIntlTelInputModule,
     NgxMatSelectSearchModule
     ],
-    providers: [ConfirmDialogService,VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
+    ],
+    providers: [
+      { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },
+      {
+        provide: DateAdapter,
+        useClass: MomentDateAdapter,
+        deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+      },
+      { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: false } },
+      ConfirmDialogService,VehicleService
     ]
 })
 export class ConfigurationModule { }

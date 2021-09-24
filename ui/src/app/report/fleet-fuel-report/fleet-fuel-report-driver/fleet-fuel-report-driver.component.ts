@@ -2176,7 +2176,8 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     
     let DATA = document.getElementById('charts');
-    html2canvas( DATA)
+    html2canvas((DATA),
+    {scale:2})
     .then(canvas => {  
       (doc as any).autoTable({
         styles: {

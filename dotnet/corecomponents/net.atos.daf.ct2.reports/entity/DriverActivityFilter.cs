@@ -17,6 +17,6 @@ namespace net.atos.daf.ct2.reports.entity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string VIN { get; set; }
-        public long ActivityDateTime { get; set; }
+        public long[] ActivityDateTime { get; set; }
     }
 }

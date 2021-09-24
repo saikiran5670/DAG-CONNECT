@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     {
                         parameter.Add("@level", filter.Level);
 
-                        query = query + " and relationship.level=@level";
+                        query = query + " and relationship.level >= @level ";
                     }
                     query = query + "ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);

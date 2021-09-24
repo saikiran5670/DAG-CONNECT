@@ -385,10 +385,10 @@ export class ReportMapService {
         this.hereMap.addObject(this.group);
         if(elem.id == row.id){
           let grp= new H.map.Group();
-          grp.addObjects([this.startMarker, this.endMarker]);
-          this.hereMap.addObject(grp);
+          this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+          this.hereMap.addObject(this.group);
           this.hereMap.getViewModel().setLookAtData({
-            bounds: grp.getBoundingBox()
+            bounds: this.group.getBoundingBox()
           });
         }
         

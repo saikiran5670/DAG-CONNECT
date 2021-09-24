@@ -1314,7 +1314,9 @@ notificationClicked(){
         "accountId": element.accountId,
         "alertViewTimestamp": 0
       }
+      if(notificationObj.tripAlertId != 0){
       notificationData.push(notificationObj);
+      }
     });
     
     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
