@@ -97,7 +97,7 @@ public class MoniteringBasedAlertProcessing {
 			 
 		 
 
-		env.execute(IndexBasedAlertProcessing.class.getSimpleName());
+		env.execute(MoniteringBasedAlertProcessing.class.getSimpleName());
 
 	}
 

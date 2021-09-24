@@ -1021,7 +1021,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         objGroupRef.GroupName = item.Name;
                         objGroupRef.VehicleCount = item.GroupRefCount;
                         objGroupRef.OrganizationId = item.OrganizationId;
-                        objGroupRef.Description = item.Description;
+                        objGroupRef.Description = item.Description ?? string.Empty;
                         if (item.CreatedAt != null)
                             objGroupRef.CreatedAt = Convert.ToInt64(item.CreatedAt);
                         if (Group.GroupType.Dynamic.ToString() == item.GroupType.ToString())

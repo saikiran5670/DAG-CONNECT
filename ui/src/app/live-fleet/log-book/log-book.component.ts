@@ -176,9 +176,9 @@ vehicleIconMarker : any;
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
-  setTimeout(() => {
-    this.initMap();
-    }, 10);
+  // setTimeout(() => {
+  //   this.initMap();
+  //   }, 10);
     
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
@@ -309,6 +309,13 @@ ngOnDestroy(){
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
+    if(this._state.fromAlertsNotifications){
+      this.showMapPanel = true;
+    }
+    setTimeout(() => {
+      this.initMap();
+      },0);
+
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -570,8 +577,8 @@ ngOnDestroy(){
     // startDate.toString();
     // let newDate: any = new Date(this._state.data[0].date + 'UTC');
     // newDate.toString();
-    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedEndTime, 'end');
+    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -764,7 +771,8 @@ ngOnDestroy(){
         if(this._state && this._state.fromAlertsNotifications){
           logbookData = newLogbookData;
           logbookData.forEach(element => {
-          this.selectedTrip.select(element);
+          // this.selectedTrip.select(element);
+          // this.checkboxLabelForTrip(element);
           this.tripCheckboxClicked(true,element);
           });
           this.showMap = true;
@@ -782,6 +790,12 @@ ngOnDestroy(){
     
   }
 
+  checkBoxSelectionForAlertNotification() {
+    this.dataSource.data.forEach(element => {
+      this.selectedTrip.select(element);
+    });
+  }
+  
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
@@ -962,8 +976,8 @@ ngOnDestroy(){
       // startDate.toString();
       // let newDate = new Date(this._state.data[0].date + 'UTC');
       // newDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.alertGeneratedTime), this.selectedEndTime, 'end');
+      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
       this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -1000,7 +1014,7 @@ ngOnDestroy(){
     let newVehicleList=[];
     if(value == 0){
       let vehicleData = this.wholeLogBookData["associatedVehicleRequest"];
-      if(vehicleData.length > 0){
+      if(vehicleData &&  vehicleData.length > 0){
       vehicleData.forEach(element => {
         if(this._state && this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
 
@@ -1048,7 +1062,7 @@ ngOnDestroy(){
         //   this.initMap();
         // }, 0);
       }else{
-        if(this._state && !this._state.fromAlertsNotifications){
+        if(this._state && !this._state.fromAlertsNotifications && !this._state.fromMoreAlerts){
         this.clearRoutesFromMap();
         }
       }
@@ -1058,6 +1072,9 @@ ngOnDestroy(){
     }
 
     this.dataSource = new MatTableDataSource(tableData);
+    if(this._state && this._state.fromAlertsNotifications){
+      this.checkBoxSelectionForAlertNotification();
+    }
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -1231,6 +1248,10 @@ let prepare = []
 
   tripCheckboxClicked(event: any, row: any) {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    // if(this._state && this._state.fromAlertsNotifications){
+    //   // this.selectedTrip.isSelected = row
+    //   this.selectedTrip.isSelected(row) ? 'select' : 'deselect'
+    // }
     if(event){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();

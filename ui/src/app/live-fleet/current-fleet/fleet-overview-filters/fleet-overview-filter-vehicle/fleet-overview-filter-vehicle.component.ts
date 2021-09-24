@@ -77,7 +77,8 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     this.tabvisibility.emit(false);
     this.isVehicleDetails = item.stepFlag;
     let obj ={
-      vehicleDetailsFlag : this.isVehicleDetails
+      vehicleDetailsFlag : this.isVehicleDetails,
+      todayFlagClicked : this.todayFlagClicked
     }
     let _dataObj ={
       vehicleDetailsFlag : this.isVehicleDetails,
