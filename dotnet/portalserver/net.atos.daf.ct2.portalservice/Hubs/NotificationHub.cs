@@ -244,6 +244,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                     AlertTypeKey = objAlertVehicleDetails.AlertTypeKey,
                                     UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
                                     CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
+                                    OrganizationId = objAlertVehicleDetails.OrganizationId
                                 };
                                 connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                 _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
