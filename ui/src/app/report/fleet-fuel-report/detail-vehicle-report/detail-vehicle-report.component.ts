@@ -932,7 +932,7 @@ createEndMarker(){
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
@@ -1812,9 +1812,17 @@ getLast3MonthDate(){
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if(filterVIN.length > 0){
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if(vinArray.length > 0){
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
 
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
@@ -2325,7 +2333,8 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     
     let DATA = document.getElementById('charts');
-    html2canvas( DATA)
+    html2canvas((DATA),
+    {scale:2})
     .then(canvas => {  
       (doc as any).autoTable({
         styles: {
@@ -2351,7 +2360,6 @@ setVehicleGroupAndVehiclePreSelection() {
 
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;

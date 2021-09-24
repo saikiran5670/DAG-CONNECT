@@ -222,20 +222,22 @@ export class Util {
         if (_t.length > 0) {
             _timezone = _t[1].trim();
         }
-        if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
-        console.log(moment.utc( _date ).valueOf());
-        return _dateWithoutMiliSeconds.getTime(); 
-        }​​​​​​ 
-        else{
-        //let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset() * -1;
+        // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
+        // console.log(moment.utc( _date ).valueOf());
+        // return _dateWithoutMiliSeconds.getTime(); 
+        // }​​​​​​ 
+        // else{
+        console.log(_dateWithoutMiliSeconds.getTime() )
+        let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset();
        // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
-
-        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset()* -1;
-        let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
-
+        
+        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
+        let diff = localTimeZoneOffset + PrefTzToGMT;
+        let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);       
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
+        console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
-        }
+        //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();     
         // return gmt_val;
     }
@@ -257,36 +259,36 @@ export class Util {
  
             // let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
             // return gmt['_d'].getTime();
-    // public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
+    public static getMillisecondsToUTCDate1(_date: any, prefTimezone: any) {
         
-    //     // //    console.log("_date", _date)
-    //      let _dateWithoutMiliSeconds:any = new Date(_date.setMilliseconds(0));
-    //     // //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
-    //     // //    console.log("_date", moment(_date).millisecond(0))
-    //     let _t = prefTimezone.split(') ');
-    //     let _timezone: any;
-    //     if (_t.length > 0) {
-    //         _timezone = _t[1].trim();
-    //     }
-    //     let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();// +5.30 diff
-    //      console.log("gmtTimeDiff", gmtTimeDiff)  
-    //     //let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff); // gmt time of selected from locale
-    //     // console.log(" gmt time of selected from locale", _gmt)
-    //     //let localeToGmtTz:any = _date.getTimezoneOffset();
-    //     let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref 
+        // //    console.log("_date", _date)
+         let _dateWithoutMiliSeconds:any = new Date(_date.setMilliseconds(0));
+        // //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
+        // //    console.log("_date", moment(_date).millisecond(0))
+        let _t = prefTimezone.split(') ');
+        let _timezone: any;
+        if (_t.length > 0) {
+            _timezone = _t[1].trim();
+        }
+        let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();// +5.30 diff
+         console.log("gmtTimeDiff", gmtTimeDiff)  
+        //let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff); // gmt time of selected from locale
+        // console.log(" gmt time of selected from locale", _gmt)
+        //let localeToGmtTz:any = _date.getTimezoneOffset();
+        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref 
         
-    //     console.log("diff selected timezone pref ", PrefTzToGMT);
+        console.log("diff selected timezone pref ", PrefTzToGMT);
 
-    //     let PrefTimeAsPerSelected =  moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
+        let PrefTimeAsPerSelected =  moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
 
-    //     console.log("PrefTimeAsPerSelected ", PrefTimeAsPerSelected);
+        console.log("PrefTimeAsPerSelected ", PrefTimeAsPerSelected);
 
-    //    // let UtcValToSendToAPI = moment(_gmt).utcOffset(PrefTzToGMT);
-    //     let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-    //     console.log('_convertedUtc==' + _convertedUtc);
-    //     return _convertedUtc;
+       // let UtcValToSendToAPI = moment(_gmt).utcOffset(PrefTzToGMT);
+        let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
+        console.log('_convertedUtc==' + _convertedUtc);
+        return _convertedUtc;
 
-   // }
+   }
 
   public static convertUtcToDateAndTimeFormat(_utc: any, timeZone: any, timeFormat? :any){
     let _t = timeZone.split(')');

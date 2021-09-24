@@ -40,6 +40,61 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getVINFromTripFleetUtilisation(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/fleetutilization/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVINFromTripFleetfuel(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/fleetfuel/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVINFromTripFuelbenchmarking(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/fuelbenchmarking/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVINFromTripFueldeviation(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/fueldeviation/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVINFromTripVehicleperformance(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/vehicleperformance/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getUserPreferenceReport(reportId: any, accountId: any, orgId: any) {
     let headerObj = this.generateHeader();
     const headers = {
@@ -118,6 +173,18 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/drivetime/getparameters`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getDefaultDriverParameterEcoScore(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/getparameters`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

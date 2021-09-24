@@ -639,7 +639,7 @@ export class FuelDeviationReportComponent implements OnInit {
 
   loadFuelDeviationData(){
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFueldeviation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeFuelDeviationData = tripData;
       this.filterDateData();
@@ -661,9 +661,17 @@ export class FuelDeviationReportComponent implements OnInit {
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);     
     if(this.wholeFuelDeviationData.vinTripList.length > 0){
-      let filterVIN: any = this.wholeFuelDeviationData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if(filterVIN.length > 0){
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeFuelDeviationData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if(vinArray.length > 0){
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
