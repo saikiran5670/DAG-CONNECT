@@ -546,6 +546,62 @@ namespace net.atos.daf.ct2.vehicle
             }
 
         }
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaGroupIds(vehicleGroupIds);
+
+                foreach (var vehicleGroup in vehicleGroups)
+                {
+                    switch (vehicleGroup.GroupType)
+                    {
+                        case "S":
+                            //Single
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
+                            break;
+                        case "G":
+                            //Group
+                            vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleGroup.Id));
+                            break;
+                        case "D":
+                            //Dynamic
+                            switch (vehicleGroup.GroupMethod)
+                            {
+                                case "A":
+                                    //All
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    break;
+                                case "O":
+                                    //Owner
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    break;
+                                case "V":
+                                    //Visible
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    break;
+                                case "M":
+                                    //OEM
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroup.Id));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return vehicles.Distinct(new ObjectComparer()).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
 
         #region Vehicle Count for Report Scheduler

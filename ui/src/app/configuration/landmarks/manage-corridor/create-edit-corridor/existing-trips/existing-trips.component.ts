@@ -409,16 +409,28 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.startDateValue = this.setStartEndDateTime(event.value, this.selectedStartTime, 'start');
+    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.endDateValue = this.setStartEndDateTime(event.value, this.selectedEndTime, 'end');
+    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    date.setHours(timeObj.split(":")[0]);
-    date.setMinutes(timeObj.split(":")[1]);
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if (this.prefTimeFormat == 12) {
+      if (_y.split(' ')[1] == 'AM' && _x == 12) {
+        date.setHours(0);
+      } else {
+        date.setHours(_x);
+      }
+      date.setMinutes(_y.split(' ')[0]);
+    } else {
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+
     date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }

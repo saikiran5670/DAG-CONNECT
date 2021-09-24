@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.visibility
@@ -16,5 +17,7 @@ namespace net.atos.daf.ct2.visibility
                                                                                                            string featureName = "Alert");
         Task<int> GetReportFeatureId(int reportId);
         Task<IEnumerable<VehiclePackage>> GetSubcribedVehicleByFeature(int featureid, int organizationid);
+        
+        Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId);
     }
 }

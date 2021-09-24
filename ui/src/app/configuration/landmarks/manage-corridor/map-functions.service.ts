@@ -114,18 +114,19 @@ export class MapFunctionsService {
     this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
   }
 
-  // added to remove selected polyline
-  removeCorridor(_id){
-    if(this.polyLinePathArray.length >0){
-      let filteredPolyline = this.polyLinePathArray.filter(elem => elem.id != _id);
-      this.polyLinePathArray = filteredPolyline;
-    }
+  // code changed for bug 16249
+  // added to remove selected polyline  // functions removed as points are preserved from lat long line : 246
+  // removeCorridor(_id){
+  //   if(this.polyLinePathArray.length >0){
+  //     let filteredPolyline = this.polyLinePathArray.filter(elem => elem.id != _id);
+  //     this.polyLinePathArray = filteredPolyline;
+  //   }
     
-  }
+  // }
 
-  clearPolylines(){
-    this.polyLinePathArray = [];
-  }
+  // clearPolylines(){
+  //   this.polyLinePathArray = [];
+  // }
 
   group = new H.map.Group();
 
@@ -236,9 +237,17 @@ export class MapFunctionsService {
                   }
                 
                 if (data[0].viaAddressDetail.length > 0) {
+                  this.viaRoutePlottedPoints = [];
                   this.viaRoutePlottedPoints = data[0].viaAddressDetail;
                   this.plotViaStopPoints();
                 }
+                else{
+                  this.viaRoutePlottedPoints = [];
+                }
+                this.startAddressPositionLat = data[0].startLat;
+                this.startAddressPositionLong = data[0].startLong;
+                this.endAddressPositionLat = data[0].endLat;
+                this.endAddressPositionLong = data[0].endLong;
                 this.calculateTruckRoute();
 
               }
@@ -413,7 +422,8 @@ export class MapFunctionsService {
   routePoints: any;
   calculateTruckRoute() {
     let lineWidth = this.corridorWidthKm;
-    let routeRequestParams = {
+    let routeRequestParams = {}
+    routeRequestParams = {
       'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
       'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
       'return':'polyline,summary,travelSummary',
@@ -502,23 +512,27 @@ export class MapFunctionsService {
         });
 
          this.polyLineArray.push(this.corridorPath);
-        if(this.organizationId){ // to store all the polylines 16249
-          this.polyLinePathArray.push({
-            'id' : this.corridorId,
-            'corridorPath' : this.corridorPath,
-            'polylinePath' : this.polylinePath
-          })
-        }
-        if(this.polyLinePathArray.length > 0){
-          for(var i in this.polyLinePathArray){
-            this.mapGroup.addObjects([this.polyLinePathArray[i]['corridorPath'], this.polyLinePathArray[i]['polylinePath']]);
+         this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
 
-          }
-        }
-        else{
-          this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
+        // functions removed as points are preserved from lat long line : 246 - were added for 16249
+        // if(this.organizationId){ // to store all the polylines 16249
+        //   this.polyLinePathArray.push({
+        //     'id' : this.corridorId,
+        //     'corridorPath' : this.corridorPath,
+        //     'polylinePath' : this.polylinePath
+        //   })
+        // }
+        // if(this.polyLinePathArray.length > 0){
+        //   for(var i in this.polyLinePathArray){
+        //     this.mapGroup.addObjects([this.polyLinePathArray[i]['corridorPath'], this.polyLinePathArray[i]['polylinePath']]);
 
-        }
+        //   }
+        // }
+        // else{
+        //   this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
+
+        // }
+        // added for 16249 till here!
         
         // Add the polyline to the map
         // if (this.viaMarker) {

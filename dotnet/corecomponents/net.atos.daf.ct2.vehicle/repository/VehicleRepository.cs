@@ -2260,6 +2260,25 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
+        public async Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaGroupIds(IEnumerable<int> vehicleGroupIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicle_group_ids", vehicleGroupIds);
+
+                string query =
+                    @"SELECT id, group_type as GroupType, function_enum as GroupMethod, ref_id as RefId 
+                      FROM master.group
+                      WHERE id = ANY (@vehicleGroupIds)";
+
+                return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
 
         #region get Group Info for filter

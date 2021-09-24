@@ -108,7 +108,8 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    enteringAndExitingZoneFun
+                    enteringAndZoneFun,
+                    exitZoneFun
             ));
         }};
         /**

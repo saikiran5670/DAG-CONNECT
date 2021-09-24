@@ -7,11 +7,17 @@ using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
+        private readonly IVisibilityManager _visibilityManager;
+        public ReportSchedulerRepository(IVisibilityManager visibilityManager)
+        {
+            _visibilityManager = visibilityManager;
+        }
         public Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList(int reportCreationRangeInMinutes)
         {
             try
@@ -52,7 +58,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-
         public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
         {
             try
@@ -231,6 +236,24 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             )
                             select distinct * from cte_account_vehicle_CompleteList";
                 return _dataAccess.QueryAsync<VehicleList>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_schedule_id", reprotSchedulerId);
+                //parameter.Add("@organization_id", organizationId);
+                var query = @"select distinct vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id =@report_schedule_id
+                            ";
+                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter),0);//need to pass parameter
+
+                return await Task.FromResult(vehicles.Select(s => new VehicleList { Id = s.Id, VIN = s.VIN }));
             }
             catch (Exception)
             {
