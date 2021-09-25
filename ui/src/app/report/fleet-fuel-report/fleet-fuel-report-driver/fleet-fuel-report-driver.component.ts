@@ -2018,7 +2018,7 @@ setVehicleGroupAndVehiclePreSelection() {
         pdfColumnHeads.push('CO2 Emmision gr/km');
         break;
       }     
-      case 'idlingConsumptionValue' :{
+      case 'idlingConsumptionWithPTO' :{
         pdfColumnHeads.push('Idling Consumption Value('+idlingPTO+')');
         break;
       }
