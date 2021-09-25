@@ -1222,10 +1222,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
     }
-    if(this.vehicleDD.length>0){
-      let vehicleID = this.vehicleDD[0].vehicleId;
-      this.tripForm.get('vehicle').setValue(vehicleID);
-    }
+    // if(this.vehicleDD.length>0){
+    //   let vehicleID = this.vehicleDD[0].vehicleId;
+    //   this.tripForm.get('vehicle').setValue(vehicleID);
+    // }
   }
 
   onAdvanceFilterOpen() {
