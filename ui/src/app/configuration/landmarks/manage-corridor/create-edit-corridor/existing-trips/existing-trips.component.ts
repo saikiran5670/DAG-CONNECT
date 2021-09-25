@@ -421,11 +421,21 @@ export class ExistingTripsComponent implements OnInit {
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      } else {
-        date.setHours(_x);
+      if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
       }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
       date.setMinutes(_y.split(' ')[0]);
     } else {
       date.setHours(_x);
