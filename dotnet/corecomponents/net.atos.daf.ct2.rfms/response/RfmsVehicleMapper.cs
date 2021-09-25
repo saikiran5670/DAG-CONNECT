@@ -112,7 +112,7 @@ namespace net.atos.daf.ct2.rfms.response
             return vehiclePosition;
         }
 
-        internal VehicleStatus MapVehicleStatus(dynamic record)
+        internal VehicleStatus MapVehicleStatus(dynamic record, string contentFilter)
         {
             VehicleStatus vehicleStatus = new VehicleStatus();
             vehicleStatus.RecordId = record.id;
@@ -185,11 +185,18 @@ namespace net.atos.daf.ct2.rfms.response
             {
                 vehicleStatus.GrossCombinationVehicleWeight = Convert.ToString(record.GrossCombinationVehicleWeight);
             }
-
-
-            vehicleStatus.AccumulatedData = MapAccumuatedData(record);
-            vehicleStatus.SnapshotData = MapSnapShotData(record);
-            vehicleStatus.UptimeData = MapUptimeData(record);
+            if (!string.IsNullOrEmpty(contentFilter))
+            {
+                vehicleStatus.AccumulatedData = contentFilter.Contains(ContentType.ACCUMULATED.ToString()) ? MapAccumuatedData(record) : null;
+                vehicleStatus.SnapshotData = contentFilter.Contains(ContentType.SNAPSHOT.ToString()) ? MapSnapShotData(record) : null;
+                vehicleStatus.UptimeData = contentFilter.Contains(ContentType.UPTIME.ToString()) ? MapUptimeData(record) : null;
+            }
+            else
+            {
+                vehicleStatus.AccumulatedData = MapAccumuatedData(record);
+                vehicleStatus.SnapshotData = MapSnapShotData(record);
+                vehicleStatus.UptimeData = MapUptimeData(record);
+            }
             return vehicleStatus;
         }
 

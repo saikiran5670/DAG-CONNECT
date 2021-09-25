@@ -827,7 +827,7 @@ calendarOptions: CalendarOptions = {
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFleetUtilisation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
@@ -854,9 +854,17 @@ calendarOptions: CalendarOptions = {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if(filterVIN.length > 0){
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if(vinArray.length > 0){
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
@@ -1050,9 +1058,9 @@ calendarOptions: CalendarOptions = {
       this.chartsLabelsdefined.push(resultDate);
     
       // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
-      let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
+      let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat));
       this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
-      let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat))/e.vehiclecount);
+      let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat))/e.vehiclecount);
       this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData.toFixed(2) });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
@@ -1182,7 +1190,7 @@ calendarOptions: CalendarOptions = {
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
-        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistanceperday/this.mileagebasedThreshold)*100);
+        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100);
         this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
@@ -1319,7 +1327,7 @@ calendarOptions: CalendarOptions = {
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date,this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date,this.prefTimeFormat, this.prefDateFormat);
   }
 
   selectionTimeRange(selection: any){
@@ -1589,7 +1597,7 @@ getAllSummaryData(){
       });
       numbeOfVehicles = this.initData.length;      
       this.summaryObj = [
-        [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+        [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
           this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
           numberOfTrips, averageDistPerDay.toFixed(2), idleDuration 
         ]
