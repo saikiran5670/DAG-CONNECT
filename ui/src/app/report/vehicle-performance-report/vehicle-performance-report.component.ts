@@ -101,7 +101,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
   chartXaxis;
   chartYaxis;
   legends = [];
-  backgroundColorPattern = [];
 
   commonAxis = {
     type: 'numeric',
@@ -326,35 +325,13 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processYaxis(data) {
-    this.backgroundColorPattern = [];
     if(data.length > 0) {
       let tempArr = [];
       for(let row of data) {
         if(row.index != -1) {
           tempArr.push(row.range);
-          let colors = row.axisvalues.split(',')
-          let offsetX = 0;
-          let width = 41;
-          for(let color of colors) {
-            let leg = this.legends.filter((item) => item.value == color);
-            let colorObj = {
-              y: row.index * 10,
-              y2: ((row.index * 10) + 10),
-              offsetX: offsetX,
-              opacity: 1,
-              strokeDashArray: 0,
-              borderColor: '#fff',
-              width: JSON.stringify(width),
-              fillColor: this.colorToLegends[color],
-              labelName: this.translationData[leg[0].name]
-            }
-            this.backgroundColorPattern.push(colorObj);
-            offsetX = offsetX + 41;
-            width = width - 41;
-          }
         }
       }
-      console.log("this.backgroundColorPattern", this.backgroundColorPattern)
       return tempArr;
     }
     return [];
