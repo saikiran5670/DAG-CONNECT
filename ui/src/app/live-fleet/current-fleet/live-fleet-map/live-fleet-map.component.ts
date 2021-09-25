@@ -93,12 +93,19 @@ export class LiveFleetMapComponent implements OnInit {
 
     if (vehicleResponse) {
       if(!vehicleResponse.vehicleDetailsFlag){
+        this.tripTraceArray = [];
         this.tripTraceArray = vehicleResponse.data;
         this.showIcons = true;
 
       }
       else{
-        this.tripTraceArray = vehicleResponse.data; //1665 - data wasn't mapped correctly 
+        this.tripTraceArray = [];
+        if(vehicleResponse.data.length === undefined){ // 16665 - changes added to convert data to array
+          this.tripTraceArray.push(vehicleResponse.data);
+        }
+        else if(vehicleResponse.data.length > 0){
+          this.tripTraceArray = vehicleResponse.data; //1665 - data wasn't mapped correctly 
+        }
         this.showIcons = false;
 
       }
@@ -125,6 +132,7 @@ export class LiveFleetMapComponent implements OnInit {
     this.mapFilterForm.get('routeType').setValue('C');
     setTimeout(() => {
       this.fleetMapService.initMap(this.mapElement);
+      this.fleetMapService.clearRoutesFromMap();
       this.tripTraceArray = this.detailsData;
     this.makeHerePOIList();
     this.loadUserPOI();
@@ -140,7 +148,9 @@ export class LiveFleetMapComponent implements OnInit {
     //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);
- 
+
+
+    this.fleetMapService.clearRoutesFromMap();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
 
     //this.fleetMapService.setIconsOnMap();

@@ -235,7 +235,7 @@ export class DashboardComponent implements OnInit {
   }
 
   processVins(tripData){
-    let _vinList = tripData['vehicleDetailsWithAccountVisibiltyList'].map(x=>x.vin);
+    let _vinList = tripData['vinTripList'].map(x=>x.vin);
     if(_vinList.length > 0){
       this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
     }
