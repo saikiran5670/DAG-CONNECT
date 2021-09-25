@@ -152,7 +152,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       language: flag,
       timeZone: flag,
       unit: flag,
-      //currency: flag,
+      currency: flag,
       dateFormat: flag,
       vehDisplay: flag,
       timeFormat: flag,
