@@ -279,8 +279,8 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   setDefaultStartEndTime() {
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    // this.selectedStartTime = "00:00";
+    // this.selectedEndTime = "23:59";
     this.setPrefFormatTime();
   }
 
@@ -288,9 +288,13 @@ export class ExistingTripsComponent implements OnInit {
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
     } else {
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
+      this.startTimeDisplay = '12:00:00 AM';
+      this.endTimeDisplay = '11:59:59 PM';
+      this.selectedStartTime = "12:00 AM";
+      this.selectedEndTime = "11:59 PM";   
     }
   }
 
