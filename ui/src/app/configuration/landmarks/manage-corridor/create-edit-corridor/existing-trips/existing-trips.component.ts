@@ -255,8 +255,8 @@ export class ExistingTripsComponent implements OnInit {
     });
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicleGroup').setValue('All');
-    this.existingTripForm.get('vehicle').setValue('All');
+    this.existingTripForm.get('vehicleGroup');
+    this.existingTripForm.get('vehicle');
     //For Edit Screen
     // if(this.actionType === 'edit'){
     //   this.existingTripForm.controls.label.disable();
@@ -491,8 +491,8 @@ export class ExistingTripsComponent implements OnInit {
     this.endTimeDisplay= '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicle').setValue('All');
-    this.existingTripForm.get('vehicleGroup').setValue('All');
+    this.existingTripForm.get('vehicle');
+    this.existingTripForm.get('vehicleGroup');
     // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
