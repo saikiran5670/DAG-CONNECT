@@ -57,6 +57,7 @@ message GeofenceRequest{
     google.protobuf.StringValue Message =19;
     google.protobuf.StringValue CategoryName =20;
     google.protobuf.StringValue SubCategoryName =21;
+    int64 CreatedAt = 22;
 }
 message NodeRequest{
     int32 Id =1;

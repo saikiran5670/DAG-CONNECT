@@ -50,7 +50,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   types = ['Regular', 'Global'];
   userCreatedMsg: any = '';
   hereMapService: any;
-  organizationId: any;
+  organizationId: any = 0;
   latitude: any;
   longitude: any;
   localStLanguage: any;
@@ -71,6 +71,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   map_key: any = '';
   dataService: any;
   searchMarker: any = {};
+  accessType: any = {};
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -135,6 +136,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.accessType = JSON.parse(localStorage.getItem("accessType"));
     this.poiFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1), Validators.max(100)]],
       category: ['', [Validators.required]],
@@ -153,6 +155,16 @@ export class CreateEditViewPoiComponent implements OnInit {
         ]
       });
     this.breadcumMsg = this.getBreadcum(this.actionType);
+    if(this.accessType && !this.accessType.globalPOIAccess){
+      this.types = ['Regular'];
+    }else{
+      this.types = ['Regular', 'Global'];
+    }
+
+    if(this.actionType == 'create'){
+      this.poiFormGroup.get('type').setValue(this.types[0]); // default selection as per demand
+    }
+
     if (this.actionType == 'view' || this.actionType == 'edit') {
       this.setDefaultValue();
     }
@@ -456,7 +468,7 @@ this.map.setZoom(14);
   setDefaultValue() {
     this.poiFormGroup.get("name").setValue(this.selectedElementData.name);
     this.poiFormGroup.get("address").setValue(this.selectedElementData.address);
-    this.poiFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.poiFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? (this.types.length > 1) ? this.types[1] : this.types[0] : this.types[0]);
     this.poiFormGroup.get("city").setValue(this.selectedElementData.city);
     this.poiFormGroup.get("zip").setValue(this.selectedElementData.zipcode);
     this.poiFormGroup.get("lattitude").setValue(this.selectedElementData.latitude);
@@ -485,13 +497,16 @@ this.map.setZoom(14);
     {
       zip = "";
     }
+    
+    let orgId: any = this.organizationId;
     if(this.poiFormGroup.controls.type.value && this.poiFormGroup.controls.type.value == 'Global'){
-      this.organizationId = 0;
+      orgId = 0;
     }
+
     let objData = {
       id: 0,
       //icon: this.poiFormGroup.controls.type.value,
-      organizationId: this.organizationId,
+      organizationId: parseInt(orgId), // this.organizationId
       categoryId: this.poiFormGroup.controls.category.value,
       subCategoryId: subcatId,
       //  categoryId: 5,
@@ -531,7 +546,7 @@ this.map.setZoom(14);
       let objData = {
         id: this.selectedElementData.id,
         icon: this.selectedElementData.icon,
-        organizationId: this.selectedElementData.organizationId,
+        organizationId: parseInt(orgId), // this.selectedElementData.organizationId
         categoryId: this.poiFormGroup.controls.category.value,
         subCategoryId: this.poiFormGroup.controls.subcategory.value,
         name: this.poiFormGroup.controls.name.value,
@@ -564,12 +579,12 @@ this.map.setZoom(14);
   }
 
   onTypeChange(typeValue: any) {
-    console.log("---type selected", typeValue)
-    if(typeValue == "Global"){
-      this.organizationId = "";
-    }else if(typeValue == "Regular"){
-      this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
-    }
+    // console.log("---type selected", typeValue)
+    // if(typeValue == "Global"){
+    //   this.organizationId = "";
+    // }else if(typeValue == "Regular"){
+    //   this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    // }
   }
 
   onReset(){

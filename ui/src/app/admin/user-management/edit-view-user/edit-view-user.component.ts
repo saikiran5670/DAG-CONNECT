@@ -82,6 +82,7 @@ export class EditViewUserComponent implements OnInit {
   contextOrgName: any;
   userCreatedMsg : any;
   grpTitleVisible: boolean = false;
+  adminAccessType: any = {};
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
@@ -120,6 +121,7 @@ export class EditViewUserComponent implements OnInit {
       ]
     });
     this.contextOrgName = localStorage.getItem("contextOrgName");
+    this.adminAccessType =  JSON.parse(localStorage.getItem("accessType"));
     this.accountInfoData.organization = this.contextOrgName;
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -127,16 +129,25 @@ export class EditViewUserComponent implements OnInit {
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.userTypeList = [
-      {
-        name: this.translationData.lblPortalUser || 'Portal Account',
-        value: 'P'
-      },
-      {
-        name: this.translationData.lblSystemUser || 'System Account',
-        value: 'S'
-      }
-    ];
+    if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser || 'Portal Account',
+          value: 'P'
+        },
+        {
+          name: this.translationData.lblSystemUser || 'System Account',
+          value: 'S'
+        }
+      ];
+    }else{
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser || 'Portal Account',
+          value: 'P'
+        }
+      ];
+    }
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
     this.loadRoleTable();

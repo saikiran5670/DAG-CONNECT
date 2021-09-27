@@ -64,6 +64,8 @@ export class AppComponent {
   adminReadOnlyAccess: boolean = false;
   adminContributorAccess: boolean = false;
   adminFullAccess: boolean = false;
+  globalPOIAccess: boolean = false;
+  systemAccountAccess: boolean = false;
   accessType: object;
   userType: any = "";
   public landingPageForm: FormGroup;
@@ -603,6 +605,11 @@ export class AppComponent {
       this.menuPages.features.forEach((obj: any) => {
         accessNameList.push(obj.name)
       });
+      this.adminFullAccess = false;
+      this.adminContributorAccess = false;
+      this.adminReadOnlyAccess = false;
+      this.globalPOIAccess = false;
+      this.systemAccountAccess = false;
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -610,14 +617,30 @@ export class AppComponent {
       } else {
         this.adminReadOnlyAccess = true;
       }
+
+      if(accessNameList.includes('Configuration.Landmarks.GlobalPoi')){
+        this.globalPOIAccess = true;
+      }
+      if(accessNameList.includes('Admin.AccountManagement.SystemAccount')){
+        this.systemAccountAccess = true;
+      }
   
       this.accessType = {
         adminFullAccess: this.adminFullAccess,
         adminContributorAccess: this.adminContributorAccess,
-        adminReadOnlyAccess: this.adminReadOnlyAccess
+        adminReadOnlyAccess: this.adminReadOnlyAccess,
+        globalPOIAccess: this.globalPOIAccess,
+        systemAccountAccess: this.systemAccountAccess
       }
       localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User
+      // For checking Type of the User auth hierarchy
+      
+      // Platform Admin            
+      // Global Admin              
+      // DAF User    
+      // Admin          
+      // Office Staff
+      // Viewer
       if (accessNameList.includes("Admin#Platform")) {
         this.userType = "Admin#Platform";
       } else if (accessNameList.includes("Admin#Global")) {
