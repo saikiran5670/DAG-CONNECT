@@ -534,12 +534,12 @@ namespace net.atos.daf.ct2.visibility.repository
                 parameter.Add("@featureid", featureId);
                 parameter.Add("@organizationid", organizationId);
 
-                var queryStatement = @"select p.type, array_agg(distinct coalesce(s.vehicle_id,0)) from master.subscription s
-                                    inner join master.package p on p.id=s.package_id or p.type='P'
+                var queryStatement = @"select p.type as PackageType, array_agg(distinct coalesce(s.vehicle_id,0)) as VehicleIds from master.subscription s
+                                    inner join master.package p on p.id=s.package_id 
                                     inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                     inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                     inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
-                                    where s.organization_id=@organizationid and f.id=@featureid and p.type in('O', 'V') AND s.state = 'A'
+                                    where s.organization_id=@organizationid and f.id=@featureid and p.type = 'V'  AND s.state = 'A'
                                     group by p.type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
 
@@ -597,7 +597,8 @@ namespace net.atos.daf.ct2.visibility.repository
                     ) veh
                     group by veh.owner_org_id";
 
-                return await _dataAccess.ExecuteScalarAsync<int[]>(queryStatement, parameter);
+                var result = await _dataAccess.ExecuteScalarAsync<int[]>(queryStatement, parameter);
+                return result ?? new int[] { };
             }
             catch (Exception)
             {
