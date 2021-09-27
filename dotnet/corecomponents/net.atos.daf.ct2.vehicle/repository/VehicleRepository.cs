@@ -2247,7 +2247,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
 
                 string query =
-                                @"select veh.id, veh.vin,true as hasowned                               
+                                @"select veh.id, veh.vin,veh.organization_id = grp.organization_id as hasowned                               
 	                               from master.vehicle veh 
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";

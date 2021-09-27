@@ -17,26 +17,54 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
         private readonly ILogger<FmsDataServiceController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IAuditTraillib _auditTrail;
-        public FmsDataServiceController(IAuditTraillib auditTrail, ILogger<FmsDataServiceController> logger, IConfiguration configuration)
+        // private readonly IFmsManager _fmsManager;
+        public FmsDataServiceController(IAuditTraillib auditTrail, ILogger<FmsDataServiceController> logger, IConfiguration configuration)//, IFmsManager fmsManager)
         {
             _logger = logger;
             _auditTrail = auditTrail;
             _configuration = configuration;
+            // _fmsManager = fmsManager;
         }
 
         [HttpGet]
         [Route("position")]
-        public async Task<IActionResult> Position(Position position)
+        public async Task<IActionResult> Position(VehiclePositionRequest vehiclePositionRequest)
         {
-            await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Postion", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice position received object", 0, 0, JsonConvert.SerializeObject(position), 0, 0);
-            return StatusCode(500, string.Empty);
+            try
+            {
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Postion", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice position received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
+                _logger.LogInformation("Fms vehicle position function called - " + vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+
+                // VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePostion(vehiclePositionRequest);
+                return Ok(vehiclePositionRequest);
+                // return StatusCode(500, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while processing fms vehicle position data.");
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Fms Data Service", "Fms data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "fms data service position object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
+                return StatusCode(500, string.Empty);
+            }
         }
         [HttpGet]
         [Route("status")]
-        public async Task<IActionResult> Status(Status status)
+        public async Task<IActionResult> Status(VehicleStatusRequest vehicleStatusRequest)
         {
-            await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(status), 0, 0);
-            return StatusCode(500, string.Empty);
+            try
+            {
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
+                _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
+
+                // VehicleStatusResponse vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehiclePositionRequest);
+                return Ok(vehicleStatusRequest);
+                // return StatusCode(500, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while processing fms vehicle status data.");
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Fms Data Service", "Fms data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "fms data service status object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
+                return StatusCode(500, string.Empty);
+            }
         }
     }
 }

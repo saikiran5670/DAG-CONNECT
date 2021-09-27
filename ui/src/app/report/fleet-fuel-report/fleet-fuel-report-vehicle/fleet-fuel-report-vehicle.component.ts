@@ -1922,7 +1922,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration,
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
-      item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
+      item.cruiseControlDistance75, item.averageTrafficClassification, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
       item.idlingConsumption, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
     ]);
@@ -2253,11 +2253,11 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'ccFuelConsumption' :{
-            tempObj.push(e.ccFuelConsumption);
+            tempObj.push(e.convetedCCFuelConsumption);
             break;
           }
           case 'fuelconsumptionCCnonactive' :{
-            tempObj.push(e.fuelconsumptionCCnonactive);
+            tempObj.push(e.convertedFuelConsumptionCCNonActive);
             break;
           }
           case 'idlingConsumption' :{
