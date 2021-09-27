@@ -78,6 +78,7 @@ export class NewUserStepComponent implements OnInit {
   prefId: any = 0;
   orgDefaultFlag: any;
   contextOrgName: any;
+  adminAccessType: any = {};
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -111,10 +112,11 @@ export class NewUserStepComponent implements OnInit {
 
   ngOnInit() {
     if(localStorage.getItem('contextOrgId'))
-    this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     else 
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
+    this.adminAccessType =  JSON.parse(localStorage.getItem("accessType"));
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
@@ -154,16 +156,25 @@ export class NewUserStepComponent implements OnInit {
     // this.thirdFormGroup = this._formBuilder.group({
     //   thirdCtrl: ['', Validators.required]
     // });
-    this.userTypeList = [
-      {
-        name: this.translationData.lblPortalUser || 'Portal Account',
-        value: 'P'
-      },
-      {
-        name: this.translationData.lblSystemUser || 'System Account',
-        value: 'S'
-      }
-    ];
+    if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser || 'Portal Account',
+          value: 'P'
+        },
+        {
+          name: this.translationData.lblSystemUser || 'System Account',
+          value: 'S'
+        }
+      ];
+    }else{
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser || 'Portal Account',
+          value: 'P'
+        }
+      ];
+    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal

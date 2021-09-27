@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,6 @@ public class MonitorDataProcess {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
 					envParams.get(DafConstants.MONITOR_JOB));
 
@@ -46,27 +47,30 @@ public class MonitorDataProcess {
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 
-			DataStream<KafkaRecord<Monitor>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			//consumerStream.print();
+			// DataStream<KafkaRecord<Monitor>> consumerStream =
+			// flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
+			// consumerStream.print();
+
+			KeyedStream<KafkaRecord<Monitor>, String> keyedMonitorData = flinkKafkaConsumer.connectToKafkaTopic(envParams, env)
+					.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
+
+			SingleOutputStreamOperator<KafkaRecord<Monitor>> consumerStream = keyedMonitorData
+					.map(monitorKafkaRecord -> monitorKafkaRecord);
 
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
-			
-			
-			//consumerStream.addSink(new LiveFleetPositionPostgreSink()); // Writing into PostgreSQL Table
-			
-			consumerStream.addSink(new DriverTimeManagementSink()); //Drive Time Management
-			consumerStream.addSink(new WarningStatisticsSink());  //Warning Statistics
-			
+
+			consumerStream.addSink(new DriverTimeManagementSink()); // Drive Time Management
+			consumerStream.addSink(new WarningStatisticsSink()); // Warning Statistics
 
 			log.info("after addsink");
 			try {
-				
+
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				
+
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
 						"Realtime Data Monitoring processing Job Started");
-				
+
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception e) {
@@ -96,13 +100,14 @@ public class MonitorDataProcess {
 
 	private static Map<String, String> createAuditMap(String jobStatus, String message) {
 		Map<String, String> auditMap = new HashMap<>();
-		
+
 		auditMap.put(DafConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(DafConstants.AUDIT_PERFORMED_BY, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_COMPONENT_NAME, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_SERVICE_NAME, DafConstants.AUDIT_SERVICE);
 		auditMap.put(DafConstants.AUDIT_EVENT_TYPE, DafConstants.AUDIT_CREATE_EVENT_TYPE);// check
-		auditMap.put(DafConstants.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
+		auditMap.put(DafConstants.AUDIT_EVENT_TIME,
+				String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(DafConstants.AUDIT_EVENT_STATUS, jobStatus);
 		auditMap.put(DafConstants.AUDIT_MESSAGE, message);
 		auditMap.put(DafConstants.AUDIT_SOURCE_OBJECT_ID, DafConstants.DEFAULT_OBJECT_ID);
