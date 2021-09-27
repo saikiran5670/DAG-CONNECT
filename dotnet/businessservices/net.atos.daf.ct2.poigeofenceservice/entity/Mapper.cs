@@ -184,6 +184,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Exists = geofenceRequest.Exists;
             geofence.CategoryName = geofenceRequest.CategoryName;
             geofence.SubCategoryName = geofenceRequest.SubCategoryName;
+            geofence.CreatedAt = geofenceRequest.CreatedAt;
             return geofence;
         }
 
