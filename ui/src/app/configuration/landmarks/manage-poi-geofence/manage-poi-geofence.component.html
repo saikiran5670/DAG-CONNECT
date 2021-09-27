@@ -49,7 +49,7 @@
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
               <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
-                <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblNewLandmark || 'New Landmark' }}
+                <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewLandmark || 'New Landmark' }}
               </button>
               <mat-menu #belowMenu="matMenu" yPosition="below">
                 <button mat-menu-item (click)="createEditView()">{{ translationData.lblNewPOI || 'New POI' }}</button>

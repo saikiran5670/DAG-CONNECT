@@ -160,6 +160,11 @@ export class CreateEditViewPoiComponent implements OnInit {
     }else{
       this.types = ['Regular', 'Global'];
     }
+
+    if(this.actionType == 'create'){
+      this.poiFormGroup.get('type').setValue(this.types[0]); // default selection as per demand
+    }
+
     if (this.actionType == 'view' || this.actionType == 'edit') {
       this.setDefaultValue();
     }
