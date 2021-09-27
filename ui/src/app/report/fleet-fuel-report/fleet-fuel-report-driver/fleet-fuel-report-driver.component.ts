@@ -2019,7 +2019,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }     
       case 'idlingConsumptionWithPTO' :{
-        pdfColumnHeads.push('Idling Consumption Value('+idlingPTO+')');
+        pdfColumnHeads.push('Idling Consumption With PTO('+idlingPTO+')');
         break;
       }
     }
