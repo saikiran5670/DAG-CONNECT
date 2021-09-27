@@ -19,7 +19,12 @@ namespace net.atos.daf.ct2.visibility
             _vehicleManager = vehicleManager;
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId)
+        public async Task<int> GetReportFeatureId(int reportId)
+        {
+            return await _visibilityRepository.GetReportFeatureId(reportId);
+        }
+
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
             List<VisibilityVehicle> vehicles;
             //If context switched then find vehicle visibility for the organization
@@ -32,7 +37,59 @@ namespace net.atos.daf.ct2.visibility
                 vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
 
+            // vehicle filtering based on features
+            if (false && vehicles.Count() > 0)
+            {
+                var vehiclePackages = await GetSubscribedVehicleByFeature(reportFeatureId, contextOrgId);
+
+                //Filter owned vehicles based on package features
+                //If not found Org packages then filter vehicles based on subscribed vehicles
+                var ownedVehicles = vehicles.Where(e => e.HasOwned == true).ToList();
+
+                if (!vehiclePackages.Any(e => e.PackageType == 'O'))
+                {
+                    var filteredOwnedVehicleIds = ownedVehicles
+                        .Where(e => vehiclePackages.FirstOrDefault().VehicleIds.Contains(e.Id)).Select(k => k.Id);
+
+                    //Removing other vins from owned vehicles list and not allow them in the visibility
+                    ownedVehicles.RemoveAll(e => !filteredOwnedVehicleIds.Contains(e.Id));
+                }
+
+                //Filter visible vehicles based on org relationship features and package features
+                var visibleVehicles = vehicles.Where(e => e.HasOwned == false).ToList();
+
+                if (visibleVehicles.Count() > 0)
+                {
+                    //Fetch visible relationship vehicles of having reportFeatureId in it's allowed features list
+                    //Intersect those vehicles with Org+VIN package subscribed vehicles where reportFeatureId is present in the subscription
+                    //Filter vehicles out those are not in relationship vehicles and subscribed vehicles.
+                    if (vehiclePackages.Any(e => e.PackageType == 'V'))
+                    {
+                        var subscriptionVehicleIds = vehiclePackages.First().VehicleIds;
+                        var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
+
+                        //Fetch vehicles records to be removed from visible vehicles list
+                        var filteredVisibleVehicleIds = relationshipVehicleIds.Except(subscriptionVehicleIds).ToList();
+                        filteredVisibleVehicleIds.AddRange(subscriptionVehicleIds.Except(relationshipVehicleIds));
+
+                        visibleVehicles.RemoveAll(e => !filteredVisibleVehicleIds.Contains(e.Id));
+                    }
+                    else
+                    {
+                        visibleVehicles.Clear();
+                    }
+                }
+
+                //Concatenate both lists
+                vehicles = ownedVehicles.Concat(visibleVehicles.AsEnumerable()).ToList();
+            }
+
             return await _visibilityRepository.GetVehicleVisibilityDetails(vehicles.Select(x => x.Id).ToArray(), accountId);
+        }
+
+        public async Task<IEnumerable<VehiclePackage>> GetSubscribedVehicleByFeature(int featureid, int organizationid)
+        {
+            return await _visibilityRepository.GetSubscribedVehicleByFeature(featureid, organizationid);
         }
 
         public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId)
@@ -55,12 +112,12 @@ namespace net.atos.daf.ct2.visibility
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int orgId, int contextOrgId, int roleId,
-                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, string featureName = "Alert")
+                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, int featureId, string featureName = "Alert")
         {
             try
             {
                 var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeature>();
-                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, orgId, contextOrgId);
+                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, orgId, contextOrgId, featureId);
 
                 if (!vehicleByVisibility.Any())
                 {
@@ -145,6 +202,11 @@ namespace net.atos.daf.ct2.visibility
             {
                 throw;
             }
+        }
+
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        {
+            return await _vehicleManager.GetVisibilityVehicles(vehicleGroupIds, orgId);
         }
     }
 }

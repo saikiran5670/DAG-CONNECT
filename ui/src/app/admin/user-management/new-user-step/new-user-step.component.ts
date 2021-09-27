@@ -175,7 +175,7 @@ export class NewUserStepComponent implements OnInit {
       language: true,
       timeZone: true,
       unit: true,
-      currency: true,
+      //currency: true,
       dateFormat: true,
       vehDisplay: true,
       timeFormat: true,
@@ -774,10 +774,10 @@ export class NewUserStepComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;

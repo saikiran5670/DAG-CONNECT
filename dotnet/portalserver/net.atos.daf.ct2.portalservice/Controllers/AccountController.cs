@@ -126,10 +126,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(500, PortalConstants.AccountValidation.ERROR_MESSAGE);
                     }
-                    else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
-                    {
-                        return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
-                    }
+                    //Removed because account creation should not depend on email functionality failure
+                    //else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
+                    //{
+                    //    return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
+                    //}
                     else
                     {
                         return StatusCode(500, string.Format(PortalConstants.ResponseError.INTERNAL_SERVER_ERROR, "01"));
@@ -1864,12 +1865,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest("Account Id mismatched");
 
                 // check for DAF Admin
-                int level = await _privilegeChecker.GetLevelByRoleId(sOrgId, sRoleId);
-
-                //Add context org id to session
-                if (level >= 30)
+                if (_userDetails.RoleLevel >= 30)
                     return Unauthorized("Unauthorized access");
 
+                //Add context org id to session
                 _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                 //return menu items
@@ -1963,22 +1962,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
-        }
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("gethostname2")]
-        public async Task<IActionResult> GetHostName2()
-        {
-            return Ok("testing");
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("gethostname")]
-        public async Task<IActionResult> GetHostName()
-        {
-            _logger.Error("gethostname started");
-            return Ok(Dns.GetHostName().ToLower());
         }
     }
 }

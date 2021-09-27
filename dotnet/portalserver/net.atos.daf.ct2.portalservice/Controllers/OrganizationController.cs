@@ -37,7 +37,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly string _fk_Constraint = "violates foreign key constraint";
-        private readonly AccountPrivilegeChecker _privilegeChecker;
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
@@ -46,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
                                       IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor,
-                                      SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                                      SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._organizationClient = organizationClient;
@@ -211,7 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Id = filterRequest.Id,
                     Featuresetid = filterRequest.FeaturesetId,
                     OrganizationId = filterRequest.OrganizationId,
-                    Level = filterRequest.Level,
+                    Level = _userDetails.RoleLevel,
                     Code = filterRequest.Code ?? string.Empty
                 };
 
@@ -233,7 +232,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var level = await GetUserPrivilegeLevel();
+                var level = _userDetails.RoleLevel;
                 var levelCode = new RelationshipLevelCode();
                 var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
@@ -884,6 +883,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
+                request.Level = _userDetails.RoleLevel;
                 var relationList = await _organizationClient.GetRelationshipAsync(request);
 
                 RelationShipMappingDetails details = new RelationShipMappingDetails();

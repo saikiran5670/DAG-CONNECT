@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.process.functions;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
 import static net.atos.daf.ct2.util.Utils.getCurrentTimeInSecond;
@@ -8,12 +9,13 @@ import static net.atos.daf.ct2.util.Utils.millisecondsToSeconds;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import net.atos.daf.ct2.models.LandMarkDetails;
+import net.atos.daf.ct2.models.MetaData;
+import net.atos.daf.ct2.service.geofence.RayCasting;
+import org.apache.flink.api.common.state.MapState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,6 +281,180 @@ public class IndexBasedAlertFunctions implements Serializable {
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
 
+
+    /**
+     * Entering zone function
+     */
+    public static AlertLambdaExecutor<Message, Target> enteringAndZoneFun = (Message s) -> {
+        Index index=(Index)s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("enteringAndExitingZoneFun");
+        MapState<String, String> vehicleGeofenceSateEnteringZone = (MapState<String, String>) threshold.get("enteringAndExitingZoneVehicleState");
+        try {
+            Map<Long, List<AlertUrgencyLevelRefSchema>> alertMap = new HashMap<>();
+            for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
+                if(alertMap.containsKey(schema.getAlertId())){
+                    alertMap.get(schema.getAlertId()).add(schema);
+                }else{
+                    List<AlertUrgencyLevelRefSchema> tmplist = new ArrayList<>();
+                    tmplist.add(schema);
+                    alertMap.put(schema.getAlertId(),tmplist);
+                }
+            }
+            Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
+                if(! alertMap.isEmpty()){
+                    List<Target> targetList = alertMap.entrySet()
+                            .stream()
+                            .filter(entries -> entries.getValue().size() > 2)
+                            .map(entries -> entries.getValue())
+                            .map(schemaList -> checkGeofence(index, schemaList, point,vehicleGeofenceSateEnteringZone,"enterZone"))
+                            .filter(target -> target.getAlert().isPresent())
+                            .collect(Collectors.toList());
+                    if(!targetList.isEmpty()){
+                        return targetList.get(0);
+                    }
+                }
+
+        } catch (Exception ex) {
+            logger.error("Error while calculating enteringZoneFun:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
+    /**
+     * Exit zone function
+     */
+    public static AlertLambdaExecutor<Message, Target> exitZoneFun = (Message s) -> {
+        Index index=(Index)s.getPayload().get();
+        Map<String, Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("exitingZoneFun");
+        MapState<String, String> vehicleGeofenceSateExitZone = (MapState<String, String>) threshold.get("exitingZoneVehicleState");
+        try {
+            Map<Long, List<AlertUrgencyLevelRefSchema>> alertMap = new HashMap<>();
+            for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
+                if(alertMap.containsKey(schema.getAlertId())){
+                    alertMap.get(schema.getAlertId()).add(schema);
+                }else{
+                    List<AlertUrgencyLevelRefSchema> tmplist = new ArrayList<>();
+                    tmplist.add(schema);
+                    alertMap.put(schema.getAlertId(),tmplist);
+                }
+            }
+            Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
+            if(! alertMap.isEmpty()){
+                List<Target> targetList = alertMap.entrySet()
+                        .stream()
+                        .filter(entries -> entries.getValue().size() > 2)
+                        .map(entries -> entries.getValue())
+                        .map(schemaList -> checkGeofence(index, schemaList, point,vehicleGeofenceSateExitZone,"exitZone"))
+                        .filter(target -> target.getAlert().isPresent())
+                        .collect(Collectors.toList());
+                if(!targetList.isEmpty()){
+                    return targetList.get(0);
+                }
+            }
+
+        } catch (Exception ex) {
+            logger.error("Error while calculating enteringZoneFun:: {}", ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
+    public static Target checkGeofence(Index index, List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas,
+                                       Double[] point,MapState<String, String> vehicleGeofenceSateEnteringZone,
+                                       String alertType
+                                       ) {
+
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        // Get vehicle sate for geofence
+        Boolean vehicleState=Boolean.FALSE;
+        try {
+            if(vehicleGeofenceSateEnteringZone.contains(index.getVin())){
+                vehicleState= Boolean.valueOf(vehicleGeofenceSateEnteringZone.get(index.getVin()));
+            }else{
+                vehicleGeofenceSateEnteringZone.put(index.getVin(),"false");
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieve previous state for vin {} "+alertType+"  {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+        }
+        for (String priority : priorityList) {
+            AlertUrgencyLevelRefSchema tempSchema = new AlertUrgencyLevelRefSchema();
+            List<Double> polygonPointList = new ArrayList<>();
+
+            /**
+             * sort lat lon based not node seq
+             */
+            urgencyLevelRefSchemas= urgencyLevelRefSchemas.stream().sorted(Comparator.comparing(AlertUrgencyLevelRefSchema::getLandmarkId).thenComparing(AlertUrgencyLevelRefSchema::getNodeSeq)).collect(Collectors.toList());
+            //group the schema by landmark id
+            Map<Integer, List<AlertUrgencyLevelRefSchema>> groupSchema = urgencyLevelRefSchemas.stream()
+                    .collect(Collectors.groupingBy(AlertUrgencyLevelRefSchema::getLandmarkId));
+            Set<Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>>> entries = groupSchema.entrySet();
+
+            Iterator<Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>>> iterator = entries.iterator();
+            while (iterator.hasNext()){
+                Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>> next = iterator.next();
+                List<AlertUrgencyLevelRefSchema> schemasOrdered = next.getValue();
+                for (AlertUrgencyLevelRefSchema schema : schemasOrdered) {
+                    if (schema.getUrgencyLevelType().equalsIgnoreCase(priority) && schema.getLatitude() !=0.0 && schema.getLongitude() !=0.0) {
+                        polygonPointList.add(schema.getLatitude());
+                        polygonPointList.add(schema.getLongitude());
+                    }
+                    tempSchema = schema;
+                }
+                if(! polygonPointList.isEmpty()){
+                    /**
+                     * Convert arraylist of lat lon to polygon matrix
+                     */
+                    logger.info("Polygon boundary nodes {} for {}",polygonPointList,String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    logger.info("Polygon boundary test point {} for {}",Arrays.asList(point),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    Double[][] polygonPoints = new Double[polygonPointList.size() / 2][polygonPointList.size() / 2];
+                    int indexCounter=0;
+                    for (int i = 0; i < polygonPointList.size(); i=i+2) {
+                        polygonPoints[indexCounter] = new Double[]{polygonPointList.get(i), polygonPointList.get((i + 1) % polygonPointList.size())};
+                        indexCounter++;
+                    }
+                    // Check weather point inside or outside of polygon
+                    Boolean inside = RayCasting.isInside(polygonPoints, point);
+                    logger.info("Ray casting result  {} for {}",inside,String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    // If the state change raise an alert for entering zone
+                    if (checkVehicleStateForZone(index, vehicleGeofenceSateEnteringZone, vehicleState, tempSchema, inside,alertType))
+                        return getTarget(index, tempSchema, 0);
+                }
+            }
+        }
+        return Target.builder().alert(Optional.empty()).build();
+    }
+
+    public static boolean checkVehicleStateForZone(Index index, MapState<String, String> vehicleGeofenceSate,
+                                                   Boolean vehicleState, AlertUrgencyLevelRefSchema tempSchema,
+                                                   Boolean inside, String alertType) {
+
+        Boolean enterZoneTrue = !vehicleState && inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean exitZoneTrue = vehicleState && !inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean enterZoneFalse = vehicleState && !inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean exitZoneFalse = !vehicleState && inside && alertType.equalsIgnoreCase("exitZone");
+
+        if (enterZoneTrue || exitZoneTrue) {
+            logger.info(alertType + " alert generated  {} for alertId {} {}", index, tempSchema.getAlertId(), String.format(INCOMING_MESSAGE_UUID, index.getJobName()));
+            try {
+                vehicleGeofenceSate.put(index.getVin(), inside.toString());
+            } catch (Exception e) {
+                logger.error("Error while retrieve previous state for vin {} " + alertType + " {}", index.getVin(), String.format(INCOMING_MESSAGE_UUID, index.getJobName()));
+            }
+            return true;
+        }
+        // If the state change raise an alert for exiting zone
+        if (enterZoneFalse || exitZoneFalse) {
+            try {
+                vehicleGeofenceSate.put(index.getVin(), inside.toString());
+            } catch (Exception e) {
+                logger.error("Error while retrieve previous state for vin {} " + alertType + " {} error {}", index.getVin(), String.format(INCOMING_MESSAGE_UUID, index.getJobName()), e);
+            }
+        }
+        return false;
+    }
+
+
     private static Target getTarget(Index index, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
@@ -292,6 +468,8 @@ public class IndexBasedAlertFunctions implements Serializable {
                         .thresholdValueUnitType(urgency.getUnitType())
                         .valueAtAlertTime(""+valueAtAlertTime)
                         .urgencyLevelType(urgency.getUrgencyLevelType())
+                        .latitude(""+index.getGpsLatitude())
+                        .longitude(""+index.getGpsLongitude())
                         .build()))
                 .build();
     }

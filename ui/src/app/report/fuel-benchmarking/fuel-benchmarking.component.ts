@@ -436,8 +436,8 @@ export class FuelBenchmarkingComponent implements OnInit {
       } else {
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.selectedStartTime = "12:00 AM";
+        this.selectedEndTime = "11:59 PM";
       }
     }
 
@@ -606,9 +606,18 @@ export class FuelBenchmarkingComponent implements OnInit {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if (filterVIN.length > 0) {
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+       
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         //////console.log("distinctVIN:: ", distinctVIN);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
@@ -885,7 +894,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     //console.log("---all selected value--", _startTime, _endTime, selectedVehicleGroup, this.vehicleDD)
 
   }
-
+  
   onVehicleGroupChange(event: any) {
     //this.selectedVehicleGroup = event.value;
    
@@ -922,7 +931,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   loadWholeTripData() {
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFuelbenchmarking(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
@@ -946,29 +955,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-
-    if (type == "start") {
-      //console.log("--date type--", date)
-      //console.log("--date type--", timeObj)
-      // this.fuelBenchmarkingSearchData["startDateStamp"] = date;
-    } else if (type == "end") {
-    }
-
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      } else {
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    } else {
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+   return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   hideloader() {

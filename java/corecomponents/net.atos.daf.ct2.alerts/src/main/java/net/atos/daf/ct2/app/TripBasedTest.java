@@ -1,16 +1,22 @@
 package net.atos.daf.ct2.app;
 
+import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import net.atos.daf.ct2.cache.kafka.KafkaCdcStreamV2;
 import net.atos.daf.ct2.cache.kafka.impl.KafkaCdcImplV2;
 import net.atos.daf.ct2.cache.postgres.TableStream;
 import net.atos.daf.ct2.cache.postgres.impl.JdbcFormatTableStream;
 import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.Payload;
+import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
+import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.props.AlertConfigProp;
+import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
+import net.atos.daf.ct2.serialization.PojoKafkaSerializationSchema;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.kafka.KafkaService;
 import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
@@ -42,6 +48,8 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.apache.flink.streaming.connectors.kafka.KafkaDeserializationSchema;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -67,14 +75,7 @@ public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
 
-    /**
-     * RealTime functions defined
-     */
-    public static Map<Object, Object> excessiveUnderUtilizationFunConfigMap = new HashMap() {{
-        put("functions", Arrays.asList(
-                excessiveUnderUtilizationInHoursFun
-        ));
-    }};
+
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -83,14 +84,17 @@ public class TripBasedTest implements Serializable {
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
         /**
-         *  Booting cache
+         * Alert produce topic
          */
+        String dafAlertProduceTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC);
+        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
+        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<String>();
 
+        FlinkKafkaConsumer<String> alertConsumer = new FlinkKafkaConsumer<String>
+                (dafAlertProduceTopic,deserializationSchema,kafkaTopicProp);
 
-        SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
-                .returns(Index.class);
-
-        indexStringStream.print();
+        env.addSource(alertConsumer)
+                        .print();
 
 
 

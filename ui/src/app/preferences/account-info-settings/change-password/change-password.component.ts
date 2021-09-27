@@ -15,8 +15,11 @@ export class ChangePasswordComponent implements OnInit {
   public changePasswordForm : FormGroup
   password: string;
   minCharacterTxt: any;
-  errorMsg: string= '';
-  errorCode: number= 0;
+  errorMsg: string = '';
+  errorCode: number = 0;
+  curPwdHide: boolean = true;
+  newPwdHide: boolean = true;
+  confirmPwdHide: boolean = true;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,

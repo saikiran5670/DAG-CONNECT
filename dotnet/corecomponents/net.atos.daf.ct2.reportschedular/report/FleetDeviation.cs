@@ -54,11 +54,13 @@ namespace net.atos.daf.ct2.account.report
         public long TotalIdleDuration { get; private set; }
         public IEnumerable<reports.entity.FuelDeviation> FuelDeviationDetails { get; private set; }
 
+        public int FeatureId { get; }
+
         public FuelDeviation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager, int featureId)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -70,6 +72,7 @@ namespace net.atos.daf.ct2.account.report
             _contentType = contentType;
             _mapManager = mapManager;
             _mapHelper = new MapHelper(_mapManager);
+            FeatureId = featureId;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)

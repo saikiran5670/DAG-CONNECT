@@ -185,7 +185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (request.OrganizationId == 0)
                 {
-                    //bool hasRights = await HasAdminPrivilege();
+                    //bool hasRights = HasAdminPrivilege();
                     //if (!hasRights)
                     return StatusCode(400, "Organization_Id Required .");
                 }
@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.OrganizationId == 0 && request.Id == 0)
                 {
-                    //bool hasRights = await HasAdminPrivilege();
+                    //bool hasRights = HasAdminPrivilege();
                     //if (!hasRights)
                     return StatusCode(400, "Organization_Id and Id are Required .");
                 }
@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
 
                 if (request.Id <= 0)
                 {

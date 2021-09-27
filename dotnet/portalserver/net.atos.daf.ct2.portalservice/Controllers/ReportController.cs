@@ -37,9 +37,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker,
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient,
                                VehicleService.VehicleServiceClient vehicleClient
-                               ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                               ) : base(httpContextAccessor, sessionHelper)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
@@ -179,18 +179,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Trip Report
         #region Select Trip User Preferences
         [HttpGet]
-        //[Route("getvinsfromtripstatisticsandvehicledetails")]
         [Route("trip/getparameters")]
+        [Route("fleetfuel/getparameters")]
+        [Route("fleetutilization/getparameters")]
+        [Route("fuelbenchmarking/getparameters")]
+        [Route("fueldeviation/getparameters")]
+        [Route("vehicleperformance/getparameters")]
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
                 organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 var response = await _reportServiceClient
                                             .GetVinsFromTripStatisticsWithVehicleDetailsAsync
@@ -224,6 +231,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         #endregion
 
         #region - Trip Report Table Details
@@ -369,10 +377,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("drivetime/getparameters")]
+        [Route("ecoscore/getparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
         {
             try
             {
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 request.OrganizationId = GetContextOrgId();
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
@@ -383,6 +394,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 var data = await _reportServiceClient.GetDriverActivityParametersAsync(request, headers);
 
@@ -419,6 +431,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(0));
 
                 var data = await _reportServiceClient.GetReportSearchParameterAsync(request, headers);
                 if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
@@ -542,7 +555,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
                 var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
@@ -570,7 +583,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege();
+                bool hasRights = HasAdminPrivilege();
                 var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
                 grpcRequest.ProfileId = request.ProfileId;
                 Metadata headers = new Metadata();
@@ -921,6 +934,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 ReportFleetOverviewFilter reportFleetOverviewFilter = new ReportFleetOverviewFilter();
                 var fleetOverviewFilterRequest = new FleetOverviewFilterIdRequest();
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
@@ -929,6 +945,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest, headers);
 
@@ -964,12 +981,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpPost]
         [Route("fleetoverview/getfleetoverviewdetails")]
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 FleetOverviewDetailsRequest fleetOverviewDetailsRequest = new FleetOverviewDetailsRequest
                 {
                     AccountId = _userDetails.AccountId,
@@ -991,6 +1012,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest, headers);
                 if (response == null)
@@ -1275,6 +1297,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
@@ -1284,6 +1308,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest, headers);
 
@@ -1442,7 +1467,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
                 var logBookFilterRequest = new LogbookFilterIdRequest();
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
@@ -1453,6 +1478,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest, headers);
 
@@ -1603,6 +1629,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 if (!(request.StartDateTime > 0))
                 { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0))
@@ -1617,6 +1646,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFluelBenchMarkFilter, headers);
                 if (data?.FuelBenchmarkDetails != null)

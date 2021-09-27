@@ -377,6 +377,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.geofenceService.getGeofenceDetails(this.organizationId).subscribe((geoListData: any) => {
       let geoInitData = geoListData;
       geoInitData = geoInitData.filter(item => item.type == "C" || item.type == "O");
+      geoInitData.sort((userobj1, userobj2)=> parseInt(userobj2.id) - parseInt(userobj1.id));
       let geofenceCreatedUpdateMsg = this.circularGeofence ? this.getCircularGeofenceCreatedUpdatedMessage() : this.getPolygonGeofenceCreatedUpdatedMessage();
       let emitObj = { stepFlag: false, tableData: geoInitData, successMsg: geofenceCreatedUpdateMsg };
       this.backToPage.emit(emitObj);

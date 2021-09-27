@@ -19,6 +19,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   @Input() vehicleGrpList: any;
   @Input() translationData: any;
   @Input() associationTypeId: any;
+  @Input() vehicleDisplayPreference: any;
   breadcumMsg: any = '';  
   @Output() accessRelationCreate = new EventEmitter<object>();
   accessRelationshipFormGroup: FormGroup;

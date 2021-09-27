@@ -31,9 +31,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public AlertController(AlertService.AlertServiceClient alertServiceClient,
                                AuditHelper auditHelper,
-                               Common.AccountPrivilegeChecker privilegeChecker,
                                VehicleService.VehicleServiceClient vehicleClient,
-                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _alertServiceClient = alertServiceClient;
             _auditHelper = auditHelper;

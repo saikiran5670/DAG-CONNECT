@@ -1135,7 +1135,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 // org filter
                 if (organizationId > 0 && is_vehicle)
                 {
-                    query = @"-- Owned vehicles G/D
+                    query = @"-- Owned groups G/D
                               SELECT grp.id, grp.name, count(v.id) as count, true as is_group
                               FROM master.vehicle v
                               LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
@@ -1144,36 +1144,6 @@ namespace net.atos.daf.ct2.vehicle.repository
                               INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                               WHERE 
 	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
-	                              ELSE COALESCE(end_date,0) = 0 END
-                              GROUP BY grp.id, grp.name
-                              
-                              UNION
-                              
-                              -- Visible vehicles of type G
-                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
-                              FROM master.vehicle v
-                              INNER JOIN master.groupref gref ON v.id=gref.ref_id
-                              INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
-                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
-                              WHERE 
-	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
-	                              ELSE COALESCE(end_date,0) = 0 END
-                              GROUP BY grp.id, grp.name
-
-                              UNION
-
-                              -- Visible vehicles of type D with method O
-                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
-                              FROM master.group grp
-                              INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
-                                          AND orm.owner_org_id=grp.organization_id 
-                                          AND orm.target_org_id=@organization_id
-                                          AND grp.group_type='D' AND grp.object_type='V'
-                              INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
-                              INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
-                              WHERE 
-	                              CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
 	                              ELSE COALESCE(end_date,0) = 0 END
                               GROUP BY grp.id, grp.name";
                 }
@@ -2078,7 +2048,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var query = @"select id, vin from master.vehicle where ";
+                var query = @"select id, vin,true as hasowned from master.vehicle where ";
                 var parameter = new DynamicParameters();
 
                 // Vehicle Id 
@@ -2101,7 +2071,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 var queryStatement = @"
                         -- Owned vehicles
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin,true as hasowned
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
@@ -2110,7 +2080,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type S/G
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin, false as hasowned
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
@@ -2121,7 +2091,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type D, method O
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin, false as hasowned
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
@@ -2183,7 +2153,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             try
             {
                 var queryStatement = @"
-                        SELECT v.id, v.vin
+                        SELECT v.id, v.vin,true as hasowned
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
@@ -2238,7 +2208,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                      INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A'
 	                      INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id 
 	                      WHERE acc.id=@account_id AND grp.organization_id=@organization_id
-                      )";
+                      ) AND organization_id=@organization_id";
 
                 return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
             }
@@ -2277,7 +2247,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
 
                 string query =
-                                @"select veh.id, veh.vin	                               
+                                @"select veh.id, veh.vin,true as hasowned                               
 	                               from master.vehicle veh 
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";
@@ -2290,6 +2260,25 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
+        public async Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaGroupIds(IEnumerable<int> vehicleGroupIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicle_group_ids", vehicleGroupIds);
+
+                string query =
+                    @"SELECT id, group_type as GroupType, function_enum as GroupMethod, ref_id as RefId 
+                      FROM master.group
+                      WHERE id = ANY (@vehicleGroupIds)";
+
+                return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
 
         #region get Group Info for filter

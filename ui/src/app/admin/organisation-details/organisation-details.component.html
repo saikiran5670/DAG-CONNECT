@@ -161,7 +161,7 @@
                         </div>
 
                         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
-                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblCurrency || 'Currency' }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
                                     <span style='font-weight: 500!important;'>{{ prefDefault.currency }}</span>
@@ -176,8 +176,7 @@
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
-                            </div>
-
+                            </div> -->
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label style='display: flex; place-content: space-between;'>
                                     <span>{{ translationData.lblDateFormat || 'Date Format' }}</span>
@@ -214,9 +213,6 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-                        </div>
-
-                        <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                         }}</span></mat-label>
@@ -233,6 +229,25 @@
                                     </mat-form-field>
                                 </div>
                             </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
+                            <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
+                                        }}</span></mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{ vehicleOptIn }}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="onSelectionChange($event)" formControlName="vehicleDefaultStatus" required>
+                                            <mat-option *ngFor="let rer of vehicleStatusDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div> -->
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label style='display: flex;'>
                                     <span>{{ translationData.lblDriverDefaultStatus || 'Driver Default Status' }}</span>
@@ -248,6 +263,28 @@
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="areaWidth min-width-30-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
+                                <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{ organisationData.pageRefreshTime ? organisationData.pageRefreshTime : '-' }}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline">
+                                        <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                                        <span matSuffix>min</span>   
+                                    </mat-form-field>
+                                    <!-- <span style="margin: 10px 0px 0px 10px;">({{ translationData.lblminimum1minormaximum60min || 'minimum 1 min or maximum 60 min' }})</span> -->
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')">
+                                        {{ translationData.lblPleaseEnterRefreshTime || 'Please Enter Refresh Time' }}
+                                    </mat-error>
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                                        {{ translationData.lblRefreshTimecannotbegreaterthan60 || 'Refresh Time cannot be greater than 60' }}
+                                    </mat-error>
+                                    <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                                        {{ translationData.lblRefreshTimecannotbelessthan1 || 'Refresh Time cannot be less than 1' }}
+                                    </mat-error>
                                 </div>
                             </div>
                             <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
@@ -279,7 +316,7 @@
                                 </mat-error>
                             </div>
                         </div>
-                        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+                        <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
                             <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
                                 <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
@@ -302,7 +339,7 @@
                                     </mat-error>
                                 </div>
                             </div>
-                          </div>
+                        </div> -->
                     </div>
                     <mat-card-actions class='no-margin no-padding'>
                         <div *ngIf="editPrefereneceFlag" fxLayout="column" fxLayoutAlign="center flex-end">

@@ -256,10 +256,10 @@ tripTraceArray: any = [];
   summaryColumnData: any = [];
   isChartsOpen: boolean = false;
   isDetailsOpen: boolean = false;
-  selectedStartTime: any = '00:00';
-  selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
+  selectedStartTime: any = '00:00';
+  selectedEndTime: any = '23:59'; 
   fleetFuelSearchData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
@@ -1579,41 +1579,7 @@ createEndMarker(){
   }
 
   formStartDate(date: any){
-    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
-    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
-    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
-    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
-    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
-    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
-    let _date: any;
-    let _time: any;
-    if(this.prefTimeFormat == 12){
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
-    }else{
-      _time = `${h}:${m}:${s}`;
-    }
-    switch(this.prefDateFormat){
-      case 'ddateformat_dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        break;
-      }
-      default:{
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-      }
-    }
-    return _date;
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   setChartData(graphData: any){
@@ -2108,8 +2074,8 @@ createEndMarker(){
     } else{
       this.startTimeDisplay = '12:00 AM';
       this.endTimeDisplay = '11:59 PM';
-      this.selectedStartTime = "00:00";
-      this.selectedEndTime = "23:59";
+      this.selectedStartTime = "12:00 AM";
+      this.selectedEndTime = "11:59 PM";
     }
   }
 }
@@ -2193,41 +2159,8 @@ setDefaultTodayDate(){
   }
 }
 
-setStartEndDateTime(date: any, timeObj: any, type: any){
-
-    if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
-      // this.fleetUtilizationSearchData["startDateStamp"] = date;
-      // this.fleetUtilizationSearchData.testDate = date;
-      // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
-    }else if(type == "end") {
-      // this.fleetUtilizationSearchData["endDateStamp"] = date;
-      // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-    }
-
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if(date) {
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      }else{
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
-    date.setSeconds(type == 'start' ? '00' : '59');
-  }
-    return date;
+  setStartEndDateTime(date: any, timeObj: any, type: any) {
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   getTodayDate(){
@@ -2316,9 +2249,17 @@ getLast3MonthDate(){
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if(filterVIN.length > 0){
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if(vinArray.length > 0){
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
 
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
@@ -2523,7 +2464,7 @@ setVehicleGroupAndVehiclePreSelection() {
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
-           ['Fleet Fuel Vehicle Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+           ['Fleet Fuel Vehicle Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]

@@ -251,6 +251,7 @@ getFilterData(){
     this.levelList = [];
     this.healthList = [];
     this.otherList = [];
+    this.vehicleListData =[];
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
@@ -305,15 +306,23 @@ getFilterData(){
           }
           this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
     })
-    let currentDate = new Date().getTime();
-        let categoryData =this.filterData["fleetOverviewAlerts"].forEach(element => {
-          let createdDate = parseInt(element.alertTime); 
-          let nextDate = createdDate + 86400000;
-          if(currentDate > createdDate && currentDate < nextDate){
-            this.categoryList.push(element);
-            this.healthList.push(element);
-          }
-        });
+    // let currentDate = new Date().getTime();
+    //     let categoryData =this.filterData["fleetOverviewAlerts"].forEach(element => {
+    //       let createdDate = parseInt(element.alertTime); 
+    //       let nextDate = createdDate + 86400000;
+    //       if(currentDate > createdDate && currentDate < nextDate){
+    //         this.categoryList.push(element);
+    //         this.healthList.push(element);
+    //       }
+    //     });
+
+      this.filterData["alertCategory"].forEach(item=>{
+      let catName =  this.translationAlertData[item.name];
+      this.categoryList.push({'name':catName, 'value': item.value})});     
+     
+      this.filterData["alertLevel"].forEach(item=>{
+      let levelName =  this.translationAlertData[item.name];
+      this.levelList.push({'name':levelName, 'value': item.value})}); 
  
         this.filterData["healthStatus"].forEach(item=>{
         let statusName = this.translationData[item.name];
@@ -325,6 +334,7 @@ getFilterData(){
         this.otherList.push({'name':statusName, 'value': item.value})
         }});
         this.setDefaultDropValue();
+        this.vehicleListData = this.detailsData;
     }
   })
 } 

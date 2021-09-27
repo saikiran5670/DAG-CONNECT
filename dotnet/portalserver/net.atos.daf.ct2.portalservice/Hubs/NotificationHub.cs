@@ -24,7 +24,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -62,10 +62,6 @@ namespace net.atos.daf.ct2.portalservice.hubs
             string consumerGroup = string.Empty;
             try
             {
-                //_ = _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                //AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                //string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", "ex.message"), 0, 0, JsonConvert.SerializeObject(podConsumerGroupMap),
-                // new HeaderObj { AccountId = 1, OrgId = 2, AccountEmailId = "test", RoleId = 3, ContextOrgId = 4 }).Result;
                 consumerGroup = podConsumerGroupMap.Where(w => w.Key.ToLower() == hostName).FirstOrDefault().Value;
                 if (string.IsNullOrEmpty(consumerGroup)) _logger.Error($"Error in GetCusumerGroupFmHostName - {hostName} not found in disctionory");
             }
@@ -75,7 +71,50 @@ namespace net.atos.daf.ct2.portalservice.hubs
             }
             return consumerGroup;
         }
-
+        public override async Task OnConnectedAsync()
+        {
+            try
+            {
+                if (Context?.ConnectionId != null)
+                {
+                    if (_userDetails.AccountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == _userDetails.AccountId && a.HubClientId == Context.ConnectionId))
+                    {
+                        AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                        {
+                            AccountId = _userDetails.AccountId,
+                            OrganizationId = _userDetails.OrgId,
+                            HubClientId = Context.ConnectionId
+                        };
+                        _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                        _logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
+                    }
+                }
+                await base.OnConnectedAsync();
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.StackTrace);
+                _logger.Error("Error in OnConnectedAsync method", err);
+            }
+        }
+        public override async Task OnDisconnectedAsync(Exception ex)
+        {
+            try
+            {
+                if (Context?.ConnectionId != null)
+                {
+                    _accountSignalRClientsMappingList._accountClientMapperList.RemoveAll(client => client.HubClientId == Context.ConnectionId);
+                }
+                _logger.Info($"OnDisconnectedAsync client: {Context?.ConnectionId}");
+                await base.OnDisconnectedAsync(ex);
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.StackTrace);
+                _logger.Error("Error in OnDisconnectedAsync method", err);
+            }
+        }
+        [AllowAnonymous]
         public async Task NotifyAlert(string someTextFromClient)
         {
             var list = someTextFromClient.Split(',');
@@ -114,10 +153,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         UrgencyTypeKey = Context.ConnectionId,
                         UrgencyLevel = "C"
                     };
-                    //       IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId).Select(clients => clients.HubClientId).ToList();
-                    //await Clients.All.SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages));
                     IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
-                    //_logger.Info($"\n\rNotifyAlertKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
                     await Clients.Clients(connectionIds).SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
                     if (_pkId > 1000)
                     {
@@ -139,71 +175,20 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
             }
         }
-        public override async Task OnConnectedAsync()
+        public async Task PushNotificationForAlert()
         {
             try
             {
-                if (Context?.ConnectionId != null)
-                {
-                    if (_userDetails.AccountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == _userDetails.AccountId && a.HubClientId == Context.ConnectionId))
-                    {
-                        AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
-                        {
-                            AccountId = _userDetails.AccountId,
-                            OrganizationId = _userDetails.OrgId,
-                            HubClientId = Context.ConnectionId
-                        };
-                        _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
-                    }
-                    //ConnectedUser.Ids.Add(Context.ConnectionId);
-                }
-                await base.OnConnectedAsync();
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.StackTrace);
-                _logger.Error("Error in OnConnectedAsync method", err);
-            }
-        }
-        public override async Task OnDisconnectedAsync(Exception ex)
-        {
-            try
-            {
-                //AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                //if (accountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
                 //{
-                //    AccountId = 1,
-                //    OrganizationId = 30,
-                //    HubClientId = ""
-                //};
-                if (Context?.ConnectionId != null)
-                {
-                    _accountSignalRClientsMappingList._accountClientMapperList.RemoveAll(client => client.HubClientId == Context.ConnectionId);
-                }
-                //ConnectedUser.Ids.Remove(Context.ConnectionId);
-                await base.OnDisconnectedAsync(ex);
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.StackTrace);
-                _logger.Error("Error in OnDisconnectedAsync method", err);
-            }
-        }
-        public async Task ReadKafkaMessages(int accountId, int orgId)
-        {
-            try
-            {
-                if (accountId > 0 && !_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
-                {
-                    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
-                    {
-                        AccountId = accountId,
-                        OrganizationId = orgId,
-                        HubClientId = this.Context.ConnectionId
-                    };
-                    _logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
-                    //await File.AppendAllTextAsync("_accountClientMapperList.txt", JsonConvert.SerializeObject(accountSignalRClientMapper));
-                    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
-                }
+                //    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+                //    {
+                //        AccountId = accountId,
+                //        OrganizationId = orgId,
+                //        HubClientId = this.Context.ConnectionId
+                //    };
+                //    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+                //}
                 confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -219,7 +204,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     try
                     {
                         //Pushing message to kafka topic
-                        Thread.Sleep(2000);
+                        //Thread.Sleep(2000);
                         ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
                         TripAlert tripAlert = new TripAlert();
                         if (response != null)
@@ -255,50 +240,35 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                     AlertTypeKey = objAlertVehicleDetails.AlertTypeKey,
                                     UrgencyTypeKey = objAlertVehicleDetails.UrgencyTypeKey,
                                     CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
+                                    OrganizationId = objAlertVehicleDetails.OrganizationId
                                 };
-                                //     await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                                //AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                //string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "ReadKafkaMessages", AlertConstants.NOTIFICATION_HUB_MSG), notificationAlertMessages.AlertId, notificationAlertMessages.AlertId, JsonConvert.SerializeObject(tripAlert),
-                                //_userDetails);
-                                // match session values with clientID & created by 
-                                //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == Context?.ConnectionId && pre.AccountId == notificationAlertMessages.CreatedBy && pre.AccountId == 187/*_userDetails.AccountId*/).Select(clients => clients.HubClientId).ToList();
                                 connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                 _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
-                                //await File.AppendAllTextAsync("NotifyAlertResponse.txt", $"\n\rReadKafka2019 - {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}--- {this.Context.ConnectionId} - {_kafkaConfiguration.CONSUMER_GROUP} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
-                                await Clients.Clients(connectionIds).SendAsync("NotifyAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+                                await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
                             }
                         }
                     }
                     catch (RpcException ex)
                     {
-                        _logger.Error($"Error in ReadKafkaMessages - AlertID: {alertId}", ex);
-                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
+                        _logger.Error($"RpcException Error in ReadKafkaMessages - AlertID: {alertId}", ex);
+                        await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                     catch (Exception ex)
                     {
-                        //await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                        // AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                        // string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
-                        //  _userDetails);
-                        //_ = ex.Message;
                         _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}", ex);
-                        await Clients.Clients(connectionIds).SendAsync("askServerResponse", ex.Message);
+                        await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                 }
             }
             catch (RpcException ex)
             {
-                _logger.Error("Error in ReadKafkaMessages method", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                _logger.Error("RpcException in ReadKafkaMessages method", ex);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, AlertConstants.NOTIFICATION_HUB_MSG,
-                // AlertConstants.NOTIFICATION_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                // string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ReadKafkaMessages", ex.Message), 0, 0, "",
-                //  _userDetails);
                 _logger.Error("Error in ReadKafkaMessages method", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("askServerResponse", ex.Message);
+                await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
         }
     }

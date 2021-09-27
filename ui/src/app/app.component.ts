@@ -309,6 +309,9 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      if (this.isLogedIn) {
+        this.connectWithSignalR();
+      }
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -381,7 +384,7 @@ export class AppComponent {
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
           this.getOfflineNotifications();
-          this.connectWithSignalR();
+          // this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -1311,7 +1314,9 @@ notificationClicked(){
         "accountId": element.accountId,
         "alertViewTimestamp": 0
       }
+      if(notificationObj.tripAlertId != 0){
       notificationData.push(notificationObj);
+      }
     });
     
     this.alertService.addViewedNotifications(notificationData).subscribe(data => {

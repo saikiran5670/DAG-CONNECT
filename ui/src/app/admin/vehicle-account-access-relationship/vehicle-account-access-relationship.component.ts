@@ -11,6 +11,7 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -19,6 +20,8 @@ import html2canvas from 'html2canvas';
 })
 
 export class VehicleAccountAccessRelationshipComponent implements OnInit {
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  accountPrefObj: any;
   vehicleGrpVehicleAssociationDetails: any = [];
   accountGrpAccountAssociationDetails: any = [];
   vehicleGrpVehicleDetails: any = [];
@@ -49,7 +52,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   userType: any = localStorage.getItem("userType");
   associationTypeId: any = 1;
 
-  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
 
@@ -63,6 +66,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
@@ -73,10 +77,36 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       filter: "",
       menuId: 30 //-- for access relationship mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.showLoadingIndicator = true;
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
       this.processTranslation(data);
-      this.loadAccessRelationshipData();
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      }, (error)=>{
+        this.hideloader();
+      });
+    }, (error)=>{
+      this.hideloader();
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    if(preference.vehicleDisplayId){
+      let _search = prefData.vehicledisplay.filter(i => i.id == preference.vehicleDisplayId);
+      if(_search.length > 0) { // present
+        this.vehicleDisplayPreference = _search[0].name;
+      }
+    }
+    this.loadAccessRelationshipData();  
   }
 
   loadAccessRelationshipData(){
@@ -99,8 +129,6 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
         this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
       }
     }, (error)=>{
-      this.hideloader();
-      console.log("error:: ", error);
       this.hideloader();
     });
   }

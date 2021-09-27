@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsByOrganization(int orgId);
         Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
         Task<VehicleCountFilter> GetGroupFilterDetail(int vehicleGroupId, int orgnizationId);
-
+        Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaGroupIds(IEnumerable<int> vehicleGroupIds);
         #endregion
 
         // Task<bool> SetConnectionStatus(char Status);

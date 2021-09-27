@@ -187,10 +187,12 @@ namespace net.atos.daf.ct2.dashboardservice
             try
             {
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
-                var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
-                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                var vehicleDetailsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+
+                if (vehicleDetailsWithAccountVisibility.Count() == 0)
                 {
                     response.Message = string.Format(DashboardConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
@@ -198,7 +200,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 }
 
                 var vinList = await _reportManager
-                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                        .GetVinsFromTripStatistics(vehicleDetailsWithAccountVisibility
                                                                        .Select(s => s.Vin).Distinct());
                 if (vinList.Count() == 0)
                 {
@@ -207,7 +209,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     response.VinTripList.Add(new List<VehicleFromTripDetails>());
                     return response;
                 }
-                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                var res = JsonConvert.SerializeObject(vehicleDetailsWithAccountVisibility);
                 response.VehicleDetailsWithAccountVisibiltyList.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
                     );

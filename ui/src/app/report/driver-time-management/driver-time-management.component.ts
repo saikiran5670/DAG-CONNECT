@@ -839,7 +839,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // _yesterday.getTime();
     //this.resetdriverTimeFormControlValue();
-    let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    let driverList = [];
+    this.onLoadData.driverList.forEach(element => {
+      if(element.activityDateTime && element.activityDateTime.length > 0){
+        let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
+        if(search.length > 0){
+          driverList.push(element.driverID);
+        }
+      }
+    });
+    
     let filteredDriverList = [];
     let filteredVehicleList = [];
     let filteredVehicleGroupList = [];
@@ -960,7 +970,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any){
-    return this.reportMapService.formStartDate(date, this.prefTimeFormat);
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   applyFilter(filterValue: string) {
@@ -976,7 +986,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
   const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
   this.summaryObj=[
-    ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
+    ['Driver Time Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
       this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
       this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
     ]

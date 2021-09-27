@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 int thresholdValue = Convert.ToInt32(thresholdRate);
 
                 RfmsVehicleStatusRequest rfmsVehicleStatusRequest = _mapper.MapVehicleStatusRequest(requestFilter.RfmsVehicleStatusFilter);
-                rfmsVehicleStatusRequest.ContentFilter = requestFilter.ContentFilter;
+                rfmsVehicleStatusRequest.ContentFilter = string.IsNullOrEmpty(requestFilter.ContentFilter) ? string.Empty : requestFilter.ContentFilter.ToUpper();
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Rfms Vehicle Position Service", "Rfms Vehicle Position Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get vehicle position method vehicle position service", 0, 0, JsonConvert.SerializeObject(rfmsVehicleStatusRequest), 0, 0);
 

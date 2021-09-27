@@ -139,26 +139,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
                 //}
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
+                int level = _userDetails.RoleLevel;
 
-                FeatureRequest FeatureObj = new FeatureRequest();
-                FeatureObj.Name = featureRequest.Name;
-                FeatureObj.Level = level;
+                FeatureRequest featureObj = new FeatureRequest();
+                featureObj.Name = featureRequest.Name;
+                featureObj.Level = level;
                 //FeatureObj.Level = featureRequest.Level;
-                FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
-                FeatureObj.Description = featureRequest.Description;
-                FeatureObj.DataAttribute = new DataAttributeSetRequest();
-                FeatureObj.DataAttribute.Name = featureRequest.Name;
-                FeatureObj.DataAttribute.Description = featureRequest.Description;
-                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.Is_Exclusive;
+                featureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                featureObj.Description = featureRequest.Description;
+                featureObj.DataAttribute = new DataAttributeSetRequest();
+                featureObj.DataAttribute.Name = featureRequest.Name;
+                featureObj.DataAttribute.Description = featureRequest.Description;
+                featureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.Is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
                 foreach (var item in featureRequest.DataAttributeIds.Distinct())
                 {
-                    FeatureObj.DataAttribute.DataAttributeIDs.Add(item);
+                    featureObj.DataAttribute.DataAttributeIDs.Add(item);
                 }
 
-                var responce = await _featureclient.CreateAsync(FeatureObj);
+                var responce = await _featureclient.CreateAsync(featureObj);
                 if (responce.Code == Responcecode.Success)
                 {
 
@@ -307,8 +307,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //if (cachedfeature != null) return Ok(cachedfeature);
 
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
-                request.Level = level;
+                request.Level = _userDetails.RoleLevel;
                 if (request.OrganizationID != 0)
                 {
                     request.OrganizationID = GetContextOrgId();

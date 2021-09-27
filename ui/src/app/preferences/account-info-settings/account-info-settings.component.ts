@@ -603,10 +603,10 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;

@@ -98,7 +98,7 @@
 
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth chart-box min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" [chartTitle]="bubbleHeatchartTitle" [backgroundColorPattern]="backgroundColorPattern"></app-heat-bubble-chart>
+                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" [chartTitle]="bubbleHeatchartTitle" [legends]="legends" [colorToLegends]="colorToLegends" [translationData]="translationData"></app-heat-bubble-chart>
                 </div>
                 <div class="areaWidth chart-box min-width-50-per" fxLayout="column" fxLayoutAlign="left">
                     <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData" [pieChartColor]="pieChartColors" [legends]="legends" [chartTitle]="piechartTitle"></app-pie-chart>

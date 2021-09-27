@@ -25,6 +25,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string MailSubject { get; set; }
         public string MailDescription { get; set; }
         public long ReportDispatchTime { get; set; }
+        public int FeatureId { get; set; }
     }
 
     public class ScheduledReport

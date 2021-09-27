@@ -123,5 +123,5 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createVehicleAccountAccessRelation' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccountVehicle($event)'></app-create-edit-view-vehicle-account-access-relationship>
+  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createVehicleAccountAccessRelation' [vehicleDisplayPreference]='vehicleDisplayPreference' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccountVehicle($event)'></app-create-edit-view-vehicle-account-access-relationship>
 </div>
