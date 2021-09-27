@@ -162,11 +162,11 @@
                 <button class='actionBtn' mat-flat-button (click)="editViewPoi(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess && (adminAccessType.globalPOIAccess || row.organizationId > 0)" class='actionBtn' mat-flat-button
                   (click)="editViewPoi(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                   <mat-icon>create</mat-icon>
                 </button>
-                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button
+                <button *ngIf="adminAccessType.adminFullAccess && (adminAccessType.globalPOIAccess || row.organizationId > 0)" class='actionBtn' mat-flat-button
                   (click)="deletePoi(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>

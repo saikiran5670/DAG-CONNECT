@@ -70,10 +70,10 @@
             <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+            <button *ngIf="!adminAccessType.adminReadOnlyAccess && adminAccessType.systemAccountAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
               <mat-icon>create</mat-icon>
             </button>
-            <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+            <button *ngIf="adminAccessType.adminFullAccess && adminAccessType.systemAccountAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
               <mat-icon class="deleteIcon">delete_outline</mat-icon>
             </button>
           </mat-cell>
