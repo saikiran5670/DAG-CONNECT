@@ -65,8 +65,9 @@ public class AlertConfigProp {
 	public static final String DATAMART_POSTGRE_DATABASE_NAME = "postgres_database_name";
 	public static final String DATAMART_POSTGRE_USER = "userId";
 	public static final String DATAMART_POSTGRE_PASSWORD = "postgresql_password";
+		public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
 	
-	public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
+	public static final String KAFKA_DAF_ALERT_PRODUCE_NOTIFICATION_MSG_TOPIC="daf.notification.topic";
 
 
     public static final TypeInformation<?>[] ALERT_THRESHOLD_SCHEMA_DEF = new TypeInformation<?>[] {
@@ -114,11 +115,12 @@ public class AlertConfigProp {
     public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
     public static BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream;
     public static BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream;
-	public static final String ALERT_TIME_WINDOW_SECONDS = "alert.time.window.seconds";
-	public static final String ALERT_WATERMARK_TIME_WINDOW_SECONDS = "alert.watermark.time.window.seconds";
-	public static final String ALERT_MEASUREMENT_MILLISECONDS_VAL = "alert.time.measurement.milli";
-		
-	public static final Integer INDEX_TRIP_START = 4;
-	public static final Integer INDEX_TRIP_END = 5;
-	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    
+    public static final String ALERT_TIME_WINDOW_SECONDS = "alert.time.window.seconds";
+  	public static final String ALERT_WATERMARK_TIME_WINDOW_SECONDS = "alert.watermark.time.window.seconds";
+  	public static final String ALERT_MEASUREMENT_MILLISECONDS_VAL = "alert.time.measurement.milli";
+  		
+  	public static final Integer INDEX_TRIP_START = 4;
+  	public static final Integer INDEX_TRIP_END = 5;
+  	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 }
