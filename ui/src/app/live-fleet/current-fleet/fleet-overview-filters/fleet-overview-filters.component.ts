@@ -515,7 +515,8 @@ removeDuplicates(originalArray, prop) {
       });    
      this.categoryList = this.removeDuplicates(newAlertCat, "value");
      //console.log(newAlertCat);    
-      this.vehicleListData = data;     
+      this.vehicleListData = data;    
+      this.detailsData = data; 
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
