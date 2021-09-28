@@ -729,8 +729,9 @@ export class FleetMapService {
       let markerSize = { w: 34, h: 40 };
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-    
-      this.group.addObject(this.vehicleIconMarker);
+      let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong);
+      if(_checkValidLatLong) //16705 
+        this.group.addObject(this.vehicleIconMarker);
       let _healthStatus = '',_drivingStatus = '';
       // icon tooltip
       switch (elem.vehicleHealthStatusType) {
@@ -820,6 +821,12 @@ export class FleetMapService {
     
       
    }
+
+   validateLatLng(lat, lng) {    
+    let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
+    
+    return pattern.test(lat) && pattern.test(lng);
+  }
 
   setIconsOnMap(element,_ui) {
     let _drivingStatus = false;
