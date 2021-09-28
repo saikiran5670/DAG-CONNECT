@@ -363,7 +363,8 @@ removeDuplicates(originalArray, prop) {
       const driver = value.driverName.toLowerCase().toString().includes(searchStr);
       const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
       const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
-      return vin || driver || drivingStatus ||healthStatus;
+      const driverId = value.driver1Id.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus || driverId;
     }​​​​​​​​);
   
   
@@ -382,7 +383,8 @@ removeDuplicates(originalArray, prop) {
       const driver = value.driverName.toLowerCase().toString().includes(searchStr);
       const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
       const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
-      return vin || driver || drivingStatus ||healthStatus;
+      const driverId = value.driver1Id.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus || driverId;
     }​​​​​​​​);
 
     this.vehicleListData = filteredData;
