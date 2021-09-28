@@ -53,7 +53,10 @@ export class UserManagementComponent implements OnInit {
   orgPreference: any = {};
   actionBtn:any; 
   userDetailsType: any = '';
-  UserSessionVal: any=[];
+  UserSessionVal: any = [];
+  accountRoleId: any;
+  filterRoleList: any = [];
+  editViewRoleList: any = [];
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -157,6 +160,7 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountRoleId = parseInt(localStorage.getItem('accountRoleId'));
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     else 
@@ -172,10 +176,10 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 25 //-- for account mgnt
     }
+    this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      
-      this.processTranslation(data); 
-      this.loadUsersData();
+      this.processTranslation(data);
+      this.hideloader(); 
       this.getUserSettingsDropdownValues(); 
       if(this.userDetailsType != undefined){       
         console.log(localStorage.getItem('selectedRowItems'));
@@ -185,14 +189,15 @@ export class UserManagementComponent implements OnInit {
       else{
         this.router.navigate([]);   //16422 - page reloads and api was called multiple times 
       }
-    
     });
   }
 
   getUserSettingsDropdownValues(){
+    this.showLoadingIndicator = true;
     let languageCode = this.localStLanguage.code;
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     this.translationService.getPreferences(languageCode).subscribe(data => {
+      this.hideloader();
       this.defaultSetting = {
         languageDropdownData: data.language,
         timezoneDropdownData: data.timezone,
@@ -203,6 +208,7 @@ export class UserManagementComponent implements OnInit {
         vehicleDisplayDropdownData: data.vehicledisplay,
         landingPageDisplayDropdownData: accountNavMenu
       }
+      this.loadRoles();
     });
   }
 
@@ -229,12 +235,32 @@ export class UserManagementComponent implements OnInit {
     this.OpenDialog(options, 'delete', item);
   }
 
-  newUser() {
-    this.isCreateFlag = true;
+  loadRoles(){
+    this.showLoadingIndicator = true;
     let roleObj = { 
       Organizationid : this.accountOrganizationId,
       IsGlobal: true
    };
+    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+      this.hideloader();
+      this.roleData = allRoleData;
+      let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
+      if(accountRoleLevel.length > 0){
+        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
+      }
+      this.loadUsersData();
+    }, (error) => {
+      this.hideloader();
+      this.loadUsersData();
+    });
+  }
+
+  newUser() {
+    this.isCreateFlag = true;
+  //   let roleObj = { 
+  //     Organizationid : this.accountOrganizationId,
+  //     IsGlobal: true
+  //  };
    let accountGrpObj = {
       accountGroupId: 0,
       organizationId: this.accountOrganizationId,
@@ -243,8 +269,8 @@ export class UserManagementComponent implements OnInit {
       roleId: 0,
       name: ""
    }
-   this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
-    this.roleData = allRoleData;
+   //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+    //this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
@@ -253,27 +279,28 @@ export class UserManagementComponent implements OnInit {
         this.stepFlag = true;
       });
     }, (error)=> {});
-   }, (error)=> {});
+   //}, (error)=> {});
   }
 
   editViewUser(element: any, type: any) {
-    let roleObj = { 
-      Organizationid : this.accountOrganizationId,
-      IsGlobal: true
-   };
-   let accountGrpObj = {
-      accountGroupId: 0,
-      organizationId: this.accountOrganizationId,
-      accountId: 0,
-      vehicleGroupId: 0,
-      roleId: 0,
-      name: ""
-   }      
-  this.UserSessionVal=element; 
+  //  let roleObj = { 
+  //     Organizationid : this.accountOrganizationId,
+  //     IsGlobal: true
+  //  };
+  let accountGrpObj = {
+    accountGroupId: 0,
+    organizationId: this.accountOrganizationId,
+    accountId: 0,
+    vehicleGroupId: 0,
+    roleId: 0,
+    name: ""
+  }      
+  this.UserSessionVal = element; 
+  this.editViewRoleList = element.editDeletAccess ? this.filterRoleList.slice() : this.roleData.slice();
   localStorage.removeItem('selectedRowItems');
   localStorage.setItem('selectedRowItems', JSON.stringify(this.UserSessionVal));  
-  this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
-    this.roleData = allRoleData;
+  //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
+    //this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.selectedRoleData = element.roles;
@@ -308,7 +335,7 @@ export class UserManagementComponent implements OnInit {
           });
         }
     }, (error)=> {});   
-   }, (error)=> {});
+   //}, (error)=> {});
   }
 
   goForword(type: any){
@@ -344,6 +371,9 @@ export class UserManagementComponent implements OnInit {
           });
          }
       });
+    }, (error) => {
+      console.log('error');
+      this.hideloader();
     });
   }
 
@@ -381,9 +411,19 @@ export class UserManagementComponent implements OnInit {
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
+      let roleFound: boolean = true;
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';
+        roleTxt += resp.name + ', ';  
+        let _s: any = this.filterRoleList.filter(item => item.roleId == resp.id);
+        if(_s.length == 0){ // not found
+          roleFound = false;
+        }
       });
+      if(!roleFound){
+        element.editDeletAccess = false;
+      }else{
+        element.editDeletAccess = true;
+      }
       element.accountGroups.forEach(resp => {
         accGrpTxt += resp.name + ', ';
       });
