@@ -244,6 +244,7 @@ status = new FormControl();
  } 
 
 getFilterData(){
+  this.showLoadingIndicator = true;
   this.reportService.getFilterDetails().subscribe((data: any) => {
     this.filterData = data;
     this.groupList = [];
@@ -252,6 +253,7 @@ getFilterData(){
     this.healthList = [];
     this.otherList = [];
     this.vehicleListData =[];
+    this.showLoadingIndicator = false;
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
@@ -543,6 +545,7 @@ removeDuplicates(originalArray, prop) {
   }
 
  checkCreationForVehicle(item: any){
+  this.vehicleListData =[];
   this.todayFlagClicked = item.todayFlagClicked;
   this.isVehicleDetails  = item.vehicleDetailsFlag;
   if(this.selectedIndex == 1){

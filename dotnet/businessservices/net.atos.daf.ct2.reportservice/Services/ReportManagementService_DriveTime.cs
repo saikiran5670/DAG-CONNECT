@@ -166,7 +166,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         private async Task<Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>> GetVisibleVINDetails(int accountId, int loggedInOrgId, int organizationId, int featureId)
         {
-            IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(accountId, loggedInOrgId, organizationId, featureId);
+            IEnumerable<VisibleEntity.VehicleDetailsAccountVisibility> vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(accountId, loggedInOrgId, organizationId, featureId);
 
             string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
             ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty> lstVehiclesWithVisiblity = JsonConvert.DeserializeObject<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle);
