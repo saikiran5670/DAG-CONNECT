@@ -435,9 +435,10 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
 
+                //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {

@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 //parameter.Add("@organization_id", organizationId);
                 var query = @"select distinct vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id =@report_schedule_id
                             ";
-                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter),0);//need to pass parameter
+                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter), 0);//need to pass parameter
 
                 return await Task.FromResult(vehicles.Select(s => new VehicleList { Id = s.Id, VIN = s.VIN }));
             }

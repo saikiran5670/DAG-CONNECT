@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
-                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId);
+                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -108,9 +108,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 LogbookDetailsResponse response = new LogbookDetailsResponse();
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
                 var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId);
+                                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, featureId);
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {
@@ -119,8 +120,15 @@ namespace net.atos.daf.ct2.reportservice.Services
                     return response;
                 }
 
+                IEnumerable<int> resultGroups = new List<int>();
+                if (!logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
+                {
+                    var requestedGroups = logbookDetailsRequest.GroupIds.Select(x => Convert.ToInt32(x));
+                    var visibleGroups = vehicleDeatilsWithAccountVisibility.SelectMany(x => x.VehicleGroupIds).Distinct().ToList();
+                    resultGroups = requestedGroups.Intersect(visibleGroups);
+                }
 
-                ReportComponent.entity.LogbookDetailsFilter logbookFilter = new ReportComponent.entity.LogbookDetailsFilter
+                LogbookDetailsFilter logbookFilter = new LogbookDetailsFilter
                 {
                     // GroupId = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.GroupIds.ToList(),
                     AlertCategory = logbookDetailsRequest.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertCategories.ToList(),
@@ -128,7 +136,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     AlertType = logbookDetailsRequest.AlertType.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertType.ToList(),
                     VIN = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
-                    vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
+                    vehicleDeatilsWithAccountVisibility.Where(x => resultGroups.Any(y => x.VehicleGroupIds.Contains(y))).Select(x => x.Vin).Distinct().ToList(),
                     Start_Time = logbookDetailsRequest.StartTime,
                     End_time = logbookDetailsRequest.EndTime
                 };

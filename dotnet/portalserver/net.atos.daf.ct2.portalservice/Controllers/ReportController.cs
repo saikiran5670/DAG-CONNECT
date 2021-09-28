@@ -1511,6 +1511,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 LogbookDetailsRequest logbookDetailsRequest = new LogbookDetailsRequest
                 {
                     AccountId = _userDetails.AccountId,
@@ -1533,6 +1535,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest, headers);
                 if (response == null)
