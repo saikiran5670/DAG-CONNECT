@@ -65,6 +65,10 @@ export class LiveFleetMapComponent implements OnInit {
   @Input() filterData : any;
   globalPOIList : any = [];
   displayGlobalPOIList : any =[];
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 
   constructor(
     private translationService: TranslationService,
@@ -121,11 +125,31 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let translationObj = {
+      id: 0,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 10 //-- for fleet utilisation
+    }
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-   
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      });
     this.mapFilterForm = this._formBuilder.group({
       routeType: ['', []],
       trackType: ['', []]
@@ -161,7 +185,29 @@ export class LiveFleetMapComponent implements OnInit {
 
   }
 
- 
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.preferenceObject = {
+          prefTimeFormat : this.prefTimeFormat,
+          prefTimeZone : this.prefTimeZone,
+          prefDateFormat : this.prefDateFormat,
+          prefUnitFormat : this.prefUnitFormat
+        }
+    this.fleetMapService.setPrefObject(this.preferenceObject);
+
+  }
+
   private configureAutoSuggest(){
     let searchParam = this.searchStr != null ? this.searchStr : '';
     let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;

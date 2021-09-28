@@ -3,7 +3,7 @@ import { HereService } from '../../services/here.service';
 import { Util } from '../../shared/util';
 import { ConfigService } from '@ngx-config/core';
 import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
-
+import { ReportMapService } from '../../report/report-map.service';
 declare var H: any;
 
 @Injectable({
@@ -38,17 +38,24 @@ export class FleetMapService {
   herePOISearch: any = '';
   entryPoint: any = '';
   prefTimeZone: any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   
   alertMarker : any;
   vehicleIconMarker : any;
 
-  constructor(private hereSerive : HereService, private _configService: ConfigService) {
+  constructor(private hereSerive : HereService, private _configService: ConfigService,private reportMapService : ReportMapService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
+  }
+
+  setPrefObject(_prefObj){
+    this.prefUnitFormat = _prefObj.prefUnitFormat;
   }
 
   initMap(mapElement: any){
@@ -778,6 +785,9 @@ export class FleetMapService {
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vid ? elem.vid : elem.vin;
+      let _mileage = this.reportMapService.getDistance(elem.odometerVal,this.prefUnitFormat); //19040
+      let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService,this.prefUnitFormat);
+      let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ?  'km' : 'miles';
       let iconBubble;
       this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
@@ -792,10 +802,10 @@ export class FleetMapService {
               <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Current Mileage:</td> <td><b>${elem.odometerVal}</b></td>
+              <td style='width: 100px;'>Current Mileage:</td> <td><b>${_mileage} ${distanceUnit}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Next Service in:</td> <td><b>-${elem.distanceUntilNextService} km</b></td>
+              <td style='width: 100px;'>Next Service in:</td> <td><b>- ${_distanceNextService} ${distanceUnit}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
