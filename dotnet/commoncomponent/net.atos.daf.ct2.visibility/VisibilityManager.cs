@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle;
@@ -24,35 +25,37 @@ namespace net.atos.daf.ct2.visibility
             return await _visibilityRepository.GetReportFeatureId(reportId);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId, int reportFeatureId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
-            List<VisibilityVehicle> vehicles;
+            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
             if (orgId != contextOrgId)
             {
-                vehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
             }
             else
             {
-                vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
 
             // vehicle filtering based on features
-            var filteredVehicles = await FilterVehiclesByfeatures(vehicles, reportFeatureId, contextOrgId);
+            resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
 
-            return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
+            //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
+            return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
-
 
         /// <summary>
         /// Filtering visible and owned vehicle as per feature id 
         /// </summary>
-        /// <param name="vehicles">Visibile vehicles received from account visibility</param>
+        /// <param name="resultDict">Visibile vehicles received from account visibility</param>
         /// <param name="reportFeatureId">Report feature Id recieved from report click</param>
         /// <param name="contextOrgId">organizatin id</param>
         /// <returns></returns>
-        private async Task<List<VisibilityVehicle>> FilterVehiclesByfeatures(List<VisibilityVehicle> vehicles, int reportFeatureId, int contextOrgId)
+        private async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> FilterVehiclesByfeatures(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict, int reportFeatureId, int contextOrgId)
         {
+            var vehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
             if (reportFeatureId > 0 && vehicles.Count() > 0)
             {
                 var vehiclePackages = await GetSubscribedVehicleByFeature(reportFeatureId, contextOrgId);
@@ -99,8 +102,15 @@ namespace net.atos.daf.ct2.visibility
 
                 //Concatenate both lists
                 vehicles = ownedVehicles.Concat(visibleVehicles.AsEnumerable()).ToList();
+
+                foreach (var vg_kv in resultDict.ToList())
+                {
+                    var resultVehicles = vg_kv.Value;
+                    resultDict[vg_kv.Key] = resultVehicles.Intersect(vehicles, new ObjectComparer()).ToList();
+                }
             }
-            return vehicles;
+
+            return resultDict;
         }
 
         public async Task<IEnumerable<VehiclePackage>> GetSubscribedVehicleByFeature(int featureid, int organizationid)
@@ -108,27 +118,31 @@ namespace net.atos.daf.ct2.visibility
             return await _visibilityRepository.GetSubscribedVehicleByFeature(featureid, organizationid);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
-            List<VisibilityVehicle> vehicles;
+            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
             if (orgId != contextOrgId)
             {
-                vehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
             }
             else
             {
-                vehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
 
-            return await _visibilityRepository.GetVehicleVisibilityDetailsTemp(vehicles.Select(x => x.Id).ToArray());
+            // vehicle filtering based on features
+            resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
+
+            //return await _visibilityRepository.GetVehicleVisibilityDetailsTemp(vehicles.Select(x => x.Id).ToArray());
+            return MapVehicleDetailsTemp(accountId, contextOrgId, resultDict);
         }
 
         public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int orgId, int contextOrgId, int roleId,
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, orgId, contextOrgId, roleId, featureName);
 
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int orgId, int contextOrgId, int roleId,
-                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty, int featureId, string featureName = "Alert")
+                                                                                                           IEnumerable<VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty, int featureId, string featureName = "Alert")
         {
             try
             {
@@ -223,6 +237,115 @@ namespace net.atos.daf.ct2.visibility
         public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
         {
             return await _vehicleManager.GetVisibilityVehicles(vehicleGroupIds, orgId);
+        }
+
+        private static List<VehicleDetailsAccountVisibility> MapVehicleDetails(int accountId, int contextOrgId, Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        {
+            List<VehicleDetailsAccountVisibility> vehicleDetails = new List<VehicleDetailsAccountVisibility>();
+            foreach (var vg_kv in resultDict)
+            {
+                var vehicleGroup = vg_kv.Key;
+                var visibleVehicles = vg_kv.Value;
+                //if (!vehicleGroup.GroupType.Equals("S"))
+                {
+                    foreach (var vehicle in visibleVehicles)
+                    {
+                        vehicleDetails.Add(new VehicleDetailsAccountVisibility
+                        {
+                            AccountId = accountId,
+                            VehicleId = vehicle.Id,
+                            Vin = vehicle.VIN,
+                            VehicleName = vehicle.Name ?? string.Empty,
+                            RegistrationNo = vehicle.RegistrationNo ?? string.Empty,
+                            ObjectType = "V",
+                            VehicleGroupId = vehicleGroup.Id,
+                            VehicleGroupName = vehicleGroup.Name,
+                            GroupType = vehicleGroup.GroupType,
+                            FunctionEnum = vehicleGroup.GroupMethod ?? string.Empty,
+                            OrganizationId = contextOrgId
+                        });
+                    }
+                }
+            }
+
+            return vehicleDetails;
+        }
+
+        private static IEnumerable<VehicleDetailsAccountVisibility> MapVehicleDetailsTemp(int accountId, int contextOrgId, Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        {
+            List<VehicleDetailsAccountVisibility> vehicleDetails = new List<VehicleDetailsAccountVisibility>();
+            foreach (var vg_kv in resultDict)
+            {
+                var vehicleGroup = vg_kv.Key;
+                var visibleVehicles = vg_kv.Value;
+                //if (!vehicleGroup.GroupType.Equals("S"))
+                {
+                    foreach (var vehicle in visibleVehicles)
+                    {
+                        vehicleDetails.Add(new VehicleDetailsAccountVisibility
+                        {
+                            AccountId = accountId,
+                            VehicleId = vehicle.Id,
+                            Vin = vehicle.VIN,
+                            VehicleName = vehicle.Name ?? string.Empty,
+                            RegistrationNo = vehicle.RegistrationNo ?? string.Empty,
+                            ObjectType = "V",
+                            VehicleGroupId = vehicleGroup.Id,
+                            VehicleGroupName = vehicleGroup.Name,
+                            GroupType = vehicleGroup.GroupType,
+                            FunctionEnum = vehicleGroup.GroupMethod ?? string.Empty,
+                            OrganizationId = contextOrgId
+                        });
+                    }
+                }
+            }
+
+            var result = vehicleDetails.GroupBy(x => new
+            {
+                x.VehicleId,
+                x.VehicleName,
+                x.Vin,
+                x.RegistrationNo,
+                x.OrganizationId
+            }).Select(x => new VehicleDetailsAccountVisibility
+            {
+                VehicleId = x.Key.VehicleId,
+                Vin = x.Key.Vin,
+                VehicleName = x.Key.VehicleName,
+                RegistrationNo = x.Key.RegistrationNo,
+                OrganizationId = x.Key.OrganizationId,
+                VehicleGroupIds = x.Select(x => x.VehicleGroupId).ToArray(),
+                VehicleGroupDetails = x.Select(x => $"{ x.VehicleGroupId }~{ x.VehicleGroupName }~{ x.GroupType }")
+                .Aggregate((s1, s2) => s1 + "," + s2)
+            });
+            return result;
+        }
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
         }
     }
 }

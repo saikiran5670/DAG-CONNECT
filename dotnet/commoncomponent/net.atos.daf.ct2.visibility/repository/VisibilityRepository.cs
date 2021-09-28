@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.visibility.repository
             return featureSets;
         }
 
-        public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
+        public Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleByAccountVisibility(int accountId,
                                                                                                int organizationId)
         {
             try
@@ -322,7 +322,7 @@ namespace net.atos.daf.ct2.visibility.repository
 		                            ,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
                             from cte_account_vehicle_CompleteList where  organization_id=@organization_id and vehicleid>0 order by 1;";
                 #endregion
-                return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
+                return _dataAccess.QueryAsync<VehicleDetailsAccountVisibility>(query, parameter);
             }
             catch (Exception)
             {
@@ -459,7 +459,7 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetails(int[] vehicleIds, int accountId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleVisibilityDetails(int[] vehicleIds, int accountId)
         {
             try
             {
@@ -477,7 +477,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                     INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR grp.group_type='D') AND grp.object_type='V'
                                     WHERE v.organization_id=grp.organization_id AND v.id = ANY(@VehicleIds)";
 
-                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(queryStatement, parameter);
+                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibility>(queryStatement, parameter);
             }
             catch (Exception)
             {
@@ -485,7 +485,7 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleVisibilityDetailsTemp(int[] vehicleIds)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleVisibilityDetailsTemp(int[] vehicleIds)
         {
             try
             {
@@ -501,7 +501,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                     WHERE v.organization_id=grp.organization_id AND v.id = ANY(@VehicleIds)
                                     GROUP BY v.id,v.name,v.vin, v.organization_id, v.license_plate_number";
 
-                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(queryStatement, parameter);
+                return await _dataAccess.QueryAsync<VehicleDetailsAccountVisibility>(queryStatement, parameter);
             }
             catch (Exception)
             {

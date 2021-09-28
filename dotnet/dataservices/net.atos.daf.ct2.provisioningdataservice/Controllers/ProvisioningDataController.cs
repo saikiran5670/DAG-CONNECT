@@ -20,6 +20,8 @@ using net.atos.daf.ct2.provisioningdataservice.CustomAttributes;
 using net.atos.daf.ct2.driver.entity;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.driver;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.provisioningdataservice.Controllers
 {
@@ -172,7 +174,9 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                 if (result is OkObjectResult)
                 {
                     var orgId = (int)(result as ObjectResult).Value;
-                    var visibleVehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(orgId);
+                    var details = await _vehicleManager.GetVisibilityVehiclesByOrganization(orgId);
+                    var visibleVehicles = details.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
                     var response = await _driverManager.GetDriverList(MapRequest(request, visibleVehicles.Select(x => x.VIN).ToArray(), orgId));
 
                     return Ok(response);
@@ -286,7 +290,9 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
             if (vehicle == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
 
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(org.Id);
+            var details = await _vehicleManager.GetVisibilityVehiclesByOrganization(org.Id);
+            var visibleVehicles = details.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
             if (!visibleVehicles.Any(x => x.VIN.Contains(vehicle.VIN)))
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
 
@@ -428,5 +434,32 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
         }
 
         #endregion
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
+        }
     }
 }
