@@ -1,6 +1,6 @@
 ﻿namespace net.atos.daf.ct2.visibility.entity
 {
-    public class VehicleDetailsAccountVisibilty
+    public class VehicleDetailsAccountVisibility
     {
         public int VehicleGroupId { get; set; }
         public int AccountId { get; set; } = default;
@@ -15,6 +15,7 @@
         public string Vin { get; set; }
         public string RegistrationNo { get; set; } = string.Empty;
         public string VehicleGroupDetails { get; set; } = string.Empty;
+        public int[] VehicleGroupIds { get; set; } = new int[] { };
     }
 
     public class VehicleDetailsVisibiltyAndFeature

@@ -12,7 +12,7 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
 import { FleetOverviewFilterVehicleComponent } from './fleet-overview-filter-vehicle/fleet-overview-filter-vehicle.component';
-
+import { FleetMapService } from '../fleet-map.service'
 @Component({
   selector: 'app-fleet-overview-filters',
   templateUrl: './fleet-overview-filters.component.html',
@@ -60,7 +60,7 @@ messages: any[] = [];
 subscription: Subscription;
 status = new FormControl();
  constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
-    private dataInterchangeService: DataInterchangeService) { 
+    private dataInterchangeService: DataInterchangeService ,private fleetMapService : FleetMapService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.loadVehicleData();
@@ -244,6 +244,7 @@ status = new FormControl();
  } 
 
 getFilterData(){
+  this.showLoadingIndicator = true;
   this.reportService.getFilterDetails().subscribe((data: any) => {
     this.filterData = data;
     this.groupList = [];
@@ -252,6 +253,7 @@ getFilterData(){
     this.healthList = [];
     this.otherList = [];
     this.vehicleListData =[];
+    this.showLoadingIndicator = false;
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
@@ -544,6 +546,9 @@ removeDuplicates(originalArray, prop) {
   }
 
  checkCreationForVehicle(item: any){
+  this.vehicleListData =[];
+  this.fleetMapService.clearRoutesFromMap();
+
   this.todayFlagClicked = item.todayFlagClicked;
   this.isVehicleDetails  = item.vehicleDetailsFlag;
   if(this.selectedIndex == 1){

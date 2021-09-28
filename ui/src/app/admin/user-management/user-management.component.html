@@ -70,10 +70,10 @@
             <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button *ngIf="!adminAccessType.adminReadOnlyAccess && adminAccessType.systemAccountAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+            <button *ngIf="(!adminAccessType.adminReadOnlyAccess && adminAccessType.systemAccountAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
               <mat-icon>create</mat-icon>
             </button>
-            <button *ngIf="adminAccessType.adminFullAccess && adminAccessType.systemAccountAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+            <button *ngIf="(adminAccessType.adminFullAccess && adminAccessType.systemAccountAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
               <mat-icon class="deleteIcon">delete_outline</mat-icon>
             </button>
           </mat-cell>
@@ -86,6 +86,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-edit-view-user *ngIf='editFlag || viewFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='roleData' [allUserGrpData]='userGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
-  <app-new-user-step *ngIf='stepFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [translationData]='translationData' [userDataForEdit]='userDataForEdit' [roleData]='roleData' [userGrpData]='userGrpData' [orgPreference]='orgPreference' (userCreate)="checkCreation($event)"></app-new-user-step>
+  <app-edit-view-user *ngIf='editFlag || viewFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='editViewRoleList' [allUserGrpData]='userGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
+  <app-new-user-step *ngIf='stepFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [translationData]='translationData' [userDataForEdit]='userDataForEdit' [roleData]='filterRoleList' [userGrpData]='userGrpData' [orgPreference]='orgPreference' (userCreate)="checkCreation($event)"></app-new-user-step>
 </div>

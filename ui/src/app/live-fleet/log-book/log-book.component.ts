@@ -741,11 +741,11 @@ ngOnDestroy(){
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
           // let filterData = this.wholeLogBookData["enumTranslation"];
-          if (this.wholeLogBookData.length > 0){
+         
           let filterData = this.wholeLogBookData["enumTranslation"];
-      filterData.forEach(element => {
-        element["value"]= this.translationData[element["key"]];
-      });
+          filterData.forEach(ele => {
+            ele["value"]= this.translationData[ele["key"]];
+          });
 
           let categoryList = filterData.filter(item => item.type == 'C');
           let alertTypeList= filterData.filter(item => item.type == 'T');
@@ -764,8 +764,7 @@ ngOnDestroy(){
           let alertLevelName = this.alertLvl.filter((s) => s.value == element.alertLevel);
           if(alertLevelName.length >0){
           element.alertLevel = alertLevelName[0].name;
-                 }
-                }
+                 }             
         });
         
         if(this._state && this._state.fromAlertsNotifications){

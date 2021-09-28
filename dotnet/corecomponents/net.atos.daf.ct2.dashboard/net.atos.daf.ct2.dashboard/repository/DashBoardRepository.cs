@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 															     --,SUM(co2_emission)         as co2emission
                                                                  , SUM(etl_gps_distance)      as distance
                                                                  , SUM(etl_gps_driving_time)  as drivingtime
-                                                                 , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))      as fuelconsumption 
+                                                                 , SUM(fuel_consumption)      as fuelconsumption 
                                                                  , SUM(etl_gps_fuel_consumed) as fuelconsumed
                                                                  , SUM(idling_consumption)    as idlingfuelconsumption
                                                                  , SUM(idle_duration)         as idlingtime
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                           , Round(SUM(distance),2)                      as distance
                                                           , SUM(drivingtime)                            as drivingtime
                                                           , Round(SUM(idlingfuelconsumption),2)         as idlingfuelconsumption
-                                                          , Round(SUM(fuelconsumption),7)               as fuelconsumption
+                                                          , Round((SUM(fuelconsumed)/SUM(distance)),7)  as fuelconsumption
                                                           , Round(SUM(fuelconsumed),7)                  as fuelconsumed
                                                           , Round(SUM(idlingtime),2)                    as idlingtime
                                                         FROM cte_filteredTrip 
