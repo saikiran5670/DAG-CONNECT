@@ -104,6 +104,7 @@
 </div>
 </div>
 </mat-expansion-panel>
+<app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
 <div >
     <app-fleet-overview-filter-vehicle 
     (tabVisibility)="tabVisibilityHandler($event)" 

@@ -38,6 +38,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   userName: string = '';
   duplicateMsg: boolean = false;
   menuFeatures: any;
+  showType: boolean = false;
   TypeList1: any = [
     {
       name: 'Organization',
@@ -78,12 +79,15 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.menuFeatures = localStorage.getItem("accountFeatures");
     let data = JSON.parse(this.menuFeatures)["features"];
     data.forEach(element => {
-      if(element.key == 'feat_admin_packagemanagement_platformpackage'){
-        this.TypeList = this.TypeList2;
-      } else {
-        this.TypeList = this.TypeList1;
+      if(element.name == 'Admin.PackageManagement.PlatformPackage'){
+        this.showType = true;
       }
     });
+    if(this.showType){
+      this.TypeList = this.TypeList2;
+    } else {
+      this.TypeList = this.TypeList1;
+    }
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
