@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.visibility
 
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
-            var filteredVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
             //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
