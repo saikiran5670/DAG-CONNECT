@@ -90,6 +90,7 @@ export class LiveFleetMapComponent implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
     this.tripTraceArray = [];
+    this.fleetMapService.clearRoutesFromMap();
 
     if (vehicleResponse) {
       if(!vehicleResponse.vehicleDetailsFlag){
@@ -100,6 +101,7 @@ export class LiveFleetMapComponent implements OnInit {
       }
       else{
         this.tripTraceArray = [];
+
         if(vehicleResponse.data.length === undefined){ // 16665 - changes added to convert data to array
           this.tripTraceArray.push(vehicleResponse.data);
         }
