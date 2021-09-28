@@ -122,12 +122,12 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 								previousDriverOneDetails = driverDAO.driver_read(
 										monitorData.getDocument().getDriverID(),
 										monitorData.getDocument().getDriver1WorkingState().toString());
+							} else { 
+								
+								break; 
 							}
-
-							/*
-							 * else { break; }
-							 */
-							if (currentEndTime >= previousDriverOneDetails.getStart_time()) {
+							 
+							
 
 								if (previousDriverOneDetails != null) {
 									Long driverOneStartTime = previousDriverOneDetails.getStart_time();
@@ -166,16 +166,14 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 									driverDAO.driver_insert(DriverDetailsD1);
 									logger.info("Driver1 new records inserted in driver table :: ");
 								}
-							} else {
-								logger.info("Driver1 record is skipped-- " + monitorData);
-							}
+							
 							// --------** DRIVER 2
 
 							TwoMinuteRulePojo previousDriver2Details = driverDAO.driver_read(
 									monitorData.getDocument().getDriver2ID(),
 									monitorData.getDocument().getDriver2WorkingState().toString());
 
-							if (currentEndTime >= previousDriver2Details.getStart_time()) {
+						
 
 								if (previousDriver2Details != null) {
 
@@ -224,9 +222,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 									driverDAO.driver_insert(DriverDetailsD2);
 									logger.info("Driver2 new record inserted in driver table :: ");
 								}
-							} else {
-								logger.info("Driver2 record is skipped-- " + monitorData);
-							}
+							
 
 							/*
 							 * driverStartTime =
