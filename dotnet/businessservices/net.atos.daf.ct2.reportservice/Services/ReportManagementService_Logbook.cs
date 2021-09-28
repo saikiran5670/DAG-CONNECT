@@ -126,12 +126,28 @@ namespace net.atos.daf.ct2.reportservice.Services
                     AlertCategory = logbookDetailsRequest.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertCategories.ToList(),
                     AlertLevel = logbookDetailsRequest.AlertLevels.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertLevels.ToList(),
                     AlertType = logbookDetailsRequest.AlertType.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertType.ToList(),
-                    VIN = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
-                    vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
-                    vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
+                    //VIN = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
+                    //vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
+                    //vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Start_Time = logbookDetailsRequest.StartTime,
                     End_time = logbookDetailsRequest.EndTime
                 };
+                if (logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) && logbookDetailsRequest.VIN.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
+                {
+                    logbookFilter.VIN = vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList();
+                }
+                else if (logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) && (logbookDetailsRequest.VIN.Count > 0))
+                {
+                    logbookFilter.VIN = vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
+                }
+                else if (logbookDetailsRequest.GroupIds.Count > 0 && logbookDetailsRequest.VIN.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
+                {
+                    logbookFilter.VIN = vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList();
+                }
+                else
+                {
+                    logbookFilter.VIN = vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString()) && logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
+                }
                 var result = await _reportManager.GetLogbookDetails(logbookFilter);
                 if (result?.Count > 0)
                 {
