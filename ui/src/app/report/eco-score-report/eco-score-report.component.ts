@@ -126,6 +126,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   trendLineSearchDataParam: any;
   noSingleDriverData: boolean=false;
   isSearched: boolean=false;
+  singleVehicle: any = [];
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -540,7 +541,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     if(parseInt(event.value) == 0){ //-- all group
       this.ecoScoreForm.get('vehicle').setValue(0);
       this.ecoScoreForm.get('driver').setValue(0);
-      this.vehicleDD = this.vehicleListData;
+      let vehicleData = this.vehicleListData.slice();
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     }else{
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
@@ -555,6 +557,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   //   this.ecoScoreForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
   //   this.ecoScoreForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
   // }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   driverDD = [];
@@ -789,13 +802,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           }
         });
       }
-
+      this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVin && distinctVin.length>0){
           distinctVin.forEach(element => {
            // filteredVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
-            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element)
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -818,7 +831,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       if(this.driverListData.length>1){
         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
       }
-      this.vehicleDD = this.vehicleListData;
+      let vehicleData = this.vehicleListData.slice();
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       this.driverDD = this.driverListData;
 
       this.ecoScoreForm.get('vehicleGroup').setValue(0);

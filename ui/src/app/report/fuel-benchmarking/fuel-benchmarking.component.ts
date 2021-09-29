@@ -53,6 +53,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   vehicleDD: any = [];
+  singleVehicle: any = [];
   vehicleGrpDD: any = [];
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
@@ -616,12 +617,13 @@ export class FuelBenchmarkingComponent implements OnInit {
           }
         }
       });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         //////console.log("distinctVIN:: ", distinctVIN);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -665,7 +667,8 @@ export class FuelBenchmarkingComponent implements OnInit {
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.vehicleDD = this.vehicleListData;
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if (this.vehicleListData.length > 0) {
       // this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
      
@@ -901,7 +904,8 @@ export class FuelBenchmarkingComponent implements OnInit {
     if (event.value || event.value == 0) {
       // this.internalSelection = true;
       // if (parseInt(event.value) == 0) { //-- all group
-      //   this.vehicleDD = this.vehicleListData;
+      //     let vehicleData = this.vehicleListData.slice();
+        // this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       // } else {
       //   let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       //   if (search.length > 0) {
@@ -919,6 +923,17 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.fuelBenchmarkingForm.get('vehicleGroup').setValue(parseInt(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue));
       //  this.fuelBenchmarkingForm.get('vehicle').setValue(parseInt(this.fuelBenchmarkingSearchData.vehicleDropDownValue));
     }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   setVehicleGroupAndVehiclePreSelection() {
