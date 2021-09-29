@@ -192,7 +192,7 @@ public class UtilsTest {
     @Test
     public void listToArray(){
         List<Integer> polygonPointList = new ArrayList<>();
-        for(int i =0; i < 6 ; i++){
+        for(int i =0; i < 2 ; i++){
             polygonPointList.add(i);
         }
         polygonPointList.stream().forEach(System.out:: println);

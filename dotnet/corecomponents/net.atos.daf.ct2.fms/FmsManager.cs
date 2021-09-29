@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.fms.entity;
 using net.atos.daf.ct2.fms.repository;
 
-namespace net.atos.daf.ct2.rfms
+namespace net.atos.daf.ct2.fms
 {
     public class FmsManager : IFmsManager
     {

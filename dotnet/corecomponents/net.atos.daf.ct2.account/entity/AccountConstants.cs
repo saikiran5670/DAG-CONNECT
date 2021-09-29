@@ -8,5 +8,6 @@
         public const string ERROR_ACCOUNT_BLOCKED = "Account is blocked, please contact DAF System Admin.";
         public const string ERROR_ACCOUNT_LOCKED_INTERVAL = "Login failed. Please try with proper credentials after {0} minutes.";
         public const string ERROR_ACCOUNT_LOGIN_FAILED = "Login failed. Please try with proper credentials.";
+        public const string ERROR_ACCOUNT_PWD_EXPIRED = "Account password expired. Please login to the portal to reset the password.";
     }
 }

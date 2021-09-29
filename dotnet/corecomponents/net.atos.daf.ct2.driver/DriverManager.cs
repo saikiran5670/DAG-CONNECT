@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.driver
 
         #endregion
 
-        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int? organisationId, string email)
         {
             return await _driverRepository.CheckIfDriverExists(driverId, organisationId, email);
         }

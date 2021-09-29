@@ -1262,7 +1262,7 @@ export class ReportMapService {
         break;
       }
       case 'dunit_Imperial': {
-        _data = tonFlag ? this.convertKgToTons(data) : data; //-- pound/ton
+        _data = this.convertKgToTons(data); //-- pound/ton
         break;
       }
       default: {
@@ -1305,7 +1305,7 @@ export class ReportMapService {
     switch(unitFormat){
 
          case 'dunit_Metric' : {
-            _data = data;//not doing conversion-kmph
+            _data = data.toFixed(2);//not doing conversion-kmph
             break;
          }
          case 'dunit_Imperial' : {
