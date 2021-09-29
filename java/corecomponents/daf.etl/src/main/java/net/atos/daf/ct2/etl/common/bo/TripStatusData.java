@@ -100,4 +100,6 @@ public class TripStatusData implements Serializable {
 	private Object[] nonZeroBrakePedalAclnSpeedMatrix;
 	private Object[] numValAclnSpeed;
 	private Object[] clmnIdnxAclnSpeed;
+	
+	private String fuelType;
 }

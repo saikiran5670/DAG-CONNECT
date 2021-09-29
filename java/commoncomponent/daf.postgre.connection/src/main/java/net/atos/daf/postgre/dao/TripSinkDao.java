@@ -775,12 +775,12 @@ public class TripSinkDao implements Serializable {
 		if(rec.getNumValRpmSpeed() != null)
 			numValRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getNumValRpmSpeed());
 		
-		statement.setArray(143, numValRpmTorqueArray);
+		statement.setArray(143, numValRpmSpeedArray);
 		
 		if(rec.getClmnIdnxRpmSpeed() != null)
 			clmnIdnxRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxRpmSpeed());
 		
-		statement.setArray(144, clmnIdnxRpmTorqueArray);
+		statement.setArray(144, clmnIdnxRpmSpeedArray);
 				
 		jsonObject.setValue(rec.getAclnSpeed()); 
 		statement.setObject(145, jsonObject);
