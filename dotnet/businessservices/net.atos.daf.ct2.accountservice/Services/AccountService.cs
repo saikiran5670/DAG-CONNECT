@@ -1280,15 +1280,16 @@ namespace net.atos.daf.ct2.accountservice
                     List<vehicleEntity.AccountVehicleEntity> vehicleList = new List<vehicleEntity.AccountVehicleEntity>();
                     List<AccountVehicleEntity> accountList = new List<AccountVehicleEntity>();
                     filter.OrganizationId = request.OrganizationId;
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                     if (request.IsAccount)
                     {
                         accountList = await _accountmanager.GetAccount(filter, true);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, false);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(loggedInOrgId, false, request.AccountId, request.OrganizationId);
                     }
                     else
                     {
                         accountList = await _accountmanager.GetAccount(filter, false);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(loggedInOrgId, true, request.AccountId, request.OrganizationId);
                     }
                     List<AccountVehicleEntity> objVehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.Id, Name = a.Name, Is_group = a.Is_group, Count = a.Count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(objVehiclelist));

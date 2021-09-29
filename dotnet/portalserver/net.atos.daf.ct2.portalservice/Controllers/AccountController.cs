@@ -1297,7 +1297,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
                 filter.IsAccount = isAccount;
                 filter.OrganizationId = GetContextOrgId();
-                var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter);
+                filter.AccountId = _userDetails.AccountId;
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter, headers);
                 AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
                 if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
                 {
