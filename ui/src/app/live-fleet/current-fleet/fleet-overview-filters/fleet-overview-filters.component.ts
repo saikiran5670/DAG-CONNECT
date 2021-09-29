@@ -605,61 +605,65 @@ setIconsOnMap(element) {
   if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
     this.drivingStatus = false;
   }
-  switch (element.vehicleHealthStatusType) {
-    case 'T': // stop now;
-      _healthStatus = 'Stop Now';
-      break;
-    case 'V': // service now;
-      _healthStatus = 'Service Now';
-      break;
-    case 'N': // no action;
-      _healthStatus = 'No Action';
-      break
-    default:
-      break;
-  }
-  switch (element.vehicleDrivingStatusType) {
-    case 'N': 
-      _drivingStatus = 'Never Moved';
-      break;
-    case 'D':
-      _drivingStatus = 'Driving';
-      break;
-    case 'I': // no action;
-      _drivingStatus = 'Idle';
-      break;
-    case 'U': // no action;
-      _drivingStatus = 'Unknown';
-      break;
-    case 'S': // no action;
-      _drivingStatus = 'Stopped';
-      break
+  // switch (element.vehicleHealthStatusType) {
+  //   case 'T': // stop now;
+  //     _healthStatus = 'Stop Now';
+  //     break;
+  //   case 'V': // service now;
+  //     _healthStatus = 'Service Now';
+  //     break;
+  //   case 'N': // no action;
+  //     _healthStatus = 'No Action';
+  //     break
+  //   default:
+  //     break;
+  // }
+  // switch (element.vehicleDrivingStatusType) {
+  //   case 'N': 
+  //     _drivingStatus = 'Never Moved';
+  //     break;
+  //   case 'D':
+  //     _drivingStatus = 'Driving';
+  //     break;
+  //   case 'I': // no action;
+  //     _drivingStatus = 'Idle';
+  //     break;
+  //   case 'U': // no action;
+  //     _drivingStatus = 'Unknown';
+  //     break;
+  //   case 'S': // no action;
+  //     _drivingStatus = 'Stopped';
+  //     break
     
-    default:
-      break;
-  }
+  //   default:
+  //     break;
+  // }
   let healthColor = '#606060';
   let _alertConfig = undefined;
+  _drivingStatus = this.fleetMapService.getDrivingStatus(element,_drivingStatus);
+  let obj =this.fleetMapService.getVehicleHealthStatusType(element,_healthStatus,healthColor,this.drivingStatus);
+  _healthStatus = obj._healthStatus;
+  healthColor = obj.healthColor;
   // if (element.vehicleDrivingStatusType === 'D') {
   //   _drivingStatus = true
   // }
-    switch (element.vehicleHealthStatusType) {
-      case 'T': // stop now;
-        healthColor = '#D50017'; //red
-        break;
-      case 'V': // service now;
-        healthColor = '#FC5F01'; //orange
-        break;
-      case 'N': // no action;
-        // healthColor = '#606060'; //grey
-        healthColor = '#00AE10'; //green for no action
-      if (_drivingStatus) {
-        healthColor = '#00AE10'; //green
-      }
-      break
-    default:
-      break;
-  }
+  //   switch (element.vehicleHealthStatusType) {
+  //     case 'T': // stop now;
+  //       healthColor = '#D50017'; //red
+  //       break;
+  //     case 'V': // service now;
+  //       healthColor = '#FC5F01'; //orange
+  //       break;
+  //     case 'N': // no action;
+  //       // healthColor = '#606060'; //grey
+  //       healthColor = '#00AE10'; //green for no action
+  //     if (_drivingStatus) {
+  //       healthColor = '#00AE10'; //green
+  //     }
+  //     break
+  //   default:
+  //     break;
+  // }
   let _vehicleIcon : any; 
   if(_drivingStatus){
 

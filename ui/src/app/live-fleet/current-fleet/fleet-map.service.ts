@@ -288,6 +288,62 @@ export class FleetMapService {
     this.group.addObject(poiMarker);
   }
 
+  getVehicleHealthStatusType(element,_healthStatus,healthColor,drivingStatus){
+    switch (element.vehicleHealthStatusType) {
+    case 'T': // stop now;
+    case 'Stop Now':
+      _healthStatus = 'Stop Now';
+      healthColor = '#D50017'; //red
+      break;
+    case 'V': // service now;
+    case 'Service Now':
+      _healthStatus = 'Service Now';
+      healthColor = '#FC5F01'; //orange
+      break;
+    case 'N': // no action;
+    case 'No Action':
+      _healthStatus = 'No Action';
+      healthColor = '#00AE10'; //green for no action
+      break;
+    case drivingStatus:
+        healthColor = '#00AE10'; //green
+      
+      break
+    default:
+      break;
+    }
+    return {_healthStatus,healthColor};
+  }
+
+  getDrivingStatus(element,_drivingStatus){
+    switch (element.vehicleDrivingStatusType) {
+      case 'N': 
+      case 'Never Moved':
+        _drivingStatus = 'Never Moved';
+        break;
+      case 'D':
+        case 'Driving':
+        _drivingStatus = 'Driving';
+        break;
+      case 'I': // no action;
+      case 'Idle':
+        _drivingStatus = 'Idle';
+        break;
+      case 'U': // no action;
+      case 'Unknown':
+        _drivingStatus = 'Unknown';
+        break;
+      case 'S': // no action;
+      case 'Stopped':
+        _drivingStatus = 'Stopped';
+        break
+      
+      default:
+        break;
+    }
+    return _drivingStatus;
+  }
+
   createMarker(poiType: any){
     let homeMarker: any = '';
     switch(poiType){
@@ -1084,47 +1140,47 @@ let _type ='';
         this.group.addObject(this.vehicleIconMarker);
       let _healthStatus = '',_drivingStatus = '';
       // icon tooltip
-      switch (elem.vehicleHealthStatusType) {
-        case 'T': // stop now;
-        case 'Stop Now':
-          _healthStatus = 'Stop Now';
-          break;
-        case 'V': // service now;
-        case 'Service Now':
-          _healthStatus = 'Service Now';
-          break;
-        case 'N': // no action;
-        case 'No Action':
-          _healthStatus = 'No Action';
-          break
-        default:
-          break;
-      }
-      switch (elem.vehicleDrivingStatusType) {
-        case 'N': 
-        case 'Never Moved':
-          _drivingStatus = 'Never Moved';
-          break;
-        case 'D':
-          case 'Driving':
-          _drivingStatus = 'Driving';
-          break;
-        case 'I': // no action;
-        case 'Idle':
-          _drivingStatus = 'Idle';
-          break;
-        case 'U': // no action;
-        case 'Unknown':
-          _drivingStatus = 'Unknown';
-          break;
-        case 'S': // no action;
-        case 'Stopped':
-          _drivingStatus = 'Stopped';
-          break
+      // switch (elem.vehicleHealthStatusType) {
+      //   case 'T': // stop now;
+      //   case 'Stop Now':
+      //     _healthStatus = 'Stop Now';
+      //     break;
+      //   case 'V': // service now;
+      //   case 'Service Now':
+      //     _healthStatus = 'Service Now';
+      //     break;
+      //   case 'N': // no action;
+      //   case 'No Action':
+      //     _healthStatus = 'No Action';
+      //     break
+      //   default:
+      //     break;
+      // }
+      // switch (elem.vehicleDrivingStatusType) {
+      //   case 'N': 
+      //   case 'Never Moved':
+      //     _drivingStatus = 'Never Moved';
+      //     break;
+      //   case 'D':
+      //     case 'Driving':
+      //     _drivingStatus = 'Driving';
+      //     break;
+      //   case 'I': // no action;
+      //   case 'Idle':
+      //     _drivingStatus = 'Idle';
+      //     break;
+      //   case 'U': // no action;
+      //   case 'Unknown':
+      //     _drivingStatus = 'Unknown';
+      //     break;
+      //   case 'S': // no action;
+      //   case 'Stopped':
+      //     _drivingStatus = 'Stopped';
+      //     break
         
-        default:
-          break;
-      }
+      //   default:
+      //     break;
+      // }
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vid ? elem.vid : elem.vin;
@@ -1182,32 +1238,80 @@ let _type ='';
   }
 
   setIconsOnMap(element,_ui) {
-    let _drivingStatus = false;
+    let drivingStatus = false;
+    let _healthStatus ='',_drivingStatus = '';
     let healthColor = '#606060';
     let _alertConfig = undefined;
     //element.vehicleDrivingStatusType = 'D'
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
-      _drivingStatus = true
+      drivingStatus = true
     }
-    switch (element.vehicleHealthStatusType) {
-      case 'T': // stop now;
-      case 'Stop Now':
-        healthColor = '#D50017'; //red
-        break;
-      case 'V': // service now;
-      case 'Service Now':
-        healthColor = '#FC5F01'; //orange
-        break;
-      case 'N': // no action;
-      case 'No Action':
-        healthColor = '#606060'; //grey
-        if (_drivingStatus) {
-          healthColor = '#00AE10'; //green
-        }
-        break
-      default:
-        break;
-    }
+    // switch (element.vehicleHealthStatusType) {
+    //   case 'T': // stop now;
+    //   case 'Stop Now':
+    //     _healthStatus = 'Stop Now';
+    //     break;
+    //   case 'V': // service now;
+    //   case 'Service Now':
+    //     _healthStatus = 'Service Now';
+    //     break;
+    //   case 'N': // no action;
+    //   case 'No Action':
+    //     _healthStatus = 'No Action';
+    //     break
+    //   default:
+    //     break;
+    // }
+    // switch (element.vehicleDrivingStatusType) {
+    //   case 'N': 
+    //   case 'Never Moved':
+    //     _drivingStatus = 'Never Moved';
+    //     break;
+    //   case 'D':
+    //     case 'Driving':
+    //     _drivingStatus = 'Driving';
+    //     break;
+    //   case 'I': // no action;
+    //   case 'Idle':
+    //     _drivingStatus = 'Idle';
+    //     break;
+    //   case 'U': // no action;
+    //   case 'Unknown':
+    //     _drivingStatus = 'Unknown';
+    //     break;
+    //   case 'S': // no action;
+    //   case 'Stopped':
+    //     _drivingStatus = 'Stopped';
+    //     break
+      
+    //   default:
+    //     break;
+    // }
+    
+    // switch (element.vehicleHealthStatusType) {
+    //   case 'T': // stop now;
+    //   case 'Stop Now':
+    //     healthColor = '#D50017'; //red
+    //     break;
+    //   case 'V': // service now;
+    //   case 'Service Now':
+    //     healthColor = '#FC5F01'; //orange
+    //     break;
+    //   case 'N': // no action;
+    //   case 'No Action':
+    //     // healthColor = '#606060'; //grey
+    //     healthColor = '#00AE10'; //green for no action
+    //     if (_drivingStatus) {
+    //       healthColor = '#00AE10'; //green
+    //     }
+    //     break
+    //   default:
+    //     break;
+    // }
+    _drivingStatus =  this.getDrivingStatus(element,_drivingStatus);
+    let obj =this.getVehicleHealthStatusType(element,_healthStatus,healthColor,drivingStatus);
+    _healthStatus = obj._healthStatus;
+    healthColor = obj.healthColor;
     let _vehicleIcon : any;
     // if(_drivingStatus){
 
@@ -1232,12 +1336,41 @@ let _type ='';
     // }
     // else{
       let _alertFound = undefined ;
-      
+      let alertsData =[];  
       if(element.fleetOverviewAlert.length > 0){
-        _alertFound = element.fleetOverviewAlert.find(item=>{
-          item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude})
+        // _alertFound = element.fleetOverviewAlert.find(item=>{
+        //   item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude})
+        _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+        if(_alertFound){
+          alertsData.push(_alertFound);
+        }
       }
-      
+      if(_alertFound){
+        if(alertsData.length > 1){ //check for criticality
+          alertsData.forEach(element => {
+            let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
+            if(_currentElem){
+              _alertConfig = this.getAlertConfig(element);  
+            }
+            let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
+            if(_currentElem == undefined && warnElem){
+              _alertConfig = this.getAlertConfig(element); 
+            }
+           if(_currentElem == undefined && warnElem == undefined ){ //advisory
+              _alertConfig = this.getAlertConfig(element); 
+            }
+          });
+        }
+        else if(alertsData.length == 1){
+          _alertConfig = this.getAlertConfig(_alertFound);
+        }  
+      }
+      if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
+          let obj = this.setIconForUnknownOrNeverMoved(_alertFound,_drivingStatus, _healthStatus,_alertConfig);
+          let data = obj.icon;
+          return {icon: data,alertConfig:_alertConfig};
+      }
+
       if(_alertFound){
         _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">

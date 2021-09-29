@@ -33,7 +33,8 @@ namespace net.atos.daf.ct2.rfms.test
         {
             try
             {
-                var data = _fmsManager.GetVehiclePosition("", "today").Result;
+                //dev1  vin = M4A1116
+                var data = _fmsManager.GetVehiclePosition("M4A1116", "1632700800000").Result;
                 Assert.IsNotNull(data);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace net.atos.daf.ct2.rfms.test
         {
             try
             {
-                var data = _fmsManager.GetVehicleStatus("M4A1116", "").Result;
+                //dev1  vin = M4A1116
+                var data = _fmsManager.GetVehicleStatus("M4A1116", "1632700800000").Result;
                 Assert.IsNotNull(data);
             }
             catch (Exception ex)
