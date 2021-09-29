@@ -1357,7 +1357,7 @@ namespace net.atos.daf.ct2.organization.repository
                 var parameters = new DynamicParameters();
                 parameters.Add("@org_id", orgId);
                 parameters.Add("@vehicle_group_ids", vehicleGroupIds);
-                var query = @"select grp.name, string_agg(v.vin::text, ',') as vins
+                var query = @"select grp.name, string_agg(v.vin::text, ', ') as vins
 	                        from master.group grp
 	                        inner join master.groupref gref on grp.id=gref.group_id and grp.id = any(@vehicle_group_ids) and 
                                                                grp.organization_id = @org_id and grp.object_type='V' and grp.group_type='G'

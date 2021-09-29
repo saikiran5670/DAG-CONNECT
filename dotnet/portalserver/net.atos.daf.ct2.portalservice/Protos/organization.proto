@@ -147,7 +147,7 @@ message OrgRelationshipCreateResponse{
   string Message = 2;
   repeated int32 relationship = 3;
   repeated OrgRelationshipMappingGetRequest OrgRelationshipMappingList=4;
-  repeated OrgRelationshipVehicleConflict OrgRelationshipVehiceConflictList = 5;
+  repeated OrgRelationshipVehicleConflict OrgRelationshipVehicleConflictList = 5;
 }
 
 message OrgRelationshipVehicleConflict{
