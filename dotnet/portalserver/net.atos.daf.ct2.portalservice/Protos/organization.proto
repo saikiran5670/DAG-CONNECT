@@ -133,7 +133,7 @@ message OrgRelationshipCreateRequest
     int32 OrgRelationId =1;
     int32 RelationShipId = 2;
     repeated int32 VehicleGroupID = 3;
-    int32 OwnerOrId = 4;
+    int32 OwnerOrgId = 4;
     int32 CreatedOrgId = 5;
     repeated int32 TargetOrgId = 6;
     int64 StartDate= 7;
@@ -147,7 +147,12 @@ message OrgRelationshipCreateResponse{
   string Message = 2;
   repeated int32 relationship = 3;
   repeated OrgRelationshipMappingGetRequest OrgRelationshipMappingList=4;
- 
+  repeated OrgRelationshipVehicleConflict OrgRelationshipVehiceConflictList = 5;
+}
+
+message OrgRelationshipVehicleConflict{
+  string VehicleGroupName = 1;
+  string ConflictedVINs = 2;
 }
 
 message RelationshipGetRequest{
@@ -281,13 +286,12 @@ message OrganizationGetData {
   int32 Id = 1;
 }
 
-
-
   enum Responcecode{
       Success = 0;
       Failed = 1;
       Conflict = 2;
       NotFound = 3;
+      Forbidden = 4;
     }
  message AccountPreferenceFilter
     {
