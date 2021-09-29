@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.fms.entity;
 
-namespace net.atos.daf.ct2.rfms
+namespace net.atos.daf.ct2.fms
 {
     public interface IFmsManager
     {
