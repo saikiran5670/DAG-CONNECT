@@ -68,6 +68,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.alert_id as AlertId,                             
                                 ta.latitude as Latitude,
                                 ta.longitude as Longitude,
+                                RANK () OVER (PARTITION BY ta.vin,ta.alert_id
+								ORDER BY ta.alert_generated_time ASC) Occurrence,
                                 ta.urgency_level_type as AlertLevel,
                                 extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
