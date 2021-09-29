@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.fms.entity
     public class VehicleStatus
     {
         public string VIN { get; set; }
-        public List<VehiclePositionForStatus> VehiclePosition { get; set; }
+        public VehiclePositionForStatus VehiclePosition { get; set; }
         public int CatalystFuelLevel { get; set; }
         public string Driver1Id { get; set; }
         public string Driver1WorkingState { get; set; }
