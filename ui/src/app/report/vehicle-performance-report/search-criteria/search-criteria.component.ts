@@ -42,6 +42,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   wholeTripData: any = [];
   vehicleDD: any = [];
+  singleVehicle: any = [];
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
@@ -260,11 +261,12 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           }
         }
       });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -293,7 +295,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       }
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
     }
-    this.vehicleDD = this.vehicleListData.slice();
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   setDefaultStartEndTime() {
@@ -385,7 +399,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     if (event.value || event.value == 0) {
       this.internalSelection = true;
       if (parseInt(event.value) == 0) { //-- all group
-        this.vehicleDD = this.vehicleListData.slice();
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
