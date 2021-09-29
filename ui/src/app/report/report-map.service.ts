@@ -1305,7 +1305,7 @@ export class ReportMapService {
     switch(unitFormat){
 
          case 'dunit_Metric' : {
-            _data = data;//not doing conversion-kmph
+            _data = data.toFixed(2);//not doing conversion-kmph
             break;
          }
          case 'dunit_Imperial' : {
