@@ -532,15 +532,13 @@ export class DashboardPreferencesComponent implements OnInit {
 
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-    this.prefUnit = unitObj[0].value;
-    //console.log("Preference ID", this.prefUnit);
-    if (unitObj[0].value == 'Imperial') {
-
-      this.prefUnitFormat = 'dunit_Imperial';
-
-    } else {
-      this.prefUnitFormat = 'dunit_Metric';
-
+    if (unitObj && unitObj.length != 0) {
+      this.prefUnit = unitObj[0].value;
+      if (this.prefUnit == 'Imperial') {
+        this.prefUnitFormat = 'dunit_Imperial';
+      } else {
+        this.prefUnitFormat = 'dunit_Metric';
+      }
     }
   }
 
