@@ -169,6 +169,7 @@ status = new FormControl();
   }
 
   loadDriverData(){  
+    this.noRecordFlag = true;
     let newAlertCat=[];
     let selectedDriverId:any;
     let selectedDriverDays:any;   
@@ -229,13 +230,14 @@ status = new FormControl();
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
           
     }, (error) => {
       let val = [{vehicleGroup : driverSelected[0].driverId, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -243,7 +245,7 @@ status = new FormControl();
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
 getFilterData(){
@@ -444,6 +446,7 @@ removeDuplicates(originalArray, prop) {
   }
   
   loadVehicleData(){  
+    this.noRecordFlag = true;
     this.initData =this.detailsData;
     let newAlertCat=[];
     let status=this.filterVehicleForm.controls.status.value;
@@ -528,13 +531,14 @@ removeDuplicates(originalArray, prop) {
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
           
     }, (error) => {
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -542,7 +546,7 @@ removeDuplicates(originalArray, prop) {
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
   checkToHideFilter(item:any){
