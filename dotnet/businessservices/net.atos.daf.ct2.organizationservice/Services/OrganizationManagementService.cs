@@ -239,9 +239,9 @@ namespace net.atos.daf.ct2.organizationservice
                 // if yes then discard the request
                 var conflictResult = await _organizationtmanager.GetVisibleVehiclesGroupCheck(request.VehicleGroupID.ToArray(), request.OwnerOrgId);
 
-                if (false)//conflictResult.Count() > 0)
+                if (conflictResult.Count() > 0)
                 {
-                    response.OrgRelationshipVehiceConflictList
+                    response.OrgRelationshipVehicleConflictList
                         .AddRange(conflictResult.Select(x => new OrgRelationshipVehicleConflict
                         {
                             VehicleGroupName = x.Name,
