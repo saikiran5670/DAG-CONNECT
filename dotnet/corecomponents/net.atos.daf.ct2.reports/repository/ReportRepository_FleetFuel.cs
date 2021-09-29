@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                                	(
-                                               		Select
+                                               		Select distinct
                                                			VIN
                                                		  , driver1_id                                                             as DriverId
                                                		  , count(trip_id)                                                         as numberoftrips
@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                	)
                                                  , cte_combine as
                                                	(
-                                               		SELECT
+                                               		SELECT distinct
                                                			vh.name            as VehicleName
                                                       , '' as tripid
                                                		  , fd.vin             as VIN

@@ -565,12 +565,16 @@ export class FleetMapService {
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
          
-      
-        let endMarkerSize = { w: 34, h: 40 };;
+        if(this.validateLatLng(this.startAddressPositionLat,this.startAddressPositionLong)){
+          this.group.addObject(this.startMarker);
+        }
+        let endMarkerSize = { w: 34, h: 40 };
         let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
         const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
         this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        this.group.addObjects([this.startMarker,this.rippleMarker, this.endMarker]);
+        if(this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong)){
+         this.group.addObjects([this.rippleMarker, this.endMarker]);
+        }
         // end start marker
         // var startBubble;
         // this.startMarker.addEventListener('pointerenter', function (evt) {

@@ -334,7 +334,55 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //    .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
 
                 //_cache.SetCache(request.LangaugeCode, feature.Features, cacheEntryOptions);
-                return Ok(feature.Features);
+                return Ok(feature.Features.Where(e => e.State == "ACTIVE").ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetDataAttributeFeatures")]
+
+        public async Task<IActionResult> GetDataAttributeFeatures([FromQuery] FeaturesFilterRequest request)
+        {
+            try
+            {
+
+                //Google.Protobuf.Collections.RepeatedField<FeatureRequest> cachedfeature = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<FeatureRequest>>(request.LangaugeCode);
+                //if (cachedfeature != null) return Ok(cachedfeature);
+
+                request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
+                request.Level = _userDetails.RoleLevel;
+                if (request.OrganizationID != 0)
+                {
+                    request.OrganizationID = GetContextOrgId();
+                }
+
+                var feature = await _featureclient.GetFeaturesAsync(request);
+
+                //List<FeatureResponce> featureList = new List<FeatureResponce>();
+                //foreach (var featureitem in feature.Features)
+                //{
+                //    FeatureResponce obj = new FeatureResponce();
+                //    obj.I = featureitem.Id;
+                //    obj.CreatedBy = featureitem.Createdby;
+                //    obj.FeatureName = featureitem.Name;
+                //    obj.Description = featureitem.Description;
+                //    obj.RoleId = featureitem.RoleId;
+                //    obj.OrganizationId = featureitem.Organization_Id;
+                //    obj.FeatureType = featureitem.Type;
+                //    featureList.Add(obj);
+                //}
+                // Set cache options.
+                //var cacheEntryOptions = new MemoryCacheEntryOptions()
+                //    // Keep in cache for this time, reset time if accessed.
+                //    .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
+
+                //_cache.SetCache(request.LangaugeCode, feature.Features, cacheEntryOptions);
+                return Ok(feature.Features.Where(e => e.Type == "D").ToList());
             }
             catch (Exception ex)
             {
