@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_heading as heading
                                         ,gps_latitude as latitude
                                         ,gps_longitude as longitude
-                                        ,gps_datetime as positiondatetime
+                                        ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
                                from livefleet.livefleet_position_statistics
                                WHERE 1=1";
@@ -49,16 +49,17 @@ namespace net.atos.daf.ct2.fms.repository
                     switch (since.ToLower().Trim())
                     {
                         case "yesterday"://yesterday
-                            parameter.Add("@timestamp", GetDate(1));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp = @timestamp");
+                            parameter.Add("@yesterdaytimestamp", GetDate(1));
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp = @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
                             break;
                         default:
-                            parameter.Add("@millies", since);
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and last_odometer_val = @millies");
+                            parameter.Add("@millies", Convert.ToInt64(since));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
                             break;
                     }
                 }
@@ -85,7 +86,7 @@ namespace net.atos.daf.ct2.fms.repository
                 objVehiclePosition.Heading = item.heading ?? 0;
                 objVehiclePosition.Latitude = item.latitude ?? 0;
                 objVehiclePosition.Longitude = item.longitude ?? 0;
-                objVehiclePosition.GPSTimestamp = item.positiondatetime ?? 0;
+                objVehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
                 objVehiclePosition.Speed = item.speed ?? 0;
                 objVehiclePositionResponse.VehiclePosition.Add(objVehiclePosition);
             }
@@ -103,7 +104,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_heading as heading
                                         ,gps_latitude as latitude
                                         ,gps_longitude as longitude
-                                        ,gps_datetime as positiondatetime
+                                        ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
 										,catalyst_fuel_level as CatalystFuelLevel
 										,driver1_id as Driver1Id
@@ -129,20 +130,22 @@ namespace net.atos.daf.ct2.fms.repository
                     switch (since.ToLower().Trim())
                     {
                         case "yesterday"://yesterday
-                            parameter.Add("@timestamp", GetDate(1));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp = @timestamp");
+                            parameter.Add("@yesterdaytimestamp", GetDate(1));
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp = @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
                             break;
                         default:
-                            parameter.Add("@millies", since);
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and last_odometer_val = @millies");
+                            parameter.Add("@millies", Convert.ToInt64(since));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
                             break;
                     }
                 }
-                var result = ConvertDynamicToStatusModel(await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter));
+                var data = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                var result = ConvertDynamicToStatusModel(data);
                 return result;
             }
             catch (Exception)
@@ -159,8 +162,22 @@ namespace net.atos.daf.ct2.fms.repository
             foreach (var item in data)
             {
                 VehicleStatus objVehicleStatus = new VehicleStatus();
-                objVehicleStatus.VIN = item.vin;
-                objVehicleStatus.Driver1Id = item.driver1id;
+                objVehicleStatus.VIN = item.vin ?? string.Empty;
+                objVehicleStatus.Driver1Id = item.driver1id ?? string.Empty;
+                objVehicleStatus.CatalystFuelLevel = item.CatalystFuelLevel ?? 0;
+                objVehicleStatus.Driver1WorkingState = item.Driver1WorkingState ?? string.Empty;
+                objVehicleStatus.EngineTotalFuelUsed = item.EngineTotalFuelUsed ?? 0;
+                objVehicleStatus.EventTimestamp = item.EventTimestamp ?? 0;
+                objVehicleStatus.FuelLevel1 = item.FuelLevel1 ?? 0;
+                objVehicleStatus.GrossCombinationVehicleWeight = item.GrossCombinationVehicleWeight ?? 0;
+                objVehicleStatus.VehiclePosition = new VehiclePositionForStatus();
+                objVehicleStatus.VehiclePosition.Altitude = item.altitude;
+                objVehicleStatus.VehiclePosition.Heading = item.heading;
+                objVehicleStatus.VehiclePosition.Latitude = item.latitude;
+                objVehicleStatus.VehiclePosition.Longitude = item.longitude;
+                objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp;
+                objVehicleStatus.VehiclePosition.Speed = item.speed;
+                objVehicleStatusResponse.VehicleStatus.Add(objVehicleStatus);
             }
             return objVehicleStatusResponse;
         }
@@ -168,7 +185,7 @@ namespace net.atos.daf.ct2.fms.repository
         public long GetDate(int value)
         {
             DateTime filter = DateTime.Now.AddDays(-value);
-            DateTime earlyHr = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
+            DateTime earlyHr = DateTime.Now.AddDays(-value).AddHours(-filter.Hour).AddMinutes(-filter.Minute)
                                .AddSeconds(-filter.Second).AddMilliseconds(-filter.Millisecond);
             return earlyHr.ToUnixMiliSecTime();
         }
