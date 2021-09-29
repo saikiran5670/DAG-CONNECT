@@ -620,10 +620,10 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                     if (vehicleGroupIds.Count() > 0)
                     {
-                        var parameters = new DynamicParameters();
-                        parameters.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
+                        var param = new DynamicParameters();
+                        param.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
                         //Delete access relationships with single vehicle group
-                        await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+                        await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", param);
                     }
 
                     //Delete groups with single type
