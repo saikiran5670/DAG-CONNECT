@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.bo.FuelDeviation;
 import net.atos.daf.ct2.util.FuelDeviationConstants;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+import net.atos.daf.postgre.connection.PostgreConnection;
 
 public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implements Serializable {
 
@@ -51,13 +51,19 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		try {
-			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PORT)),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER),
-					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.info("In FuelDeviation sink connection done" + connection);
+					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD));*/
+			connection = PostgreConnection.getInstance().getConnection(
+					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER),
+					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(FuelDeviationConstants.POSTGRE_SQL_DRIVER));
+			logger.info("In FuelDeviation sink connection done : " + connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
 			logger.error("Issue while establishing Postgre connection in FuelDeviation streaming Job :: " + e);
