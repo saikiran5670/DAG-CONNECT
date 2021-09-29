@@ -1,19 +1,16 @@
 package net.atos.daf.ct2.service.realtime;
 
 import net.atos.daf.ct2.cache.service.CacheService;
-import net.atos.daf.ct2.models.AlertFuelMeasurement;
-import net.atos.daf.ct2.models.LandMarkDetails;
 import net.atos.daf.ct2.models.Payload;
+import net.atos.daf.ct2.models.VehicleGeofenceState;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.process.config.AlertConfig;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
-import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -36,8 +33,8 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
     public IndexKeyBasedAlertDefService(Map<Object, Object> configMap){
         this.configMap=configMap;
     }
-    private MapState<String, String> vehicleGeofenceSateEnteringZone;
-    private MapState<String, String> vehicleGeofenceSateExitZone;
+    private MapState<String, VehicleGeofenceState> vehicleGeofenceSateEnteringZone;
+    private MapState<String, VehicleGeofenceState> vehicleGeofenceSateExitZone;
 
     @Override
     public void processElement(Tuple2<Index, Payload<Set<Long>>> indexTup2, KeyedBroadcastProcessFunction<Object, Tuple2<Index, Payload<Set<Long>>>, Payload<Object>, Index>.ReadOnlyContext readOnlyContext, Collector<Index> collector) throws Exception {
@@ -128,12 +125,12 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
     }
     @Override
     public void open(org.apache.flink.configuration.Configuration config) {
-        MapStateDescriptor<String, String> descriptor = new MapStateDescriptor("vehicleGeofenceSateEnteringZone",
-                TypeInformation.of(String.class),TypeInformation.of(String.class));
+        MapStateDescriptor<String, VehicleGeofenceState> descriptor = new MapStateDescriptor("vehicleGeofenceSateEnteringZone",
+                TypeInformation.of(String.class),TypeInformation.of(VehicleGeofenceState.class));
         vehicleGeofenceSateEnteringZone = getRuntimeContext().getMapState(descriptor);
 
-        MapStateDescriptor<String, String> descriptorExitZone = new MapStateDescriptor("vehicleGeofenceSateExitZone",
-                TypeInformation.of(String.class),TypeInformation.of(String.class));
+        MapStateDescriptor<String, VehicleGeofenceState> descriptorExitZone = new MapStateDescriptor("vehicleGeofenceSateExitZone",
+                TypeInformation.of(String.class),TypeInformation.of(VehicleGeofenceState.class));
         vehicleGeofenceSateExitZone = getRuntimeContext().getMapState(descriptorExitZone);
     }
 }

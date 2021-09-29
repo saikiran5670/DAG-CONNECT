@@ -1,6 +1,6 @@
 package net.atos.daf.ct2.app;
 
-//import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
+
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_INDEX_MSG_TOPIC;
@@ -108,7 +108,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    enteringAndZoneFun,
+                    enteringZoneFun,
                     exitZoneFun
             ));
         }};
