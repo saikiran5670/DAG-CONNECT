@@ -105,5 +105,10 @@ namespace net.atos.daf.ct2.organization
 
         #endregion
 
+        public async Task<IEnumerable<OrgRelationshipConflict>> GetVisibleVehiclesGroupCheck(int[] vehicleGroupIds, int orgId)
+        {
+            return await _organizationRepository.GetVisibleVehiclesGroupCheck(vehicleGroupIds, orgId);
+        }
+
     }
 }

@@ -103,6 +103,13 @@
 			<artifactId>flink-connector-jdbc_${scala.dependency.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
+		
+		 <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-jdbc -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-jdbc_${scala.dependency.version}</artifactId>
+            <version>1.10.3</version>
+        </dependency>
 
 		<!-- commented while integration <dependency> <groupId>org.projectlombok</groupId> 
 			<artifactId>lombok</artifactId> <version>1.18.10</version> </dependency> -->

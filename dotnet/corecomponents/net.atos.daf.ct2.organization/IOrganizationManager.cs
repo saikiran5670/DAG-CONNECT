@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.organization
         #region Provisioning Data Service
 
         Task<ProvisioningOrganisationDataServiceResponse> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request);
+        Task<IEnumerable<OrgRelationshipConflict>> GetVisibleVehiclesGroupCheck(int[] vehicleGroupIds, int orgId);
 
         #endregion
     }

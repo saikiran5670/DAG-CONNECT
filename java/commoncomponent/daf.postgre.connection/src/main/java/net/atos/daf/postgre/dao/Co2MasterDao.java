@@ -109,4 +109,33 @@ public class Co2MasterDao implements Serializable {
 		}
 		return co2CoEfficient;
 	}
+	
+	public String readFuelType(PreparedStatement fuelTypeQry, String vin) {
+		ResultSet rs = null;
+		String fuelType = "";
+		try {
+			fuelTypeQry.setString(1, vin);
+			rs = fuelTypeQry.executeQuery();
+			while (rs.next()) {
+				fuelType = rs.getString("fuel_type");
+			}
+
+		} catch (SQLException e) {
+			logger.error("Issue while reading fuelType value for trip statistics job :: " + e);
+			// throw e;
+		} catch (Exception e) {
+			logger.error("Issue while reading fuelType value for trip statistics job :: " + e);
+			// throw e;
+		} finally {
+			if (null != rs) {
+				try {
+					rs.close();
+				} catch (Exception e) {
+					logger.error("Issue while closing fuelType resultset :: " + e);
+					// throw e;
+				}
+			}
+		}
+		return fuelType;
+	}
 }
