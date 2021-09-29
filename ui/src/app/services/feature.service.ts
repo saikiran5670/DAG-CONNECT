@@ -29,7 +29,7 @@ export class FeatureService {
         const headers = new HttpHeaders({ headerObj });
         const options =  { headers: headers };
         return this.httpClient
-          .get<any[]>(`${this.featureServiceUrl}/getfeatures`, options)
+          .get<any[]>(`${this.featureServiceUrl}/GetDataAttributeFeatures`, options)
           .pipe(catchError(this.handleError));
     }
 
