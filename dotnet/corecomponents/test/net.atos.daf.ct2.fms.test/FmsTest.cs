@@ -25,29 +25,32 @@ namespace net.atos.daf.ct2.rfms.test
             _dataMartDataAccess = new PgSQLDataMartDataAccess(dataMartConnectionString);
 
             _rfmsRepository = new FmsRepository(_dataAccess, _dataMartDataAccess);
-            //var vehicleRepo = new VehicleRepository(_dataAccess, _dataMartDataAccess);
-            //var vehicleManager = new VehicleManager(vehicleRepo);
-
             _fmsManager = new FmsManager(_rfmsRepository);
         }
 
         [TestMethod]
+        public void GetVehiclePosition()
+        {
+            try
+            {
+                var data = _fmsManager.GetVehiclePosition("", "today").Result;
+                Assert.IsNotNull(data);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        [TestMethod]
         public void GetVehicleStatus()
         {
-            RfmsVehicleStatusRequest rfmsVehicleRequest = new RfmsVehicleStatusRequest()
+            try
             {
-                AccountId = 171,
-                OrgId = 36,
-                //Vin = "BLRAE75PC0E272200",
-                //  StartTime = "2021-07-30T01:40:00.000Z",
-
-
-            };
-
-            var rfmsVehicleList = _fmsManager.GetRfmsVehicleStatus(rfmsVehicleRequest).Result;
-            Assert.IsNotNull(rfmsVehicleList);
-
-
+                var data = _fmsManager.GetVehicleStatus("M4A1116", "").Result;
+                Assert.IsNotNull(data);
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }
