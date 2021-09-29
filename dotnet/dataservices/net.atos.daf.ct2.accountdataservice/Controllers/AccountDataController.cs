@@ -426,9 +426,14 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             var email = identity.Split(":")[0].Trim();
             var password = identity.Split(":")[1].Trim();
 
-            var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+            int? orgId = null;
+            if (!string.IsNullOrEmpty(request.OrganisationId))
+            {
+                var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+                orgId = org?.Id ?? 0;
+            }
 
-            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, org?.Id ?? 0, email);
+            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, orgId, email);
             if (!isExists)
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
@@ -436,7 +441,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
-            return new OkObjectResult(new { Email = email, OrgId = org?.Id ?? 0 });
+            return new OkObjectResult(new { Email = email, OrgId = orgId ?? 0 });
         }
 
         private async Task<IActionResult> ValidateParameters(ChangePasswordRequest request)

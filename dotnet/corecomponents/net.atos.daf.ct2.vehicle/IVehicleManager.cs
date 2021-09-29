@@ -25,9 +25,9 @@ namespace net.atos.daf.ct2.vehicle
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int organizationId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int organizationId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
-        Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId);
+        Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId, int accountId, int contextOrgId);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
-        Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
+        Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle, int accountId, int contextOrgId);
 
         Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects);
 

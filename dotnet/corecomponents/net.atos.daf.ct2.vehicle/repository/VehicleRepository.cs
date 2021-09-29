@@ -1163,18 +1163,19 @@ namespace net.atos.daf.ct2.vehicle.repository
                 IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                 response = accessRelationship.ToList();
 
-                IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId);
-                foreach (var item in vehicles.ToList())
-                {
-                    AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
-                    accountVehicleEntity.Id = item.Id;
-                    accountVehicleEntity.Name = item.Name;
-                    accountVehicleEntity.Count = 0;
-                    accountVehicleEntity.Is_group = false;
-                    accountVehicleEntity.VIN = item.VIN;
-                    accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
-                    response.Add(accountVehicleEntity);
-                }
+                //setting this set of code to manager Level
+                //IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId);
+                //foreach (var item in vehicles.ToList())
+                //{
+                //    AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
+                //    accountVehicleEntity.Id = item.Id;
+                //    accountVehicleEntity.Name = item.Name;
+                //    accountVehicleEntity.Count = 0;
+                //    accountVehicleEntity.Is_group = false;
+                //    accountVehicleEntity.VIN = item.VIN;
+                //    accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
+                //    response.Add(accountVehicleEntity);
+                //}
                 return response;
             }
             catch (Exception)

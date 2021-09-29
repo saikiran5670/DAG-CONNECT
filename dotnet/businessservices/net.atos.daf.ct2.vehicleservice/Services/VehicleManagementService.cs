@@ -190,7 +190,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 VehicleFilter objVehicleFilter = new VehicleFilter();
                 VehicleListResponce response = new VehicleListResponce();
                 objVehicleFilter = _mapper.ToVehicleFilterEntity(request);
-
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("accountid")).FirstOrDefault()?.Value ?? "0");
                 if (!string.IsNullOrEmpty(objVehicleFilter.VIN) || !string.IsNullOrEmpty(objVehicleFilter.VehicleIdList) ||
                     objVehicleFilter.VehicleId > 0)
                 {
@@ -202,7 +203,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 else
                 {
-                    IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(request.OrganizationId);
+                    IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(loggedInOrgId, accountId, request.OrganizationId);
                     foreach (var item in objRetrieveVehicleList)
                     {
                         response.Vehicles.Add(_mapper.ToVehicleDetails(item));
@@ -1163,7 +1164,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
                 //VehicleFilter objVehicleFilter = new VehicleFilter();
-                IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(request.OrganizationId);
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+
+                IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(loggedInOrgId, request.AccountId, request.OrganizationId);
                 VehiclesResponse response = new VehiclesResponse();
                 foreach (var item in objRetrieveVehicleList)
                 {
