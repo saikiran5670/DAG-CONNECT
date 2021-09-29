@@ -12,7 +12,7 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
 import { FleetOverviewFilterVehicleComponent } from './fleet-overview-filter-vehicle/fleet-overview-filter-vehicle.component';
-
+import { FleetMapService } from '../fleet-map.service'
 @Component({
   selector: 'app-fleet-overview-filters',
   templateUrl: './fleet-overview-filters.component.html',
@@ -60,7 +60,7 @@ messages: any[] = [];
 subscription: Subscription;
 status = new FormControl();
  constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
-    private dataInterchangeService: DataInterchangeService) { 
+    private dataInterchangeService: DataInterchangeService ,private fleetMapService : FleetMapService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.loadVehicleData();
@@ -517,7 +517,8 @@ removeDuplicates(originalArray, prop) {
       });    
      this.categoryList = this.removeDuplicates(newAlertCat, "value");
      //console.log(newAlertCat);    
-      this.vehicleListData = data;     
+      this.vehicleListData = data;    
+      this.detailsData = data; 
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
@@ -546,6 +547,8 @@ removeDuplicates(originalArray, prop) {
 
  checkCreationForVehicle(item: any){
   this.vehicleListData =[];
+  this.fleetMapService.clearRoutesFromMap();
+
   this.todayFlagClicked = item.todayFlagClicked;
   this.isVehicleDetails  = item.vehicleDetailsFlag;
   if(this.selectedIndex == 1){
