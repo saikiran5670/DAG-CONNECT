@@ -1262,7 +1262,7 @@ export class ReportMapService {
         break;
       }
       case 'dunit_Imperial': {
-        _data = tonFlag ? this.convertKgToTons(data) : data; //-- pound/ton
+        _data = this.convertKgToTons(data); //-- pound/ton
         break;
       }
       default: {

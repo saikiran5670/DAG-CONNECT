@@ -1024,7 +1024,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1351,7 +1351,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1643,7 +1643,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.organization_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1937,7 +1937,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ), 
 								 AverageGrossweight as 
                                 (
-                                    select eco.vin, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)  as AverageGrossweight
+                                    select eco.vin, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2234,7 +2234,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),

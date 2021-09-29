@@ -117,8 +117,8 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 								warningDao.warning_insert(warningDetail);
 								System.out.println("warning Message 4 Inserted");
-								warningDao.warningUpdateMessageFourCommonTrip(warningDetail);
-								System.out.println("warning updated for message 10 in another table");
+								//warningDao.warningUpdateMessageFourCommonTrip(warningDetail);
+								//System.out.println("warning updated for message 10 in another table");
 
 							}
 

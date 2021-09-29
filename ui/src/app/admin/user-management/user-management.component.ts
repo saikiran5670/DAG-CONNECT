@@ -56,6 +56,7 @@ export class UserManagementComponent implements OnInit {
   UserSessionVal: any = [];
   accountRoleId: any;
   filterRoleList: any = [];
+  filterRoleList2: any = [];
   editViewRoleList: any = [];
 
   constructor(
@@ -247,6 +248,7 @@ export class UserManagementComponent implements OnInit {
       let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
       if(accountRoleLevel.length > 0){
         this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
+        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel[0].level);
       }
       this.loadUsersData();
     }, (error) => {
@@ -411,15 +413,15 @@ export class UserManagementComponent implements OnInit {
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
-      let roleFound: boolean = true;
+      let roleFound: boolean = false;
       element.roles.forEach(resp => {
         roleTxt += resp.name + ', ';  
-        let _s: any = this.filterRoleList.filter(item => item.roleId == resp.id);
-        if(_s.length == 0){ // not found
-          roleFound = false;
+        let _s: any = this.filterRoleList2.filter(item => item.roleId == resp.id);
+        if(_s.length > 0){ // not found
+          roleFound = true;
         }
       });
-      if(!roleFound){
+      if((element.roles.length > 0 && roleFound) || (element.type && element.type == 'S' && !this.adminAccessType.systemAccountAccess)){
         element.editDeletAccess = false;
       }else{
         element.editDeletAccess = true;

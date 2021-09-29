@@ -447,7 +447,7 @@ proceedStep(prefData: any, preference: any){
         this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
           if(element.urgencyLevelType == 'C'){
             this.isCriticalLevelSelected= true;
-            this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'W'){
             this.isWarningLevelSelected= true;
@@ -455,11 +455,11 @@ proceedStep(prefData: any, preference: any){
             // if(this.alert_category_selected+this.alert_type_selected == 'LU'){
             //   threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
             // }
-            this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'A'){
             this.isAdvisoryLevelSelected= true;
-            this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
           }          
         });
       }
