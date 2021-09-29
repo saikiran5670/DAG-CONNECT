@@ -942,6 +942,15 @@
               </mat-cell>
   
             </ng-container>
+
+            <ng-container matColumnDef="averageTrafficClassificationValue">
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification ||
+                'Average Traffic Classification Value' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
+                <span>{{row.averageTrafficClassificationValue}}</span>
+              </mat-cell>
+            </ng-container>
   
             <ng-container matColumnDef="ccFuelConsumption">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
