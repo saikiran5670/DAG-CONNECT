@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
-        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int? organisationId, string email)
         {
             try
             {
@@ -104,13 +104,13 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@OrganisationId", organisationId);
 
                 var queryStatement =
-                        @"SELECT EXISTS (SELECT 1
+                       @"SELECT EXISTS (SELECT 1
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
                             WHERE driver_id_ext = @DriverId and email = @Email and drv.state='A'{0})";
 
-                queryStatement = organisationId > 0 ? string.Format(queryStatement, " and drv.organization_id = @OrganisationId")
-                                                    : string.Format(queryStatement, string.Empty);
-                return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
+                string predicate = organisationId.HasValue ? " and drv.organization_id = @OrganisationId" : string.Empty;
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(string.Format(queryStatement, predicate), parameter);
             }
             catch (Exception)
             {
