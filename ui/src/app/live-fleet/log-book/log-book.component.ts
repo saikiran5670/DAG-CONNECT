@@ -75,6 +75,7 @@ vehicleListData: any = [];
 trackType: any = 'snail';
 displayRouteView: any = 'C';
 vehicleDD: any = [];
+singleVehicle: any = [];
 alertTypeName: any = [];
 vehicleGrpDD: any = [];
 alertLvl: any =[];
@@ -1023,7 +1024,8 @@ ngOnDestroy(){
     }
     }
     if(value == 'all'){
-     this.vehicleDD = this.vehicleListData;
+      let vehicleData = this.vehicleListData.slice();
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     }
     else{
       let vehicle_group_selected:any = parseInt(value);
@@ -1037,6 +1039,18 @@ ngOnDestroy(){
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
     }   
   }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
 
   onVehicleChange(event: any){
     this.internalSelection = true;
@@ -1440,11 +1454,12 @@ let prepare = []
 
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
       let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData.associatedVehicleRequest.filter(i => i.vin === element); 
+            let _item = this.wholeLogBookData.associatedVehicleRequest.filter(i => i.vin === element && i.groupType != 'S'); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -1474,7 +1489,8 @@ let prepare = []
        //   });
        // }    
      }
-     this.vehicleDD = this.vehicleListData;
+     let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
      if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
