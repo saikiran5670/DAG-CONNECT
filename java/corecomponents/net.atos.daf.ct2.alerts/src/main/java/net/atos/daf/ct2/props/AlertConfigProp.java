@@ -87,6 +87,9 @@ public class AlertConfigProp {
             BasicTypeInfo.BIG_DEC_TYPE_INFO,
             BasicTypeInfo.INT_TYPE_INFO,
             BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
+            BasicTypeInfo.BIG_DEC_TYPE_INFO,
     };
 
     public static final TypeInformation<?>[] ALERT_MAP_SCHEMA_DEF = new TypeInformation<?>[] {

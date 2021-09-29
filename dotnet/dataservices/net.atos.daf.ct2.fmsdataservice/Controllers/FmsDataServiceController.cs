@@ -7,6 +7,8 @@ using net.atos.daf.ct2.audit.Enum;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.fmsdataservice.Entity;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.fms;
+using net.atos.daf.ct2.fms.entity;
 
 namespace net.atos.daf.ct2.fmsdataservice.Controllers
 {
@@ -17,13 +19,14 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
         private readonly ILogger<FmsDataServiceController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IAuditTraillib _auditTrail;
-        // private readonly IFmsManager _fmsManager;
-        public FmsDataServiceController(IAuditTraillib auditTrail, ILogger<FmsDataServiceController> logger, IConfiguration configuration)//, IFmsManager fmsManager)
+        private readonly IFmsManager _fmsManager;
+
+        public FmsDataServiceController(IAuditTraillib auditTrail, ILogger<FmsDataServiceController> logger, IConfiguration configuration, IFmsManager fmsManager)
         {
             _logger = logger;
             _auditTrail = auditTrail;
             _configuration = configuration;
-            // _fmsManager = fmsManager;
+            _fmsManager = fmsManager;
         }
 
         [HttpGet]
@@ -34,9 +37,9 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
             {
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Postion", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice position received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle position function called - " + vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-
-                // VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePostion(vehiclePositionRequest);
-                return Ok(vehiclePositionRequest);
+                net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+                // VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+                return Ok(vehiclePositionResponse);
                 // return StatusCode(500, string.Empty);
             }
             catch (Exception ex)

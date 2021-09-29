@@ -18,16 +18,15 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.Co2MasterDao;
 
-public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripStatusData> {
-	private static final Logger logger = LoggerFactory.getLogger(TripCo2Emission.class);
+public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, TripStatusData> {
+	private static final Logger logger = LoggerFactory.getLogger(VehicleFuelTypeLookup.class);
 
 	private static final long serialVersionUID = 1L;
 	private Connection masterConnection;
 	private Co2MasterDao cmDao;
-	PreparedStatement co2CoEfficientStmt;
+	PreparedStatement fuelTypeStmt;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -50,11 +49,11 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
 			masterConnection = DriverManager.getConnection(dbUrl);
 			
-			logger.info("In TripCo2Emission sink connection done" + masterConnection);
+			logger.info("In VehicleFuelTypeLookup sink connection done" + masterConnection);
 			
 			cmDao = new Co2MasterDao();
 			cmDao.setConnection(masterConnection);
-			co2CoEfficientStmt = masterConnection.prepareStatement(ETLQueries.CO2_COEFFICIENT_QRY);
+			fuelTypeStmt = masterConnection.prepareStatement(ETLQueries.VEH_FUELTYPE_QRY);
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -72,17 +71,13 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			Collector<TripStatusData> out){
 
 		try {
-			double co2CoEfficient = cmDao.read(co2CoEfficientStmt, stsData.getVin());
-			double co2Emission = 0;
-			if (co2CoEfficient != 0 && stsData.getVUsedFuel() != null)
-				co2Emission = (stsData.getVUsedFuel() * co2CoEfficient) / 1000000;
-
-			logger.info("tripId : "+stsData.getTripId() +" vin : " + stsData.getVin() + " co2CoEfficient :" + co2CoEfficient + " co2Emission :"+co2Emission);
-			stsData.setCo2Emission(co2Emission);
+			String fuelType = cmDao.readFuelType(fuelTypeStmt, stsData.getVin());
+			stsData.setFuelType(fuelType);
+			logger.info("Lookup value for vin : {}  fuelType: {}",stsData.getVin(), fuelType);
 			out.collect(stsData);
 		} catch (Exception e) {
 			// TODO error suppressed , cross verify scenarios
-			logger.error("Issue while processing Co2CoEfficient trip statisctics job :: " + e);
+			logger.error("Issue while processing fuelType trip statisctics job :: " + e);
 		}
 	}
 
@@ -91,8 +86,8 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 		try {
 			super.close();
 			
-			if(Objects.nonNull(co2CoEfficientStmt))
-				co2CoEfficientStmt.close();
+			if(Objects.nonNull(fuelTypeStmt))
+				fuelTypeStmt.close();
 			
 			if (masterConnection != null) {
 				masterConnection.close();
@@ -103,7 +98,7 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			throw e;
 		}
 	}
-	
+
 	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
 			String password) throws Exception {
 
@@ -121,5 +116,4 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			throw new RuntimeException(ex.getCause());
 		}
 	}
-
 }

@@ -742,7 +742,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 OrgRelationshipCreateRequest objRelationship = new OrgRelationshipCreateRequest();
                 objRelationship.RelationShipId = request.RelationShipId;
                 objRelationship.VehicleGroupID.Add(request.VehicleGroupId);
-                objRelationship.OwnerOrId = request.OwnerOrgId;
+                objRelationship.OwnerOrgId = request.OwnerOrgId;
                 objRelationship.CreatedOrgId = request.CreatedOrgId;
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.Allow_chain;
@@ -752,16 +752,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
+                  "CreateOrgRelationShip method in Organization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(createResponse);
                 }
                 if (createResponse.Code == OrganizationBusinessService.Responcecode.Conflict)
                 {
                     return StatusCode(409, createResponse);
                 }
+                else if (createResponse.Code == OrganizationBusinessService.Responcecode.Forbidden)
+                {
+                    return StatusCode(403, createResponse);
+                }
                 else
                 {
-                    return StatusCode(500, "Error in creating relationships");
+                    return StatusCode(500, "Error in creating organization relationship.");
                 }
 
             }
