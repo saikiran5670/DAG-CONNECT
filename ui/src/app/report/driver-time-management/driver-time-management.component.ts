@@ -89,6 +89,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   driverDetails : any= [];
   detailConvertedData : any;
   summaryObj:any=[];
+  singleVehicle: any = [];
 
   reportPrefData: any = [];
   reportId:number = 9;
@@ -511,7 +512,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       //.filter(i => i.vehicleGroupId != 0);
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
-      this.vehicleDD = this.vehicleListData;
+      let vehicleData = this.vehicleListData.slice();
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     }else{
 
       //this.vehicleListData = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -530,6 +532,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
     // this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue);
  // }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   driverDD = [];
@@ -882,13 +895,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       }
       //console.log(filteredDriverList)
       //console.log(finalDriverList)
-
+      this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVin && distinctVin.length>0){
           distinctVin.forEach(element => {
            // filteredVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
-            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element)
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -913,12 +926,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if(this.driverListData.length>1){
           this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
           }
-          this.vehicleDD = this.vehicleListData;
+          let vehicleData = this.vehicleListData.slice();
+          this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
           this.driverDD = this.driverListData;
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
-          //this.driverTimeForm.get('vehicle').setValue(0);
-          //this.driverTimeForm.get('driver').setValue(0);
+          this.driverTimeForm.get('vehicle').setValue(0);
+          this.driverTimeForm.get('driver').setValue(0);
 
 
     }

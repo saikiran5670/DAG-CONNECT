@@ -20,6 +20,9 @@ import net.atos.daf.ct2.models.AlertFuelMeasurement;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.props.AlertConfigProp;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+
 public class FuelDuringTripProcessor extends ProcessWindowFunction<Index, Index, String, TimeWindow> {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(FuelDuringTripProcessor.class);
@@ -91,8 +94,7 @@ public class FuelDuringTripProcessor extends ProcessWindowFunction<Index, Index,
 			}
 
 		} catch (Exception e) {
-			logger.error("Issue while processing Alert FuelDuringTripProcessor Data for key : " + key + "  error :: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("Issue while processing Alert FuelDuringTripProcessor Data for key : " + key + "  error :: " + e);
 		}
 	}
 
@@ -107,7 +109,12 @@ public class FuelDuringTripProcessor extends ProcessWindowFunction<Index, Index,
 
 	private AlertFuelMeasurement createFuelMeasurementObj(String evtDateTime, Double vFuelLevel) throws ParseException {
 		AlertFuelMeasurement fuelMeasurement = new AlertFuelMeasurement();
-		fuelMeasurement.setEvtDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(evtDateTime, AlertConfigProp.DATE_FORMAT));
+		try{
+			fuelMeasurement.setEvtDateTime(TimeFormatter.getInstance().
+					convertUTCToEpochMilli(evtDateTime, AlertConfigProp.DATE_FORMAT));
+		}catch (Exception ex){
+			logger.error("Error while converting event time stamp {}",evtDateTime,String.format(INCOMING_MESSAGE_UUID, "noUUID"));
+		}
 		fuelMeasurement.setVFuelLevel(BigDecimal.valueOf(vFuelLevel));
 		return fuelMeasurement;
 	}

@@ -92,6 +92,8 @@ public class ETLQueries {
 	
 	public static final String CO2_COEFFICIENT_QRY = " select coefficient from master.co2coefficient c join master.vehicle v on c.fuel_type = v.fuel_type and vin = ? ";
 	
+	public static final String VEH_FUELTYPE_QRY = " select fuel_type master.vehicle where vin = ? ";
+	
 	public static final String TRIP_QRY = " select tripId ,vid ,vin ,startDateTime ,endDateTime ,gpsTripDist ,tripCalDist ,vIdleDuration, tripCalAvgSpeed "
 			+ ", vGrossWeightCombination ,gpsStartVehDist ,gpsStopVehDist ,gpsStartLatitude ,gpsStartLongitude ,gpsEndLatitude ,gpsEndLongitude ,vUsedFuel "
 			+ ", tripCalUsedFuel ,vTripMotionDuration ,tripCalDrivingTm ,receivedTimestamp ,tripCalC02Emission ,tripCalFuelConsumption ,vTachographSpeed "

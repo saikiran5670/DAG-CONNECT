@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.accountservice
 
         #region Identity
 
-        public override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
+        public async override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
         {
             AccountIdentityResponse response = new AccountIdentityResponse();
             try
@@ -56,10 +56,10 @@ namespace net.atos.daf.ct2.accountservice
                 Identity account = new Identity();
                 account.UserName = request.UserName.Trim();
                 account.Password = request.Password;
-                AccountIdentity accIdentity = _accountIdentityManager.Login(account).Result;
-                if (accIdentity != null && accIdentity.StatusCode == 5)
+                AccountIdentity accIdentity = await _accountIdentityManager.Login(account);
+                if (accIdentity != null && accIdentity.StatusCode == 6)
                 {
-                    return Task.FromResult(new AccountIdentityResponse
+                    return await Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Forbidden,
@@ -69,7 +69,6 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
                 {
-                    _logger.Info("account is Authenticated");
                     response.TokenIdentifier = accIdentity.TokenIdentifier;
                     if (accIdentity.AccountInfo != null)
                     {
@@ -98,11 +97,11 @@ namespace net.atos.daf.ct2.accountservice
                             response.AccountRole.Add(accRole);
                         }
                     }
-                    return Task.FromResult(response);
+                    return await Task.FromResult(response);
                 }
                 else if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
                 {
-                    return Task.FromResult(new AccountIdentityResponse
+                    return await Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = (Responcecode)accIdentity.StatusCode,
@@ -112,7 +111,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else
                 {
-                    return Task.FromResult(new AccountIdentityResponse
+                    return await Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
@@ -124,7 +123,7 @@ namespace net.atos.daf.ct2.accountservice
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return Task.FromResult(new AccountIdentityResponse
+                return await Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responcecode.Failed,
                     Message = " Authentication is failed due to - " + ex.ToString(),
@@ -132,12 +131,12 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override Task<LogoutResponse> Logout(LogoutRequest request, ServerCallContext context)
+        public async override Task<LogoutResponse> Logout(LogoutRequest request, ServerCallContext context)
         {
             LogoutResponse response = new LogoutResponse();
             try
             {
-                bool result = _accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
+                bool result = await _accountIdentityManager.LogoutByTokenId(request.TokenId);
                 if (result)
                 {
                     _logger.Info("account is logged out");
@@ -154,7 +153,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.Error(null, ex);
                 response.Success = false;
             }
-            return Task.FromResult(response);
+            return await Task.FromResult(response);
         }
 
         #endregion
@@ -1281,15 +1280,16 @@ namespace net.atos.daf.ct2.accountservice
                     List<vehicleEntity.AccountVehicleEntity> vehicleList = new List<vehicleEntity.AccountVehicleEntity>();
                     List<AccountVehicleEntity> accountList = new List<AccountVehicleEntity>();
                     filter.OrganizationId = request.OrganizationId;
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                     if (request.IsAccount)
                     {
                         accountList = await _accountmanager.GetAccount(filter, true);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, false);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(loggedInOrgId, false, request.AccountId, request.OrganizationId);
                     }
                     else
                     {
                         accountList = await _accountmanager.GetAccount(filter, false);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(loggedInOrgId, true, request.AccountId, request.OrganizationId);
                     }
                     List<AccountVehicleEntity> objVehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.Id, Name = a.Name, Is_group = a.Is_group, Count = a.Count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(objVehiclelist));

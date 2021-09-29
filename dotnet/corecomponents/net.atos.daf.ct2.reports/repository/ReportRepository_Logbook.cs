@@ -68,8 +68,10 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.alert_id as AlertId,                             
                                 ta.latitude as Latitude,
                                 ta.longitude as Longitude,
+                                RANK () OVER (PARTITION BY ta.vin,ta.alert_id
+								ORDER BY ta.alert_generated_time ASC) Occurrence,
                                 ta.urgency_level_type as AlertLevel,
-                                ta.alert_generated_time as AlertGeneratedTime,
+                                extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
                                 ts.start_time_stamp as TripStartTime,
                                 ts.end_time_stamp as TripEndTime,
@@ -83,8 +85,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time/1000)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time/1000)::date) <= (to_timestamp(@end_time_stamp )::date))";
+                                and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp)::timestamp)
+                                and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))";
 
 
 
@@ -112,6 +114,14 @@ namespace net.atos.daf.ct2.reports.repository
                 var logBookDetailsResult = await _dataMartdataAccess.QueryAsync<LogbookDetails>(queryLogBookPull, parameter);
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)
                 {
+                    parameter.Add("@AlertIds", logBookDetailsResult.Select(x => x.AlertId).ToArray());
+                    string queryAlert = @"select id, Name from master.alert where id = ANY(@AlertIds)";
+                    var alertNames = await _dataAccess.QueryAsync<AlertNameList>(queryAlert, parameter);
+
+                    foreach (var item in logBookDetailsResult)
+                    {
+                        item.AlertName = alertNames.Where(x => x.Id == item.AlertId).Select(x => x.Name).FirstOrDefault();
+                    }
                     return logBookDetailsResult.AsList<LogbookDetails>();
                 }
                 else
