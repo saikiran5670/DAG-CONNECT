@@ -290,6 +290,7 @@ message OrgVehicleGroupListResponse{
 message OrgvehicleIdRequest {
   int32 OrganizationId = 1;
   int32 VehicleId = 2;
+  int32 AccountId=3;
 }
 
 message VehicleGroupDetails {

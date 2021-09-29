@@ -413,7 +413,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
-				Select
+				Select distinct
 					VIN				  
                   , id as Id
 				  , trip_id  as tripid
@@ -456,7 +456,7 @@ namespace net.atos.daf.ct2.reports.repository
 			)
 		  , cte_combine as
             (
-                SELECT
+                SELECT distinct
                     vh.name as VehicleName
                   , fd.Id
 				  , tripid
@@ -555,7 +555,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
-				Select
+				Select distinct
 					VIN
                   , id as Id
                   ,trip_id                                                                 as tripid
@@ -599,7 +599,7 @@ namespace net.atos.daf.ct2.reports.repository
 			)
 		  , cte_combine as
 			(
-				SELECT
+				SELECT distinct
 					vh.name            as VehicleName
                    ,  fd.Id
                    ,tripid

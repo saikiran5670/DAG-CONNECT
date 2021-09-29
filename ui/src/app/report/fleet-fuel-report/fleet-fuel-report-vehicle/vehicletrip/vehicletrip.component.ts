@@ -278,6 +278,7 @@ tripTraceArray: any = [];
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
+  singleVehicle: any = [];
   ConsumedChartType: any;
   TripsChartType: any;
   Co2ChartType: any;
@@ -2258,12 +2259,13 @@ getLast3MonthDate(){
           }
         }
       });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
 
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S'); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -2292,7 +2294,8 @@ getLast3MonthDate(){
 
     }
 
-    this.vehicleDD = this.vehicleListData;
+    let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
@@ -2301,6 +2304,17 @@ getLast3MonthDate(){
     if(this.fromTripPageBack){
       this.onSearch();
     }
+}
+
+getUniqueVINs(vinList: any){
+  let uniqueVINList = [];
+  for(let vin of vinList){
+    let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+    if(vinPresent == -1) {
+      uniqueVINList.push(vin);
+    }
+  }
+  return uniqueVINList;
 }
 
 setVehicleGroupAndVehiclePreSelection() {
@@ -2314,7 +2328,8 @@ setVehicleGroupAndVehiclePreSelection() {
       this.internalSelection = true; 
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
-        this.vehicleDD = this.vehicleListData;
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
