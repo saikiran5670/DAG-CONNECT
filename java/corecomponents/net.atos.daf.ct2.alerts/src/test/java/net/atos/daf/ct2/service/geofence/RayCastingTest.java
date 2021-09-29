@@ -7,17 +7,17 @@ public class RayCastingTest extends TestCase {
     public void testIsInside() {
 
         Double [][] polygonPoints = {
-                {49.6594544,3.0665322},
-                {53.1121239,16.4257716},
-                {49.31089,21.35733},
-                {48.5647,9.65262},
+                {51.4301963,5.5313448},
+                {51.43046,5.53892},
+                {51.426998,5.5416274},
+                {51.4266886,5.532953},
         };
 
-        Double point[] ={49.31089,21.35733};
+        Double point[] ={51.42855125796569,5.537232922486132};
         Boolean inside = RayCasting.isInside(polygonPoints, point);
         System.out.println(inside);
 
-        Double point2[] ={47.44836,23.98412};
+        Double point2[] ={51.41659457495235,5.510225269449434};
         inside = RayCasting.isInside(polygonPoints, point2);
         System.out.println(inside);
     }

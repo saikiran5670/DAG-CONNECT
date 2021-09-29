@@ -84,21 +84,23 @@ public class TripBasedTest implements Serializable {
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
         /**
-         * Alert produce topic
+         *  Booting cache
          */
-        String dafAlertProduceTopic = propertiesParamTool.get(KAFKA_DAF_ALERT_PRODUCE_MSG_TOPIC);
-        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
-        KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<String>();
+        SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
+                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                propertiesParamTool, env)
+                .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .returns(Index.class)
+                .filter(index -> index.getVid() != null)
+                .returns(Index.class)
+                .map(idx -> {
+                    idx.setJobName(UUID.randomUUID().toString());
+                    logger.info("Index message received for alert processing :: {}  {}",idx, String.format(INCOMING_MESSAGE_UUID, idx.getJobName()));
+                    return idx;})
+                .returns(Index.class);
 
-        FlinkKafkaConsumer<String> alertConsumer = new FlinkKafkaConsumer<String>
-                (dafAlertProduceTopic,deserializationSchema,kafkaTopicProp);
 
-        env.addSource(alertConsumer)
-                        .print();
-
-
-
-
+        indexStringStream.print();
         env.execute("TripBasedTest");
 
 
