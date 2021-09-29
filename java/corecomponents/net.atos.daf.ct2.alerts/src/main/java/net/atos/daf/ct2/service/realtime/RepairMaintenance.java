@@ -176,7 +176,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			}
 		} else {
 
-			warningDetail.setVehicleHealthStatusType("");
+			warningDetail.setVehicleHealthStatusType("N");
 		}
 
 		// Vehicle Driving status
