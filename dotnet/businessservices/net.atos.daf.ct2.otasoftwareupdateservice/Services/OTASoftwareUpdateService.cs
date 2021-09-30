@@ -35,6 +35,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                     Message = "Successfully fetch records for Vehicle Software Status",
                     Code = ResponseCode.Success
                 };
+
                 response.VehicleSoftwareStatusList.AddRange(
                                                 vehicleSoftwareStatusList.Select(s =>
                                                         new VehicleSoftwareStatus
@@ -71,6 +72,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                     Message = "Successfully fetch records for Vehicle Software Status",
                     Code = ResponseCode.Success
                 };
+
                 response.VehicleStatusList.AddRange(
                                                 vehicleStatusList.Select(s =>
                                                         new VehicleStatusList
@@ -81,7 +83,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                             RegistrationNo = s.RegistrationNo ?? string.Empty,
                                                             VehicleGroupNames = s.VehicleGroupNames ?? string.Empty,
                                                             ModelYear = s.ModelYear ?? string.Empty,
-                                                            Type = s.Type ?? string.Empty
+                                                            Type = s.Type ?? string.Empty,
+                                                            SoftwareStatus = string.Empty
                                                         }));
                 return await Task.FromResult(response);
             }
