@@ -36,11 +36,7 @@ public final class AlertExecutorConfigImpl implements AlertExecutorConfig<Messag
                 .map(t -> t.getAlert().get())
                 .collect(Collectors.toList());
 
-        if(! alerts.isEmpty()){
-            return getMessage(s,alerts);
-        }else {
-           return getMessage(s,alerts);
-        }
+        return getMessage(s,alerts);
     }
 
     private Message getMessage(Message s,List<Alert> alerts) {
