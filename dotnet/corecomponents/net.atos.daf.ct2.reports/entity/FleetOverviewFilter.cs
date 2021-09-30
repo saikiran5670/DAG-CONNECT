@@ -15,6 +15,8 @@ namespace net.atos.daf.ct2.reports.entity
         public List<string> DriverId { get; set; }
         public int Days { get; set; }
         public string LanguageCode { get; set; }
+        //check the unknown driving state in 'N' minutes of interval
+        public int UnknownDrivingStateCheckInterval { get; set; }
     }
 
 }
