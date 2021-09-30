@@ -523,12 +523,30 @@ namespace net.atos.daf.ct2.rfms.repository
                             t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
                             t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
                             t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
-                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero
+                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero,
+--classes
+                            t2.pto_active_class_pto_duration as ptoactiveclassptoduration,
+                            t2.pto_active_class_pto_fuel_consumed as ptoactiveclassptofuelconsumed,
+                            t2.acceleration_pedal_pos_class_distr as accelerationpedalposclassdistr,
+                            t2.acceleration_pedal_pos_class_min_range as accelerationpedalposclassminrange,
+                            t2.acceleration_pedal_pos_class_max_range as accelerationpedalposclassmaxrange,
+                            t2.acceleration_pedal_pos_class_distr_step as accelerationpedalposclassdistrstep, 
+                            t2.acceleration_pedal_pos_class_distr_array_time as accelerationpedalposclassdistrarraytime,
+                            t2.retarder_torque_class_distr as retardertorqueclassdistr, 
+                            t2.retarder_torque_class_min_range as retardertorqueclassminrange,
+                            t2.retarder_torque_class_max_range as retardertorqueclassmaxrange,
+                            t2.retarder_torque_class_distr_step as retardertorqueclassdistrstep,
+                            t2.retarder_torque_class_distr_array_time as retardertorqueclassdistrarray_time,
+                            t2.engine_torque_engine_load_class_distr as enginetorqueengineloadclassdistr, 
+                            t2.engine_torque_engine_load_class_min_range as enginetorqueengineloadclassminrange, 
+                            t2.engine_torque_engine_load_class_max_range as enginetorqueengineloadclassmaxrange,
+                            t2.engine_torque_engine_load_class_distr_step as enginetorqueengineloadclassdistrstep, 
+                            t2.engine_torque_engine_load_class_distr_array_time  as enginetorqueengineloadclassdistrarraytime
                             ";
 
 
             }
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()[0].ToString()))
             {
                 query += @" ,t1.gps_altitude as altitude,
                             t1.gps_heading as heading,

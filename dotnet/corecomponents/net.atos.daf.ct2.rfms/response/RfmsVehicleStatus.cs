@@ -249,4 +249,15 @@ namespace net.atos.daf.ct2.rfms.response
         public string RequestServerDateTime { get; set; }
 
     }
+
+    public class AccumulatedClassRequest
+    {
+        public int MinRange { get; set; }
+        public int MaxRange { get; set; }
+
+        public int NoOfStep { get; set; }
+        public int[] ClassDistanceData { get; set; }
+
+
+    }
 }
