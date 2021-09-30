@@ -1194,7 +1194,7 @@ let _type ='';
               <td style='width: 100px;'>Current Mileage:</td> <td><b>${_mileage} ${distanceUnit}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Next Service in:</td> <td><b>- ${_distanceNextService} ${distanceUnit}</b></td>
+              <td style='width: 100px;'>Next Service in:</td> <td><b>${_distanceNextService} ${distanceUnit}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>

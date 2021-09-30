@@ -680,42 +680,22 @@ setIconsOnMap(element) {
     let alertsData =[];    
     if(element.fleetOverviewAlert.length > 0){
       // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+      if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
       _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
       if(_alertFound){
         alertsData.push(_alertFound);
       }
+    }
+    else{
+        //only for never moved type of driving status
+          if(_drivingStatus == "Never Moved"){
+            let latestAlert :any =[];
+            latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
+            _alertFound = latestAlert[0];
+            alertsData.push(_alertFound);
+          }
+        }
     } 
-    // if(element.fleetOverviewAlert.length > 0){      
-      // let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
-      // let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
-      // let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
-     
-    //   if(critical.length > 0){
-    //   _alertFound = critical[0];
-    //  } 
-    //  else if(warning.length > 0){
-    //   _alertFound = warning[0];
-    //  } else{
-    //   _alertFound = advisory[0];
-    //  }
-
-    //  let alertName ='';
-    //  if(_alertFound){
-    //  if(_alertFound.level == 'C')
-    //  {
-    //   alertName = 'Critical';
-    //  }
-    //  else if(_alertFound.level == 'W')
-    //  {
-    //   alertName = 'Warning';
-    //  }
-    //  else{
-    //   alertName = 'Advisory';
-    //  }
-    // }
-    //  element =  Object.defineProperty(element, "alertName", {value : alertName,
-    //   writable : true,enumerable : true, configurable : true}); 
-    // }
 
     if(_alertFound){
       if(alertsData.length > 1){ //check for criticality
