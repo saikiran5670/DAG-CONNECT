@@ -55,7 +55,13 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Fuel { get; set; }
     }
 
-    public class VehicleAxelInformation
+    public class VehiclePropertyForOTA
+    {
+        public int VehicleId { get; set; }
+        public string ModelYear { get; set; }
+        public string Type { get; set; }
+    }
+        public class VehicleAxelInformation
     {
         public int Id { get; set; }
         public int VehicleId { get; set; }
