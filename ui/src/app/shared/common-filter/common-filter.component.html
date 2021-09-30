@@ -1,23 +1,23 @@
 <mat-expansion-panel style="width:100%;" class="full-width">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter || 'Filter' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter}}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
+            <mat-label>{{ translationData.lblName  }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <input placeholder="{{ translationData.lblSearchName || 'Search Name' }}" [(ngModel)]="name" matInput>
+                <input placeholder="{{ translationData.lblSearchName  }}" [(ngModel)]="name" matInput>
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblGroup || 'Group' }}
+                {{ translationData.lblGroup  }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" [(ngModel)]="userGroup">
-                    <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
+                <mat-select placeholder="{{ translationData.lblSelectUserGroup }}" [(ngModel)]="userGroup">
+                    <mat-option value='All'>{{ translationData.lblAll }}</mat-option>
                     <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
                     <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
                         {{usrGrp}}
@@ -27,11 +27,11 @@
         </div>
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblRole || 'Role' }}
+                {{ translationData.lblRole }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}" [(ngModel)]="role">
-                    <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
+                <mat-select placeholder="{{ translationData.lblSelectUserRole }}" [(ngModel)]="role">
+                    <mat-option value='All'>{{ translationData.lblAll  }}</mat-option>
                     <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
                     <mat-option *ngFor="let role of roles" [value]="role">
                         {{role}}
@@ -42,10 +42,10 @@
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" class='margin-top-lg'>
                 <button style='margin-left:10px' mat-flat-button color="primary" (click)="filter()">
-                    {{ translationData.lblFilter || 'Filter' }}
+                    {{ translationData.lblFilter }}
                 </button>
                 <button class='resetCancelBtnColor' style='margin-left:10px' mat-flat-button color="primary" (click)="reset()">
-                    {{ translationData.lblReset || 'Reset' }}
+                    {{ translationData.lblReset  }}
                 </button>
             </div>
         </div>

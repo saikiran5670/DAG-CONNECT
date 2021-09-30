@@ -104,11 +104,11 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadFleetUtilisationPreferences();
     }else{
-      this.reportId = 5; //- hard coded for fleet utilisation report
+      console.error("No report id found!")
     }
     this.translationUpdate();
-    this.loadFleetUtilisationPreferences();
   }
 
   getUnitFormat(accPref: any){

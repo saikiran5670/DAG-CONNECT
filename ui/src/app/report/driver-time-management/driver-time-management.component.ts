@@ -241,7 +241,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
-    this.defaultTranslation()
+
   }
 
 
@@ -491,11 +491,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     return res;
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
-  }
+ 
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
