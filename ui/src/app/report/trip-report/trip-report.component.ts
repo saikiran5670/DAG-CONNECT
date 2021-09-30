@@ -1131,7 +1131,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
-    if (this.wholeTripData.vinTripList.length > 0) {
+    if (this.wholeTripData &&  this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       // this.wholeTripData.vinTripList =[
       //     {
       //       "vin": "XLR0998HGFFT74597",
