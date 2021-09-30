@@ -673,7 +673,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification' }}     
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">     
-                    <span>{{row.averageTrafficClassification}}</span>     
+                    <span>{{row.averageTrafficClassificationValue}}</span>     
                   </mat-cell>      
                 </ng-container>
                 <ng-container matColumnDef="ccFuelConsumption">
@@ -684,7 +684,7 @@
                     || ' mpg') }})</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
-                      <span>{{row.ccFuelConsumption}}</span>
+                      <span>{{(row.ccFuelConsumption.toFixed(2))}}</span>
                     </mat-cell>
                   </ng-container>
       
@@ -704,7 +704,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}    
                   </mat-header-cell>     
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">      
-                    <span>{{row.idlingConsumption}}</span>      
+                    <span>{{row.idlingConsumptionValue}}</span>      
                   </mat-cell>
                 </ng-container>     
                 <ng-container matColumnDef="dpaScore">     

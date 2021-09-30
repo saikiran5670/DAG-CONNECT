@@ -7,7 +7,7 @@
             <span class='custom-font' (click)="closeImport()">
                 <span>
                     <&nbsp;</span>
-                        <span class='backBtnCss'>{{ this.importTranslationData.lblBack || 'Back' }}</span>
+                        <span class='backBtnCss'>{{ this.importTranslationData.lblBack  }}</span>
             </span>
         </div>
     </div>
@@ -15,7 +15,7 @@
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importTitle || 'Import New Package'}}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importTitle}}</span>
             </div>
            
       
@@ -25,30 +25,30 @@
                 <span style='display: flex; align-items: center;'>
                     <img matTooltip='Download' [src]='fileIcon' style="width: 30px; height: 30px;" />&nbsp;
                     <a  (click)='downloadTemplate()' class='cursor-pointer' style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
-                        {{ this.importTranslationData.downloadTemplate || 'Download a Template'}}
+                        {{ this.importTranslationData.downloadTemplate}}
                     </a>
                 </span>
-                <span>{{ this.importTranslationData.downloadTemplateInstruction || 'Downlaod template from here and upload it again with updated details'}}</span>
+                <span>{{ this.importTranslationData.downloadTemplateInstruction}}</span>
             </div>
             <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                 <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                     <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                <mat-label>{{this.importTranslationData.selectUpdatedFile || 'Select Updated File'}} <span class='mandatoryColor'>*</span></mat-label>
+                                <mat-label>{{this.importTranslationData.selectUpdatedFile}} <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
                                     <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload File" ></ngx-mat-file-input>
-                                    <button mat-flat-button color="primary" matSuffix>{{ this.importTranslationData.browse || 'Browse' }}</button>
+                                    <button mat-flat-button color="primary" matSuffix>{{ this.importTranslationData.browse }}</button>
                                 </mat-form-field>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('required')">
-                                    {{ this.importTranslationData.selectFile || 'Please select a file' }}
+                                    {{ this.importTranslationData.selectFile }}
                                 </mat-error>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('maxContentSize')">
-                                    {{this.importTranslationData.totalSizeMustNotExceed || 'The total size must not exceed' }} {{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                    {{this.importTranslationData.totalSizeMustNotExceed  }} {{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                     | byteFormat}}).
                                 </mat-error> 
                                <mat-error *ngIf="excelEmptyMsg">
-                                    {{ this.importTranslationData.emptyFile || 'Empty File' }}
+                                    {{ this.importTranslationData.emptyFile  }}
                                 </mat-error> 
                                 <mat-error *ngIf="filetypeError">
                                     {{ this.importTranslationData.invalidFileType}}
@@ -73,7 +73,7 @@
   
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importedFileDetails || 'Imported file details' }} ( {{filelist.length}} )</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importedFileDetails }} ( {{filelist.length}} )</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -82,12 +82,12 @@
     <div *ngIf="!packageCodeErrorMsg">
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedCount}} {{this.importTranslationData.new}} {{importedCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
+            <span>{{ this.importTranslationData.imported }} <span style='color: green'>{{importedCount}} {{this.importTranslationData.new}} {{importedCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.rejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
+            <span>{{ this.importTranslationData.rejected  }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
 
         </div>
     </div>
