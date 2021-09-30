@@ -4,14 +4,14 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblAddNewRelationsip || 'Add New Relationship' }}
+              translationData.lblAddNewRelationsip }}
             </mat-label>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblRelationsip || 'Relationship' }} <span *ngIf="createStatus" class='mandatoryColor'>*</span>
+              translationData.lblRelationsip  }} <span *ngIf="createStatus" class='mandatoryColor'>*</span>
             </mat-label>
           </div>
         </div>
@@ -25,7 +25,7 @@
                     </mat-select>
                 </mat-form-field>
                 <mat-error *ngIf="OrganisationRelationshipFormGroup.get('relationship').hasError('required')">
-                  {{ translationData.lblPleaseEnterRelationname || 'Please select Relation'}}
+                  {{ translationData.lblPleaseEnterRelationname }}
               </mat-error>
           </div>
           <!-- </div> -->
@@ -34,8 +34,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                 <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
                   <span
-                    style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
-                    || 'Chain Relationship:' }}
+                    style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship }}
                 <mat-radio-group (change)='onChange($event)'>
                   <!-- <mat-radio-button style='margin-right: 20px;' value="active"
                     [checked]="selectedType ===  'active' ? true : false">{{ translationData.lblActive || 'Active' }}
@@ -44,10 +43,10 @@
                     [checked]="selectedType ===  'inactive' ? true : false">{{ translationData.lblInActive || 'InActive' }}
                   </mat-radio-button> -->
                   <mat-radio-button [checked]="selectedType" style='margin-right: 20px;' value="true">{{
-                    translationData.lblActive || 'Active' }}
+                    translationData.lblActive }}
                 </mat-radio-button>
                 <mat-radio-button [checked]="selectedType ===  'inactive'" style='margin-right: 20px;' value="false">{{
-                    translationData.lblInactive || 'Inactive' }}
+                    translationData.lblInactive }}
                 </mat-radio-button>
                 </mat-radio-group></span>
               </div>
@@ -59,7 +58,7 @@
           <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
               <mat-icon class='margin-right-10'>info</mat-icon>
-              <span>{{translationData.lblRelationshipInfo || "Select multiple ''vehicle Group and Organisation'' from below list to map with this Relationship." }}</span>
+              <span>{{translationData.lblRelationshipInfo }}</span>
             </div>
           </div>
           <div fxLayout="column" fxLayoutAlign="end">
@@ -68,8 +67,8 @@
               <!-- <button *ngIf="editUserContent" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
               <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
-                (click)='onCreate();' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
-                (translationData.lblConfirm || 'Confirm') }}</button>
+                (click)='onCreate();' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate ) :
+                (translationData.lblConfirm ) }}</button>
             </div>
           </div>
         </div>
@@ -81,12 +80,12 @@
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
 
       <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
      
         <div fxLayout="row"  class='margin-bottom-sm'>
           <div class='areaWidth' fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <input matInput (keyup)="applyFilterOnVehicle($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <input matInput (keyup)="applyFilterOnVehicle($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
           </div>
@@ -105,7 +104,7 @@
                       [indeterminate]='selectedOrgRelations.hasValue() && !isAllSelectedForOrgRelationship()'
                       [aria-label]='checkboxLabelForOrgRelationship()'>
                     </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
@@ -114,7 +113,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="groupName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" >{{row.groupName}} </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="vehicleGroupDisplayColumn"></mat-header-row>
@@ -127,12 +126,12 @@
       </div>
 
     <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
   
       <div fxLayout="row"  class='margin-bottom-sm'>
         <div class='areaWidth' fxLayoutAlign="left">
           <mat-form-field appearance="outline">
-              <input matInput (keyup)="applyFilterOnOrg($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <input matInput (keyup)="applyFilterOnOrg($event.target.value)" placeholder="{{ translationData.lblSearch }}">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
@@ -152,7 +151,7 @@
                     [indeterminate]='selectedOrganisation.hasValue() && !isAllSelectedForOrganisation()'
                     [aria-label]='checkboxLabelForOrganisation()'>
                   </mat-checkbox>
-                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrganisation.toggle(row) : null'
@@ -161,11 +160,11 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="organizationId">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationId || 'Organisation Id'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationId }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{row.organizationId}} </mat-cell>
             </ng-container>
               <ng-container matColumnDef="organizationName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName || 'Organisation Name'}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.organizationName}} </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="organisationNameDisplayColumn"></mat-header-row>

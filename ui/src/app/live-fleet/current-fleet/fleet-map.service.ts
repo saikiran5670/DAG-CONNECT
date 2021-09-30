@@ -11,6 +11,7 @@ declare var H: any;
 })
 export class FleetMapService {
   platform: any;
+  alertConfigMap: any;
   alertFoundFlag: boolean =false;
   clusteringLayer: any;
   markerClusterLayer: any = [];
@@ -492,7 +493,7 @@ export class FleetMapService {
   }
   private createDrivingMarkerSVG(direction: any,healthColor:any, elem): string {
 
-    // if(!this.alertFoundFlag){
+    if(!this.alertFoundFlag){
     return `
       <g id="svg_15">
 			<g id="svg_1" transform="${direction.outer}">
@@ -530,11 +531,12 @@ export class FleetMapService {
 		
 		</g>`;
     }
-    // else{
+    else{
       // let alertConfig = this.getAlertConfig(elem);
-      // let alertIcon = this.setAlertFoundIcon(healthColor,alertConfig);
-    // }
-  // }
+      let alertIcon = this.setAlertFoundIcon(healthColor,this.alertConfigMap);
+      return alertIcon;
+    }
+  }
 
     viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
     this.clearRoutesFromMap();
@@ -1310,6 +1312,8 @@ let _type ='';
               latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
+              this.endAddressPositionLat = _alertFound.latitude;
+              this.endAddressPositionLong =_alertFound.longitude;
             }
         }
       }
@@ -1340,8 +1344,9 @@ let _type ='';
       }
       else{
       if(_alertFound){
-        _alertConfig = this.getAlertConfig(_alertFound);
+        // _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = this.setAlertFoundIcon(healthColor,_alertConfig);
+        this.alertConfigMap = _alertConfig;
 
       }
       else{
@@ -2468,4 +2473,20 @@ let _type ='';
     return _date;
   }
    
+  processedLiveFLeetData(fleetData: any){
+    fleetData.forEach(element => {
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
+      element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
+      element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
+      element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+    })
+    return fleetData;
+  }
+
+  skipInvalidRecord(livePoints: any){
+    livePoints.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
+    return filterPoints;
+  }
 }

@@ -195,8 +195,9 @@ status = new FormControl();
       "languagecode":"cs-CZ"
     }   
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
-     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-    
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
     let val:any;
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
@@ -494,8 +495,9 @@ removeDuplicates(originalArray, prop) {
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
-     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-  
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
