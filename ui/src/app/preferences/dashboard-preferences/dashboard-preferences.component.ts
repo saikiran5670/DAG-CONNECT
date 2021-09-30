@@ -153,11 +153,12 @@ export class DashboardPreferencesComponent implements OnInit {
 
       if (repoId.length > 0) {
         this.reportId = repoId[0].id;
+        this.loadDashboardPreferences();
       } else {
-        this.reportId = 18;
+        console.error("No report id found!")
       }//- hard coded for Dashboard
 
-      this.loadDashboardPreferences();
+      
     }, (error) => {
       console.log('Report not found...', error);
       this.hideloader();

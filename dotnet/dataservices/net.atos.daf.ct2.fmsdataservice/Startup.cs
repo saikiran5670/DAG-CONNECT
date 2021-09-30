@@ -28,7 +28,8 @@ using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
-
+using net.atos.daf.ct2.fms;
+using net.atos.daf.ct2.fms.repository;
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -97,6 +98,9 @@ namespace net.atos.daf.ct2.fmsdataservice
             services.AddTransient<ITranslationManager, TranslationManager>();
             services.AddTransient<IDriverRepository, DriverRepository>();
             services.AddTransient<IDriverManager, DriverManager>();
+            services.AddTransient<IFmsManager, FmsManager>();
+            services.AddTransient<IFmsRepository, FmsRepository>();
+
 
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
