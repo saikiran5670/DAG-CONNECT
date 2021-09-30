@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.visibility
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int reportFeatureId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId)
         {
             Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.visibility
             }
 
             // vehicle filtering based on features
-            resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
+            resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
 
             //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
             return MapVehicleDetailsForOTA(resultDict);

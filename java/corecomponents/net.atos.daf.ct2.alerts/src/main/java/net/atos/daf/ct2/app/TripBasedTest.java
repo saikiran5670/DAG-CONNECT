@@ -63,11 +63,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.*;
 
@@ -84,14 +80,30 @@ public class TripBasedTest implements Serializable {
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
 
         /**
+         * RealTime functions defined
+         * for geofence
+         */
+        Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+                    enteringZoneFun
+            ));
+        }};
+        /**
          *  Booting cache
          */
+        KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
+        Tuple2<BroadcastStream<VehicleAlertRefSchema>, BroadcastStream<Payload<Object>>> bootCache = kafkaCdcStreamV2.bootCache();
+
+        AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
+        AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
+
         SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
-                propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
-                propertiesParamTool, env)
+                        propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
+                        propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class)
-                .filter(index -> index.getVid() != null)
+                .filter(index -> index.getVid() != null && index.getVin() != null)
+                .filter(index ->index.getVin().equalsIgnoreCase("XLR0998HGFFT80000"))
                 .returns(Index.class)
                 .map(idx -> {
                     idx.setJobName(UUID.randomUUID().toString());
@@ -99,8 +111,13 @@ public class TripBasedTest implements Serializable {
                     return idx;})
                 .returns(Index.class);
 
+        /**
+         * Entering and exiting zone
+         */
+        KeyedStream<Index, String> geofenceEnteringZoneStream = indexStringStream.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
-        indexStringStream.print();
+        IndexMessageAlertService.processIndexKeyStream(geofenceEnteringZoneStream,
+                env,propertiesParamTool,geofenceFunConfigMap);
         env.execute("TripBasedTest");
 
 

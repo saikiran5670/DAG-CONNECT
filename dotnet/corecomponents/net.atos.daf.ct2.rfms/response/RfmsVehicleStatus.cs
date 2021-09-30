@@ -185,7 +185,7 @@ namespace net.atos.daf.ct2.rfms.response
         public double? TachographSpeed { get; set; }
         public int? EngineSpeed { get; set; }
         public string FuelType { get; set; }
-        public int? FuelLevel1 { get; set; }
+        public double? FuelLevel1 { get; set; }
         //public int? FuelLevel2 { get; set; }
         public int? CatalystFuelLevel { get; set; }
         public string Driver1WorkingState { get; set; }
@@ -247,6 +247,17 @@ namespace net.atos.daf.ct2.rfms.response
         public bool MoreDataAvailable { get; set; }
         public string MoreDataAvailableLink { get; set; }
         public string RequestServerDateTime { get; set; }
+
+    }
+
+    public class AccumulatedClassRequest
+    {
+        public int MinRange { get; set; }
+        public int MaxRange { get; set; }
+
+        public int NoOfStep { get; set; }
+        public int[] ClassDistanceData { get; set; }
+
 
     }
 }
