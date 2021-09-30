@@ -2232,7 +2232,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@Organization_id", orgId);
 
                 string query =
-                    @"SELECT DISTINCT grp.id, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
+                    @"SELECT DISTINCT grp.id, grp.name, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
                       FROM master.group grp
 	                  INNER JOIN master.groupref gref ON (gref.group_id=grp.id OR grp.group_type='D' OR grp.group_type='S') AND grp.object_type='V'
 	                  WHERE grp.organization_id=@Organization_id";
