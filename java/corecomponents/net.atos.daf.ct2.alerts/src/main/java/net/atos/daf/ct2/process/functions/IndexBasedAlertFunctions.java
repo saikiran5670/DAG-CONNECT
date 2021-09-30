@@ -299,6 +299,8 @@ public class IndexBasedAlertFunctions implements Serializable {
                 populateGeofenceAlertMap(alertMap, schema, "O");
                 // Checking only for circular geofence
                 populateGeofenceAlertMap(alertCircleMap, schema, "C");
+                // Checking only for POI geofence
+                populateGeofenceAlertMap(alertCircleMap, schema, "P");
             }
             Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
 
@@ -311,7 +313,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                             .collect(Collectors.toList());
                     if(!targetList.isEmpty()){
                         logger.info("Entering zone alert generated for polygon geofence vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
-                       return build = targetList.get(0);
+                       return  targetList.get(0);
                     }
                 }
             /**
@@ -326,7 +328,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                          .collect(Collectors.toList());
                 if(!targetList.isEmpty()){
                     logger.info("Entering zone alert generated for circular geofence vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
-                    return build = targetList.get(0);
+                    return  targetList.get(0);
                 }
             }
         } catch (Exception ex) {
@@ -352,6 +354,8 @@ public class IndexBasedAlertFunctions implements Serializable {
                 populateGeofenceAlertMap(alertMap, schema, "O");
                 // Checking only for circular geofence
                 populateGeofenceAlertMap(alertCircleMap, schema, "C");
+                // Checking only for POI geofence
+                populateGeofenceAlertMap(alertCircleMap, schema, "P");
             }
             Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
             if(! alertMap.isEmpty()){
