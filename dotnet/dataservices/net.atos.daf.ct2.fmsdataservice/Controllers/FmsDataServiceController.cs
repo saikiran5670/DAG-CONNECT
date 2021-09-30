@@ -30,17 +30,22 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
         }
 
         [HttpGet]
-        [Route("position")]
-        public async Task<IActionResult> Position(VehiclePositionRequest vehiclePositionRequest)
+        [Route("position/current")]
+        public async Task<IActionResult> Position([FromQuery] VehiclePositionRequest vehiclePositionRequest)
         {
             try
             {
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Postion", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice position received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle position function called - " + vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
                 net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-                // VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-                return Ok(vehiclePositionResponse);
-                // return StatusCode(500, string.Empty);
+                if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
+                {
+                    return Ok(vehiclePositionResponse);
+                }
+                else
+                {
+                    return StatusCode(400, string.Empty);
+                }
             }
             catch (Exception ex)
             {
@@ -50,17 +55,23 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
             }
         }
         [HttpGet]
-        [Route("status")]
-        public async Task<IActionResult> Status(VehicleStatusRequest vehicleStatusRequest)
+        [Route("status/current")]
+        public async Task<IActionResult> Status([FromQuery] VehicleStatusRequest vehicleStatusRequest)
         {
             try
             {
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
 
-                // VehicleStatusResponse vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehiclePositionRequest);
-                return Ok(vehicleStatusRequest);
-                // return StatusCode(500, string.Empty);
+                net.atos.daf.ct2.fms.entity.VehicleStatusResponse vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
+                if (vehicleStatusResponse != null)
+                {
+                    return Ok(vehicleStatusResponse);
+                }
+                else
+                {
+                    return StatusCode(400, "No vehicle found with the VIN given");
+                }
             }
             catch (Exception ex)
             {
