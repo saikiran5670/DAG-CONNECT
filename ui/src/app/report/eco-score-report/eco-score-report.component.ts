@@ -252,7 +252,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
-    this.defaultTranslation()
+  
   }
 
   ngOnInit(): void {
@@ -518,11 +518,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     return res;
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
-  }
+ 
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -824,12 +820,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
       if(this.vehicleGroupListData.length >0){
-        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
       }
       if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
-        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll  });
       if(this.driverListData.length>1){
-        this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+        this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
       }
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
@@ -854,7 +850,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 //         });
 //         this.vehicleGroupListData = finalGroupDataList;
 //       }
-//         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+//         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
 //       this.finalVehicleList = [];
 //       this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
 //       this.vehicleListData =[];
@@ -872,7 +868,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 //       }
 //       this.vehicleListData = finalVINDataList;
 //       if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
-//       this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+//       this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll  });
 //     }
 //     }
 //     if(this.onLoadData.driverList.length > 0){
@@ -889,7 +885,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 //         });
 //         this.driverListData = finalDriverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime));
       
-//         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+//         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
 //         this.finalDriverList = this.driverListData;
 //       }
 //       }
@@ -908,10 +904,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
     this.selectedDriverName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     this.selectedDriverOption='';
-    this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
-    this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips || 'Short Trips') + ' ';
-    this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ?  (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
-    this.selectedDriverOption += ' ' + (this.translationData.lblMinDriverTotDist || 'Minimum Driver Total Distance');
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude ) : (this.translationData.lblExclude );
+    this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips ) + ' ';
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ?  (this.translationData.lblInclude ) : (this.translationData.lblExclude );
+    this.selectedDriverOption += ' ' + (this.translationData.lblMinDriverTotDist );
   }
 
   checkIfNamePresent(_item){
@@ -1554,7 +1550,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   successMsgBlink(){
     this.titleVisible = true;
-    this.feautreCreatedMsg = this.translationData.lblVehicleLimitExceeds || 'Driver has driven more than 20 vehicles. For report purposes only top 20 have been displayed.';
+    this.feautreCreatedMsg = this.translationData.lblVehicleLimitExceeds;
     setTimeout(() => {  
       this.titleVisible = false;
     }, 25000);
