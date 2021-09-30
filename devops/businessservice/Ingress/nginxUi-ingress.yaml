@@ -9,7 +9,7 @@ metadata:
   name: ui-ingress
 spec:
   rules:
-  - host: services-00.aks-ingress.acc2.ct2.atos.net
+  - host: #{PortalIngressURL}#
     http:
       paths:
       - backend:
@@ -21,4 +21,4 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - services-00.aks-ingress.acc2.ct2.atos.net
+    - #{PortalIngressURL}#

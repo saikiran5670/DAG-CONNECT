@@ -27,7 +27,7 @@ import net.atos.daf.postgre.bo.IndexTripData;
 import net.atos.daf.postgre.dao.ReadIndexDataDao;
 
 public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedData, TripAggregatedData> {
-	private static final Logger logger = LoggerFactory.getLogger(TripAggregatedData.class);
+	private static final Logger logger = LoggerFactory.getLogger(IndexDataSourceLookup.class);
 
 	private static final long serialVersionUID = 1L;
 	private Connection connection;

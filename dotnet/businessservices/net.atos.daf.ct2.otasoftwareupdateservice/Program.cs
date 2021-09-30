@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace net.atos.daf.ct2.otasoftwareupateservice
+namespace net.atos.daf.ct2.otasoftwareupdateservice
 {
     public class Program
     {
