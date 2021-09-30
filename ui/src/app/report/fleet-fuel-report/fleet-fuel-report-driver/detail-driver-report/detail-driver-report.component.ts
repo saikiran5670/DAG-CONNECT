@@ -1236,7 +1236,7 @@ createEndMarker(){
     {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime":this.dateDetails.endTime,
-      "viNs": driverDetails.vin,
+      "viNs": [driverDetails.vin],
       "LanguageCode": "EN-GB"
     } 
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
