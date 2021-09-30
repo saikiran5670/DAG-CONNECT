@@ -663,12 +663,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+   
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
-    }
+    }  
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
