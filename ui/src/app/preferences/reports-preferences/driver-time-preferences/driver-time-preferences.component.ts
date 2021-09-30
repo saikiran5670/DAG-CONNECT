@@ -37,11 +37,11 @@ export class DriverTimePreferencesComponent implements OnInit {
     let repoId: any = this.reportListData.filter(i => i.name == 'Drive Time Management');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadDriveTimePreferences();
     }else{
-      this.reportId = 9; //- hard coded for Drive Time Management Report
+      console.error("No report id found!")
     }
     this.translationUpdate();
-    this.loadDriveTimePreferences();
   }
 
   translationUpdate(){
