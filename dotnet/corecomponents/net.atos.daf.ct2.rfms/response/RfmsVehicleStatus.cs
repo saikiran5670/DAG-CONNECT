@@ -187,10 +187,10 @@ namespace net.atos.daf.ct2.rfms.response
         public string FuelType { get; set; }
         public double? FuelLevel1 { get; set; }
         //public int? FuelLevel2 { get; set; }
-        public int? CatalystFuelLevel { get; set; }
-        public string Driver1WorkingState { get; set; }
+        public decimal? CatalystFuelLevel { get; set; }
+        public int? Driver1WorkingState { get; set; }
         public Driver2Id Driver2Id { get; set; }
-        public string Driver2WorkingState { get; set; }
+        public int? Driver2WorkingState { get; set; }
         public double? AmbientAirTemperature { get; set; }
         public bool? ParkingBrakeSwitch { get; set; } //optional for this delivery
         public int? HybridBatteryPackRemainingCharge { get; set; } //optional for this delivery
@@ -207,8 +207,8 @@ namespace net.atos.daf.ct2.rfms.response
         public List<TellTaleInfo> TellTaleInfo { get; set; }
         public int? ServiceDistance { get; set; }
         public int? EngineCoolantTemperature { get; set; }
-        public int? ServiceBrakeAirPressureCircuit1 { get; set; }
-        public int? ServiceBrakeAirPressureCircuit2 { get; set; }
+        public double? ServiceBrakeAirPressureCircuit1 { get; set; }
+        public double? ServiceBrakeAirPressureCircuit2 { get; set; }
         // public int DurationAtLeastOneDoorOpen { get; set; }
         public AlternatorInfo AlternatorInfo { get; set; }
         //public int BellowPressureFrontAxleLeft { get; set; }
