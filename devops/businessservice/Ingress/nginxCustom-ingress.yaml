@@ -1,0 +1,291 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: 10.60.0.4,10.60.160.4,10.210.0.10,10.250.0.6,10.250.0.5,10.250.0.4
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  name: customerdataservice-ingress
+spec:
+  rules:
+  - host: #{IngressURL}#
+    http:
+      paths:
+      - backend:
+          service:
+            name: customerdataservice
+            port:
+              number: 80
+        path: /customer-data
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /portalservice
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /account
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /login
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /logout
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: autenticationdataservice
+            port:
+              number: 80
+        path: /auth
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /package
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /feature
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /alert
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /organization
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /corridor
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /role
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /vehicle
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /audit
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /translation
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /driver
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /subscribe
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /poi
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /geofence
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /landmarkcategory
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /landmarkgroup
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: vehicledataservice
+            port:
+              number: 80
+        path: /vehicle-data
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: vehicledataservice
+            port:
+              number: 80
+        path: /vehicle/mileage
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: vehicledataservice
+            port:
+              number: 80
+        path: /vehicle/namelist
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: featureactivationservice
+            port:
+              number: 80
+        path: /subscription
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: singlesignonservice
+            port:
+              number: 80
+        path: /sso
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: applicationservice
+            port:
+              number: 80
+        path: /health-check
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /report
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /mapservice
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: applicationservice
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /reportscheduler
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /NotificationHub
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: ecoscoredataservice
+            port:
+              number: 80
+        path: /ecoscore/kpiinfo
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: ecoscoredataservice
+            port:
+              number: 80
+        path: /ecoscore/chartinfo
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: autenticationdataservice
+            port:
+              number: 80
+        path: /rfms3/token
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: rfmsdataservice
+            port:
+              number: 80
+        path: /rfms/vehicles
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: portalservice
+            port:
+              number: 80
+        path: /dashboard
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: rfmsdataservice
+            port:
+              number: 80
+        path: /rfms/vehiclepositions
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: provisioningdataservice
+            port:
+              number: 80
+        path: /provisioning
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - #{IngressURL}#
+
