@@ -4,8 +4,7 @@ option csharp_namespace = "net.atos.daf.ct2.otasoftwareupdateservice";
 
 package otasoftwareupdate;
 
-service OTASoftwareUpdateService {
-  
+service OTASoftwareUpdateService {  
  rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponce); 
 }
 enum ResponseCode{
