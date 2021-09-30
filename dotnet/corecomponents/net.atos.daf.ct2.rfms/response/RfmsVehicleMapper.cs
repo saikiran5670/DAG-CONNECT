@@ -187,9 +187,9 @@ namespace net.atos.daf.ct2.rfms.response
             }
             if (!string.IsNullOrEmpty(contentFilter))
             {
-                vehicleStatus.AccumulatedData = contentFilter.Contains(ContentType.ACCUMULATED.ToString()) ? MapAccumuatedData(record) : null;
-                vehicleStatus.SnapshotData = contentFilter.Contains(ContentType.SNAPSHOT.ToString()) ? MapSnapShotData(record) : null;
-                vehicleStatus.UptimeData = contentFilter.Contains(ContentType.UPTIME.ToString()) ? MapUptimeData(record) : null;
+                vehicleStatus.AccumulatedData = contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()) ? MapAccumuatedData(record) : null;
+                vehicleStatus.SnapshotData = contentFilter.Contains(ContentType.SNAPSHOT.ToString()[0].ToString()) ? MapSnapShotData(record) : null;
+                vehicleStatus.UptimeData = contentFilter.Contains(ContentType.UPTIME.ToString()[0].ToString()) ? MapUptimeData(record) : null;
             }
             else
             {
@@ -477,7 +477,7 @@ namespace net.atos.daf.ct2.rfms.response
             snapshotData.Driver2Id = new Driver2Id()
             {
 
-                TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment),
+                TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment.toString()),
                 OemDriverIdentification = new OemDriverIdentification()
                 {
                     IdType = record.driver2oemidtype,
