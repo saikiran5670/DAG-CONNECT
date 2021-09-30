@@ -61,5 +61,8 @@ namespace net.atos.daf.ct2.vehicle
         Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
 
         #endregion
+        #region Get Vehicles property Model Year and Type
+        Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds);
+        #endregion
     }
 }
