@@ -1225,7 +1225,7 @@ createEndMarker(){
       "driverId": driverDetails.driverID
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1756,6 +1756,22 @@ createEndMarker(){
           labelString: data1    
         }
       }];     
+      this.barChartOptions3.scales.xAxes= [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },  
+        type:'time',
+         time:
+         {
+           tooltipFormat:  this.chartLabelDateFormat,
+           unit: 'day',
+           stepSize:1,
+           displayFormats: {      
+             day:  this.chartLabelDateFormat,            
+            },             
+         }   
+     }];  
     this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: data1,
@@ -1777,6 +1793,22 @@ createEndMarker(){
         labelString: 'Number of Trips'    
       }
     }]; 
+    this.barChartOptions.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      }, 
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }   
+   }];  
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -1797,6 +1829,22 @@ createEndMarker(){
         labelString: data2   
       }
     }];
+    this.barChartOptions4.scales.xAxes= [{     
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }  
+     }];
     this.barChartData3= [
       { data: this.co2Chart,
         label: data2,
@@ -1817,6 +1865,22 @@ createEndMarker(){
         labelString: data3   
       }
     }];
+    this.barChartOptions2.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }     
+   }];
      this.barChartData4= [
       { data: this.distanceChart,
         label: data3,
@@ -1836,6 +1900,22 @@ createEndMarker(){
         labelString: 'Minutes'      
       }
     }];
+    this.barChartOptions1.scales.xAxes= [{      
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },    
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }      
+  }]; 
   this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
@@ -1854,6 +1934,22 @@ createEndMarker(){
         labelString: data4    
       }
     }];
+    this.barChartOptions5.scales.xAxes= [{      
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+    type:'time',
+    time:
+    {
+      tooltipFormat:  this.chartLabelDateFormat,
+      unit: 'day',
+      stepSize:1,
+      displayFormats: {      
+        day:  this.chartLabelDateFormat,            
+       },             
+    }      
+}]; 
      this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label:data4,

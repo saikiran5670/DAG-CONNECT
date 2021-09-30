@@ -121,10 +121,12 @@ public class Co2MasterDao implements Serializable {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Issue while reading fuelType value for trip statistics job :: " + e);
+			logger.error("Issue while reading fuelType value exception :: " + e);
+			logger.error("Issue while reading fuelType value for trip statistics job :: ",fuelTypeQry);
 			// throw e;
 		} catch (Exception e) {
-			logger.error("Issue while reading fuelType value for trip statistics job :: " + e);
+			logger.error("Issue while reading fuelType exception :: " + e);
+			logger.error("Issue while reading fuelType value for trip statistics job :: ",fuelTypeQry);
 			// throw e;
 		} finally {
 			if (null != rs) {

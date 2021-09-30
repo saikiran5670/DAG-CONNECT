@@ -3,7 +3,7 @@
         <span class='custom-font' (click)="backToMainPageCall()">
             <span>
                 <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack  }}</span>
         </span>
     </div>
 </div>
@@ -11,7 +11,7 @@
     <mat-expansion-panel [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title >
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral  }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -19,13 +19,13 @@
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblFrom || 'From' }}: </span>
+                <span>{{ translationData.lblFrom  }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.fromDisplayDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblVehicleGroup|| 'Driver Name' }}: </span>
+                <span>{{ translationData.lblVehicleGroup }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.selectedDriverName }}</span>
               </span>
             </div>
@@ -34,13 +34,13 @@
 
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblTo|| 'To' }}: </span>
+                <span>{{ translationData.lblTo }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.toDisplayDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblVehicle || 'Driver Id' }}: </span>
+                <span>{{ translationData.lblVehicle}}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.selectedDriverId }}</span>
               </span>
             </div>
@@ -51,31 +51,31 @@
             
             <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <div>{{ translationData.lblTotalDriveTime || 'Total Drive Time' }}: </div>
+                <div>{{ translationData.lblTotalDriveTime }}: </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.driveTime }} (hh:mm)</div>
               </span>
             </div>
               <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <div>{{ translationData.lblTotalWorkTime || 'Total Work Time' }}: </div>
+                  <div>{{ translationData.lblTotalWorkTime  }}: </div>
                   <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.workTime }} (hh:mm)</div>
                 </span>
               </div>
               <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <div>{{ translationData.lblTotalAvailableTime || 'Total Available Time' }}: </div>
+                  <div>{{ translationData.lblTotalAvailableTime }}: </div>
                   <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.availableTime }} (hh:mm)</div>
                 </span>
               </div>
               <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <div>{{ translationData.lblTotalRestTime || 'Total Rest Time' }}: </div>
+                  <div>{{ translationData.lblTotalRestTime  }}: </div>
                   <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.restTime }} (hh:mm)</div>
                 </span>
               </div>
               <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <div>{{ translationData.lblTotalServiceTime || 'Total Service Time' }}: </div>
+                  <div>{{ translationData.lblTotalServiceTime }}: </div>
                   <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.serviceTime }} (hh:mm)</div>
                 </span>
               </div>
