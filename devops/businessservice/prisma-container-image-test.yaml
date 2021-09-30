@@ -88,4 +88,4 @@ steps:
   displayName: 'Prisma Cloud Compute Scan'
   inputs:
     twistlockService: 'DAF DTA Prisma Cloud Compute Connection'
-    artifact: 'testservice-grpc-image:latest'
+    artifact: 'acraksvyajhwtrez6ou.azurecr.io/testservice-grpc-image:latest'
