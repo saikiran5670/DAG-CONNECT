@@ -6,7 +6,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.otasoftwareupdate;
 
-namespace net.atos.daf.ct2.otasoftwareupateservice
+namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
 {
 
     public class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.otasoftwareupateservice
             _otaSoftwareUpdateManagement = otaSoftwareUpdateManagement;
         }
 
-        public async override Task<VehicleSoftwareStatusResponce> GetVehicleSoftwareStatus(NoRequest request, ServerCallContext context)
+        public override async Task<VehicleSoftwareStatusResponce> GetVehicleSoftwareStatus(NoRequest request, ServerCallContext context)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.otasoftwareupateservice
                 var response = new VehicleSoftwareStatusResponce
                 {
                     Message = "Successfully fetch records for Vehicle Software Status",
-                    Code = ResponceCode.Success
+                    Code = ResponseCode.Success
                 };
                 response.VehicleSoftwareStatusList.AddRange(
                                                 vehicleSoftwareStatusList.Select(s =>
@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.otasoftwareupateservice
                 return await Task.FromResult(new VehicleSoftwareStatusResponce
                 {
                     Message = "Exception :-" + ex.Message,
-                    Code = ResponceCode.InternalServerError
+                    Code = ResponseCode.InternalServerError
                 });
             }
         }

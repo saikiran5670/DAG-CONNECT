@@ -52,11 +52,11 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
 
     if (repoId.length > 0) {
       this.reportId = repoId[0].id;
+      this.loadFuelBenchmarkReportPreferences();
     } else {
-      this.reportId = 6; //- hard coded for Fuel Benchmarking Report
+      console.error("No report id found!");
     }
     this.translationUpdate();
-    this.loadFuelBenchmarkReportPreferences();
   }
 
   translationUpdate() {

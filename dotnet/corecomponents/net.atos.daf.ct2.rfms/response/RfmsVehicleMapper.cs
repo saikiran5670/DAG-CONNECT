@@ -238,6 +238,7 @@ namespace net.atos.daf.ct2.rfms.response
         }
         public AccumulatedData MapAccumuatedData(dynamic record)
         {
+
             var accumulatedData = new AccumulatedData()
             {
                 DurationWheelbaseSpeedOverZero = record.durationWheelbaseSpeedOverZero,
@@ -246,127 +247,179 @@ namespace net.atos.daf.ct2.rfms.response
                 FuelConsumptionDuringCruiseActive = record.fuelconsumptionduringcruiseactive,
                 DurationWheelbaseSpeedZero = record.durationwheelbasespeedzero,
                 FuelWheelbaseSpeedZero = record.fuelduringwheelbasespeedzero,
-                FuelWheelbaseSpeedOverZero = record.fuelwheelbasespeedoverzero,
-                PtoActiveClass = new List<PtoActiveClass>
-                { new PtoActiveClass()
-                {
-                Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
-                Seconds= 12345,
-                Meters= 2345,
-                MilliLitres= 3456
-                }
-                },
                 BrakePedalCounterSpeedOverZero = record.brakepedalcounterspeedoverzero,
                 DistanceBrakePedalActiveSpeedOverZero = record.distancebrakepedalactivespeedoverzero,
-                AccelerationPedalPositionClass = new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
-                    To = 20,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345} },
-                BrakePedalPositionClass = new List<BrakePedalPositionClass>() { new BrakePedalPositionClass() {  From = 0,
-                    To = 20,
-                    Seconds = 2456,
-                    Meters = 34578,
-                    MilliLitres = 67345 } },
-                AccelerationClass = new List<AccelerationClass>{ new AccelerationClass() { From = -1.1,
-                    To = -0.9,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                } },
-
-                HighAccelerationClass = new List<HighAccelerationClass>(){new HighAccelerationClass()
-            {
-                    From = -3,
-                    To = -2.5,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-                },
-                RetarderTorqueClass = new List<RetarderTorqueClass>(){new RetarderTorqueClass()
-            {
-                    From = 0,
-                    To = 20,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-                },
-                DrivingWithoutTorqueClass = new List<DrivingWithoutTorqueClass>(){new DrivingWithoutTorqueClass()
-            {
-                    Label =MasterMemoryObjectCacheConstants.DRIVING_WITHOUT_TORQUE,
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-                },
-                EngineTorqueClass = new List<EngineTorqueClass>() {new EngineTorqueClass()            {
-                    From = 0,
-                    To = 10,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                EngineTorqueAtCurrentSpeedClass = new List<EngineTorqueAtCurrentSpeedClass>() {new EngineTorqueAtCurrentSpeedClass()
-            {
-                    From = 0,
-                    To = 10,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
-            {
-                    From = 0,
-                    To = 4,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                EngineSpeedClass = new List<EngineSpeedClass>() {new EngineSpeedClass()
-            {
-                    From = 0,
-                    To = 400,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                AccelerationDuringBrakeClass = new List<AccelerationDuringBrakeClass>() { new  AccelerationDuringBrakeClass()
-            {
-                    From = -1.1,
-                    To = -0.9,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                SelectedGearClass = new List<SelectedGearClass>() {new SelectedGearClass()
-            {
-                    Label = "0",
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-         },
-                CurrentGearClass = new List<CurrentGearClass>() { new CurrentGearClass()
-            {
-                    Label = "0",
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-                },
-
+                FuelWheelbaseSpeedOverZero = record.fuelwheelbasespeedoverzero
             };
+
+            //PtoActiveClass = new List<PtoActiveClass>
+            //{ new PtoActiveClass()
+            //{
+            //Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
+            //Seconds= 12345,
+            //Meters= 2345,
+            //MilliLitres= 3456
+            //}
+            //},
+
+            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrangek != null)
+            {
+                accumulatedData.AccelerationPedalPositionClass = AccumulateAccelerationPedalPositionClass(record);
+            }
+            //new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
+            //    To = 20,
+            //    Seconds = 23456,
+            //    Meters = 345678,
+            //    MilliLitres = 678345} },
+            //       BrakePedalPositionClass = new List<BrakePedalPositionClass>() { new BrakePedalPositionClass() {  From = 0,
+            //           To = 20,
+            //           Seconds = 2456,
+            //           Meters = 34578,
+            //           MilliLitres = 67345 } },
+            //       AccelerationClass = new List<AccelerationClass>{ new AccelerationClass() { From = -1.1,
+            //           To = -0.9,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       } },
+
+            //       HighAccelerationClass = new List<HighAccelerationClass>(){new HighAccelerationClass()
+            //   {
+            //           From = -3,
+            //           To = -2.5,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //       },
+            //       RetarderTorqueClass = new List<RetarderTorqueClass>(){new RetarderTorqueClass()
+            //   {
+            //           From = 0,
+            //           To = 20,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //       },
+            //       DrivingWithoutTorqueClass = new List<DrivingWithoutTorqueClass>(){new DrivingWithoutTorqueClass()
+            //   {
+            //           Label =MasterMemoryObjectCacheConstants.DRIVING_WITHOUT_TORQUE,
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //       },
+            //       EngineTorqueClass = new List<EngineTorqueClass>() {new EngineTorqueClass()            {
+            //           From = 0,
+            //           To = 10,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       EngineTorqueAtCurrentSpeedClass = new List<EngineTorqueAtCurrentSpeedClass>() {new EngineTorqueAtCurrentSpeedClass()
+            //   {
+            //           From = 0,
+            //           To = 10,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
+            //   {
+            //           From = 0,
+            //           To = 4,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       EngineSpeedClass = new List<EngineSpeedClass>() {new EngineSpeedClass()
+            //   {
+            //           From = 0,
+            //           To = 400,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       AccelerationDuringBrakeClass = new List<AccelerationDuringBrakeClass>() { new  AccelerationDuringBrakeClass()
+            //   {
+            //           From = -1.1,
+            //           To = -0.9,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       SelectedGearClass = new List<SelectedGearClass>() {new SelectedGearClass()
+            //   {
+            //           Label = "0",
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //},
+            //       CurrentGearClass = new List<CurrentGearClass>() { new CurrentGearClass()
+            //   {
+            //           Label = "0",
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //       },
+
+            // };
 
             return accumulatedData;
         }
+        private List<string> GetPedalInterval(int maxSize, int minSize, int step)
+        {
+            Dictionary<int, string> intervalRanges = new Dictionary<int, string>();
+            List<string> intervals = new List<string>();
+            int index = 0;
+            int[] res = new int[10];
+            for (int i = minSize; i <= maxSize;
+            i += step)
+            {
+                index += 1;
+                var a = i;//== 0 ? i : i += 1;
+                var b = i + step > maxSize ? maxSize : i + step;
+                if (a < maxSize)
+                {
+                    var range = a.ToString() + "-" + b.ToString();
+                    intervalRanges.Add(index, range);
+                    intervals.Add(range);
+                };
 
+            }
+            return intervals;// intervalRanges;
+        }
+        private List<AccelerationPedalPositionClass> AccumulateAccelerationPedalPositionClass(dynamic record)
+        {
+
+            var accumulatedClassRequest = new AccumulatedClassRequest()
+            {
+                ClassDistanceData = record.accelerationpedalposclassdistr = new int[40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30],
+                MaxRange = record.accelerationpedalposclassmaxrange,
+                MinRange = record.accelerationpedalposclassminrange,
+                NoOfStep = record.accelerationpedalposclassdistrstep,
+
+            };
+            var accClass = new List<AccelerationPedalPositionClass>();
+            var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
+            foreach (var item in intervals.Select((value, i) => new { i, value }))
+            {
+                accClass.Add(new AccelerationPedalPositionClass()
+                {
+                    From = Convert.ToInt32(item.value.Split('-')[0]),
+                    To = Convert.ToInt32(item.value.Split('-')[1]),
+                    Seconds = accumulatedClassRequest.ClassDistanceData[item.i]
+                });
+            }
+            return accClass;
+        }
 
         public SnapshotData MapSnapShotData(dynamic record)
         {

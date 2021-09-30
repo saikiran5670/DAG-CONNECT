@@ -6,6 +6,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
@@ -44,6 +45,10 @@ public class FlinkUtil {
 
 		env.setStateBackend(
 				(StateBackend) new FsStateBackend(envParams.get(FuelDeviationConstants.CHECKPOINT_DIRECTORY), true));
+		
+		// enable externalized checkpoints which are retained after job  cancellation
+		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
 
 		if("true".equals(envParams.get(FuelDeviationConstants.RESTART_FLAG))){
 			env.setRestartStrategy(

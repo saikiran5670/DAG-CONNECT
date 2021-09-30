@@ -6,8 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.otasoftwareupdate;
+using net.atos.daf.ct2.otasoftwareupdate.repository;
+using net.atos.daf.ct2.otasoftwareupdateservice.Services;
 
-namespace net.atos.daf.ct2.otasoftwareupateservice
+namespace net.atos.daf.ct2.otasoftwareupdateservice
 {
     public class Startup
     {
@@ -49,7 +52,8 @@ namespace net.atos.daf.ct2.otasoftwareupateservice
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
 
-            //services.AddTransient<IFeatureRepository, FeatureRepository>();
+            services.AddTransient<IOTASoftwareUpdateRepository, OTASoftwareUpdateRepository>();
+            services.AddTransient<IOTASoftwareUpdateManager, OTASoftwareUpdateManager>(); 
 
         }
 
