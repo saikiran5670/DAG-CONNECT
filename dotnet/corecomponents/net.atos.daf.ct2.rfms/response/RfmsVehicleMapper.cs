@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, Convert.ToString(record.driverauthenticationequipment));
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
             //new TachoDriverIdentification();
             //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
             //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, Convert.ToString(record.driverauthenticationequipment));
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
             // new TachoDriverIdentification();
             //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
             //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
@@ -474,16 +474,14 @@ namespace net.atos.daf.ct2.rfms.response
             // FuelLevel2 = 45,
             snapshotData.CatalystFuelLevel = record.catalystfuellevel;
             snapshotData.Driver1WorkingState = record.driver1workingstate;
-            snapshotData.Driver2Id = new Driver2Id()
+            var driver2Id = new Driver2Id();
+            driver2Id.TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment);
+            driver2Id.OemDriverIdentification = new OemDriverIdentification()
             {
-
-                TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment.toString()),
-                OemDriverIdentification = new OemDriverIdentification()
-                {
-                    IdType = record.driver2oemidtype,
-                    DriverIdentification = record.oemdriver2identification
-                }
+                IdType = record.driver2oemidtype,
+                DriverIdentification = record.oemdriver2identification
             };
+
             snapshotData.Driver2WorkingState = record.driver2workingstate;
             snapshotData.AmbientAirTemperature = record.ambientairtemperature;
             snapshotData.ParkingBrakeSwitch = null;
@@ -527,7 +525,7 @@ namespace net.atos.daf.ct2.rfms.response
         }
 
 
-        public TachoDriverIdentification GetDriverCardDetails(string driverIdentification, string authenticationEquipment)
+        public TachoDriverIdentification GetDriverCardDetails(string driverIdentification, int? authenticationEquipment)
         {
             //TachoDriverIdentification tacho = new TachoDriverIdentification();
             // record.tachodriver2identification;
@@ -538,7 +536,7 @@ namespace net.atos.daf.ct2.rfms.response
                 {
                     DriverIdentification = driverIdentification,
                     CardIssuingMemberState = driverIdentification == "*" ? "*" : driverIdentification.Substring(0, 3).Trim(),//first three with trim
-                    DriverAuthenticationEquipment = authenticationEquipment,
+                    DriverAuthenticationEquipment = authenticationEquipment?.ToString(),
                     CardReplacementIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
                     CardRenewalIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring(driverIdentification.Length - 2) // last two index
                 };
