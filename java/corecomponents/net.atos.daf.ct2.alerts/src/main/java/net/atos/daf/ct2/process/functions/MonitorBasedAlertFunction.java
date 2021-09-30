@@ -20,6 +20,9 @@ import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.process.service.AlertLambdaExecutor;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
+import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
+
 public class MonitorBasedAlertFunction implements Serializable {
 	private static final long serialVersionUID = -2623908626314058510L;
 	private static final Logger logger = LoggerFactory.getLogger(MonitorBasedAlertFunction.class);
@@ -97,14 +100,23 @@ public class MonitorBasedAlertFunction implements Serializable {
 
 
 	private static Target getTarget(Monitor moniter, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {
+		String alertGeneratedTime = String.valueOf(System.currentTimeMillis());
+		try{
+			alertGeneratedTime = String.valueOf(convertDateToMillis(moniter.getEvtDateTime()));
+		}catch (Exception ex){
+			logger.error("Error while converting event time to milliseconds {} error {} ",String.format(INCOMING_MESSAGE_UUID,moniter.getJobName()));
+		}
 		return Target.builder().alert(Optional.of(Alert.builder()
-				.tripid(" ").vin(moniter.getVin())
-				.categoryType(urgency.getAlertCategory()).type(urgency.getAlertType())
-				.alertid("" + urgency.getAlertId()).alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
-				.thresholdValue("" + urgency.getThresholdValue()).thresholdValueUnitType(urgency.getUnitType())
-				//.valueAtAlertTime("" + valueAtAlertTime).
-				.valueAtAlertTime("0.0").
-				urgencyLevelType(urgency.getUrgencyLevelType()).build()))
+						.tripid(" ")
+						.vin(moniter.getVin())
+						.categoryType(urgency.getAlertCategory())
+						.type(urgency.getAlertType())
+						.alertid("" + urgency.getAlertId())
+						.alertGeneratedTime(alertGeneratedTime)
+						.thresholdValue("" + urgency.getThresholdValue())
+						.thresholdValueUnitType(urgency.getUnitType())
+						.valueAtAlertTime("0.0")
+						.urgencyLevelType(urgency.getUrgencyLevelType()).build()))
 				.build();
 	}
 }

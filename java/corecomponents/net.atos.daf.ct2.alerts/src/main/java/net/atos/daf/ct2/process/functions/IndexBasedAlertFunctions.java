@@ -449,7 +449,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                     // Check weather point inside or outside of polygon
                     Boolean inside = isPolygon ? RayCasting.isInside(polygonPoints, point)
                             : CircularGeofence.isInsideByHaversine(polygonPoints[0], point, tempSchema.getCircleRadius());
-                    logger.info("Geofence testing result  {} for {}",inside,messageUUID);
+                    logger.info("Geofence testing result  {} points: {} test point {} for {}",inside,Arrays.asList(polygonPoints),Arrays.asList(point),messageUUID);
                     // If the state change raise an alert for entering zone
                     if (checkVehicleStateForZone(index, vehicleGeofenceSateEnteringZone, vehicleState, tempSchema, inside,alertType)){
                         Target target = getTarget(index, tempSchema, 0);
@@ -519,6 +519,12 @@ public class IndexBasedAlertFunctions implements Serializable {
     }
 
     private static Target getTarget(Index index, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {
+        String alertGeneratedTime = String.valueOf(System.currentTimeMillis());
+        try{
+            alertGeneratedTime = String.valueOf(convertDateToMillis(index.getEvtDateTime()));
+        }catch (Exception ex){
+            logger.error("Error while converting event time to milliseconds {} error {} ",String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+        }
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
                         .tripid(index.getDocument() !=null ? index.getDocument().getTripID() : "")
@@ -526,7 +532,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                         .categoryType(urgency.getAlertCategory())
                         .type(urgency.getAlertType())
                         .alertid("" + urgency.getAlertId())
-                        .alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
+                        .alertGeneratedTime(alertGeneratedTime)
                         .thresholdValue("" + urgency.getThresholdValue())
                         .thresholdValueUnitType(urgency.getUnitType())
                         .valueAtAlertTime(""+valueAtAlertTime)
