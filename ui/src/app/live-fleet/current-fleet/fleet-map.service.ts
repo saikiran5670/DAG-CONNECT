@@ -11,6 +11,7 @@ declare var H: any;
 })
 export class FleetMapService {
   platform: any;
+  alertConfigMap: any;
   alertFoundFlag: boolean =false;
   clusteringLayer: any;
   markerClusterLayer: any = [];
@@ -492,7 +493,7 @@ export class FleetMapService {
   }
   private createDrivingMarkerSVG(direction: any,healthColor:any, elem): string {
 
-    // if(!this.alertFoundFlag){
+    if(!this.alertFoundFlag){
     return `
       <g id="svg_15">
 			<g id="svg_1" transform="${direction.outer}">
@@ -530,11 +531,12 @@ export class FleetMapService {
 		
 		</g>`;
     }
-    // else{
+    else{
       // let alertConfig = this.getAlertConfig(elem);
-      // let alertIcon = this.setAlertFoundIcon(healthColor,alertConfig);
-    // }
-  // }
+      let alertIcon = this.setAlertFoundIcon(healthColor,this.alertConfigMap);
+      return alertIcon;
+    }
+  }
 
     viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
     this.clearRoutesFromMap();
@@ -1310,6 +1312,8 @@ let _type ='';
               latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
+              this.endAddressPositionLat = _alertFound.latitude;
+              this.endAddressPositionLong =_alertFound.longitude;
             }
         }
       }
@@ -1340,8 +1344,9 @@ let _type ='';
       }
       else{
       if(_alertFound){
-        _alertConfig = this.getAlertConfig(_alertFound);
+        // _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = this.setAlertFoundIcon(healthColor,_alertConfig);
+        this.alertConfigMap = _alertConfig;
 
       }
       else{
