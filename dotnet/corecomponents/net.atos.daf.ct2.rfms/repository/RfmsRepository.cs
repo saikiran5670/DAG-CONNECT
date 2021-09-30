@@ -513,7 +513,7 @@ namespace net.atos.daf.ct2.rfms.repository
         private string GetContentFilterQuery(string contentFilter)
         {
             var query = string.Empty;
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()))
             {
                 query += @" ,t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
                             t2.distance_cruise_control_active as distancecruisecontrolactive,
@@ -568,7 +568,7 @@ namespace net.atos.daf.ct2.rfms.repository
                             t1.ambient_air_temperature as ambientairtemperature ";
 
             }
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()[0].ToString()))
             {
                 query += @" ,t1.oem_telltale as oemtelltale,
                             t1.telltale_state_id as state,
