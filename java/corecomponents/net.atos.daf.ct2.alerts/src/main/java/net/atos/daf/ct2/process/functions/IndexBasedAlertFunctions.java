@@ -266,8 +266,8 @@ public class IndexBasedAlertFunctions implements Serializable {
                             for(Index idx : indexList){
                                 long eventTimeInMillis = convertDateToMillis(idx.getEvtDateTime());
                                 long eventTimeInSeconds = millisecondsToSeconds(eventTimeInMillis);
-                                long fromTimeInSeconds =  millisecondsToSeconds(System.currentTimeMillis()) - schema.getThresholdValue().longValue();
-                                long endTimeInSeconds =   millisecondsToSeconds(System.currentTimeMillis());
+                                long fromTimeInSeconds =  millisecondsToSeconds(getCurrentTimeInUTC()) - schema.getThresholdValue().longValue();
+                                long endTimeInSeconds =   millisecondsToSeconds(getCurrentTimeInUTC());
                                 if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds){
                                     logger.info("Alert found excessiveUnderUtilizationInHours ::type {} , threshold {} , urgency {} index {}", schema.getAlertType(), schema.getThresholdValue(), schema.getUrgencyLevelType(), index);
                                     return getTarget(index, schema, eventTimeInSeconds);
