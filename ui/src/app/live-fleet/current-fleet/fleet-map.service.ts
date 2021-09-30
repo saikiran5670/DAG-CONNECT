@@ -11,6 +11,7 @@ declare var H: any;
 })
 export class FleetMapService {
   platform: any;
+  alertConfigMap: any;
   alertFoundFlag: boolean =false;
   clusteringLayer: any;
   markerClusterLayer: any = [];
@@ -492,7 +493,7 @@ export class FleetMapService {
   }
   private createDrivingMarkerSVG(direction: any,healthColor:any, elem): string {
 
-    // if(!this.alertFoundFlag){
+    if(!this.alertFoundFlag){
     return `
       <g id="svg_15">
 			<g id="svg_1" transform="${direction.outer}">
@@ -530,11 +531,12 @@ export class FleetMapService {
 		
 		</g>`;
     }
-    // else{
+    else{
       // let alertConfig = this.getAlertConfig(elem);
-      // let alertIcon = this.setAlertFoundIcon(healthColor,alertConfig);
-    // }
-  // }
+      let alertIcon = this.setAlertFoundIcon(healthColor,this.alertConfigMap);
+      return alertIcon;
+    }
+  }
 
     viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
     this.clearRoutesFromMap();
@@ -552,8 +554,8 @@ export class FleetMapService {
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
       this.drawIcons(_selectedRoutes,_ui);
-    
       this.hereMap.addObject(this.group);
+      this.makeCluster(_selectedRoutes, _ui);
       
       //this.makeCluster(_selectedRoutes, _ui);
     }
@@ -593,61 +595,7 @@ export class FleetMapService {
               this.group.addObject( this.endMarker);
              }
           }
-       // let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
-       // const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
-       // this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        // end start marker
-        // var startBubble;
-        // this.startMarker.addEventListener('pointerenter', function (evt) {
-        //   // event target is the marker itself, group is a parent event target
-        //   // for all objects that it contains
-        //   startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-        //     // read custom data
-        //     content:`<table style='width: 350px;'>
-        //       <tr>
-        //         <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-        //       </tr>
-        //     </table>`
-        //   });
-        //   // show info bubble
-        //   _ui.addBubble(startBubble);
-        // }, false);
-        // this.startMarker.addEventListener('pointerleave', function(evt) {
-        //   startBubble.close();
-        // }, false);
-
-        // var endBubble;
-        // this.endMarker.addEventListener('pointerenter', function (evt) {
-        //   // event target is the marker itself, group is a parent event target
-        //   // for all objects that it contains
-        //   endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-        //     // read custom data
-        //     content:`<table style='width: 350px;'>
-        //       <tr>
-        //         <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-        //       </tr>
-        //     </table>`
-        //   });
-        //   // show info bubble
-        //   _ui.addBubble(endBubble);
-        // }, false);
-        // this.endMarker.addEventListener('pointerleave', function(evt) {
-        //   endBubble.close();
-        // }, false);
-
-        //this.calculateAtoB(trackType);
+       
         if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
@@ -675,7 +623,7 @@ export class FleetMapService {
         
       });
    
-      this.makeCluster(_selectedRoutes, _ui);
+      
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
         this.hereMap.addObject(this.group);
@@ -1246,7 +1194,7 @@ let _type ='';
               <td style='width: 100px;'>Current Mileage:</td> <td><b>${_mileage} ${distanceUnit}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Next Service in:</td> <td><b>- ${_distanceNextService} ${distanceUnit}</b></td>
+              <td style='width: 100px;'>Next Service in:</td> <td><b>${_distanceNextService} ${distanceUnit}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
@@ -1310,6 +1258,8 @@ let _type ='';
               latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
+              this.endAddressPositionLat = _alertFound.latitude;
+              this.endAddressPositionLong =_alertFound.longitude;
             }
         }
       }
@@ -1340,8 +1290,9 @@ let _type ='';
       }
       else{
       if(_alertFound){
-        _alertConfig = this.getAlertConfig(_alertFound);
+        // _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = this.setAlertFoundIcon(healthColor,_alertConfig);
+        this.alertConfigMap = _alertConfig;
 
       }
       else{
@@ -2468,4 +2419,20 @@ let _type ='';
     return _date;
   }
    
+  processedLiveFLeetData(fleetData: any){
+    fleetData.forEach(element => {
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
+      element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
+      element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
+      element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+    })
+    return fleetData;
+  }
+
+  skipInvalidRecord(livePoints: any){
+    livePoints.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
+    return filterPoints;
+  }
 }

@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.visibility
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int reportFeatureId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId)
         {
             Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
@@ -59,10 +59,10 @@ namespace net.atos.daf.ct2.visibility
             }
 
             // vehicle filtering based on features
-            resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
+            resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
 
             //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
-            return MapVehicleDetailsForOTA(resultDict);
+            return await MapVehicleDetailsForOTA(resultDict);
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace net.atos.daf.ct2.visibility
         }
 
 
-        private static IEnumerable<VehicleDetailsAccountVisibilityForOTA> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        private async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
         {
             List<VehicleDetailsAccountVisibilityForOTA> vehicleDetails = new List<VehicleDetailsAccountVisibilityForOTA>();
             foreach (var vg_kv in resultDict)
@@ -350,6 +350,7 @@ namespace net.atos.daf.ct2.visibility
                 var vehicleGroup = vg_kv.Key;
                 var visibleVehicles = vg_kv.Value;
                 //if (!vehicleGroup.GroupType.Equals("S"))
+                var vehiclePropertiesList = await _vehicleManager.GetVehiclePropertiesByIds(visibleVehicles.Select(s => s.Id).Distinct().ToArray());
                 {
                     foreach (var vehicle in visibleVehicles)
                     {
@@ -360,8 +361,8 @@ namespace net.atos.daf.ct2.visibility
                             VehicleName = vehicle.Name ?? string.Empty,
                             RegistrationNo = vehicle.RegistrationNo ?? string.Empty,
                             VehicleGroupName = vehicleGroup.Name,
-                            ModelYear = string.Empty,
-                            Type = string.Empty
+                            ModelYear = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().ModelYear ?? string.Empty,
+                            Type = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().Type ?? string.Empty,
                         });
                     }
                 }

@@ -105,12 +105,7 @@ public class LogisticAlertFunction implements Serializable {
     }
 
     private static Target getTarget(Status status, AlertUrgencyLevelRefSchema urgency, Object actualValue) {
-        String alertGeneratedTime = String.valueOf(System.currentTimeMillis());
-        try{
-            alertGeneratedTime = String.valueOf(convertDateToMillis(status.getEvtDateTime()));
-        }catch (Exception ex){
-            logger.error("Error while converting event time to milliseconds {} error {} ",String.format(INCOMING_MESSAGE_UUID,status.getJobName()));
-        }
+
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
                         .tripid(status.getDocument() !=null ? status.getDocument().getTripID() : "")
@@ -118,7 +113,7 @@ public class LogisticAlertFunction implements Serializable {
                         .categoryType(urgency.getAlertCategory())
                         .type(urgency.getAlertType())
                         .alertid("" + urgency.getAlertId())
-                        .alertGeneratedTime(alertGeneratedTime)
+                        .alertGeneratedTime(""+ getCurrentTimeInUTC())
                         .thresholdValue("" + urgency.getThresholdValue())
                         .thresholdValueUnitType(urgency.getUnitType())
                         .valueAtAlertTime(""+actualValue)

@@ -81,5 +81,8 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
 
         Task<IEnumerable<VehicleGroupForOrgRelMapping>> GetVehicleGroupsForOrgRelationshipMapping(long organizationId);
+        #region Get Vehicles property Model Year and Type
+        Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds);
+        #endregion
     }
 }

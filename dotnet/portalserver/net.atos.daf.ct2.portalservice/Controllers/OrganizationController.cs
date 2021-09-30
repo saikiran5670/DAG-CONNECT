@@ -904,11 +904,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 foreach (var item in organizationList.OrganizationList)
                 {
-                    details.OrganizationData.Add(new OrganizationData
+                    if (item.Id != organizationId)
                     {
-                        OrganizationId = Convert.ToInt32(item.Id),
-                        OrganizationName = item.Name
-                    });
+                        details.OrganizationData.Add(new OrganizationData
+                        {
+                            OrganizationId = Convert.ToInt32(item.Id),
+                            OrganizationName = item.Name
+                        });
+                    }
                 }
                 int ownerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
                 int oemRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
