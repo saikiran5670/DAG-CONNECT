@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.util.Utils.*;
 
 public class LogisticAlertFunction implements Serializable {
@@ -104,6 +105,12 @@ public class LogisticAlertFunction implements Serializable {
     }
 
     private static Target getTarget(Status status, AlertUrgencyLevelRefSchema urgency, Object actualValue) {
+        String alertGeneratedTime = String.valueOf(System.currentTimeMillis());
+        try{
+            alertGeneratedTime = String.valueOf(convertDateToMillis(status.getEvtDateTime()));
+        }catch (Exception ex){
+            logger.error("Error while converting event time to milliseconds {} error {} ",String.format(INCOMING_MESSAGE_UUID,status.getJobName()));
+        }
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
                         .tripid(status.getDocument() !=null ? status.getDocument().getTripID() : "")
@@ -111,7 +118,7 @@ public class LogisticAlertFunction implements Serializable {
                         .categoryType(urgency.getAlertCategory())
                         .type(urgency.getAlertType())
                         .alertid("" + urgency.getAlertId())
-                        .alertGeneratedTime(String.valueOf(System.currentTimeMillis()))
+                        .alertGeneratedTime(alertGeneratedTime)
                         .thresholdValue("" + urgency.getThresholdValue())
                         .thresholdValueUnitType(urgency.getUnitType())
                         .valueAtAlertTime(""+actualValue)
