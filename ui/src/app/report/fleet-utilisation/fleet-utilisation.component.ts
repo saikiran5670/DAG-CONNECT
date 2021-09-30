@@ -73,6 +73,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   vehicleDD: any = [];
+  singleVehicle: any = [];
   vehicleGrpDD: any = [];
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
@@ -863,12 +864,13 @@ calendarOptions: CalendarOptions = {
           }
         }
       });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S'); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -902,7 +904,8 @@ calendarOptions: CalendarOptions = {
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.vehicleDD = this.vehicleListData;
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
@@ -911,6 +914,17 @@ calendarOptions: CalendarOptions = {
     if(this.fromTripPageBack){
       this.onSearch();
     }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   onSearch(){
@@ -1262,7 +1276,8 @@ calendarOptions: CalendarOptions = {
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-        this.vehicleDD = this.vehicleListData;
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));

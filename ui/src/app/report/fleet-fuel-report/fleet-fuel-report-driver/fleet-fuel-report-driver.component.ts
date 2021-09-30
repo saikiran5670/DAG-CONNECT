@@ -92,6 +92,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
+  singleVehicle: any = [];
   ConsumedChartType: any;
   TripsChartType: any;
   Co2ChartType: any;
@@ -662,12 +663,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+   
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
-    }
+    }  
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
@@ -1045,6 +1049,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
           labelString: data1    
         }
       }];     
+      this.barChartOptions3.scales.xAxes= [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },  
+        type:'time',
+         time:
+         {
+           tooltipFormat:  this.chartLabelDateFormat,
+           unit: 'day',
+           stepSize:1,
+           displayFormats: {      
+             day:  this.chartLabelDateFormat,            
+            },             
+         }   
+     }];  
     this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: data1,
@@ -1066,6 +1086,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: 'Number of Trips'    
       }
     }]; 
+    this.barChartOptions.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      }, 
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }   
+   }];  
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -1086,6 +1122,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data2   
       }
     }];
+    this.barChartOptions4.scales.xAxes= [{     
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }  
+     }];
     this.barChartData3= [
       { data: this.co2Chart,
         label: data2,
@@ -1106,6 +1158,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data3   
       }
     }];
+    this.barChartOptions2.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }     
+   }];
      this.barChartData4= [
       { data: this.distanceChart,
         label: data3,
@@ -1125,6 +1193,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: 'Minutes'      
       }
     }];
+    this.barChartOptions1.scales.xAxes= [{      
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },    
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }      
+  }]; 
   this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
@@ -1143,12 +1227,29 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data4    
       }
     }];
+    this.barChartOptions5.scales.xAxes= [{      
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+    type:'time',
+    time:
+    {
+      tooltipFormat:  this.chartLabelDateFormat,
+      unit: 'day',
+      stepSize:1,
+      displayFormats: {      
+        day:  this.chartLabelDateFormat,            
+       },             
+    }      
+}]; 
      this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label:data4,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
+  
      //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
@@ -1581,12 +1682,13 @@ setDefaultTodayDate(){
           }
         }
       });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
 
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S'); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -1615,7 +1717,8 @@ setDefaultTodayDate(){
 
     }
 
-    this.vehicleDD = this.vehicleListData;
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
@@ -1625,6 +1728,18 @@ setDefaultTodayDate(){
       this.onSearch();
     }
 }
+
+getUniqueVINs(vinList: any){
+  let uniqueVINList = [];
+  for(let vin of vinList){
+    let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+    if(vinPresent == -1) {
+      uniqueVINList.push(vin);
+    }
+  }
+  return uniqueVINList;
+}
+
 
 setVehicleGroupAndVehiclePreSelection() {
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
@@ -1637,7 +1752,8 @@ setVehicleGroupAndVehiclePreSelection() {
       this.internalSelection = true; 
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
-        this.vehicleDD = this.vehicleListData;
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){

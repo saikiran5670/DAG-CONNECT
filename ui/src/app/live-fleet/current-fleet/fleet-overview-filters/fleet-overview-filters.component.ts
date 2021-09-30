@@ -12,7 +12,8 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
 import { FleetOverviewFilterVehicleComponent } from './fleet-overview-filter-vehicle/fleet-overview-filter-vehicle.component';
-import { FleetMapService } from '../fleet-map.service'
+import { FleetMapService} from '../fleet-map.service';
+
 @Component({
   selector: 'app-fleet-overview-filters',
   templateUrl: './fleet-overview-filters.component.html',
@@ -24,6 +25,7 @@ export class FleetOverviewFiltersComponent implements OnInit {
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;
 tabVisibilityStatus: boolean = true;
+drivingStatus : boolean = false;
 selectedIndex: number = 0;
 filterData: any;
 filterValue: any;
@@ -59,8 +61,8 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
 messages: any[] = [];
 subscription: Subscription;
 status = new FormControl();
- constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
-    private dataInterchangeService: DataInterchangeService ,private fleetMapService : FleetMapService) { 
+ constructor(private fleetMapService: FleetMapService, private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
+    private dataInterchangeService: DataInterchangeService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.loadVehicleData();
@@ -167,6 +169,7 @@ status = new FormControl();
   }
 
   loadDriverData(){  
+    this.noRecordFlag = true;
     let newAlertCat=[];
     let selectedDriverId:any;
     let selectedDriverDays:any;   
@@ -192,8 +195,10 @@ status = new FormControl();
       "languagecode":"cs-CZ"
     }   
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      let val:any;
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
+    let val:any;
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
       }
@@ -226,13 +231,14 @@ status = new FormControl();
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
           
     }, (error) => {
       let val = [{vehicleGroup : driverSelected[0].driverId, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -240,7 +246,7 @@ status = new FormControl();
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
 getFilterData(){
@@ -261,7 +267,8 @@ getFilterData(){
     
         this.filterData["alertCategory"].forEach(item=>{
         let catName =  this.translationAlertData[item.name];
-        this.categoryList.push({'name':catName, 'value': item.value})});     
+        if(catName != undefined){
+        this.categoryList.push({'name':catName, 'value': item.value})}});     
        
         this.filterData["alertLevel"].forEach(item=>{
         let levelName =  this.translationAlertData[item.name];
@@ -320,7 +327,8 @@ getFilterData(){
 
       this.filterData["alertCategory"].forEach(item=>{
       let catName =  this.translationAlertData[item.name];
-      this.categoryList.push({'name':catName, 'value': item.value})});     
+      if(catName != undefined){
+      this.categoryList.push({'name':catName, 'value': item.value})}});     
      
       this.filterData["alertLevel"].forEach(item=>{
       let levelName =  this.translationAlertData[item.name];
@@ -441,6 +449,8 @@ removeDuplicates(originalArray, prop) {
   }
   
   loadVehicleData(){  
+    this.noRecordFlag = true;
+    this.showLoadingIndicator=true;
     this.initData =this.detailsData;
     let newAlertCat=[];
     let status=this.filterVehicleForm.controls.status.value;
@@ -466,7 +476,7 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel": this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
@@ -478,7 +488,7 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel":this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
@@ -488,8 +498,10 @@ removeDuplicates(originalArray, prop) {
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
+    let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
@@ -505,7 +517,7 @@ removeDuplicates(originalArray, prop) {
           {         
            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
-         });         
+         });    
          if(this.categoryList.length>0){
          item.fleetOverviewAlert.forEach(e => {
          let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
@@ -515,22 +527,25 @@ removeDuplicates(originalArray, prop) {
         });  
        }
       });    
-     this.categoryList = this.removeDuplicates(newAlertCat, "value");
+    // this.categoryList = this.removeDuplicates(newAlertCat, "value");
      //console.log(newAlertCat);    
-      this.vehicleListData = data;    
-      this.detailsData = data; 
+      this.vehicleListData = data;   
+      this.detailsData = data;  
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
+      this.showLoadingIndicator = false;
           
     }, (error) => {
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
+        this.showLoadingIndicator=false;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -538,7 +553,7 @@ removeDuplicates(originalArray, prop) {
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
   checkToHideFilter(item:any){
@@ -581,39 +596,6 @@ drawIcons(_selectedRoutes){
     }
     let markerSize = { w: 40, h: 49 };
     let _healthStatus = '',_drivingStatus = '';
-    switch (elem.vehicleHealthStatusType) {
-      case 'T': // stop now;
-        _healthStatus = 'Stop Now';
-        break;
-      case 'V': // service now;
-        _healthStatus = 'Service Now';
-        break;
-      case 'N': // no action;
-        _healthStatus = 'No Action';
-        break
-      default:
-        break;
-    }
-    switch (elem.vehicleDrivingStatusType) {
-      case 'N': 
-        _drivingStatus = 'Never Moved';
-        break;
-      case 'D':
-        _drivingStatus = 'Driving';
-        break;
-      case 'I': // no action;
-        _drivingStatus = 'Idle';
-        break;
-      case 'U': // no action;
-        _drivingStatus = 'Unknown';
-        break;
-      case 'S': // no action;
-        _drivingStatus = 'Stopped';
-        break
-      
-      default:
-        break;
-    }
 
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
@@ -625,69 +607,124 @@ drawIcons(_selectedRoutes){
  }
 
 setIconsOnMap(element) {
-  let _drivingStatus = false;
+
+  let _healthStatus = '', _drivingStatus = '';
+  if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
+    this.drivingStatus = false;
+  }
+  // switch (element.vehicleHealthStatusType) {
+  //   case 'T': // stop now;
+  //     _healthStatus = 'Stop Now';
+  //     break;
+  //   case 'V': // service now;
+  //     _healthStatus = 'Service Now';
+  //     break;
+  //   case 'N': // no action;
+  //     _healthStatus = 'No Action';
+  //     break
+  //   default:
+  //     break;
+  // }
+  // switch (element.vehicleDrivingStatusType) {
+  //   case 'N': 
+  //     _drivingStatus = 'Never Moved';
+  //     break;
+  //   case 'D':
+  //     _drivingStatus = 'Driving';
+  //     break;
+  //   case 'I': // no action;
+  //     _drivingStatus = 'Idle';
+  //     break;
+  //   case 'U': // no action;
+  //     _drivingStatus = 'Unknown';
+  //     break;
+  //   case 'S': // no action;
+  //     _drivingStatus = 'Stopped';
+  //     break
+    
+  //   default:
+  //     break;
+  // }
   let healthColor = '#606060';
   let _alertConfig = undefined;
+  _drivingStatus = this.fleetMapService.getDrivingStatus(element,_drivingStatus);
+  let obj =this.fleetMapService.getVehicleHealthStatusType(element,_healthStatus,healthColor,this.drivingStatus);
+  _healthStatus = obj._healthStatus;
+  healthColor = obj.healthColor;
   // if (element.vehicleDrivingStatusType === 'D') {
   //   _drivingStatus = true
   // }
-  switch (element.vehicleHealthStatusType) {
-    case 'T': // stop now;
-      healthColor = '#D50017'; //red
-      break;
-    case 'V': // service now;
-      healthColor = '#FC5F01'; //orange
-      break;
-    case 'N': // no action;
-      healthColor = '#606060'; //grey
-      if (_drivingStatus) {
-        healthColor = '#00AE10'; //green
-      }
-      break
-    default:
-      break;
-  }
+  //   switch (element.vehicleHealthStatusType) {
+  //     case 'T': // stop now;
+  //       healthColor = '#D50017'; //red
+  //       break;
+  //     case 'V': // service now;
+  //       healthColor = '#FC5F01'; //orange
+  //       break;
+  //     case 'N': // no action;
+  //       // healthColor = '#606060'; //grey
+  //       healthColor = '#00AE10'; //green for no action
+  //     if (_drivingStatus) {
+  //       healthColor = '#00AE10'; //green
+  //     }
+  //     break
+  //   default:
+  //     break;
+  // }
   let _vehicleIcon : any; 
   if(_drivingStatus){
 
   }
-  else{
-    let _alertFound = undefined ;    
-    // if(element.fleetOverviewAlert.length > 0){
-    //   _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
-
-    // } 
-    if(element.fleetOverviewAlert.length > 0){      
-      let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
-      let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
-      let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
-     
-      if(critical.length > 0){
-      _alertFound = critical[0];
-     } 
-     else if(warning.length > 0){
-      _alertFound = warning[0];
-     } else{
-      _alertFound = advisory[0];
-     }
-     let alertName ='';
-     if(_alertFound.level == 'C')
-     {
-      alertName = 'Critical';
-     }
-     else if(_alertFound.level == 'W')
-     {
-      alertName = 'Warning';
-     }
-     else{
-      alertName = 'Advisory';
-     }
-     element =  Object.defineProperty(element, "alertName", {value : alertName,
-      writable : true,enumerable : true, configurable : true}); 
+  // else{
+    let _alertFound = undefined ;
+    let alertsData =[];    
+    if(element.fleetOverviewAlert.length > 0){
+      // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+      if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
+      _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+      if(_alertFound){
+        alertsData.push(_alertFound);
+      }
     }
-       
+    else{
+        //only for never moved type of driving status
+          if(_drivingStatus == "Never Moved"){
+            let latestAlert :any =[];
+            latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
+            _alertFound = latestAlert[0];
+            alertsData.push(_alertFound);
+          }
+        }
+    } 
+
     if(_alertFound){
-      _alertConfig = this.getAlertConfig(_alertFound);  
+      if(alertsData.length > 1){ //check for criticality
+        alertsData.forEach(element => {
+          let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
+          if(_currentElem){
+            _alertConfig = this.getAlertConfig(element);  
+          }
+          let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
+          if(_currentElem == undefined && warnElem){
+            _alertConfig = this.getAlertConfig(element); 
+          }
+         if(_currentElem == undefined && warnElem == undefined ){ //advisory
+            _alertConfig = this.getAlertConfig(element); 
+          }
+        });
+      }
+      else if(alertsData.length == 1){
+        _alertConfig = this.getAlertConfig(_alertFound);
+      }  
+    }
+    if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
+        let obj = this.fleetMapService.setIconForUnknownOrNeverMoved(_alertFound,_drivingStatus, _healthStatus,_alertConfig);
+        let data = obj.icon;
+        return {icon: data,alertConfig:_alertConfig};
+}
+    else{
+    if(_alertFound ){
+      // _alertConfig = this.getAlertConfig(_alertFound);  
       _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
@@ -736,10 +773,12 @@ setIconsOnMap(element) {
       </clipPath>
       </defs>
       </svg>`
+      
     }
-  
-  }
-  return {icon: _vehicleIcon,alertConfig:_alertConfig};
+    return {icon: _vehicleIcon,alertConfig:_alertConfig};
+    }
+  // }
+//   return {icon: _vehicleIcon,alertConfig:_alertConfig};
 }
 
 getAlertConfig(_currentAlert){

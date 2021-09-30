@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { DataInterchangeService} from '../../services/data-interchange.service';
 import { OrganizationService } from '../../services/organization.service';
 import { Router } from '@angular/router';
-
+import { FleetMapService } from './fleet-map.service';
 
 declare var H: any;
 
@@ -148,7 +148,7 @@ export class CurrentFleetComponent implements OnInit {
     private reportService: ReportService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
-    private organizationService: OrganizationService, private router: Router) { 
+    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -271,13 +271,14 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
-       this.detailsData = data;
-       let _dataObj ={
-        vehicleDetailsFlag : false,
-        data:data
+      let processedData = this.fleetMapService.processedLiveFLeetData(data);
+      this.detailsData = processedData;
+      let _dataObj = {
+        vehicleDetailsFlag: false,
+        data: data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      if(this._state && this._state.data){
+      if (this._state && this._state.data) {
         this.userPreferencesSetting();
         this.toBack();
       }

@@ -49,7 +49,7 @@
             <mat-select [disabled]="vehicleListData.length == 0" placeholder="Alert Category" multiple [(ngModel)]="selection1" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
                 <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                 <mat-option *ngFor="let item of categoryList" [value]="item.value">
-                    {{item.name}}
+                    <span *ngIf = "item.value != 0">{{item.name}}</span>
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -117,6 +117,8 @@
     [otherList] = "otherList"
     [noRecordFlag] ="noRecordFlag"
     [vehicleListData] ="vehicleListData"
+    [drivingStatus] = "drivingStatus"
+    [showLoadingIndicator] ="showLoadingIndicator"
     (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'
     (vehicleDetailsInfoEmit)='checkToHideFilter($event)'
     [vehInfoPrefData]='vehInfoPrefData'>

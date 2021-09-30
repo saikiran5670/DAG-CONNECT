@@ -76,102 +76,9 @@ export class DriverManagementComponent implements OnInit {
   organizationData: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService, private organizationService: OrganizationService) { 
-      this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblConsent: "Consent",
-      lblAction: "Action", 
-      lblCancel: "Cancel",
-      lblConfirm: "Confirm",
-      lblReset: "Reset",
-      lblNew: "New",
-      lblSave: "Save",
-      lblDriverManagement: "Driver Management",
-      lblImportNewDrivers: "Import New Drivers",
-      lblDownloadaTemplate: "Download a Template",
-      lblDownloadaTemplateMessage: "You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Only Driver ID is mandatory, rest all fields are optional. See the template for details on valid input criteria for each field. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.",
-      lblUploadupdateddriverdetailsandselectgroupfordefiningcategory: "Upload updated driver details and select group for defining category",
-      lblSelectUserGroupOptional: "Select User Group (Optional)",
-      lblUploadUpdatedExcelFile: "Upload Updated Excel File",
-      lblBrowse: "Browse",
-      lblImport: "Import",
-      lblSelectUserGroup: "Select User Group",
-      lblDriverDetails: "Driver Details",
-      lblDrivers: "Drivers",
-      lblDriverID: "Driver ID",
-      lblDriverName: "Driver Name",
-      lblEmailID: "Email ID",
-      lblEmail: "E-mail",
-      lblUserGroup: "User Group",
-      lblOptInAll: "Opt-In All",
-      lblOptOutAll: "Opt-Out All",
-      lblOptIn: "Opt-In",
-      lblOptOut: "Opt-Out",
-      lblInherit: "Inherit",
-      lblImportedFileDetails: "Imported File Details",
-      lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
-      lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
-      lblRole: "Role",
-      lblnewdrivers: "new drivers",
-      lblEditDriverDetails: "Edit Driver Details",
-      lblDriverIDConsentStatus: "Driver ID Consent Status",
-      lblAlldetailsaremandatory: "All details are mandatory",
-      lblSalutation: "Salutation",
-      lblFirstName: "First Name",
-      lblLastName: "Last Name",
-      lblBirthDate: "Birth Date",
-      lblLanguage: "Language",
-      lblUnits: "Units", 
-      lblTimeZone: "Time Zone",
-      lblCurrency: "Currency",
-      lblDriverIDConsent: "Driver ID Consent",
-      lblOrganisation: "Organisation",
-      lblTotalDrivers: "Total Drivers",
-      lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
-      lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",
-      lblName: "Name",
-      lblDriverrecordupdated: "Driver record updated",
-      lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
-      lblDeleteDriver: "Delete Driver ",
-      lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
-      lblDriverwassuccessfullydeleted: "Driver '$' was successfully deleted",
-      lblErrordeletingdriver: "Error deleting driver",
-      lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
-      lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'",
-      lblDriverIDCountryCode: 'Driver ID Country Code', 
-      lblDriverIDNumber: 'Driver ID Number',
-      lblExcelHintMsgNew: `    Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
-      Driver ID Number: number of the tacho driver card (16 characters)
-      E-mail: e-mail address of the driver
-      First Name: name of the driver
-      Last Name: name of the driver
-      
-      All fields are mandatory!`,
-      lblEmailIDexceedsmaximumallowedlengthof100chars: "Email ID exceeds maximum allowed length of 100 chars",
-      lblEmailIDformatisinvalid: "Email ID format is invalid",
-      lblDriverIDismandatoryinput: "Driver ID is mandatory input",
-      lblDriverIDshouldbeexactly19charsinlength: "Driver ID should be exactly 19 chars in length",
-      lblDriverIDformatisinvalid: "Driver ID format is invalid",
-      lblexceedsmaximumallowedlengthofchars: "'$' exceeds maximum allowed length of '#' chars",
-      lblNumbersnotallowedin: "Numbers not allowed in '$'",
-      lblSpecialcharactersnotallowedin: "Special characters not allowed in '$'",
-      lblWhitespacesnotallowedin: "Whitespaces not allowed in '$'",
-      lblOptInOptOutAttemptingMsg: "You are attempting to change consent to '$'",
-      lblInheritAttemptingMsg: "You are attempting to '$' your organisation’s consent setting. This means that the consent of this driver will set to the consent of your organisation" ,
-      lblOptOutExtraMsg: "By selecting and confirming this option, you are confirming that you understand that the personal data of the selected driver(s) such as the driver ID will no longer be visible in the DAF CONNECT portal. As a result of opting-out some services will no longer show the driver ID in the DAF CONNECT portal while some services may be terminated altogether. Termination (or partial or complete unavailability) of any services as a result of the opt-out request will by no means result in any restitution of fees or any other form of compensation from DAF Trucks NV.",
-      lblOptInExtraMsg: "By selecting and confirming this option you are confirming that the personal data of the selected driver(s), such as the driver ID, will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
-      lblSinceyourorganisationconsentis : "Since your organisation’s consent is '$'.",
-      lblHence : "Hence",
-      lblThedrivewasOptedoutsuccessfully : "The driver '$' was Opted-out successfully",
-      lblThedrivewasOptedinsuccessfully : "The driver '$' was Opted-in successfully",
-      lblThedrivewassuccessfully : "The driver '$' was successfully '#'",
-      lblAlldriverswassuccessfully: "'#' drivers were successfully '$'"
-    }
-  }
-
+  
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -516,12 +423,12 @@ export class DriverManagementComponent implements OnInit {
       }
       if(value.length > 100){ //-- as per db table
         obj.status = false;
-        obj.reason = this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars || 'Email ID exceeds maximum allowed length of 100 chars';  
+        obj.reason = this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars;  
         return obj;
       }
       if(!regx.test(value)){
         obj.status = false;
-        obj.reason = this.translationData.lblEmailIDformatisinvalid || 'Email ID format is invalid';  
+        obj.reason = this.translationData.lblEmailIDformatisinvalid ;  
         return obj;
       }
       return obj;
@@ -535,22 +442,22 @@ export class DriverManagementComponent implements OnInit {
     let SpecialCharRegex = /[^-!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDCountryCodeismandatoryinput || 'Driver ID Country Code is mandatory input';
+      obj.reason = this.translationData.lblDriverIDCountryCodeismandatoryinput ;
       return obj;  
     }
     if(value.trim().length > 3){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength || 'Driver ID Country Code should not be more than 3 chars in length';  
+      obj.reason = this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength ;  
       return obj;
     }
     if(!numberRegex.test(value)){
       obj.status = false;
-      obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin || "Numbers not allowed in '$'"); 
+      obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
       return obj;
     }
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
-      obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin || "Special characters not allowed in '$'");
+      obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
       return obj;
     }
     // if(!regx.test(value)){
@@ -566,17 +473,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumberismandatoryinput || 'Driver ID Number is mandatory input';
+      obj.reason = this.translationData.lblDriverIDNumberismandatoryinput ;
       return obj;  
     }
     if(value.trim().length > 16){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumbershouldnotbemorethan16charsinlength || 'Driver ID Number should not be more than 16 chars in length';  
+      obj.reason = this.translationData.lblDriverIDNumbershouldnotbemorethan16charsinlength;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumberformatisinvalid || 'Driver ID Number format is invalid';  
+      obj.reason = this.translationData.lblDriverIDNumberformatisinvalid;  
       return obj;
     }
     return obj; 
@@ -587,17 +494,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDismandatoryinput || 'Driver ID is mandatory input';
+      obj.reason = this.translationData.lblDriverIDismandatoryinput ;
       return obj;  
     }
     if(value.length > 19){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDshouldbeexactly19charsinlength || 'Driver ID should be exactly 19 chars in length';  
+      obj.reason = this.translationData.lblDriverIDshouldbeexactly19charsinlength ;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDformatisinvalid || 'Driver ID format is invalid';  
+      obj.reason = this.translationData.lblDriverIDformatisinvalid ;  
       return obj;
     }
     return obj;
@@ -622,22 +529,22 @@ export class DriverManagementComponent implements OnInit {
       }
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars || "'$' exceeds maximum allowed length of '#' chars", maxLength) 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
         return obj;
       }
       if(!numberRegex.test(value)){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin || "Numbers not allowed in '$'"); 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin || "Special characters not allowed in '$'");
+        obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
         return obj;
       }
       if(value.toString().trim().length == 0){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin || "Whitespaces not allowed in '$'");
+        obj.reason = this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin );
         return obj;
       }
       return obj;
@@ -671,10 +578,10 @@ export class DriverManagementComponent implements OnInit {
 
   onDelete(row: any){
     const options = {
-      title: this.translationData.lblDeleteDriver || "Delete Driver",
-      message: this.translationData.lblAreyousureyouwanttodeletedriver || "Are you sure you want to delete driver '$'? ",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteDriver,
+      message: this.translationData.lblAreyousureyouwanttodeletedriver,
+      cancelText: this.translationData.lblCancel ,
+      confirmText: this.translationData.lblDelete 
     };
    
     let name = `${row.firstName} ${row.lastName}`;
@@ -805,21 +712,15 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.data = {
       tableData: driverList,
       colsList: ['countryCode', 'driverNumber', 'firstName', 'lastName', 'email', 'returnMassage'],
-      colsName: [this.translationData.lblDriverIDCountryCode || 'Driver ID Country Code', this.translationData.lblDriverIDNumber || 'Driver ID Number', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmail || 'E-mail', this.translationData.lblFailReason || 'Fail Reason'],
-      tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
+      colsName: [this.translationData.lblDriverIDCountryCode , this.translationData.lblDriverIDNumber , this.translationData.lblFirstName , this.translationData.lblLastName, this.translationData.lblEmail , this.translationData.lblFailReason],
+      tableTitle: this.translationData.lblRejectedDriverDetails 
     }
     this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 
   downloadDriverTemplate(){
-    let excelHintMsg = this.translationData.lblExcelHintMsgNew || `    Driver ID Country Code: country in which tacho driver card is issued (as indicated on the card)
-    Driver ID Number: number of the tacho driver card (16 characters)
-    E-mail: e-mail address of the driver
-    First Name: name of the driver
-    Last Name: name of the driver
-    
-    All fields are mandatory!`;
-    const header = [this.translationData.lblDriverIDCountryCode || 'Driver ID Country Code', this.translationData.lblDriverIDNumber || 'Driver ID Number', this.translationData.lblEmail || 'E-mail', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', excelHintMsg];
+    let excelHintMsg = this.translationData.lblExcelHintMsgNew ;
+    const header = [this.translationData.lblDriverIDCountryCode , this.translationData.lblDriverIDNumber , this.translationData.lblEmail , this.translationData.lblFirstName , this.translationData.lblLastName , excelHintMsg];
     const data = [
       ['B  ', 'B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""]
     ];

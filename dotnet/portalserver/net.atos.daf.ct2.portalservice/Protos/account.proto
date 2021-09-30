@@ -474,7 +474,7 @@ bool IsAccount=2;
 //int32 VehichleGroupId=2;
 //int32 VehicleId=3;
 //int32 AccountGroupId=4;
-//int32 AccountId=5;
+int32 AccountId=5;
 
 }
 message AccountAccessRelationship

@@ -26,6 +26,7 @@ import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import html2canvas from 'html2canvas';
+import { single } from 'rxjs/operators';
 
 declare var H: any;
 
@@ -101,6 +102,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
+  singleVehicle: any = [];
   advanceFilterOpen: boolean = false;
   showField: any = {
     vehicleName: true,
@@ -701,7 +703,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if (event.value || event.value == 0) {
       this.internalSelection = true;
       if (parseInt(event.value) == 0) { //-- all group
-        this.vehicleDD = this.vehicleListData.slice();
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
@@ -717,6 +720,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
     }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   onVehicleChange(event: any) {
@@ -1117,7 +1131,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
-    if (this.wholeTripData.vinTripList.length > 0) {
+    if (this.wholeTripData &&  this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       // this.wholeTripData.vinTripList =[
       //     {
       //       "vin": "XLR0998HGFFT74597",
@@ -1163,11 +1177,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
       //     });
       //   }
       // }
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -1197,7 +1212,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.vehicleDD = this.vehicleListData.slice();
+    let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     // if (this.vehicleDD.length > 0) {
     //   let _s1 = this.vehicleListData.map(item=>item.vehicleName).filter((value,index,self)=>self.indexOf(value)=== index);
     //   if(_s1.length > 0){

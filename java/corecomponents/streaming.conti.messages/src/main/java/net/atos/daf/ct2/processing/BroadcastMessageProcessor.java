@@ -46,19 +46,20 @@ public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<Kaf
 
         //logger.info("BroadcastMessageProcessor Record VID:  :: {} keyMessage :{} broadcastStateMap: {}",valueRecord, keyMessage, broadcastStateMap);
         
-        JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
-        
+       
         if(broadcastStateMap.contains(keyMessage)){
             KafkaRecord<R> kafkaRecord = broadcastStateMap.get(keyMessage);
             VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)kafkaRecord.getValue();
             //logger.info("Broadcast info found for vin: {}, message: {}",keyMessage.get(), value);
             if(vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_OFF) || vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_ON)){
-
+            	 JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
+                 KafkaRecord<U> updatedkafkaRecord = new KafkaRecord<U>();
+                 
             	((ObjectNode) jsonNode).put("VIN", vinStatusRecord.getVin());
                 ((ObjectNode) jsonNode).put("STATUS", vinStatusRecord.getStatus());
                 ((ObjectNode) jsonNode).put("FuelType", vinStatusRecord.getFuelType());
-                KafkaRecord<U> updatedkafkaRecord = new KafkaRecord<U>();
-                updatedkafkaRecord.setKey(valueRecord);
+                
+                updatedkafkaRecord.setKey(vinStatusRecord.getVin());
                 updatedkafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
                 out.collect(updatedkafkaRecord);
                
@@ -67,13 +68,17 @@ public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<Kaf
             }
             
         }else {
-           
+        	 JsonNode noMappingJsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
+             KafkaRecord<U> ignoredKafkaRecord = new KafkaRecord<U>();
+             
             if("UNKNOWN".equals(valueRecord))
-            	((ObjectNode) jsonNode).put("VID", valueRecord);
+            	((ObjectNode) noMappingJsonNode).put("VID", valueRecord);
             
-            ((ObjectNode) jsonNode).put("VIN", valueRecord);   
-            logger.info("VID and VIN mapping not found for message. VID and VIN:{} value: {}",valueRecord, value);
-            out.collect(value);
+            ((ObjectNode) noMappingJsonNode).put("VIN", valueRecord);   
+            ignoredKafkaRecord.setKey(valueRecord);
+            ignoredKafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(noMappingJsonNode));
+            logger.info("VID and VIN mapping not found for message. VID and VIN:{} value: {}",valueRecord, ignoredKafkaRecord);
+            out.collect(ignoredKafkaRecord);
         }
     }
 

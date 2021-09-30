@@ -150,14 +150,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                var QueryStatement = @"DELETE FROM
+                var queryStatement = @"DELETE FROM
                                         master.accountsession 
                                         where account_id=@account_id
                                         RETURNING Id;";
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", AccountId);
-                int Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                return Id;
+                parameter.Add("@account_id", AccountId);
+                return await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
             }
             catch (Exception)
             {

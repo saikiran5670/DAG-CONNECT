@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -47,20 +48,28 @@ public class MonitorDataProcess {
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 
-			// DataStream<KafkaRecord<Monitor>> consumerStream =
-			// flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			// consumerStream.print();
-
-			KeyedStream<KafkaRecord<Monitor>, String> keyedMonitorData = flinkKafkaConsumer.connectToKafkaTopic(envParams, env)
-					.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
-
-			SingleOutputStreamOperator<KafkaRecord<Monitor>> consumerStream = keyedMonitorData
-					.map(monitorKafkaRecord -> monitorKafkaRecord);
-
+			DataStream<KafkaRecord<Monitor>> consumerStream =flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
+			//consumerStream.print();
+			
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
 
-			consumerStream.addSink(new DriverTimeManagementSink()); // Drive Time Management
-			consumerStream.addSink(new WarningStatisticsSink()); // Warning Statistics
+			//KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
+			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
+			
+			consumerKeyedStream.addSink(new DriverTimeManagementSink());  // Drive Time Management
+			consumerKeyedStream.addSink(new WarningStatisticsSink()); // Warning Statistics
+																		
+			/*
+			 * KeyedStream<KafkaRecord<Monitor>, String> keyedMonitorData =
+			 * flinkKafkaConsumer.connectToKafkaTopic(envParams, env) .keyBy(kafkaRecord ->
+			 * kafkaRecord.getValue().getVin());
+			 * 
+			 * SingleOutputStreamOperator<KafkaRecord<Monitor>> consumerStream =
+			 * keyedMonitorData .map(monitorKafkaRecord -> monitorKafkaRecord);
+			 */
+			
+			//consumerKeyedStream.addSink(new DriverTimeManagementSink()); 
+			
 
 			log.info("after addsink");
 			try {

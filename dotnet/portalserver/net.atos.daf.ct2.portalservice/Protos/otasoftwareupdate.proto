@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.otasoftwareupdateservice";
+
+package otasoftwareupdate;
+
+service OTASoftwareUpdateService {  
+ rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponce); 
+}
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+message NoRequest{
+int32 Id = 1;
+}
+message VehicleSoftwareStatus{
+int32 Id = 1;
+string Type = 2;
+string Enum = 3;
+string ParentEnum = 4;
+string Key = 5;
+int32 FeatureId = 6;
+}
+message VehicleSoftwareStatusResponce{
+ResponseCode code=1;
+repeated VehicleSoftwareStatus VehicleSoftwareStatusList = 2;
+string Message = 3;
+}
+
+
+

@@ -241,6 +241,12 @@ if(vehicleList != '' && orgList != ''){
 }
         this.getDuplicateRecordMsg(name,orgList,vehicleList);
       }
+      if(error.status == 403){
+        let NewData = error.error['orgRelationshipVehicleConflictList'];
+        let vehicleName = NewData[0].vehicleGroupName;
+        let vinList = NewData[0].conflictedVINs;
+        this.getErrorMsg(vehicleName,vinList);
+      }
     }
 
     );
@@ -248,12 +254,30 @@ if(vehicleList != '' && orgList != ''){
       
   }
 
+  getErrorMsg(vehicleName:any, vinList:any){
+    const options = {
+      title: this.translationData.lblAlert ,
+      message:  
+      `Vehicle group '${vehicleName}' is not eligible for creating Organisation Relationship. Vehicle group should only contain owned vehicles of the organisation. Non-eligible vehicles are, ${vinList}`,
+      confirmText: this.translationData.lblOk 
+    };
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = options;
+    this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+    
+    });
+  }
+
   getDuplicateRecordMsg(relnName: any, orgname:any,vehicleName:any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
+      title: this.translationData.lblAlert ,
       message:  
       `Vehicle group '${vehicleName}' is already associated with Organisation '${orgname}' under Relationship '${relnName}'.Please choose other entities.`,
-      confirmText: this.translationData.lblOk || "OK"
+      confirmText: this.translationData.lblOk 
     };
 
     const dialogConfig = new MatDialogConfig();

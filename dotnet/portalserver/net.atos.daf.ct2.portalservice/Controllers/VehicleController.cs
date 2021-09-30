@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -116,7 +117,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Assign context orgId               
                 vehicleFilter.OrganizationId = GetContextOrgId();
                 var vehicleFilterRequest = _mapper.ToVehicleFilter(vehicleFilter);
-                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("accountId", Convert.ToString(_userDetails.AccountId));
+
+                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest, headers);
                 List<VehicleResponse> response = new List<VehicleResponse>();
                 response = _mapper.ToVehicles(vehicleListResponse);
 
@@ -922,8 +927,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
                 orgvehicleIdRequest.OrganizationId = organizationId;
+                orgvehicleIdRequest.AccountId = _userDetails.AccountId;
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
 
-                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
+                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest, headers);
                 List<VehicleManagementResponse> vehicles = _mapper.ToVehicles(vehiclesResponse);
 
                 if (vehiclesResponse != null && vehiclesResponse.Code == VehicleBusinessService.Responcecode.Success)

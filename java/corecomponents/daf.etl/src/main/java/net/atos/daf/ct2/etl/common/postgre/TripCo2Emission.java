@@ -1,6 +1,10 @@
 package net.atos.daf.ct2.etl.common.postgre;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -31,12 +35,23 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		try {
-			masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
 					envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
+					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));*/
+			
+			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
+			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
+					envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
+					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
 					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+			masterConnection = DriverManager.getConnection(dbUrl);
+			
+			logger.info("In TripCo2Emission sink connection done" + masterConnection);
+			
 			cmDao = new Co2MasterDao();
 			cmDao.setConnection(masterConnection);
 			co2CoEfficientStmt = masterConnection.prepareStatement(ETLQueries.CO2_COEFFICIENT_QRY);
@@ -86,6 +101,24 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			// TODO Need to check if logging and throw is required
 			logger.error("Issue while Closing Postgre table connection :: ", e);
 			throw e;
+		}
+	}
+	
+	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+			String password) throws Exception {
+
+		String encodedPassword = encodeValue(password);
+		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
+				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
+	
+		return url;
+	}
+	
+	private String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
 		}
 	}
 
