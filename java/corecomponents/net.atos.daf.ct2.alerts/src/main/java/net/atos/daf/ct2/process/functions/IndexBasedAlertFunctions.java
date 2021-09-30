@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.process.functions;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
+import static net.atos.daf.ct2.util.Utils.*;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
 import static net.atos.daf.ct2.util.Utils.getCurrentTimeInSecond;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import net.atos.daf.ct2.models.VehicleGeofenceState;
 import net.atos.daf.ct2.service.geofence.CircularGeofence;
 import net.atos.daf.ct2.service.geofence.RayCasting;
+import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.state.MapState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -413,7 +415,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
         for (String priority : priorityList) {
             AlertUrgencyLevelRefSchema tempSchema = new AlertUrgencyLevelRefSchema();
-            List<Double> polygonPointList = new ArrayList<>();
+
 
             /**
              * sort lat lon based not node seq
@@ -427,6 +429,7 @@ public class IndexBasedAlertFunctions implements Serializable {
 
             Iterator<Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>>> iterator = entries.iterator();
             while (iterator.hasNext()){
+                List<Double> polygonPointList = new ArrayList<>();
                 Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>> next = iterator.next();
                 List<AlertUrgencyLevelRefSchema> schemasOrdered = next.getValue();
                 for (AlertUrgencyLevelRefSchema schema : schemasOrdered) {
@@ -470,12 +473,12 @@ public class IndexBasedAlertFunctions implements Serializable {
 
         String messageUUId = String.format(INCOMING_MESSAGE_UUID, index.getJobName());
         //Enter zone check
-        Boolean enterZoneTrue = ! vehicleState.getIsInside() && tempSchema.getLandmarkId() != vehicleState.getLandMarkId()   && inside && alertType.equalsIgnoreCase("enterZone");
-        Boolean enterZoneFalse = vehicleState.getIsInside()  && tempSchema.getLandmarkId() == vehicleState.getLandMarkId()  && !inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean enterZoneTrue = ! vehicleState.getIsInside() && inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean enterZoneFalse = vehicleState.getIsInside()  && !inside && alertType.equalsIgnoreCase("enterZone");
 
         //Exit zone check
-        Boolean exitZoneTrue = vehicleState.getIsInside() && tempSchema.getLandmarkId() == vehicleState.getLandMarkId() && !inside && alertType.equalsIgnoreCase("exitZone");
-        Boolean exitZoneFalse = !vehicleState.getIsInside() && tempSchema.getLandmarkId() != vehicleState.getLandMarkId() && inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean exitZoneTrue = vehicleState.getIsInside() && !inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean exitZoneFalse = !vehicleState.getIsInside() && inside && alertType.equalsIgnoreCase("exitZone");
 
         if (enterZoneTrue || exitZoneTrue) {
             if(enterZoneTrue)
@@ -519,12 +522,7 @@ public class IndexBasedAlertFunctions implements Serializable {
     }
 
     private static Target getTarget(Index index, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {
-        String alertGeneratedTime = String.valueOf(System.currentTimeMillis());
-        try{
-            alertGeneratedTime = String.valueOf(convertDateToMillis(index.getEvtDateTime()));
-        }catch (Exception ex){
-            logger.error("Error while converting event time to milliseconds {} error {} ",String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
-        }
+
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
                         .tripid(index.getDocument() !=null ? index.getDocument().getTripID() : "")
@@ -532,7 +530,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                         .categoryType(urgency.getAlertCategory())
                         .type(urgency.getAlertType())
                         .alertid("" + urgency.getAlertId())
-                        .alertGeneratedTime(alertGeneratedTime)
+                        .alertGeneratedTime(""+ getCurrentTimeInUTC())
                         .thresholdValue("" + urgency.getThresholdValue())
                         .thresholdValueUnitType(urgency.getUnitType())
                         .valueAtAlertTime(""+valueAtAlertTime)

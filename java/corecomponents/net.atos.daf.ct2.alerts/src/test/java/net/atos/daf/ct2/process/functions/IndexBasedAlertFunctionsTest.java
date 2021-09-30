@@ -57,9 +57,14 @@ public class IndexBasedAlertFunctionsTest {
         logger.info("Enter zone Test6 inside circle 3:: {}",test6);
         Assert.assertEquals(true,test6);
         // vehicle inside the circle 3
-        boolean test7  = testVehicleStateForZone(idx, vehicleGeofenceSateMap, schema3,Boolean.TRUE, "enterZone");
-        logger.info("Enter zone Test7 inside circle 3:: {}",test7);
+        boolean test7  = testVehicleStateForZone(idx, vehicleGeofenceSateMap, schema3,Boolean.FALSE, "enterZone");
+        logger.info("Enter zone Test7 outside circle 3:: {}",test7);
         Assert.assertEquals(false,test7);
+
+        // vehicle enter circle 3
+        test6  = testVehicleStateForZone(idx, vehicleGeofenceSateMap, schema3,Boolean.TRUE, "enterZone");
+        logger.info("Enter zone Test6 inside circle 3 repeat:: {}",test6);
+        Assert.assertEquals(true,test6);
 
     }
 
@@ -81,12 +86,12 @@ public class IndexBasedAlertFunctionsTest {
 
         String messageUUId = String.format(INCOMING_MESSAGE_UUID, index.getJobName());
         //Enter zone check
-        Boolean enterZoneTrue = ! vehicleState.getIsInside() && tempSchema.getLandmarkId() != vehicleState.getLandMarkId()   && inside && alertType.equalsIgnoreCase("enterZone");
-        Boolean enterZoneFalse = vehicleState.getIsInside()  && tempSchema.getLandmarkId() == vehicleState.getLandMarkId()  && !inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean enterZoneTrue = ! vehicleState.getIsInside() && inside && alertType.equalsIgnoreCase("enterZone");
+        Boolean enterZoneFalse = vehicleState.getIsInside() && !inside && alertType.equalsIgnoreCase("enterZone");
 
         //Exit zone check
-        Boolean exitZoneTrue = vehicleState.getIsInside() && tempSchema.getLandmarkId() == vehicleState.getLandMarkId() && !inside && alertType.equalsIgnoreCase("exitZone");
-        Boolean exitZoneFalse = !vehicleState.getIsInside() && tempSchema.getLandmarkId() != vehicleState.getLandMarkId() && inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean exitZoneTrue = vehicleState.getIsInside()  && !inside && alertType.equalsIgnoreCase("exitZone");
+        Boolean exitZoneFalse = !vehicleState.getIsInside()  && inside && alertType.equalsIgnoreCase("exitZone");
 
         if (enterZoneTrue || exitZoneTrue) {
             if(enterZoneTrue)
