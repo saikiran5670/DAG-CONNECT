@@ -9,7 +9,7 @@ metadata:
   name: customerdataservice-ingress
 spec:
   rules:
-  - host: api-00.aks-ingress.acc2.ct2.atos.net
+  - host: #{IngressURL}#
     http:
       paths:
       - backend:
@@ -287,5 +287,5 @@ spec:
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - api-00.aks-ingress.acc2.ct2.atos.net
+    - #{IngressURL}#
 
