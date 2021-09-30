@@ -2473,4 +2473,20 @@ let _type ='';
     return _date;
   }
    
+  processedLiveFLeetData(fleetData: any){
+    fleetData.forEach(element => {
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
+      element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
+      element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
+      element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+    })
+    return fleetData;
+  }
+
+  skipInvalidRecord(livePoints: any){
+    livePoints.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
+    return filterPoints;
+  }
 }
