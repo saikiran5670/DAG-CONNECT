@@ -52,7 +52,8 @@ export class VehicletripComponent implements OnInit {
   @Input() endDateValue: any;
   @Input() startDateValue: any;
   @Input() _vinData: any;
-  @Input() graphData: any;
+  
+  graphData: any;
   // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
   // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
   // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
@@ -229,6 +230,7 @@ selectedTrip = new SelectionModel(true, []);
 selectedPOI = new SelectionModel(true, []);
 selectedHerePOI = new SelectionModel(true, []);
 advanceFilterOpen: boolean = false;
+showGraph: boolean = false;
 showField: any = {
   vehicleName: true,
   vin: true,
@@ -271,8 +273,8 @@ tripTraceArray: any = [];
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
-  selectionTab: any;
-  chartLabelDateFormat:any ='';
+  selectionTab: any; 
+
   //startDateValue: any = 0;
   //endDateValue: any = 0;
   last3MonthDate: any;
@@ -291,6 +293,7 @@ tripTraceArray: any = [];
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
+  chartLabelDateFormat:any ='MM/DD/YYYY';
   bufferValue = 75;
   chartsLabelsdefined: any = [];
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -788,16 +791,16 @@ tripTraceArray: any = [];
                 this.query = "starbucks";
                 this.platform = new H.service.Platform({
                 "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-                  });
-               this.configureAutoSuggest();
+                  });                
+                 this.configureAutoSuggest();
                }
                defaultTranslation(){
                 this.translationData = {
                   lblSearchReportParameters: 'Search Report Parameters'
-                }    
+                }
               }
-
-               
+          
+       
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
@@ -825,7 +828,7 @@ tripTraceArray: any = [];
       value: "",
       filter: "",
       menuId: 10 //-- for fleet utilisation
-    }
+    }  
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');
@@ -1168,16 +1171,21 @@ createEndMarker(){
       "viNs": vehicleDetails.vin.split(),
       "languageCode": "EN-GB"
     }
-    this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    // console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
-    this.displayData = data["fleetFuelDetails"];
+   this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
+     // console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
+    this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    })
+    });
+    this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
+      this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData= graphData;
+      this.showGraph= true;
+    });
   }
-
+   
  
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
@@ -1584,6 +1592,7 @@ createEndMarker(){
   }
 
   setChartData(graphData: any){
+    if(graphData.length > 0){
      graphData.forEach(e => {
       var date = new Date(e.date);
       //let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
@@ -1614,16 +1623,31 @@ createEndMarker(){
 
     this.barChartLegend = true;
     this.chartsLabelsdefined=[];
-    this.barChartPlugins = [];
-    if( this.chartLabelDateFormat=='DD/MM/YYYY' ||  this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate =this.dateDetails.startTime;
-      let endDate = this.dateDetails.endTime;  
+    this.barChartPlugins = []; 
+    
+    let newDate_start = new Date( this.dateDetails.startTime);
+    let newDate_end = new Date(this.dateDetails.endTime);
+
+    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone); 
       this.chartsLabelsdefined=[ startDate, endDate ];
-    }   
-    else {
-      let startDateValue =  (this.dateDetails.fromDate).split(' ');
-      let endDateValue = (this.dateDetails.endDate).split(' '); 
-      this.chartsLabelsdefined=[ startDateValue[0], endDateValue[0] ];
+    }
+    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone);   
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
+      
+      let startDate = `${newDate_start.getMonth()+1}-${newDate_start.getDate()}-${newDate_start.getFullYear()}`;;
+      let endDate = `${newDate_end.getMonth()+1}-${newDate_end.getDate()}-${newDate_end.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else{
+      let startDate = `${newDate_start.getMonth()+1}/${newDate_start.getDate()}/${newDate_start.getFullYear()}`;;
+      let endDate = `${newDate_end.getMonth()+1}/${newDate_end.getDate()}/${newDate_end.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
     }
    
     this.lineChartLabels = this.chartsLabelsdefined;
@@ -1987,6 +2011,7 @@ createEndMarker(){
     this.lineChartType = 'line';
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined;  
+    }
   }
   
 
