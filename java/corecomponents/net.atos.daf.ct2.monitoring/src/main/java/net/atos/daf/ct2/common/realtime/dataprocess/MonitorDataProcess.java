@@ -58,6 +58,7 @@ public class MonitorDataProcess {
 			
 			consumerKeyedStream.addSink(new DriverTimeManagementSink());  // Drive Time Management
 			consumerKeyedStream.addSink(new WarningStatisticsSink()); // Warning Statistics
+			consumerKeyedStream.addSink(new LiveFleetPositionPostgreSink());
 																		
 			/*
 			 * KeyedStream<KafkaRecord<Monitor>, String> keyedMonitorData =

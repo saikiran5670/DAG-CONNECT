@@ -57,10 +57,25 @@ public class LiveFleetPojo implements Serializable{
 	private Integer telltale_state_id;
 	private Integer drivingTime;
 	
-	 
-	
-	
-	
+	//status API fields
+	private Long total_vehicle_distance;
+	private Long total_engine_hours;
+	private Long total_engine_fuel_used;
+	private Long gross_combination_vehicle_weight;
+	private Long engine_speed;
+	private Double fuel_level1;
+	private Integer catalyst_fuel_level;
+	private String driver2_id;
+	private Integer driver1_working_state;
+	private Integer driver2_working_state;
+	private Integer driver2_auth_equipment_type_id;
+	private String driver2_card_replacement_index;
+	private String oem_driver2_id_type;
+	private String oem_driver2_id;
+	private Long ambient_air_temperature;
+	private Integer engine_coolant_temperature;
+	private Long service_brake_air_pressure_circuit1;
+	private Long service_brake_air_pressure_circuit2;
 	
 
 }
