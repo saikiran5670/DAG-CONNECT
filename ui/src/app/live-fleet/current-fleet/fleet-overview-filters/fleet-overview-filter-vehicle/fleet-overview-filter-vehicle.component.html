@@ -48,6 +48,7 @@
      <div *ngIf="noRecordFlag">
          <p>{{translationData.lblNoRecordFound || 'No Record Found'}}</p>
      </div>
+     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-expansion-panel>
 
   <app-vehicle-details *ngIf='isVehicleDetails' 

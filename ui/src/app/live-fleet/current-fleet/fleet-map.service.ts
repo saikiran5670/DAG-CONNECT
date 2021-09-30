@@ -554,8 +554,8 @@ export class FleetMapService {
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
       this.drawIcons(_selectedRoutes,_ui);
-    
       this.hereMap.addObject(this.group);
+      this.makeCluster(_selectedRoutes, _ui);
       
       //this.makeCluster(_selectedRoutes, _ui);
     }
@@ -595,61 +595,7 @@ export class FleetMapService {
               this.group.addObject( this.endMarker);
              }
           }
-       // let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
-       // const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
-       // this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        // end start marker
-        // var startBubble;
-        // this.startMarker.addEventListener('pointerenter', function (evt) {
-        //   // event target is the marker itself, group is a parent event target
-        //   // for all objects that it contains
-        //   startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-        //     // read custom data
-        //     content:`<table style='width: 350px;'>
-        //       <tr>
-        //         <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-        //       </tr>
-        //     </table>`
-        //   });
-        //   // show info bubble
-        //   _ui.addBubble(startBubble);
-        // }, false);
-        // this.startMarker.addEventListener('pointerleave', function(evt) {
-        //   startBubble.close();
-        // }, false);
-
-        // var endBubble;
-        // this.endMarker.addEventListener('pointerenter', function (evt) {
-        //   // event target is the marker itself, group is a parent event target
-        //   // for all objects that it contains
-        //   endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-        //     // read custom data
-        //     content:`<table style='width: 350px;'>
-        //       <tr>
-        //         <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
-        //       </tr>
-        //       <tr>
-        //         <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-        //       </tr>
-        //     </table>`
-        //   });
-        //   // show info bubble
-        //   _ui.addBubble(endBubble);
-        // }, false);
-        // this.endMarker.addEventListener('pointerleave', function(evt) {
-        //   endBubble.close();
-        // }, false);
-
-        //this.calculateAtoB(trackType);
+       
         if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
@@ -677,7 +623,7 @@ export class FleetMapService {
         
       });
    
-      this.makeCluster(_selectedRoutes, _ui);
+      
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
         this.hereMap.addObject(this.group);
