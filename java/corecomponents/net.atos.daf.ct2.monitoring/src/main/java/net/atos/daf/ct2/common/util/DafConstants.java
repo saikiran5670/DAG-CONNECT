@@ -86,6 +86,8 @@ public class DafConstants {
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
 	
+	public static final String Monitor="M";
+	
 	//queries
 		public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 		public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";

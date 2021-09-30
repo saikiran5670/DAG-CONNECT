@@ -53,9 +53,7 @@ public class MonitorDataProcess {
 			
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
 
-			//KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
-			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
-			
+			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
 			consumerKeyedStream.addSink(new DriverTimeManagementSink());  // Drive Time Management
 			consumerKeyedStream.addSink(new WarningStatisticsSink()); // Warning Statistics
 																		
