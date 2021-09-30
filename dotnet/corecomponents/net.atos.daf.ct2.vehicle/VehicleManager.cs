@@ -738,6 +738,12 @@ namespace net.atos.daf.ct2.vehicle
         }
 
         #endregion
+        #region Get Vehicles property Model Year and Type
+        public async Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds)
+        {
+            return await _vehicleRepository.GetVehiclePropertiesByIds(vehicleIds);
+        }
+        #endregion
     }
 
     internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>

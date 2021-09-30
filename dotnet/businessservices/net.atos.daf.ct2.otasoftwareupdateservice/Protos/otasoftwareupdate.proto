@@ -48,6 +48,7 @@ string RegistrationNo = 4;
 string VehicleGroupNames = 5;
 string ModelYear = 6;
 string Type = 7;
+string SoftwareStatus = 8;
 }
 
 message VehicleStatusResponse{
