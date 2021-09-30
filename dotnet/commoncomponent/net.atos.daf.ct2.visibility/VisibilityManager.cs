@@ -45,6 +45,26 @@ namespace net.atos.daf.ct2.visibility
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId)
+        {
+            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+            //If context switched then find vehicle visibility for the organization
+            if (orgId != contextOrgId)
+            {
+                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+            }
+            else
+            {
+                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            }
+
+            // vehicle filtering based on features
+            resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
+
+            //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
+            return MapVehicleDetailsForOTA(resultDict);
+        }
+
         /// <summary>
         /// Filtering visible and owned vehicle as per feature id 
         /// </summary>
@@ -321,6 +341,53 @@ namespace net.atos.daf.ct2.visibility
             return result;
         }
 
+
+        private static IEnumerable<VehicleDetailsAccountVisibilityForOTA> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        {
+            List<VehicleDetailsAccountVisibilityForOTA> vehicleDetails = new List<VehicleDetailsAccountVisibilityForOTA>();
+            foreach (var vg_kv in resultDict)
+            {
+                var vehicleGroup = vg_kv.Key;
+                var visibleVehicles = vg_kv.Value;
+                //if (!vehicleGroup.GroupType.Equals("S"))
+                {
+                    foreach (var vehicle in visibleVehicles)
+                    {
+                        vehicleDetails.Add(new VehicleDetailsAccountVisibilityForOTA
+                        {
+                            VehicleId = vehicle.Id,
+                            Vin = vehicle.VIN,
+                            VehicleName = vehicle.Name ?? string.Empty,
+                            RegistrationNo = vehicle.RegistrationNo ?? string.Empty,
+                            VehicleGroupName = vehicleGroup.Name,
+                            ModelYear = string.Empty,
+                            Type = string.Empty
+                        });
+                    }
+                }
+            }
+
+            var result = vehicleDetails.GroupBy(x => new
+            {
+                x.VehicleId,
+                x.VehicleName,
+                x.Vin,
+                x.RegistrationNo,
+                x.ModelYear,
+                x.Type
+            }).Select(x => new VehicleDetailsAccountVisibilityForOTA
+            {
+                VehicleId = x.Key.VehicleId,
+                Vin = x.Key.Vin,
+                VehicleName = x.Key.VehicleName,
+                RegistrationNo = x.Key.RegistrationNo,
+                ModelYear = x.Key.ModelYear,
+                Type = x.Key.Type,
+                VehicleGroupNames = x.Select(x => x.VehicleGroupName)
+                .Aggregate((s1, s2) => s1 + "," + s2)
+            });
+            return result;
+        }
         internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
         {
             public bool Equals(VisibilityVehicle x, VisibilityVehicle y)

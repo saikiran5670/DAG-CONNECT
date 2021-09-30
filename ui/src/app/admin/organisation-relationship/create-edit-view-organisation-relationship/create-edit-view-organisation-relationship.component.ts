@@ -256,10 +256,10 @@ if(vehicleList != '' && orgList != ''){
 
   getErrorMsg(vehicleName:any, vinList:any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
+      title: this.translationData.lblAlert ,
       message:  
       `Vehicle group '${vehicleName}' is not eligible for creating Organisation Relationship. Vehicle group should only contain owned vehicles of the organisation. Non-eligible vehicles are, ${vinList}`,
-      confirmText: this.translationData.lblOk || "OK"
+      confirmText: this.translationData.lblOk 
     };
 
     const dialogConfig = new MatDialogConfig();
@@ -274,10 +274,10 @@ if(vehicleList != '' && orgList != ''){
 
   getDuplicateRecordMsg(relnName: any, orgname:any,vehicleName:any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
+      title: this.translationData.lblAlert ,
       message:  
       `Vehicle group '${vehicleName}' is already associated with Organisation '${orgname}' under Relationship '${relnName}'.Please choose other entities.`,
-      confirmText: this.translationData.lblOk || "OK"
+      confirmText: this.translationData.lblOk 
     };
 
     const dialogConfig = new MatDialogConfig();

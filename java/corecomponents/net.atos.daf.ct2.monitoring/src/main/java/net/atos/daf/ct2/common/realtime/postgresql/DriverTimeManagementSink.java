@@ -46,6 +46,9 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 		logger.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+		
+		 int pId = getRuntimeContext().getIndexOfThisSubtask();
+		 logger.info("PID value {}",  pId);
 
 		driverDAO = new LiveFleetDriverActivityDao();
 		// System.out.println("read Query--->" +
@@ -89,6 +92,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 						synchronizedCopy = new ArrayList<Monitor>(queue);
 						queue.clear();
 						int i = 0;
+						
 						/*
 						 * for (Monitor monitorData : synchronizedCopy) { if
 						 * (("driver1").equalsIgnoreCase(monitorData.getDocument().getDriverID())) {

@@ -173,17 +173,17 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'category', name: (this.translationData.lblCategory), field: 'key',
         type: FieldType.string, minWidth: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
-        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
+        id: 'target', name: (this.translationData.lblTarget ), field: 'targetValue',
         type: FieldType.string, formatter: this.getTarget, minWidth: 90, maxWidth: 275, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'categoryG', name: (this.translationData.lblCategory ), field: 'key',
         type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       }
     ];

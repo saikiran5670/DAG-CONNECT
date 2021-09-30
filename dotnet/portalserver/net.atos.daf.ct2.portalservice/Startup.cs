@@ -37,6 +37,7 @@ using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.dashboardservice;
 using net.atos.daf.ct2.notificationservice;
+using net.atos.daf.ct2.otasoftwareupdateservice;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
 using Microsoft.AspNetCore.Http.Connections;
 
@@ -71,6 +72,7 @@ namespace net.atos.daf.ct2.portalservice
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
             var mapservice = Configuration["ServiceConfiguration:mapservice"];
             var dashboarservice = Configuration["ServiceConfiguration:dashboardservice"];
+            var otasoftwareupdateservice = Configuration["ServiceConfiguration:otasoftwareupdateservice"];
             var reportschedulerservice = Configuration["ServiceConfiguration:reportschedulerservice"];
             string notificationservice = Configuration["ServiceConfiguration:notificationservice"];
 
@@ -255,6 +257,7 @@ namespace net.atos.daf.ct2.portalservice
 
             services.AddGrpcClient<PushNotificationService.PushNotificationServiceClient>(o => o.Address = new Uri(notificationservice));
             services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(notificationservice));
+            services.AddGrpcClient<OTASoftwareUpdateService.OTASoftwareUpdateServiceClient>(o => o.Address = new Uri(otasoftwareupdateservice));
 
             services.AddSwaggerGen(c =>
             {
