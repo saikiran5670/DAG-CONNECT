@@ -18,6 +18,7 @@ export class FleetMapService {
   ui: any
   hereMap: any;
   public mapElement: ElementRef;
+  drivingStatus: boolean =false;
   mapGroup: any;
   iconsGroup: any;
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
@@ -565,12 +566,16 @@ export class FleetMapService {
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
          
-      
-        let endMarkerSize = { w: 34, h: 40 };;
+        if(this.validateLatLng(this.startAddressPositionLat,this.startAddressPositionLong)){
+          this.group.addObject(this.startMarker);
+        }
+        let endMarkerSize = { w: 34, h: 40 };
         let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
         const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
         this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        this.group.addObjects([this.startMarker,this.rippleMarker, this.endMarker]);
+        if(this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong)){
+         this.group.addObjects([this.rippleMarker, this.endMarker]);
+        }
         // end start marker
         // var startBubble;
         // this.startMarker.addEventListener('pointerenter', function (evt) {
@@ -1133,11 +1138,19 @@ let _type ='';
         _type = _alertConfig.type;
       }
       let markerSize = { w: 34, h: 40 };
+      if(this.drivingStatus){
+        let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType);
+        const icon = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.vehicleIconMarker = new H.map.Marker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon });
+        }
+        else{
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
+        }
       let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong);
+        
       if(_checkValidLatLong) //16705 
-        this.group.addObject(this.vehicleIconMarker);
+        this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
       let _healthStatus = '',_drivingStatus = '';
       // icon tooltip
       // switch (elem.vehicleHealthStatusType) {
@@ -1238,13 +1251,13 @@ let _type ='';
   }
 
   setIconsOnMap(element,_ui) {
-    let drivingStatus = false;
+    // let drivingStatus = false;
     let _healthStatus ='',_drivingStatus = '';
     let healthColor = '#606060';
     let _alertConfig = undefined;
     //element.vehicleDrivingStatusType = 'D'
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
-      drivingStatus = true
+      this.drivingStatus = true
     }
     // switch (element.vehicleHealthStatusType) {
     //   case 'T': // stop now;
@@ -1309,7 +1322,7 @@ let _type ='';
     //     break;
     // }
     _drivingStatus =  this.getDrivingStatus(element,_drivingStatus);
-    let obj =this.getVehicleHealthStatusType(element,_healthStatus,healthColor,drivingStatus);
+    let obj =this.getVehicleHealthStatusType(element,_healthStatus,healthColor,this.drivingStatus);
     _healthStatus = obj._healthStatus;
     healthColor = obj.healthColor;
     let _vehicleIcon : any;

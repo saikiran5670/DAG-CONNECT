@@ -52,7 +52,7 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() endDateValue: any;
   @Input() startDateValue: any;
   @Input() _vinData: any;
-  @Input() graphData: any;
+  graphData: any;
   idleDuration: any =[];
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
@@ -235,6 +235,7 @@ selectedTrip = new SelectionModel(true, []);
 selectedPOI = new SelectionModel(true, []);
 selectedHerePOI = new SelectionModel(true, []);
 advanceFilterOpen: boolean = false;
+showGraph: boolean = false;
 showField: any = {
   vehicleName: true,
   vin: true,
@@ -294,9 +295,9 @@ tripTraceArray: any = [];
   tableInfoObj: any ;
   summaryObj: any;
   detailSummaryObj: any;
-  chartLabelDateFormat:any ='MM/DD/YYYY';
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
+  chartLabelDateFormat:any ='MM/DD/YYYY';
   bufferValue = 75;
   chartsLabelsdefined: any = [];
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -1224,13 +1225,25 @@ createEndMarker(){
       "driverId": driverDetails.driverID
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
-    this.displayData = data["fleetFuelDetails"];
+    //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    })
+    });
+    let searchDataParam=
+    {
+      "startDateTime": this.dateDetails.startTime,
+      "endDateTime":this.dateDetails.endTime,
+      "viNs": driverDetails.vin,
+      "LanguageCode": "EN-GB"
+    } 
+   this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+      this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData = graphData;
+      this.showGraph= true;
+    }); 
   }
 
  
@@ -1670,7 +1683,7 @@ createEndMarker(){
   }
 
 
-  setChartData(graphData: any){
+  setChartData(graphData: any){   
     graphData.forEach(e => {
       var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
@@ -1702,18 +1715,33 @@ createEndMarker(){
     this.barChartLegend = true;
     this.chartsLabelsdefined=[];
     this.barChartPlugins = [];
-    if( this.chartLabelDateFormat=='DD/MM/YYYY' ||  this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate =this.dateDetails.startTime;
-      let endDate = this.dateDetails.endTime;  
+    let newDate_start = new Date( this.dateDetails.startTime);
+    let newDate_end = new Date(this.dateDetails.endTime);
+
+    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone); 
       this.chartsLabelsdefined=[ startDate, endDate ];
-    }   
-    else {
-      let startDateValue =  (this.dateDetails.fromDate).split(' ');
-      let endDateValue = (this.dateDetails.endDate).split(' '); 
-      this.chartsLabelsdefined=[ startDateValue[0], endDateValue[0] ];
     }
+    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone);   
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
+      
+      let startDate = `${newDate_start.getMonth()+1}-${newDate_start.getDate()}-${newDate_start.getFullYear()}`;;
+      let endDate = `${newDate_end.getMonth()+1}-${newDate_end.getDate()}-${newDate_end.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+    else{
+      let startDate = `${newDate_start.getMonth()+1}/${newDate_start.getDate()}/${newDate_start.getFullYear()}`;;
+      let endDate = `${newDate_end.getMonth()+1}/${newDate_end.getDate()}/${newDate_end.getFullYear()}`;;  
+      this.chartsLabelsdefined=[ startDate, endDate ];
+    }
+   
     this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;  
+    this.barChartLabels= this.chartsLabelsdefined;   
     if(this.ConsumedChartType == 'Bar'){
       let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
       this.barChartOptions3.scales.yAxes= [{
@@ -1728,6 +1756,22 @@ createEndMarker(){
           labelString: data1    
         }
       }];     
+      this.barChartOptions3.scales.xAxes= [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },  
+        type:'time',
+         time:
+         {
+           tooltipFormat:  this.chartLabelDateFormat,
+           unit: 'day',
+           stepSize:1,
+           displayFormats: {      
+             day:  this.chartLabelDateFormat,            
+            },             
+         }   
+     }];  
     this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: data1,
@@ -1749,6 +1793,22 @@ createEndMarker(){
         labelString: 'Number of Trips'    
       }
     }]; 
+    this.barChartOptions.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      }, 
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }   
+   }];  
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -1769,6 +1829,22 @@ createEndMarker(){
         labelString: data2   
       }
     }];
+    this.barChartOptions4.scales.xAxes= [{     
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }  
+     }];
     this.barChartData3= [
       { data: this.co2Chart,
         label: data2,
@@ -1789,6 +1865,22 @@ createEndMarker(){
         labelString: data3   
       }
     }];
+    this.barChartOptions2.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }     
+   }];
      this.barChartData4= [
       { data: this.distanceChart,
         label: data3,
@@ -1808,6 +1900,22 @@ createEndMarker(){
         labelString: 'Minutes'      
       }
     }];
+    this.barChartOptions1.scales.xAxes= [{      
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },    
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }      
+  }]; 
   this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
@@ -1826,6 +1934,22 @@ createEndMarker(){
         labelString: data4    
       }
     }];
+    this.barChartOptions5.scales.xAxes= [{      
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+    type:'time',
+    time:
+    {
+      tooltipFormat:  this.chartLabelDateFormat,
+      unit: 'day',
+      stepSize:1,
+      displayFormats: {      
+        day:  this.chartLabelDateFormat,            
+       },             
+    }      
+}]; 
      this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label:data4,
@@ -1994,7 +2118,7 @@ createEndMarker(){
     this.lineChartType = 'line';
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels= this.chartsLabelsdefined; 
-
+  
   }
 
   resetChartData(){
