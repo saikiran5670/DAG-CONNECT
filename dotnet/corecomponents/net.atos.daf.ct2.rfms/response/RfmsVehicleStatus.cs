@@ -31,9 +31,9 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class BrakePedalPositionClass
@@ -67,9 +67,9 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class DrivingWithoutTorqueClass
@@ -93,18 +93,18 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class VehicleSpeedClass
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class EngineSpeedClass
@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.rfms.response
         public int MaxRange { get; set; }
 
         public int NoOfStep { get; set; }
-        public int[] ClassDistanceData { get; set; }
+        public List<int> ClassDistanceData { get; set; }
 
 
     }

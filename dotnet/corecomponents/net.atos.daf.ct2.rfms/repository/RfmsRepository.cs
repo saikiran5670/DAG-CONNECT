@@ -358,7 +358,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @" from livefleet.livefleet_position_statistics T1
                                         left  join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin
                                         INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
 										from livefleet.livefleet_position_statistics Group By Vin) T3
 										on T1.created_datetime = T3.lastDate
@@ -399,7 +399,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @"from livefleet.livefleet_position_statistics t1 left
                                         join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id";
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin";
                     queryStatement += contentFilterQuery + selectQuery;
                 }
 
@@ -509,7 +509,7 @@ namespace net.atos.daf.ct2.rfms.repository
             }
 
         }
-      
+
         private string GetContentFilterQuery(string contentFilter)
         {
             var query = string.Empty;
