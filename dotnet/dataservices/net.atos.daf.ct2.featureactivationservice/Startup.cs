@@ -19,6 +19,8 @@ using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
@@ -60,6 +62,8 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<IDriverRepository, DriverRepository>();
             services.AddTransient<IDriverManager, DriverManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

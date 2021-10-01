@@ -8,14 +8,21 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+declare var H: any;
 
 @Injectable()
 export class POIService {
   PoiServiceUrl: string = '';
   hereMapApiUrl: string = 'https://places.ls.hereapi.com';
+  map_key: any = '';
+  private platform: any;
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.PoiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
+    this.map_key = config.getSettings("hereMap").api_key;
+    this.platform = new H.service.Platform({
+      "apikey": this.map_key 
+    });
   }
 
   generateHeader() {
@@ -56,7 +63,7 @@ export class POIService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.hereMapApiUrl}/places/v1/autosuggest?at=40.74917,-73.98529&q=${inputKey}&apiKey=${'BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw'}`, headers)
+      .get<any[]>(`${this.hereMapApiUrl}/places/v1/autosuggest?at=40.74917,-73.98529&q=${inputKey}&apiKey=${this.map_key}`, headers)
       .pipe(catchError(this.handleError));
   }
 
