@@ -13,7 +13,7 @@ import { ConsentOptComponent } from '../consent-opt/consent-opt.component';
 export class EditDriverDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<boolean>();
   @Input() driverData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() organizationData: any;
   dialogRef: MatDialogRef<ConsentOptComponent>;

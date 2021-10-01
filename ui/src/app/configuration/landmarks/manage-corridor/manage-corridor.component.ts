@@ -18,7 +18,7 @@ declare var H: any;
 
 export class ManageCorridorComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   displayedColumns = ['All', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width', 'action'];
   createEditStatus = false;

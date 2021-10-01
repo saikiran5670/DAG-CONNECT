@@ -34,7 +34,7 @@ export class ManageGroupComponent implements OnInit {
   rowsData: any;
   createStatus: boolean;
   titleText: string;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;
