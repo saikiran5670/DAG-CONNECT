@@ -50,7 +50,7 @@ query: any;
 searchMarker: any = {};
 @ViewChild("map")
 public mapElement: ElementRef;
-logbookPrefId: any = 13;
+logbookPrefId: number;
 selectionTab: any;
 reportPrefData: any = [];
 @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -194,7 +194,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
-    "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    "apikey": this.map_key 
   });
 
   this.configureAutoSuggest();
@@ -374,17 +374,22 @@ ngOnDestroy(){
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getLogbookPref(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Logbook');
+      if(repoId.length > 0){
+        this.logbookPrefId = repoId[0].id; 
+        this.getLogbookPref();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Logbook', id: 13}]; // hard coded
-      this.getLogbookPref(reportListData);
+      reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
+      // this.getLogbookPref();
     });
   }
 
-  getLogbookPref(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Logbook');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 13).subscribe((data : any) => {
+  getLogbookPref(){
+    this.reportService.getReportUserPreference(this.logbookPrefId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);

@@ -82,7 +82,7 @@ export class FuelDeviationReportComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
-  fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
+  fuelDeviationReportId: number;
   displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   pdfDisplayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
@@ -438,10 +438,9 @@ export class FuelDeviationReportComponent implements OnInit {
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });
     this.configureAutoSuggest();
-    this.defaultTranslation();
     this.setIcons();
   }
 
@@ -452,12 +451,7 @@ export class FuelDeviationReportComponent implements OnInit {
     this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
-  }
-
+  
   ngOnDestroy() {
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.fuelDeviationForm.controls.vehicleGroup.value;
     this.globalSearchFilterData["vehicleDropDownValue"] = this.fuelDeviationForm.controls.vehicle.value;
@@ -611,17 +605,22 @@ export class FuelDeviationReportComponent implements OnInit {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getFuelDeviationReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Fuel Deviation Report');
+      if(repoId.length > 0){
+        this.fuelDeviationReportId = repoId[0].id; 
+        this.getFuelDeviationReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Fuel Deviation Report', id: 7}]; // hard coded
-      this.getFuelDeviationReportPreferences(reportListData);
+      reportListData = [{name: 'Fuel Deviation Report', id: this.fuelDeviationReportId}];
+      // this.getFuelDeviationReportPreferences();
     });
   }
 
-  getFuelDeviationReportPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Fuel Deviation Report');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 7).subscribe((data : any) => {
+  getFuelDeviationReportPreferences(){
+    this.reportService.getReportUserPreference(this.fuelDeviationReportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetFuelDeviationPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -702,12 +701,12 @@ export class FuelDeviationReportComponent implements OnInit {
           }
         });
       }
-      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if(this.vehicleDD.length > 0){
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
       this.resetFuelDeviationFormControlValue();
     }
     this.setVehicleGroupAndVehiclePreSelection();
@@ -1064,7 +1063,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.vehicleDD = [];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
       if(search.length > 0){
@@ -1174,9 +1173,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         totalVehCount: vinCount.length
       };
       this.fuelDeviationDChartData = [_totalIncCount.length, _totalDecCount.length];
-      this.fuelDeviationDChartLabels = [this.translationData.lblFuelIncreaseEvent || 'Fuel Increase Event', this.translationData.lblFuelDecreaseEvent || 'Fuel Decrease Event'];
+      this.fuelDeviationDChartLabels = [this.translationData.lblFuelIncreaseEvent , this.translationData.lblFuelDecreaseEvent ];
       this.fuelDeviationPChartData = [_totalIncCount.length, _totalDecCount.length];
-      this.fuelDeviationPChartLabels = [this.translationData.lblFuelIncreaseEvent || 'Fuel Increase Event', this.translationData.lblFuelDecreaseEvent || 'Fuel Decrease Event'];
+      this.fuelDeviationPChartLabels = [this.translationData.lblFuelIncreaseEvent , this.translationData.lblFuelDecreaseEvent ];
     }
   }
 
@@ -1224,7 +1223,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }    
     }];     
     this.fuelIncLineChartData = [
-      { data: this._yIncLine, label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' },
+      { data: this._yIncLine, label: this.translationData.lblFuelIncreaseEvents  },
     ];
   }
   if(this.fuelDecLineChartType == 'line'){
@@ -1241,7 +1240,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }    
     }];   
     this.fuelDecLineChartData = [
-      { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' },
+      { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents },
     ];
   }
   if(this.fuelIncBarChartType == 'bar'){
@@ -1259,7 +1258,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }];   
     this.fuelIncBarChartData = [
       {
-        label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events',
+        label: this.translationData.lblFuelIncreaseEvents ,
         type: 'bar',
         backgroundColor: '#65C3F7',
         hoverBackgroundColor: '#65C3F7',
@@ -1283,7 +1282,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }];   
     this.fuelDecBarChartData = [
       {
-        label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events',
+        label: this.translationData.lblFuelDecreaseEvents ,
         type: 'bar',
         backgroundColor: '#F4AF85',
         hoverBackgroundColor: '#F4AF85',
@@ -1427,22 +1426,22 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   getPDFExcelHeader(){
     let col: any = [];
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.translationData.lblmile );
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh  ) : (this.translationData.lblmph );
     //let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
-    let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
-    let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
-    col = [`${this.translationData.lblType || 'Type'}`, `${this.translationData.lblDifference || 'Difference'} (%)`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`, `${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValton})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValgallon})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`];
+    let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton  ) : (this.translationData.lblton );
+    let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr  ) : (this.translationData.lblgallon);
+    col = [`${this.translationData.lblType }`, `${this.translationData.lblDifference } (%)`, `${this.translationData.lblVehicleName }`, `${this.translationData.lblVIN }`, `${this.translationData.lblRegPlateNumber }`, `${this.translationData.lblDate }`, `${this.translationData.lblOdometer } (${unitValkm})`, `${this.translationData.lblStartDate }`, `${this.translationData.lblEndDate }`, `${this.translationData.lblDistance} (${unitValkm})`, `${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm })`, `${this.translationData.lblAverageSpeed} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValton})`, `${this.translationData.lblStartPosition}`, `${this.translationData.lblEndPosition}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValgallon})`, `${this.translationData.lblDrivingTime } (${this.translationData.lblhhmm })`, `${this.translationData.lblAlerts }`];
     return col;
   }
 
   exportAsExcelFile(){    
     this.getAllSummaryData();
-    const title = this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report';
-    const summary = this.translationData.lblSummarySection || 'Summary Section';
-    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    const title = this.translationData.lblFuelDeviationReport ;
+    const summary = this.translationData.lblSummarySection;
+    const detail = this.translationData.lblDetailSection;
     const header = this.getPDFExcelHeader();
-    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , `${this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events'}`, `${this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events'}`, `${this.translationData.lblVehiclesWithFuelEvents || 'Vehicles With Fuel Events'}`];
+    const summaryHeader = [`${this.translationData.lblReportName}`, `${this.translationData.lblReportCreated }`, `${this.translationData.lblReportStartTime}`, `${this.translationData.lblReportEndTime}`, `${this.translationData.lblVehicleGroup }`, (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicle) , `${this.translationData.lblFuelIncreaseEvents }`, `${this.translationData.lblFuelDecreaseEvents }`, `${this.translationData.lblVehiclesWithFuelEvents }`];
     const summaryData = this.excelSummaryData;
     
     //Create workbook and worksheet
@@ -1669,19 +1668,19 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDate || 'Date'}:</td> <td><b>${element.eventDate}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${element.eventDate}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicleName || 'Vehicle Name')}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${element.geoLocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td><b>${element.geoLocationAddress}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText.eventText}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td><b>${eventDescText.eventText}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.convertedDifference}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td><b>${element.convertedDifference}%</b></td>
             </tr>
           </table>`
         });

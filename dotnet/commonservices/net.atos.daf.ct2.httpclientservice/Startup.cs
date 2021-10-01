@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using net.atos.daf.ct2.httpclient;
+using net.atos.daf.ct2.httpclientservice.handlers;
 using net.atos.daf.ct2.httpclientservice.Services;
 
 namespace net.atos.daf.ct2.httpclientservice
@@ -39,20 +42,26 @@ namespace net.atos.daf.ct2.httpclientservice
                     .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
             }));
 
-            services.AddHttpClient("OTA22AuthClient", client =>
+            //services.AddHttpClient("OTA22AuthClient", client =>
+            //{
+            //    client.BaseAddress = new Uri(Configuration["OTA22Configurations:AUTH_URL"]);
+            //    client.Timeout = new TimeSpan(0, 0, 30);
+            //    client.DefaultRequestHeaders.Clear();
+            //});
+            services.AddHttpClient("OTA22Client", client =>
             {
-                client.BaseAddress = new Uri(Configuration["OTA22Configurations:AUTH_URL"]);
                 client.Timeout = new TimeSpan(0, 0, 30);
                 client.DefaultRequestHeaders.Clear();
-            });
-            services.AddHttpClient("OTA22APIClient", client =>
+            })
+            .AddHttpMessageHandler(handler => new TimeOutDelegatingHandler(TimeSpan.FromSeconds(20)))
+            .AddHttpMessageHandler(handler => new RetryPolicyDelegatingHandler(2))
+            .ConfigurePrimaryHttpMessageHandler(handler =>
+            new HttpClientHandler()
             {
-                client.BaseAddress = new Uri(Configuration["OTA22Configurations:API_BASE_URL"]);
-                client.Timeout = new TimeSpan(0, 0, 30);
-                client.DefaultRequestHeaders.Clear();
+                AutomaticDecompression = System.Net.DecompressionMethods.GZip
             });
 
-            //services.AddTransient<IOTASoftwareUpdateRepository, OTASoftwareUpdateRepository>();
+            services.AddTransient<IOTA22HttpClientManager, OTA22HttpClientManager>();
 
         }
 

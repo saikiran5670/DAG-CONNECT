@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ConfigService } from '@ngx-config/core';
 import { OrganizationService } from 'src/app/services/organization.service';
 
 declare var H: any;
@@ -17,14 +18,16 @@ export class CommonMapComponent implements OnInit {
  lat: any = '37.7397';  
  lng: any = '-121.4252'; 
  query : any;
+ map_key: any = '';
 
   @ViewChild("map")
   public mapElement: ElementRef;
 
-  public constructor(private organizationService: OrganizationService) {
+  public constructor(private organizationService: OrganizationService, private _configService: ConfigService) {
     this.query = "starbucks";
+    this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-          "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+          "apikey": this.map_key
       });
   }
 

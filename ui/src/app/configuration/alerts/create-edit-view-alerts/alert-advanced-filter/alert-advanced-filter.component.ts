@@ -25,6 +25,7 @@ import { Util } from 'src/app/shared/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
 import { ReportMapService } from '../../../../report/report-map.service';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -115,6 +116,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   distanceUnit: any;
   poiUnit: any;
   unitTypeVal: any;
+  map_key: any = '';
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -129,9 +131,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
               private el: ElementRef,
-              private reportMapService: ReportMapService) {
+              private reportMapService: ReportMapService,  private _configService: ConfigService) {
+   this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey":this.map_key
     });
    }
 

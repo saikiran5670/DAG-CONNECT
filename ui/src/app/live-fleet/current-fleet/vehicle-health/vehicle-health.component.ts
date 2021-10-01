@@ -27,6 +27,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { ReportService } from 'src/app/services/report.service';
 import { Observable } from 'rxjs';
 import { AdminComponent } from 'src/app/admin/admin.component';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -102,14 +103,16 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
+  map_key: any = '';
 
 
-  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
+  constructor(private _configService: ConfigService, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
     
       
       this.defaultTranslation();
+      this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key
     });
   }
   defaultTranslation(){
