@@ -36,6 +36,7 @@ import net.atos.daf.ct2.etl.common.processing.TripCalculations;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.Distribution;
 import net.atos.daf.ct2.pojo.standard.SpareMatrixAcceleration;
 import net.atos.daf.ct2.pojo.standard.SparseMatrix;
 import net.atos.daf.ct2.pojo.standard.Status;
@@ -157,20 +158,7 @@ public class TripEtlStreamingJob {
 					
 					}
 			  }
-					  
-					  /*rec ->{
-					KafkaRecord<String> kafkaRec = new KafkaRecord<>();
-					kafkaRec.setKey(rec.getTripId());
-					try {
-						kafkaRec.setValue(mapper.writeValueAsString(rec));
-					} catch (JsonProcessingException e) {
-						logger.error("Issue while parsing Trip into JSON: " + e.getMessage());
-					}
-					logger.info("Aggregated Json trip structure :: "+kafkaRec);
-
-					return kafkaRec;
-				}*/
-			  ).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_TOPIC_NAME),
+			 ).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_TOPIC_NAME),
 						new KafkaMessageSerializeSchema<String>(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_TOPIC_NAME)), getSinkProperties(envParams),
 						FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Egress Data");
 			}
@@ -431,8 +419,7 @@ public class TripEtlStreamingJob {
 					tripStsData.setNumValRpmSpeed(vSpeedRpm.getIa());
 					tripStsData.setClmnIdnxRpmSpeed(vSpeedRpm.getJa());
 				}
-				
-				
+								
 				//Acelaration Speed
 				if(Objects.nonNull(stsMsg.getDocument().getVAccelerationSpeed())){
 					SpareMatrixAcceleration aclnMatrix = stsMsg.getDocument().getVAccelerationSpeed();
@@ -444,8 +431,65 @@ public class TripEtlStreamingJob {
 					tripStsData.setNumValAclnSpeed(aclnMatrix.getIa());
 					tripStsData.setClmnIdnxAclnSpeed(aclnMatrix.getJa());
 					tripStsData.setNonZeroBrakePedalAclnSpeedMatrix(aclnMatrix.getA_VBrake());
-					
 				}	
+				
+				//Vehicle Status API
+				//tripStsData.setVTripMotionDuration(stsMsg.getDocument().getVTripMotionDuration());
+				//tripStsData.setVCruiseControlDist(stsMsg.getVCruiseControlDist());
+				//tripStsData.setVCruiseControlFuelConsumed(stsMsg.getDocument().getVCruiseControlFuelConsumed());
+				//tripStsData.setVTripIdleWithoutPTODuration(stsMsg.getDocument().getVTripIdleWithoutPTODuration());
+				if(Objects.nonNull(stsMsg.getDocument().getVTripIdlePTOFuelConsumed()))
+					tripStsData.setVTripIdlePTOFuelConsumed(stsMsg.getDocument().getVTripIdlePTOFuelConsumed());
+				else
+					tripStsData.setVTripIdlePTOFuelConsumed(ETLConstants.ZERO_VAL);
+				
+				if(Objects.nonNull(stsMsg.getVptoDist()))
+					tripStsData.setVPtoDist(stsMsg.getVptoDist());
+				else
+					tripStsData.setVPtoDist(ETLConstants.ZERO_VAL);
+				
+				tripStsData.setVTripCruiseControlDuration(stsMsg.getDocument().getVTripCruiseControlDuration());
+				tripStsData.setVTripIdleWithoutPTOFuelConsumed(stsMsg.getDocument().getVTripIdleWithoutPTOFuelConsumed());
+				tripStsData.setVTripMotionFuelConsumed(stsMsg.getDocument().getVTripMotionFuelConsumed());
+				tripStsData.setVTripMotionBrakeCount(stsMsg.getDocument().getVTripMotionBrakeCount());
+				tripStsData.setVTripMotionBrakeDist(stsMsg.getDocument().getVTripMotionBrakeDist());
+				tripStsData.setVTripMotionPTODuration(stsMsg.getDocument().getVTripMotionPTODuration());
+				tripStsData.setVTripMotionPTOFuelConsumed(stsMsg.getDocument().getVTripMotionPTOFuelConsumed());
+				
+				//Acceleration Pedal Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVAccelerationPedalDistr())){
+					Distribution accelerationPedalDistr = stsMsg.getDocument().getVAccelerationPedalDistr();
+					
+					tripStsData.setAclnPedalDistr(convertToJson(accelerationPedalDistr, jsonMapper));
+					tripStsData.setAclnMinRangeInt(accelerationPedalDistr.getDistrMinRangeInt());
+					tripStsData.setAclnMaxRangeInt(accelerationPedalDistr.getDistrMaxRangeInt());
+					tripStsData.setAclnDistrStep(accelerationPedalDistr.getDistrStep());
+					tripStsData.setAclnDistrArrayTime(accelerationPedalDistr.getDistrArrayTime());
+				}
+			
+				//Retarder Torque Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVRetarderTorqueActualDistr())){
+					Distribution retarderTorqueDistr = stsMsg.getDocument().getVRetarderTorqueActualDistr();
+					
+					tripStsData.setVRetarderTorqueActualDistr(convertToJson(retarderTorqueDistr, jsonMapper));
+					tripStsData.setVRetarderTorqueMinRangeInt(retarderTorqueDistr.getDistrMinRangeInt());
+					tripStsData.setVRetarderTorqueMaxRangeInt(retarderTorqueDistr.getDistrMaxRangeInt());
+					tripStsData.setVRetarderTorqueDistrStep(retarderTorqueDistr.getDistrStep());
+					tripStsData.setVRetarderTorqueDistrArrayTime(retarderTorqueDistr.getDistrArrayTime());
+				}
+							
+				//EngineLoad At EngineSpeed Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVEngineLoadAtEngineSpeedDistr())){
+					Distribution engTorqDistr = stsMsg.getDocument().getVEngineLoadAtEngineSpeedDistr();
+					
+					tripStsData.setVEngineLoadAtEngineSpeedDistr(convertToJson(engTorqDistr, jsonMapper));
+					tripStsData.setVEngineLoadMinRangeInt(engTorqDistr.getDistrMinRangeInt());
+					tripStsData.setVEngineLoadMaxRangeInt(engTorqDistr.getDistrMaxRangeInt());
+					tripStsData.setVEngineLoadDistrStep(engTorqDistr.getDistrStep());
+					tripStsData.setVEngineLoadDistrArrayTime(engTorqDistr.getDistrArrayTime());
+				}
+				
+				
 			}
 		
 			logger.info("On load tripStsData : {}",tripStsData);
@@ -570,14 +614,40 @@ public class TripEtlStreamingJob {
 				tripData.setNonZeroBrakePedalAclnSpeedMatrix(tripAggrData.getNonZeroBrakePedalAclnSpeedMatrix());
 				tripData.setNumValAclnSpeed(tripAggrData.getNumValAclnSpeed());
 				tripData.setClmnIdnxAclnSpeed(tripAggrData.getClmnIdnxAclnSpeed());
+				
+				tripData.setVTripIdlePTOFuelConsumed(tripAggrData.getVTripIdlePTOFuelConsumed());
+				tripData.setVPtoDist(tripAggrData.getVPtoDist());
+				tripData.setIdlingConsumptionWithPTO(tripAggrData.getIdlingConsumptionWithPTO());
+				tripData.setVTripCruiseControlDuration(tripAggrData.getVTripCruiseControlDuration());
+				tripData.setVTripIdleWithoutPTOFuelConsumed(tripAggrData.getVTripIdleWithoutPTOFuelConsumed());
+				tripData.setVTripMotionFuelConsumed(tripAggrData.getVTripMotionFuelConsumed());
+				tripData.setVTripMotionBrakeCount(tripAggrData.getVTripMotionBrakeCount());
+				tripData.setVTripMotionBrakeDist(tripAggrData.getVTripMotionBrakeDist());
+				tripData.setVTripMotionPTODuration(tripAggrData.getVTripMotionPTODuration());
+				tripData.setVTripMotionPTOFuelConsumed(tripAggrData.getVTripMotionPTOFuelConsumed());
+				tripData.setAclnPedalDistr(tripAggrData.getAclnPedalDistr());
+				tripData.setAclnMinRangeInt(tripAggrData.getAclnMinRangeInt());
+				tripData.setAclnMaxRangeInt(tripAggrData.getAclnMaxRangeInt());
+				tripData.setAclnDistrStep(tripAggrData.getAclnDistrStep());
+				tripData.setAclnDistrArrayTime(tripAggrData.getAclnDistrArrayTime());
+				tripData.setVRetarderTorqueActualDistr(tripAggrData.getVRetarderTorqueActualDistr());
+				tripData.setVRetarderTorqueMinRangeInt(tripAggrData.getVRetarderTorqueMinRangeInt());
+				tripData.setVRetarderTorqueMaxRangeInt(tripAggrData.getVRetarderTorqueMaxRangeInt());
+				tripData.setVRetarderTorqueDistrStep(tripAggrData.getVRetarderTorqueDistrStep());
+				tripData.setVRetarderTorqueDistrArrayTime(tripAggrData.getVRetarderTorqueDistrArrayTime());
+				tripData.setVEngineLoadAtEngineSpeedDistr(tripAggrData.getVEngineLoadAtEngineSpeedDistr());
+				tripData.setVEngineLoadMinRangeInt(tripAggrData.getVEngineLoadMinRangeInt());
+				tripData.setVEngineLoadMaxRangeInt(tripAggrData.getVEngineLoadMaxRangeInt());
+				tripData.setVEngineLoadDistrStep(tripAggrData.getVEngineLoadDistrStep());
+				tripData.setVEngineLoadDistrArrayTime(tripAggrData.getVEngineLoadDistrArrayTime());
+				
 				return tripData;
 			} catch (Exception e) {
 				logger.info("Issue while mapping TripData :{}",tripAggrData);
 				e.printStackTrace();
 				return null;
 			}
-	
-			
+		
 		}
 		
 	 }	
