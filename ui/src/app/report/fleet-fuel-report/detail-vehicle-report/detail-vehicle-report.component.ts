@@ -282,6 +282,7 @@ tripTraceArray: any = [];
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
+  rowdata = [];
   chartsLabelsdefined: any = [];
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData2:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -957,10 +958,10 @@ createEndMarker(){
 
   masterToggleForTrip() {
     this.tripTraceArray = [];
-    let _ui = this.reportMapService.getUI();
+    let _ui = this.mapService.getUI();
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType);
       this.showMap = false;
     }
     else{
@@ -969,7 +970,7 @@ createEndMarker(){
         this.tripTraceArray.push(row);
       });
       this.showMap = true;
-      //this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType);
     }
   }
 
@@ -987,24 +988,17 @@ createEndMarker(){
         } row`;
   }
 
-  rowdata =[];
   tripCheckboxClicked(event: any, row: any) {
-    
-    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
-    
+    this.showMap = (this.selectedTrip.selected.length > 0) ? true : false;
+    let _ui = this.mapService.getUI();
     if(event.checked){
-      
-      this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType, row);
-
-      let _ui = this.reportMapService.getUI();
-     // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.tripTraceArray.push(row);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType, row);
     }
     else{ //-- remove existing marker
-     // let arr = this.tripTraceArray.filter(item => item.id != row.id);
-    //  this.tripTraceArray = arr;
-    //  let _ui = this.reportMapService.getUI();
-    //  this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      let arr = this.tripTraceArray.filter(item => item.id != row.id);
+      this.tripTraceArray = arr.slice();
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType, row);
     }
   }
 
