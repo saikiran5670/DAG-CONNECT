@@ -1691,21 +1691,25 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }, false);
     });
     this.hereMap.addObject(this.mapGroup);
-    if(markerData && markerData.length > 0){
-      let _pos: any = {};
-      if(markerData.length > 1){ //-- multiple event icon- set zoom to last icon
-        _pos = {
-          lat: markerData[markerData.length-1].eventLatitude,
-          lng: markerData[markerData.length-1].eventLongitude
-        }
-      }else{ //-- single event icon- set zoom to that icon
-        _pos = {
-          lat: markerData[0].eventLatitude,
-          lng: markerData[0].eventLongitude
-        }
-      }
-      this.setMapToLocation(_pos);
-    }
+    this.hereMap.getViewModel().setLookAtData({
+      bounds: this.mapGroup.getBoundingBox()
+    });
+    
+    // if(markerData && markerData.length > 0){
+    //   let _pos: any = {};
+    //   if(markerData.length > 1){ //-- multiple event icon- set zoom to last icon
+    //     _pos = {
+    //       lat: markerData[markerData.length-1].eventLatitude,
+    //       lng: markerData[markerData.length-1].eventLongitude
+    //     }
+    //   }else{ //-- single event icon- set zoom to that icon
+    //     _pos = {
+    //       lat: markerData[0].eventLatitude,
+    //       lng: markerData[0].eventLongitude
+    //     }
+    //   }
+    //   this.setMapToLocation(_pos);
+    // }
   }
 
   getEventIcons(eventElement: any){
