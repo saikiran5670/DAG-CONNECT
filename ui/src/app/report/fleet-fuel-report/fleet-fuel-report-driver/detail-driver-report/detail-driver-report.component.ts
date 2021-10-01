@@ -1287,20 +1287,20 @@ createEndMarker(){
   }
 
   masterToggleForTrip() {
-    this.rowdata = [];
+    this.tripTraceArray = []
     let _ui = this.mapService.getUI();
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType);
       this.showMap = false;
     }
     else{
       this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
-        this.rowdata.push(row);
+        this.tripTraceArray.push(row);
       });
       this.showMap = true;
-      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType);
     }
   }
 
@@ -1319,16 +1319,16 @@ createEndMarker(){
   }
 
   tripCheckboxClicked(event: any, row: any) {
-    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    this.showMap = (this.selectedTrip.selected.length > 0) ? true : false;
     let _ui = this.mapService.getUI();
     if(event.checked){
-      this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType, row);
+      this.tripTraceArray.push(row);
+      this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType, row);
     }
     else{ //-- remove existing marker
-     let arr = this.rowdata.filter(item => item.id != row.id);
-     this.rowdata = arr;
-     this.mapService.viewselectedroutes(this.rowdata, _ui, this.displayRouteView, this.trackType, row);
+     let arr = this.tripTraceArray.filter(item => item.id != row.id);
+     this.tripTraceArray = arr.slice();
+     this.mapService.viewselectedroutes(this.tripTraceArray, _ui, this.displayRouteView, this.trackType, row);
     }
   }
 
@@ -1594,7 +1594,7 @@ createEndMarker(){
     // this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
     //   this.setChartData(graphData["fleetfuelGraph"]);
     // });
-    this.setChartData(this.graphData["fleetfuelGraph"]);
+    //this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -2663,7 +2663,7 @@ setVehicleGroupAndVehiclePreSelection() {
             item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumptionValue,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2968,7 +2968,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'idlingConsumption' :{
-              tempObj.push(e.idlingConsumption);
+              tempObj.push(e.idlingConsumptionValue);
               break;
             }
             case 'dpaScore' :{

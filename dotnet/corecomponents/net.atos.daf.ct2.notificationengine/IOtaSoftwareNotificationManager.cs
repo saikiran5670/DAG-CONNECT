@@ -4,9 +4,9 @@ using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.notificationengine.entity;
 
-namespace net.atos.daf.ct2.notificationengine.repository
+namespace net.atos.daf.ct2.notificationengine
 {
-    public interface IOtaSoftwareNotification
+    public interface IOtaSoftwareNotificationManager
     {
         Task<TripAlertOtaConfigParam> InsertTripAlertOtaConfigParam(TripAlertOtaConfigParam tripAlertOtaConfigParam);
     }
