@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
   maintenancePopupFlag: boolean = false;
   loginClicks = 0;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
-  translationData: any;
+  translationData: any = {};
   showLoadingIndicator: any = false;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {

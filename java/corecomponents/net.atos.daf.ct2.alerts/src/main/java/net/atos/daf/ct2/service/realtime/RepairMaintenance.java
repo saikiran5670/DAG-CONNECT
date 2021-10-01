@@ -53,7 +53,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			if (moniter.getDocument().getVWarningClass() != null && moniter.getDocument().getVWarningNumber() != null) {
 				boolean warniningInDB = DTCWarning.read(moniter.getDocument().getVWarningClass(),
 						moniter.getDocument().getVWarningNumber());
-				System.out.println("warniningInDB" + warniningInDB);
+				//System.out.println("warniningInDB" + warniningInDB);
 				logger.info("warnining detail present in master table  :{} msg UUD :: {}",
 						warniningInDB, moniter.getJobName());
 
@@ -64,17 +64,19 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 
 				if (warniningInDB && moniter.getVEvtID() == 46) {
 					if (lastProcessedTimeStamp != null) {
-						System.out.println("warning alreday present in warning table");
+						//System.out.println("warning alreday present in warning table");
 						logger.info("warning alreday present in warning table for VEvtId--46 :{} msg UUD :: {}",
 								lastProcessedTimeStamp, moniter.getJobName());
 
 					} else {
 						WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
-								lastProcessedTimeStamp);
+								lastProcessedTimeStamp,moniter.getDocument().getVWarningClass(),moniter.getDocument().getVWarningNumber());
 						warningDao.warning_insert(warningNewRowDetail);
-						System.out.println("warning not present in warning table");
-						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {}",
+						//System.out.println("warning not present in warning table");
+						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {} from alert",
 								warningNewRowDetail, moniter.getJobName());
+						warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
+						logger.info("Warning records updated in current trip table from alert:: ", warningNewRowDetail);
 
 					}
 
@@ -97,14 +99,16 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 						Long lastProcessedTimeStamp = warningDao.readRepairMaintenamce(moniter.getMessageType(), vin,
 								warning.getWarningClass(), warning.getWarningNumber());
 						if (lastProcessedTimeStamp == null) {
-							System.out.println("warning not present in warning table");
+							//System.out.println("warning not present in warning table");
 
 							WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
-									lastProcessedTimeStamp);
+									lastProcessedTimeStamp,warning.getWarningClass(), warning.getWarningNumber());
 							warningDao.warning_insert(warningNewRowDetail);
-							logger.info("warning inserted in warning table for VEvtId--63 :{} msg UUD :: {}",
+							logger.info("warning inserted in warning table for VEvtId--63 :{} msg UUD :: {} from alert",
 									warningNewRowDetail, moniter.getJobName());
 							moniter.getDocument().setVWarningClass(warning.getWarningClass());
+							warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
+							logger.info("Warning records updated in current trip table from alert:: ", warningNewRowDetail);
 
 						}
 						collector.collect(moniter);
@@ -121,12 +125,12 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		}
 	}
 
-	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp) {
+	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp, Integer warningClass, Integer warningNumber) {
 
 		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
 		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 
-		System.out.println("Inside warning calculation type 10");
+		//System.out.println("Inside warning calculation type 10");
 
 		warningDetail.setTripId(null);
 		warningDetail.setVin(row.getVin());
@@ -140,8 +144,11 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			e.printStackTrace();
 		}
 
-		warningDetail.setWarningClass(row.getDocument().getVWarningClass());
-		warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
+		//warningDetail.setWarningClass(row.getDocument().getVWarningClass());
+		//warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
+		
+		warningDetail.setWarningClass(warningClass);
+		warningDetail.setWarningNumber(warningNumber);
 
 		if (row.getGpsLatitude() != null) {
 			warningDetail.setLatitude(row.getGpsLatitude().doubleValue());
@@ -162,12 +169,13 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		}
 
 		// Vehicle Health Status
-		if ((row.getDocument().getVWarningClass() != null)) {
-			if (row.getDocument().getVWarningClass() >= 4 && row.getDocument().getVWarningClass() <= 7) {
+		//if ((row.getDocument().getVWarningClass() != null)) {
+		if (warningClass != null) {
+			if (warningClass >= 4 && warningClass <= 7) {
 
 				warningDetail.setVehicleHealthStatusType("T");
 
-			} else if (row.getDocument().getVWarningClass() >= 8 && row.getDocument().getVWarningClass() <= 11) {
+			} else if (warningClass >= 8 && warningClass <= 11) {
 
 				warningDetail.setVehicleHealthStatusType("V");
 
@@ -280,11 +288,9 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			 */
 
 			warningDao.setConnection(connection);
-
-			System.out.println("connection created");
 			DTCWarning.setConnection(masterConnection);
 
-			System.out.println("connection set");
+			
 
 		} catch (Exception e) {
 

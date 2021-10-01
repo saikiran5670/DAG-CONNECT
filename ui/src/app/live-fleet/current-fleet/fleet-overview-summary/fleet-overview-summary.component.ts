@@ -13,7 +13,7 @@ import { FleetMapService } from '../fleet-map.service';
   styleUrls: ['./fleet-overview-summary.component.less']
 })
 export class FleetOverviewSummaryComponent implements OnInit {
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   criticalAlert: number = 0;
   mileageDone: string;
   drivers: number = 0;

@@ -22,7 +22,7 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 
 export class DtcTranslationComponent implements OnInit {
   dtcTranslationFormGroup: FormGroup;
-  translationData: any;
+  translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   excelEmptyMsg: boolean = false;

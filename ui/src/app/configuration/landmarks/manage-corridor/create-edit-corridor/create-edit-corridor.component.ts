@@ -9,7 +9,7 @@ import { AlertService } from '../../../../services/alert.service';
   styleUrls: ['./create-edit-corridor.component.less']
 })
 export class CreateEditCorridorComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() selectedElementData : any;
   @Input() corridorNameList : any;

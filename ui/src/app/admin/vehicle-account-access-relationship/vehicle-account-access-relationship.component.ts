@@ -28,7 +28,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   accountGrpAccountDetails: any = [];
   accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
-  translationData: any;
+  translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   selectedVehicleViewType: any = '';

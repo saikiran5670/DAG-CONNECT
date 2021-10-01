@@ -23,7 +23,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
   @Input() defaultSetting: any;
   @Input() userGrpData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() userDataForEdit: any;
   @Input() orgPreference: any;
   @Output() userCreate = new EventEmitter<object>();
@@ -159,18 +159,18 @@ export class NewUserStepComponent implements OnInit {
     if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
       this.userTypeList = [
         {
-          name: this.translationData.lblPortalUser || 'Portal Account',
+          name: this.translationData.lblPortalUser ,
           value: 'P'
         },
         {
-          name: this.translationData.lblSystemUser || 'System Account',
+          name: this.translationData.lblSystemUser ,
           value: 'S'
         }
       ];
     }else{
       this.userTypeList = [
         {
-          name: this.translationData.lblPortalUser || 'Portal Account',
+          name: this.translationData.lblPortalUser ,
           value: 'P'
         }
       ];
@@ -372,11 +372,11 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
-      existMessage: this.translationData.lblUseraccountalreadyexists || "User account '$' already exists.",
-      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation || "Do you want to link this account to your organisation?",
-      title: this.translationData.lblAlert || "Alert",
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes ,
+      existMessage: this.translationData.lblUseraccountalreadyexists ,
+      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation ,
+      title: this.translationData.lblAlert ,
       email: this.firstFormGroup.controls.loginEmail.value
     }
     this.linkDialogRef = this.dialog.open(LinkOrgPopupComponent, dialogConfig);
@@ -559,7 +559,7 @@ export class NewUserStepComponent implements OnInit {
     let _txt: any = '';
     if(createStatus){
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
       }
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return `${this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -567,7 +567,7 @@ export class NewUserStepComponent implements OnInit {
         return `${("New Account '$' Created Successfully").replace('$', this.userName)}. ${_txt}`;
     }else{
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
       }
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return `${this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -707,8 +707,8 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles', 'accountGroupList'],
-      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role',  this.translationData.lblUserGroup || 'Account Group'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
+      colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ,  this.translationData.lblUserGroup ],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

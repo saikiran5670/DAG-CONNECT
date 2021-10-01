@@ -30,7 +30,7 @@ import { ReplaySubject } from 'rxjs';
 })
 export class ExistingTripsComponent implements OnInit {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() exclusionList: any;
   @Input() actionType: any;
   @Input() selectedElementData: any;

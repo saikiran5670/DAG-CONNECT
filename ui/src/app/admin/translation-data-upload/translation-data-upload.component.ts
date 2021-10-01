@@ -35,7 +35,7 @@ export class TranslationDataUploadComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any;
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   type: any = '';
   showLoadingIndicator: any;
