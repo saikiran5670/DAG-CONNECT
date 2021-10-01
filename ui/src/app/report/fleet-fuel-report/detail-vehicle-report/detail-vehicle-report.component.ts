@@ -2220,7 +2220,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'maxSpeed' :{
-            tempObj.push(e.maxSpeed);
+            tempObj.push(e.convertedMaxSpeed);
             break;
           }
           case 'numberOfTrips' :{
