@@ -23,6 +23,7 @@ export class CurrentFleetComponent implements OnInit {
   accountOrganizationId: any;
   translationData: any = {};
   clickOpenClose:string;
+  currentFleetReportId: number;
   detailsData =[];
   messages: any[] = [];
   subscription: Subscription;
@@ -203,17 +204,22 @@ export class CurrentFleetComponent implements OnInit {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.callPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Fleet Overview');
+      if(repoId.length > 0){
+        this.currentFleetReportId = repoId[0].id; 
+        this.callPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Fleet Overview', id: 17}]; // hard coded
-      this.callPreferences(reportListData);
+      reportListData = [{name: 'Fleet Overview', id: this.currentFleetReportId}];
+      // this.callPreferences();
     });
   }
 
-  callPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Fleet Overview');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 17).subscribe((data : any) => {
+  callPreferences(){
+    this.reportService.getReportUserPreference(this.currentFleetReportId).subscribe((data : any) => {
       let _preferencesData = data['userPreferences'];
       this.getTranslatedColumnName(_preferencesData);
       this.getFleetOverviewDetails();
