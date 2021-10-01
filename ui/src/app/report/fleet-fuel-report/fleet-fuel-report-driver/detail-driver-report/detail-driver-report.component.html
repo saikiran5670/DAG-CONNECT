@@ -553,7 +553,7 @@
                               ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_maxspeed')">              
-                            <span>{{row.maxSpeed}}</span>             
+                            <span>{{row.convertedMaxSpeed}}</span>             
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="distance">     
