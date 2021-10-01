@@ -1507,14 +1507,17 @@ let prepare = []
 
   getVehicleGroups(){ 
     this.vehicleGroupListData.forEach(element => {
-      let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+      let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
       vehicleGroupDetails.forEach(item => {
-         let vehicleGroupObj= {
-           "vehicleGroupId" : item.split("~")[0],
-           "vehicleGroupName" : item.split("~")[1],
-           "vehicleId" : element.vehicleId
-         }
-         this.vehicleGrpDD.push(vehicleGroupObj);       
+        let itemSplit = item.split("~");
+        if (itemSplit[2] != 'S') {
+          let vehicleGroupObj = {
+            "vehicleGroupId": itemSplit[0],
+            "vehicleGroupName": itemSplit[1],
+            "vehicleId": element.vehicleId
+          }
+          this.vehicleGrpDD.push(vehicleGroupObj);
+        }
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
