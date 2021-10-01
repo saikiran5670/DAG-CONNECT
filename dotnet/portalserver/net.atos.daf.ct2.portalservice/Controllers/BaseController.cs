@@ -64,5 +64,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return GetUserSubscribeFeatures()?.Where(x => x.Name.ToLower().Equals(featureName.ToLower()))
                                             ?.Select(x => x.FeatureId)?.FirstOrDefault() ?? default;
         }
+        protected IEnumerable<int> GetMappedFeatureIdByStartWithName(string featureStartWith)
+        {
+            return GetUserSubscribeFeatures()?.Where(x => x.Name.ToLower().StartsWith(featureStartWith.ToLower()))
+                                            ?.Select(x => x.FeatureId).ToList();
+        }
     }
 }
