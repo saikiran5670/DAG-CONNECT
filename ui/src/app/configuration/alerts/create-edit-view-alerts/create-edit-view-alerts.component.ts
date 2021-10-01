@@ -648,17 +648,20 @@ proceedStep(prefData: any, preference: any){
         
         this.updateVehiclesDataSource(this.vehicleListForTable);
   }
-
+  singleVehicle = [];
   getVehicleGroupsForAlertType(alertTypeObj: any){
      this.vehicleByVehGroupList.forEach(element => {
        let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
        vehicleGroupDetails.forEach(item => {
+         let itemSplit = item.split("~");
+         if(itemSplit[2] != 'S') {
           let vehicleGroupObj= {
-            "vehicleGroupId" : item.split("~")[0],
-            "vehicleGroupName" : item.split("~")[1],
+            "vehicleGroupId" : itemSplit[0],
+            "vehicleGroupName" : itemSplit[1],
             "vehicleId" : element.vehicleId
           }
-          this.vehicleGroupList.push(vehicleGroupObj);       
+          this.vehicleGroupList.push(vehicleGroupObj);
+        }       
        });
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
