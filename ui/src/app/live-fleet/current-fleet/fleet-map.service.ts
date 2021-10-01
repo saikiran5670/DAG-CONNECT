@@ -555,6 +555,10 @@ export class FleetMapService {
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
       this.drawIcons(_selectedRoutes,_ui);
       this.hereMap.addObject(this.group);
+      this.hereMap.getViewModel().setLookAtData({
+        zoom:4, // 16665 - zoom added with bounds 
+        bounds: this.group.getBoundingBox()
+      });
       this.makeCluster(_selectedRoutes, _ui);
       
       //this.makeCluster(_selectedRoutes, _ui);
@@ -627,6 +631,9 @@ export class FleetMapService {
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
         this.hereMap.addObject(this.group);
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
       }
     }
    }
@@ -649,48 +656,7 @@ export class FleetMapService {
 
       });
       finalAlerts.forEach(element => {
-        // switch (element.level) {
-        //   case 'C':
-        //     case 'Critical':{
-        //     _fillColor = '#D50017';
-        //     _level = 'Critical'
-        //   }
-        //   break;
-        //   case 'W':
-        //     case 'Warning':{
-        //     _fillColor = '#FC5F01';
-        //     _level = 'Warning'
-        //   }
-        //   break;
-        //   case 'A':
-        //     case 'Advisory':{
-        //     _fillColor = '#FFD80D';
-        //     _level = 'Advisory'
-        //   }
-        //   break;
-        //   default:
-        //     break;
-        // }
-        // switch (element.type) {
-        //   case 'L':
-        //     case 'Logistics Alerts':{
-        //     _type = 'Logistics Alerts'
-        //   }
-        //   break;
-        //   case 'F':
-        //     case 'Fuel and Driver Performance':{
-        //     _type='Fuel and Driver Performance'
-        //   }
-        //   break;
-        //   case 'R':
-        //     case 'Repair and Maintenance':{
-        //     _type='Repair and Maintenance'
-
-        //   }
-        //   break;
-        //   default:
-        //     break;
-        // }
+        
         this.setColorForAlerts(element,_fillColor,_level);
 
         let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1129,48 +1095,7 @@ let _type ='';
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
       let _healthStatus = '',_drivingStatus = '';
-      // icon tooltip
-      // switch (elem.vehicleHealthStatusType) {
-      //   case 'T': // stop now;
-      //   case 'Stop Now':
-      //     _healthStatus = 'Stop Now';
-      //     break;
-      //   case 'V': // service now;
-      //   case 'Service Now':
-      //     _healthStatus = 'Service Now';
-      //     break;
-      //   case 'N': // no action;
-      //   case 'No Action':
-      //     _healthStatus = 'No Action';
-      //     break
-      //   default:
-      //     break;
-      // }
-      // switch (elem.vehicleDrivingStatusType) {
-      //   case 'N': 
-      //   case 'Never Moved':
-      //     _drivingStatus = 'Never Moved';
-      //     break;
-      //   case 'D':
-      //     case 'Driving':
-      //     _drivingStatus = 'Driving';
-      //     break;
-      //   case 'I': // no action;
-      //   case 'Idle':
-      //     _drivingStatus = 'Idle';
-      //     break;
-      //   case 'U': // no action;
-      //   case 'Unknown':
-      //     _drivingStatus = 'Unknown';
-      //     break;
-      //   case 'S': // no action;
-      //   case 'Stopped':
-      //     _drivingStatus = 'Stopped';
-      //     break
-        
-      //   default:
-      //     break;
-      // }
+     
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vid ? elem.vid : elem.vin;
@@ -1608,51 +1533,7 @@ let _type ='';
           });
   
           // Bind cluster data to the marker:
-          clusterMarker.setData(markerCluster);
-          //clusterMarker.setZIndex(10);
-          //let infoBubble: any
-          // clusterMarker.addEventListener("tap",  (event) => {
-  
-          //   var point = event.target.getGeometry(),
-          //     screenPosition = this.hereMap.geoToScreen(point),
-          //     t = event.target,
-          //     data = t.getData(),
-          //     tooltipContent = "<table border='1'><thead><th>Action</th><th>Latitude</th><th>Longitude</th></thead><tbody>"; 
-          //     var chkBxId = 0;
-          //   data.forEachEntry(
-          //     (p) => 
-          //     { 
-          //       tooltipContent += "<tr>";
-          //       tooltipContent += "<td><input type='checkbox' id='"+ chkBxId +"' onclick='infoBubbleCheckBoxClick("+ chkBxId +","+ p.getPosition().lat +", "+ p.getPosition().lng +")'></td>" + "<td>" + p.getPosition().lat + "</td><td>" + p.getPosition().lng + "</td>";
-          //       tooltipContent += "</tr>";
-          //       chkBxId++;
-          //       //alert(chkBxId);
-          //     }
-          //   ); 
-          //   tooltipContent += "</tbody></table>";
-            
-          //   // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
-          //   //   // Get the checkbox
-          //   //   let checkBox: any = document.getElementById(chkBxId);
-          //   //   if (checkBox.checked == true){
-          //   //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
-          //   //   } else {
-          //   //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
-          //   //   }
-          //   // }
-
-          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
-          //   ui.addBubble(infoBubble);
-          // });
-          
-          
-          // clusterMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });				
+          clusterMarker.setData(markerCluster);		
   
           return clusterMarker;
         },
@@ -1700,27 +1581,6 @@ let _type ='';
   
           // Bind cluster data to the marker:
           noiseMarker.setData(noisePoint);
-  
-          // noiseMarker.addEventListener("tap", (event) => { 
-            
-          //   var point = event.target.getGeometry();
-          //   var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
-  
-          //   var screenPosition = this.hereMap.geoToScreen(point);
-  
-          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
-          //   ui.addBubble(infoBubble);
-          
-          // });
-          
-          // noiseMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });
-          
   
           return noiseMarker;
         }
@@ -1819,7 +1679,6 @@ let _type ='';
               this.selectionPolylineRoute(liveFleetPoints, _index);   
             });
             this.hereMap.addObject(this.disableGroup);
-  
             var point = event.target.getGeometry(),
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
@@ -1899,68 +1758,6 @@ let _type ='';
   
           // Bind cluster data to the marker:
           noiseMarker.setData(noisePoint);
-  
-          // noiseMarker.addEventListener("tap", (event) => { 
-            
-          //   var point = event.target.getGeometry();
-          //   var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
-  
-          //   var screenPosition = this.hereMap.geoToScreen(point);
-  
-          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
-          //   ui.addBubble(infoBubble);
-          
-          // });
-
-          // noiseMarker.addEventListener("tap",  (event) => {
-          //   this.removedDisabledGroup();
-          //   data.forEach((element, _index) => {
-          //     let liveFleetPoints: any = element.liveFleetPosition;
-          //     liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
-          //     this.selectionPolylineRoute(liveFleetPoints, _index);   
-          //   });
-          //   this.hereMap.addObject(this.disableGroup);
-  
-          //   var point = event.target.getGeometry(),
-          //     screenPosition = this.hereMap.geoToScreen(point),
-          //     t = event.target,
-          //     _data = t.getData(),
-          //     tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
-          //     var chkBxId = 0;
-          //     _data.forEachEntry(
-          //     (p) => 
-          //     { 
-          //       tooltipContent += "<tr>";
-          //       tooltipContent += "<td><input type='checkbox' class='checkbox' id='"+ chkBxId +"'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
-          //       tooltipContent += "</tr>";
-          //      chkBxId++;
-          //     }
-          //   ); 
-          //   tooltipContent += "</tbody></table>";
-
-          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent, 
-          //     onStateChange: (event) => {​​​
-          //       this.removedDisabledGroup();
-          //     }​​​
-          //   });
-
-          //   ui.addBubble(infoBubble);
-
-          //   document.querySelectorAll('.checkbox').forEach((item: any) => {
-          //     item.addEventListener('click', event => {
-          //       //handle click
-          //       this.infoBubbleCheckBoxClick(item.id, data, item.checked);
-          //     })
-          //   })
-          // });
-          
-          // noiseMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });
           return noiseMarker;
         }
       }
@@ -1978,16 +1775,6 @@ let _type ='';
     this.disableGroup.removeAll();
     //this.disableGroup = null;
   }
-
-  // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
-            //   // Get the checkbox
-            //   let checkBox: any = document.getElementById(chkBxId);
-            //   if (checkBox.checked == true){
-            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
-            //   } else {
-            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
-            //   }
-            // }
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
@@ -2031,29 +1818,7 @@ let _type ='';
 
   infoBubbleCheckBoxClick(chkBxId, _data, _checked: any){
     var checkBox: any = document.getElementById(chkBxId);
-    //console.log(_data)
-    //if (_checked){
-      //alert(" Enabled")
-      //this.removedDisabledGroup();
-      this.checkPolylineSelection(parseInt(chkBxId), _checked);
-      // let liveFleetPoints: any = _data[parseInt(checkBox)].liveFleetPosition;
-      // liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
-      //this.selectionPolylineRoute(liveFleetPoints, _checked);   
-
-      // _data.forEach((element, index) => {
-      //   let liveFleetPoints: any = element.liveFleetPosition;
-      //   liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
-      //   let _c: any = false;
-      //   if((index+1) == parseInt(chkBxId) && _checked){
-      //     _c = true;
-      //   }
-      //   this.selectionPolylineRoute(liveFleetPoints, _c);   
-      // });
-    // } else {
-    //   //alert(" Disabled")
-    //   this.selectionPolylineRoute(_checkedData, _checked);
-    // }
-    //this.hereMap.addObject(this.disableGroup);
+    this.checkPolylineSelection(parseInt(chkBxId), _checked);
   }
    
   drawPolyline(finalDatapoints: any, trackType?: any){
@@ -2095,330 +1860,6 @@ let _type ='';
     return endMarker;
   }
 
-  calculateAtoB(trackType?: any){
-    let routeRequestParams = {
-      'routingMode': 'fast',
-      'transportMode': 'truck',
-      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
-      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
-      'return': 'polyline'
-    };
-    this.hereSerive.calculateRoutePoints(routeRequestParams).then((data: any)=>{
-      this.addRouteShapeToMap(data, trackType);
-    },(error)=>{
-       console.error(error);
-    })
-  }
-
-  addRouteShapeToMap(result: any, trackType?: any){
-    result.routes[0].sections.forEach((section) =>{
-      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-        this.routeOutlineMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: this.corridorWidthKm,
-            strokeColor: '#b5c7ef',
-          }
-        });
-        // Create a patterned polyline:
-        if(trackType && trackType == 'dotted'){
-          this.routeCorridorMarker = new H.map.Polyline(linestring, {
-            style: {
-              lineWidth: 3,
-              strokeColor: '#436ddc',
-              lineDash:[2,2]
-            }
-          });
-        }else{
-          this.routeCorridorMarker = new H.map.Polyline(linestring, {
-            style: {
-              lineWidth: 3,
-              strokeColor: '#436ddc'
-            }
-          });
-        }
-        // create a group that represents the route line and contains
-        // outline and the pattern
-        var routeLine = new H.map.Group();
-        // routeLine.addObjects([routeOutline, routeArrows]);
-        this.group.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-        this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
-        // this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
-    });
-  }
-
-  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
-      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
-      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
-    });
-    return gridData;
-  }
-
-  getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
-      element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeightPerTrip, unitFormat);
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
-      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedTripTime = this.getHhMmTime(element.tripTime);
-      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
-    });
-    return gridData;
-  }
-
-  getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
-      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
-      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumption, unitFormat);
-      // element.dpaScore = element.dpaScore.toFixed(2);
-
-            //for 2 decimal points
-            element.convertedDistance = parseFloat(element.convertedDistance);
-            element.convertedDistance = element.convertedDistance.toFixed(2)*1;
-            element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
-            element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
-            element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
-            element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
-            element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
-            element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
-            element.fuelConsumed =parseFloat(element.fuelConsumed);
-            element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
-            element.fuelConsumption =parseFloat(element.fuelConsumption);
-            element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
-            element.cO2Emission =parseFloat(element.cO2Emission);
-            element.cO2Emission =element.cO2Emission.toFixed(2)*1;
-            element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
-            element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
-            element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
-            element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
-            element.dpaScore = parseFloat(element.dpaScore);
-            element.dpaScore = element.dpaScore.toFixed(2)*1;
-    });
-    return gridData;
-  }
-
-  getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    //gridData.forEach(element => {
-      gridData.driverName = gridData.driverName;
-      gridData.driverId = gridData.driverId;
-      gridData.startTime = this.getStartTime(gridData.startTime, dateFormat, timeFormat, timeZone);
-      gridData.endTime = this.getEndTime(gridData.endTime, dateFormat, timeFormat, timeZone);
-      gridData.driveTime = this.getHhMmTime(gridData.driveTime);
-      gridData.workTime = this.getHhMmTime(gridData.workTime);
-      gridData.serviceTime = this.getHhMmTime(gridData.serviceTime);
-      gridData.restTime = this.getHhMmTime(gridData.restTime);
-      gridData.availableTime = this.getHhMmTime(gridData.availableTime);
-   // });
-    return gridData;
-  }
-
-  
-  getDriverDetailsTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    let _gridData = [];
-    gridData.forEach(element => {
-      _gridData.push({
-        driverName : element.driverName,
-      driverId : element.driverId,
-      startTime : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
-      driveTime : this.getHhMmTime(element.driveTime),
-      workTime : this.getHhMmTime(element.workTime),
-      serviceTime : this.getHhMmTime(element.serviceTime),
-      restTime : this.getHhMmTime(element.restTime),
-      availableTime : this.getHhMmTime(element.availableTime),
-      })
-      
-    });
-    return _gridData;
-  }
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
-    let sTime: any = 0;
-    if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime);
-    }
-    return sTime;
-  }
-
-  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
-    let eTime: any = 0;
-    if(endTime != 0){
-      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat, addTime);
-    }
-    return eTime;
-  }
-
-  getDistance(distance: any, unitFormat: any){
-    // distance in meter
-    let _distance: any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _distance = (distance/1000).toFixed(2); //-- km
-        break;
-      }
-      case 'dunit_Imperial':
-      case 'dunit_USImperial': {
-        _distance = (distance/1609.344).toFixed(2); //-- mile
-        break;
-      }
-      default: {
-        _distance = distance.toFixed(2);
-      }
-    }
-    return _distance;    
-  }
-
-  getAvrgWeight(avgWeight: any, unitFormat: any ){
-    let _avgWeight: any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _avgWeight = avgWeight.toFixed(2); //-- kg/count
-        break;
-      }
-      case 'dunit_Imperial':{
-        _avgWeight =(avgWeight * 2.2).toFixed(2); //pounds/count
-        break;
-      }
-      case 'dunit_USImperial': {
-        _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(2); //-- imperial * 1.009
-        break;
-      }
-      default: {
-        _avgWeight = avgWeight.toFixed(2);
-      }
-    }
-    return _avgWeight;    
-  }
-
-  getAvergSpeed(avgSpeed: any, unitFormat: any){
-    let _avgSpeed : any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _avgSpeed = (avgSpeed * 360).toFixed(2); //-- km/h(converted from m/ms)
-        break;
-      }
-      case 'dunit_Imperial':{
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //miles/h
-        break;
-      }
-      case 'dunit_USImperial': {
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //-- miles/h
-        break;
-      }
-      default: {
-        _avgSpeed = avgSpeed.toFixed(2);
-      }
-    }
-    return _avgSpeed;    
-  }
-
-  getFuelConsumed(fuelConsumed: any, unitFormat: any){
-    let _fuelConsumed: any = 0;
-    switch(unitFormat){
-      case 'dunit_Metric': { 
-        _fuelConsumed = (fuelConsumed / 100).toFixed(2); //-- ltr/km(converted from ml/m)
-        break;
-      }
-      case 'dunit_Imperial':{
-        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(2); //gallons/miles
-        break;
-      }
-      case 'dunit_USImperial': {
-        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(2); //-- imperial * 1.2
-        break;
-      }
-      default: {
-        _fuelConsumed = fuelConsumed.toFixed(2);
-      }
-    }
-    return _fuelConsumed; 
-  }
-
-  getHhMmTime(totalSeconds: any){
-    let data: any = "00:00";
-    let hours = Math.floor(totalSeconds / 3600);
-    totalSeconds %= 3600;
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-    return data;
-  }
-
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
-    // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
-    // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
-    // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
-    // let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
-    // let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
-    // let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
-    let date1 = date.split(" ")[0];
-    let time1 = date.split(" ")[1];
-    let h = time1.split(":")[0];
-    let m = time1.split(":")[1];
-    let s = time1.split(":")[2];
-    let _d = date1.split("/")[2];
-    let _m = date1.split("/")[1];
-    let _y = date1.split("/")[0];
-    let _date: any;
-    let _time: any;
-    if(timeFormat == 12){
-      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
-    }else{
-      _time = `${h}:${m}:${s}`;
-    }
-    switch(dateFormat){
-      case 'ddateformat_dd/mm/yyyy': {
-        if(addTime)
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        else
-        _date = `${_d}/${_m}/${_y}`;
-
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        if(addTime)
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        else
-        _date = `${_m}/${_d}/${_y}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        if(addTime)
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        else
-        _date = `${_d}-${_m}-${_y}`;
-
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        if(addTime)
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        else
-        _date = `${_m}-${_d}-${_y}`;
-
-        break;
-      }
-      default:{
-        if(addTime)
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        else
-        _date = `${_m}/${_d}/${_y}`;
-
-      }
-    }
-    return _date;
-  }
-   
   processedLiveFLeetData(fleetData: any){
     fleetData.forEach(element => {
       element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
