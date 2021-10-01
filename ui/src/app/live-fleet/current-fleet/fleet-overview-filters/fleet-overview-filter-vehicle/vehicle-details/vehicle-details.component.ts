@@ -15,7 +15,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 export class VehicleDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   @Input() selectedElementData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() levelList: any;
   @Input() categoryList: any;
   @Input() vehInfoPrefData: any;

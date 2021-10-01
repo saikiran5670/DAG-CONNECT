@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.httpclient;
+using net.atos.daf.ct2.httpclientfactory;
 using net.atos.daf.ct2.httpclientservice.handlers;
 using net.atos.daf.ct2.httpclientservice.Services;
 

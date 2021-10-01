@@ -99,4 +99,31 @@ public class TripAggregatedData implements Serializable {
 	private Object[] nonZeroBrakePedalAclnSpeedMatrix;
 	private Object[] numValAclnSpeed;
 	private Object[] clmnIdnxAclnSpeed;
+	
+	private Long vPtoDist;
+	private Long vTripIdlePTOFuelConsumed;
+	private Double idlingConsumptionWithPTO;
+	
+	private Long vTripCruiseControlDuration;
+	private Long vTripIdleWithoutPTOFuelConsumed;
+	private Long vTripMotionFuelConsumed;
+	private Long vTripMotionBrakeCount;
+	private Long vTripMotionBrakeDist;
+	private Long vTripMotionPTODuration;
+	private Long vTripMotionPTOFuelConsumed;
+	private String aclnPedalDistr;
+	private Long aclnMinRangeInt;
+	private Long aclnMaxRangeInt;
+	private Long aclnDistrStep;
+	private Object[] aclnDistrArrayTime;
+	private String vRetarderTorqueActualDistr;
+	private Long vRetarderTorqueMinRangeInt;
+	private Long vRetarderTorqueMaxRangeInt;
+	private Long vRetarderTorqueDistrStep;
+	private Object[] vRetarderTorqueDistrArrayTime;
+	private String vEngineLoadAtEngineSpeedDistr;
+	private Long vEngineLoadMinRangeInt;
+	private Long vEngineLoadMaxRangeInt;
+	private Long vEngineLoadDistrStep;
+	private Object[] vEngineLoadDistrArrayTime;
 }

@@ -41,7 +41,7 @@ export class AppComponent {
   // public isDesktopvar = false;
   notificationList: any;
   loggedInUser: string = 'admin';
-  translationData: any;
+  translationData: any = {};
   dirValue = 'ltr'; //rtl
   public subpage: string = '';
   public currentTitle: string = '';

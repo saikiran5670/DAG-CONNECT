@@ -17,7 +17,7 @@ export class OrganisationDetailsComponent implements OnInit {
   initData: any = [];
   accountNavMenu: any = [];
   dataSource: any;
-  translationData: any;
+  translationData: any ={};
   accountOrganizationId: any = 0;
   localStLanguage: any;
   orgDetailsPreferenceForm: FormGroup;

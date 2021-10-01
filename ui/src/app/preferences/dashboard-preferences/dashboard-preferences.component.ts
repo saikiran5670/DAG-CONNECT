@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 
 export class DashboardPreferencesComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() reportListData: any;
 
   //dashboard preferences

@@ -86,7 +86,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  translationData: any = [];
+  translationData: any = {};
   isSummaryOpen: boolean = true;
   isWarningOpen: boolean = true;
   isMapOpen: boolean = false;

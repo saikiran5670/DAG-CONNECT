@@ -44,7 +44,7 @@ declare var H: any;
 })
 
 export class VehicletripComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() displayedColumns:any;
   @Input() vehicleSelected : boolean;
   @Input() dateDetails : any;
@@ -1204,7 +1204,7 @@ createEndMarker(){
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();

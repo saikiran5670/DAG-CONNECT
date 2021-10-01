@@ -594,18 +594,14 @@ export class FleetkpiComponent implements OnInit {
       //console.log(kpiData);
       this.dataError = false;
       this.kpiData = kpiData;
+      this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
+      this.updateCharts();
+      this.dataInterchangeService.getFleetData(kpiData);
 
-      if(kpiData['fleetKpis']){
-        this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
-        this.updateCharts();
-        this.dataInterchangeService.getFleetData(kpiData);
-      }
-      else{
+    },(error)=>{
+      if(error.status === 404){
         this.dataError = true;
       }
-     
-
-
     })
   }
 

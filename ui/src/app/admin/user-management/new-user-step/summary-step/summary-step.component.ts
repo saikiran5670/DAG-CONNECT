@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
   styleUrls: ['./summary-step.component.less']
 })
 export class SummaryStepComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() defaultSetting: any;
   @Input() privilegeAccess: any;
   @Input() set selectedRoleData(value: any) {
@@ -42,11 +42,11 @@ export class SummaryStepComponent implements OnInit {
   ngOnInit() { 
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'Portal Account',
+        name: this.translationData.lblPortalUser ,
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'System Account',
+        name: this.translationData.lblSystemUser ,
         value: 'S'
       }
     ];
@@ -76,11 +76,11 @@ export class SummaryStepComponent implements OnInit {
     let userTypeVal: any = [];
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'Portal Account',
+        name: this.translationData.lblPortalUser ,
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'System Account',
+        name: this.translationData.lblSystemUser,
         value: 'S'
       }
     ];

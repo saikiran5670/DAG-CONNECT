@@ -32,7 +32,7 @@ export class ReportSchedulerComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any= [];
   titleText: string;
-  translationData: any= [];
+  translationData: any = {};
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];

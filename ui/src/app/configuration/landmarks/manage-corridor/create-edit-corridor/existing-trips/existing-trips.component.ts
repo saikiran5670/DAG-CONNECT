@@ -30,7 +30,7 @@ import { ReplaySubject } from 'rxjs';
 })
 export class ExistingTripsComponent implements OnInit {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() exclusionList: any;
   @Input() actionType: any;
   @Input() selectedElementData: any;
@@ -207,9 +207,9 @@ export class ExistingTripsComponent implements OnInit {
     this.vehicleGroupList.forEach(item => {      
         this.vinList.push(item.vin)      
     });    
-    if(this.vinList.length > 0){
-      this.vinList.unshift(this.translationData.lblAll || 'All' );     
-    };
+    // if(this.vinList.length > 0){
+    //   this.vinList.unshift(this.translationData.lblAll || 'All' );     
+    // };
     this.filteredVehicleList.next(this.vinList);
     
     this.showLoadingIndicator = true;

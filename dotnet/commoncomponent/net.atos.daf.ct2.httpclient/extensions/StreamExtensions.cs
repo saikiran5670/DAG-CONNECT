@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
 
-namespace net.atos.daf.ct2.httpclient.extensions
+namespace net.atos.daf.ct2.httpclientfactory.extensions
 {
     public static class StreamExtensions
     {
