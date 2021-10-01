@@ -1181,8 +1181,8 @@ createEndMarker(){
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
-      this.graphData= graphData;
-      this.showGraph= true;
+      this.graphData = graphData;
+      this.showGraph = true;
     });
   }
    
@@ -1507,7 +1507,7 @@ createEndMarker(){
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
-    this.setChartData(this.graphData["fleetfuelGraph"]);
+    //this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}

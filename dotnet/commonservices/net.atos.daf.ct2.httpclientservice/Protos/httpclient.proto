@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.httpclientservice";
+
+package httpclient;
+
+service HttpClientService {  
+ //rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponse);
+}
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+message NoRequest{
+int32 Id = 1;
+}
