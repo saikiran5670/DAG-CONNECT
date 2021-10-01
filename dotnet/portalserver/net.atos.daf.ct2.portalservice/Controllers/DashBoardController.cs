@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FleetKpiFilterRequest objDashboardFilter = JsonConvert.DeserializeObject<FleetKpiFilterRequest>(filters);
                 _logger.Info("GetFleetKpi method in dashboard API called.");
                 var data = await _dashboardServiceClient.GetFleetKPIDetailsAsync(objDashboardFilter);
-                if (data != null)
+                if (data?.FleetKpis != null)
                 {
                     data.Message = DashboardConstant.GET_DASBHOARD_SUCCESS_MSG;
                     return Ok(data);
