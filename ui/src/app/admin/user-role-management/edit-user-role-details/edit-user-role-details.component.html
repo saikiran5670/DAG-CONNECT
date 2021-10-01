@@ -5,7 +5,7 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
         <span>&nbsp;</span>
-        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+        <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
     </div>
 </div>
 <form [formGroup]="userRoleFormGroup">
@@ -19,7 +19,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <!-- <mat-label>{{ translationData.lblSalutation }}</mat-label> -->
-                  <mat-label>{{ translationData.lblUserRoleName || 'Account Role Name' }}</mat-label>
+                  <mat-label>{{ translationData.lblUserRoleName }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].roleName  }}</mat-label>
                 </div>
                 <!-- <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -32,11 +32,11 @@
                 </div> -->
 
                 <div *ngIf="(adminAccessType.adminFullAccess)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
+                    <mat-label>{{ translationData.lblUserRoleType}}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserRoleDescriptionOptional || 'Account Role Description' }}</mat-label>
+                    <mat-label>{{ translationData.lblUserRoleDescriptionOptional }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>  
@@ -51,27 +51,27 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ createStatus ? (translationData.lblNewUserRoleName || 'New Account Role Name') : (translationData.lblUserRoleName || 'Account Role Name') }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ createStatus ? (translationData.lblNewUserRoleName ) : (translationData.lblUserRoleName || 'Account Role Name') }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterUserRoleName || 'Enter Account Role Name' }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required maxlength="60">
+                        <input placeholder="{{ translationData.lblEnterUserRoleName  }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required maxlength="60">
                     <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('required')">
-                        {{ translationData.lblPleaseentertheUserRolename || 'Please enter the Account Role name'}}
+                        {{ translationData.lblPleaseentertheUserRolename }}
                     </mat-error>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('maxlength')">
-                        {{ translationData.lblUserRoleNameShouldbeMax60Characters || 'Account Role name should be max. 60 characters'}}
+                        {{ translationData.lblUserRoleNameShouldbeMax60Characters}}
                     </mat-error>
                     <mat-error #UserValueCheck *ngIf="isUserRoleExist" >
-                        {{ translationData.lblUserRolealreadyexistsPleasechooseadifferentname || 'Account Role already exists. Please choose a different name.'}}
+                        {{ translationData.lblUserRolealreadyexistsPleasechooseadifferentname }}
                     </mat-error>
                     <mat-error *ngIf="!userRoleFormGroup.get('userRoleName').hasError('required')  && userRoleFormGroup.get('userRoleName').hasError('whitespace')">
-                        {{ translationData.lblUserRoleNamecannotcontainonlywhitespace || 'Account Role Name cannot contain only whitespace' }}
+                        {{ translationData.lblUserRoleNamecannotcontainonlywhitespace  }}
                      </mat-error>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblUserRoleType || 'Role Type'}}<span class='mandatoryColor'>*</span>
+                        {{ translationData.lblUserRoleType}}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <mat-select formControlName="roleType" [disabled]="(!adminAccessType.adminFullAccess) || (!createStatus && !duplicateFlag)">
@@ -83,12 +83,12 @@
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblUserRoleDescriptionOptional || 'Account Role Description (Optional)'}}</span>
+                        <span>{{ translationData.lblUserRoleDescriptionOptional }}</span>
                         <span *ngIf="showCount"> {{textLengthCounter }}  out of max 100 characters</span>
-                        <span *ngIf="!showCount"> {{ translationData.lbl120CharMax || '100 characters max'}}</span>
+                        <span *ngIf="!showCount"> {{ translationData.lbl120CharMax }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input maxlength="100" (keyup)="textCounter($event,100)" placeholder="{{ translationData.lblEnterAboutUserRole || 'Enter About Account Role' }}" matInput formControlName="userRoleDescription">
+                        <input maxlength="100" (keyup)="textCounter($event,100)" placeholder="{{ translationData.lblEnterAboutUserRole  }}" matInput formControlName="userRoleDescription">
                     </mat-form-field>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleDescription').hasError('whitespace')">
                       User Role Description cannot contain only whitespace
@@ -101,16 +101,16 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ translationData.lblHintMessage || 'You can select features from below list to provide access for this role. Feature selection is mandatory'}}<span class='mandatoryColor'>*</span></span>
+                        <span>{{ translationData.lblHintMessage}}<span class='mandatoryColor'>*</span></span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
                         <button class='resetCancelBtnColor margin-right-10 no-margin'  mat-raised-button color="primary" *ngIf="!createStatus"
-                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                            (click)='onReset()'>{{ translationData.lblReset  }}</button>
                         <button class="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0 || createButtonFlag" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                            (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate ) : (translationData.lblConfirm ) }}</button>
                     </div>
                 </div>
             </div>
@@ -119,13 +119,13 @@
     <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess || 'Select Role Access') : (translationData.lblSelectedRoleAccess || 'Selected Role Access') }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess ) : (translationData.lblSelectedRoleAccess ) }}</span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
-                  <input (keydown.enter)="$event.preventDefault()" matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <input (keydown.enter)="$event.preventDefault()" matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                   <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
@@ -134,11 +134,11 @@
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" matSort>      
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName }}</mat-header-cell>
                         <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess }}
                             <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
                               [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                               [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
