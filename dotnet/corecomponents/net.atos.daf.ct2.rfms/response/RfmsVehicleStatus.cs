@@ -145,14 +145,14 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int? DurationWheelbaseSpeedOverZero { get; set; }
         public int? DistanceCruiseControlActive { get; set; }
-        public int? DurationCruiseControlActive { get; set; }
+        public long? DurationCruiseControlActive { get; set; }
         public int? FuelConsumptionDuringCruiseActive { get; set; }
-        public int? DurationWheelbaseSpeedZero { get; set; }
-        public int? FuelWheelbaseSpeedZero { get; set; }
-        public int? FuelWheelbaseSpeedOverZero { get; set; }
+        public long? DurationWheelbaseSpeedZero { get; set; }
+        public long? FuelWheelbaseSpeedZero { get; set; }
+        public long? FuelWheelbaseSpeedOverZero { get; set; }
         public List<PtoActiveClass> PtoActiveClass { get; set; }
-        public int? BrakePedalCounterSpeedOverZero { get; set; }
-        public int? DistanceBrakePedalActiveSpeedOverZero { get; set; }
+        public long? BrakePedalCounterSpeedOverZero { get; set; }
+        public long? DistanceBrakePedalActiveSpeedOverZero { get; set; }
         public List<AccelerationPedalPositionClass> AccelerationPedalPositionClass { get; set; }
         public List<BrakePedalPositionClass> BrakePedalPositionClass { get; set; }
         public List<AccelerationClass> AccelerationClass { get; set; }

@@ -357,7 +357,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @" from livefleet.livefleet_position_statistics T1
-                                        inner  join tripdetail.trip_statistics t2
+                                        left  join tripdetail.trip_statistics t2
                                         on t1.trip_id = t2.trip_id
                                         INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
 										from livefleet.livefleet_position_statistics Group By Vin) T3
@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
-                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 inner
+                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 left
                                         join tripdetail.trip_statistics t2
                                         on t1.trip_id = t2.trip_id";
                     queryStatement += contentFilterQuery + selectQuery;
@@ -509,17 +509,17 @@ namespace net.atos.daf.ct2.rfms.repository
             }
 
         }
-
+      
         private string GetContentFilterQuery(string contentFilter)
         {
             var query = string.Empty;
             if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()))
             {
-                query += @" ,t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
-                            t2.distance_cruise_control_active as distancecruisecontrolactive,
+                query += @" ,t2.veh_message_driving_time as durationwheelspeedoverzero,
+                            t2.v_cruise_control_dist_for_cc_fuel_consumption as distancecruisecontrolactive,
                             t2.duration_cruise_control_active as durationcruisecontrolactive,
-                            t2.fuel_consumption_during_cruise_active as fuelconsumptionduringcruiseactive,
-                            t2.duration_wheelbase_speed_zero as durationwheelbasespeedzero,
+                            t2.v_cruise_control_fuel_consumed_for_cc_fuel_consumption as fuelconsumptionduringcruiseactive,
+                            t2.veh_message_idle_without_ptoduration as durationwheelbasespeedzero,
                             t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
                             t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
                             t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
