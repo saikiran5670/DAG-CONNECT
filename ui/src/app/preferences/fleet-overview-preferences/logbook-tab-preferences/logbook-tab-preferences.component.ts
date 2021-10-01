@@ -12,7 +12,7 @@ import { ReportService } from 'src/app/services/report.service';
 export class LogbookTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setLogbookFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];

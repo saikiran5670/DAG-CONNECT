@@ -48,7 +48,7 @@ export class SubscriptionManagementComponent implements OnInit {
   orgID: any;
   roleID: any;
   changedOrgId: any;
-  translationData: any;
+  translationData: any = {};
   createEditViewSubscriptionFlag: boolean = false;
   actionType: any;
   actionBtn:any;  

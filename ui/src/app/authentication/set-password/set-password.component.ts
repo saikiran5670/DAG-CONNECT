@@ -14,7 +14,7 @@ export class SetPasswordComponent implements OnInit {
   public setPasswordForm : FormGroup
   password: string;
   minCharacterTxt: any;
-  translationData: any = [];  
+  translationData: any = {};  
   buttonName: string;
   currentRoute: string= '';
   token: string= '';

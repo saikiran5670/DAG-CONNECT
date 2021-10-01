@@ -35,7 +35,7 @@ declare var H: any;
 export class CreateEditViewAlertsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   @Input() actionType: any;
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   alertCategoryList: any = [];
   alertTypeList: any = [];

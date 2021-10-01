@@ -50,7 +50,7 @@ export class DriverManagementComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any = [];
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   actionType: any = '';
   showLoadingIndicator: any = false;

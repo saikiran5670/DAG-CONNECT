@@ -18,7 +18,7 @@ import { Router, NavigationExtras  } from '@angular/router';
   styleUrls: ['./edit-view-user.component.less']
 })
 export class EditViewUserComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() defaultSetting: any;
   @Input() fromEdit: any;
   @Output() userCreate = new EventEmitter<object>();
@@ -132,18 +132,18 @@ export class EditViewUserComponent implements OnInit {
     if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
       this.userTypeList = [
         {
-          name: this.translationData.lblPortalUser || 'Portal Account',
+          name: this.translationData.lblPortalUser ,
           value: 'P'
         },
         {
-          name: this.translationData.lblSystemUser || 'System Account',
+          name: this.translationData.lblSystemUser ,
           value: 'S'
         }
       ];
     }else{
       this.userTypeList = [
         {
-          name: this.translationData.lblPortalUser || 'Portal Account',
+          name: this.translationData.lblPortalUser ,
           value: 'P'
         }
       ];
@@ -465,17 +465,17 @@ export class EditViewUserComponent implements OnInit {
 
   editRoleData(){
     let type= "role";
-    let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected Account Roles';
+    let tableHeader: any = this.translationData.lblSelectedUserRoles ;
     let colsList: any = ['select', 'roleName', 'featureIds'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'Account Role', this.translationData.lblServices || 'Services'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lblUserRole , this.translationData.lblServices ];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
   }
 
   editUserGroupData(){
     let type= "userGroup";
-    let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected Account Groups';
+    let tableHeader: any = this.translationData.lblSelectedUserGroups;
     let colsList: any = ['select', 'accountGroupName', 'accountCount'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Accounts'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lblGroupName , this.translationData.lblUsers ];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
 

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 
-namespace net.atos.daf.ct2.httpclient.entity
+namespace net.atos.daf.ct2.httpclientfactory.entity.ota22
 {
     public class VehiclesStatusOverview
     {
@@ -12,14 +13,18 @@ namespace net.atos.daf.ct2.httpclient.entity
 
     public class Result
     {
-        public string vin { get; set; }
-        public string status { get; set; }
-        public string description { get; set; }
+        [JsonProperty("vin")]
+        public string Vin { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
 
     public class VehiclesStatusOverviewResponse
     {
-        public HttpStatusCode HttpStatusCode { get; set; }
+        public int HttpStatusCode { get; set; }
         public VehiclesStatusOverview VehiclesStatusOverview { get; set; }
+        //public string Message { get; set; }
     }
 }

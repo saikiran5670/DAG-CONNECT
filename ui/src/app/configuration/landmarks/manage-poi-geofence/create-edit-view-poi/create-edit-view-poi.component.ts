@@ -20,7 +20,7 @@ declare var H: any;
 export class CreateEditViewPoiComponent implements OnInit {
   @Output() createViewEditPoiEmit = new EventEmitter<object>();
   @Input() createStatus: boolean;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Input() viewFlag: boolean;
   @Input() categoryList: any;

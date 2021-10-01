@@ -27,7 +27,7 @@ export class RelationshipManagementComponent implements OnInit {
   rowsData: any;
   createStatus: boolean;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;

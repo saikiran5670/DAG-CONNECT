@@ -33,7 +33,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   // @Input() ecoScoreForm: any;
   @Input() ecoScoreDriverDetails: any;
   @Input() ecoScoreDriverDetailsTrendLine: any;
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   @Input() prefUnitFormat: any;
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;

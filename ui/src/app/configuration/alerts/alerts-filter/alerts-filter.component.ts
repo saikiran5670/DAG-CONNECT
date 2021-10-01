@@ -12,7 +12,7 @@ export class AlertsFilterComponent implements OnInit {
   OrgId = parseInt(localStorage.getItem("accountOrganizationId"));
   isGlobal: boolean = true;   
 
-  @Input() translationData: any; 
+  @Input() translationData: any = {}; 
   @Input() alertCategoryList: any;
   @Input() alertTypeList: any; 
   @Input() vehicleList: any;

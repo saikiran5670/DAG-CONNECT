@@ -21,7 +21,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() vehicleListData: any;
