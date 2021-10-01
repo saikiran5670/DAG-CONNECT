@@ -122,7 +122,7 @@ export class ReportMapService {
       max: 26,
       opacity: 0.5,
       getURL: function (column, row, zoom) {
-          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
+          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=${this.map_key}&pois`;
         }
     });
     this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
