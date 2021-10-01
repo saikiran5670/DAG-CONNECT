@@ -1517,6 +1517,8 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
+        } else {
+          this.singleVehicle.push(element);
         }
       });
     });
