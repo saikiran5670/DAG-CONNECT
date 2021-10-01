@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                  		  , round(fd.fuel_consumption,5)                                           as fuel_consumption
+                                                  		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
                                                          , SUM(idle_duration) as idle_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
