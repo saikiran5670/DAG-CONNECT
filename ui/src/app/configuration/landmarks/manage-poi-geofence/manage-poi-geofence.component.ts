@@ -121,7 +121,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     ) {
       this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key
       });
       this.configureAutoSuggest();
   }

@@ -78,6 +78,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   wholeTripData: any = [];
+  fleetFuelReportId: number;
   accountId: any;
   internalSelection: boolean = false;
   accountPrefObj: any;
@@ -700,8 +701,27 @@ export class FleetFuelReportDriverComponent implements OnInit {
     return true;
   }
 
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      let repoId = reportListData.filter(i => i.name == 'Fleet Fuel Report');
+      if(repoId.length > 0){
+        this.fleetFuelReportId = repoId[0].id; 
+        this.getFleetPreferences();
+      }else{
+        console.error("No report id found!")
+      }
+     
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fleet Fuel Report', id: this.fleetFuelReportId}]; 
+      // this.getTripReportPreferences();
+    });
+  }
+
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -1464,7 +1484,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
+    this.getReportPreferences();
   }
 
   setDefaultStartEndTime()

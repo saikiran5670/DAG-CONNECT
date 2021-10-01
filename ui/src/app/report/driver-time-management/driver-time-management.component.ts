@@ -92,7 +92,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   singleVehicle: any = [];
 
   reportPrefData: any = [];
-  reportId:number = 9;
+  reportId:number;
   showField: any = {
     driverId:true,
     driverName:true,
@@ -318,11 +318,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getDriveTimeReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Drive Time Management');
+      if(repoId.length > 0){
+        this.reportId = repoId[0].id; 
+        this.getDriveTimeReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Drive Time Management', id: 9}]; // hard coded
-      this.getDriveTimeReportPreferences(reportListData);
+      reportListData = [{name: 'Drive Time Management', id: this.reportId}];
+      // this.getDriveTimeReportPreferences();
     });
   }
 
@@ -361,9 +367,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDriveTimeReportPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Drive Time Management');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 9).subscribe((data : any) => {
+  getDriveTimeReportPreferences(){
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
