@@ -12,10 +12,12 @@ namespace net.atos.daf.ct2.rfms
 
             var accumulatedClassRequest = new AccumulatedClassRequest();
 
-            accumulatedClassRequest.ClassDistanceData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 };// record.accelerationpedalposclassdistr 
+            // accumulatedClassRequest.ClassMetersData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; //data not available // record.accelerationpedalposclassdistr 
             accumulatedClassRequest.MaxRange = 100;// record.accelerationpedalposclassmaxrange 
             accumulatedClassRequest.MinRange = 0;//record.accelerationpedalposclassminrange 
             accumulatedClassRequest.NoOfStep = 10;// = record.accelerationpedalposclassdistrstep 
+            accumulatedClassRequest.ClassSecondsData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; // record.accelerationpedalposclassdistrarraytime;
+            // accumulatedClassRequest.ClassMilliLitresData=record. //data not available
 
 
 
@@ -27,7 +29,7 @@ namespace net.atos.daf.ct2.rfms
                 {
                     From = Convert.ToInt32(item.value.Split('-')[0]),
                     To = Convert.ToInt32(item.value.Split('-')[1]),
-                    Seconds = accumulatedClassRequest.ClassDistanceData[item.i],
+                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
                     Meters = null,
                     MilliLitres = null
                 });
@@ -40,7 +42,7 @@ namespace net.atos.daf.ct2.rfms
 
             var accumulatedClassRequest = new AccumulatedClassRequest();
 
-            accumulatedClassRequest.ClassDistanceData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 };// record.retardertorqueclassdistr 
+            accumulatedClassRequest.ClassSecondsData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 };// record.retardertorqueclassdistrarray_time //retardertorqueclassdistr 
             accumulatedClassRequest.MaxRange = 100;// record.retardertorqueclassmaxrange 
             accumulatedClassRequest.MinRange = 0;//record.retardertorqueclassminrange 
             accumulatedClassRequest.NoOfStep = 10;// = record.retardertorqueclassdistrstep 
@@ -55,7 +57,7 @@ namespace net.atos.daf.ct2.rfms
                 {
                     From = Convert.ToInt32(item.value.Split('-')[0]),
                     To = Convert.ToInt32(item.value.Split('-')[1]),
-                    Seconds = accumulatedClassRequest.ClassDistanceData[item.i],
+                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
                     Meters = null,
                     MilliLitres = null
                 });
@@ -67,7 +69,7 @@ namespace net.atos.daf.ct2.rfms
 
             var accumulatedClassRequest = new AccumulatedClassRequest();
 
-            accumulatedClassRequest.ClassDistanceData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 };// record.enginetorqueengineloadclassdistr 
+            accumulatedClassRequest.ClassSecondsData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 };// record.enginetorqueengineloadclassdistrarraytime //enginetorqueengineloadclassdistr 
             accumulatedClassRequest.MaxRange = 100;// record.enginetorqueengineloadclassmaxrange 
             accumulatedClassRequest.MinRange = 0;//record.enginetorqueengineloadclassminrange 
             accumulatedClassRequest.NoOfStep = 10;// = record.enginetorqueengineloadclassdistrstep 
@@ -82,7 +84,7 @@ namespace net.atos.daf.ct2.rfms
                 {
                     From = Convert.ToInt32(item.value.Split('-')[0]),
                     To = Convert.ToInt32(item.value.Split('-')[1]),
-                    Seconds = accumulatedClassRequest.ClassDistanceData[item.i],
+                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
                     Meters = null,
                     MilliLitres = null
                 });

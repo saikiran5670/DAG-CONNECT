@@ -28,7 +28,7 @@ import { FuelBenchmarkingTableComponent } from './fuel-benchmarking-table/fuel-b
 })
 export class FuelBenchmarkingComponent implements OnInit {
   searchExpandPanel: boolean = true;
-  translationData: any;
+  translationData: any = {};
   fuelBenchmarkingSearchData: any = {};
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;

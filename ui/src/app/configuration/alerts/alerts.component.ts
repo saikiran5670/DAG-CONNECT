@@ -29,7 +29,7 @@ export class AlertsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any= [];
   titleText: string;
-  translationData: any= [];
+  translationData: any= {};
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
@@ -427,10 +427,10 @@ export class AlertsComponent implements OnInit {
 
   onDeleteAlert(item: any) {
     const options = {
-      title: this.translationData.lblDeleteAlert ,
-      message: this.translationData.lblAreousureyouwanttodeleteAlert ,
-      cancelText: this.translationData.lblCancel,
-      confirmText: this.translationData.lblDelete 
+      title: this.translationData.lblDeleteAlert || "Delete Alert" ,
+      message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?" ,
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     let name = item.name;
     this.dialogService.DeleteModelOpen(options, name);
@@ -475,7 +475,7 @@ export class AlertsComponent implements OnInit {
     if(action == 'duplicate'){
       this.actionType = 'duplicate';
     }
-    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert  : this.translationData.lblEditAlertDetails ;
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert"  : this.translationData.lblEditAlertDetails || "Edit Alert Details";
     this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
     //this.rowsData.push(row);
     //this.editFlag = true;
@@ -500,10 +500,10 @@ export class AlertsComponent implements OnInit {
 
   onChangeAlertStatus(rowData: any){
     const options = {
-      title: this.translationData.lblAlert ,
-      message: this.translationData.lblYouwanttoDetails,   
-      cancelText: this.translationData.lblCancel ,
-      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate : this.translationData.lblActivate ,
+      title: this.translationData.lblAlert || "Alert",
+      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
       status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
       name: rowData.name
     };
@@ -542,9 +542,9 @@ export class AlertsComponent implements OnInit {
 
   onVehicleGroupClick(data: any) {   
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
-    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles }`;
-    let objData = {
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+   let objData = {
       groupId: data.vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',

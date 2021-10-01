@@ -21,7 +21,7 @@ import { ReplaySubject } from 'rxjs';
 })
 
 export class AccountInfoSettingsComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   confirmAccountInfoData: any = [];
   dialogRefLogin: MatDialogRef<ChangePasswordComponent>;
   editAccountSettingsFlag : boolean = false;

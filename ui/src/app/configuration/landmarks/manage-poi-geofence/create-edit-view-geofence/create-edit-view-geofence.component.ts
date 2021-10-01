@@ -27,7 +27,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   @Input() categoryList: any;
   @Input() subCategoryList: any;
   @Output() createViewEditPoiEmit = new EventEmitter<object>();
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = '';

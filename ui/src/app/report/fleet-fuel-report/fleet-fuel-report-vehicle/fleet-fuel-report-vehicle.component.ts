@@ -39,7 +39,7 @@ import { DatePipe } from '@angular/common';
   providers: [DatePipe]
 })
 export class FleetFuelReportVehicleComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   displayedColumns = ['vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -1957,7 +1957,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.initData.forEach(item => {
       worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
-      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration,
+      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassificationValue, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
       item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
@@ -2262,7 +2262,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'ptoDuration' :{
-            tempObj.push(e.ptoDuration);
+            tempObj.push(e.ptoDuration.toFixed(2));
             break;
           }
           case 'harshBrakeDuration' :{

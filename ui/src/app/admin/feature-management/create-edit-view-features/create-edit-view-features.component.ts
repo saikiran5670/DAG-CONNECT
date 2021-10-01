@@ -14,7 +14,7 @@ import { FeatureService } from '../../../services/feature.service'
 })
 
 export class CreateEditViewFeaturesComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() dataAttributeList: any;
   @Input() selectedElementData: any;

@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
 using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.httpclient.entity;
-using net.atos.daf.ct2.httpclient.Entity;
-using net.atos.daf.ct2.httpclient.ENUM;
-using net.atos.daf.ct2.httpclient.extensions;
+using net.atos.daf.ct2.httpclientfactory.entity.ota22;
+using net.atos.daf.ct2.httpclientfactory.Entity.ota22;
+using net.atos.daf.ct2.httpclientfactory.extensions;
 using Newtonsoft.Json;
 
-namespace net.atos.daf.ct2.httpclient
+namespace net.atos.daf.ct2.httpclientfactory
 {
 
     public class OTA22HttpClientManager : IOTA22HttpClientManager
@@ -33,13 +32,16 @@ namespace net.atos.daf.ct2.httpclient
         {
             try
             {
+                _logger.Info("OTA22HttpClientManager:GetVehiclesStatusOverview Started.");
                 var client = await GetHttpClient();
                 var httpRequest = new HttpRequestMessage(
                 HttpMethod.Post,
                 $"{_oTA22Configurations.API_BASE_URL}\vehiclesstatusoverview");
                 httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var serializedRequest = JsonConvert.SerializeObject(request);
+
                 httpRequest.Content = new StringContent(serializedRequest);
+
                 using (var response = await client.SendAsync(httpRequest,
                     HttpCompletionOption.ResponseHeadersRead))
                 {
@@ -48,22 +50,23 @@ namespace net.atos.daf.ct2.httpclient
                         // inspect the status code
                         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                         {
-                            return new VehiclesStatusOverviewResponse { HttpStatusCode = response.StatusCode };
+                            return new VehiclesStatusOverviewResponse { HttpStatusCode = 404 };
                         }
                         else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                         {
-                            return new VehiclesStatusOverviewResponse { HttpStatusCode = response.StatusCode };
+                            return new VehiclesStatusOverviewResponse { HttpStatusCode = 401 };
                         }
 
                     }
                     response.EnsureSuccessStatusCode();
                     var stream = await response.Content.ReadAsStreamAsync();
-                    return new VehiclesStatusOverviewResponse { HttpStatusCode = response.StatusCode, VehiclesStatusOverview = stream.ReadAndDeserializeFromJson<VehiclesStatusOverview>() };
+                    return new VehiclesStatusOverviewResponse { HttpStatusCode = 200, VehiclesStatusOverview = stream.ReadAndDeserializeFromJson<VehiclesStatusOverview>() };
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                _logger.Error($"OTA22HttpClientManager:GetVehiclesStatusOverview.Error:-{ex.Message}");
+                return new VehiclesStatusOverviewResponse { HttpStatusCode = 500 };
             }
         }
 

@@ -297,7 +297,7 @@ namespace net.atos.daf.ct2.rfms.response
             //           MilliLitres = 678345
             //       }
             //       },
-            //  if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrangek != null)
+            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrangek != null)
             {
                 accumulatedData.RetarderTorqueClass = _rfmsVehicleStatusAccumulator.AccumulateRetarderTorqueClass(record);
             }

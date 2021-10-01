@@ -923,7 +923,7 @@ namespace net.atos.daf.ct2.account
 									                FROM master.vehicle veh 
 									                INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									                INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                            AND ((org.owner_org_id=@organization_id AND lower(ors.code)='owner') or veh.organization_id=@organization_id)
+									                            AND (org.owner_org_id=@organization_id AND lower(ors.code)='owner')
 									                            AND ors.state='A'
 									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
                                                     UNION
