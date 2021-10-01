@@ -415,5 +415,11 @@ namespace net.atos.daf.ct2.visibility
                 return idHashCode ^ vinHashCode;
             }
         }
+
+
+        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetSubscribedVehicleByAlertFeature(List<int> featureid, int organizationid)
+        {
+            return await _visibilityRepository.GetSubscribedVehicleByAlertFeature(featureid, organizationid);
+        }
     }
 }
