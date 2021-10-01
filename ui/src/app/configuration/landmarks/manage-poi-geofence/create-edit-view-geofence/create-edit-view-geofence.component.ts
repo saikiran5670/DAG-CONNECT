@@ -360,7 +360,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           name: this.circularGeofenceFormGroup.controls.circularName.value.trim(),
           modifiedBy: this.accountId,
           organizationId: this.circularGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0,
-          distance: this.circularGeofenceFormGroup.controls.radius.value
+          distance: parseInt(this.circularGeofenceFormGroup.controls.radius.value)
         };
       });
       this.geofenceService.updateCircularGeofence(cirGeoUpdateObjData).subscribe((cirGeoUpdateData: any) => {
