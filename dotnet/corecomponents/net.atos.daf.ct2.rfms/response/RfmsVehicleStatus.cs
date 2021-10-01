@@ -256,7 +256,9 @@ namespace net.atos.daf.ct2.rfms.response
         public int MaxRange { get; set; }
 
         public int NoOfStep { get; set; }
-        public List<int> ClassDistanceData { get; set; }
+        public List<int> ClassSecondsData { get; set; }
+        public List<int> ClassMetersData { get; set; }
+        public List<int> ClassMilliLitresData { get; set; }
 
 
     }
