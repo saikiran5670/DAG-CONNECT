@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.kafkacdc\net.atos.daf.ct2.kafkacdc.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.subscription\net.atos.daf.ct2.subscription.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
   </ItemGroup>
 
 
