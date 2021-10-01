@@ -44,7 +44,7 @@ declare var H: any;
 })
 
 export class VehicletripComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() displayedColumns:any;
   @Input() vehicleSelected : boolean;
   @Input() dateDetails : any;
@@ -790,7 +790,7 @@ tripTraceArray: any = [];
                 //Add for Search Fucntionality with Zoom
                 this.query = "starbucks";
                 this.platform = new H.service.Platform({
-                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+                "apikey": this.map_key 
                   });                
                  this.configureAutoSuggest();
                }
@@ -2569,9 +2569,9 @@ setVehicleGroupAndVehiclePreSelection() {
         this.initData.forEach(item => {
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
             item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
-            item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
+            item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumptionValue,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2840,7 +2840,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'ptoDuration' :{
-            tempObj.push(e.ptoDuration);
+            tempObj.push(e.ptoDuration.toFixed(2));
             break;
           }
           case 'harshBrakeDuration' :{
@@ -2864,7 +2864,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'averageTrafficClassification' :{
-            tempObj.push(e.averageTrafficClassification);
+            tempObj.push(e.averageTrafficClassificationValue);
             break;
           }
           case 'ccFuelConsumption' :{
@@ -2876,7 +2876,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingConsumption' :{
-            tempObj.push(e.idlingConsumption);
+            tempObj.push(e.idlingConsumptionValue);
             break;
           }
           case 'dpaScore' :{

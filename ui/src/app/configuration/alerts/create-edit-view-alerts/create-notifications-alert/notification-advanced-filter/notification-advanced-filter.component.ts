@@ -8,7 +8,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 })
 export class NotificationAdvancedFilterComponent implements OnInit {
 
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() alert_category_selected : any;
   @Input() alert_type_selected : any;
   @Input() selectedRowData : any;

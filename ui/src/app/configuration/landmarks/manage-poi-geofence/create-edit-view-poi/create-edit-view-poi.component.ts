@@ -20,7 +20,7 @@ declare var H: any;
 export class CreateEditViewPoiComponent implements OnInit {
   @Output() createViewEditPoiEmit = new EventEmitter<object>();
   @Input() createStatus: boolean;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Input() viewFlag: boolean;
   @Input() categoryList: any;
@@ -86,7 +86,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     // });
     this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key 
       });
       this.configureAutoSuggest();
   }

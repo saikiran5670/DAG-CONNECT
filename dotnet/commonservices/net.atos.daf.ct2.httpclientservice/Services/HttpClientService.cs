@@ -1,13 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
 using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.httpclientservice.Entity;
+using net.atos.daf.ct2.httpclient;
+using net.atos.daf.ct2.httpclientfactory;
+using net.atos.daf.ct2.httpclientfactory.entity.ota22;
+using net.atos.daf.ct2.httpclientservice.Entity.ota22;
 
 namespace net.atos.daf.ct2.httpclientservice.Services
 {
@@ -16,34 +17,41 @@ namespace net.atos.daf.ct2.httpclientservice.Services
     {
         private readonly ILog _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IOTA22HttpClientManager _oTA22HttpClientManager;
         private readonly OTA22Configurations _oTA22Configurations;
-
-        public HttpClientManagementService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        private readonly Mapper _mapper;
+        public HttpClientManagementService(IHttpClientFactory httpClientFactory,
+                                           IConfiguration configuration,
+                                           IOTA22HttpClientManager oTA22HttpClientManager,
+                                           Mapper mapper)
         {
             _httpClientFactory = httpClientFactory;
+            _oTA22HttpClientManager = oTA22HttpClientManager;
+            _mapper = mapper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             configuration.GetSection("OTA22Configurations").Bind(_oTA22Configurations);
         }
 
-
-
-        /// <summary>
-        /// This mthod is used to get tokens from Oauth2 provider
-        /// </summary>
-        /// <returns></returns>
-        private async Task<string> GetElibilityToken()
+        public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverview(VehiclesStatusOverviewRequest request, ServerCallContext context)
         {
-            var client = _httpClientFactory.CreateClient("OTA22AuthClient");
-            var form = new Dictionary<string, string>
-                {
-                    {"grant_type", _oTA22Configurations.GRANT_TYPE},
-                    {"scope", _oTA22Configurations.CLIENT_SCOPE},
-                    {"client_id", _oTA22Configurations.CLIENT_ID},
-                    {"client_secret", _oTA22Configurations.CLIENT_SECRET},
-                };
+            try
+            {
+                _logger.Info("HttpClientManagementService:GetVehiclesStatusOverview Started.");
 
-            HttpResponseMessage tokenResponse = await client.PostAsync("",new FormUrlEncodedContent(form));
-            return await tokenResponse.Content.ReadAsStringAsync();
+                httpclientfactory.entity.ota22.VehiclesStatusOverviewResponse apiResponse
+                    = await _oTA22HttpClientManager.GetVehiclesStatusOverview(_mapper.MapVehiclesStatusOverviewRequest(request));
+                return await Task.FromResult(_mapper.MapVehiclesStatusOverview(apiResponse));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"HttpClientManagementService:GetVehiclesStatusOverview.Error:-{ex.Message}");
+                return await Task.FromResult(new VehiclesStatusOverviewResponse
+                {
+                    HttpStatusCode = 500,
+                    Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-{ex.Message}"
+                });
+            }
         }
 
     }

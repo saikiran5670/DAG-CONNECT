@@ -28,7 +28,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   accountGrpAccountDetails: any = [];
   accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
-  translationData: any;
+  translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   selectedVehicleViewType: any = '';
@@ -53,16 +53,16 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   associationTypeId: any = 1;
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation() {
-    this.translationData = {
-      lblSearch: "Search",
-      lblAllAccessRelationshipDetails: "All Access Relationship Details",
-      lblNewAssociation: "New Association"
-    }
-  }
+  // defaultTranslation() {
+  //   this.translationData = {
+  //     lblSearch: "Search",
+  //     lblAllAccessRelationshipDetails: "All Access Relationship Details",
+  //     lblNewAssociation: "New Association"
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -252,10 +252,10 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   deleteAccessRelationship(element: any){
     //console.log("delete item:: ", element);
     const options = {
-      title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDelete,
+      message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete 
     };
     this.dialogService.DeleteModelOpen(options, element.name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -403,8 +403,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
+    const colsName = [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers }`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -447,8 +447,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   showVehiclePopup(row: any){
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles }`;
     this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
       let data: any = [];
       data = vehData;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.httpclientservice.Entity
+namespace net.atos.daf.ct2.httpclientfactory.Entity.ota22
 {
     public class OTA22Configurations
     {

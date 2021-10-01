@@ -13,7 +13,7 @@ export class CommonFilterComponent implements OnInit {
   OrgId = parseInt(localStorage.getItem("accountOrganizationId"));
   isGlobal: boolean = true;
   @Input() initData : any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   userGroups : any = [];
   roles : any = [];
   name = '';

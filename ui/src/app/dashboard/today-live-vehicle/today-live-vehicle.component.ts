@@ -271,6 +271,8 @@ doughnutDistanceColors: Color[] = [
     }
    this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
        //console.log(vehicleData);
+    this.dataError = false;
+
       if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  this.finalVinList.length;

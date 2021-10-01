@@ -37,7 +37,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   ecoScoreForm: FormGroup;
-  translationData: any;
+  translationData: any = {};
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
@@ -89,7 +89,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   driverDetails : any= [];
   detailConvertedData : any;
   reportPrefData: any = [];
-  reportId:number = 10;
+  reportId:number ;
   minTripCheck: any;
   minTripValue: any;
   minDriverCheck: any;
@@ -342,11 +342,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getEcoScoreReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'EcoScore Report');
+      if(repoId.length > 0){
+        this.reportId = repoId[0].id; 
+        this.getEcoScoreReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'EcoScore Report', id: 10}]; // hard coded
-      this.getEcoScoreReportPreferences(reportListData);
+      reportListData = [{name: 'EcoScore Report', id: this.reportId}];
+      // this.getEcoScoreReportPreferences();
     });
   }
 
@@ -385,9 +391,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  getEcoScoreReportPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'EcoScore Report');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 10).subscribe((data : any) => {
+  getEcoScoreReportPreferences(){
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetColumnData();
       this.preparePrefData(this.reportPrefData);

@@ -847,7 +847,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ptoduration')">
   
-                <span>{{row.ptoDuration}}</span>
+                <span>{{row.ptoDuration.toFixed(2)}}</span>
   
               </mat-cell>
   

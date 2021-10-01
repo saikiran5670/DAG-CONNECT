@@ -33,7 +33,7 @@ const createGpx = require('gps-to-gpx').default;
 export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
   displayedColumnsGeo = ['All', 'name', 'categoryName', 'subCategoryName', 'Actions'];
@@ -121,7 +121,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     ) {
       this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key
       });
       this.configureAutoSuggest();
   }
