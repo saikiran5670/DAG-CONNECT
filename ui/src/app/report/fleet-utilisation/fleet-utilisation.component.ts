@@ -1204,7 +1204,7 @@ calendarOptions: CalendarOptions = {
         break;
       }
       case "rp_fu_report_calendarview_timebasedutilization": { // time based utilisation
-        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : ((element.averagedrivingtime/this.timebasedThreshold) * 100);
+        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : (((element.averagedrivingtime*1000)/this.timebasedThreshold) * 100);  //converting avgdrivingtime to milliseconds
         this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
