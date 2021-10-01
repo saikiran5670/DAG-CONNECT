@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class TripReportPreferenceComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setTripReportFlag = new EventEmitter<any>();
   localStLanguage: any;

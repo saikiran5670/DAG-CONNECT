@@ -18,7 +18,7 @@ import { Router, NavigationExtras  } from '@angular/router';
   styleUrls: ['./edit-view-user.component.less']
 })
 export class EditViewUserComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() defaultSetting: any;
   @Input() fromEdit: any;
   @Output() userCreate = new EventEmitter<object>();

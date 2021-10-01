@@ -20,7 +20,7 @@ import { FleetMapService} from '../fleet-map.service';
   styleUrls: ['./fleet-overview-filters.component.less']
 })
 export class FleetOverviewFiltersComponent implements OnInit {
-@Input() translationData: any;
+@Input() translationData: any = {};
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;

@@ -32,7 +32,7 @@ export class UserRoleManagementComponent implements OnInit {
   actionBtn:any;  
   createStatus: boolean;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;

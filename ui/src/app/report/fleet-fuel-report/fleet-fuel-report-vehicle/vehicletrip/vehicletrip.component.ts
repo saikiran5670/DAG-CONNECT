@@ -44,7 +44,7 @@ declare var H: any;
 })
 
 export class VehicletripComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() displayedColumns:any;
   @Input() vehicleSelected : boolean;
   @Input() dateDetails : any;

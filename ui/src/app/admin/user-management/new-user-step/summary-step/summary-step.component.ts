@@ -9,7 +9,7 @@ import { MatSort } from '@angular/material/sort';
   styleUrls: ['./summary-step.component.less']
 })
 export class SummaryStepComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() defaultSetting: any;
   @Input() privilegeAccess: any;
   @Input() set selectedRoleData(value: any) {

@@ -23,7 +23,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
   @Input() defaultSetting: any;
   @Input() userGrpData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() userDataForEdit: any;
   @Input() orgPreference: any;
   @Output() userCreate = new EventEmitter<object>();
