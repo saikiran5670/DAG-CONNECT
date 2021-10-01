@@ -2663,7 +2663,7 @@ setVehicleGroupAndVehiclePreSelection() {
             item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumptionValue,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2968,7 +2968,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'idlingConsumption' :{
-              tempObj.push(e.idlingConsumption);
+              tempObj.push(e.idlingConsumptionValue);
               break;
             }
             case 'dpaScore' :{
