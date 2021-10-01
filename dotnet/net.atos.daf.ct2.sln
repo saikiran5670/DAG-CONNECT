@@ -246,7 +246,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.otasoftwar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.httpclientservice", "commonservices\net.atos.daf.ct2.httpclientservice\net.atos.daf.ct2.httpclientservice.csproj", "{CFAB36D4-57D4-4A57-9872-C0BD73237D06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.httpclient", "commoncomponent\net.atos.daf.ct2.httpclient\net.atos.daf.ct2.httpclient.csproj", "{DEFA122D-6156-4BAA-8C47-4CA259E9D147}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.httpclientfactory", "commoncomponent\net.atos.daf.ct2.httpclient\net.atos.daf.ct2.httpclientfactory.csproj", "{DEFA122D-6156-4BAA-8C47-4CA259E9D147}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

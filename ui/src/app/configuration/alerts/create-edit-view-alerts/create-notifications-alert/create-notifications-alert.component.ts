@@ -17,7 +17,7 @@ import { NotificationAdvancedFilterComponent } from './notification-advanced-fil
   styleUrls: ['./create-notifications-alert.component.less']
 })
 export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input()  formGroup: FormGroup;
   notificationForm: FormGroup;

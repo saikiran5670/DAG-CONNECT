@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.httpclient\net.atos.daf.ct2.httpclient.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.httpclient\net.atos.daf.ct2.httpclientfactory.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 export class FuelDeviationPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setFuelDeviationReportFlag = new EventEmitter<any>();
   reportId: any;
