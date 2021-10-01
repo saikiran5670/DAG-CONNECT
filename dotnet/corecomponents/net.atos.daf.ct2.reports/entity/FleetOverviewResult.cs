@@ -65,5 +65,6 @@ namespace net.atos.daf.ct2.reports.entity
         public double AlertLongitude { get; set; }
         public int Alertgeoadd_LatestAlertGeolocationAddressId { get; set; }
         public string Alertgeoadd_LatestAlertGeolocationAddress { get; set; }
+        public string Veh_name { get; set; }
     }
 }

@@ -50,6 +50,8 @@ namespace net.atos.daf.ct2.reports
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter);
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved_NoWarnings(FleetOverviewFilter fleetOverviewFilter);
         Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request);
         Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId);
