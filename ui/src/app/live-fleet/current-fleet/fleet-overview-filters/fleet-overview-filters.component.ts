@@ -507,28 +507,26 @@ removeDuplicates(originalArray, prop) {
       this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
-         if(item.vehicleHealthStatusType==e.value)
-         {         
-          item.vehicleHealthStatusType = this.translationData[e.name];
-         }
+          if (item.vehicleHealthStatusType == e.value) {
+            item.vehicleHealthStatusType = this.translationData[e.name];
+          }
         });
         this.filterData["otherFilter"].forEach(element => {
-          if(item.vehicleDrivingStatusType==element.value)
-          {         
-           item.vehicleDrivingStatusType = this.translationData[element.name];
+          if (item.vehicleDrivingStatusType == element.value) {
+            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
-         });    
-         if(this.categoryList.length>0){
-         item.fleetOverviewAlert.forEach(e => {
-         let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
-         if(alertCategory.length>0){
-         newAlertCat.push(alertCategory[0]);
-         }          
-        });  
-       }
-      });    
-    // this.categoryList = this.removeDuplicates(newAlertCat, "value");
-     //console.log(newAlertCat);    
+        });
+        if (this.categoryList.length > 0) {
+          item.fleetOverviewAlert.forEach(e => {
+            let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
+            if (alertCategory.length > 0) {
+              newAlertCat.push(...alertCategory);
+            }
+          });
+        }
+      });
+      this.categoryList = this.removeDuplicates(newAlertCat, "value");
+
       this.vehicleListData = data;   
       this.detailsData = data;  
       let _dataObj ={
