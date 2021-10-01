@@ -21,7 +21,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   grpTitleVisible: boolean = false;
   vehicleGrpCreatedMsg: any = '';
   createViewEditStatus: boolean = false;
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
   initData: any = [];

@@ -30,7 +30,7 @@ export class CreateEditViewGroupComponent implements OnInit {
   geofenceDataSource: any = new MatTableDataSource([]);
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() titleText: any;

@@ -59,7 +59,7 @@ selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
 displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
-translationData: any;
+translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
 showMapPanel: boolean = false;

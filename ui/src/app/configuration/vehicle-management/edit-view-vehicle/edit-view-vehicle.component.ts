@@ -13,7 +13,7 @@ export class EditViewVehicleComponent implements OnInit {
   accountOrganizationId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
   @Output() updateRelationshipVehiclesData = new EventEmitter();
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   vehicleForm: FormGroup;

@@ -35,7 +35,7 @@ declare var H: any;
   styleUrls: ['./alert-advanced-filter.component.less']
 })
 export class AlertAdvancedFilterComponent implements OnInit {
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() alert_category_selected : any;
   @Input() alert_type_selected : any;
   @Input() selectedRowData : any;

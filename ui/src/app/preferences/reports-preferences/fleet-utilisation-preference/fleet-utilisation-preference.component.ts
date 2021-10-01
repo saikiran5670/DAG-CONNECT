@@ -14,7 +14,7 @@ import { CustomValidators } from '../../../shared/custom.validators';
 })
 
 export class FleetUtilisationPreferenceComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() reportListData: any;
   @Input() editFlag: any;
   @Input() generalPreferences: any;

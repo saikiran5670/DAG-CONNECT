@@ -42,7 +42,7 @@ declare var H: any;
 })
 
 export class DetailDriverReportComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() driverDetails: any;
   @Input() dateDetails : any;
   @Output() backToMainPage = new EventEmitter<any>();

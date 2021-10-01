@@ -7,7 +7,7 @@
                 <span class='custom-font'>{{ data.tableHeader }} ({{ selectionData.selected.length }})</span>
             </div>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
-                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
+                <mat-icon matTooltip="{{ data.translationData.lblClose }}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="start space-around">
@@ -16,7 +16,7 @@
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
-                          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch || 'Search' }}">
+                          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch  }}">
                           <span matPrefix><mat-icon>search</mat-icon></span>
                       </mat-form-field>
                     </div>
@@ -76,11 +76,11 @@
     <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
         <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onClose(false)'>{{
-                data.translationData.lblCancel || 'Cancel' }}</button>
+                data.translationData.lblCancel  }}</button>
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onReset()">{{
-                data.translationData.lblReset || 'Reset' }}</button>
+                data.translationData.lblReset  }}</button>
             <button mat-raised-button color="primary" [disabled]="data.type == 'role' ? selectionData.selected.length == 0 : false" (click)="onConfirm()">{{
-                data.translationData.lblConfirm || 'Confirm' }}</button>
+                data.translationData.lblConfirm  }}</button>
         </div>
     </mat-card-actions>
 </mat-card>
