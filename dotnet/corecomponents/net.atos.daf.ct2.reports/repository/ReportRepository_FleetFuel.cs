@@ -151,8 +151,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
                                                          		  , round(fd.average_traffic_classification)             					as AverageTrafficClassification
-                                                         		  , round((fd.CCFuelConsumed/fd.CCFuelDistance),5)                      		as CCFuelConsumption
-                                                         		  , round((fd.CCFuelConsumedNotActive/CCFuelDistanceNotActive),5)             as FuelconsumptionCCnonactive
+                                                         		  , case when fd.CCFuelDistance>0 then round((fd.CCFuelConsumed/fd.CCFuelDistance),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
+                                                         		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end  as FuelconsumptionCCnonactive
                                                          		  , idling_consumption                                   					as IdlingConsumption
                                                          		  , dpa_score                                            					as DPAScore
                                                                   , round(fd.CCFuelDistance,2) 							 					as CCFuelDistance
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                  		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
+                                                  		  , round(fd.fuel_consumption,5)                                           as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
                                                          , SUM(idle_duration) as idle_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
@@ -274,8 +274,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
                                                   		  , round(fd.average_traffic_classification)               					as AverageTrafficClassification
-                                                  		  , round((fd.CCFuelConsumed/fd.CCFuelDistance),5)                        					as CCFuelConsumption
-                                                  		  , round((fd.CCFuelConsumedNotActive/CCFuelDistanceNotActive))               					as FuelconsumptionCCnonactive
+                                                  		  , case when fd.CCFuelDistance>0 then round((fd.CCFuelConsumed/fd.CCFuelDistance),5) else fd.CCFuelConsumed end	as CCFuelConsumption
+                                                  		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end	as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     					as IdlingConsumption
                                                   		  , dpa_score                                              					as DPAScore
                                                          , round(fd.CCFuelDistance,2) 							   					as CCFuelDistance
