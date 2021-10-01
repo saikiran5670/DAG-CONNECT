@@ -24,7 +24,7 @@ export class PackageManagementComponent implements OnInit {
   packageCreatedMsg : any = '';
   selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
-  translationData: any;
+  translationData: any = {};
   // dataSource: any;
   actionType: any;
   initData: any = [];

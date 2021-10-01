@@ -35,7 +35,7 @@ export class UserManagementComponent implements OnInit {
   selectedUserGrpData: any;
   error: any;
   initData: any = [];
-  translationData: any;
+  translationData: any = {};
   userDataForEdit: any;
   selectedPreference: any;
   isCreateFlag: boolean; 

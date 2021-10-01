@@ -16,7 +16,7 @@ import { start } from 'repl';
 })
 export class CreateEditReportSchedulerComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() reportSchedulerParameterData: any;

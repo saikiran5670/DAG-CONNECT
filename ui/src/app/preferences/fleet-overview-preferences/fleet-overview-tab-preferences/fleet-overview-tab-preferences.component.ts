@@ -14,7 +14,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 export class FleetOverviewTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setFleetOverviewFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];

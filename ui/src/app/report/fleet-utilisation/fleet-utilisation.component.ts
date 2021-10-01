@@ -48,7 +48,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
   displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageSpeed', 'averageWeight', 'averageDistancePerDay', 'odometer'];
-  translationData: any;
+  translationData: any = {};
   fleetUtilizationSearchData: any = {};
   // hereMap: any;
   // platform: any;

@@ -19,7 +19,7 @@ import { DataInterchangeService } from '../../services/data-interchange.service'
   styleUrls: ['./dashboard-vehicle-utilisation.component.less']
 })
 export class DashboardVehicleUtilisationComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;

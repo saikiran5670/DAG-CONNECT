@@ -18,7 +18,7 @@ export class LanguageSelectionComponent implements OnInit {
   dataSource: any;
   selectionData = new SelectionModel(true, []);
   languages: any = [];
-  translationData: any = [];
+  translationData: any = {};
 
   constructor(
     @Inject(MAT_DIALOG_DATA)

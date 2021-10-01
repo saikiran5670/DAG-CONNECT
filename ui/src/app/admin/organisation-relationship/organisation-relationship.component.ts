@@ -32,7 +32,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   rowsData: any;
   createStatus: boolean = false;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   showLoadingIndicator: any;
   displayMessage: any;
