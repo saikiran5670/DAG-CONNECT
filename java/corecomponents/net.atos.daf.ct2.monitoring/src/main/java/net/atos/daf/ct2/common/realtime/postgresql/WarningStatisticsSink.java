@@ -70,7 +70,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		Integer messageTen = new Integer(10);
 		Integer messageFour = new Integer(4);
 		String vin;
-		if (messageTen.equals(row.getMessageType()) || messageFour.equals(row.getMessageType())) {
+		if ((messageTen.equals(row.getMessageType()) || messageFour.equals(row.getMessageType())) &&(row.getVEvtID()==44 || row.getVEvtID()==45 || row.getVEvtID()==46 || row.getVEvtID()==63 )){
 
 			queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();

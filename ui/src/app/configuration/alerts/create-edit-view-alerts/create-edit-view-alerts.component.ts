@@ -147,6 +147,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   map_key: any = '';
+  singleVehicle = [];
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -653,12 +654,17 @@ proceedStep(prefData: any, preference: any){
      this.vehicleByVehGroupList.forEach(element => {
        let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
        vehicleGroupDetails.forEach(item => {
+         let itemSplit = item.split("~");
+         if(itemSplit[2] != 'S') {
           let vehicleGroupObj= {
-            "vehicleGroupId" : item.split("~")[0],
-            "vehicleGroupName" : item.split("~")[1],
+            "vehicleGroupId" : itemSplit[0],
+            "vehicleGroupName" : itemSplit[1],
             "vehicleId" : element.vehicleId
           }
-          this.vehicleGroupList.push(vehicleGroupObj);       
+          this.vehicleGroupList.push(vehicleGroupObj);
+        } else {
+          this.singleVehicle.push(element);
+        }
        });
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
@@ -706,10 +712,20 @@ proceedStep(prefData: any, preference: any){
         }
       });
     }
-    
     this.updateVehiclesDataSource(this.vehicleListForTable);
-
   }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
 
   onChangeVehicleGroup(value){
     this.vehicleListForTable= [];
@@ -723,6 +739,7 @@ proceedStep(prefData: any, preference: any){
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
     if(value == 'ALL'){
       this.getVehiclesForAlertType(alertTypeObj);
+      this.vehicleByVehGroupList = this.getUniqueVINs([...this.vehicleByVehGroupList, ...this.singleVehicle]);
     }
     else{
       //converted vehicle group selection into int val.
