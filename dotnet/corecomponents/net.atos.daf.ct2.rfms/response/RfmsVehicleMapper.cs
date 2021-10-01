@@ -267,7 +267,7 @@ namespace net.atos.daf.ct2.rfms.response
             //}
             //},
 
-            //  if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrangek != null)
+            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null)
             {
                 accumulatedData.AccelerationPedalPositionClass = _rfmsVehicleStatusAccumulator.AccumulateAccelerationPedalPositionClass(record);
             }
@@ -297,7 +297,7 @@ namespace net.atos.daf.ct2.rfms.response
             //           MilliLitres = 678345
             //       }
             //       },
-            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassmaxrangek != null)
+            if (record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null)
             {
                 accumulatedData.RetarderTorqueClass = _rfmsVehicleStatusAccumulator.AccumulateRetarderTorqueClass(record);
             }
@@ -318,8 +318,10 @@ namespace net.atos.daf.ct2.rfms.response
             //           MilliLitres = 678345
             //       }
             //},
-
-            accumulatedData.EngineTorqueAtCurrentSpeedClass = _rfmsVehicleStatusAccumulator.AccumulateEngineTorqueAtCurrentSpeedClass(record);
+            if (record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null)
+            {
+                accumulatedData.EngineTorqueAtCurrentSpeedClass = _rfmsVehicleStatusAccumulator.AccumulateEngineTorqueAtCurrentSpeedClass(record);
+            }
             //       VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
             //   {
             //           From = 0,
