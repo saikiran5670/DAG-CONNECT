@@ -91,7 +91,7 @@ export class SubscriptionManagementComponent implements OnInit {
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
     this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL; 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
   
   generateHeader(){
@@ -118,14 +118,14 @@ export class SubscriptionManagementComponent implements OnInit {
       return this.httpClient.post(`${this.domainUrl}`, null, httpOptions);
     }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblSubscriptionManagement: "Subscription Management",
-      lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
-      lblNoRecordFound: "No Record Found",
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblSearch: "Search",
+  //     lblSubscriptionManagement: "Subscription Management",
+  //     lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
+  //     lblNoRecordFound: "No Record Found",
+  //   }
+  // }
 
   exportAsCSV(){
       this.matTableExporter.exportTable('csv', {fileName:'Subscription_Data', sheet: 'sheet_name'});

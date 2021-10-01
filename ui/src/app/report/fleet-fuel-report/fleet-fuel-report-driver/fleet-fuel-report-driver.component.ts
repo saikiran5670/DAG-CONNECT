@@ -41,7 +41,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   displayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
-  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification','averageTrafficClassificationValue',
+  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore','dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'idlingConsumptionWithPTO'];
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
@@ -78,6 +78,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   wholeTripData: any = [];
+  fleetFuelReportId: number;
   accountId: any;
   internalSelection: boolean = false;
   accountPrefObj: any;
@@ -663,12 +664,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+   
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
-    }
+    }  
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
@@ -697,8 +701,27 @@ export class FleetFuelReportDriverComponent implements OnInit {
     return true;
   }
 
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      let repoId = reportListData.filter(i => i.name == 'Fleet Fuel Report');
+      if(repoId.length > 0){
+        this.fleetFuelReportId = repoId[0].id; 
+        this.getFleetPreferences();
+      }else{
+        console.error("No report id found!")
+      }
+     
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fleet Fuel Report', id: this.fleetFuelReportId}]; 
+      // this.getTripReportPreferences();
+    });
+  }
+
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -1046,6 +1069,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
           labelString: data1    
         }
       }];     
+      this.barChartOptions3.scales.xAxes= [{ 
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },  
+        type:'time',
+         time:
+         {
+           tooltipFormat:  this.chartLabelDateFormat,
+           unit: 'day',
+           stepSize:1,
+           displayFormats: {      
+             day:  this.chartLabelDateFormat,            
+            },             
+         }   
+     }];  
     this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: data1,
@@ -1067,6 +1106,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: 'Number of Trips'    
       }
     }]; 
+    this.barChartOptions.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      }, 
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }   
+   }];  
     this.barChartData2= [
       { data: this.barData,
         label: 'Number of Trips',
@@ -1087,6 +1142,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data2   
       }
     }];
+    this.barChartOptions4.scales.xAxes= [{     
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },      
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {      
+            day:  this.chartLabelDateFormat,            
+           },             
+        }  
+     }];
     this.barChartData3= [
       { data: this.co2Chart,
         label: data2,
@@ -1107,6 +1178,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data3   
       }
     }];
+    this.barChartOptions2.scales.xAxes= [{ 
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+      type:'time',
+       time:
+       {
+         tooltipFormat:  this.chartLabelDateFormat,
+         unit: 'day',
+         stepSize:1,
+         displayFormats: {      
+           day:  this.chartLabelDateFormat,            
+          },             
+       }     
+   }];
      this.barChartData4= [
       { data: this.distanceChart,
         label: data3,
@@ -1126,6 +1213,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: 'Minutes'      
       }
     }];
+    this.barChartOptions1.scales.xAxes= [{      
+        barThickness: 6,
+        gridLines: {
+          drawOnChartArea: false
+        },    
+      type:'time',
+      time:
+      {
+        tooltipFormat:  this.chartLabelDateFormat,
+        unit: 'day',
+        stepSize:1,
+        displayFormats: {      
+          day:  this.chartLabelDateFormat,            
+         },             
+      }      
+  }]; 
   this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
@@ -1144,12 +1247,29 @@ export class FleetFuelReportDriverComponent implements OnInit {
         labelString: data4    
       }
     }];
+    this.barChartOptions5.scales.xAxes= [{      
+      barThickness: 6,
+      gridLines: {
+        drawOnChartArea: false
+      },    
+    type:'time',
+    time:
+    {
+      tooltipFormat:  this.chartLabelDateFormat,
+      unit: 'day',
+      stepSize:1,
+      displayFormats: {      
+        day:  this.chartLabelDateFormat,            
+       },             
+    }      
+}]; 
      this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label:data4,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
+  
      //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
@@ -1364,7 +1484,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
+    this.getReportPreferences();
   }
 
   setDefaultStartEndTime()
@@ -1858,10 +1978,10 @@ setVehicleGroupAndVehiclePreSelection() {
     this.initData.forEach(item => {
       worksheet.addRow([item.driverName, item.driverID, item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
-      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission, item.idleDurationPercentage, item.ptoDuration,
+      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission, item.idleDurationPercentage, item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-      item.idlingConsumption, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
+      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
     ]);
     });
@@ -2107,7 +2227,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'ptoDuration' :{
-            tempObj.push(e.ptoDuration);
+            tempObj.push(e.ptoDuration.toFixed(2));
             break;
           }
           case 'harshBrakeDuration' :{
@@ -2143,7 +2263,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingConsumption' :{
-            tempObj.push(e.idlingConsumption);
+            tempObj.push(e.idlingConsumptionValue);
             break;
           }
           case 'dpaScore' :{

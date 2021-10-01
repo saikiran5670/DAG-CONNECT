@@ -213,7 +213,12 @@ public class TripEtlStreamingJob {
 			tripStsData.setEtlProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime());
 			tripStsData.setDriverId(stsMsg.getDriverID());
 			tripStsData.setVid(stsMsg.getVid());
-			tripStsData.setVin(stsMsg.getVin());
+			
+			if(Objects.nonNull(stsMsg.getVin()))
+				tripStsData.setVin(stsMsg.getVin());
+			else
+				tripStsData.setVin(stsMsg.getVid());
+			
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
 			tripStsData.setFuelType(stsMsg.getFuelType());
 			

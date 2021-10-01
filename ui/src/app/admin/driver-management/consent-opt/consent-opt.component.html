@@ -4,7 +4,7 @@
             <div fxLayout="row" fxLayoutAlign="start space-around"
                 style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>{{ data.translationData.lblDriverIDConsent || 'Driver ID Consent' }}</span>
+                    <span class='custom-font'>{{ data.translationData.lblDriverIDConsent }}</span>
                 </div>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
                     <mat-icon (click)='onCancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
@@ -12,43 +12,43 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" class='margin-20'>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblName || 'Name' }}</span>
+                    <span>{{ data.translationData.lblName }}</span>
                     <span class='custom-font'>{{ data.driverData.firstName }} {{ data.driverData.lastName }}</span>
                 </div>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblDriverId || 'Driver Id' }}</span>
+                    <span>{{ data.translationData.lblDriverId }}</span>
                     <span class='custom-font'>{{ data.driverData.driverIdExt }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblOrgnization || 'Orgnization' }}</span>
+                    <span>{{ data.translationData.lblOrgnization }}</span>
                     <span class='custom-font'>{{ organizationName }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblTotalDrivers || 'Total Drivers' }}</span>
+                    <span>{{ data.translationData.lblTotalDrivers }}</span>
                     <span class='custom-font'>{{ totalDrivers }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="7px" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign="space-between">
-                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber || 'Current Consent Status For Subscriber' }} 'DAF Connect'= {{ 
+                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber  }} 'DAF Connect'= {{ 
                             (data.actionType == true) ? 
                             ((data.consentType === 'U') ? 
-                            (data.translationData.lblOptOutAll || 'Opt-Out All') : 
+                            (data.translationData.lblOptOutAll ) : 
                             (data.consentType === 'I') ? 
-                            (data.translationData.lblOptInAll || 'Opt-In All'):
-                            (data.translationData.lblInherit || 'Inherit')) : 
+                            (data.translationData.lblOptInAll ):
+                            (data.translationData.lblInherit )) : 
                             ((data.consentType === 'U') ? 
-                            (data.translationData.lblOptOut || 'Opt-Out') : 
+                            (data.translationData.lblOptOut ) : 
                             (data.consentType === 'I') ? 
-                            (data.translationData.lblOptIn || 'Opt-In'):
-                            (data.translationData.lblInherit || 'Inherit'))
+                            (data.translationData.lblOptIn ):
+                            (data.translationData.lblInherit ))
                         }}</span>
                     </div>
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <mat-radio-group (change)='onChange($event)'>
-                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit || 'Inherit' }}</mat-radio-button>
-                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
-                                <mat-radio-button value="U" [disabled]="data.radioSelected" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit  }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll ) : (data.translationData.lblOptIn ) }}</mat-radio-button>
+                                <mat-radio-button value="U" [disabled]="data.radioSelected" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll ) : (data.translationData.lblOptOut ) }}</mat-radio-button>
                             </mat-radio-group>
                         </div>
                     </div>
@@ -56,23 +56,22 @@
             </div>
             <div *ngIf='showOptOutMsg' fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #d62a29; color: #fff;'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    {{ data.translationData.lblOptOutMessage || "Now you are proceeding with Driver ID Consent Opt-Out operation, Click 'Confirm' to change the
-                    consent status." }}
+                    {{ data.translationData.lblOptOutMessage }}
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #f1f1f1;'>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
                     <div>{{ consentMsg }}.</div>
                     <div *ngIf="data.consentType == 'H'">{{ inheritMsgExtra }}</div>
-                    <div>{{ (data.consentType == 'H') ? (data.translationData.lblHence || 'Hence') : '' }}{{ (data.consentType == 'H') ? ',' : '' }} {{ consentMsgExtra }}</div>
+                    <div>{{ (data.consentType == 'H') ? (data.translationData.lblHence ) : '' }}{{ (data.consentType == 'H') ? ',' : '' }} {{ consentMsgExtra }}</div>
                 </div>
             </div> 
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
             <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
-                <button *ngIf="!data.radioSelected" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
-                <button *ngIf="!data.radioSelected" (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
-                <button *ngIf="data.radioSelected" (click)="onUpdateStatusOk($event)" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblStatusOk || 'OK' }}</button>
+                <button *ngIf="!data.radioSelected" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel }}</button>
+                <button *ngIf="!data.radioSelected" (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm }}</button>
+                <button *ngIf="data.radioSelected" (click)="onUpdateStatusOk($event)" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblStatusOk }}</button>
             </div>
         </mat-card-actions>
     </mat-card>

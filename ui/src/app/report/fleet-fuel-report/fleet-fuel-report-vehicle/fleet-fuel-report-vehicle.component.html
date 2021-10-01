@@ -683,7 +683,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ptoduration')">{{ translationData.lblPTODuration || 'PTO Duration%' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ptoduration')">
-              <span>{{row.ptoDuration}}</span>
+              <span>{{row.ptoDuration.toFixed(2)}}</span>
             </mat-cell>
           </ng-container>
 
@@ -742,18 +742,18 @@
               'Average Traffic Classification' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
-              <span>{{row.averageTrafficClassification}}</span>
+              <span>{{row.averageTrafficClassificationValue}}</span>
             </mat-cell>
           </ng-container>
 
-          <ng-container matColumnDef="averageTrafficClassificationValue">
+          <!-- <ng-container matColumnDef="averageTrafficClassificationValue">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification ||
               'Average Traffic Classification Value' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
               <span>{{row.averageTrafficClassificationValue}}</span>
             </mat-cell>
-          </ng-container>
+          </ng-container> -->
 
           <ng-container matColumnDef="ccFuelConsumption">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
@@ -785,7 +785,7 @@
               Consumption' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">
-              <span>{{row.idlingConsumption}}</span>
+              <span>{{row.idlingConsumptionValue}}</span>
             </mat-cell>
           </ng-container>
 
@@ -914,7 +914,7 @@
   <!-- </div> -->
   <div *ngIf="vehicleSelected">
     <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns'  [startDateValue] ='startDateValue'
-   [endDateValue] = 'endDateValue' [graphData] = 'graphData' (backToMainPage)="backToMainPage()" 
+   [endDateValue] = 'endDateValue' (backToMainPage)="backToMainPage()" 
     ></app-vehicletrip>
   </div>
   

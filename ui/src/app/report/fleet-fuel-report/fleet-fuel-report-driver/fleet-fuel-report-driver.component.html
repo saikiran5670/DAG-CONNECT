@@ -847,7 +847,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ptoduration')">
   
-                <span>{{row.ptoDuration}}</span>
+                <span>{{row.ptoDuration.toFixed(2)}}</span>
   
               </mat-cell>
   
@@ -937,20 +937,20 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
   
-                <span>{{row.averageTrafficClassification}}</span>
+                <span>{{row.averageTrafficClassificationValue}}</span>
   
               </mat-cell>
   
             </ng-container>
 
-            <ng-container matColumnDef="averageTrafficClassificationValue">
+            <!-- <ng-container matColumnDef="averageTrafficClassificationValue">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification ||
                 'Average Traffic Classification Value' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
                 <span>{{row.averageTrafficClassificationValue}}</span>
               </mat-cell>
-            </ng-container>
+            </ng-container> -->
   
             <ng-container matColumnDef="ccFuelConsumption">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
@@ -960,7 +960,7 @@
                 || ' mpg') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
-                  <span>{{row.ccFuelConsumption}}</span>
+                  <span>{{(row.ccFuelConsumption.toFixed(2))}}</span>
                 </mat-cell>
               </ng-container>
   
@@ -985,7 +985,7 @@
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">
   
-                <span>{{row.idlingConsumption}}</span>
+                <span>{{row.idlingConsumptionValue}}</span>
   
               </mat-cell>
   
@@ -1137,8 +1137,7 @@
       [displayedColumns]='detaildisplayedColumns' 
       (backToMainPage)="backToMainPage()" 
       [startDateValue] ='startDateValue'
-      [endDateValue] = 'endDateValue'
-      [graphData] = 'graphData'
+      [endDateValue] = 'endDateValue'    
       ></app-detail-driver-report>
     </div>
 

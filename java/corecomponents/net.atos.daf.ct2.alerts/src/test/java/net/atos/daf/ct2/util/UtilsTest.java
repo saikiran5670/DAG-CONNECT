@@ -206,4 +206,13 @@ public class UtilsTest {
     public void messageUUIDcheck(){
         System.out.println(INCOMING_MESSAGE_UUID.format(UUID.randomUUID().toString()));
     }
+
+
+    @Test
+    public void timeInUTC(){
+        ZonedDateTime utc = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneOffset.UTC);
+        long toEpochMilli = utc.toInstant().toEpochMilli();
+        System.out.println(utc);
+        System.out.println(Utils.convertMillisecondToDateTime(toEpochMilli));
+    }
 }

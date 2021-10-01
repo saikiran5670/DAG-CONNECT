@@ -50,7 +50,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   searchMarker: any = {};
   @ViewChild("map")
   public mapElement: ElementRef;
-  tripReportId: any = 1;
+  tripReportId: number;
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -189,10 +189,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     //Add for Search Fucntionality with Zoom
     this.query = "starbucks";
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key 
     });
     this.configureAutoSuggest();
-    this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     this._state = navigation.extras.state as {
       fromFleetUtilReport: boolean,
@@ -205,11 +204,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  defaultTranslation() {
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }
-  }
+ 
 
   ngOnDestroy() {
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
@@ -303,19 +298,19 @@ export class TripReportComponent implements OnInit, OnDestroy {
   makeHerePOIList() {
     this.herePOIList = [{
       key: 'Hotel',
-      translatedName: this.translationData.lblHotel || 'Hotel'
+      translatedName: this.translationData.lblHotel 
     },
     {
       key: 'Parking',
-      translatedName: this.translationData.lblParking || 'Parking'
+      translatedName: this.translationData.lblParking 
     },
     {
       key: 'Petrol Station',
-      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+      translatedName: this.translationData.lblPetrolStation 
     },
     {
       key: 'Railway Station',
-      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+      translatedName: this.translationData.lblRailwayStation 
     }];
   }
 
@@ -342,17 +337,23 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getTripReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Trip Report');
+      if(repoId.length > 0){
+        this.tripReportId = repoId[0].id; 
+        this.getTripReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
+     
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Trip Report', id: 1}]; // hard coded
-      this.getTripReportPreferences(reportListData);
+      reportListData = [{name: 'Trip Report', id: this.tripReportId}]; 
+      // this.getTripReportPreferences();
     });
   }
 
-  getTripReportPreferences(prefData: any) {
-    let repoId: any = prefData.filter(i => i.name == 'Trip Report');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 1).subscribe((data: any) => {
+  getTripReportPreferences() {
+    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -770,25 +771,25 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   getPDFExcelHeader(){
     let col: any = [];
-    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg || 'mpg') : (this.translationData.lblmpg || 'mpg');
-    let unitValLtrGallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal || 'gal') : (this.translationData.lblgal || 'gal');
-    let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
+    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg) : (this.translationData.lblmpg );
+    let unitValLtrGallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal ) : (this.translationData.lblgal );
+    let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton ) : (this.translationData.lblton );
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph ) : (this.translationData.lblmph );
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi ) : (this.translationData.lblmi );
     //col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumption || 'Fuel Consumption'} (${unitVal100km})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`, `${this.translationData.lblEvents || 'Events'}`];
-    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValLtrGallon})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`];
+    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate }`, `${this.translationData.lblEndDate }`, `${this.translationData.lblDistance } (${unitValkm})`, `${this.translationData.lblIdleDuration } (${this.translationData.lblhhmm })`, `${this.translationData.lblAverageSpeed } (${unitValkmh})`, `${this.translationData.lblAverageWeight } (${unitValTon})`, `${this.translationData.lblOdometer } (${unitValkm})`, `${this.translationData.lblStartPosition }`, `${this.translationData.lblEndPosition }`, `${this.translationData.lblFuelConsumed } (${unitValLtrGallon})`, `${this.translationData.lblDrivingTime } (${this.translationData.lblhhmm })`, `${this.translationData.lblAlerts }`];
     return col;
   }
 
   exportAsExcelFile() {
-    const title = this.translationData.lblTripReport || 'Trip Report';
-    const summary = this.translationData.lblSummarySection || 'Summary Section'; 
-    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    const title = this.translationData.lblTripReport ;
+    const summary = this.translationData.lblSummarySection ; 
+    const detail = this.translationData.lblDetailSection ;
     
     const header = this.getPDFExcelHeader(); 
-    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`];
+    const summaryHeader = [`${this.translationData.lblReportName }`, `${this.translationData.lblReportCreated }`, `${this.translationData.lblReportStartTime}`, `${this.translationData.lblReportEndTime}`, `${this.translationData.lblVehicleGroup }`, `${this.translationData.lblVehicleName}`, `${this.translationData.lblVIN }`, `${this.translationData.lblRegPlateNumber }`];
     let summaryObj = [
-      [this.translationData.lblTripReport || 'Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [this.translationData.lblTripReport , this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
       ]
     ];
@@ -1131,7 +1132,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
-    if (this.wholeTripData.vinTripList.length > 0) {
+    if (this.wholeTripData &&  this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       // this.wholeTripData.vinTripList =[
       //     {
       //       "vin": "XLR0998HGFFT74597",
@@ -1208,7 +1209,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         });
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);

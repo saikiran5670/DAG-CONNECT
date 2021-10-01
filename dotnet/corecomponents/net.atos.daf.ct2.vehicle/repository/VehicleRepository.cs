@@ -603,40 +603,45 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@is_ota", vehicle.Is_Ota);
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
-                //if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
-                //{
-                //    //Update existing vehicle groups if change ownership happens
-                //    //Delete single groups and access relationships created in old owner org
-                //    parameter = new DynamicParameters();
-                //    parameter.Add("@Id", vehicle.ID);
-                //    parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
+                if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
+                {
+                    //Update existing vehicle groups if change ownership happens
+                    //Delete single groups and access relationships created in old owner org
+                    parameter = new DynamicParameters();
+                    parameter.Add("@Id", vehicle.ID);
+                    parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
 
-                //    //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
-                //    var vehicleGroupIds = await _dataAccess
-                //                        .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
-                //                                   (select id from master.group where ref_id = @Id 
-                //                                    and organization_id = @Old_OrganizationId
-                //                                    and group_type = 'S' and object_type = 'V')", parameter);
+                    //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
+                    var vehicleGroupIds = await _dataAccess
+                                        .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
+                                                   (select id from master.group where ref_id = @Id 
+                                                    and organization_id = @Old_OrganizationId
+                                                    and group_type = 'S' and object_type = 'V')", parameter);
 
-                //    if (vehicleGroupIds.Count() > 0)
-                //    {
-                //        var param = new DynamicParameters();
-                //        param.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
-                //        //Delete access relationships with single vehicle group
-                //        await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", param);
-                //    }
+                    if (vehicleGroupIds.Count() > 0)
+                    {
+                        var param = new DynamicParameters();
+                        param.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
+                        //Delete access relationships with single vehicle group
+                        await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", param);
+                    }
 
-                //    //Delete groups with single type
-                //    await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
-                //                                 and group_type = 'S' and object_type = 'V'", parameter);
+                    //Delete Foreign key references from scheduledreportvehicleref records which uses single type group(s)
+                    await _dataAccess.ExecuteAsync(@"delete from master.scheduledreportvehicleref where vehicle_group_id in 
+                                                    (select id from master.group where ref_id = @Id 
+                                                    and organization_id = @Old_OrganizationId
+                                                    and group_type = 'S' and object_type = 'V')", parameter);
 
-                //    //Delete vehicle entries from GroupRef for old owner org
-                //    await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
-                //                                where gref.ref_id = @Id and gref.group_id in 
-                //                                    (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
-                //                                    and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+                    //Delete groups with single type
+                    await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
+                                                 and group_type = 'S' and object_type = 'V'", parameter);
 
-                //}
+                    //Delete vehicle entries from GroupRef for old owner org
+                    await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
+                                                where gref.ref_id = @Id and gref.group_id in 
+                                                    (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
+                                                    and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+                }
 
                 transaction.Commit();
                 _log.Info("VehicleUpdateOrgVehicleDetails UpdateComplete " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle));
@@ -2227,7 +2232,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@Organization_id", orgId);
 
                 string query =
-                    @"SELECT DISTINCT grp.id, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
+                    @"SELECT DISTINCT grp.id, grp.name, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
                       FROM master.group grp
 	                  INNER JOIN master.groupref gref ON (gref.group_id=grp.id OR grp.group_type='D' OR grp.group_type='S') AND grp.object_type='V'
 	                  WHERE grp.organization_id=@Organization_id";
@@ -2494,6 +2499,30 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         }
 
+        #endregion
+
+        #region Get Vehicles property Model Year and Type
+        public async Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@vehicle_ids", vehicleIds);
+                string queryAlertLevelPull =
+                    @"select coalesce(model_year,'') as ModelYear,coalesce(series_vehicle_range,'') as Type,v.id as VehicleId
+                        from master.vehicle v
+	                        left join master.vehicleproperties vp
+	                        on v.vehicle_property_id = vp.id
+                        where v.id = ANY (@vehicle_ids)";
+
+                return await _dataAccess.QueryAsync<VehiclePropertyForOTA>(queryAlertLevelPull, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
         #endregion
     }
 }

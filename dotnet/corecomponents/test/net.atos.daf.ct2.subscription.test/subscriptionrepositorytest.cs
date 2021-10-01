@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.subscription.test
             objSubscription.VINs.Add("Vehicle_143_2");
             objSubscription.VINs.Add("Vehicle_143_3");
             objSubscription.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            var results = await _subscriptionManager.Subscribe(objSubscription);
+            var results = await _subscriptionManager.Subscribe(objSubscription, new List<string>() { });
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }

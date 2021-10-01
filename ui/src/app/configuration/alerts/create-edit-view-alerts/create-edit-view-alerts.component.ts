@@ -23,6 +23,7 @@ import { TranslationService } from '../../../services/translation.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { SimpleChanges } from '@angular/core';
 import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -145,6 +146,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  map_key: any = '';
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -186,10 +188,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private el: ElementRef,
               private reportMapService: ReportMapService,
               private translationService: TranslationService,
-              private organizationService: OrganizationService) 
+              private organizationService: OrganizationService,
+              private _configService: ConfigService ) 
   {
+    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });  
    }
 

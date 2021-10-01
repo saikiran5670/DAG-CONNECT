@@ -313,7 +313,7 @@
                                 </div>
                             </div>
 
-                            <div *ngIf="field.translatedName== 'Distance Based Utilization Rate'" fxLayout="column"
+                          <div *ngIf="field.translatedName== 'Distance Based Utilization Rate'" fxLayout="column" 
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'" placeholder="{{ 'Set Target' }}">
@@ -332,20 +332,17 @@
                             </div>
 
                             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
-                                class="areaWidth min-width-25-per">
-                                <mat-form-field appearance="outline" style='width: 80%'>
-                                    <mat-select
-                                        *ngIf="field.translatedName== 'Distance Based Utilization Rate' || field.translatedName== 'Time Based Utilization Rate'"
-                                        [disabled]='!editDashboardFlag || donutPieDD.length == 0' placeholder="{{'Chart Type' }}"
+                                class="areaWidth min-width-25-per">                                
+                                <mat-form-field appearance="outline" style='width: 80%'  *ngIf="field.translatedName== 'Distance Based Utilization Rate' || field.translatedName== 'Time Based Utilization Rate'" >
+                                    <mat-select [disabled]='!editDashboardFlag || donutPieDD.length == 0' placeholder="{{'Chart Type' }}"
                                         [formControlName]="field.key+'chartType'">
                                         <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
                                             {{ rer.name }}
                                         </mat-option>
                                     </mat-select>
-
-                                    <mat-select
-                                        *ngIf="field.translatedName== 'Distance Per Day' || field.translatedName== 'Active Vehicles Per Day'"
-                                        [disabled]='!editDashboardFlag || lineBarDD.length == 0' placeholder="{{'Chart Type' }}"
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" style='width: 80%' *ngIf="field.translatedName== 'Distance Per Day' || field.translatedName== 'Active Vehicles Per Day'">
+                                    <mat-select [disabled]='!editDashboardFlag || lineBarDD.length == 0' placeholder="{{'Chart Type' }}"
                                         [formControlName]="field.key+'chartType'">
                                         <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
                                             {{ rer.name }}

@@ -195,8 +195,9 @@ status = new FormControl();
       "languagecode":"cs-CZ"
     }   
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
-     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-    
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
     let val:any;
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
@@ -266,7 +267,8 @@ getFilterData(){
     
         this.filterData["alertCategory"].forEach(item=>{
         let catName =  this.translationAlertData[item.name];
-        this.categoryList.push({'name':catName, 'value': item.value})});     
+        if(catName != undefined){
+        this.categoryList.push({'name':catName, 'value': item.value})}});     
        
         this.filterData["alertLevel"].forEach(item=>{
         let levelName =  this.translationAlertData[item.name];
@@ -325,7 +327,8 @@ getFilterData(){
 
       this.filterData["alertCategory"].forEach(item=>{
       let catName =  this.translationAlertData[item.name];
-      this.categoryList.push({'name':catName, 'value': item.value})});     
+      if(catName != undefined){
+      this.categoryList.push({'name':catName, 'value': item.value})}});     
      
       this.filterData["alertLevel"].forEach(item=>{
       let levelName =  this.translationAlertData[item.name];
@@ -447,6 +450,7 @@ removeDuplicates(originalArray, prop) {
   
   loadVehicleData(){  
     this.noRecordFlag = true;
+    this.showLoadingIndicator=true;
     this.initData =this.detailsData;
     let newAlertCat=[];
     let status=this.filterVehicleForm.controls.status.value;
@@ -472,7 +476,7 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel": this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
@@ -484,7 +488,7 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel":this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
@@ -494,36 +498,35 @@ removeDuplicates(originalArray, prop) {
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
-     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-  
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
-         if(item.vehicleHealthStatusType==e.value)
-         {         
-          item.vehicleHealthStatusType = this.translationData[e.name];
-         }
+          if (item.vehicleHealthStatusType == e.value) {
+            item.vehicleHealthStatusType = this.translationData[e.name];
+          }
         });
         this.filterData["otherFilter"].forEach(element => {
-          if(item.vehicleDrivingStatusType==element.value)
-          {         
-           item.vehicleDrivingStatusType = this.translationData[element.name];
+          if (item.vehicleDrivingStatusType == element.value) {
+            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
-         });         
-         if(this.categoryList.length>0){
-         item.fleetOverviewAlert.forEach(e => {
-         let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
-         if(alertCategory.length>0){
-         newAlertCat.push(alertCategory[0]);
-         }          
-        });  
-       }
-      });    
-     this.categoryList = this.removeDuplicates(newAlertCat, "value");
-     //console.log(newAlertCat);    
+        });
+        if (this.categoryList.length > 0) {
+          item.fleetOverviewAlert.forEach(e => {
+            let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
+            if (alertCategory.length > 0) {
+              newAlertCat.push(...alertCategory);
+            }
+          });
+        }
+      });
+      this.categoryList = this.removeDuplicates(newAlertCat, "value");
+
       this.vehicleListData = data;   
       this.detailsData = data;  
       let _dataObj ={
@@ -532,6 +535,7 @@ removeDuplicates(originalArray, prop) {
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
       this.noRecordFlag = false;
+      this.showLoadingIndicator = false;
           
     }, (error) => {
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
@@ -539,6 +543,7 @@ removeDuplicates(originalArray, prop) {
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         //this.noRecordFlag = true;
+        this.showLoadingIndicator=false;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -673,42 +678,22 @@ setIconsOnMap(element) {
     let alertsData =[];    
     if(element.fleetOverviewAlert.length > 0){
       // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+      if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
       _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
       if(_alertFound){
         alertsData.push(_alertFound);
       }
+    }
+    else{
+        //only for never moved type of driving status
+          if(_drivingStatus == "Never Moved"){
+            let latestAlert :any =[];
+            latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
+            _alertFound = latestAlert[0];
+            alertsData.push(_alertFound);
+          }
+        }
     } 
-    // if(element.fleetOverviewAlert.length > 0){      
-      // let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
-      // let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
-      // let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
-     
-    //   if(critical.length > 0){
-    //   _alertFound = critical[0];
-    //  } 
-    //  else if(warning.length > 0){
-    //   _alertFound = warning[0];
-    //  } else{
-    //   _alertFound = advisory[0];
-    //  }
-
-    //  let alertName ='';
-    //  if(_alertFound){
-    //  if(_alertFound.level == 'C')
-    //  {
-    //   alertName = 'Critical';
-    //  }
-    //  else if(_alertFound.level == 'W')
-    //  {
-    //   alertName = 'Warning';
-    //  }
-    //  else{
-    //   alertName = 'Advisory';
-    //  }
-    // }
-    //  element =  Object.defineProperty(element, "alertName", {value : alertName,
-    //   writable : true,enumerable : true, configurable : true}); 
-    // }
 
     if(_alertFound){
       if(alertsData.length > 1){ //check for criticality

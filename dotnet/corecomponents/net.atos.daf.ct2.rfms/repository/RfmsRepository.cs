@@ -357,8 +357,8 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @" from livefleet.livefleet_position_statistics T1
-                                        inner  join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id
+                                        left  join tripdetail.trip_statistics t2
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin
                                         INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
 										from livefleet.livefleet_position_statistics Group By Vin) T3
 										on T1.created_datetime = T3.lastDate
@@ -397,9 +397,9 @@ namespace net.atos.daf.ct2.rfms.repository
 
                                         t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
-                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 inner
+                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 left
                                         join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id";
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin";
                     queryStatement += contentFilterQuery + selectQuery;
                 }
 
@@ -513,22 +513,40 @@ namespace net.atos.daf.ct2.rfms.repository
         private string GetContentFilterQuery(string contentFilter)
         {
             var query = string.Empty;
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()))
             {
-                query += @" ,t2.duration_wheelbase_speed_over_zero as durationwheelspeedoverzero,
-                            t2.distance_cruise_control_active as distancecruisecontrolactive,
+                query += @" ,t2.veh_message_driving_time as durationwheelspeedoverzero,
+                            t2.v_cruise_control_dist_for_cc_fuel_consumption as distancecruisecontrolactive,
                             t2.duration_cruise_control_active as durationcruisecontrolactive,
-                            t2.fuel_consumption_during_cruise_active as fuelconsumptionduringcruiseactive,
-                            t2.duration_wheelbase_speed_zero as durationwheelbasespeedzero,
+                            t2.v_cruise_control_fuel_consumed_for_cc_fuel_consumption as fuelconsumptionduringcruiseactive,
+                            t2.veh_message_idle_without_ptoduration as durationwheelbasespeedzero,
                             t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
                             t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
                             t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
-                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero
+                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero,
+--classes
+                            t2.pto_active_class_pto_duration as ptoactiveclassptoduration,
+                            t2.pto_active_class_pto_fuel_consumed as ptoactiveclassptofuelconsumed,
+                            t2.acceleration_pedal_pos_class_distr as accelerationpedalposclassdistr,
+                            t2.acceleration_pedal_pos_class_min_range as accelerationpedalposclassminrange,
+                            t2.acceleration_pedal_pos_class_max_range as accelerationpedalposclassmaxrange,
+                            t2.acceleration_pedal_pos_class_distr_step as accelerationpedalposclassdistrstep, 
+                            t2.acceleration_pedal_pos_class_distr_array_time as accelerationpedalposclassdistrarraytime,
+                            t2.retarder_torque_class_distr as retardertorqueclassdistr, 
+                            t2.retarder_torque_class_min_range as retardertorqueclassminrange,
+                            t2.retarder_torque_class_max_range as retardertorqueclassmaxrange,
+                            t2.retarder_torque_class_distr_step as retardertorqueclassdistrstep,
+                            t2.retarder_torque_class_distr_array_time as retardertorqueclassdistrarray_time,
+                            t2.engine_torque_engine_load_class_distr as enginetorqueengineloadclassdistr, 
+                            t2.engine_torque_engine_load_class_min_range as enginetorqueengineloadclassminrange, 
+                            t2.engine_torque_engine_load_class_max_range as enginetorqueengineloadclassmaxrange,
+                            t2.engine_torque_engine_load_class_distr_step as enginetorqueengineloadclassdistrstep, 
+                            t2.engine_torque_engine_load_class_distr_array_time  as enginetorqueengineloadclassdistrarraytime
                             ";
 
 
             }
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()[0].ToString()))
             {
                 query += @" ,t1.gps_altitude as altitude,
                             t1.gps_heading as heading,
@@ -550,7 +568,7 @@ namespace net.atos.daf.ct2.rfms.repository
                             t1.ambient_air_temperature as ambientairtemperature ";
 
             }
-            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()))
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()[0].ToString()))
             {
                 query += @" ,t1.oem_telltale as oemtelltale,
                             t1.telltale_state_id as state,

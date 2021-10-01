@@ -60,11 +60,16 @@ export class FleetFuelPreferencesComponent implements OnInit {
   ngOnInit(): void {
     let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
     this.unitId = accountPreference.unitId
-    this.loadFleetFuelPreferences();
+    let repoId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report');
+    if (repoId.length > 0) {
+      this.reportId = repoId[0].id;
+      this.loadFleetFuelPreferences();
+    } else {
+      console.error("No report id found!")
+    }
   }
 
   loadFleetFuelPreferences() {
-    this.reportId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
     this.reportService.getReportUserPreference(this.reportId).subscribe((res:any) => {
       this.reportData = res.userPreferences;
       if (this.tabName == 'Vehicle') {

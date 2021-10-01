@@ -189,7 +189,8 @@ public class TripCalculations implements Serializable{
 								
 
 							} catch (Exception e) {
-								logger.error(" Issue while processing co2 emission: {}",value);
+								logger.error(" Issue in TripCalculations while processing : {}",value);
+								logger.error(" Issue in TripCalculations exception : {}",e);
 							}
 							logger.info("In Fuel Coeff calculation,  tripStsAggr :{}",tripStsAggr);
 							out.collect(tripStsAggr);

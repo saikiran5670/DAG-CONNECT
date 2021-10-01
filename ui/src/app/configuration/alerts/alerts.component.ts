@@ -427,8 +427,8 @@ export class AlertsComponent implements OnInit {
 
   onDeleteAlert(item: any) {
     const options = {
-      title: this.translationData.lblDeleteAlert || "Delete Alert",
-      message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
+      title: this.translationData.lblDeleteAlert || "Delete Alert" ,
+      message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?" ,
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -475,7 +475,7 @@ export class AlertsComponent implements OnInit {
     if(action == 'duplicate'){
       this.actionType = 'duplicate';
     }
-    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert" : this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert"  : this.translationData.lblEditAlertDetails || "Edit Alert Details";
     this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
     //this.rowsData.push(row);
     //this.editFlag = true;
@@ -544,7 +544,7 @@ export class AlertsComponent implements OnInit {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    let objData = {
+   let objData = {
       groupId: data.vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',

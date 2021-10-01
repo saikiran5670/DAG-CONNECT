@@ -187,4 +187,13 @@ public class Utils implements Serializable {
 			}
     	 return idleDuration;
     }
+
+    /**
+     * Get current time in UTC
+     */
+    public static long getCurrentTimeInUTC(){
+        return Instant.ofEpochMilli(System.currentTimeMillis())
+                .atZone(ZoneOffset.UTC)
+                .toInstant().toEpochMilli();
+    }
 }
