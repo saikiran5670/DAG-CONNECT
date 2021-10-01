@@ -619,13 +619,13 @@ namespace net.atos.daf.ct2.visibility.repository
                 parameter.Add("@featureid", featureId.ToArray());
                 parameter.Add("@organizationid", organizationId);
 
-                var queryStatement = @"select p.type as SubscriptionType, s.vehicle_id as VehicleId,f.key as FeatureKey
+                var queryStatement = @"select distinct p.type as SubscriptionType, s.vehicle_id as VehicleId,f.key as FeatureKey
                                     from master.subscription s
                                     inner join master.package p on p.id=s.package_id 
                                     inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                     inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                     inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
-                                    where s.organization_id=@organizationid and f.id= ANY(@featureid) and p.type = 'V'  AND s.state = 'A'";
+                                    where s.organization_id=@organizationid and f.id= ANY(@featureid) AND s.state = 'A'";
                 var result = await _dataAccess.QueryAsync<VehicleDetailsVisibiltyAndFeatureTemp>(queryStatement, parameter);
 
                 return result;
