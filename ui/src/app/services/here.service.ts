@@ -8,6 +8,7 @@ import {
     HttpHeaders,
     HttpParams
 } from '@angular/common/http';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -20,9 +21,13 @@ export class HereService {
     public platform: any;
     public geocoder: any;
     public router: any;
-    public constructor(private httpClient: HttpClient) {
+    map_key: any = '';
+    
+    public constructor(private httpClient: HttpClient, 
+    private _configService: ConfigService) {
+        this.map_key = _configService.getSettings("hereMap").api_key;
         this.platform = new H.service.Platform({
-            "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+            "apikey": this.map_key
         });
         this.geocoder = this.platform.getGeocodingService();
         this.router = this.platform.getRoutingService(null, 8);
@@ -116,7 +121,7 @@ export class HereService {
     
     getHerePois(){
             
-        let params = `apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`
+        let params = `apiKey=${this.map_key}&pois`
 
         let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?';
         return this.httpClient.get<any>(routeURL + (params));

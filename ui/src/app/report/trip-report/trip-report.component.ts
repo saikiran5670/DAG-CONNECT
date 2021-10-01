@@ -50,7 +50,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   searchMarker: any = {};
   @ViewChild("map")
   public mapElement: ElementRef;
-  tripReportId: any = 1;
+  tripReportId: number;
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -189,7 +189,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     //Add for Search Fucntionality with Zoom
     this.query = "starbucks";
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key 
     });
     this.configureAutoSuggest();
     const navigation = this.router.getCurrentNavigation();
@@ -337,17 +337,23 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getTripReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Trip Report');
+      if(repoId.length > 0){
+        this.tripReportId = repoId[0].id; 
+        this.getTripReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
+     
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Trip Report', id: 1}]; // hard coded
-      this.getTripReportPreferences(reportListData);
+      reportListData = [{name: 'Trip Report', id: this.tripReportId}]; 
+      // this.getTripReportPreferences();
     });
   }
 
-  getTripReportPreferences(prefData: any) {
-    let repoId: any = prefData.filter(i => i.name == 'Trip Report');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 1).subscribe((data: any) => {
+  getTripReportPreferences() {
+    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);

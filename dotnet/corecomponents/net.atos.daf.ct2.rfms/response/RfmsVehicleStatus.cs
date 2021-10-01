@@ -31,9 +31,9 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class BrakePedalPositionClass
@@ -67,9 +67,9 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class DrivingWithoutTorqueClass
@@ -93,18 +93,18 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class VehicleSpeedClass
     {
         public int From { get; set; }
         public int To { get; set; }
-        public int Seconds { get; set; }
-        public int Meters { get; set; }
-        public int MilliLitres { get; set; }
+        public int? Seconds { get; set; }
+        public int? Meters { get; set; }
+        public int? MilliLitres { get; set; }
     }
 
     public class EngineSpeedClass
@@ -145,14 +145,14 @@ namespace net.atos.daf.ct2.rfms.response
     {
         public int? DurationWheelbaseSpeedOverZero { get; set; }
         public int? DistanceCruiseControlActive { get; set; }
-        public int? DurationCruiseControlActive { get; set; }
+        public long? DurationCruiseControlActive { get; set; }
         public int? FuelConsumptionDuringCruiseActive { get; set; }
-        public int? DurationWheelbaseSpeedZero { get; set; }
-        public int? FuelWheelbaseSpeedZero { get; set; }
-        public int? FuelWheelbaseSpeedOverZero { get; set; }
+        public long? DurationWheelbaseSpeedZero { get; set; }
+        public long? FuelWheelbaseSpeedZero { get; set; }
+        public long? FuelWheelbaseSpeedOverZero { get; set; }
         public List<PtoActiveClass> PtoActiveClass { get; set; }
-        public int? BrakePedalCounterSpeedOverZero { get; set; }
-        public int? DistanceBrakePedalActiveSpeedOverZero { get; set; }
+        public long? BrakePedalCounterSpeedOverZero { get; set; }
+        public long? DistanceBrakePedalActiveSpeedOverZero { get; set; }
         public List<AccelerationPedalPositionClass> AccelerationPedalPositionClass { get; set; }
         public List<BrakePedalPositionClass> BrakePedalPositionClass { get; set; }
         public List<AccelerationClass> AccelerationClass { get; set; }
@@ -256,7 +256,9 @@ namespace net.atos.daf.ct2.rfms.response
         public int MaxRange { get; set; }
 
         public int NoOfStep { get; set; }
-        public int[] ClassDistanceData { get; set; }
+        public List<int> ClassSecondsData { get; set; }
+        public List<int> ClassMetersData { get; set; }
+        public List<int> ClassMilliLitresData { get; set; }
 
 
     }

@@ -1,4 +1,5 @@
 import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ConfigService } from '@ngx-config/core';
 import { HereService } from 'src/app/services/here.service';
 import { ReportService } from 'src/app/services/report.service';
 
@@ -9,7 +10,7 @@ declare var H: any;
 })
 export class MapService {
 
-    map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+    map_key: any = "";
     ui: any;
     group = new H.map.Group();
     platform: any;
@@ -26,10 +27,11 @@ export class MapService {
     endAddressPositionLat: number = 0;
     endAddressPositionLong: number = 0;
 
-    constructor(private hereService: HereService, private ReportService: ReportService) {
-        this.platform = new H.service.Platform({
-          "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-        });
+    constructor(private hereService: HereService, private ReportService: ReportService,  private _configService: ConfigService) {
+      this.map_key = _configService.getSettings("hereMap").api_key;
+      this.platform = new H.service.Platform({
+          "apikey": this.map_key
+      });
       }
 
       getHhMmTime(totalSeconds: any){

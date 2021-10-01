@@ -85,7 +85,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.query = "starbucks";
     this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key 
     });
     this.configureAutoSuggest();
   }
@@ -360,7 +360,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           name: this.circularGeofenceFormGroup.controls.circularName.value.trim(),
           modifiedBy: this.accountId,
           organizationId: this.circularGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0,
-          distance: this.circularGeofenceFormGroup.controls.radius.value
+          distance: parseInt(this.circularGeofenceFormGroup.controls.radius.value)
         };
       });
       this.geofenceService.updateCircularGeofence(cirGeoUpdateObjData).subscribe((cirGeoUpdateData: any) => {
