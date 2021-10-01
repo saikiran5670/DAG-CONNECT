@@ -85,10 +85,14 @@ namespace net.atos.daf.ct2.visibility
                 var ownedVehicles = vehicles.Where(e => e.HasOwned == true).ToList();
                 if (ownedVehicles.Count() > 0)
                 {
-                    if (vehiclePackages.Any(e => e.PackageType == "V"))
+                    if (vehiclePackages.Any(e => e.PackageType == "O"))
+                    {
+                        //do nothing (if org type package no need to remove from owned vehicles)
+                    }
+                    else if (vehiclePackages.Any(e => e.PackageType == "V" && e.HasOwned == true)) // check if any v type and owned subscription available
                     {
                         var filteredOwnedVehicleIds = ownedVehicles
-                            .Where(e => vehiclePackages.FirstOrDefault(e => e.PackageType == "V").VehicleIds.Contains(e.Id)).Select(k => k.Id);
+                            .Where(e => vehiclePackages.FirstOrDefault(e => e.HasOwned == true).VehicleIds.Contains(e.Id)).Select(k => k.Id);
 
                         //Removing other vins from owned vehicles list and not allow them in the visibility
                         ownedVehicles.RemoveAll(e => !filteredOwnedVehicleIds.Contains(e.Id));
@@ -103,9 +107,9 @@ namespace net.atos.daf.ct2.visibility
                     //Fetch visible relationship vehicles of having reportFeatureId in it's allowed features list
                     //Intersect those vehicles with Org+VIN package subscribed vehicles where reportFeatureId is present in the subscription
                     //Filter vehicles out those are not in relationship vehicles and subscribed vehicles.
-                    if (vehiclePackages.Any(e => e.PackageType == "V"))
+                    if (vehiclePackages.Any(e => e.HasOwned == false))
                     {
-                        var subscriptionVehicleIds = vehiclePackages.Where(e => e.PackageType == "V").First().VehicleIds;
+                        var subscriptionVehicleIds = vehiclePackages.First(e => e.HasOwned == false).VehicleIds;
                         var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
 
                         //Fetch vehicles records to be removed from visible vehicles list
