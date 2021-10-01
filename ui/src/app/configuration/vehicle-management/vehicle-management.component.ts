@@ -12,7 +12,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
 
 export class VehicleManagementComponent implements OnInit {
   public selectedIndex: number = 0; 
-  translationData: any =[];
+  translationData: any = {};
   localStLanguage: any;
   accountOrganizationId: any = 0;
   accountOrganizationSetting: any ;

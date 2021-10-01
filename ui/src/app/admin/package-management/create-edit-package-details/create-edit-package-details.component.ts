@@ -14,7 +14,7 @@ import { PackageService } from 'src/app/services/package.service';
 })
 export class CreateEditPackageDetailsComponent implements OnInit {
   @Input() actionType: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Input() createStatus: boolean;
   @Input() viewFlag: boolean;

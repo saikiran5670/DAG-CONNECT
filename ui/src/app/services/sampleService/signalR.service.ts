@@ -18,7 +18,7 @@ import { Util } from 'src/app/shared/util';
 
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
-  translationData: any= [];
+  translationData: any = {};
   selectedStartTime: any = '00:00';
   localStLanguage: any;
   accountPrefObj: any;

@@ -33,7 +33,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   // @Input() ecoScoreForm: any;
   @Input() ecoScoreDriverDetails: any;
   @Input() ecoScoreDriverDetailsTrendLine: any;
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   @Input() prefUnitFormat: any;
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
@@ -499,7 +499,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   formatData(data, isBrushChart){
     let result = [];
     for (var i in data) {      
-      let val = (new Date(i)).getTime();
+      let val = Util.convertUtcToDateTZ((new Date(i)).getTime(), this.prefObj.prefTimeZone);
       this.calMinMaxValue(val);
       let temp = Number.parseFloat(data[i]);
       if(isBrushChart)
@@ -515,7 +515,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     for (var i in data) {
       let arr = data[i].substr(0, data[i].lastIndexOf(":"));
       let temp = Number.parseFloat((arr.split(":").join(".")));
-      let val = (new Date(i)).getTime();
+      let val = Util.convertUtcToDateTZ((new Date(i)).getTime(), this.prefObj.prefTimeZone);
       this.calMinMaxValue(val);
       if(isBrushChart)
         result.push([val, 0]);

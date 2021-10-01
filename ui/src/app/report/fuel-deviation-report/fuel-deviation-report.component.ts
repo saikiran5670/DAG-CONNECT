@@ -90,7 +90,7 @@ export class FuelDeviationReportComponent implements OnInit {
   last3MonthDate: any;
   todayDate: any;
   endDateValue: any;
-  translationData: any;
+  translationData: any = {};
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;

@@ -37,7 +37,7 @@ import { DatePipe } from '@angular/common';
 })
 
 export class FleetFuelReportDriverComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   displayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',

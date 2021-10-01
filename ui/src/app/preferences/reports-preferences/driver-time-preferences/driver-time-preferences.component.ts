@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 export class DriverTimePreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setDriverTimeFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;

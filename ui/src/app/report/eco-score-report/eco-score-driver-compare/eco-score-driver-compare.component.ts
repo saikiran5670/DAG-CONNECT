@@ -17,7 +17,7 @@ import {
 export class EcoScoreDriverCompareComponent implements OnInit {
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   @Input() compareEcoScore: any;
   @Input() prefUnitFormat: any;
   @Output() backToMainPage = new EventEmitter<any>();

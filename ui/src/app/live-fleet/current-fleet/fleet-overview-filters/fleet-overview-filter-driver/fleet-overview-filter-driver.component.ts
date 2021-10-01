@@ -10,7 +10,7 @@ import { Output } from '@angular/core';
   styleUrls: ['./fleet-overview-filter-driver.component.less']
 })
 export class FleetOverviewFilterDriverComponent implements OnInit { 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   groupList : any= []; 
   isVehicleListOpen: boolean = true;
   
