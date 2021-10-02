@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                          		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                          		  , SUM(etl_gps_distance)                                                  as veh_message_distance
-                                                         		  , AVG(average_speed)                                                     as average_speed
+                                                         		  , SUM(etl_gps_distance)/SUM(etl_gps_trip_time)                           as average_speed
                                                          		  , MAX(max_speed)                                                         as max_speed
                                                          		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                          		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , SUM(idle_duration) as idle_duration
                                                          		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end               as idle_duration_percentage
                                                       		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
-                                                      		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end       as harsh_brake_duration
+                                                      		      , SUM(harsh_brake_duration)                                              as harsh_brake_duration
                                                       		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
                                                       		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end     as cruise_control_distance_30_50
                                                       		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end   as cruise_control_distance_50_75
@@ -119,6 +119,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                     			  , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
                                                     			  , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
                                                     			  , SUM(veh_message_brake_duration) 									   as FootBrake
+                                                                  , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
+																  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
+																  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                          		From
                                                          			tripdetail.trip_statistics 
                                                                WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -138,14 +141,16 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round (fd.average_speed,7)                           					as AverageSpeed
                                                          		  , max_speed                                            					as MaxSpeed
                                                          		  , numberoftrips                                        					as NumberOfTrips
-                                                         		  , round (fd.average_gross_weight_comb,2)               					as AverageGrossWeightComb
+                                                         		  ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
+													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                          		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
                                                          		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
                                                          		  , round(fd.co2_emission,2)                             					as CO2Emission
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
-                                                         		  , round(fd.harsh_brake_duration,2)                     					as HarshBrakeDuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
+													  			      else round (fd.harsh_brake_duration,2) end  						    as HarshBrakeDuration
                                                          		  , round(fd.heavy_throttle_duration,2)                  					as HeavyThrottleDuration
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
@@ -154,7 +159,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , case when fd.CCFuelDistance>0 then round((fd.CCFuelConsumed/fd.CCFuelDistance),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
                                                          		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end  as FuelconsumptionCCnonactive
                                                          		  , idling_consumption                                   					as IdlingConsumption
-                                                         		  , dpa_score                                            					as DPAScore
+                                                         		  ,case when numoftripswithdpascore>0 then  (dpa_score/numoftripswithdpascore)
+																      else dpa_score  end  								                    as DPAScore
                                                                   , round(fd.CCFuelDistance,2) 							 					as CCFuelDistance
                                                                   , round(fd.CCFuelConsumed,2) 							 					as CCFuelConsumed
                                                                   , round(fd.etl_gps_distance - fd.CCFuelDistance,2) 	 					as CCFuelDistanceNotActive
@@ -242,7 +248,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                   		  , SUM(etl_gps_distance)                                                  as veh_message_distance
-                                                  		  , AVG(average_speed)                                                     as average_speed
+                                                  		  , SUM(etl_gps_distance)/SUM(etl_gps_trip_time)                           as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
@@ -251,7 +257,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , SUM(idle_duration) as idle_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end                  as pto_duration
-                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end           as harsh_brake_duration
+                                                  		  , SUM(harsh_brake_duration)                                              as harsh_brake_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end        as heavy_throttle_duration
                                                   		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end        as cruise_control_distance_30_50
                                                   		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end      as cruise_control_distance_50_75
@@ -268,6 +274,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
                                                           , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
                                                           , SUM(veh_message_brake_duration) 									   as FootBrake
+                                                          , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
+														  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
+														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                   		From
                                                   			tripdetail.trip_statistics
                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -289,14 +298,16 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round (fd.average_speed,7)                             					as AverageSpeed
                                                   		  , max_speed                                              					as MaxSpeed
                                                   		  , numberoftrips                                          					as NumberOfTrips
-                                                  		  , round (fd.average_gross_weight_comb,2)                 					as AverageGrossWeightComb
-                                                  		  , round(fd.fuel_consumed,2)                              					as FuelConsumed
-                                                  		  , round((fd.fuel_consumed/fd.etl_gps_distance),5)                           					as FuelConsumption
+                                                  		 ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
+													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
+                                                          , round(fd.fuel_consumed,2)                              					as FuelConsumed
+                                                  		  , round((fd.fuel_consumed/fd.etl_gps_distance),5)                         as FuelConsumption
                                                   		  , round(fd.co2_emission,2)                               					as CO2Emission
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
-                                                  		  , round(fd.harsh_brake_duration,2)                       					as HarshBrakeDuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
+													  			      else round (fd.harsh_brake_duration,2) end  				    as HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration,2)                    					as HeavyThrottleDuration
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
@@ -305,7 +316,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , case when fd.CCFuelDistance>0 then round((fd.CCFuelConsumed/fd.CCFuelDistance),5) else fd.CCFuelConsumed end	as CCFuelConsumption
                                                   		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end	as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     					as IdlingConsumption
-                                                  		  , dpa_score                                              					as DPAScore
+                                                  		 ,case when numoftripswithdpascore>0 then  (dpa_score/numoftripswithdpascore)
+																      else dpa_score  end  								                    as DPAScore
                                                          , round(fd.CCFuelDistance,2) 							   					as CCFuelDistance
                                                          , round(fd.CCFuelConsumed,2) 							   					as CCFuelConsumed
                                                          , round(fd.etl_gps_distance - fd.CCFuelDistance,2) 	   					as CCFuelDistanceNotActive
@@ -486,7 +498,7 @@ namespace net.atos.daf.ct2.reports.repository
                   , idle_duration as idle_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
+				  , harsh_brake_duration as harsh_brake_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
