@@ -369,7 +369,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                         .collect(Collectors.toList());
                 if(!targetList.isEmpty()){
                     logger.info("Exit zone alert generated for polygon geofence vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
-                    return build = targetList.get(0);
+                    return  targetList.get(0);
                 }
             }
             /**
@@ -384,7 +384,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                         .collect(Collectors.toList());
                 if(!targetList.isEmpty()){
                     logger.info("Exit zone alert generated for circular geofence vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
-                    return build = targetList.get(0);
+                    return  targetList.get(0);
                 }
             }
 

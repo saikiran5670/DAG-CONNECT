@@ -66,7 +66,7 @@ import java.util.stream.StreamSupport;
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.util.Utils.*;
-
+@Deprecated
 public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
@@ -103,7 +103,7 @@ public class TripBasedTest implements Serializable {
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class)
                 .filter(index -> index.getVid() != null && index.getVin() != null)
-                .filter(index ->index.getVin().equalsIgnoreCase("XLR0998HGFFT80000"))
+                .filter(index ->index.getVin().equalsIgnoreCase("TEST_CDC_VIN"))
                 .returns(Index.class)
                 .map(idx -> {
                     idx.setJobName(UUID.randomUUID().toString());
