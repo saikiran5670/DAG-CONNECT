@@ -1211,7 +1211,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 objVeh.ModelId = vehicleproperty.Classification_Model_Id;
                 objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;
                 objVeh.VehiclePropertiesId = VehiclePropertiesId;
-                objVeh.Fuel = vehicleproperty.Fuel == string.Empty ? "D" : vehicleproperty.Fuel;
+                objVeh.Fuel = string.IsNullOrEmpty(vehicleproperty.Fuel) ? "D" : vehicleproperty.Fuel;
                 objVeh.IPPS = true;
                 //dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
                 //if (oiedetail != null)

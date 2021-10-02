@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle-data")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class VehicleDataserviceController : ControllerBase
     {
         private readonly ILogger<VehicleDataserviceController> _logger;
