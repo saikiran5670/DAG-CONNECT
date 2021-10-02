@@ -110,8 +110,9 @@ namespace net.atos.daf.ct2.reports.repository
                         await GetLiveFleetPosition(item);
                     }
                     */
-
-                    List<TripAlert> lstTripAlert = await GetTripAlert(tripFilters);
+                    List<string> vins = new List<string>();
+                    vins.Add(tripFilters.VIN);
+                    List<TripAlert> lstTripAlert = await GetTripAlert(tripFilters.StartDateTime, tripFilters.EndDateTime, vins);
                     if (lstTripAlert.Count() > 0)
                     {
                         foreach (TripDetails trip in data)
@@ -235,7 +236,7 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
-        private async Task<List<TripAlert>> GetTripAlert(TripFilterRequest tripFilters)
+        private async Task<List<TripAlert>> GetTripAlert(double startDate, double endDate, List<string> vin)
         {
             try
             {
@@ -252,7 +253,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                 urgency_level_type as UrgencyLevelType
 	                                FROM tripdetail.tripalert TA
 	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
-	                                 where  TS.vin = @vin
+	                                 where  TS.vin =ANY (@vin)
 	                                 AND (
 		                                    TS.end_time_stamp >= @StartDateTime and
 		                                    TS.end_time_stamp <= @EndDateTime
@@ -260,9 +261,9 @@ namespace net.atos.daf.ct2.reports.repository
                                          order by TS.end_time_stamp desc";
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
-                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
-                parameter.Add("@vin", tripFilters.VIN);
+                parameter.Add("@StartDateTime", startDate);
+                parameter.Add("@EndDateTime", endDate);
+                parameter.Add("@vin", vin);
                 List<TripAlert> lstTripAlert = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryAlert, parameter);
 
                 if (lstTripAlert.Count() > 0)
