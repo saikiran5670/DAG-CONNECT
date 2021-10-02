@@ -41,7 +41,7 @@ import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringTripProcessor;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
-
+@Deprecated
 public class IndexBasedAlertProcessing implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
     private static final long serialVersionUID = 1L;
