@@ -928,8 +928,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
                 orgvehicleIdRequest.OrganizationId = organizationId;
                 orgvehicleIdRequest.AccountId = _userDetails.AccountId;
+
+                var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
+
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
 
                 VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest, headers);
                 List<VehicleManagementResponse> vehicles = _mapper.ToVehicles(vehiclesResponse);
