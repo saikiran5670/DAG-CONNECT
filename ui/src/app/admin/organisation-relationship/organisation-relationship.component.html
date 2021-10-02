@@ -146,7 +146,7 @@
                         <mat-cell *matCellDef="let row">{{setDate(row.endDate)}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="allowChain">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus  }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ 	translationData.lblStatus || 'Allow Chaining' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <button class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblActive ) : translationData.lblInActive }}">
                           <mat-slide-toggle color="primary"  

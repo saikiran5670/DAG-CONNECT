@@ -205,7 +205,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting  }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting  }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
               <!-- <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
                 <mat-icon *ngIf='!editGeneralSettingsFlag' style="cursor: pointer;" (click)="editGeneralSettings()">create</mat-icon>
               </button> -->
@@ -402,7 +402,7 @@
                       <mat-cell *matCellDef="let row"> {{ row.roleName }} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="featureIds">
-                      <mat-header-cell *matHeaderCellDef>{{ translationData.Services  }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef>{{ translationData.Services || 'Services' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">  
                         <span *ngIf='row.featureIds.length > 0'>
                           <span *ngFor='let item of [].constructor(row.featureIds.length > 4 ? 4 : row.featureIds.length); let i = index'>

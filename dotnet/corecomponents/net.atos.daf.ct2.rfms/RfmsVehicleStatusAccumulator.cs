@@ -9,85 +9,95 @@ namespace net.atos.daf.ct2.rfms
     {
         public List<AccelerationPedalPositionClass> AccumulateAccelerationPedalPositionClass(dynamic record)
         {
-
-            var accumulatedClassRequest = new AccumulatedClassRequest();
-
-            // accumulatedClassRequest.ClassMetersData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; //data not available // record.accelerationpedalposclassdistr 
-            accumulatedClassRequest.MaxRange = record.accelerationpedalposclassmaxrange;
-            accumulatedClassRequest.MinRange = record.accelerationpedalposclassminrange;
-            accumulatedClassRequest.NoOfStep = record.accelerationpedalposclassdistrstep;
-            accumulatedClassRequest.ClassSecondsData = new List<int>(record.accelerationpedalposclassdistrarraytime);//new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; //
-            // accumulatedClassRequest.ClassMilliLitresData=record. //data not available
-
-
-
             var accClass = new List<AccelerationPedalPositionClass>();
-            var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
-            foreach (var item in intervals.Select((value, i) => new { i, value }))
+            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null && record.accelerationpedalposclassdistr != null)
+
             {
-                accClass.Add(new AccelerationPedalPositionClass()
+                var accumulatedClassRequest = new AccumulatedClassRequest();
+                // accumulatedClassRequest.ClassMetersData = new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; //data not available // record.accelerationpedalposclassdistr 
+                accumulatedClassRequest.MaxRange = record.accelerationpedalposclassmaxrange;
+                accumulatedClassRequest.MinRange = record.accelerationpedalposclassminrange;
+                accumulatedClassRequest.NoOfStep = record.accelerationpedalposclassdistrstep;
+                accumulatedClassRequest.ClassSecondsData = new List<int>(record.accelerationpedalposclassdistrarraytime);//new List<int>() { 40, 10, 20, 2000, 30, 40, 10, 20, 2000, 30 }; //
+                                                                                                                         // accumulatedClassRequest.ClassMilliLitresData=record. //data not available
+
+
+
+                //var accClass = new List<AccelerationPedalPositionClass>();
+                var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
+                foreach (var item in intervals.Select((value, i) => new { i, value }))
                 {
-                    From = Convert.ToInt32(item.value.Split("qaz")[0]),
-                    To = Convert.ToInt32(item.value.Split("qaz")[1]),
-                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
-                    Meters = null,
-                    MilliLitres = null
-                });
+                    accClass.Add(new AccelerationPedalPositionClass()
+                    {
+                        From = Convert.ToInt32(item.value.Split("qaz")[0]),
+                        To = Convert.ToInt32(item.value.Split("qaz")[1]),
+                        Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
+                        Meters = null,
+                        MilliLitres = null
+                    });
+                }
             }
             return accClass;
         }
         //RetarderTorqueClass(
         public List<RetarderTorqueClass> AccumulateRetarderTorqueClass(dynamic record)
         {
-
-            var accumulatedClassRequest = new AccumulatedClassRequest();
-
-            accumulatedClassRequest.ClassSecondsData = new List<int>(record.retardertorqueclassdistrarray_time);//retardertorqueclassdistr 
-            accumulatedClassRequest.MaxRange = record.retardertorqueclassmaxrange;
-            accumulatedClassRequest.MinRange = record.retardertorqueclassminrange;
-            accumulatedClassRequest.NoOfStep = record.retardertorqueclassdistrstep;
-
-
-
             var accClass = new List<RetarderTorqueClass>();
-            var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
-            foreach (var item in intervals.Select((value, i) => new { i, value }))
+            if (record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null && record.retardertorqueclassdistr != null)
+
             {
-                accClass.Add(new RetarderTorqueClass()
+                var accumulatedClassRequest = new AccumulatedClassRequest();
+
+                accumulatedClassRequest.ClassSecondsData = new List<int>(record.retardertorqueclassdistrarray_time);//retardertorqueclassdistr 
+                accumulatedClassRequest.MaxRange = record.retardertorqueclassmaxrange;
+                accumulatedClassRequest.MinRange = record.retardertorqueclassminrange;
+                accumulatedClassRequest.NoOfStep = record.retardertorqueclassdistrstep;
+
+
+
+                //var accClass = new List<RetarderTorqueClass>();
+                var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
+                foreach (var item in intervals.Select((value, i) => new { i, value }))
                 {
-                    From = Convert.ToInt32(item.value.Split("qaz")[0]),
-                    To = Convert.ToInt32(item.value.Split("qaz")[1]),
-                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
-                    Meters = null,
-                    MilliLitres = null
-                });
+                    accClass.Add(new RetarderTorqueClass()
+                    {
+                        From = Convert.ToInt32(item.value.Split("qaz")[0]),
+                        To = Convert.ToInt32(item.value.Split("qaz")[1]),
+                        Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
+                        Meters = null,
+                        MilliLitres = null
+                    });
+                }
             }
             return accClass;
         }
         public List<EngineTorqueAtCurrentSpeedClass> AccumulateEngineTorqueAtCurrentSpeedClass(dynamic record)
         {
-
-            var accumulatedClassRequest = new AccumulatedClassRequest();
-
-            accumulatedClassRequest.ClassSecondsData = new List<int>(record.enginetorqueengineloadclassdistrarraytime); //enginetorqueengineloadclassdistr 
-            accumulatedClassRequest.MaxRange = record.enginetorqueengineloadclassmaxrange;
-            accumulatedClassRequest.MinRange = record.enginetorqueengineloadclassminrange;
-            accumulatedClassRequest.NoOfStep = record.enginetorqueengineloadclassdistrstep;
-
-
-
             var accClass = new List<EngineTorqueAtCurrentSpeedClass>();
-            var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
-            foreach (var item in intervals.Select((value, i) => new { i, value }))
+            if (record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null && record.enginetorqueengineloadclassdistr != null)
             {
-                accClass.Add(new EngineTorqueAtCurrentSpeedClass()
+                var accumulatedClassRequest = new AccumulatedClassRequest();
+
+                accumulatedClassRequest.ClassSecondsData = new List<int>(record.enginetorqueengineloadclassdistrarraytime); //enginetorqueengineloadclassdistr 
+                accumulatedClassRequest.MaxRange = record.enginetorqueengineloadclassmaxrange;
+                accumulatedClassRequest.MinRange = record.enginetorqueengineloadclassminrange;
+                accumulatedClassRequest.NoOfStep = record.enginetorqueengineloadclassdistrstep;
+
+
+
+                //var accClass = new List<EngineTorqueAtCurrentSpeedClass>();
+                var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
+                foreach (var item in intervals.Select((value, i) => new { i, value }))
                 {
-                    From = Convert.ToInt32(item.value.Split("qaz")[0]),
-                    To = Convert.ToInt32(item.value.Split("qaz")[1]),
-                    Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
-                    Meters = null,
-                    MilliLitres = null
-                });
+                    accClass.Add(new EngineTorqueAtCurrentSpeedClass()
+                    {
+                        From = Convert.ToInt32(item.value.Split("qaz")[0]),
+                        To = Convert.ToInt32(item.value.Split("qaz")[1]),
+                        Seconds = accumulatedClassRequest.ClassSecondsData[item.i],
+                        Meters = null,
+                        MilliLitres = null
+                    });
+                }
             }
             return accClass;
         }
