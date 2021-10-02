@@ -27,8 +27,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 	private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET end_time_stamp = ? , driver1_id = ? , trip_distance = ? , "
 			+ "driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , distance_until_next_service = ? , latest_received_position_lattitude = ? , "
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
-			+ "vehicle_health_status_type = ? , latest_warning_class = ? , latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , "
-			+ "latest_warning_position_latitude = ? , latest_warning_position_longitude = ? , latest_warning_geolocation_address_id = ? , modified_at = ? WHERE trip_id = ? ";
+			+ "modified_at = ? WHERE trip_id = ? ";
 	
 	public void insert(TripStatisticsPojo row)
 			throws TechnicalException, SQLException {
@@ -86,8 +85,10 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		
 		if (tripStatistics.getVehicle_driving_status_type() != null)
 			stmt_update_existing_trip.setString(6, String.valueOf(tripStatistics.getVehicle_driving_status_type())); 
-		else
-			stmt_update_existing_trip.setString(6, String.valueOf(Character.valueOf(' ')));
+		/*
+		 * else stmt_update_existing_trip.setString(6,
+		 * String.valueOf(Character.valueOf(' ')));
+		 */
 		
 		if (tripStatistics.getOdometer_val() != null)
 			stmt_update_existing_trip.setLong(7, tripStatistics.getOdometer_val());
@@ -124,45 +125,57 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		else
 			stmt_update_existing_trip.setLong(13, 0);
 		
-		if (tripStatistics.getVehicle_health_status_type() != null)
-			stmt_update_existing_trip.setString(14, String.valueOf(tripStatistics.getVehicle_health_status_type()));
-		else
-			stmt_update_existing_trip.setString(14, String.valueOf(Character.valueOf(' ')));
-		
-		if (tripStatistics.getLatest_warning_class() != null)
-			stmt_update_existing_trip.setLong(15, tripStatistics.getLatest_warning_class());
-		else
-			stmt_update_existing_trip.setLong(15, 0);
-		
-		if (tripStatistics.getLatest_warning_number() != null)
-			stmt_update_existing_trip.setLong(16, tripStatistics.getLatest_warning_number());
-		else
-			stmt_update_existing_trip.setLong(16, 0);
-		
-		if (tripStatistics.getLatest_warning_type() != null)
-			stmt_update_existing_trip.setString(17, String.valueOf(tripStatistics.getLatest_warning_type()));
-		else
-			stmt_update_existing_trip.setString(17, String.valueOf(Character.valueOf(' ')));
-		
-		if (tripStatistics.getLatest_warning_timestamp() != null)
-			stmt_update_existing_trip.setLong(18, tripStatistics.getLatest_warning_timestamp());
-		else
-			stmt_update_existing_trip.setLong(18, 0);
-		
-		if (tripStatistics.getLatest_warning_position_latitude() != null)
-			stmt_update_existing_trip.setDouble(19, tripStatistics.getLatest_warning_position_latitude());
-		else
-			stmt_update_existing_trip.setDouble(19, 0);
-		
-		if (tripStatistics.getLatest_warning_position_longitude() != null)
-			stmt_update_existing_trip.setDouble(20, tripStatistics.getLatest_warning_position_longitude());
-		else
-			stmt_update_existing_trip.setDouble(20, 0);
-		
-		if (tripStatistics.getLatest_warning_geolocation_address_id() != null)
-			stmt_update_existing_trip.setLong(21, tripStatistics.getLatest_warning_geolocation_address_id());
-		else
-			stmt_update_existing_trip.setLong(21, 0);
+		/*
+		 * if (tripStatistics.getVehicle_health_status_type() != null)
+		 * stmt_update_existing_trip.setString(14,
+		 * String.valueOf(tripStatistics.getVehicle_health_status_type())); else
+		 * stmt_update_existing_trip.setString(14, String.valueOf(Character.valueOf('
+		 * ')));
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_class() != null)
+		 * stmt_update_existing_trip.setLong(15,
+		 * tripStatistics.getLatest_warning_class()); else
+		 * stmt_update_existing_trip.setLong(15, 0);
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_number() != null)
+		 * stmt_update_existing_trip.setLong(16,
+		 * tripStatistics.getLatest_warning_number()); else
+		 * stmt_update_existing_trip.setLong(16, 0);
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_type() != null)
+		 * stmt_update_existing_trip.setString(17,
+		 * String.valueOf(tripStatistics.getLatest_warning_type())); else
+		 * stmt_update_existing_trip.setString(17, String.valueOf(Character.valueOf('
+		 * ')));
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_timestamp() != null)
+		 * stmt_update_existing_trip.setLong(18,
+		 * tripStatistics.getLatest_warning_timestamp()); else
+		 * stmt_update_existing_trip.setLong(18, 0);
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_position_latitude() != null)
+		 * stmt_update_existing_trip.setDouble(19,
+		 * tripStatistics.getLatest_warning_position_latitude()); else
+		 * stmt_update_existing_trip.setDouble(19, 0);
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_position_longitude() != null)
+		 * stmt_update_existing_trip.setDouble(20,
+		 * tripStatistics.getLatest_warning_position_longitude()); else
+		 * stmt_update_existing_trip.setDouble(20, 0);
+		 * 
+		 * 
+		 * if (tripStatistics.getLatest_warning_geolocation_address_id() != null)
+		 * stmt_update_existing_trip.setLong(21,
+		 * tripStatistics.getLatest_warning_geolocation_address_id()); else
+		 * stmt_update_existing_trip.setLong(21, 0);
+		 */
+		 
 
 		if (tripStatistics.getModified_at() != null)
 			stmt_update_existing_trip.setLong(22, tripStatistics.getModified_at());

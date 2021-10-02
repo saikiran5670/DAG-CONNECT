@@ -130,8 +130,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									TimeFormatter.getInstance().convertUTCToEpochMilli(
 											indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							currentTripPojo.setStart_geolocation_address_id(null);
-
-							// warning and vehicle health status fields - to be populated from monitoring
+							
+							//NOTE: warning and vehicle health status fields - mapped NULL as populated from monitoring
 							// messages
 							currentTripPojo.setVehicle_health_status_type(null);
 							currentTripPojo.setLatest_warning_class(null);
@@ -141,6 +141,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							currentTripPojo.setLatest_warning_position_latitude(null);
 							currentTripPojo.setLatest_warning_position_longitude(null);
 							currentTripPojo.setLatest_warning_geolocation_address_id(null);
+
 							
 							currentTripPojo.setModified_at(TimeFormatter.getInstance().getCurrentUTCTime());
 
@@ -161,7 +162,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 						try {
 							if (varVEvtid != 4) { // trip exists, so update trip start fields (coming from index message)
-
+								
 								CurrentTrip current_trip_start_var = null;
 
 								if (indexValue.getDocument() != null) {
@@ -217,7 +218,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 										currentTripPojo.setVehicle_driving_status_type('D'); // DRIVING if wheelspeed >
 																								// 0
 									else if (vWheelSpeed == 0) {
-										if (indexValue.getDocument().getVEngineSpeed() != null
+										if (indexValue.getDocument() != null) {
+											 if	(indexValue.getDocument().getVEngineSpeed() != null
 												&& indexValue.getDocument().getVEngineSpeed().longValue() > 0)
 											currentTripPojo.setVehicle_driving_status_type('I'); // IDLING if wheelspeed
 																									// = 0 but
@@ -225,6 +227,9 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 										else
 											currentTripPojo.setVehicle_driving_status_type('S'); // STOPPED if
 																									// wheelspped = 0
+										}
+										else 
+											currentTripPojo.setVehicle_driving_status_type('S');
 									}
 									
 
@@ -251,7 +256,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setDriving_time(0L);
 									currentTripPojo.setTrip_distance(0L);
 									currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
-									
+
 
 									// calculate the vehicle_driving_status_type
 									currentTripPojo.setVehicle_driving_status_type('N'); // NEVER_MOVED, only when trip

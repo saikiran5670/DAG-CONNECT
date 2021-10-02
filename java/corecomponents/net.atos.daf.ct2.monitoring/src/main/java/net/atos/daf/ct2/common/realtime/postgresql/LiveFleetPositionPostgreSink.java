@@ -100,11 +100,14 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 						currentPosition = tripCalculation(row, currentPosition);
 
 						positionDAO.insert(currentPosition);
+						
+						log.info("Monitoring :: Live Fleet Position record inserted successfully");
 
 					}
 				}
 			}
 		} catch (Exception e) {
+			log.info("Monitoring :: Live Fleet Position record insertion failed !!! ");
 			e.printStackTrace();
 		}
 		
@@ -114,7 +117,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-		log.info("########## In LiveFleet Position ##############");
+		log.info("########## In Monitoring: LiveFleet Position  ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		livefleetposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION);
@@ -143,7 +146,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 		} catch (Exception e) {
 
-			log.error("Error in Live fleet position" + e.getMessage());
+			log.error("Error in Monitoring :: Live fleet position " + e.getMessage());
 
 		}
 
@@ -276,7 +279,9 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		currentPosition.setEngine_coolant_temperature(row.getDocument().getVEngineCoolantTemperature());
 		currentPosition.setService_brake_air_pressure_circuit1(row.getDocument().getVServiceBrakeAirPressure1());
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
-
+		
+		log.info("Monitoring :: Live Fleet Position calculated (to be inserted) ::\n" + currentPosition);
+		
 		return currentPosition;
 
 	}
