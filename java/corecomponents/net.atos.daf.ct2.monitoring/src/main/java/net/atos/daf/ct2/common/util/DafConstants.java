@@ -86,12 +86,19 @@ public class DafConstants {
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
 	
+	public static final String Monitor="M";
+	public static final String MONITOR_TOPIC_NAME = "egress.conti.monitordata.object";
+	
 	//queries
 		public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 		public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
 		public static final String QUERY_LIVEFLEET_POSITION = "livefleet.position.query";
 	
-	public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+	public static final int FUEL_CONSUMPTION_INDICATOR = 2;	
+	
+    //KAFKA CONFIG
+    public static final String AUTO_OFFSET_RESET_CONFIG = "auto.offset.reset";
+    public static final String BROADCAST_NAME = "broadcast.name";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";

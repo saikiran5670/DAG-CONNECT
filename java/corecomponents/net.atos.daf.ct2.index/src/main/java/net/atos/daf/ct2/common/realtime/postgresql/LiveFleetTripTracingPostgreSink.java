@@ -289,6 +289,23 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 
 		currentPosition.setDriver1Id(row.getDriverID());
 		currentPosition.setDrivingTime(drivingTime.intValue());
+		
+		//vehicle status API fields
+		currentPosition.setTotal_vehicle_distance(row.getVDist());
+		currentPosition.setTotal_engine_hours(row.getDocument().getVEngineTotalHours());
+		currentPosition.setTotal_engine_fuel_used(row.getVCumulatedFuel());
+		currentPosition.setGross_combination_vehicle_weight(row.getDocument().getVGrossWeightCombination());
+		currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
+		currentPosition.setFuel_level1(row.getDocument().getVFuelLevel1());
+		currentPosition.setCatalyst_fuel_level(row.getDocument().getVDEFTankLevel());
+		currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
+		currentPosition.setDriver1_working_state(row.getDocument().getDriver1WorkingState());
+		currentPosition.setDriver2_working_state(row.getDocument().getDriver2WorkingState());
+		currentPosition.setAmbient_air_temperature(row.getDocument().getVAmbiantAirTemperature());
+		currentPosition.setEngine_coolant_temperature(row.getDocument().getVEngineCoolantTemperature());
+		currentPosition.setService_brake_air_pressure_circuit1(row.getDocument().getVServiceBrakeAirPressure1());
+		//currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());)
+		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
 
 		System.out.println("Inside Trip Calculation in end");
 

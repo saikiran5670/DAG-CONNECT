@@ -195,7 +195,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (!string.IsNullOrEmpty(objVehicleFilter.VIN) || !string.IsNullOrEmpty(objVehicleFilter.VehicleIdList) ||
                     objVehicleFilter.VehicleId > 0)
                 {
-                    IEnumerable<Vehicle> objRetrieveVehicleList = await _vehicleManager.GetRelationshipVehicles(objVehicleFilter);
+                    IEnumerable<Vehicle> objRetrieveVehicleList = await _vehicleManager.GetRelationshipVehicles(objVehicleFilter, loggedInOrgId, accountId);
                     foreach (var item in objRetrieveVehicleList)
                     {
                         response.Vehicles.Add(_mapper.ToVehicle(item));
@@ -1165,6 +1165,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 //VehicleFilter objVehicleFilter = new VehicleFilter();
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var adminRightsFeatureId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("admin_rights_featureId")).FirstOrDefault()?.Value ?? "0");
 
                 IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(loggedInOrgId, request.AccountId, request.OrganizationId);
                 VehiclesResponse response = new VehiclesResponse();
