@@ -619,7 +619,7 @@ namespace net.atos.daf.ct2.visibility.repository
                 parameter.Add("@featureid", featureId.ToArray());
                 parameter.Add("@organizationid", organizationId);
 
-                var queryStatement = @"select distinct p.type as SubscriptionType, s.vehicle_id as VehicleId,f.key as FeatureKey
+                var queryStatement = @"select distinct s.type as SubscriptionType, s.vehicle_id as VehicleId,f.key as FeatureKey
                                     from master.subscription s
                                     inner join master.package p on p.id=s.package_id 
                                     inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
