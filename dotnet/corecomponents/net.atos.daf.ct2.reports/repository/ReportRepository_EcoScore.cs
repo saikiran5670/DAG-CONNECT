@@ -1184,7 +1184,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1511,7 +1511,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1803,7 +1803,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.organization_id , CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.organization_id , CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -2098,7 +2098,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.vin,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.vin,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
                                 ),
@@ -2394,7 +2394,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2885,7 +2885,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -3293,7 +3293,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day
                                 ),
