@@ -57,11 +57,11 @@ export class CreateEditUserGroupComponent implements OnInit {
 
     this.groupTypeList = [
       {
-        name: this.translationData.lblGroup || 'Group',
+        name: this.translationData.lblGroup ,
         value: 'G'
       },
       {
-        name: this.translationData.lblDynamic || 'Dynamic',
+        name: this.translationData.lblDynamic ,
         value: 'D'
       }
     ];
