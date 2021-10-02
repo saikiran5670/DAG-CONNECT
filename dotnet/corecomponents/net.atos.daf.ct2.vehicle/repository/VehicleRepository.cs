@@ -305,21 +305,21 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string")
             {
                 _log.Info("VehicleUpdate TCU check if");
-                vehicle = await VehicleNameExists(vehicle);
+                //vehicle = await VehicleNameExists(vehicle);
                 //commenting as PersistenceStatus bug 6239
                 //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 
-                // duplicate vehicle Name
-                if (vehicle.VehicleNameExists)
-                {
-                    return vehicle;
-                }
+                //// duplicate vehicle Name
+                //if (vehicle.VehicleNameExists)
+                //{
+                //    return vehicle;
+                //}
 
-                // duplicate License Plate Number
-                if (vehicle.VehicleLicensePlateNumberExists)
-                {
-                    return vehicle;
-                }
+                //// duplicate License Plate Number
+                //if (vehicle.VehicleLicensePlateNumberExists)
+                //{
+                //    return vehicle;
+                //}
 
                 var queryStatement = @" UPDATE master.vehicle
                                         SET 
@@ -1211,7 +1211,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 objVeh.ModelId = vehicleproperty.Classification_Model_Id;
                 objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;
                 objVeh.VehiclePropertiesId = VehiclePropertiesId;
-                objVeh.Fuel = vehicleproperty.Fuel;
+                objVeh.Fuel = string.IsNullOrEmpty(vehicleproperty.Fuel) ? "D" : vehicleproperty.Fuel;
                 objVeh.IPPS = true;
                 //dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
                 //if (oiedetail != null)

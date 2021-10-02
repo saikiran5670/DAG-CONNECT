@@ -172,7 +172,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   editRelationship(row: any){
-    this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
+    this.titleText = this.translationData.lblRelationshipDetails ;
     this.rowsData = [];
     this.editFlag = true;
     this.viewFlag = false;

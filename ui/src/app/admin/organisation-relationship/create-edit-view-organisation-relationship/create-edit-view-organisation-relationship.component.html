@@ -46,7 +46,7 @@
                     translationData.lblActive }}
                 </mat-radio-button>
                 <mat-radio-button [checked]="selectedType ===  'inactive'" style='margin-right: 20px;' value="false">{{
-                    translationData.lblInactive }}
+                  translationData.lblInactive || 'Inactive'}}
                 </mat-radio-button>
                 </mat-radio-group></span>
               </div>
@@ -160,7 +160,7 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="organizationId">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationId }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationId || 'Organisation Id' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{row.organizationId}} </mat-cell>
             </ng-container>
               <ng-container matColumnDef="organizationName">

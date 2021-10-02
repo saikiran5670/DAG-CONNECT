@@ -200,7 +200,7 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   newRelationship(){
-    this.titleText = this.translationData.lblAddNewRelationship || "Add New Relationship";
+    this.titleText = this.translationData.lblAddNewRelationship ;
     this.rowsData = [];
     this.rowsData = this.initData; 
     this.editFlag = true;
@@ -208,7 +208,7 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   viewRelationship(row: any){
-    this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
+    this.titleText = this.translationData.lblRelationshipDetails ;
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -217,7 +217,7 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   editRelationship(row: any){
-    this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
+    this.titleText = this.translationData.lblRelationshipDetails ;
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
@@ -226,10 +226,10 @@ export class RelationshipManagementComponent implements OnInit {
 
   deleteRelationship(row: any){
     const options = {
-      title: this.translationData.lblDelete || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to end '$' relationship?",
-      cancelText: this.translationData.lblCancel || 'Cancel',
-      confirmText: this.translationData.lblDelete || 'Delete'
+      title: this.translationData.lblDelete ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblCancel ,
+      confirmText: this.translationData.lblDelete 
     };
     let name = row.name;
     this.dialogService.DeleteModelOpen(options, name);

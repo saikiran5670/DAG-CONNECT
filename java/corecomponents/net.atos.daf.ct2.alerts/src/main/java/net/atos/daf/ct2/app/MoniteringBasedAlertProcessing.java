@@ -27,7 +27,7 @@ import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
 import net.atos.daf.ct2.service.realtime.MonitorMessageAlertService;
 import net.atos.daf.ct2.service.realtime.RepairMaintenance;
-
+@Deprecated
 public class MoniteringBasedAlertProcessing {
 	private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
 	private static final long serialVersionUID = 1L;
@@ -85,18 +85,10 @@ public class MoniteringBasedAlertProcessing {
 	
 		  KeyedStream<Monitor, String> monitorStringKeyedStream =
 		  MonitorStringStream.process(new RepairMaintenance(propertiesParamTool))
-		  
-		  
-		  .keyBy(moniter -> moniter.getVin() != null ? moniter.getVin() :
-		  moniter.getVid());
+		  .keyBy(moniter -> moniter.getVin() != null ? moniter.getVin() : moniter.getVid());
 		  
 		  MonitorMessageAlertService.processMonitorKeyStream(monitorStringKeyedStream,
 		  env, propertiesParamTool, repairMaintenanceFunConfigMap);
-		 
-			 
-			 
-		 
-
 		env.execute(MoniteringBasedAlertProcessing.class.getSimpleName());
 
 	}

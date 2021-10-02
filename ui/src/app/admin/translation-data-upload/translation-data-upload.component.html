@@ -12,7 +12,7 @@
             <form [formGroup]="uploadTranslationDataFormGroup">
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTranslationData || 'Upload New Translation Data' }}</span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTranslationData }}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
@@ -20,10 +20,10 @@
                         <span style='display: flex; align-items: center;'>
                             <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
                             <a (click)="openLanguageSelectionPopup()"    
-                                style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
+                                style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadTranslatedData }}
                             </a>
                         </span>
-                        <span>{{ translationData.lblDownloadaTemplateMessage || 'Download final template from here and upload it here with updated details.'}}</span>
+                        <span>{{ translationData.lblDownloadaTemplateMessage }}</span>
                     </div>
                     <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                         <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
@@ -32,35 +32,35 @@
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                         <mat-label>{{ translationData.lblUploadTranslationDataFile || 'Upload Translation Data file' }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
-                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedXLSXFile || 'Upload your updated xlsx File'}}" ></ngx-mat-file-input>
-                                            <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedXLSXFile }}" ></ngx-mat-file-input>
+                                            <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse  }}</button>
                                         </mat-form-field>
                                         <mat-error *ngIf="uploadTranslationDataFormGroup.get('uploadFile').hasError('required')">
-                                            {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                                            {{ translationData.lblPleaseselectafile  }}
                                         </mat-error>
                                         <mat-error *ngIf="uploadTranslationDataFormGroup.get('uploadFile').hasError('maxContentSize')">
                                             The total size must not exceed {{uploadTranslationDataFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{uploadTranslationDataFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                             | byteFormat}}).
                                         </mat-error>
                                         <mat-error *ngIf="excelEmptyMsg">
-                                            {{ translationData.lblEmptyFile || 'Empty File' }}
+                                            {{ translationData.lblEmptyFile  }}
                                         </mat-error>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                         <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="uploadTranslationData()">
-                                            <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile || 'Upload File' }}
+                                            <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile }}
                                         </button>
                                     </div>
                                 </div>
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                     <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                     <mat-label>
-                                        {{ translationData.lblDescription || 'Description'}}
-                                        <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
+                                        {{ translationData.lblDescription }}
+                                        <span>{{ translationData.lbl120CharMax }}</span>
                                     </mat-label>
                                     <mat-form-field appearance="outline">
-                                        <input maxlength="120" placeholder="{{ translationData.lblEnterFileDescription || 'Enter File Description' }}" matInput formControlName="fileDescription">
+                                        <input maxlength="120" placeholder="{{ translationData.lblEnterFileDescription  }}" matInput formControlName="fileDescription">
                                     </mat-form-field>
                                     <mat-error *ngIf="uploadTranslationDataFormGroup.get('fileDescription').hasError('whitespace')">
                                         Description cannot contain only whitespace
@@ -76,7 +76,7 @@
         <mat-card *ngIf='isTranslationDataUploaded' style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadedFileDetails || 'Uploaded File Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadedFileDetails }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
                     <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -84,7 +84,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='color: green'>{{ translationData.lblFileuploadedSuccessfully || 'File has been uploaded successfully'}}</span>
+                    <span style='color: green'>{{ translationData.lblFileuploadedSuccessfully }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
@@ -101,7 +101,7 @@
         <mat-card class='mat-elevation-z'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbluploadedFileHistory || 'Uploaded File History' }}</span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbluploadedFileHistory  }}</span>
                     </div>
                 </div>
                 <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -116,7 +116,7 @@
                     [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [actionColumnElements]="actionColumnElements">
                 
                     <ng-template #actionColumnElements let-gridData='rowData'>
-                        <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(gridData)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
+                        <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(gridData)" matTooltip="{{ translationData.lblDownload  }}">
                             <img src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" />
                         </button>
                     </ng-template>

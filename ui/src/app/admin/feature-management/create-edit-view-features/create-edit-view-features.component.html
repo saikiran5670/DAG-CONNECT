@@ -63,7 +63,7 @@
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDataAttributeDescription }}
                             <mat-icon *ngIf="actionType != 'view'"
-                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription }}"
+                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription || 'New Feature description will auto create same as Data Attribute description'}}"
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>
@@ -189,7 +189,7 @@
                                 </mat-slide-toggle>
                                 <span style="margin: 5px 0px 0px 5px;"
                                     [ngClass]="{'opacity-0-5': actionType == 'view'}">{{selectedSetType ?
-                                    (translationData.lblExclude ) : ( translationData.lblInclude )}}</span>
+                                    (translationData.lblExclude || 'Exclude' ) : ( translationData.lblInclude || 'Include')}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'
