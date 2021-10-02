@@ -21,13 +21,13 @@
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRelationshipDetails || 'Relationship Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRelationshipDetails  }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                   <mat-form-field appearance="outline">
-                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch  }}">
                       <span matPrefix><mat-icon>search</mat-icon></span>
                   </mat-form-field>
                 </div>
@@ -41,12 +41,12 @@
                     </div>
                     <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
                     <button mat-flat-button color="primary" (click)="newRelationship()">
-                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewRelationship || 'New Relationship'}}
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewRelationship }}
                     </button>
                 </div>
                 </div>
             </div>
-            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound  }}</div>
             <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg' id="relationshipData">
                 <div fxLayout="column" class='full-width'>
                     <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[5]">
@@ -57,31 +57,31 @@
                             </mat-cell>
                         </ng-container> -->
                         <ng-container matColumnDef="name">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew  }}</span>
                                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.name}}</span> &nbsp;
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="features">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures || 'Features'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{row.featureIds.length}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="level">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{row.levelVal}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="code">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCode || 'Code'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCode }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{row.code}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="description">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDescription || 'Description'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDescription }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.description}}</span> </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction  }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" class="action">
                                 <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewRelationship(row)">
                                     <mat-icon>visibility</mat-icon>
