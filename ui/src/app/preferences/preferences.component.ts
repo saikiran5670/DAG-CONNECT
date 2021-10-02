@@ -10,7 +10,7 @@ import { DataInterchangeService } from '.././services/data-interchange.service';
 })
 
 export class PreferencesComponent implements OnInit, AfterViewInit {
-  translationData: any = [];
+  translationData: any = {};
   @Input() userPreferencesFlag : boolean;
   public selectedIndex: number = 0;
   localStLanguage: any;

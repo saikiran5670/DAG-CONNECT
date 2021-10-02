@@ -315,6 +315,7 @@ message TripDetails {
     double EndPositionLongitude=22;
     string RegistrationNo =23;
     string VehicleName=24;
+    repeated TripAlert TripAlert=25;
 }
 message LiveFleetPosition {
     double GpsAltitude=1;
@@ -324,6 +325,19 @@ message LiveFleetPosition {
     double Fuelconsumtion=6;
     double Co2emission=7;
     int32 Id=5;
+    int64 MessageTimeStamp=8;
+}
+message TripAlert {
+     google.protobuf.StringValue TripId=1;
+     google.protobuf.StringValue VIN=2; 
+     google.protobuf.StringValue CategoryType=3;
+     google.protobuf.StringValue AlertType=4; 
+     google.protobuf.StringValue AlertName=6;
+    double AlertLatitude=7;
+    double AlertLongitude=8;
+    int64 AlertTime=9;
+    int64 ProcessedMessageTimeStamp=10;
+     google.protobuf.StringValue UrgencyLevelType=11;
 }
 // End Trip Report Table
 

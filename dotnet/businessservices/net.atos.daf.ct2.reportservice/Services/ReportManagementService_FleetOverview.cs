@@ -138,10 +138,40 @@ namespace net.atos.daf.ct2.reportservice.Services
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Days = request.Days,
+                    UnknownDrivingStateCheckInterval = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"])
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
+                //check if atleast one trip is available 
                 if (result?.Count > 0)
                 {
+                    // Identify the vehicle dont have trip in last 'N' days
+                    //List<string> neverMovedVins = result.Where(x => !fleetOverviewFilter.VINIds.Contains(x.Vin)).Select(x => x.Vin).Distinct().ToList();
+                    List<string> neverMovedVins = fleetOverviewFilter.VINIds.Where(x => !result.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                    neverMovedVins.RemoveAll(item => item == null);
+                    if (neverMovedVins.Count > 0)
+                    {
+                        fleetOverviewFilter.VINIds = new List<string>();
+                        fleetOverviewFilter.VINIds = neverMovedVins;
+                        var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+                        if (resultNeverMoved?.Count > 0)
+                        {
+                            //If vehicel has only warnings and not trip then add to vehicle with trips 
+                            result.AddRange(resultNeverMoved);
+                            //extract vehicles neither having trips nor warnings against it.
+                            List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                            neverMoved_NoWarningsVins.RemoveAll(item => item == null);
+                            if (neverMoved_NoWarningsVins?.Count > 0)
+                            {
+                                fleetOverviewFilter.VINIds = new List<string>();
+                                fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
+                                //prepare response for never moved vehicles those  neither having trips nor warnings against it.
+                                var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+                                //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
+                                result.AddRange(resultNeverMoved_NoWarnings);
+                            }
+                        }
+                    }
+
                     List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
                                                                                              .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
@@ -186,8 +216,65 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else
                 {
-                    response.Code = Responsecode.NotFound;
-                    response.Message = "No Result Found";
+                    //if no trip is available    
+                    // Identify the vehicle don't have trip in last 'N' days, and retrive warnings if any
+                    List<string> neverMovedVins = fleetOverviewFilter.VINIds;
+                    neverMovedVins.RemoveAll(item => item == null);
+                    if (result != null && neverMovedVins.Count > 0)
+                    {
+                        fleetOverviewFilter.VINIds = new List<string>();
+                        fleetOverviewFilter.VINIds = neverMovedVins;
+                        var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+                        //If vehicel has only warnings and not trip then add to vehicle with trips 
+                        result.AddRange(resultNeverMoved);
+                        //extract vehicles neither having trips nor warnings against it.
+                        List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                        neverMoved_NoWarningsVins.RemoveAll(item => item == null);
+                        if (neverMoved_NoWarningsVins?.Count > 0)
+                        {
+                            fleetOverviewFilter.VINIds = new List<string>();
+                            fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
+                            //prepare response for never moved vehicles those  neither having trips nor warnings against it.
+                            var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+                            //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
+                            result.AddRange(resultNeverMoved_NoWarnings);
+                        }
+                    }
+                    //if vehicle have any warning, then return only waarning data 
+                    if (result?.Count > 0)
+                    {
+                        List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
+                                                                                                 .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
+                        List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
+                        foreach (var fleetOverviewDetails in result)
+                        {
+                            fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
+                            var warning = warningDetails?.Where(w => w.WarningClass == fleetOverviewDetails.LatestWarningClass
+                                                                              && w.WarningNumber == fleetOverviewDetails.LatestWarningNumber
+                                                                              && w.LngCode == request.LanguageCode).FirstOrDefault();
+                            if (string.IsNullOrEmpty(warning?.WarningName))
+                            {
+                                warning = warningDetails?.Where(w => w.WarningClass == fleetOverviewDetails.LatestWarningClass
+                                                                           && w.WarningNumber == fleetOverviewDetails.LatestWarningNumber
+                                                                           && w.LngCode == ReportConstants.DEFAULT_LANGUAGE.ToLower()).FirstOrDefault();
+                            }
+                            fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
+                            fleetOverviewDetails.DriverName = (driverDetails.Where(d => d.DriverId == fleetOverviewDetails.Driver1Id).Select(n => n.DriverName).FirstOrDefault()) ?? string.Empty;
+
+                            if (string.IsNullOrEmpty(fleetOverviewDetails.Driver1Id))
+                            {
+                                fleetOverviewDetails.DriverName = "Unknown";
+                            }
+                            response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
+                        }
+                        response.Code = Responsecode.Success;
+                        response.Message = Responsecode.Success.ToString();
+                    }
+                    else
+                    {
+                        response.Code = Responsecode.NotFound;
+                        response.Message = "No Result Found";
+                    }
                 }
                 return await Task.FromResult(response);
             }

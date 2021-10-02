@@ -40,7 +40,7 @@ import { DatePipe } from '@angular/common';
 export class FleetUtilisationComponent implements OnInit, OnDestroy {
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
-  tripReportId: any = 1;
+  tripReportId: number;
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -48,7 +48,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
   displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageSpeed', 'averageWeight', 'averageDistancePerDay', 'odometer'];
-  translationData: any;
+  translationData: any = {};
   fleetUtilizationSearchData: any = {};
   // hereMap: any;
   // platform: any;
@@ -553,11 +553,17 @@ calendarOptions: CalendarOptions = {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getFleetUtilPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Fleet Utilisation Report');
+      if(repoId.length > 0){
+        this.tripReportId = repoId[0].id; 
+        this.getFleetUtilPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Fleet Utilisation Report', id: 5}]; // hard coded
-      this.getFleetUtilPreferences(reportListData);
+      reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
+      // this.getFleetUtilPreferences();
     });
   }
 
@@ -618,9 +624,8 @@ calendarOptions: CalendarOptions = {
     this.detailColumnData = [];
   }
 
-  getFleetUtilPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Fleet Utilisation Report');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 5).subscribe((data: any) => {
+  getFleetUtilPreferences(){
+    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
@@ -804,7 +809,7 @@ calendarOptions: CalendarOptions = {
       rp_fu_report_calendarview_drivingtime: 'Driving Time',
       rp_fu_report_calendarview_totaltrips: 'Total trips',
       rp_fu_report_calendarview_idleduration: 'Idle Duration',
-      rp_fu_report_calendarview_timebasedutlisation: 'Time Based Utilisation',
+      rp_fu_report_calendarview_timebasedutilization: 'Time Based Utilisation',
       rp_fu_report_calendarview_mileagebasedutilization: 'Mileage Based Utilisation',
       rp_fu_report_calendarview_activevehicles: 'Active Vehicles',
       rp_fu_report_calendarview_distance: 'Distance',
@@ -1198,13 +1203,13 @@ calendarOptions: CalendarOptions = {
         this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "rp_fu_report_calendarview_timebasedutlisation": { // time based utilisation
-        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : ((element.averagedrivingtime/this.timebasedThreshold) * 100);
+      case "rp_fu_report_calendarview_timebasedutilization": { // time based utilisation
+        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : (((element.averagedrivingtime*1000)/this.timebasedThreshold) * 100).toFixed(2)+' %';  //converting avgdrivingtime to milliseconds
         this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
-        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100);
+        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100).toFixed(2)+' %';
         this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }

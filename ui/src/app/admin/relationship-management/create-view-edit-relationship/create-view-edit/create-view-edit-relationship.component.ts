@@ -25,7 +25,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   @Input() createStatus: boolean;
   @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() relationshipData:any;
   @Input() viewRelationshipFromOrg:any;
   @Input() selectedRowFromRelationship:any;

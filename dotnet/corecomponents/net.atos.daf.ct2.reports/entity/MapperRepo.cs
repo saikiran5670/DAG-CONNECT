@@ -92,7 +92,8 @@ namespace net.atos.daf.ct2.reports.entity
                 StartGeolocationAddressId = fleetOverviewResult.Stageoadd_StartGeolocationAddressId,
                 StartGeolocationAddress = fleetOverviewResult.Stageoadd_StartGeolocationAddress,
                 LatestWarningGeolocationAddressId = fleetOverviewResult.Wangeoadd_LatestWarningGeolocationAddressId,
-                LatestWarningGeolocationAddress = fleetOverviewResult.Wangeoadd_LatestWarningGeolocationAddress
+                LatestWarningGeolocationAddress = fleetOverviewResult.Wangeoadd_LatestWarningGeolocationAddress,
+                VehicleName = fleetOverviewResult.Veh_name
             };
             return fleetOverviewDetails;
         }

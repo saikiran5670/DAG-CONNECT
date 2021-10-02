@@ -29,7 +29,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 	private DTCWarningMasterDao DTCWarning;
 	private WarningStatisticsDao warningDao;
 	Connection connection = null;
-	// WarningStatisticsDao warningDetail = new WarningStatisticsDao();
 	private ParameterTool parameterTool;
 	
 	
@@ -40,7 +39,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 	@Override
 	public void processElement(Monitor moniter, ProcessFunction<Monitor, Monitor>.Context context,
 			Collector<Monitor> collector) throws Exception {
-		// TODO Auto-generated method stub
 
 		try {
 			String vin;
@@ -68,10 +66,12 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 
 					} else {
 						WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
-								lastProcessedTimeStamp);
+								lastProcessedTimeStamp,moniter.getDocument().getVWarningClass(),moniter.getDocument().getVWarningNumber());
 						warningDao.warning_insert(warningNewRowDetail);
-						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {}",
+						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {} from alert",
 								warningNewRowDetail, moniter.getJobName());
+						warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
+						logger.info("Warning records updated in current trip table from alert:: ", warningNewRowDetail);
 
 					}
 
@@ -97,11 +97,13 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 							logger.info("warning not present in warning table");
 
 							WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
-									lastProcessedTimeStamp);
+									lastProcessedTimeStamp,warning.getWarningClass(), warning.getWarningNumber());
 							warningDao.warning_insert(warningNewRowDetail);
-							logger.info("warning inserted in warning table for VEvtId--63 :{} msg UUD :: {}",
+							logger.info("warning inserted in warning table for VEvtId--63 :{} msg UUD :: {} from alert",
 									warningNewRowDetail, moniter.getJobName());
 							moniter.getDocument().setVWarningClass(warning.getWarningClass());
+							warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
+							logger.info("Warning records updated in current trip table from alert:: ", warningNewRowDetail);
 
 						}
 						collector.collect(moniter);
@@ -118,7 +120,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		}
 	}
 
-	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp) {
+	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp, Integer warningClass, Integer warningNumber) {
 
 		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
 		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
@@ -137,8 +139,11 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			e.printStackTrace();
 		}
 
-		warningDetail.setWarningClass(row.getDocument().getVWarningClass());
-		warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
+		//warningDetail.setWarningClass(row.getDocument().getVWarningClass());
+		//warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
+
+		warningDetail.setWarningClass(warningClass);
+		warningDetail.setWarningNumber(warningNumber);
 
 		if (row.getGpsLatitude() != null) {
 			warningDetail.setLatitude(row.getGpsLatitude().doubleValue());
@@ -159,12 +164,13 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		}
 
 		// Vehicle Health Status
-		if ((row.getDocument().getVWarningClass() != null)) {
-			if (row.getDocument().getVWarningClass() >= 4 && row.getDocument().getVWarningClass() <= 7) {
+		//if ((row.getDocument().getVWarningClass() != null)) {
+		if (warningClass != null) {
+			if (warningClass >= 4 && warningClass <= 7) {
 
 				warningDetail.setVehicleHealthStatusType("T");
 
-			} else if (row.getDocument().getVWarningClass() >= 8 && row.getDocument().getVWarningClass() <= 11) {
+			} else if (warningClass >= 8 && warningClass <= 11) {
 
 				warningDetail.setVehicleHealthStatusType("V");
 

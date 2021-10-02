@@ -1,6 +1,7 @@
 import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from 'src/app/services/here.service';
 import { CorridorService } from 'src/app/services/corridor.service';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -42,12 +43,13 @@ export class MapFunctionsService {
   dirtRoadChecked = false;
   exclusions = [];
 
-  map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  map_key: any = '';
   ui: any;
 
-  constructor(private hereService: HereService, private corridorService: CorridorService) {
+  constructor(private hereService: HereService, private corridorService: CorridorService, private _configService: ConfigService) {
+    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });
   }
 

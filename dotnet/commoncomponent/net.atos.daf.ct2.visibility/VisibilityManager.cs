@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.visibility
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int reportFeatureId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId)
         {
             Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
@@ -59,10 +59,10 @@ namespace net.atos.daf.ct2.visibility
             }
 
             // vehicle filtering based on features
-            resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
+            resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
 
             //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
-            return MapVehicleDetailsForOTA(resultDict);
+            return await MapVehicleDetailsForOTA(resultDict);
         }
 
         /// <summary>
@@ -85,10 +85,14 @@ namespace net.atos.daf.ct2.visibility
                 var ownedVehicles = vehicles.Where(e => e.HasOwned == true).ToList();
                 if (ownedVehicles.Count() > 0)
                 {
-                    if (vehiclePackages.Any(e => e.PackageType == "V"))
+                    if (vehiclePackages.Any(e => e.PackageType == "O"))
+                    {
+                        //do nothing (if org type package no need to remove from owned vehicles)
+                    }
+                    else if (vehiclePackages.Any(e => e.PackageType == "V" && e.HasOwned == true)) // check if any v type and owned subscription available
                     {
                         var filteredOwnedVehicleIds = ownedVehicles
-                            .Where(e => vehiclePackages.FirstOrDefault(e => e.PackageType == "V").VehicleIds.Contains(e.Id)).Select(k => k.Id);
+                            .Where(e => vehiclePackages.FirstOrDefault(e => e.HasOwned == true).VehicleIds.Contains(e.Id)).Select(k => k.Id);
 
                         //Removing other vins from owned vehicles list and not allow them in the visibility
                         ownedVehicles.RemoveAll(e => !filteredOwnedVehicleIds.Contains(e.Id));
@@ -103,9 +107,9 @@ namespace net.atos.daf.ct2.visibility
                     //Fetch visible relationship vehicles of having reportFeatureId in it's allowed features list
                     //Intersect those vehicles with Org+VIN package subscribed vehicles where reportFeatureId is present in the subscription
                     //Filter vehicles out those are not in relationship vehicles and subscribed vehicles.
-                    if (vehiclePackages.Any(e => e.PackageType == "V"))
+                    if (vehiclePackages.Any(e => e.HasOwned == false))
                     {
-                        var subscriptionVehicleIds = vehiclePackages.Where(e => e.PackageType == "V").First().VehicleIds;
+                        var subscriptionVehicleIds = vehiclePackages.First(e => e.HasOwned == false).VehicleIds;
                         var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
 
                         //Fetch vehicles records to be removed from visible vehicles list
@@ -342,7 +346,7 @@ namespace net.atos.daf.ct2.visibility
         }
 
 
-        private static IEnumerable<VehicleDetailsAccountVisibilityForOTA> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        private async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
         {
             List<VehicleDetailsAccountVisibilityForOTA> vehicleDetails = new List<VehicleDetailsAccountVisibilityForOTA>();
             foreach (var vg_kv in resultDict)
@@ -350,6 +354,7 @@ namespace net.atos.daf.ct2.visibility
                 var vehicleGroup = vg_kv.Key;
                 var visibleVehicles = vg_kv.Value;
                 //if (!vehicleGroup.GroupType.Equals("S"))
+                var vehiclePropertiesList = await _vehicleManager.GetVehiclePropertiesByIds(visibleVehicles.Select(s => s.Id).Distinct().ToArray());
                 {
                     foreach (var vehicle in visibleVehicles)
                     {
@@ -360,8 +365,8 @@ namespace net.atos.daf.ct2.visibility
                             VehicleName = vehicle.Name ?? string.Empty,
                             RegistrationNo = vehicle.RegistrationNo ?? string.Empty,
                             VehicleGroupName = vehicleGroup.Name,
-                            ModelYear = string.Empty,
-                            Type = string.Empty
+                            ModelYear = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().ModelYear ?? string.Empty,
+                            Type = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().Type ?? string.Empty,
                         });
                     }
                 }
@@ -413,6 +418,12 @@ namespace net.atos.daf.ct2.visibility
                 int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
                 return idHashCode ^ vinHashCode;
             }
+        }
+
+
+        public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetSubscribedVehicleByAlertFeature(List<int> featureid, int organizationid)
+        {
+            return await _visibilityRepository.GetSubscribedVehicleByAlertFeature(featureid, organizationid);
         }
     }
 }

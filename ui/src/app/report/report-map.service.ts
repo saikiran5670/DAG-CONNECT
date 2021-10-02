@@ -39,7 +39,7 @@ export class ReportMapService {
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key 
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
@@ -122,7 +122,7 @@ export class ReportMapService {
       max: 26,
       opacity: 0.5,
       getURL: function (column, row, zoom) {
-          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
+          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=${this.map_key}&pois`;
         }
     });
     this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
@@ -385,7 +385,7 @@ export class ReportMapService {
           }
           this.hereMap.addObject(this.group);
           //if(elem.id == row.id){
-            let grp= new H.map.Group();
+            //let grp = new H.map.Group();
             this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
             this.hereMap.addObject(this.group);
             this.hereMap.getViewModel().setLookAtData({
@@ -1524,32 +1524,37 @@ export class ReportMapService {
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);
 
-            //for 2 decimal points
-            // element.convertedDistance = parseFloat(element.convertedDistance);
-            // element.convertedDistance = element.convertedDistance.toFixed(2)*1;
-            // element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
-            // element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
-            // element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
-            // element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
-            // element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
-            // element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
-            // element.fuelConsumed =parseFloat(element.fuelConsumed);
-            // element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
-            // element.fuelConsumption =parseFloat(element.fuelConsumption);
-            // element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
-            // element.cO2Emission =parseFloat(element.cO2Emission);
-            // element.cO2Emission =element.cO2Emission.toFixed(2)*1;
-            // element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
-            // element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
-            // element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
-            // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
-            // element.dpaScore = parseFloat(element.dpaScore);
-            // element.dpaScore = element.dpaScore.toFixed(2)*1;
-            //element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
-            element.convertedMaxSpeed = this.convertMaxSpeedUnits(element.maxSpeed,unitFormat);
-            element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
-    
-  
+      //for 2 decimal points
+      // element.convertedDistance = parseFloat(element.convertedDistance);
+      // element.convertedDistance = element.convertedDistance.toFixed(2)*1;
+      // element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
+      // element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
+      // element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
+      // element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
+      // element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
+      // element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
+      // element.fuelConsumed =parseFloat(element.fuelConsumed);
+      // element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
+      // element.fuelConsumption =parseFloat(element.fuelConsumption);
+      // element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
+      // element.cO2Emission =parseFloat(element.cO2Emission);
+      // element.cO2Emission =element.cO2Emission.toFixed(2)*1;
+      // element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
+      // element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
+      // element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
+      // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
+      // element.dpaScore = parseFloat(element.dpaScore);
+      // element.dpaScore = element.dpaScore.toFixed(2)*1;
+      //element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+      
+      element.convertedMaxSpeed = this.convertMaxSpeedUnits(element.maxSpeed,unitFormat);
+      element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
+
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startpositionlattitude; 
+      element.startpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startpositionlongitude; 
+      element.endpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endpositionlattitude; 
+      element.endpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endpositionlongitude; 
     });
     return gridData;
   }
@@ -1669,7 +1674,7 @@ export class ReportMapService {
 
   //Fuel Consumption in Summary Section
   getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
-    console.log("This function works well"); 
+    //console.log("This function works well"); 
     let _fuelConsumption: any = 0;
 
     switch(unitFormat){

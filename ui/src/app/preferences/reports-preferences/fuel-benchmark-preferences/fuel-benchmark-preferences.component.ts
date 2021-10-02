@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FuelBenchmarkPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setFuelBenchmarkReportFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;

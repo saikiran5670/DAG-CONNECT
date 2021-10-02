@@ -34,6 +34,7 @@ import net.atos.daf.ct2.etl.common.postgre.TripSink;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.Distribution;
 import net.atos.daf.ct2.pojo.standard.SpareMatrixAcceleration;
 import net.atos.daf.ct2.pojo.standard.SparseMatrix;
 import net.atos.daf.ct2.pojo.standard.Status;
@@ -376,8 +377,64 @@ public class TripStreamingJob {
 					tripStsData.setNumValAclnSpeed(aclnMatrix.getIa());
 					tripStsData.setClmnIdnxAclnSpeed(aclnMatrix.getJa());
 					tripStsData.setNonZeroBrakePedalAclnSpeedMatrix(aclnMatrix.getA_VBrake());
-					
 				}	
+				
+				//Vehicle Status API
+				//tripStsData.setVTripMotionDuration(stsMsg.getDocument().getVTripMotionDuration());
+				//tripStsData.setVCruiseControlDist(stsMsg.getVCruiseControlDist());
+				//tripStsData.setVCruiseControlFuelConsumed(stsMsg.getDocument().getVCruiseControlFuelConsumed());
+				//tripStsData.setVTripIdleWithoutPTODuration(stsMsg.getDocument().getVTripIdleWithoutPTODuration());
+				if(Objects.nonNull(stsMsg.getDocument().getVTripIdlePTOFuelConsumed()))
+					tripStsData.setVTripIdlePTOFuelConsumed(stsMsg.getDocument().getVTripIdlePTOFuelConsumed());
+				else
+					tripStsData.setVTripIdlePTOFuelConsumed(ETLConstants.ZERO_VAL);
+				
+				if(Objects.nonNull(stsMsg.getVptoDist()))
+					tripStsData.setVPtoDist(stsMsg.getVptoDist());
+				else
+					tripStsData.setVPtoDist(ETLConstants.ZERO_VAL);
+				
+				
+				tripStsData.setVTripCruiseControlDuration(stsMsg.getDocument().getVTripCruiseControlDuration());
+				tripStsData.setVTripIdleWithoutPTOFuelConsumed(stsMsg.getDocument().getVTripIdleWithoutPTOFuelConsumed());
+				tripStsData.setVTripMotionFuelConsumed(stsMsg.getDocument().getVTripMotionFuelConsumed());
+				tripStsData.setVTripMotionBrakeCount(stsMsg.getDocument().getVTripMotionBrakeCount());
+				tripStsData.setVTripMotionBrakeDist(stsMsg.getDocument().getVTripMotionBrakeDist());
+				tripStsData.setVTripMotionPTODuration(stsMsg.getDocument().getVTripMotionPTODuration());
+				tripStsData.setVTripMotionPTOFuelConsumed(stsMsg.getDocument().getVTripMotionPTOFuelConsumed());
+				
+				//Acceleration Pedal Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVAccelerationPedalDistr())){
+					Distribution accelerationPedalDistr = stsMsg.getDocument().getVAccelerationPedalDistr();
+					
+					tripStsData.setAclnPedalDistr(convertToJson(accelerationPedalDistr, jsonMapper));
+					tripStsData.setAclnMinRangeInt(accelerationPedalDistr.getDistrMinRangeInt());
+					tripStsData.setAclnMaxRangeInt(accelerationPedalDistr.getDistrMaxRangeInt());
+					tripStsData.setAclnDistrStep(accelerationPedalDistr.getDistrStep());
+					tripStsData.setAclnDistrArrayTime(accelerationPedalDistr.getDistrArrayTime());
+				}
+			
+				//Retarder Torque Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVRetarderTorqueActualDistr())){
+					Distribution retarderTorqueDistr = stsMsg.getDocument().getVRetarderTorqueActualDistr();
+					
+					tripStsData.setVRetarderTorqueActualDistr(convertToJson(retarderTorqueDistr, jsonMapper));
+					tripStsData.setVRetarderTorqueMinRangeInt(retarderTorqueDistr.getDistrMinRangeInt());
+					tripStsData.setVRetarderTorqueMaxRangeInt(retarderTorqueDistr.getDistrMaxRangeInt());
+					tripStsData.setVRetarderTorqueDistrStep(retarderTorqueDistr.getDistrStep());
+					tripStsData.setVRetarderTorqueDistrArrayTime(retarderTorqueDistr.getDistrArrayTime());
+				}
+							
+				//EngineLoad At EngineSpeed Distr
+				if(Objects.nonNull(stsMsg.getDocument().getVEngineLoadAtEngineSpeedDistr())){
+					Distribution engTorqDistr = stsMsg.getDocument().getVEngineLoadAtEngineSpeedDistr();
+					
+					tripStsData.setVEngineLoadAtEngineSpeedDistr(convertToJson(engTorqDistr, jsonMapper));
+					tripStsData.setVEngineLoadMinRangeInt(engTorqDistr.getDistrMinRangeInt());
+					tripStsData.setVEngineLoadMaxRangeInt(engTorqDistr.getDistrMaxRangeInt());
+					tripStsData.setVEngineLoadDistrStep(engTorqDistr.getDistrStep());
+					tripStsData.setVEngineLoadDistrArrayTime(engTorqDistr.getDistrArrayTime());
+				}
 			}
 			
 			logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());

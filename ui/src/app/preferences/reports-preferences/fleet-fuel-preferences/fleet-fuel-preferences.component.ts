@@ -12,7 +12,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
   @Input() tabName: string;
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences;
   @Output() setFuelFleetFlag = new EventEmitter<any>();
   reportId;

@@ -434,24 +434,34 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-
+                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
                 //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
-                var vehicleDetailsAccountVisibilty
-                                              = await _visibilityManager
-                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
-
+                // var vehicleDetailsAccountVisibilty
+                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                if (featureIds != null && featureIds.Count() > 0)
+                {
+                    foreach (int featureId in featureIds)
+                    {
+                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                        //append visibile vins
+                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                        //remove duplicate vins by key as vin
+                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    }
+                }
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
-
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
                     response.AssociatedVehicleRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
                         );
-
+                    //var vehicleByVisibilityAndFeature
+                    //                            = await _visibilityManager
+                    //                                .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
+                    //                                                                   request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
                     var vehicleByVisibilityAndFeature
-                                                = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeatureTemp(request.AccountId, loggedInOrgId, request.OrganizationId,
-                                                                                       request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
+                                                = await _visibilityManager.GetSubscribedVehicleByAlertFeature(featureIds.ToList(), request.OrganizationId);
 
                     res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
                     response.AlertCategoryFilterRequest.AddRange(

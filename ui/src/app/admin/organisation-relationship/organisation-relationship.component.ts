@@ -32,7 +32,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   rowsData: any;
   createStatus: boolean = false;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   showLoadingIndicator: any;
   displayMessage: any;
@@ -327,10 +327,10 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDeleteAccount ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     let name = rowData.relationshipName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -406,10 +406,10 @@ export class OrganisationRelationshipComponent implements OnInit {
     //   id: this.selectedOrgRelations.selected.map(item=>item.id)
     // }
     const options = {
-      title: this.translationData.lblDelete || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDelete ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     //let name = this.selectedOrgRelations.selected[0].relationshipName;
     let name = this.selectedOrgRelations.selected.forEach(item => {

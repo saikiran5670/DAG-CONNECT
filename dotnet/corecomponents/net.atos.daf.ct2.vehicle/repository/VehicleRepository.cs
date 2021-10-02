@@ -309,17 +309,17 @@ namespace net.atos.daf.ct2.vehicle.repository
                 //commenting as PersistenceStatus bug 6239
                 //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 
-                // duplicate vehicle Name
-                if (vehicle.VehicleNameExists)
-                {
-                    return vehicle;
-                }
+                //// duplicate vehicle Name
+                //if (vehicle.VehicleNameExists)
+                //{
+                //    return vehicle;
+                //}
 
-                // duplicate License Plate Number
-                if (vehicle.VehicleLicensePlateNumberExists)
-                {
-                    return vehicle;
-                }
+                //// duplicate License Plate Number
+                //if (vehicle.VehicleLicensePlateNumberExists)
+                //{
+                //    return vehicle;
+                //}
 
                 var queryStatement = @" UPDATE master.vehicle
                                         SET 
@@ -1211,7 +1211,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 objVeh.ModelId = vehicleproperty.Classification_Model_Id;
                 objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;
                 objVeh.VehiclePropertiesId = VehiclePropertiesId;
-                objVeh.Fuel = vehicleproperty.Fuel;
+                objVeh.Fuel = string.IsNullOrEmpty(vehicleproperty.Fuel) ? "D" : vehicleproperty.Fuel;
                 objVeh.IPPS = true;
                 //dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
                 //if (oiedetail != null)
@@ -2499,6 +2499,30 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         }
 
+        #endregion
+
+        #region Get Vehicles property Model Year and Type
+        public async Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@vehicle_ids", vehicleIds);
+                string queryAlertLevelPull =
+                    @"select coalesce(model_year,'') as ModelYear,coalesce(series_vehicle_range,'') as Type,v.id as VehicleId
+                        from master.vehicle v
+	                        left join master.vehicleproperties vp
+	                        on v.vehicle_property_id = vp.id
+                        where v.id = ANY (@vehicle_ids)";
+
+                return await _dataAccess.QueryAsync<VehiclePropertyForOTA>(queryAlertLevelPull, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
         #endregion
     }
 }
