@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.ALERT_MAP_SCHEMA_DEF;
-
+@Deprecated
 public class TripBasedAlertprocessingV2 implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedAlertProcessing.class);
     private static final long serialVersionUID = 1L;

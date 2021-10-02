@@ -29,7 +29,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 	private DTCWarningMasterDao DTCWarning;
 	private WarningStatisticsDao warningDao;
 	Connection connection = null;
-	// WarningStatisticsDao warningDetail = new WarningStatisticsDao();
 	private ParameterTool parameterTool;
 	
 	
@@ -40,7 +39,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 	@Override
 	public void processElement(Monitor moniter, ProcessFunction<Monitor, Monitor>.Context context,
 			Collector<Monitor> collector) throws Exception {
-		// TODO Auto-generated method stub
 
 		try {
 			String vin;
@@ -53,7 +51,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 			if (moniter.getDocument().getVWarningClass() != null && moniter.getDocument().getVWarningNumber() != null) {
 				boolean warniningInDB = DTCWarning.read(moniter.getDocument().getVWarningClass(),
 						moniter.getDocument().getVWarningNumber());
-				//System.out.println("warniningInDB" + warniningInDB);
 				logger.info("warnining detail present in master table  :{} msg UUD :: {}",
 						warniningInDB, moniter.getJobName());
 
@@ -64,7 +61,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 
 				if (warniningInDB && moniter.getVEvtID() == 46) {
 					if (lastProcessedTimeStamp != null) {
-						//System.out.println("warning alreday present in warning table");
 						logger.info("warning alreday present in warning table for VEvtId--46 :{} msg UUD :: {}",
 								lastProcessedTimeStamp, moniter.getJobName());
 
@@ -72,7 +68,6 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 						WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
 								lastProcessedTimeStamp,moniter.getDocument().getVWarningClass(),moniter.getDocument().getVWarningNumber());
 						warningDao.warning_insert(warningNewRowDetail);
-						//System.out.println("warning not present in warning table");
 						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {} from alert",
 								warningNewRowDetail, moniter.getJobName());
 						warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
@@ -99,7 +94,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 						Long lastProcessedTimeStamp = warningDao.readRepairMaintenamce(moniter.getMessageType(), vin,
 								warning.getWarningClass(), warning.getWarningNumber());
 						if (lastProcessedTimeStamp == null) {
-							//System.out.println("warning not present in warning table");
+							logger.info("warning not present in warning table");
 
 							WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
 									lastProcessedTimeStamp,warning.getWarningClass(), warning.getWarningNumber());
@@ -130,7 +125,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
 		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 
-		//System.out.println("Inside warning calculation type 10");
+		logger.info("Inside warning calculation type 10");
 
 		warningDetail.setTripId(null);
 		warningDetail.setVin(row.getVin());
@@ -146,7 +141,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 
 		//warningDetail.setWarningClass(row.getDocument().getVWarningClass());
 		//warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
-		
+
 		warningDetail.setWarningClass(warningClass);
 		warningDetail.setWarningNumber(warningNumber);
 
@@ -255,42 +250,14 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 					  envParams.get(AlertConfigProp.MASTER_POSTGRE_DATABASE_NAME),
 					  envParams.get(AlertConfigProp.MASTER_POSTGRE_USER),
 					  envParams.get(AlertConfigProp.MASTER_POSTGRE_PASSWORD));
-			
-					/*"jdbc:postgresql://dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com",
-					Integer.parseInt("5432"), "dafconnectmasterdatabase",
-					"pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master", "9RQkJM2hwfe!");*/
 
-			/*
-			 * master_postgre_server_name=jdbc:postgresql://dafct-lan1-d-euwe-cdp-pgsql-
-			 * master.postgres.database.azure.com master_postgre_port=5432
-			 * master_postgre_userId=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master
-			 * master_postgre_database_name=dafconnectmasterdatabase
-			 * master_postgre_password=9RQkJM2hwfe!
-			 */
-
-			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
-					/*"jdbc:postgresql://dafct-lan1-d-euwe-cdp-pgsql-datamart.postgres.database.azure.com",
-					Integer.parseInt("5432"), "vehicledatamart", "pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart",
-					"9RQkJM2hwfe!");// 9RQkJM2hwfe!
-					
-*/
-					
-					envParams.get(AlertConfigProp.DATAMART_POSTGRE_SERVER_NAME),
+			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(	envParams.get(AlertConfigProp.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(AlertConfigProp.DATAMART_POSTGRE_PORT)),
 					envParams.get(AlertConfigProp.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(AlertConfigProp.DATAMART_POSTGRE_USER),
 					envParams.get(AlertConfigProp.DATAMART_POSTGRE_PASSWORD));
-			/*
-			 * postgresql_driver=org.postgresql.Driver postgresql_password=9RQkJM2hwfe!
-			 * server_name=jdbc:postgresql://dafct-lan1-d-euwe-cdp-pgsql-datamart.postgres.
-			 * database.azure.com port=5432 postgres_database_name=vehicledatamart
-			 * userId=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart
-			 */
-
 			warningDao.setConnection(connection);
 			DTCWarning.setConnection(masterConnection);
-
-			
 
 		} catch (Exception e) {
 

@@ -39,7 +39,6 @@ public class MonitorBasedAlertFunction implements Serializable {
 		// List<String> priorityList = Arrays.asList("E", "O");
 
 		try {
-			System.out.println("inside try");
 			for (String priority : priorityList) {
 				for (AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas) {
 					if (schema.getAlertType().equalsIgnoreCase("O")
@@ -48,16 +47,13 @@ public class MonitorBasedAlertFunction implements Serializable {
 								&& monitor.getDocument().getVWarningClass() <= 7) {
 
 							if (monitor.getVEvtID() == 46) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Critical Alert generated for VEvtid=46  :{} msg UUD :: {}", monitor.getJobName());
 
 								return getTarget(monitor, schema, 46);
 							} else if (monitor.getVEvtID() == 63) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Critical Alert generated for VEvtid=63  :{} msg UUD :: {}", monitor.getJobName());
 								return getTarget(monitor, schema, 63);
 							} else if (monitor.getVEvtID() == 44) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Critical Alert generated for VEvtid=44  :{} msg UUD :: {}", monitor.getJobName());
 								return getTarget(monitor, schema, 44);
 							}
@@ -72,15 +68,12 @@ public class MonitorBasedAlertFunction implements Serializable {
 								&& monitor.getDocument().getVWarningClass() <=11) {
 
 							if (monitor.getVEvtID() == 46) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Warning Alert generated for VEvtid=46  :{} msg UUD :: {}", monitor.getJobName());
 								return getTarget(monitor, schema, 46);
 							} else if (monitor.getVEvtID() == 63) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Warning Alert generated for VEvtid=63  :{} msg UUD :: {}", monitor.getJobName());
 								return getTarget(monitor, schema, 63);
 							} else if (monitor.getVEvtID() == 44) {
-								System.out.println("inside Monitor Function--alert raised");
 								logger.info("Warning Alert generated for VEvtid=44  :{} msg UUD :: {}", monitor.getJobName());
 								return getTarget(monitor, schema, 44);
 							}
