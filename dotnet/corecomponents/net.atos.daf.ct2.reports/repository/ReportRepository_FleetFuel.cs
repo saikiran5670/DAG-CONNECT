@@ -182,8 +182,36 @@ namespace net.atos.daf.ct2.reports.repository
                 //List<CO2Coefficient> co2CoEfficientData = await GetCO2CoEfficientData();
                 //List<IdlingConsumption> idlingConsumption = await GetIdlingConsumptionData("EN-GB");
                 //List<AverageTrafficClassification> averageTrafficClassification = await GetAverageTrafficClassificationData("EN-GB");
+                if (lstFleetDetails?.Count > 0)
+                {
 
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
+                    }
+                    */
+
+                    List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                    if (lstTripAlert.Count() > 0)
+                    {
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
+
 
             }
             catch (System.Exception ex)
@@ -307,6 +335,14 @@ namespace net.atos.daf.ct2.reports.repository
                                                   dr.driver_id = cmb.driverId";
 
                 List<FleetFuelDetailsByDriver> lstFleetDetails = (List<FleetFuelDetailsByDriver>)await _dataMartdataAccess.QueryAsync<FleetFuelDetailsByDriver>(queryFleetUtilization, parameterOfFilters);
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetailsByDriver>();
 
             }
@@ -555,6 +591,14 @@ namespace net.atos.daf.ct2.reports.repository
                     }
                     */
                 }
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetails trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception ex)
@@ -705,6 +749,16 @@ namespace net.atos.daf.ct2.reports.repository
                     */
                 }
 
+                List<string> vins = new List<string>();
+                vins.Add(fleetFuelFiltersDriver.VIN);
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFiltersDriver.StartDateTime, fleetFuelFiltersDriver.EndDateTime, vins);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetails trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception)
