@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string IdlingWithoutPTOpercent { get; set; } = string.Empty;
         public string FootBrake { get; set; } = string.Empty;
         //public string CO2Emmision { get; set; } = string.Empty;
-
+        public List<TripAlert> TripAlert { get; set; }
     }
 
     public class FleetFuelDetailsByDriver : FleetFuelDetails
