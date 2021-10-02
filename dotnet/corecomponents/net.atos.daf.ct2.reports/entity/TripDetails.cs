@@ -37,5 +37,24 @@ namespace net.atos.daf.ct2.reports.entity
         public string VehicleName { get; set; }
 
         public List<LiveFleetPosition> LiveFleetPosition { get; set; }
+        public List<TripAlert> TripAlert { get; set; }
+    }
+    public class TripAlert
+    {
+        public int Id { get; set; }
+        public string TripId { get; set; }
+        public int AlertId { get; set; }
+        public string AlertName { get; set; }
+        public string AlertType { get; set; }
+        public long AlertTime { get; set; }
+        public string AlertLevel { get; set; }
+        public string CategoryType { get; set; }
+        public double AlertLatitude { get; set; }
+        public double AlertLongitude { get; set; }
+        public int AlertGeolocationAddressId { get; set; }
+        public string AlertGeolocationAddress { get; set; }
+        public long ProcessedMessageTimeStamp { get; set; }
+        public string UrgencyLevelType { get; set; }
+
     }
 }
