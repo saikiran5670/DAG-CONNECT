@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.entity;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
@@ -25,13 +28,16 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         private readonly ISubscriptionManager _subscriptionManager;
         private readonly FeatureActivationCdcHelper _featureActivationCdcHelper;
         private readonly IFeatureActivationCdcManager _featureActivationCdcManager;
+        private readonly IVehicleManager _vehicleManager;
 
-        public FeatureActivationController(ILogger<FeatureActivationController> logger, ISubscriptionManager subscriptionManager, IFeatureActivationCdcManager featureActivationCdcManager)
+        public FeatureActivationController(ILogger<FeatureActivationController> logger, ISubscriptionManager subscriptionManager,
+            IFeatureActivationCdcManager featureActivationCdcManager, IVehicleManager vehicleManager)
         {
             this._logger = logger;
             this._subscriptionManager = subscriptionManager;
             _featureActivationCdcManager = featureActivationCdcManager;
             _featureActivationCdcHelper = new FeatureActivationCdcHelper(_featureActivationCdcManager);
+            _vehicleManager = vehicleManager;
         }
 
         [HttpPost]
@@ -81,7 +87,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
                     }
 
-                    var order = await _subscriptionManager.Subscribe(objSubs);
+                    var visibleVINs = await GetVisibleVINsToOrg(objSubs);
+
+                    var order = await _subscriptionManager.Subscribe(objSubs, visibleVINs);
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
                         if (order.Item2.Value is string[])
@@ -174,6 +182,24 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             }
         }
 
+        private async Task<IEnumerable<string>> GetVisibleVINsToOrg(SubscriptionActivation objSubs)
+        {
+            var package = await _subscriptionManager.GetPackageTypeByCode(objSubs.PackageId);
+
+            if (package?.Type?.ToLower()?.Equals("v") ?? false)
+            {
+                int orgId = await _subscriptionManager.GetOrganizationIdByCode(objSubs.OrganizationId);
+                if (orgId > 0 && objSubs.VINs.Count() > 0)
+                {
+                    var resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(orgId);
+                    var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Where(x => x.HasOwned == false).Select(x => x.VIN);
+                    return visibleVehicles.Intersect(objSubs.VINs);
+                }
+            }
+
+            return new List<string>() { };
+        }
+
         private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string errorCode = "", object value = null)
         {
             switch (statusCode)
@@ -202,6 +228,33 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     });
                 default:
                     return null;
+            }
+        }
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
             }
         }
     }

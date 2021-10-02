@@ -32,7 +32,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   driverTimeForm: FormGroup;
-  translationData: any;
+  translationData: any = {};
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;

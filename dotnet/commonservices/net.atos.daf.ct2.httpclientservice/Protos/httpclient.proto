@@ -5,7 +5,7 @@ option csharp_namespace = "net.atos.daf.ct2.httpclientservice";
 package httpclient;
 
 service HttpClientService {  
- //rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponse);
+ rpc GetVehiclesStatusOverview (VehiclesStatusOverviewRequest) returns (VehiclesStatusOverviewResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -17,4 +17,26 @@ enum ResponseCode{
 }
 message NoRequest{
 int32 Id = 1;
+}
+
+message VehiclesStatusOverviewRequest {
+repeated string Vins = 1;
+string Language = 2;
+string Retention =3;
+}
+
+message VehiclesStatusOverviewResults{
+string Vin = 1;
+string Status = 2;
+string Description =3;
+}
+
+message VehiclesStatusOverview { 
+repeated  VehiclesStatusOverviewResults VehiclesStatusOverviewResults=1;
+}
+
+message VehiclesStatusOverviewResponse{
+int32 HttpStatusCode =1;
+VehiclesStatusOverview VehiclesStatusOverview =2;
+string Message = 3;
 }

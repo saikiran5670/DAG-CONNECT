@@ -16,9 +16,9 @@ namespace net.atos.daf.ct2.subscription
             _subscriptionRepository = subscriptionRepository;
         }
 
-        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription)
+        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription, IEnumerable<string> visibleVINs)
         {
-            return await _subscriptionRepository.Subscribe(objSubscription);
+            return await _subscriptionRepository.Subscribe(objSubscription, visibleVINs);
         }
 
         public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Unsubscribe(UnSubscription objUnSubscription)
@@ -35,5 +35,14 @@ namespace net.atos.daf.ct2.subscription
             return await _subscriptionRepository.Get(objSubscriptionDetailsRequest);
         }
 
+        public async Task<int> GetOrganizationIdByCode(string organizationCode)
+        {
+            return await _subscriptionRepository.GetOrganizationIdByCode(organizationCode);
+        }
+
+        public async Task<Package> GetPackageTypeByCode(string packageCode)
+        {
+            return await _subscriptionRepository.GetPackageTypeByCode(packageCode);
+        }
     }
 }

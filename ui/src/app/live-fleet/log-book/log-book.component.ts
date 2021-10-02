@@ -59,7 +59,7 @@ selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
 displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
-translationData: any;
+translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
 showMapPanel: boolean = false;
@@ -585,7 +585,7 @@ ngOnDestroy(){
     // newDate.toString();
     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-    this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
+    this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertUrgency);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
     this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
@@ -983,7 +983,7 @@ ngOnDestroy(){
       // newDate.toString();
       this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
+      this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertUrgency);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
       if(this._state.data[0].vehicleGroupId != 0){
@@ -1458,13 +1458,13 @@ let prepare = []
 
 
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
-      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
+      let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
+      // this.singleVehicle = this.wholeTripData?.vehicleDetailsWithAccountVisibiltyList?.filter(i=> i.groupType == 'S');
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData.associatedVehicleRequest.filter(i => i.vin === element && i.groupType != 'S'); 
+            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S'); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -1505,16 +1505,21 @@ let prepare = []
      }
   }
 
-  getVehicleGroups(){
+  getVehicleGroups(){ 
     this.vehicleGroupListData.forEach(element => {
-      let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+      let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
       vehicleGroupDetails.forEach(item => {
-         let vehicleGroupObj= {
-           "vehicleGroupId" : item.split("~")[0],
-           "vehicleGroupName" : item.split("~")[1],
-           "vehicleId" : element.vehicleId
-         }
-         this.vehicleGrpDD.push(vehicleGroupObj);       
+        let itemSplit = item.split("~");
+        if (itemSplit[2] != 'S') {
+          let vehicleGroupObj = {
+            "vehicleGroupId": itemSplit[0],
+            "vehicleGroupName": itemSplit[1],
+            "vehicleId": element.vehicleId
+          }
+          this.vehicleGrpDD.push(vehicleGroupObj);
+        } else {
+          this.singleVehicle.push(element);
+        }
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");

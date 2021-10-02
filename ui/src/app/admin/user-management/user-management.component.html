@@ -14,13 +14,13 @@
     </div>  
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails || 'All Account Details' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
       </div>
@@ -35,45 +35,45 @@
             </div>
               <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button mat-flat-button color="primary" (click)="newUser()">
-                <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser || 'New Account' }}
+                <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser }}
                 </button>
               </div>
         </div>
       </div>
     </div>
-    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound }}</div>
     <div *ngIf='initData.length > 0' id="accountMgmtData">
       <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[4]" >
         <ng-container matColumnDef="firstName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-            <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+            <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew}}</span>
             <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.firstName }} {{ row.lastName }}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="emailId">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID }}</mat-header-cell>
           <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="roles">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole }}</mat-header-cell>
           <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'Account Group' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup }}</mat-header-cell>
           <mat-cell class="link" *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
-          <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction }} </mat-header-cell>
           <mat-cell *matCellDef="let row" class="action">
-            <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+            <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView }}">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button *ngIf="(!adminAccessType.adminReadOnlyAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+            <button *ngIf="(!adminAccessType.adminReadOnlyAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit }}">
               <mat-icon>create</mat-icon>
             </button>
-            <button *ngIf="(adminAccessType.adminFullAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+            <button *ngIf="(adminAccessType.adminFullAccess) && row.editDeletAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete}}">
               <mat-icon class="deleteIcon">delete_outline</mat-icon>
             </button>
           </mat-cell>

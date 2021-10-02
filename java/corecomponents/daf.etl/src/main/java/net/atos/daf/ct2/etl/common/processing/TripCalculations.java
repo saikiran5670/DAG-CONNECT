@@ -55,7 +55,6 @@ public class TripCalculations implements Serializable{
 								if(mapBrodcast.contains(value.getFuelType())){
 									logger.info("Inside FuelCoefficientCalculation fueltpe:{},  coff is: {} ",value.getFuelType(), mapBrodcast.get(value.getFuelType()));
 									tripStsAggr.setTripCalC02Emission((mapBrodcast.get(value.getFuelType()) * (value.getVStopFuel() - value.getVStartFuel())) / 1000000);
-									
 								}else{
 									tripStsAggr.setTripCalC02Emission(Double.valueOf(0));
 								}
@@ -186,6 +185,38 @@ public class TripCalculations implements Serializable{
 								}
 							
 								tripStsAggr.setTripCalDpaScore((brakingScore + anticipationScore)/2);
+								
+								tripStsAggr.setVTripIdlePTOFuelConsumed(value.getVTripIdlePTOFuelConsumed());
+								tripStsAggr.setVPtoDist(value.getVPtoDist());
+								
+								if(0 != value.getVPtoDist())
+									tripStsAggr.setIdlingConsumptionWithPTO((Double.valueOf(value.getVTripIdlePTOFuelConsumed())/value.getVPtoDist()) *100);
+								else
+									tripStsAggr.setIdlingConsumptionWithPTO(Double.valueOf(value.getVTripIdlePTOFuelConsumed()));
+									
+								tripStsAggr.setVTripCruiseControlDuration(value.getVTripCruiseControlDuration());
+								tripStsAggr.setVTripIdleWithoutPTOFuelConsumed(value.getVTripIdleWithoutPTOFuelConsumed());
+								tripStsAggr.setVTripMotionFuelConsumed(value.getVTripMotionFuelConsumed());
+								tripStsAggr.setVTripMotionBrakeCount(value.getVTripMotionBrakeCount());
+								tripStsAggr.setVTripMotionBrakeDist(value.getVTripMotionBrakeDist());
+								tripStsAggr.setVTripMotionPTODuration(value.getVTripMotionPTODuration());
+								tripStsAggr.setVTripMotionPTOFuelConsumed(value.getVTripMotionPTOFuelConsumed());
+								tripStsAggr.setAclnPedalDistr(value.getAclnPedalDistr());
+								tripStsAggr.setAclnMinRangeInt(value.getAclnMinRangeInt());
+								tripStsAggr.setAclnMaxRangeInt(value.getAclnMaxRangeInt());
+								tripStsAggr.setAclnDistrStep(value.getAclnDistrStep());
+								tripStsAggr.setAclnDistrArrayTime(value.getAclnDistrArrayTime());
+								tripStsAggr.setVRetarderTorqueActualDistr(value.getVRetarderTorqueActualDistr());
+								tripStsAggr.setVRetarderTorqueMinRangeInt(value.getVRetarderTorqueMinRangeInt());
+								tripStsAggr.setVRetarderTorqueMaxRangeInt(value.getVRetarderTorqueMaxRangeInt());
+								tripStsAggr.setVRetarderTorqueDistrStep(value.getVRetarderTorqueDistrStep());
+								tripStsAggr.setVRetarderTorqueDistrArrayTime(value.getVRetarderTorqueDistrArrayTime());
+								tripStsAggr.setVEngineLoadAtEngineSpeedDistr(value.getVEngineLoadAtEngineSpeedDistr());
+								tripStsAggr.setVEngineLoadMinRangeInt(value.getVEngineLoadMinRangeInt());
+								tripStsAggr.setVEngineLoadMaxRangeInt(value.getVEngineLoadMaxRangeInt());
+								tripStsAggr.setVEngineLoadDistrStep(value.getVEngineLoadDistrStep());
+								tripStsAggr.setVEngineLoadDistrArrayTime(value.getVEngineLoadDistrArrayTime());
+
 								
 
 							} catch (Exception e) {

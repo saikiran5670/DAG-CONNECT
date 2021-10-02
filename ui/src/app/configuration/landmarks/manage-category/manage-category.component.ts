@@ -19,7 +19,7 @@ import { DeleteCategoryPopupComponent } from './delete-category-popup/delete-cat
 export class ManageCategoryComponent implements OnInit {
   initData: any = [];
   dataSource = new MatTableDataSource(this.initData);
-  @Input() translationData: any;
+  @Input() translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   createViewEditStatus: boolean = false;

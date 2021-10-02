@@ -43,7 +43,7 @@ export class UserGroupManagementComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   inputText: any;
   actionBtn:any; 
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   showLoadingIndicator: any = false;
   createViewEditStatus: boolean = false;

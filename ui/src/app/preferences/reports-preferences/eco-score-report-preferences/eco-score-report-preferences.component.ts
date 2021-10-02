@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class EcoScoreReportPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setEcoScoreFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;

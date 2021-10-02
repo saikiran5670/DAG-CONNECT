@@ -121,7 +121,7 @@ export class HereService {
     
     getHerePois(){
             
-        let params = `apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`
+        let params = `apiKey=${this.map_key}&pois`
 
         let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?';
         return this.httpClient.get<any>(routeURL + (params));
