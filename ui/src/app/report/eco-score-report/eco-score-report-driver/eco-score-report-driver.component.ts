@@ -329,7 +329,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
         id: "chart2",
         type: "line",
         height: 515,
-        width: 1200,
         toolbar: {
           autoSelected: "pan",
           show: false

@@ -186,7 +186,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         {
             var package = await _subscriptionManager.GetPackageTypeByCode(objSubs.PackageId);
 
-            if (package.Type.ToLower().Equals("v"))
+            if (package?.Type?.ToLower()?.Equals("v") ?? false)
             {
                 int orgId = await _subscriptionManager.GetOrganizationIdByCode(objSubs.OrganizationId);
                 if (orgId > 0 && objSubs.VINs.Count() > 0)
