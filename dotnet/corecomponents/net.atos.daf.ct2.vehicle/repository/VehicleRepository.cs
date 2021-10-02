@@ -305,7 +305,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string")
             {
                 _log.Info("VehicleUpdate TCU check if");
-                vehicle = await VehicleNameExists(vehicle);
+                //vehicle = await VehicleNameExists(vehicle);
                 //commenting as PersistenceStatus bug 6239
                 //vehicle = await VehicleLicensePlateNumberExists(vehicle);
 

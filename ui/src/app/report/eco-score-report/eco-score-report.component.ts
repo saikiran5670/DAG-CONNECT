@@ -829,7 +829,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
       if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll  });
-      if(this.driverListData.length>1){
+      if(this.driverListData.length>0){
         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
       }
       let vehicleData = this.vehicleListData.slice();
