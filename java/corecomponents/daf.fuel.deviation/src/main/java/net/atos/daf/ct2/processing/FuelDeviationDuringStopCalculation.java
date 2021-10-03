@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.processing;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -34,61 +35,34 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 				
 				BigDecimal vFuelStopPrevVal = fuelStopState.get(key);
 				
-				//if(FuelDeviationConstants.INDEX_TRIP_END == vFuelObj.getVEvtId() ){
 				if(vFuelStopPrevVal == null){
 					fuelStopState.put(key, vFuelObj.getVFuelLevel());
 				}else{
+					//1st cond is not required cross check 
+					if(Objects.nonNull(vFuelStopPrevVal) && Objects.nonNull(vFuelObj.getVFuelLevel())){
 					
-					if(vFuelStopPrevVal != null && vFuelObj.getVFuelLevel() != null){
-						/*BigDecimal fuelIncreaseDiff = vFuelObj.getVFuelLevel().subtract(vFuelStopPrevVal);
-						logger.info("Fuel Stop Deviation, tripStartFuel : "+vFuelObj.getVFuelLevel() +" vFuelStopPrevVal : "+ vFuelStopPrevVal + " fuelIncreaseDeviation : "+fuelIncreaseDiff + "stopIncreaseThresholdVal: "+stopIncreaseThresholdVal);
+						if((FuelDeviationConstants.INDEX_TRIP_START).intValue() == vFuelObj.getVEvtId()){
+							BigDecimal fuelIncreaseDiff = vFuelObj.getVFuelLevel().subtract(vFuelStopPrevVal);
+							logger.info("Fuel Increase Stop Deviation, vin:{}, trip_id :{}, tripStartFuel: {} , vFuelStopPrevVal:{}, fuelIncreaseDiff: {}, stopIncreaseThresholdVal: {}  ", vFuelObj.getVin(), vFuelObj.getTripId(), vFuelObj.getVFuelLevel(), vFuelStopPrevVal, fuelIncreaseDiff, stopIncreaseThresholdVal);
 
-						//1 when fuelIncreaseDiff > threshold
-						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(stopIncreaseThresholdVal) > 0){
-							FuelDeviation fuelIncreaseEvt = createFuelDeviationEvtObj(vFuelObj, FuelDeviationConstants.FUEL_DEVIATION_INCREASE_EVENT, FuelDeviationConstants.FUEL_DEVIATION_STOP_ACTIVITY_TYPE);
-							fuelIncreaseEvt.setFuelDiff(fuelIncreaseDiff.doubleValue());
-							
-							out.collect(fuelIncreaseEvt);
-						}else{
-							BigDecimal fuelDecreaseDiff = (vFuelStopPrevVal.subtract(vFuelObj.getVFuelLevel())).abs();
-							logger.info("Fuel Stop Deviation, tripStartFuel : "+vFuelObj.getVFuelLevel() +" tripStopFuel : "+ vFuelStopPrevVal + " fuelLossDeviation : "+fuelDecreaseDiff +" stopDecreaseThresholdVal: "+stopDecreaseThresholdVal);
-							
+							//1 when fuelIncreaseDiff > threshold
+							if(fuelIncreaseDiff.compareTo(stopIncreaseThresholdVal) > 0){
+								FuelDeviation fuelIncreaseEvt = createFuelDeviationEvtObj(vFuelObj, FuelDeviationConstants.FUEL_DEVIATION_INCREASE_EVENT, FuelDeviationConstants.FUEL_DEVIATION_STOP_ACTIVITY_TYPE);
+								fuelIncreaseEvt.setFuelDiff(fuelIncreaseDiff.doubleValue());
+								
+								out.collect(fuelIncreaseEvt);
+							}
+						
+							BigDecimal fuelDecreaseDiff = vFuelStopPrevVal.subtract(vFuelObj.getVFuelLevel());
+							logger.info("Fuel decrease Stop Deviation, vin:{}, trip_id :{}, tripStartFuel: {} , vFuelStopPrevVal:{},fuelDecreaseDiff:{}, stopDecreaseThresholdVal: {}, vin:{}  ", vFuelObj.getVin(), vFuelObj.getTripId(), vFuelObj.getVFuelLevel(),  vFuelStopPrevVal, fuelDecreaseDiff, stopDecreaseThresholdVal);
+
+							//1 when fuelIncreaseDiff > threshold
 							if(fuelDecreaseDiff.compareTo(stopDecreaseThresholdVal) > 0){
 								FuelDeviation fuelDecreaseEvt = createFuelDeviationEvtObj(vFuelObj, FuelDeviationConstants.FUEL_DEVIATION_DECREASE_EVENT, FuelDeviationConstants.FUEL_DEVIATION_STOP_ACTIVITY_TYPE);
 								fuelDecreaseEvt.setFuelDiff(fuelDecreaseDiff.doubleValue());
 								
 								out.collect(fuelDecreaseEvt);
 							}
-						}
-						
-						fuelStopState.put(key, vFuelObj.getVFuelLevel());*/
-						
-						BigDecimal fuelIncreaseDiff = BigDecimal.ZERO;
-						
-						if((FuelDeviationConstants.INDEX_TRIP_START).intValue() == vFuelObj.getVEvtId())
-							fuelIncreaseDiff = vFuelObj.getVFuelLevel().subtract(vFuelStopPrevVal);
-						logger.info("Fuel Increase Stop Deviation, tripStartFuel: {} , vFuelStopPrevVal:{}, fuelIncreaseDiff: {}, stopIncreaseThresholdVal: {}, vin:{}  ",vFuelObj.getVFuelLevel(),  vFuelStopPrevVal, fuelIncreaseDiff, stopIncreaseThresholdVal, vFuelObj.getVin());
-
-						//1 when fuelIncreaseDiff > threshold
-						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(stopIncreaseThresholdVal) > 0){
-							FuelDeviation fuelIncreaseEvt = createFuelDeviationEvtObj(vFuelObj, FuelDeviationConstants.FUEL_DEVIATION_INCREASE_EVENT, FuelDeviationConstants.FUEL_DEVIATION_STOP_ACTIVITY_TYPE);
-							fuelIncreaseEvt.setFuelDiff(fuelIncreaseDiff.doubleValue());
-							
-							out.collect(fuelIncreaseEvt);
-						}
-						
-						BigDecimal fuelDecreaseDiff = BigDecimal.ZERO;
-						
-						if((FuelDeviationConstants.INDEX_TRIP_START).intValue() == vFuelObj.getVEvtId())
-							fuelDecreaseDiff = vFuelStopPrevVal.subtract(vFuelObj.getVFuelLevel());
-						logger.info("Fuel decrease Stop Deviation, tripStartFuel: {} , vFuelStopPrevVal:{},fuelDecreaseDiff:{}, stopDecreaseThresholdVal: {}, vin:{}  ",vFuelObj.getVFuelLevel(),  vFuelStopPrevVal, fuelDecreaseDiff, stopDecreaseThresholdVal, vFuelObj.getVin());
-
-						//1 when fuelIncreaseDiff > threshold
-						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(stopDecreaseThresholdVal) > 0){
-							FuelDeviation fuelDecreaseEvt = createFuelDeviationEvtObj(vFuelObj, FuelDeviationConstants.FUEL_DEVIATION_DECREASE_EVENT, FuelDeviationConstants.FUEL_DEVIATION_STOP_ACTIVITY_TYPE);
-							fuelDecreaseEvt.setFuelDiff(fuelDecreaseDiff.doubleValue());
-							
-							out.collect(fuelDecreaseEvt);
 						}
 						
 						fuelStopState.put(key, vFuelObj.getVFuelLevel());
