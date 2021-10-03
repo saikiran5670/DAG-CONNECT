@@ -174,7 +174,6 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , '' AS StartPosition					
                                                                   , '' AS EndPosition					
                                                     			  , round(fd.DPABrakingScore,4) 							 				as DPABrakingScore                         
-                                                    			  , round(fd.DPAAnticipationScore,4) 						 				as DPAAnticipationScore                     
                                                     			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
                                                     			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
                                                     			  , round(fd.FootBrake,4) 								 					as FootBrake
@@ -276,13 +275,16 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
                                                           , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
                                                 		  , SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
-                                                          , SUM(veh_message_dpaanticipation_score) 								   as DPAAnticipationScore                     
+                                                           , SUM(veh_message_dpaanticipation_score/
+	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
+	                                                              else 1 END)) 	   as DPAAnticipationScore       
                                                           , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
                                                           , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
                                                           , SUM(veh_message_brake_duration) 									   as FootBrake
                                                           , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
 														  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
 														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
+                                                          , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                   		From
                                                   			tripdetail.trip_statistics
                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -319,10 +321,10 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
                                                   		  , round(fd.average_traffic_classification)               					as AverageTrafficClassification
-                                                  		  , case when fd.CCFuelDistance>0 then round((fd.CCFuelConsumed/fd.CCFuelDistance),5) else fd.CCFuelConsumed end	as CCFuelConsumption
+                                                  		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
                                                   		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end	as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     					as IdlingConsumption
-                                                  		 ,case when numoftripswithdpascore>0 then  (dpa_score/numoftripswithdpascore)
+                                                  		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
 																      else dpa_score  end  								                    as DPAScore
                                                          , round(fd.CCFuelDistance,2) 							   					as CCFuelDistance
                                                          , round(fd.CCFuelConsumed,2) 							   					as CCFuelConsumed
@@ -331,7 +333,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , '' AS StartPosition
                                                          , '' AS EndPosition
                                                 		 , round(fd.DPABrakingScore,4) 							   					as DPABrakingScore                         
-                                                         , round(fd.DPAAnticipationScore,4) 						   				as DPAAnticipationScore                     
+                                                          ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
+                                                                else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
                                                          , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                
                                                          , round(fd.IdlingPTO,4) 								 	   				as IdlingPTO 
                                                          , round(fd.FootBrake,4) 								 	   				as FootBrake
