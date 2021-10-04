@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.reports.entity
         public long EndDateTime { get; set; }
         public string VIN { get; set; }
         public string DriverId { get; set; }
+        public string LanguageCode { get; set; } = "EN-GB";
     }
 }

@@ -175,9 +175,9 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		 */
 
 		if (tripStatistics.getModified_at() != null)
-			stmt_update_existing_trip.setLong(22, tripStatistics.getModified_at());
+			stmt_update_existing_trip.setLong(14, tripStatistics.getModified_at());
 		else
-			stmt_update_existing_trip.setLong(22, 0);
+			stmt_update_existing_trip.setLong(14, 0);
 
 		return stmt_update_existing_trip;
 	}
@@ -288,7 +288,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		if (tripStatistics.getVehicle_health_status_type() != null)
 			stmt_insert_current_trip.setString(21, String.valueOf(tripStatistics.getVehicle_health_status_type()));
 		else
-			stmt_insert_current_trip.setString(21, String.valueOf(Character.valueOf(' ')));
+			stmt_insert_current_trip.setString(21, String.valueOf(Character.valueOf('N')));
 
 		if (tripStatistics.getLatest_warning_class() != null)
 			stmt_insert_current_trip.setLong(22, tripStatistics.getLatest_warning_class());
@@ -421,7 +421,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				trip_stats_update_stmt = connection.prepareStatement(UPDATE_CURRENT_TRIP,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				trip_stats_update_stmt = fillUpdateStatement(trip_stats_update_stmt, row);
-				trip_stats_update_stmt.setString(23, row.getTripId());
+				trip_stats_update_stmt.setString(15, row.getTripId());
 
 				System.out.println("UPDATE_CURRENT_TRIP query : " + trip_stats_update_stmt);
 

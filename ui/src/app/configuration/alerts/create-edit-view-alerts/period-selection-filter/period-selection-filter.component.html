@@ -2,7 +2,8 @@
   <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
     <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectCalender || 'Select Calender' }}
     </mat-label>
-    <mat-label  formControlName="dayCalender" class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
+    <input type="hidden" value='' formControlName="dayCalender"> 
+    <mat-label  class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
         class='mandatoryColor'>*</span>
       <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
         day)'}}</mat-label>
