@@ -38,6 +38,8 @@ int32 AccountId = 1;
 int32 OrgId = 2;
 int32 ContextOrgId = 3;
 int32 FeatureId = 4;
+string Language = 5;
+string Retention = 6;
 }
 
 message VehicleStatusList{
