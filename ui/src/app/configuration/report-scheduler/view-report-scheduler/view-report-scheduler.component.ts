@@ -15,7 +15,7 @@ import { Util } from 'src/app/shared/util';
 })
 export class ViewReportSchedulerComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Output() backToPage = new EventEmitter<any>();
 

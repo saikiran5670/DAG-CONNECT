@@ -7,6 +7,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportService } from 'src/app/services/report.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Util } from '../../../shared/util';
+import { ReportMapService } from '../../report-map.service';
 
 @Component({
   selector: 'app-search-criteria',
@@ -41,13 +42,14 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   wholeTripData: any = [];
   vehicleDD: any = [];
+  singleVehicle: any = [];
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -139,25 +141,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    if(date){
-      let _x = timeObj.split(":")[0];
-      let _y = timeObj.split(":")[1];
-      if (this.prefTimeFormat == 12) {
-        if (_y.split(' ')[1] == 'AM' && _x == 12) {
-          date.setHours(0);
-        } else {
-          date.setHours(_x);
-        }
-        date.setMinutes(_y.split(' ')[0]);
-      } else {
-        date.setHours(_x);
-        date.setMinutes(_y);
-      }
-
-      date.setSeconds(type == 'start' ? '00' : '59');
-      return date;
-    }
-  }
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
+   }
 
   setPrefFormatDate() {
     switch (this.prefDateFormat) {
@@ -247,7 +232,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   loadWholeTripData() {
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripVehicleperformance(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.wholeTripData = tripData;
       this.filterDateData();
     }, (error) => {
@@ -267,12 +252,21 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if (filterVIN.length > 0) {
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -301,7 +295,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       }
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
     }
-    this.vehicleDD = this.vehicleListData.slice();
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   setDefaultStartEndTime() {
@@ -333,8 +339,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       } else {
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.searchForm.get('startTime').setValue("00:00");
-        this.searchForm.get('endTime').setValue("23:59");
+        this.searchForm.get('startTime').setValue("12:00 AM");
+        this.searchForm.get('endTime').setValue("11:59 PM");
       }
     }
 
@@ -393,7 +399,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     if (event.value || event.value == 0) {
       this.internalSelection = true;
       if (parseInt(event.value) == 0) { //-- all group
-        this.vehicleDD = this.vehicleListData.slice();
+        let vehicleData = this.vehicleListData.slice();
+        this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
@@ -481,42 +488,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  formStartDate(date: any) {
-    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
-    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
-    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
-    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
-    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
-    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
-    let _date: any;
-    let _time: any;
-    if (this.prefTimeFormat == 12) {
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
-    } else {
-      _time = `${h}:${m}:${s}`;
-    }
-    switch (this.prefDateFormat) {
-      case 'ddateformat_dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        break;
-      }
-      default: {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-      }
-    }
-    return _date;
+  formStartDate(date: any) {    
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   onReset() {

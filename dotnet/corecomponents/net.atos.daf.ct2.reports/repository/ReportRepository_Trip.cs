@@ -19,10 +19,10 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@fromdate", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-90)));
                 parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
-                var query = @"SELECT DISTINCT vin,start_time_stamp AS StartTimeStamp,
-                                     end_time_stamp AS EndTimeStamp FROM tripdetail.trip_statistics 
+                var query = @"SELECT DISTINCT vin,
+                                     array_agg(distinct end_time_stamp) AS EndTimeStamp FROM tripdetail.trip_statistics 
                               WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
-                                     vin = Any(@vins)";
+                                     vin = Any(@vins) group by vin";
                 return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
@@ -82,13 +82,14 @@ namespace net.atos.daf.ct2.reports.repository
 		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
 		                        )
-                        order by endtimestamp desc
-                ";
+                        order by endtimestamp desc";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", tripFilters.StartDateTime);
                 parameter.Add("@EndDateTime", tripFilters.EndDateTime);
                 parameter.Add("@vin", tripFilters.VIN);
+
+
 
                 List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
                 if (data?.Count > 0 && isLiveFleetRequired)
@@ -109,6 +110,16 @@ namespace net.atos.daf.ct2.reports.repository
                         await GetLiveFleetPosition(item);
                     }
                     */
+                    List<string> vins = new List<string>();
+                    vins.Add(tripFilters.VIN);
+                    List<TripAlert> lstTripAlert = await GetTripAlert(tripFilters.StartDateTime, tripFilters.EndDateTime, vins);
+                    if (lstTripAlert.Count() > 0)
+                    {
+                        foreach (TripDetails trip in data)
+                        {
+                            trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList();
+                        }
+                    }
                 }
                 lstTripEntityResponce = data;
                 return lstTripEntityResponce;
@@ -203,7 +214,8 @@ namespace net.atos.daf.ct2.reports.repository
                                          gps_latitude as GpsLatitude,
                                          gps_longitude as GpsLongitude,
                                          fuel_consumption as Fuelconsumtion,
-                                         co2_emission as Co2emission
+                                         co2_emission as Co2emission,
+                                         message_time_stamp as MessageTimeStamp     
                                     from livefleet.livefleet_position_statistics
                                     where trip_id = ANY (@trip_id) order by id desc";
                 List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
@@ -223,6 +235,53 @@ namespace net.atos.daf.ct2.reports.repository
             }
 
         }
+
+        private async Task<List<TripAlert>> GetTripAlert(double startDate, double endDate, List<string> vin)
+        {
+            try
+            {
+                string queryAlert = @"SELECT                                             
+                                                TA.trip_id TripId, 
+                                                TA.vin as VIN, 
+                                                category_type as CategoryType, 
+                                                type AlertType,
+                                                name as AlertName,                                                
+                                                latitude as AlertLatitude, 
+                                                longitude as AlertLongitude,
+                                                alert_generated_time as AlertTime,   
+                                                processed_message_time_stamp ProcessedMessageTimeStamp, 
+                                                urgency_level_type as UrgencyLevelType
+	                                FROM tripdetail.tripalert TA
+	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
+	                                 where  TS.vin =ANY (@vin)
+	                                 AND (
+		                                    TS.end_time_stamp >= @StartDateTime and
+		                                    TS.end_time_stamp <= @EndDateTime
+		                                  )
+                                         order by TS.end_time_stamp desc";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@StartDateTime", startDate);
+                parameter.Add("@EndDateTime", endDate);
+                parameter.Add("@vin", vin);
+                List<TripAlert> lstTripAlert = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryAlert, parameter);
+
+                if (lstTripAlert.Count() > 0)
+                {
+                    return lstTripAlert;
+                }
+                else
+                {
+                    return new List<TripAlert>();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
 
         #region Generic code to Prepare In query String
 

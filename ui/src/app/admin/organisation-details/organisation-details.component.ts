@@ -17,7 +17,7 @@ export class OrganisationDetailsComponent implements OnInit {
   initData: any = [];
   accountNavMenu: any = [];
   dataSource: any;
-  translationData: any;
+  translationData: any ={};
   accountOrganizationId: any = 0;
   localStLanguage: any;
   orgDetailsPreferenceForm: FormGroup;
@@ -64,14 +64,14 @@ export class OrganisationDetailsComponent implements OnInit {
   isDefaultBrandLogo: any = false;
 
   constructor(private domSanitizer: DomSanitizer, private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblCountry :'Country'
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblCountry :'Country'
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));

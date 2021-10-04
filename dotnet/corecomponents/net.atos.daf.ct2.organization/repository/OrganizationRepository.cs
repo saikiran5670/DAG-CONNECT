@@ -448,9 +448,10 @@ namespace net.atos.daf.ct2.organization.repository
 
                     await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
-                    // Assign base package at ORG lavel if not exist                   
-                    var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // Assign base package at ORG lavel if not exist
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
                 else
                 {
@@ -489,8 +490,9 @@ namespace net.atos.daf.ct2.organization.repository
                     await CreateDefaultGroupsAndAccessRelationship(organizationId);
 
                     // Assign base package at ORG lavel
-                    var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
             }
             catch (Exception ex)
@@ -1347,5 +1349,27 @@ namespace net.atos.daf.ct2.organization.repository
         }
 
         #endregion
+
+        public async Task<IEnumerable<OrgRelationshipConflict>> GetVisibleVehiclesGroupCheck(int[] vehicleGroupIds, int orgId)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@org_id", orgId);
+                parameters.Add("@vehicle_group_ids", vehicleGroupIds);
+                var query = @"select grp.name, string_agg(v.vin::text, ', ') as vins
+	                        from master.group grp
+	                        inner join master.groupref gref on grp.id=gref.group_id and grp.id = any(@vehicle_group_ids) and 
+                                                               grp.organization_id = @org_id and grp.object_type='V' and grp.group_type='G'
+	                        inner join master.vehicle v on gref.ref_id = v.id
+	                        where v.organization_id <> @org_id
+	                        group by grp.name";
+                return await _dataAccess.QueryAsync<OrgRelationshipConflict>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FleetKpiFilterRequest objDashboardFilter = JsonConvert.DeserializeObject<FleetKpiFilterRequest>(filters);
                 _logger.Info("GetFleetKpi method in dashboard API called.");
                 var data = await _dashboardServiceClient.GetFleetKPIDetailsAsync(objDashboardFilter);
-                if (data != null)
+                if (data?.FleetKpis != null)
                 {
                     data.Message = DashboardConstant.GET_DASBHOARD_SUCCESS_MSG;
                     return Ok(data);
@@ -177,12 +177,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(DashboardConstant.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(DashboardConstant.ORGANIZATION_REQUIRED_MSG);
 
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
 
                 var response = await _dashboardServiceClient.GetVisibleVinsAsync(
                                               new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId }, headers);

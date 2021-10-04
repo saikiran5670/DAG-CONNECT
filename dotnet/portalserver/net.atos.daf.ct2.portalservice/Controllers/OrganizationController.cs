@@ -37,7 +37,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly string _fk_Constraint = "violates foreign key constraint";
-        private readonly AccountPrivilegeChecker _privilegeChecker;
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
@@ -46,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
                                       IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor,
-                                      SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                                      SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._organizationClient = organizationClient;
@@ -211,7 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Id = filterRequest.Id,
                     Featuresetid = filterRequest.FeaturesetId,
                     OrganizationId = filterRequest.OrganizationId,
-                    Level = filterRequest.Level,
+                    Level = _userDetails.RoleLevel,
                     Code = filterRequest.Code ?? string.Empty
                 };
 
@@ -233,7 +232,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var level = await GetUserPrivilegeLevel();
+                var level = _userDetails.RoleLevel;
                 var levelCode = new RelationshipLevelCode();
                 var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
@@ -743,7 +742,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 OrgRelationshipCreateRequest objRelationship = new OrgRelationshipCreateRequest();
                 objRelationship.RelationShipId = request.RelationShipId;
                 objRelationship.VehicleGroupID.Add(request.VehicleGroupId);
-                objRelationship.OwnerOrId = request.OwnerOrgId;
+                objRelationship.OwnerOrgId = request.OwnerOrgId;
                 objRelationship.CreatedOrgId = request.CreatedOrgId;
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.Allow_chain;
@@ -753,16 +752,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
+                  "CreateOrgRelationShip method in Organization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(createResponse);
                 }
                 if (createResponse.Code == OrganizationBusinessService.Responcecode.Conflict)
                 {
                     return StatusCode(409, createResponse);
                 }
+                else if (createResponse.Code == OrganizationBusinessService.Responcecode.Forbidden)
+                {
+                    return StatusCode(403, createResponse);
+                }
                 else
                 {
-                    return StatusCode(500, "Error in creating relationships");
+                    return StatusCode(500, "Error in creating organization relationship.");
                 }
 
             }
@@ -884,6 +887,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
+                request.Level = _userDetails.RoleLevel;
                 var relationList = await _organizationClient.GetRelationshipAsync(request);
 
                 RelationShipMappingDetails details = new RelationShipMappingDetails();
@@ -900,11 +904,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 foreach (var item in organizationList.OrganizationList)
                 {
-                    details.OrganizationData.Add(new OrganizationData
+                    if (item.Id != organizationId)
                     {
-                        OrganizationId = Convert.ToInt32(item.Id),
-                        OrganizationName = item.Name
-                    });
+                        details.OrganizationData.Add(new OrganizationData
+                        {
+                            OrganizationId = Convert.ToInt32(item.Id),
+                            OrganizationName = item.Name
+                        });
+                    }
                 }
                 int ownerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
                 int oemRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);

@@ -33,7 +33,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   // @Input() ecoScoreForm: any;
   @Input() ecoScoreDriverDetails: any;
   @Input() ecoScoreDriverDetailsTrendLine: any;
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   @Input() prefUnitFormat: any;
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
@@ -182,20 +182,20 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   loadOverallPerfomance(){
     // Doughnut - Eco-Score
-    this.doughnutChartLabelsEcoScore = [(this.translationData.lblEcoScore || 'Eco-Score'), '', ''];
+    this.doughnutChartLabelsEcoScore = [(this.translationData.lblEcoScore ), '', ''];
     this.doughnutChartDataEcoScore= [ [this.ecoScoreDriverDetails.overallPerformance.ecoScore.score, this.ecoScoreDriverDetails.overallPerformance.ecoScore.targetValue] ];
     // Doughnut - Fuel Consumption
-    this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption || 'Fuel Consumption'), '', ''];
+    this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption ), '', ''];
     //litre/100 km - mpg pending
     let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
     if(this.prefUnitFormat == 'dunit_Imperial' && fuelConsumption !== '0.0')
       fuelConsumption = (282.481/(fuelConsumption)).toFixed(2);
     this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
     // Doughnut - Anticipation Score
-    this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore || 'Anticipation Score'), '', ''];
+    this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore ), '', ''];
     this.doughnutChartDataAnticipationScore= [ [this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue] ];
     // Doughnut - Braking Score
-    this.doughnutChartLabelsBrakingScore = [(this.translationData.lblBrakingScore || 'Braking Score'), '', ''];
+    this.doughnutChartLabelsBrakingScore = [(this.translationData.lblBrakingScore ), '', ''];
     this.doughnutChartDataBrakingScore = [ [this.ecoScoreDriverDetails.overallPerformance.brakingScore.score, this.ecoScoreDriverDetails.overallPerformance.brakingScore.targetValue] ];
 
     this.pluginsCommon = [{
@@ -329,7 +329,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
         id: "chart2",
         type: "line",
         height: 515,
-        width: 1200,
         toolbar: {
           autoSelected: "pan",
           show: false
@@ -499,7 +498,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   formatData(data, isBrushChart){
     let result = [];
     for (var i in data) {      
-      let val = (new Date(i)).getTime();
+      let val = Util.convertUtcToDateTZ((new Date(i)).getTime(), this.prefObj.prefTimeZone);
       this.calMinMaxValue(val);
       let temp = Number.parseFloat(data[i]);
       if(isBrushChart)
@@ -515,7 +514,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     for (var i in data) {
       let arr = data[i].substr(0, data[i].lastIndexOf(":"));
       let temp = Number.parseFloat((arr.split(":").join(".")));
-      let val = (new Date(i)).getTime();
+      let val = Util.convertUtcToDateTZ((new Date(i)).getTime(), this.prefObj.prefTimeZone);
       this.calMinMaxValue(val);
       if(isBrushChart)
         result.push([val, 0]);
@@ -752,17 +751,17 @@ export class EcoScoreReportDriverComponent implements OnInit {
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'category', name: (this.translationData.lblCategory), field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       },
       {
-        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
+        id: 'target', name: (this.translationData.lblTarget ), field: 'targetValue',
         type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true, sortable: true
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'categoryG', name: (this.translationData.lblCategory ), field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       }
     ];
@@ -1055,14 +1054,14 @@ public barChartOptions = {
       position: 'bottom',
       scaleLabel: {
        display: true,
-       labelString: this.translationData.lblAverageGrossWeight || ' Average Gross Weight'
+       labelString: this.translationData.lblAverageGrossWeight 
       }
     }],
     yAxes: [{
       position: 'left',
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblPercentage || ' Percentage'
+        labelString: this.translationData.lblPercentage 
       },
       ticks: {
         stepValue: 10,
@@ -1126,14 +1125,14 @@ public barChartOptionsPerformance = {
       position: 'bottom',
       scaleLabel: {
        display: true,
-       labelString: this.translationData.lblAverageDrivingSpeed || ' Average Driving Speed'
+       labelString: this.translationData.lblAverageDrivingSpeed 
       }
     }],
     yAxes: [{
       position: 'left',
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblPercentage || ' Percentage'
+        labelString: this.translationData.lblPercentage 
       },
       ticks: {
         stepValue: 10,

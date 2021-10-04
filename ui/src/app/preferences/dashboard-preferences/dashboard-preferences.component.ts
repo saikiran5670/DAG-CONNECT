@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 
 export class DashboardPreferencesComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() reportListData: any;
 
   //dashboard preferences
@@ -153,11 +153,12 @@ export class DashboardPreferencesComponent implements OnInit {
 
       if (repoId.length > 0) {
         this.reportId = repoId[0].id;
+        this.loadDashboardPreferences();
       } else {
-        this.reportId = 18;
+        console.error("No report id found!")
       }//- hard coded for Dashboard
 
-      this.loadDashboardPreferences();
+      
     }, (error) => {
       console.log('Report not found...', error);
       this.hideloader();
@@ -532,15 +533,13 @@ export class DashboardPreferencesComponent implements OnInit {
 
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-    this.prefUnit = unitObj[0].value;
-    //console.log("Preference ID", this.prefUnit);
-    if (unitObj[0].value == 'Imperial') {
-
-      this.prefUnitFormat = 'dunit_Imperial';
-
-    } else {
-      this.prefUnitFormat = 'dunit_Metric';
-
+    if (unitObj && unitObj.length != 0) {
+      this.prefUnit = unitObj[0].value;
+      if (this.prefUnit == 'Imperial') {
+        this.prefUnitFormat = 'dunit_Imperial';
+      } else {
+        this.prefUnitFormat = 'dunit_Metric';
+      }
     }
   }
 

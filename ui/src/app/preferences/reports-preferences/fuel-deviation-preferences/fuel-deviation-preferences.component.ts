@@ -12,7 +12,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 export class FuelDeviationPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setFuelDeviationReportFlag = new EventEmitter<any>();
   reportId: any;
@@ -60,13 +60,13 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     });
     
     if(repoId.length > 0){
-      this.reportId = repoId[0].id; 
+      this.reportId = repoId[0].id;
+      this.loadFuelDeviationReportPreferences(); 
     }else{
-      this.reportId = 7; //- hard coded for Fuel Deviation Report
+      console.error("No report id found!")
     }
     this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
-    this.loadFuelDeviationReportPreferences();
   }
 
   getUnitFormat(accPref: any){

@@ -32,7 +32,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   rowsData: any;
   createStatus: boolean = false;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   showLoadingIndicator: any;
   displayMessage: any;
@@ -67,7 +67,6 @@ export class OrganisationRelationshipComponent implements OnInit {
   };
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
- this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
       this.viewRelationshipName = params["name"]; 
    });
@@ -223,20 +222,15 @@ export class OrganisationRelationshipComponent implements OnInit {
       }
 
   defaultTranslation () {
-    this.translationData = {
-      lblOrganisationRelationshipDetails : "Organisation Relationship Details",
-      lblSearch: "Search",
-      lblNewRelationship: "New Relationship",
-      lblNoRecordFound: "No Record Found",
-      lblOrganisationName: "Organisation Name",
-      lblVehicleGroup: "Vehicle Group Name",
-      lblSelectVehicleGroup: "Select Vehicle Group",
-      lblSelectOrganisation: "Select Organisation"
-
-    }
+    this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate || "Click to deactivate";
+    this.translationData.lblClickToActivate = this.translationData.lblClickToActivate || "Click to activate";
+    
   }
+
   processTranslation(transData: any){   
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.defaultTranslation();
+
     //console.log("process translationData:: ", this.translationData)
   }
 
@@ -327,10 +321,10 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDeleteAccount ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     let name = rowData.relationshipName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -368,8 +362,8 @@ export class OrganisationRelationshipComponent implements OnInit {
     if(rowData.endDate == 0)
     {
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      title: this.translationData.lblChangeChainingStatus || "Change Chaining Status",
+      message: this.translationData.lblYouwanttoDeactivate || "You want to deactivate the relationship '$'?",
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
       cancelText: this.translationData.lblCancel || "Cancel",
@@ -406,10 +400,10 @@ export class OrganisationRelationshipComponent implements OnInit {
     //   id: this.selectedOrgRelations.selected.map(item=>item.id)
     // }
     const options = {
-      title: this.translationData.lblDelete || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDelete ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     //let name = this.selectedOrgRelations.selected[0].relationshipName;
     let name = this.selectedOrgRelations.selected.forEach(item => {

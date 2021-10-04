@@ -18,7 +18,7 @@ import { Router, NavigationExtras  } from '@angular/router';
   styleUrls: ['./edit-view-user.component.less']
 })
 export class EditViewUserComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() defaultSetting: any;
   @Input() fromEdit: any;
   @Output() userCreate = new EventEmitter<object>();
@@ -80,6 +80,9 @@ export class EditViewUserComponent implements OnInit {
   createPrefFlag = false;
   orgDefaultFlag: any;
   contextOrgName: any;
+  userCreatedMsg : any;
+  grpTitleVisible: boolean = false;
+  adminAccessType: any = {};
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
@@ -118,6 +121,7 @@ export class EditViewUserComponent implements OnInit {
       ]
     });
     this.contextOrgName = localStorage.getItem("contextOrgName");
+    this.adminAccessType =  JSON.parse(localStorage.getItem("accessType"));
     this.accountInfoData.organization = this.contextOrgName;
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -125,16 +129,25 @@ export class EditViewUserComponent implements OnInit {
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.userTypeList = [
-      {
-        name: this.translationData.lblPortalUser || 'Portal Account',
-        value: 'P'
-      },
-      {
-        name: this.translationData.lblSystemUser || 'System Account',
-        value: 'S'
-      }
-    ];
+    if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser ,
+          value: 'P'
+        },
+        {
+          name: this.translationData.lblSystemUser ,
+          value: 'S'
+        }
+      ];
+    }else{
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser ,
+          value: 'P'
+        }
+      ];
+    }
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
     this.loadRoleTable();
@@ -155,7 +168,7 @@ export class EditViewUserComponent implements OnInit {
       language: flag,
       timeZone: flag,
       unit: flag,
-      currency: flag,
+      //currency: flag,
       dateFormat: flag,
       vehDisplay: flag,
       timeFormat: flag,
@@ -207,7 +220,7 @@ export class EditViewUserComponent implements OnInit {
   loadAccountGroupTable(){
     let filterAccountGroupData = this.filterAccountGroupTableData();
     this.selecteUserGrpDataSource = new MatTableDataSource(filterAccountGroupData);
-    console.log("Testing 2 ---------------------------");
+    //console.log("Testing 2 ---------------------------");
     setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
@@ -338,13 +351,13 @@ export class EditViewUserComponent implements OnInit {
       vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
       landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id,
       pageRefreshTime: this.generalSettingForm.controls.pageRefreshTime.value ? parseInt(this.generalSettingForm.controls.pageRefreshTime.value) : this.pageRefreshTime
-      
     }
 
     if(this.accountInfoData.preferenceId > 0){ //-- update pref
       this.accountService.updateAccountPreference(objData).subscribe((data) => {
         this.selectedPreference = data;
         this.goForword();
+        this.successMsgBlink(this.getSuccessMsg('accountSetting'));
       });
     } 
     else{ //-- create pref
@@ -359,9 +372,11 @@ export class EditViewUserComponent implements OnInit {
           this.selectedPreference = prefData;
           this.accountInfoData.preferenceId = prefData.id;
           this.goForword();
+          this.successMsgBlink(this.getSuccessMsg('accountSetting'));
         });
       }else{
         this.goForword();
+        this.successMsgBlink(this.getSuccessMsg('accountSetting'));
       }
     }
   }
@@ -407,13 +422,38 @@ export class EditViewUserComponent implements OnInit {
         organizationId: this.accountInfoData.organizationId,
         driverId: ""
     }
-    this.accountService.updateAccount(objData).subscribe((data: any)=>{
+    this.accountService.updateAccount(objData).subscribe((data: any) => {
       this.accountInfoData = data;
       this.accountInfoData.organization = this.contextOrgName;
       this.setDefaultAccountInfo();
       // this.isSelectPictureConfirm = true;
       this.editAccountInfoFlag = false;
+      this.successMsgBlink(this.getSuccessMsg('accountInfo'));
     });
+  }
+
+  getSuccessMsg(type: any){
+    if(type == 'accountInfo'){
+      if(this.translationData.lblAccountInformationSuccessfullyUpdated)
+        return this.translationData.lblAccountInformationSuccessfullyUpdated;
+      else
+        return ("Account Information Successfully Updated");
+    }else if(type == 'accountSetting'){
+      if(this.translationData.lblAccountSettingSuccessfullyUpdated)
+        return this.translationData.lblAccountSettingSuccessfullyUpdated;
+      else
+        return ("Account Setting Successfully Updated");
+    }else if(type == 'roleInfo'){
+      if(this.translationData.lblAccountRolesSuccessfullyUpdated)
+        return this.translationData.lblAccountRolesSuccessfullyUpdated;
+      else
+        return ("Account Roles Successfully Updated");
+    }else if(type == 'groupInfo'){
+      if(this.translationData.lblAccountGroupsSuccessfullyUpdated)
+        return this.translationData.lblAccountGroupsSuccessfullyUpdated;
+      else
+        return ("Account Groups Successfully Updated");
+    }
   }
 
   myFilter = (d: Date | null): boolean => {
@@ -425,17 +465,17 @@ export class EditViewUserComponent implements OnInit {
 
   editRoleData(){
     let type= "role";
-    let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected Account Roles';
+    let tableHeader: any = this.translationData.lblSelectedUserRoles ;
     let colsList: any = ['select', 'roleName', 'featureIds'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'Account Role', this.translationData.lblServices || 'Services'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lblUserRole , this.translationData.lblServices ];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
   }
 
   editUserGroupData(){
     let type= "userGroup";
-    let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected Account Groups';
+    let tableHeader: any = this.translationData.lblSelectedUserGroups;
     let colsList: any = ['select', 'accountGroupName', 'accountCount'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Accounts'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lblGroupName , this.translationData.lblUsers ];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
 
@@ -459,9 +499,11 @@ export class EditViewUserComponent implements OnInit {
       if(res.type == 'role'){
         this.selectedRoleData = res.data;
         this.loadRoleTable();
+        this.successMsgBlink(this.getSuccessMsg('roleInfo'));
       }else if(res.type == 'userGroup'){
         this.selectedUserGrpData = res.data;
         this.loadAccountGroupTable();
+        this.successMsgBlink(this.getSuccessMsg('groupInfo'));
       }
     });
   }
@@ -606,10 +648,10 @@ export class EditViewUserComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;
@@ -627,6 +669,18 @@ export class EditViewUserComponent implements OnInit {
         break;
       }
     } 
+  }
+
+  onClose(){
+    this.grpTitleVisible = false;
+  }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.userCreatedMsg = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
   }
 
 }

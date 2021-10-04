@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.rfms
         {
             rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(thresholdValue).ToList();
             string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
-            string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime;//.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
 
             if (!rfmsVehicleStatus.MoreDataAvailable)
             {
@@ -39,8 +39,8 @@ namespace net.atos.daf.ct2.rfms
         {
             rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Take(thresholdValue).ToList();
             string lastVin = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().Vin;
-            string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
-            rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatuses?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
+            string lastReceivedDateTime = rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Last().ReceivedDateTime;//.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+            rfmsVehicleStatus.MoreDataAvailableLink = "//vehiclestatus?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
             rfmsVehicleStatus.MoreDataAvailable = true;
         }
         internal void SetStatusMoreDataAvailableLink(RfmsVehicleStatusRequest rfmsVehicleStatusRequest, RfmsVehicleStatus rfmsVehicleStatus)

@@ -35,7 +35,7 @@ export class FeatureManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   dataSource: any;
-  translationData: any;
+  translationData: any = {};
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
   actionBtn:any;  
@@ -46,27 +46,10 @@ export class FeatureManagementComponent implements OnInit {
     private featureService: FeatureService,
     private dialogService: ConfirmDialogService,
     private dialog: MatDialog) { 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblFeatureManagement: "Feature Management",
-      lblFeatureRelationshipDetails: "Feature Relationship Details",
-      lblNewFeature: "New Feature",
-      lblNoRecordFound: "No Record Found",
-      lblView: "View",
-      lblEdit: "Edit",
-      lblDelete: "Delete",
-      lblExclude: "Exclude",
-      lblInclude: "Include",
-      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name",
-      lblToolTipTextDataAttrSetName : "New Feature will auto create same as Data Attribute set name",
-      lblToolTipTextDataAttrDescription: "New Feature description will auto create same as Data Attribute description"
-    }
-  }
-
+  
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -262,7 +245,7 @@ export class FeatureManagementComponent implements OnInit {
   deleteFeature(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      message: this.translationData.lblAreyousureyouwanttodeletefeature || "Are you sure you want to delete Feature '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };

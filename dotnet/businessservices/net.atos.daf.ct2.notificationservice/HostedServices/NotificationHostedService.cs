@@ -84,10 +84,12 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 };
                 //Pushing message to kafka topic
                 ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
+                _logger.Info("Kafka consumer message: " + response.Message.Value);
                 if (response != null)
                 {
                     Console.WriteLine(response.Message.Value);
                     tripAlert = JsonConvert.DeserializeObject<NotificationEngineEntity.TripAlert>(response.Message.Value);
+                    _logger.Info("Json trip alert object: " + tripAlert);
                     if (tripAlert != null && tripAlert.Alertid > 0)
                     {
                         List<NotificationHistory> identifiedNotificationRec = await _notificationIdentifierManager.GetNotificationDetails(tripAlert);
@@ -134,7 +136,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             try
             {
                 bool isResult = false;
-
+                _logger.Info("Notification Email Method Call");
                 foreach (var item in notificationHistoryEmail)
                 {
                     string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
@@ -184,6 +186,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     };
 
                     isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    _logger.Info("Notification Email Method Result: " + isResult + "Alert Id: " + item.AlertId);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await _notificationIdentifierManager.InsertNotificationSentHistory(item);
                 }

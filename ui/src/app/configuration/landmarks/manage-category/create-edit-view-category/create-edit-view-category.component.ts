@@ -14,7 +14,7 @@ import { count } from 'rxjs/operators';
 })
 
 export class CreateEditViewCategoryComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any ={};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();

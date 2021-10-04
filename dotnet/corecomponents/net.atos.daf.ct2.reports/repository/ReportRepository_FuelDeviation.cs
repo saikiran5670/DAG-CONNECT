@@ -15,9 +15,9 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                string query = @"SELECT 
+                string query = @"SELECT distinct
                            trpst .trip_id as TripId
-                        ,  fueldev.id as FuelDeviationId
+                        --,  fueldev.id as FuelDeviationId
 	                    , fueldev.fuel_event_type as FuelEventType
 	                    , fueldev.vehicle_activity_type as VehicleActivityType
 	                    , case when fueldev.fuel_event_type='I' then 'enumfueleventtype_increase' else 'enumfueleventtype_decrease' end as FuelEventTypeKey

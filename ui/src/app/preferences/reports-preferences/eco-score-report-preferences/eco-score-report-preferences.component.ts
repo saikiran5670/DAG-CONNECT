@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class EcoScoreReportPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setEcoScoreFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;
@@ -42,11 +42,11 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     let repoId: any = this.reportListData.filter(i => i.name == 'EcoScore Report');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadEcoScoreReportPreferences();
     }else{
-      this.reportId = 10; //- hard coded for Eco-Score Report
+      console.error("No report id found!")
     }
     this.translationUpdate();
-    this.loadEcoScoreReportPreferences();
   }
 
   translationUpdate(){

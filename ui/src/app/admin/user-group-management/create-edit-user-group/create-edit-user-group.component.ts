@@ -24,7 +24,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() userGroupData:any;
@@ -57,11 +57,11 @@ export class CreateEditUserGroupComponent implements OnInit {
 
     this.groupTypeList = [
       {
-        name: this.translationData.lblGroup || 'Group',
+        name: this.translationData.lblGroup ,
         value: 'G'
       },
       {
-        name: this.translationData.lblDynamic || 'Dynamic',
+        name: this.translationData.lblDynamic ,
         value: 'D'
       }
     ];

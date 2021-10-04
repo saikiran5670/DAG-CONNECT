@@ -28,6 +28,14 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
     private String dayTypeArray;
     private Long   startTime;
     private Long   endTime;
+    private Integer nodeSeq;
+    private Double latitude;
+    private Double longitude;
+    private Integer landmarkId;
+    private String landMarkType;
+    private Double circleLatitude;
+    private Double circleLongitude;
+    private Double circleRadius;
 
     private Long timestamp = System.currentTimeMillis();
 
@@ -38,12 +46,12 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlertUrgencyLevelRefSchema schema = (AlertUrgencyLevelRefSchema) o;
-        return alertId.equals(schema.alertId) && urgencyLevelType.equals(schema.urgencyLevelType) && thresholdValue.equals(schema.thresholdValue) && unitType.equals(schema.unitType) && alertCategory.equals(schema.alertCategory) && alertType.equals(schema.alertType) && alertState.equals(schema.alertState) && periodType.equals(schema.periodType) && dayTypeArray.equals(schema.dayTypeArray) && startTime.equals(schema.startTime) && endTime.equals(schema.endTime);
+        return Objects.equals(alertId, schema.alertId) && Objects.equals(urgencyLevelType, schema.urgencyLevelType) && Objects.equals(thresholdValue, schema.thresholdValue) && Objects.equals(unitType, schema.unitType) && Objects.equals(alertCategory, schema.alertCategory) && Objects.equals(alertType, schema.alertType) && Objects.equals(alertState, schema.alertState) && Objects.equals(periodType, schema.periodType) && Objects.equals(dayTypeArray, schema.dayTypeArray) && Objects.equals(startTime, schema.startTime) && Objects.equals(endTime, schema.endTime) && Objects.equals(nodeSeq, schema.nodeSeq) && Objects.equals(latitude, schema.latitude) && Objects.equals(longitude, schema.longitude) && Objects.equals(landmarkId, schema.landmarkId) && Objects.equals(landMarkType, schema.landMarkType) && Objects.equals(circleLatitude, schema.circleLatitude) && Objects.equals(circleLongitude, schema.circleLongitude) && Objects.equals(circleRadius, schema.circleRadius);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime);
+        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime, nodeSeq, latitude, longitude, landmarkId, landMarkType, circleLatitude, circleLongitude, circleRadius);
     }
 
     @Override

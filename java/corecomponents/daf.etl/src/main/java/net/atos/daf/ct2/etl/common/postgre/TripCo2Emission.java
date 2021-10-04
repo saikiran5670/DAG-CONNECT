@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+import net.atos.daf.postgre.connection.PostgreConnection;
 import net.atos.daf.postgre.dao.Co2MasterDao;
 
 public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripStatusData> {
@@ -31,22 +31,32 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		try {
-			masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
 					envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
-					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));*/
+			
+			masterConnection = PostgreConnection.getInstance().getConnection(
+					envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
+					envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
+					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
+					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD),envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
+			
+			logger.info("In TripCo2Emission sink connection done:{}", masterConnection);
+			
 			cmDao = new Co2MasterDao();
 			cmDao.setConnection(masterConnection);
 			co2CoEfficientStmt = masterConnection.prepareStatement(ETLQueries.CO2_COEFFICIENT_QRY);
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
-			logger.error("serverNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME) +" port :: "+Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
-			logger.error("databaseNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME) +" user :: "+envParams.get(ETLConstants.MASTER_POSTGRE_USER) + " pwd :: "+envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
-			logger.error("masterConnection :: " + masterConnection);
+			logger.error("Issue while establishing Postgre connection in Trip streaming Job ::{} ", e);
+			logger.error("serverNm ::{},  port ::{} ",envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME), Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
+			logger.error("databaseNm ::{},  user ::{}, pwd ::{} ",envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.MASTER_POSTGRE_USER), envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+			logger.error("masterConnection ::{} ", masterConnection);
 			throw e;
 		}
 
@@ -88,5 +98,5 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 			throw e;
 		}
 	}
-
+		
 }

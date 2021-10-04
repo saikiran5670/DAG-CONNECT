@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.driver
 
         #endregion
 
-        Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email);
+        Task<bool> CheckIfDriverExists(string driverId, int? organisationId, string email);
         Task<DriverLookup> GetDriver(int organizationId, string driverID);
     }
 }

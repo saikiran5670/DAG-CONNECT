@@ -19,7 +19,7 @@ import { DataInterchangeService } from '../../services/data-interchange.service'
   styleUrls: ['./dashboard-vehicle-utilisation.component.less']
 })
 export class DashboardVehicleUtilisationComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
@@ -597,7 +597,7 @@ setAlertChartData(){
 }
 
 checkForPreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 3 && this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
@@ -611,7 +611,7 @@ checkForPreference(fieldKey) {
 }
 
 checkForVehiclePreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
@@ -627,7 +627,7 @@ checkForVehiclePreference(fieldKey) {
 getPreferenceThreshold(fieldKey){
   let thresholdType = 'U';
   let thresholdValue = 10080;
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       thresholdType = filterData[0].thresholdType;

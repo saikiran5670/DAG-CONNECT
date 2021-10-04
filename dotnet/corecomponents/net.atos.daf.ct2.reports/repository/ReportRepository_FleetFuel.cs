@@ -86,94 +86,149 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
-                                                  	(
-                                                  		Select
-                                                  			VIN
-                                                  		  , count(trip_id)                                                         as numberoftrips
-                                                  		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
-                                                  		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                                  		  , SUM(etl_gps_distance)                                              as veh_message_distance
-                                                  		  , AVG(average_speed)                                                     as average_speed
-                                                  		  , MAX(max_speed)                                                         as max_speed
-                                                  		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-                                                  		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                  		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
-                                                  		  , SUM(co2_emission)                                                      as co2_emission
-                                                          , SUM(idle_duration) as idle_duration
-                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
-                                               		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
-                                               		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end       as harsh_brake_duration
-                                               		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
-                                               		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end    as cruise_control_distance_30_50
-                                               		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end  as cruise_control_distance_50_75
-                                               		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end as cruise_control_distance_more_than_75
-                                                  		  , MAX(average_traffic_classification)                                    as average_traffic_classification
-                                                  		  , SUM(cc_fuel_consumption)                                               as cc_fuel_consumption
-                                                  		  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
-                                                  		  , SUM(idling_consumption)                                                as idling_consumption
-                                                  		  , SUM(dpa_score)                                                         as dpa_score
-                                                          , SUM(v_cruise_control_dist_for_cc_fuel_consumption) as CCFuelDistance
-                                                          , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) as CCFuelConsumed
-                                                  		From
-                                                  			tripdetail.trip_statistics 
-                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                and VIN=ANY(@Vins)
-                                                  		GROUP BY
-                                                  			VIN
-                                                  	)
-                                                    , cte_combine as
-                                                  	(
-                                                  		SELECT
-                                                  			vh.name                                              as VehicleName
-                                                          , '' as tripid
-                                                  		  , fd.vin                                               as VIN
-                                                  		  , vh.registration_no                                   as VehicleRegistrationNo
-                                                  		  , round ( fd.etl_gps_distance,2)                       as Distance
-                                                  		  , case when totalworkingdays>0 then round ((fd.veh_message_distance/totalworkingdays),2) else 0 end as AverageDistancePerDay
-                                                  		  , round (fd.average_speed,7)                           as AverageSpeed
-                                                  		  , max_speed                                            as MaxSpeed
-                                                  		  , numberoftrips                                        as NumberOfTrips
-                                                  		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                                  		  , round(fd.fuel_consumed,2)                            As FuelConsumed
-                                                  		  , round(fd.fuel_consumption,5)                         As FuelConsumption
-                                                  		  , round(fd.co2_emission,2)                             As CO2Emission
-                                                  		  , round(fd.idle_duration,2)                                     as IdleDuration
-                                                          , round(fd.idle_duration_percentage,2)                          as IdleDurationPercentage
-                                                  		  , round(fd.pto_duration,2)                             as PTODuration
-                                                  		  , round(fd.harsh_brake_duration,2)                     As HarshBrakeDuration
-                                                  		  , round(fd.heavy_throttle_duration,2)                  As HeavyThrottleDuration
-                                                  		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
-                                                  		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
-                                                  		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
-                                                  		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-                                                  		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
-                                                  		  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
-                                                  		  , idling_consumption                                     as IdlingConsumption
-                                                  		  , dpa_score                                              as DPAScore
-                                                          , round(fd.CCFuelDistance,2) as CCFuelDistance
-                                                          , round(fd.CCFuelConsumed,2) as CCFuelConsumed
-                                                          , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
-                                                          , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
-                                                          , '' AS StartPosition
-                                                          , '' AS EndPosition
-                                                  		FROM
-                                                  			CTE_FleetDeatils fd
-                                                  			join
-                                                  				master.vehicle vh
-                                                  				on
-                                                  					fd.VIN =vh.VIN
-                                                  	)
-                                                  SELECT *
-                                                  FROM
-                                                  	cte_combine";
+                                                         	(
+                                                         		Select
+                                                         			VIN
+                                                         		  , count(trip_id)                                                         as numberoftrips
+                                                         		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
+                                                         		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
+                                                         		  , SUM(etl_gps_distance)                                                  as veh_message_distance
+                                                         		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end as average_speed
+                                                         		  , MAX(max_speed)                                                         as max_speed
+                                                         		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
+                                                         		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
+                                                         		  , (SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuel_consumption
+                                                         		  , SUM(co2_emission)                                                      as co2_emission
+                                                                  , SUM(idle_duration) as idle_duration
+                                                         		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end               as idle_duration_percentage
+                                                      		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
+                                                      		      , SUM(harsh_brake_duration)                                              as harsh_brake_duration
+                                                      		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
+                                                      		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end     as cruise_control_distance_30_50
+                                                      		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end   as cruise_control_distance_50_75
+                                                      		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end as     cruise_control_distance_more_than_75
+                                                         		  , MAX(average_traffic_classification)                                    as average_traffic_classification
+                                                         		  , SUM(cc_fuel_consumption)                                               as cc_fuel_consumption
+                                                         		  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
+                                                         		  , SUM(idling_consumption)                                                as idling_consumption
+                                                         		  , SUM(dpa_score)                                                         as dpa_score
+                                                                  , SUM(veh_message_dpaanticipation_score/
+	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
+	                                                              else 1 END)) 	   as DPAAnticipationScore       
+                                                                  , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
+                                                                  , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
+                                                    			  --, SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
+                                                                  , SUM(veh_message_dpabraking_score/
+	                                                              (case when veh_message_dpabraking_count > 0 then veh_message_dpabraking_count
+	                                                              else 1 END)) 	   as DPABrakingScore 
+                                                    			  --, SUM(veh_message_dpaanticipation_score) 								   as DPAAnticipationScore                     
+                                                    			  , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
+                                                    			  , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
+                                                    			  , SUM(veh_message_brake_duration) 									   as FootBrake
+                                                                  , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
+																  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
+																  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
+                                                                  , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
+                                                                  , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
+                                                         		From
+                                                         			tripdetail.trip_statistics 
+                                                               WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                                        and VIN=ANY(@Vins)
+                                                         		GROUP BY
+                                                         			VIN
+                                                         	)
+                                                           , cte_combine as
+                                                         	(
+                                                         		SELECT
+                                                         			vh.name                                              					as VehicleName
+                                                                 , '' as tripid
+                                                         		  , fd.vin                                               					as VIN
+                                                         		  , vh.registration_no                                   					as VehicleRegistrationNo
+                                                         		  , round ( fd.etl_gps_distance,2)                       					as Distance
+                                                         		  , case when totalworkingdays>0 then round ((fd.veh_message_distance/totalworkingdays),2) else 0 end as AverageDistancePerDay
+                                                         		  , round (fd.average_speed,7)                           					as AverageSpeed
+                                                         		  , max_speed                                            					as MaxSpeed
+                                                         		  , numberoftrips                                        					as NumberOfTrips
+                                                         		  ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
+													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
+                                                         		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
+                                                         		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
+                                                         		  , round(fd.co2_emission,2)                             					as CO2Emission
+                                                                  , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
+                                                         		  , round(fd.idle_duration,2)                            					as IdleDuration
+                                                                  , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
+                                                         		  , round(fd.pto_duration,2)                             					as PTODuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
+													  			      else round (fd.harsh_brake_duration,2) end  						    as HarshBrakeDuration
+                                                         		  , round(fd.heavy_throttle_duration,2)                  					as HeavyThrottleDuration
+                                                         		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
+                                                         		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
+                                                         		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
+                                                         		  , round(fd.average_traffic_classification,4) * 1000            					as AverageTrafficClassification
+                                                         		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
+                                                                  ,case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
+                                                         		  , idling_consumption                                   					as IdlingConsumption
+                                                         		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
+																      else dpa_score  end  								                    as DPAScore
+                                                                  ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
+                                                                     else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
+                                                                  , round(fd.CCFuelDistance,2) 							 					as CCFuelDistance
+                                                                  , round(fd.CCFuelConsumed,2) 							 					as CCFuelConsumed
+                                                                  , round(fd.etl_gps_distance - fd.CCFuelDistance,2) 	 					as CCFuelDistanceNotActive
+                                                                  , round(fd.fuel_consumed - fd.CCFuelConsumed,2) 		 					as CCFuelConsumedNotActive
+                                                                  , '' AS StartPosition					
+                                                                  , '' AS EndPosition					
+                                                    			  ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
+                                                                     else fd.DPABrakingScore  end  		  as DPABrakingScore                         
+                                                    			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
+                                                    			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
+                                                    			  , round(fd.FootBrake,4) 								 					as FootBrake
+                                                         		FROM
+                                                         			CTE_FleetDeatils fd
+                                                         			join
+                                                         				master.vehicle vh
+                                                         				on
+                                                         					fd.VIN =vh.VIN
+                                                         	)
+                                                         SELECT *
+                                                         FROM
+                                                         	cte_combine";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
 
                 //List<CO2Coefficient> co2CoEfficientData = await GetCO2CoEfficientData();
                 //List<IdlingConsumption> idlingConsumption = await GetIdlingConsumptionData("EN-GB");
                 //List<AverageTrafficClassification> averageTrafficClassification = await GetAverageTrafficClassificationData("EN-GB");
+                if (lstFleetDetails?.Count > 0)
+                {
 
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
+                    }
+                    */
+
+                    List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                    if (lstTripAlert.Count() > 0)
+                    {
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
+
 
             }
             catch (System.Exception ex)
@@ -196,97 +251,130 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
-                                               	(
-                                               		Select
-                                               			VIN
-                                               		  , driver1_id                                                             as DriverId
-                                               		  , count(trip_id)                                                         as numberoftrips
-                                               		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
-                                               		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
-                                               		  , SUM(etl_gps_distance)                                                  as veh_message_distance
-                                               		  , AVG(average_speed)                                                     as average_speed
-                                               		  , MAX(max_speed)                                                         as max_speed
-                                               		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-                                               		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                               		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
-                                               		  , SUM(co2_emission)                                                      as co2_emission
-                                                      , SUM(idle_duration) as idle_duration
-                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
-                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
-                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end       as harsh_brake_duration
-                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
-                                               		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end    as cruise_control_distance_30_50
-                                               		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end  as cruise_control_distance_50_75
-                                               		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end as cruise_control_distance_more_than_75
-                                               		  , MAX(average_traffic_classification)                                    as average_traffic_classification
-                                               		  , SUM(cc_fuel_consumption)                                               as cc_fuel_consumption
-                                               		  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
-                                               		  , SUM(idling_consumption)                                                as idling_consumption
-                                               		  , SUM(dpa_score)                                                         as dpa_score
-                                                      , SUM(v_cruise_control_dist_for_cc_fuel_consumption) as CCFuelDistance
-                                                      , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) as CCFuelConsumed
-                                               		From
-                                               			tripdetail.trip_statistics
-                                                    WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                and VIN=ANY(@Vins)
-                                               		GROUP BY
-                                               			driver1_id
-                                               		  , VIN
-                                               	)
-                                                 , cte_combine as
-                                               	(
-                                               		SELECT
-                                               			vh.name            as VehicleName
-                                                      , '' as tripid
-                                               		  , fd.vin             as VIN
-                                               		  , vh.registration_no as VehicleRegistrationNo
-                                               		  , fd.DriverId
-                                               		  , round ( fd.etl_gps_distance,2)                         as Distance
-                                               		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
-                                               		  , round (fd.average_speed,7)                             as AverageSpeed
-                                               		  , max_speed                                              as MaxSpeed
-                                               		  , numberoftrips                                          as NumberOfTrips
-                                               		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
-                                               		  , round(fd.fuel_consumed,2)                              As FuelConsumed
-                                               		  , round(fd.fuel_consumption,5)                           As FuelConsumption
-                                               		  , round(fd.co2_emission,2)                               As CO2Emission
-                                               		  , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
-                                                      , round(fd.idle_duration,2)                                       as IdleDuration
-                                               		  , round(fd.pto_duration,2)                               as PTODuration
-                                               		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
-                                               		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
-                                               		  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
-                                               		  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
-                                               		  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
-                                               		  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-                                               		  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
-                                               		  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
-                                               		  , idling_consumption                                     as IdlingConsumption
-                                               		  , dpa_score                                              as DPAScore
-                                                      , round(fd.CCFuelDistance,2) as CCFuelDistance
-                                                      , round(fd.CCFuelConsumed,2) as CCFuelConsumed
-                                                      , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
-                                                      , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
-                                                      , '' AS StartPosition
-                                                      , '' AS EndPosition
-                                               		FROM
-                                               			CTE_FleetDeatils fd
-                                               		    left join
-                                               				master.vehicle vh
-                                               				on
-                                               					fd.VIN =vh.VIN                                                  	
-                                               	)
-                                               SELECT
-                                               	COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
-                                                 , cmb.*
-                                               FROM
-                                               	cte_combine cmb
-                                               	left join
-                                               		master.driver dr
-                                               		on
-                                               dr.driver_id = cmb.driverId";
+                                                  	(
+                                                  		Select
+                                                  			VIN
+                                                  		  , driver1_id                                                             as DriverId
+                                                  		  , count(trip_id)                                                         as numberoftrips
+                                                  		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
+                                                  		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
+                                                  		  , SUM(etl_gps_distance)                                                  as veh_message_distance
+                                                  		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end                          as average_speed
+                                                  		  , MAX(max_speed)                                                         as max_speed
+                                                  		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
+                                                  		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
+                                                  		  , (SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end)                     as fuel_consumption
+                                                  		  , SUM(co2_emission)                                                      as co2_emission
+                                                          , SUM(idle_duration) as idle_duration
+                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
+                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end                  as pto_duration
+                                                  		  , SUM(harsh_brake_duration)                                              as harsh_brake_duration
+                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end        as heavy_throttle_duration
+                                                  		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end        as cruise_control_distance_30_50
+                                                  		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end      as cruise_control_distance_50_75
+                                                  		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end  as cruise_control_distance_more_than_75
+                                                  		  , MAX(average_traffic_classification)                                    as average_traffic_classification
+                                                  		  , SUM(cc_fuel_consumption)                                               as cc_fuel_consumption
+                                                  		  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
+                                                  		  , SUM(idling_consumption)                                                as idling_consumption
+                                                  		  , SUM(dpa_score)                                                         as dpa_score
+                                                          , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
+                                                          , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
+                                                          , SUM(veh_message_dpabraking_score/
+	                                                              (case when veh_message_dpabraking_count > 0 then veh_message_dpabraking_count
+	                                                              else 1 END)) 	   as DPABrakingScore  
+                                                           , SUM(veh_message_dpaanticipation_score/
+	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
+	                                                              else 1 END)) 	   as DPAAnticipationScore       
+                                                          , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
+                                                          , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
+                                                          , SUM(veh_message_brake_duration) 									   as FootBrake
+                                                          , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
+														  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
+														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
+                                                          , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
+                                                          , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
+                                                  		From
+                                                  			tripdetail.trip_statistics
+                                                       WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                                        and VIN=ANY(@Vins)
+                                                  		GROUP BY
+                                                  			driver1_id
+                                                  		  , VIN
+                                                  	)
+                                                    , cte_combine as
+                                                  	(
+                                                  		SELECT distinct
+                                                  			vh.name            									   				    as VehicleName
+                                                         , '' as tripid				    
+                                                  		  , fd.vin             									   				    as VIN
+                                                  		  , vh.registration_no 									   				    as VehicleRegistrationNo
+                                                  		  , fd.DriverId				    
+                                                  		  , round ( fd.etl_gps_distance,2)                         				    as Distance
+                                                  		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
+                                                  		  , round (fd.average_speed,7)                             					as AverageSpeed
+                                                  		  , max_speed                                              					as MaxSpeed
+                                                  		  , numberoftrips                                          					as NumberOfTrips
+                                                  		 ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
+													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
+                                                          , round(fd.fuel_consumed,2)                              					as FuelConsumed
+                                                  		  , round((fd.fuel_consumed/fd.etl_gps_distance),5)                         as FuelConsumption
+                                                  		  , round(fd.co2_emission,2)                               					as CO2Emission
+                                                          , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
+                                                  		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
+                                                         , round(fd.idle_duration,2)                               					as IdleDuration
+                                                  		  , round(fd.pto_duration,2)                               					as PTODuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
+													  			      else round (fd.harsh_brake_duration,2) end  				    as HarshBrakeDuration
+                                                  		  , round(fd.heavy_throttle_duration,2)                    					as HeavyThrottleDuration
+                                                  		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
+                                                  		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
+                                                  		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
+                                                  		  , round(fd.average_traffic_classification,4) * 1000              					as AverageTrafficClassification
+                                                  		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
+                                                  		  ,case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
+                                                  		  , idling_consumption                                     					as IdlingConsumption
+                                                  		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
+																      else dpa_score  end  								                    as DPAScore
+                                                         , round(fd.CCFuelDistance,2) 							   					as CCFuelDistance
+                                                         , round(fd.CCFuelConsumed,2) 							   					as CCFuelConsumed
+                                                         , round(fd.etl_gps_distance - fd.CCFuelDistance,2) 	   					as CCFuelDistanceNotActive
+                                                         , round(fd.fuel_consumed - fd.CCFuelConsumed,2) 		   					as CCFuelConsumedNotActive
+                                                         , '' AS StartPosition
+                                                         , '' AS EndPosition
+                                                         ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
+                                                                else fd.DPABrakingScore  end  		  as DPABrakingScore
+                                                          ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
+                                                                else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
+                                                         , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                
+                                                         , round(fd.IdlingPTO,4) 								 	   				as IdlingPTO 
+                                                         , round(fd.FootBrake,4) 								 	   				as FootBrake
+                                                  		FROM
+                                                  			CTE_FleetDeatils fd
+                                                  		    left join
+                                                  				master.vehicle vh
+                                                  				on
+                                                  					fd.VIN =vh.VIN                                                  	
+                                                  	)
+                                                  SELECT
+                                                  	COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
+                                                    , cmb.*
+                                                  FROM
+                                                  	cte_combine cmb
+                                                  	left join
+                                                  		master.driver dr
+                                                  		on
+                                                  dr.driver_id = cmb.driverId";
 
                 List<FleetFuelDetailsByDriver> lstFleetDetails = (List<FleetFuelDetailsByDriver>)await _dataMartdataAccess.QueryAsync<FleetFuelDetailsByDriver>(queryFleetUtilization, parameterOfFilters);
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetailsByDriver>();
 
             }
@@ -413,7 +501,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
-				Select
+				Select distinct
 					VIN				  
                   , id as Id
 				  , trip_id  as tripid
@@ -423,15 +511,15 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
-				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
+				  , (average_gross_weight_comb)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                             as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
                   , idle_duration as idle_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration_percentage
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end   as pto_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as harsh_brake_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as heavy_throttle_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
+				  , harsh_brake_duration as harsh_brake_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75
@@ -456,7 +544,7 @@ namespace net.atos.daf.ct2.reports.repository
 			)
 		  , cte_combine as
             (
-                SELECT
+                SELECT distinct
                     vh.name as VehicleName
                   , fd.Id
 				  , tripid
@@ -479,9 +567,9 @@ namespace net.atos.daf.ct2.reports.repository
                     , round(fd.cruise_control_distance_30_50, 2)                as CruiseControlDistance3050
 				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
-				  , round(fd.average_traffic_classification) as AverageTrafficClassification
+				  , round(fd.average_traffic_classification,4) * 1000 as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5) as CCFuelConsumption
-				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactivesx
+				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactive
 				  , idling_consumption as IdlingConsumption
 				  , dpa_score as DPAScore
                   ,StartDate
@@ -535,6 +623,14 @@ namespace net.atos.daf.ct2.reports.repository
                     }
                     */
                 }
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetails trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception ex)
@@ -555,7 +651,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
-				Select
+				Select distinct
 					VIN
                   , id as Id
                   ,trip_id                                                                 as tripid
@@ -566,15 +662,15 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (etl_gps_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
-				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
+				  , (average_gross_weight_comb)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                                  as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
                   , idle_duration as idle_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration_percentage
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end   as pto_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as harsh_brake_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as heavy_throttle_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75
@@ -599,7 +695,7 @@ namespace net.atos.daf.ct2.reports.repository
 			)
 		  , cte_combine as
 			(
-				SELECT
+				SELECT distinct
 					vh.name            as VehicleName
                    ,  fd.Id
                    ,tripid
@@ -623,9 +719,9 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
 				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
-				  , round(fd.average_traffic_classification)               as AverageTrafficClassification
+				  , round(fd.average_traffic_classification,4)  * 1000             as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
-				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
+				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
                   , StartDate
@@ -685,6 +781,16 @@ namespace net.atos.daf.ct2.reports.repository
                     */
                 }
 
+                List<string> vins = new List<string>();
+                vins.Add(fleetFuelFiltersDriver.VIN);
+                List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFiltersDriver.StartDateTime, fleetFuelFiltersDriver.EndDateTime, vins);
+                if (lstTripAlert.Count() > 0)
+                {
+                    foreach (FleetFuelDetails trip in lstFleetDetails)
+                    {
+                        trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                    }
+                }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception)

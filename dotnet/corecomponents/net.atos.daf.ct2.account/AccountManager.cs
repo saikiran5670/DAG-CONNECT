@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await _repository.Create(account);
 
-                account.IsErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
+                await SetPasswordViaEmail(account, EmailEventType.CreateAccount);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.account
                         account = await _repository.Create(account);
                         await _identity.UpdateUser(identityEntity);
 
-                        account.IsErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
+                        await SetPasswordViaEmail(account, EmailEventType.CreateAccount);
                     }
                     else
                     {
@@ -184,12 +184,19 @@ namespace net.atos.daf.ct2.account
         {
             return await _repository.Get(filter);
         }
+
         public async Task<int> GetCount(int organization_id)
         {
             return await _repository.GetCount(organization_id);
         }
+
         public async Task<Account> AddAccountToOrg(Account account)
         {
+            if (account.AccountType == AccountType.SystemAccount)
+            {
+                if (await _repository.CheckIfSystemAccAlreadyHasOrgLinked(account.Id))
+                    return null;
+            }
             return await _repository.AddAccountToOrg(account);
         }
 

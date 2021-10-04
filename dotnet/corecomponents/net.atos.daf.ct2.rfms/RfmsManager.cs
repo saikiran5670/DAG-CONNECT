@@ -8,6 +8,8 @@ using System;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using net.atos.daf.ct2.rfms.common;
+using net.atos.daf.ct2.vehicle.entity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.rfms
 {
@@ -36,10 +38,11 @@ namespace net.atos.daf.ct2.rfms
         public async Task<RfmsVehicles> GetVehicles(string lastVin, int thresholdValue, int accountId, int orgId)
         {
             string visibleVins = string.Empty;
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            var result = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
+            var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
             int lastVinId = 0;
             RfmsVehicles rfmsVehicles = new RfmsVehicles();
-            rfmsVehicles.Vehicles = new List<Vehicle>();
+            rfmsVehicles.Vehicles = new List<response.Vehicle>();
             if (visibleVehicles.Count > 0)
             {
                 if (!string.IsNullOrEmpty(lastVin))
@@ -138,7 +141,8 @@ namespace net.atos.daf.ct2.rfms
             string visibleVins = string.Empty;
 
             //CHECK VISIBLE VEHICLES FOR USER
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(accountId, OrgId);
+            var result = await _vehicleManager.GetVisibilityVehicles(accountId, OrgId);
+            var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
 
             //ADD MASTER DATA TO CACHE
             //AddMasterDataToCache();
@@ -179,6 +183,31 @@ namespace net.atos.daf.ct2.rfms
             return visibleVins;
         }
 
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
 
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
+        }
     }
 }

@@ -19,6 +19,8 @@ using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 {
@@ -139,7 +141,8 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             if (vehicle.FirstOrDefault() == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
 
-            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(account.Id, org.Id);
+            var result = await _vehicleManager.GetVisibilityVehicles(account.Id, org.Id);
+            var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
             if (!visibleVehicles.Any(x => x.VIN == request.VIN))
             {
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
@@ -172,6 +175,33 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 MinDistance = minDistance ?? 0,
                 EcoScoreRecordsLimit = Convert.ToInt32(_configuration["EcoScoreRecordsLimit"])
             };
+        }
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
         }
     }
 }

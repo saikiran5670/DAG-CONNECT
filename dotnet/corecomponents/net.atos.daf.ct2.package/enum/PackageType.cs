@@ -8,7 +8,8 @@ namespace net.atos.daf.ct2.package.ENUM
         VIN = 'V',
         Organization = 'O',
         ORGVIN = 'R',
-        ReadWrite = 'W'
+        ReadWrite = 'W',
+        Platform = 'P'
         //None = 0,
         //Vehicle = 1,
         //Organization = 2,

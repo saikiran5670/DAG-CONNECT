@@ -422,6 +422,16 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved_NoWarnings(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
         public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
@@ -521,7 +531,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });
@@ -560,7 +570,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });

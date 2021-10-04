@@ -48,7 +48,7 @@ export class FleetkpiComponent implements OnInit {
    //CO2 Emission Chart
    currentC02Value : any =  0;
    cutOffC02Value : any =  0;
-
+   dataError : boolean = false;
    doughnutChartLabels: Label[] = [('Target'), '', ''];
    doughnutChartData: MultiDataSet = [ [0, 100] ];
    doughnutChartType: ChartType = 'doughnut';
@@ -590,14 +590,18 @@ export class FleetkpiComponent implements OnInit {
       //   "XLR0998HGFFT75550"
       // ]
     }
-    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
+    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
       //console.log(kpiData);
+      this.dataError = false;
       this.kpiData = kpiData;
       this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
       this.updateCharts();
       this.dataInterchangeService.getFleetData(kpiData);
 
-
+    },(error)=>{
+      if(error.status === 404){
+        this.dataError = true;
+      }
     })
   }
 
@@ -2194,7 +2198,7 @@ export class FleetkpiComponent implements OnInit {
   // ***************************** Preference functions *****************************//
 
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
@@ -2210,7 +2214,7 @@ export class FleetkpiComponent implements OnInit {
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;

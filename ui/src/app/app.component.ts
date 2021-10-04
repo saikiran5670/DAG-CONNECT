@@ -41,7 +41,7 @@ export class AppComponent {
   // public isDesktopvar = false;
   notificationList: any;
   loggedInUser: string = 'admin';
-  translationData: any;
+  translationData: any = {};
   dirValue = 'ltr'; //rtl
   public subpage: string = '';
   public currentTitle: string = '';
@@ -64,6 +64,8 @@ export class AppComponent {
   adminReadOnlyAccess: boolean = false;
   adminContributorAccess: boolean = false;
   adminFullAccess: boolean = false;
+  globalPOIAccess: boolean = false;
+  systemAccountAccess: boolean = false;
   accessType: object;
   userType: any = "";
   public landingPageForm: FormGroup;
@@ -309,6 +311,9 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      if (this.isLogedIn) {
+        this.connectWithSignalR();
+      }
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -381,7 +386,7 @@ export class AppComponent {
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
           this.getOfflineNotifications();
-          this.connectWithSignalR();
+          // this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -600,6 +605,11 @@ export class AppComponent {
       this.menuPages.features.forEach((obj: any) => {
         accessNameList.push(obj.name)
       });
+      this.adminFullAccess = false;
+      this.adminContributorAccess = false;
+      this.adminReadOnlyAccess = false;
+      this.globalPOIAccess = false;
+      this.systemAccountAccess = false;
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -607,14 +617,30 @@ export class AppComponent {
       } else {
         this.adminReadOnlyAccess = true;
       }
+
+      if(accessNameList.includes('Configuration.Landmarks.GlobalPoi')){
+        this.globalPOIAccess = true;
+      }
+      if(accessNameList.includes('Admin.AccountManagement.SystemAccount')){
+        this.systemAccountAccess = true;
+      }
   
       this.accessType = {
         adminFullAccess: this.adminFullAccess,
         adminContributorAccess: this.adminContributorAccess,
-        adminReadOnlyAccess: this.adminReadOnlyAccess
+        adminReadOnlyAccess: this.adminReadOnlyAccess,
+        globalPOIAccess: this.globalPOIAccess,
+        systemAccountAccess: this.systemAccountAccess
       }
       localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User
+      // For checking Type of the User auth hierarchy
+      
+      // Platform Admin            
+      // Global Admin              
+      // DAF User    
+      // Admin          
+      // Office Staff
+      // Viewer
       if (accessNameList.includes("Admin#Platform")) {
         this.userType = "Admin#Platform";
       } else if (accessNameList.includes("Admin#Global")) {
@@ -1268,54 +1294,56 @@ export class AppComponent {
   }
 
 getOfflineNotifications(){
-  // this.alertService.getOfflineNotifications().subscribe(data => {
-  //   if(data){
-  //     this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-  //     this.signalRService.notificationData= data["notificationResponse"];
-  //   }
-  //   // setTimeout(() => {
-  //   //   this.getOfflineNotifications();
-  //   // }, 180000);
+  this.alertService.getOfflineNotifications().subscribe(data => {
+    if(data){
+      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+      this.signalRService.notificationData= data["notificationResponse"];
+    }
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
 
-  // },
-  // error => {
-  //   // setTimeout(() => {
-  //   //   this.getOfflineNotifications();
-  //   // }, 180000);
-  // })
+  },
+  error => {
+    // setTimeout(() => {
+    //   this.getOfflineNotifications();
+    // }, 180000);
+  })
 }
 
 connectWithSignalR(){
-  // this.signalRService.startConnection();
+  this.signalRService.startConnection();
 }
 
 notificationsClosed(){
-  // this.signalRService.notificationData=[];
-  // this.signalRService.notificationCount= 0;
+  this.signalRService.notificationData=[];
+  this.signalRService.notificationCount= 0;
 }
 
 notificationClicked(){
-  // this.showAlertNotifications = true;
-//   if(this.signalRService.notificationCount > 0){
-//     let notificationData= [];
-//     this.signalRService.notificationData.forEach(element => {
-//       let notificationObj= {
-//         "tripId": element.tripId,
-//         "vin": element.vin,
-//         "alertCategory": element.alertCategory,
-//         "alertType": element.alertType,
-//         "alertGeneratedTime": element.alertGeneratedTime,
-//         "organizationId": element.organizationId,
-//         "tripAlertId": element.tripAlertId,
-//         "alertId": element.alertId,
-//         "accountId": element.accountId,
-//         "alertViewTimestamp": 0
-//       }
-//       notificationData.push(notificationObj);
-//     });
+  this.showAlertNotifications = true;
+  if(this.signalRService.notificationCount > 0){
+    let notificationData= [];
+    this.signalRService.notificationData.forEach(element => {
+      let notificationObj= {
+        "tripId": element.tripId,
+        "vin": element.vin,
+        "alertCategory": element.alertCategory,
+        "alertType": element.alertType,
+        "alertGeneratedTime": element.alertGeneratedTime,
+        "organizationId": element.organizationId,
+        "tripAlertId": element.tripAlertId,
+        "alertId": element.alertId,
+        "accountId": element.accountId,
+        "alertViewTimestamp": 0
+      }
+      if(notificationObj.tripAlertId != 0){
+      notificationData.push(notificationObj);
+      }
+    });
     
-//     this.alertService.addViewedNotifications(notificationData).subscribe(data => {
-//     })
-//   }
- }
+    this.alertService.addViewedNotifications(notificationData).subscribe(data => {
+    })
+  }
+}
 }

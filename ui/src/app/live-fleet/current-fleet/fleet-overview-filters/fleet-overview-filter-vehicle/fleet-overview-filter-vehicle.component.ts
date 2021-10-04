@@ -9,7 +9,9 @@ import { DataInterchangeService } from '../../../../services/data-interchange.se
   styleUrls: ['./fleet-overview-filter-vehicle.component.less']
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
-@Input() translationData: any;
+@Input() showLoadingIndicator: any;
+@Input() translationData: any = {};
+@Input() drivingStatus : any;
 @Input() groupList: any;
 @Input() categoryList: any;
 @Input() levelList: any;
@@ -77,7 +79,8 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     this.tabvisibility.emit(false);
     this.isVehicleDetails = item.stepFlag;
     let obj ={
-      vehicleDetailsFlag : this.isVehicleDetails
+      vehicleDetailsFlag : this.isVehicleDetails,
+      todayFlagClicked : this.todayFlagClicked
     }
     let _dataObj ={
       vehicleDetailsFlag : this.isVehicleDetails,

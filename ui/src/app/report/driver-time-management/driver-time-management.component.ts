@@ -32,7 +32,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   driverTimeForm: FormGroup;
-  translationData: any;
+  translationData: any = {};
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
@@ -89,9 +89,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   driverDetails : any= [];
   detailConvertedData : any;
   summaryObj:any=[];
+  singleVehicle: any = [];
 
   reportPrefData: any = [];
-  reportId:number = 9;
+  reportId:number;
   showField: any = {
     driverId:true,
     driverName:true,
@@ -240,7 +241,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
-    this.defaultTranslation()
+
   }
 
 
@@ -317,11 +318,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.getDriveTimeReportPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Drive Time Management');
+      if(repoId.length > 0){
+        this.reportId = repoId[0].id; 
+        this.getDriveTimeReportPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Drive Time Management', id: 9}]; // hard coded
-      this.getDriveTimeReportPreferences(reportListData);
+      reportListData = [{name: 'Drive Time Management', id: this.reportId}];
+      // this.getDriveTimeReportPreferences();
     });
   }
 
@@ -354,15 +361,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       } else{
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.selectedStartTime = "12:00 AM";
+        this.selectedEndTime = "11:59 PM";
       }
     }
   }
 
-  getDriveTimeReportPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Drive Time Management');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 9).subscribe((data : any) => {
+  getDriveTimeReportPreferences(){
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
@@ -490,11 +496,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     return res;
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
-  }
+ 
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -511,7 +513,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       //.filter(i => i.vehicleGroupId != 0);
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
-      this.vehicleDD = this.vehicleListData;
+      let vehicleData = this.vehicleListData.slice();
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     }else{
 
       //this.vehicleListData = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -530,6 +533,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
     // this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue);
  // }
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
 
   driverDD = [];
@@ -839,7 +853,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // _yesterday.getTime();
     //this.resetdriverTimeFormControlValue();
-    let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
+    let driverList = [];
+    this.onLoadData.driverList.forEach(element => {
+      if(element.activityDateTime && element.activityDateTime.length > 0){
+        let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
+        if(search.length > 0){
+          driverList.push(element.driverID);
+        }
+      }
+    });
+    
     let filteredDriverList = [];
     let filteredVehicleList = [];
     let filteredVehicleGroupList = [];
@@ -851,7 +875,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.driverDD = [];
     this.vehicleDD = [];
     this.vehicleGroupListData=[];
-
+    let finalVinList=[];
     //console.log(driverList.length)
     let distinctDriver;
     if( driverList && driverList.length > 0){
@@ -868,17 +892,21 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
               finalDriverList.push(element)
             });
           }
+          vinList.forEach(vin =>{
+            finalVinList.push(vin);
+          });
         });
       }
+      vinList=finalVinList;
       //console.log(filteredDriverList)
       //console.log(finalDriverList)
-
+      this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVin && distinctVin.length>0){
           distinctVin.forEach(element => {
            // filteredVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
-            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element)
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -903,12 +931,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if(this.driverListData.length>1){
           this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
           }
-          this.vehicleDD = this.vehicleListData;
+          let vehicleData = this.vehicleListData.slice();
+          this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
           this.driverDD = this.driverListData;
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
-          //this.driverTimeForm.get('vehicle').setValue(0);
-          //this.driverTimeForm.get('driver').setValue(0);
+          this.driverTimeForm.get('vehicle').setValue(0);
+          this.driverTimeForm.get('driver').setValue(0);
 
 
     }
@@ -960,41 +989,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   formStartDate(date: any){
-    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
-    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
-    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
-    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
-    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
-    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
-    let _date: any;
-    let _time: any;
-    if(this.prefTimeFormat == 12){
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
-    }else{
-      _time = `${h}:${m}:${s}`;
-    }
-    switch(this.prefDateFormat){
-      case 'ddateformat_dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_dd-mm-yyyy': {
-        _date = `${_d}-${_m}-${_y} ${_time}`;
-        break;
-      }
-      case 'ddateformat_mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${_time}`;
-        break;
-      }
-      default:{
-        _date = `${_m}/${_d}/${_y} ${_time}`;
-      }
-    }
-    return _date;
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
   applyFilter(filterValue: string) {
@@ -1010,7 +1005,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
   const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
   this.summaryObj=[
-    ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
+    ['Driver Time Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
       this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
       this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
     ]
@@ -1336,22 +1331,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     return date;
   }
   setStartEndDateTime(date: any, timeObj: any, type: any){
-
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      }else{
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   selectionTimeRange(selection: any){

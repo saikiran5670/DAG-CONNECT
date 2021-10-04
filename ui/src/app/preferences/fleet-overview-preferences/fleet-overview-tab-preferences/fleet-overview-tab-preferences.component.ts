@@ -14,7 +14,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 export class FleetOverviewTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setFleetOverviewFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];
@@ -39,11 +39,11 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     });
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadFleetOverviewPreferences();
     }else{
-      this.reportId = 17; //- hard coded for Fleet Overview - Logbook -13
+      console.error("No report id found!")
     }
     this.translationUpdate();
-    this.loadFleetOverviewPreferences();
    }
 
    translationUpdate(){

@@ -315,6 +315,7 @@ message TripDetails {
     double EndPositionLongitude=22;
     string RegistrationNo =23;
     string VehicleName=24;
+    repeated TripAlert TripAlert=25;
 }
 message LiveFleetPosition {
     double GpsAltitude=1;
@@ -324,6 +325,19 @@ message LiveFleetPosition {
     double Fuelconsumtion=6;
     double Co2emission=7;
     int32 Id=5;
+    int64 MessageTimeStamp=8;
+}
+message TripAlert {
+     google.protobuf.StringValue TripId=1;
+     google.protobuf.StringValue VIN=2; 
+     google.protobuf.StringValue CategoryType=3;
+     google.protobuf.StringValue AlertType=4; 
+     google.protobuf.StringValue AlertName=6;
+    double AlertLatitude=7;
+    double AlertLongitude=8;
+    int64 AlertTime=9;
+    int64 ProcessedMessageTimeStamp=10;
+     google.protobuf.StringValue UrgencyLevelType=11;
 }
 // End Trip Report Table
 
@@ -347,7 +361,7 @@ string RegistrationNo = 12;
 message VehicleFromTripDetails {
 string Vin = 1;
 int64 StartTimeStamp=2;
-int64 EndTimeStamp=3;
+repeated int64 EndTimeStamp=3;
 }
 
 message VehicleListAndDetailsResponse{
@@ -425,7 +439,7 @@ google.protobuf.StringValue Vin = 1;
 google.protobuf.StringValue DriverID=2;
 google.protobuf.StringValue FirstName=3;
 google.protobuf.StringValue LastName=4;
-int64 ActivityDateTime=5;
+repeated int64 ActivityDateTime=5;
 }
 
 message IdRequestForDriverActivity {
@@ -848,10 +862,10 @@ message FleetFuelDetails {
     double DPAScore = 24;
     google.protobuf.StringValue DPAAnticipationScore = 25;
     google.protobuf.StringValue DPABrakingScore = 26;
-    google.protobuf.StringValue IdlingPTOScore = 27;
-    google.protobuf.StringValue IdlingPTO = 28;
-    google.protobuf.StringValue IdlingWithoutPTO = 29;
-    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+      int64 IdlingPTOScore = 27;
+    double IdlingPTO = 28;
+    int64 IdlingWithoutPTO = 29;
+    double IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
     google.protobuf.StringValue AverageTrafficClassificationValue = 33;
@@ -872,6 +886,7 @@ message FleetFuelDetails {
     string StartPosition = 49;
     string EndPosition = 50;
     double IdleDurationPercentage = 51;
+    repeated TripAlert TripAlert=52;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -900,10 +915,10 @@ message FleetFuelDetailsByDriver {
     double DPAScore = 24;
     google.protobuf.StringValue DPAAnticipationScore = 25;
     google.protobuf.StringValue DPABrakingScore = 26;
-    google.protobuf.StringValue IdlingPTOScore = 27;
-    google.protobuf.StringValue IdlingPTO = 28;
-    google.protobuf.StringValue IdlingWithoutPTO = 29;
-    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+      int64 IdlingPTOScore = 27;
+    double IdlingPTO = 28;
+    int64 IdlingWithoutPTO = 29;
+    double IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
     google.protobuf.StringValue AverageTrafficClassificationValue = 33;
@@ -918,6 +933,7 @@ message FleetFuelDetailsByDriver {
     int64 CCFuelDistanceNotActive = 42;
     double CCFuelConsumedNotActive = 43;
     double IdleDurationPercentage = 44;
+    repeated TripAlert TripAlert=45;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

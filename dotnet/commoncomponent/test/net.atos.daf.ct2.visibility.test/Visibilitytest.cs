@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByAccountVisibility(51, 93, 93);
+                                    .GetVehicleByAccountVisibility(51, 93, 93, 0);
             Assert.IsTrue(result.Count() > 0);
         }
 
@@ -51,6 +51,18 @@ namespace net.atos.daf.ct2.Audittrail.test
         }
 
         [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVehicleByFeatureAndSubsction Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehicleByFeature()
+        {
+
+            var result = await _visibilityManager
+                                    .GetSubscribedVehicleByFeature(51, 36);
+            Assert.IsTrue(result.Count() > 0);
+        }
+
+        [TestCategory("Unit-Test-Case")]
         [Description("Test for GetVehicleByVisibilityAndFeature Sucess case")]
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
@@ -58,7 +70,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         {
 
             var result = await _visibilityManager
-                                    .GetVehicleByVisibilityAndFeature(51, 93, 93, 160, null, "Alert");
+                                    .GetVehicleByVisibilityAndFeature(51, 93, 93, 160, null, 0, "Alert");
             Assert.IsTrue(result.Count() > 0);
         }
     }

@@ -190,7 +190,11 @@
             <scope>test</scope>
         </dependency>
 
-
+ <dependency>
+			<groupId>net.atos</groupId>
+			<artifactId>daf.postgre.connection</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
     </dependencies>
@@ -203,7 +207,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>daf.alerts.logistics.StatusAlertGeneration</mainClass>
+                            <mainClass>net.atos.daf.ct2.app.IndexBasedAlertProcessing</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

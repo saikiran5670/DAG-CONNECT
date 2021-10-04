@@ -35,7 +35,7 @@ export class TranslationDataUploadComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any;
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   type: any = '';
   showLoadingIndicator: any;
@@ -264,9 +264,9 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   openLanguageSelectionPopup(){
-    let tableHeader: any = this.translationData.lblDownloadTemplate || 'Download Template';
+    let tableHeader: any = this.translationData.lblDownloadTemplate ;
     let colsList: any = ['select', 'name'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lbllanguage || 'Language'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lbllanguage ];
 
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;

@@ -1,7 +1,7 @@
 .arrow_box {
     padding: 10px;
 }
-#chart {
+#chartContainer {
     overflow: auto;
 }
 

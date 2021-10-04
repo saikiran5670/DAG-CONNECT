@@ -1,0 +1,68 @@
+package net.atos.ct2.kafka.kafka;
+
+import com.fasterxml.jackson.annotation.*;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "alertId",
+        "vinOps"
+})
+@JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
+public class AlertCdc implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @JsonProperty("alertId")
+    private String alertId;
+    @JsonProperty("opration")
+    private String operation;
+    @JsonProperty("vinOps")
+    private List<VinOp> vinOps = null;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("alertId")
+    public String getAlertId() {
+        return alertId;
+    }
+
+    @JsonProperty("alertId")
+    public void setAlertId(String alertId) {
+        this.alertId = alertId;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    @JsonProperty("vinOps")
+    public List<VinOp> getVinOps() {
+        return vinOps;
+    }
+
+    @JsonProperty("vinOps")
+    public void setVinOps(List<VinOp> vinOps) {
+        this.vinOps = vinOps;
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
+    }
+
+}

@@ -40,5 +40,6 @@
         public const string OFFLINE_NOTI_NOT_FOUND_MSG = "Offline notifications are not found.";
         public const string NOTIFICATION_HUB_MSG = "Notification hub.";
         public const string NOTIFICATION_SERVICE_NAME = "Notification service";
+        public const string ALERT_FEATURE_STARTWITH = "Alerts.";
     }
 }

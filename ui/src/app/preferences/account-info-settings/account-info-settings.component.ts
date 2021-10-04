@@ -21,7 +21,7 @@ import { ReplaySubject } from 'rxjs';
 })
 
 export class AccountInfoSettingsComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   confirmAccountInfoData: any = [];
   dialogRefLogin: MatDialogRef<ChangePasswordComponent>;
   editAccountSettingsFlag : boolean = false;
@@ -603,10 +603,10 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;

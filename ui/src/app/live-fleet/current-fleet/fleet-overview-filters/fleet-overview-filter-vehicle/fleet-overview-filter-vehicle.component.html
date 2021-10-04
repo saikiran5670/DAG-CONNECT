@@ -11,10 +11,16 @@
           </div>
      <div  *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
+            <div class="vehicleList-icon" *ngIf= "!drivingStatus">
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+                &#13; Alert: {{item.alertName}}"> </span>
+            </div>
+            <div class='rippleSVG'  *ngIf= "drivingStatus">
             <div class="vehicleList-icon">
                 <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
                 &#13; Alert: {{item.alertName}}"> </span>
             </div>
+        </div>
             <div class="vehicleList-details">
             <div>
                 <span class="vehicle-details-head">{{ translationData.lblVin || 'VIN'}}: </span>
@@ -42,6 +48,7 @@
      <div *ngIf="noRecordFlag">
          <p>{{translationData.lblNoRecordFound || 'No Record Found'}}</p>
      </div>
+     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-expansion-panel>
 
   <app-vehicle-details *ngIf='isVehicleDetails' 

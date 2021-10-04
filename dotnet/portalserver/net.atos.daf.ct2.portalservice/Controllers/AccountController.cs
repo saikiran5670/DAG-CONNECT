@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -125,10 +126,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(500, PortalConstants.AccountValidation.ERROR_MESSAGE);
                     }
-                    else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
-                    {
-                        return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
-                    }
+                    //Removed because account creation should not depend on email functionality failure
+                    //else if (accountResponse.Message == PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE)
+                    //{
+                    //    return StatusCode(500, PortalConstants.AccountValidation.EMAIL_SENDING_FAILED_MESSAGE);
+                    //}
                     else
                     {
                         return StatusCode(500, string.Format(PortalConstants.ResponseError.INTERNAL_SERVER_ERROR, "01"));
@@ -427,11 +429,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 accountRequest.EndDate = 0;
                 var response = new AccountBusinessService.AccountOrganizationResponse();
-                response = await _accountClient.AddAccountToOrgAsync(accountRequest);
+
+                Metadata headers = new Metadata();
+                headers.Add("account_type", _userDetails.AccountType);
+
+                response = await _accountClient.AddAccountToOrgAsync(accountRequest, headers);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                 {
                     return StatusCode(500, "Internal Server Error.(0)");
                 }
+                if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
+                {
+                    return StatusCode(403, response.Message);
+                }
+
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                             "AddAccountOrg  method in Account controller", request.OrganizationId, response.AccountOrgId, JsonConvert.SerializeObject(request),
@@ -1286,7 +1297,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
                 filter.IsAccount = isAccount;
                 filter.OrganizationId = GetContextOrgId();
-                var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter);
+                filter.AccountId = _userDetails.AccountId;
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter, headers);
                 AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
                 if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1854,12 +1869,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest("Account Id mismatched");
 
                 // check for DAF Admin
-                int level = await _privilegeChecker.GetLevelByRoleId(sOrgId, sRoleId);
-
-                //Add context org id to session
-                if (level >= 30)
+                if (_userDetails.RoleLevel >= 30)
                     return Unauthorized("Unauthorized access");
 
+                //Add context org id to session
                 _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                 //return menu items
@@ -1953,22 +1966,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
-        }
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("gethostname2")]
-        public async Task<IActionResult> GetHostName2()
-        {
-            return Ok("testing");
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("gethostname")]
-        public async Task<IActionResult> GetHostName()
-        {
-            _logger.Error("gethostname started");
-            return Ok(Dns.GetHostName().ToLower());
         }
     }
 }

@@ -838,9 +838,15 @@ namespace net.atos.daf.ct2.reports.repository
                                   INTERSECT
                                   --Subscription Route
                                   SELECT f.id, f.data_attribute_set_id
-                                  FROM master.Subscription s
-                                  INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
-                                  INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+                                  FROM
+	                              (
+		                              SELECT pkg.feature_set_id
+		                              FROM master.Package pkg
+		                              INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+		                              UNION
+		                              SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+	                              ) subs
+                                  INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
                                   INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
                                   INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
                               ) fsets ON fsets.data_attribute_set_id = das.id";
@@ -1018,7 +1024,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1178,7 +1184,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1345,7 +1351,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1505,7 +1511,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1637,7 +1643,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.organization_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1797,7 +1803,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.organization_id , CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.organization_id , CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -1931,7 +1937,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ), 
 								 AverageGrossweight as 
                                 (
-                                    select eco.vin, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)  as AverageGrossweight
+                                    select eco.vin, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2092,7 +2098,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.vin,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.vin,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
                                 ),
@@ -2228,7 +2234,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
+                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2388,7 +2394,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2879,7 +2885,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -3287,7 +3293,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 BrakeDuration as
                                 (
-                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)/ 86400 as BrakeDuration
+                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day
                                 ),

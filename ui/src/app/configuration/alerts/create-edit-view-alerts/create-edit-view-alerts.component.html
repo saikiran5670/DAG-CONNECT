@@ -111,7 +111,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.applyOn == 'G' ? 'Group' : 'Vehicle' }}</span>
             </div>
         </div>
-        <div class="areaWidth min-width-30-per max-width-30-per vehicleGroup" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf= "selectedApplyOn =='G'" class="areaWidth min-width-30-per max-width-30-per vehicleGroup" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">

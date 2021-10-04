@@ -14,7 +14,7 @@ import { CustomValidators } from '../../../shared/custom.validators';
 })
 
 export class FleetUtilisationPreferenceComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() reportListData: any;
   @Input() editFlag: any;
   @Input() generalPreferences: any;
@@ -104,11 +104,11 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadFleetUtilisationPreferences();
     }else{
-      this.reportId = 5; //- hard coded for fleet utilisation report
+      console.error("No report id found!")
     }
     this.translationUpdate();
-    this.loadFleetUtilisationPreferences();
   }
 
   getUnitFormat(accPref: any){

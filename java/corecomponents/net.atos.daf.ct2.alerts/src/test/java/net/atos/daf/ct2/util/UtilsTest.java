@@ -4,6 +4,8 @@ import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.kafka.AlertCdc;
 import net.atos.daf.ct2.models.kafka.CdcPayloadWrapper;
 import net.atos.daf.ct2.models.process.Target;
+import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.table.planner.expressions.In;
 import org.junit.Assert;
@@ -185,5 +187,32 @@ public class UtilsTest {
         System.out.println(lst);
         System.out.println(collect);
 
+    }
+
+    @Test
+    public void listToArray(){
+        List<Integer> polygonPointList = new ArrayList<>();
+        for(int i =0; i < 2 ; i++){
+            polygonPointList.add(i);
+        }
+        polygonPointList.stream().forEach(System.out:: println);
+
+        for(int i=0; i < polygonPointList.size() ;i=i+2){
+            System.out.println(polygonPointList.get(i)+" : "+ polygonPointList.get((i+1)%polygonPointList.size()));
+        }
+    }
+
+    @Test
+    public void messageUUIDcheck(){
+        System.out.println(INCOMING_MESSAGE_UUID.format(UUID.randomUUID().toString()));
+    }
+
+
+    @Test
+    public void timeInUTC(){
+        ZonedDateTime utc = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneOffset.UTC);
+        long toEpochMilli = utc.toInstant().toEpochMilli();
+        System.out.println(utc);
+        System.out.println(Utils.convertMillisecondToDateTime(toEpochMilli));
     }
 }

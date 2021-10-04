@@ -230,11 +230,23 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter)
+        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter, int loggedInOrgId, int accountId)
         {
             try
             {
-                return await _vehicleRepository.GetRelationshipVehicles(vehiclefilter);
+                var contextOrgId = vehiclefilter.OrganizationId;
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+                if (loggedInOrgId != contextOrgId)
+                {
+                    resultDict = await GetVisibilityVehiclesByOrganization(contextOrgId);
+                }
+                else
+                {
+                    resultDict = await GetVisibilityVehicles(accountId, loggedInOrgId);
+                }
+                var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
+                var vehicleList = await _vehicleRepository.GetRelationshipVehicles(vehiclefilter);
+                return vehicleList.Where(e => visibleVehicles.Contains(e.VIN));
             }
             catch (Exception)
             {
@@ -242,11 +254,23 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId)
+        public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId, int accountId, int contextOrgId, int adminRightsFeatureId = 0)
         {
             try
             {
-                return await _vehicleRepository.GetAllRelationshipVehicles(orgId);
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+                if (orgId != contextOrgId)
+                {
+                    resultDict = await GetVisibilityVehiclesByOrganization(contextOrgId);
+                }
+                else
+                {
+                    resultDict = await GetVisibilityVehicles(accountId, orgId);
+                }
+                var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
+                var vehicleList = await _vehicleRepository.GetAllRelationshipVehicles(orgId);
+                var visibleVehicleList = vehicleList.Where(e => visibleVehicles.Contains(e.VIN)).ToList();
+                return visibleVehicleList;
             }
             catch (Exception)
             {
@@ -265,11 +289,26 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
-        public async Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle)
+
+        public async Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle, int accountId, int contextOrgId)
         {
             try
             {
-                return await _vehicleRepository.GetORGRelationshipVehicleGroupVehicles(organizationId, is_vehicle);
+                var response = await _vehicleRepository.GetORGRelationshipVehicleGroupVehicles(organizationId, is_vehicle);
+
+                IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId, accountId, contextOrgId);
+                foreach (var item in vehicles.ToList())
+                {
+                    AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
+                    accountVehicleEntity.Id = item.Id;
+                    accountVehicleEntity.Name = item.Name;
+                    accountVehicleEntity.Count = 0;
+                    accountVehicleEntity.Is_group = false;
+                    accountVehicleEntity.VIN = item.VIN;
+                    accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
+                    response.Add(accountVehicleEntity);
+                }
+                return response;
             }
             catch (Exception)
             {
@@ -312,7 +351,8 @@ namespace net.atos.daf.ct2.vehicle
                 if (vehicleMileageList.Count() > 0)
                 {
                     //Fetch visibility vehicles for the account
-                    var vehicles = await GetVisibilityVehicles(accountId, orgid);
+                    var result = await GetVisibilityVehicles(accountId, orgid);
+                    var vehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
 
                     vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.Vin)).AsEnumerable();
                 }
@@ -388,7 +428,8 @@ namespace net.atos.daf.ct2.vehicle
                 if (vehicleNameList.Count() > 0)
                 {
                     //Fetch visibility vehicles for the account
-                    var vehicles = await GetVisibilityVehicles(accountId, orgId);
+                    var result = await GetVisibilityVehicles(accountId, orgId);
+                    var vehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
 
                     vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.Vin)).AsEnumerable();
                 }
@@ -422,15 +463,17 @@ namespace net.atos.daf.ct2.vehicle
 
         #region Vehicle Visibility
 
-        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId)
+        public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(int accountId, int orgId)
         {
             try
             {
-                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict = new Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>();
+                List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId, orgId);
 
                 foreach (var vehicleGroup in vehicleGroups)
                 {
+                    vehicles = new List<VisibilityVehicle>();
                     switch (vehicleGroup.GroupType)
                     {
                         case "S":
@@ -470,8 +513,10 @@ namespace net.atos.daf.ct2.vehicle
                         default:
                             break;
                     }
+
+                    resultDict.Add(vehicleGroup, vehicles);
                 }
-                return vehicles.Distinct(new ObjectComparer()).ToList();
+                return resultDict;// vehicles.Distinct(new ObjectComparer()).ToList();
             }
             catch (Exception)
             {
@@ -479,11 +524,12 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<List<VisibilityVehicle>> GetVisibilityVehiclesByOrganization(int orgId)
+        public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehiclesByOrganization(int orgId)
         {
             try
             {
-                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict = new Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>();
+                List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsByOrganization(orgId);
 
                 if (vehicleGroups.Any(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")))
@@ -498,6 +544,66 @@ namespace net.atos.daf.ct2.vehicle
 
                 foreach (var vehicleGroup in vehicleGroups)
                 {
+                    vehicles = new List<VisibilityVehicle>();
+                    switch (vehicleGroup.GroupType)
+                    {
+                        case "S":
+                            //Single
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
+                            break;
+                        case "G":
+                            //Group
+                            vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleGroup.Id));
+                            break;
+                        case "D":
+                            //Dynamic
+                            switch (vehicleGroup.GroupMethod)
+                            {
+                                case "A":
+                                    //All
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    break;
+                                case "O":
+                                    //Owner
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    break;
+                                case "V":
+                                    //Visible
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    break;
+                                case "M":
+                                    //OEM
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroup.Id));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    resultDict.Add(vehicleGroup, vehicles);
+                }
+                return resultDict; //vehicles.Distinct(new ObjectComparer()).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaGroupIds(vehicleGroupIds);
+
+                foreach (var vehicleGroup in vehicleGroups)
+                {
                     switch (vehicleGroup.GroupType)
                     {
                         case "S":
@@ -544,7 +650,6 @@ namespace net.atos.daf.ct2.vehicle
             {
                 throw;
             }
-
         }
         #endregion
 
@@ -613,7 +718,9 @@ namespace net.atos.daf.ct2.vehicle
             var provisioningVehicle = await _vehicleRepository.GetCurrentVehicle(request);
             if (provisioningVehicle != null)
             {
-                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                var result = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
                 if (visibleVehicles.Select(x => x.VIN).ToArray().Contains(provisioningVehicle.VIN))
                     vehicles.Add(provisioningVehicle);
             }
@@ -626,7 +733,9 @@ namespace net.atos.daf.ct2.vehicle
             var provisioningVehicles = await _vehicleRepository.GetVehicleList(request);
             if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
             {
-                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                var result = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
                 provisioningVehicles = provisioningVehicles.Where(nl => visibleVehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
             }
 
@@ -638,6 +747,12 @@ namespace net.atos.daf.ct2.vehicle
             return _vehicleRepository.GetVehicleIdsByOrgId(refId);
         }
 
+        #endregion
+        #region Get Vehicles property Model Year and Type
+        public async Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds)
+        {
+            return await _vehicleRepository.GetVehiclePropertiesByIds(vehicleIds);
+        }
         #endregion
     }
 

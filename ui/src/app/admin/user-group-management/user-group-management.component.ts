@@ -43,7 +43,7 @@ export class UserGroupManagementComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   inputText: any;
   actionBtn:any; 
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   showLoadingIndicator: any = false;
   createViewEditStatus: boolean = false;
@@ -61,75 +61,75 @@ export class UserGroupManagementComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.defaultTranslation();
+    // this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
       this.userDetailsType = params['UserDetails']; 
    });
   }
 
-  defaultTranslation() {
-    this.translationData = {
-      lblUserGroupManagement: "Account Group Management",
-      lblGroupDetails: "Group Details",
-      lblNewUserGroup: "New Account Group",
-      lblGroupName: "Group Name",
-      lblVehicles: "Vehicles",
-      lblUsers: "Accounts",
-      lblAction: "Action",
-      lblNewUserGroupName: "New Account Group Name",
-      lblCreate: "Create",
-      lblCreateContinue: "Create & Continue",
-      lblNewUserGroupPopupInfo: "For adding more details click on Create and Continue' button.",
-      lblUserGroupCreatedSuccessfully: "Account Group '$' Created Successfully",
-      lblCancel: "Cancel",
-      lblNext: "Next",
-      lblPrevious: "Previous",
-      lblSearch: "Search",
-      lblAll: "All",
-      lblUserRole: "Account Role",
-      lblServices: "Services",
-      lblServicesName: "Services Name",
-      lblType: "Type",
-      lblStep: "Step",
-      lblSelectUserRole: "Select Account Role",
-      lblSelectVehicleGroupVehicle: "Select Vehicle Group/Vehicle",
-      lblSummary: "Summary",
-      lblVehicleGroup: "Vehicle Group",
-      lblVehicle: "Vehicle",
-      lblVIN: "VIN",
-      lblRegistrationNumber: "Registration Number",
-      lblVehicleName: "Vehicle Name",
-      lblGroup: "Group",
-      lblBoth: "Both",
-      lblSelectedUserRoles: "Selected Account Roles",
-      lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
-      lblBack: "Back",
-      lblReset: "Reset",
-      lblNew: "New", 
-      lblDeleteGroup: "Delete Group",
-      lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' account group?",
-      lblDelete: "Delete",
-      lblUserGroupalreadyexists: "Account Group already exists",
-      lblPleaseenterUserGroupname: "Please enter Account Group name",
-      lblSpecialcharactersnotallowed: "Special characters not allowed",
-      lblCreateUserGroupAPIFailedMessage: "Error encountered in creating new Account Group '$'",
-      lblUserGroupDelete: "Account Group '$' was successfully deleted.",
-      lblDeleteUserGroupAPIFailedMessage: "Error deleting Account Group '$'",
-      lblFilter: "Filter",
-      lblConfirm: "Confirm",
-      lblUpdate: "Update",
-      lblUserGroupName: "Account Group Name",
-      lblSelectUser: "Select Account",
-      lblEnterNewUserGroupName: "Enter New Account Group Name",
-      lblErrorUserGroupName: "Please enter any Account Group name",
-      lblUserGroupDescription: "Account Group Description (Optional)",
-      lblUserGroupDescriptionOptional: "Account Group Description",
-      lbl120CharMax: "120 characters max",
-      lblEnterAboutGroupPlaceholder: "Enter About Group",
-      lblUserGroupManagementInfo: "You can select Account from below list to map with this Account Group",
-      lblOptional: "(Optional)"
-    }
-  }
+  // defaultTranslation() {
+  //   this.translationData = {
+  //     lblUserGroupManagement: "Account Group Management",
+  //     lblGroupDetails: "Group Details",
+  //     lblNewUserGroup: "New Account Group",
+  //     lblGroupName: "Group Name",
+  //     lblVehicles: "Vehicles",
+  //     lblUsers: "Accounts",
+  //     lblAction: "Action",
+  //     lblNewUserGroupName: "New Account Group Name",
+  //     lblCreate: "Create",
+  //     lblCreateContinue: "Create & Continue",
+  //     lblNewUserGroupPopupInfo: "For adding more details click on Create and Continue' button.",
+  //     lblUserGroupCreatedSuccessfully: "Account Group '$' Created Successfully",
+  //     lblCancel: "Cancel",
+  //     lblNext: "Next",
+  //     lblPrevious: "Previous",
+  //     lblSearch: "Search",
+  //     lblAll: "All",
+  //     lblUserRole: "Account Role",
+  //     lblServices: "Services",
+  //     lblServicesName: "Services Name",
+  //     lblType: "Type",
+  //     lblStep: "Step",
+  //     lblSelectUserRole: "Select Account Role",
+  //     lblSelectVehicleGroupVehicle: "Select Vehicle Group/Vehicle",
+  //     lblSummary: "Summary",
+  //     lblVehicleGroup: "Vehicle Group",
+  //     lblVehicle: "Vehicle",
+  //     lblVIN: "VIN",
+  //     lblRegistrationNumber: "Registration Number",
+  //     lblVehicleName: "Vehicle Name",
+  //     lblGroup: "Group",
+  //     lblBoth: "Both",
+  //     lblSelectedUserRoles: "Selected Account Roles",
+  //     lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
+  //     lblBack: "Back",
+  //     lblReset: "Reset",
+  //     lblNew: "New", 
+  //     lblDeleteGroup: "Delete Group",
+  //     lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' account group?",
+  //     lblDelete: "Delete",
+  //     lblUserGroupalreadyexists: "Account Group already exists",
+  //     lblPleaseenterUserGroupname: "Please enter Account Group name",
+  //     lblSpecialcharactersnotallowed: "Special characters not allowed",
+  //     lblCreateUserGroupAPIFailedMessage: "Error encountered in creating new Account Group '$'",
+  //     lblUserGroupDelete: "Account Group '$' was successfully deleted.",
+  //     lblDeleteUserGroupAPIFailedMessage: "Error deleting Account Group '$'",
+  //     lblFilter: "Filter",
+  //     lblConfirm: "Confirm",
+  //     lblUpdate: "Update",
+  //     lblUserGroupName: "Account Group Name",
+  //     lblSelectUser: "Select Account",
+  //     lblEnterNewUserGroupName: "Enter New Account Group Name",
+  //     lblErrorUserGroupName: "Please enter any Account Group name",
+  //     lblUserGroupDescription: "Account Group Description (Optional)",
+  //     lblUserGroupDescriptionOptional: "Account Group Description",
+  //     lbl120CharMax: "120 characters max",
+  //     lblEnterAboutGroupPlaceholder: "Enter About Group",
+  //     lblUserGroupManagementInfo: "You can select Account from below list to map with this Account Group",
+  //     lblOptional: "(Optional)"
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));

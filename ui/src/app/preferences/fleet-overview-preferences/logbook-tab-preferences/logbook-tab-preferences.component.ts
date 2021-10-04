@@ -12,7 +12,7 @@ import { ReportService } from 'src/app/services/report.service';
 export class LogbookTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setLogbookFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];
@@ -27,8 +27,9 @@ export class LogbookTabPreferencesComponent implements OnInit {
     let repoId: any = this.reportListData.filter(i => i.name == 'Logbook');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadLogbookPreferences();
     }else{
-      this.reportId = 13; //- hard coded for Logbook
+      console.error("No report id found!")
     }
     this.translationUpdate();
     this.loadLogbookPreferences();

@@ -37,6 +37,7 @@ message ReportParameterRequest
     int32 OrganizationId = 2;
     int32 RoleId=3;
     int32 ContextOrgId=4;
+    int32 ReportId=5;
 }
 message ReportParameterResponse
 {

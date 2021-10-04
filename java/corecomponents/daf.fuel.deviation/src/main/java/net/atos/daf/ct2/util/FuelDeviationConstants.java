@@ -19,6 +19,7 @@ public class FuelDeviationConstants {
 	public static final String DATAMART_POSTGRE_USER = "datamart.postgres.userId";
 	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart.postgres.database.name";
 	public static final String DATAMART_POSTGRE_PASSWORD = "datamart.postgres.password";
+	public static final String POSTGRE_SQL_DRIVER = "postgresql.driver";
 
 	//Date Format
 	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -80,5 +81,6 @@ public class FuelDeviationConstants {
 	public static final String UNKNOWN = "UNKNOWN";
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
+	public static final Double ZERO_DOUBLE_VAL = 0.0;
 		
 }

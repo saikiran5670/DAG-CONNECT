@@ -170,11 +170,15 @@ namespace net.atos.daf.ct2.rfms.repository
                     //Parameter add for starttime
                     if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime != null)
                     {
-                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
                         if (lastVinId > 0)
                         {
                             var second = 1;
                             parameter.Add("@start_time", utilities.UTCHandling.RfmsGetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime, second));
+                        }
+                        else
+                        {
+                            parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
+
                         }
                         if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.Type == DateType.Created.ToString())
                         {
@@ -321,56 +325,82 @@ namespace net.atos.daf.ct2.rfms.repository
                 //parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
                 // To do rfms vehicle status....
                 string queryStatement = string.Empty;
+                string contentFilterQuery = GetContentFilterQuery(rfmsVehicleStatusRequest.ContentFilter);
+
                 if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
-                    queryStatement = @"SELECT Id, 
-                                    vin as vin,
-                                    vehicle_msg_trigger_type_id as triggertype,
-                                    'RFMS' as context,
-                                    vehicle_msg_trigger_additional_info as triggerinfo,
-                                    driver1_id as tachodriveridentification,
-                                    created_datetime as createddatetime,
-                                    received_datetime as receiveddatetime,                                 
-                                    'hr_total_vehicle_distance' as hrtotalvehicledistance,
-                                    'total_engine_hours' as totalenginehours,
-                                    'engine_total_fuel_used' as engineTotalFuelUsed,
-                                    'gross_combination_vehicle_weight' as grosscombinationvehicleweight,
-                                    driver1_id as driver1Id,
-                                    'accumulateddata' as accumulateddata,
-                                    'snapshotdata' as snapshotdata,
-                                    'uptimedata' as uptimedata,
-                                    'status2ofdoors' as status2ofdoors, 
-                                    'doorstatus' as doorstatus
-                                     from livefleet.livefleet_position_statistics T1
-										INNER JOIN 
-										(SELECT MAX(Created_DateTime) as lastDate, vin
-										from livefleet.livefleet_position_statistics 
-										Group By Vin) T2
-										on T1.created_datetime = T2.lastDate
-										and T1.Vin = T2.Vin";
+                    queryStatement = @"SELECT t1.Id, 
+                                        t1.vin,
+                                        t1.vehicle_msg_trigger_type_id as triggertype,
+                                        'RFMS' as context,
+                                        t1.vehicle_msg_trigger_additional_info as triggerinfo,
+                                        T1.driver1_id as tachodriveridentification,
+                                        t1.driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        t1.card_replacement_index as cardreplacementindex,
+                                        t1.oem_driver_id as oemdriveridentification,
+                                        t1.oem_driver_id_type as oemidtype,
+                                        t1.pto_id as ptoid,
+                                        t1.oem_telltale as oemtelltale,
+                                        t1.telltale_state_id as state,
+                                        t1.telltale_id as telltale,
+                                        t1.created_datetime as createddatetime,
+                                        t1.received_datetime as receiveddatetime,
+                                        t1.total_vehicle_distance as totalvehicledistance,
+                                        t1.total_engine_hours as totalenginehours,
+
+                                        t1.driver1_id as tachodriver1identification,
+                                        t1.driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        t1.card_replacement_index as cardreplacementindex,                                     
+                                        t1.oem_driver_id as oemdriveridentification,
+                                        t1.oem_driver_id_type as oemidtype,
+
+                                        t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
+                                        t1.total_engine_fuel_used as engineTotalFuelUsed ";
+                    var selectQuery = @" from livefleet.livefleet_position_statistics T1
+                                        left  join tripdetail.trip_statistics t2
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin
+                                        INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
+										from livefleet.livefleet_position_statistics Group By Vin) T3
+										on T1.created_datetime = T3.lastDate
+										and T1.Vin = T3.Vin";
+
+                    queryStatement += contentFilterQuery + selectQuery;
+
+
                 }
                 else
                 {
-                    queryStatement = @"SELECT Id, 
-                                    vin as vin,
-                                    vehicle_msg_trigger_type_id as triggertype,
-                                    'RFMS' as context,
-                                    vehicle_msg_trigger_additional_info as triggerinfo,
-                                    driver1_id as tachodriveridentification,
-                                    created_datetime as createddatetime,
-                                    received_datetime as receiveddatetime,                                 
-                                    'hr_total_vehicle_distance' as hrtotalvehicledistance,
-                                    'total_engine_hours' as totalenginehours,
-                                    'engine_total_fuel_used' as engineTotalFuelUsed,
-                                    'gross_combination_vehicle_weight' as grosscombinationvehicleweight,
-                                    driver1_id as driver1Id,
-                                    'accumulateddata' as accumulateddata,
-                                    'snapshotdata' as snapshotdata,
-                                    'uptimedata' as uptimedata,
-                                    'status2ofdoors' as status2ofdoors, 
-                                    'doorstatus' as doorstatus
-                                    
-									    from livefleet.livefleet_position_statistics";
+                    queryStatement = @"SELECT t1.Id, 
+                                        t1.vin,
+                                        t1.vehicle_msg_trigger_type_id as triggertype,
+                                        'RFMS' as context,
+                                        t1.vehicle_msg_trigger_additional_info as triggerinfo,
+                                        T1.driver1_id as tachodriveridentification,
+                                        t1.driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        t1.card_replacement_index as cardreplacementindex,
+                                        t1.oem_driver_id as oemdriveridentification,
+                                        t1.oem_driver_id_type as oemidtype,
+                                        t1.pto_id as ptoid,
+                                        t1.oem_telltale as oemtelltale,
+                                        t1.telltale_state_id as state,
+                                        t1.telltale_id as telltale,
+                                        t1.created_datetime as createddatetime,
+                                        t1.received_datetime as receiveddatetime,
+                                        t1.total_vehicle_distance as totalvehicledistance,
+                                        t1.total_engine_hours as totalenginehours,
+
+                                        t1.driver1_id as tachodriver1identification,
+                                        t1.driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        t1.card_replacement_index as cardreplacementindex,                                     
+                                        t1.oem_driver_id as oemdriveridentification,
+                                        t1.oem_driver_id_type as oemidtype,
+
+                                        t1.gross_combination_vehicle_weight as grogrossCombinationVehicleWeight,
+                                        t1.total_engine_fuel_used as engineTotalFuelUsed ";
+                    var selectQuery = @"from livefleet.livefleet_position_statistics t1 left
+                                        join tripdetail.trip_statistics t2
+                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin";
+                    queryStatement += contentFilterQuery + selectQuery;
                 }
 
 
@@ -382,9 +412,9 @@ namespace net.atos.daf.ct2.rfms.repository
                     List<string> lstVisibleVins = visibleVins.Split(',').ToList();
                     parameter.Add("@visibleVins", lstVisibleVins);
                     if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
-                        queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins)";
                     else
-                        queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins)";
                 }
 
                 //If Not Latest Only Check
@@ -393,15 +423,23 @@ namespace net.atos.daf.ct2.rfms.repository
                     //Parameter add for starttime
                     if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime != null)
                     {
-                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
-
-                        if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Type == DateType.Created.ToString())
+                        if (lastVinId > 0)
                         {
-                            queryStatement = queryStatement + " and created_datetime > @start_time";
+                            var second = 1;
+                            parameter.Add("@start_time", utilities.UTCHandling.RfmsGetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime, second));
                         }
                         else
                         {
-                            queryStatement = queryStatement + " and received_datetime > @start_time";
+                            parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
+
+                        }
+                        if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.Type == DateType.Created.ToString())
+                        {
+                            queryStatement = queryStatement + " and created_datetime >= @start_time";
+                        }
+                        else
+                        {
+                            queryStatement = queryStatement + " and received_datetime >= @start_time";
                         }
                     }
 
@@ -422,11 +460,6 @@ namespace net.atos.daf.ct2.rfms.repository
                 }
                 // Parameter add for content filter
 
-                //if (rfmsVehicleStatusRequest.ContentFilter == ContentType.ACCUMULATED)
-                //{
-
-                //    queryStatement += "@select";
-                //}
 
                 //Parameter add for TriggerFilter
                 if (Int32.TryParse(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.TriggerFilter, out int triggerFilter))
@@ -439,7 +472,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
                     if (!rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
-                        queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
                 }
                 if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {
@@ -460,7 +493,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(_rfmsVehicleStatusMapper.MapVehicleStatus(record));
+                    lstVehicleStatus.Add(_rfmsVehicleStatusMapper.MapVehicleStatus(record, rfmsVehicleStatusRequest.ContentFilter));
                 }
 
 
@@ -474,6 +507,79 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 throw;
             }
+
+        }
+
+        private string GetContentFilterQuery(string contentFilter)
+        {
+            var query = string.Empty;
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()))
+            {
+                query += @" ,t2.veh_message_driving_time as durationwheelspeedoverzero,
+                            t2.v_cruise_control_dist_for_cc_fuel_consumption as distancecruisecontrolactive,
+                            t2.duration_cruise_control_active as durationcruisecontrolactive,
+                            t2.v_cruise_control_fuel_consumed_for_cc_fuel_consumption as fuelconsumptionduringcruiseactive,
+                            t2.veh_message_idle_without_ptoduration as durationwheelbasespeedzero,
+                            t2.fuel_during_wheelbase_speed_zero as fuelduringwheelbasespeedzero,
+                            t2.fuel_wheelbase_speed_over_zero as fuelwheelbasespeedoverzero,
+                            t2.brake_pedal_counter_speed_over_zero as brakepedalcounterspeedoverzero,
+                            t2.distance_brake_pedal_active_speed_over_zero as distancebrakepedalactivespeedoverzero,
+--classes
+                            t2.pto_active_class_pto_duration as ptoactiveclassptoduration,
+                            t2.pto_active_class_pto_fuel_consumed as ptoactiveclassptofuelconsumed,
+                            t2.acceleration_pedal_pos_class_distr as accelerationpedalposclassdistr,
+                            t2.acceleration_pedal_pos_class_min_range as accelerationpedalposclassminrange,
+                            t2.acceleration_pedal_pos_class_max_range as accelerationpedalposclassmaxrange,
+                            t2.acceleration_pedal_pos_class_distr_step as accelerationpedalposclassdistrstep, 
+                            t2.acceleration_pedal_pos_class_distr_array_time as accelerationpedalposclassdistrarraytime,
+                            t2.retarder_torque_class_distr as retardertorqueclassdistr, 
+                            t2.retarder_torque_class_min_range as retardertorqueclassminrange,
+                            t2.retarder_torque_class_max_range as retardertorqueclassmaxrange,
+                            t2.retarder_torque_class_distr_step as retardertorqueclassdistrstep,
+                            t2.retarder_torque_class_distr_array_time as retardertorqueclassdistrarray_time,
+                            t2.engine_torque_engine_load_class_distr as enginetorqueengineloadclassdistr, 
+                            t2.engine_torque_engine_load_class_min_range as enginetorqueengineloadclassminrange, 
+                            t2.engine_torque_engine_load_class_max_range as enginetorqueengineloadclassmaxrange,
+                            t2.engine_torque_engine_load_class_distr_step as enginetorqueengineloadclassdistrstep, 
+                            t2.engine_torque_engine_load_class_distr_array_time  as enginetorqueengineloadclassdistrarraytime
+                            ";
+
+
+            }
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.SNAPSHOT.ToString()[0].ToString()))
+            {
+                query += @" ,t1.gps_altitude as altitude,
+                            t1.gps_heading as heading,
+                            t1.gps_latitude as latitude,
+                            t1.gps_longitude as longitude,
+                            t1.gps_datetime as positiondatetime,
+                            t1.gps_speed as speed,
+                            t1.tachgraph_speed as tachographspeed,
+                            t1.wheelbased_speed as wheelbasespeed,
+                            t1.fuel_level1 as fuellevel1,
+                            t1.catalyst_fuel_level as catalystfuellevel,										
+                            t1.driver1_working_state as driver1workingstate,
+                            t1.driver2_id as tachodriver2identification,
+                            t1.driver2_auth_equipment_type_id as driver2authenticationequipment,
+                            t1.driver2_card_replacement_index as cardreplacementindex,                                     
+                            t1.oem_driver2_id as oemdriver2identification,
+                            t1.oem_driver2_id_type as driver2oemidtype,
+                            t1.driver2_working_state as driver2workingstate,
+                            t1.ambient_air_temperature as ambientairtemperature ";
+
+            }
+            if (string.IsNullOrEmpty(contentFilter) || contentFilter.Contains(ContentType.UPTIME.ToString()[0].ToString()))
+            {
+                query += @" ,t1.oem_telltale as oemtelltale,
+                            t1.telltale_state_id as state,
+                            t1.telltale_id as telltale,
+                            t1.distance_until_next_service as serviceDistance,
+                            t1.engine_coolant_temperature as enginecoolanttemperature,
+                            t1.service_brake_air_pressure_circuit1 as servicebrakeairpressurecircuit1,
+                            t1.service_brake_air_pressure_circuit2 as servicebrakeairpressurecircuit2 ";
+
+            }
+            return query;
 
         }
     }

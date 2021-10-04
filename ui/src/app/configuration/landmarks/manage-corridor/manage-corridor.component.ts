@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfigService } from '@ngx-config/core';
 import { CorridorService } from 'src/app/services/corridor.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { MapFunctionsService } from './map-functions.service';
@@ -17,7 +18,7 @@ declare var H: any;
 
 export class ManageCorridorComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   displayedColumns = ['All', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width', 'action'];
   createEditStatus = false;
@@ -43,6 +44,7 @@ export class ManageCorridorComponent implements OnInit {
   selectedElementData: any;
   showLoadingIndicator: boolean;
   localStLanguage: any;
+  map_key: any = '';
   selectedCorridors = new SelectionModel(true, []);
 
   
@@ -50,9 +52,11 @@ export class ManageCorridorComponent implements OnInit {
     private dialogService: ConfirmDialogService, 
     private corridorService : CorridorService,
     private _snackBar: MatSnackBar,
-    private mapFunctions: MapFunctionsService) {
+    private mapFunctions: MapFunctionsService,
+    private _configService: ConfigService) {
+      this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });
    }
 
@@ -261,11 +265,10 @@ export class ManageCorridorComponent implements OnInit {
   }
   masterToggleForCorridor() {
     this.markerArray = [];
+    this.mapFunctions.clearRoutesFromMap();
+
     if(this.isAllSelectedForCorridor()){
       this.selectedCorridors.clear();
-      this.mapFunctions.clearRoutesFromMap();
-      this.mapFunctions.clearPolylines();
-
       this.showMap = false;
     }
     else{
@@ -307,7 +310,6 @@ export class ManageCorridorComponent implements OnInit {
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
-      this.mapFunctions.removeCorridor(row.id);
       }
     this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 

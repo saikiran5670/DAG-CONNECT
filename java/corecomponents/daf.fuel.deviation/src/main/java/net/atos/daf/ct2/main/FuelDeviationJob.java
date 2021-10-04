@@ -47,6 +47,27 @@ public class FuelDeviationJob {
 
 			SingleOutputStreamOperator<FuelDeviationData> fuelDeviationData = FlinkKafkaFuelDeviationMsgConsumer
 					.consumeIndexMsgs(envParams, env)
+					.assignTimestampsAndWatermarks(WatermarkStrategy
+							.<KafkaRecord<Index>>forBoundedOutOfOrderness(Duration.ofSeconds(Long.parseLong(envParams
+									.get(FuelDeviationConstants.FUEL_DEVIATION_WATERMARK_TIME_WINDOW_SECONDS))))
+							.withTimestampAssigner(new SerializableTimestampAssigner<KafkaRecord<Index>>() {
+
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public long extractTimestamp(KafkaRecord<Index> element, long recordTimestamp) {
+									long eventTm = TimeFormatter.getInstance().getCurrentUTCTime();
+									try {
+										eventTm = TimeFormatter.getInstance().convertUTCToEpochMilli(
+												element.getValue().getEvtDateTime().toString(),
+												FuelDeviationConstants.DATE_FORMAT);
+									} catch (Exception e) {
+										logger.error("Issue mandatory field is null, msg :{}", element.getValue());
+									}
+
+									return eventTm;
+								}
+							}))
 					.map(new MapFunction<KafkaRecord<Index>, FuelDeviationData>() {
 						/**
 						 * 
@@ -57,45 +78,33 @@ public class FuelDeviationJob {
 						public FuelDeviationData map(KafkaRecord<Index> kafkaRec) {
 							return fetchFuelDeviationData(kafkaRec.getValue());
 						}
-					}).assignTimestampsAndWatermarks(
-							WatermarkStrategy.<FuelDeviationData>forBoundedOutOfOrderness(Duration.ofSeconds(Long.parseLong(
-									envParams.get(FuelDeviationConstants.FUEL_DEVIATION_WATERMARK_TIME_WINDOW_SECONDS))))
-									.withTimestampAssigner(new SerializableTimestampAssigner<FuelDeviationData>() {
-
-										private static final long serialVersionUID = 1L;
-
-										@Override
-										public long extractTimestamp(FuelDeviationData element, long recordTimestamp) {
-											return element.getEvtDateTime();
-										}
-									}));
+					});
 
 			FuelDeviationProcess fuelDeviation = new FuelDeviationProcess();
 			SingleOutputStreamOperator<FuelDeviationData> fuelDuringStopData = fuelDeviationData
 					.filter(rec -> (FuelDeviationConstants.INDEX_TRIP_START).intValue() == rec.getVEvtId().intValue()
 							|| (FuelDeviationConstants.INDEX_TRIP_END).intValue() == rec.getVEvtId().intValue());
 
-			
-			
 			SingleOutputStreamOperator<FuelDeviation> fuelDeviationDuringStopData = fuelDeviation
 					.fuelDeviationProcessingDuringStop(fuelDuringStopData,
 							Long.parseLong(envParams.get(FuelDeviationConstants.FUEL_DEVIATION_TIME_WINDOW_SECONDS)));
 
 			fuelDeviationDuringStopData.addSink(new FuelDeviationSink());
-			
+
 			SingleOutputStreamOperator<FuelDeviationData> fuelDuringTripData = fuelDeviationData
 					.filter(rec -> rec.getTripId() != null);
-			
+
 			SingleOutputStreamOperator<FuelDeviation> fuelDeviationDuringTripData = fuelDeviation
 					.fuelDeviationProcessingDuringTrip(fuelDuringTripData,
 							Long.parseLong(envParams.get(FuelDeviationConstants.FUEL_DEVIATION_TIME_WINDOW_SECONDS)));
 
 			fuelDeviationDuringTripData.addSink(new FuelDeviationSink());
-			
+
 			env.execute("Fuel Deviation Streaming Job");
 
 		} catch (Exception e) {
-			fuelDeviationJob.auditFuelDevialJobDetails(envParams, "FuelDeviation streaming job failed ::" + e.getMessage());
+			fuelDeviationJob.auditFuelDevialJobDetails(envParams,
+					"FuelDeviation streaming job failed ::" + e.getMessage());
 			logger.error("Issue FuelDeviationJob failed, reason :: " + e);
 			e.printStackTrace();
 		}
@@ -108,39 +117,60 @@ public class FuelDeviationJob {
 		try {
 
 			fuelStopObj.setVid(idxMsg.getVid());
-			
-			if(Objects.nonNull(idxMsg.getVin()))
+
+			if (Objects.nonNull(idxMsg.getVin()))
 				fuelStopObj.setVin(idxMsg.getVin());
 			else
 				fuelStopObj.setVin(idxMsg.getVid());
-			
+
 			if (idxMsg.getEvtDateTime() != null) {
 				fuelStopObj.setEvtDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						idxMsg.getEvtDateTime().toString(), FuelDeviationConstants.DATE_FORMAT));
-			}else
+			} else
 				fuelStopObj.setEvtDateTime(FuelDeviationConstants.ZERO_VAL);
 
 			if (idxMsg.getDocument() != null) {
-				if(Objects.nonNull(idxMsg.getDocument().getTripID()))
+				if (Objects.nonNull(idxMsg.getDocument().getTripID()))
 					fuelStopObj.setTripId(idxMsg.getDocument().getTripID());
 				else
 					fuelStopObj.setTripId("UNKNOWN");
-				//cross verify
+				// cross verify
 				if (idxMsg.getDocument().getVFuelLevel1() != null)
 					fuelStopObj.setVFuelLevel(BigDecimal.valueOf(idxMsg.getDocument().getVFuelLevel1()));
-				/*else
-					fuelStopObj.setVFuelLevel(BigDecimal.ZERO);*/
+				/*
+				 * else fuelStopObj.setVFuelLevel(BigDecimal.ZERO);
+				 */
 			}
 
-			if(idxMsg.getVEvtID() != null)
+			if (idxMsg.getVEvtID() != null)
 				fuelStopObj.setVEvtId(idxMsg.getVEvtID());
 			else
 				fuelStopObj.setVEvtId(0);
-			
-			fuelStopObj.setVDist(idxMsg.getVDist());
-			fuelStopObj.setGpsLatitude(idxMsg.getGpsLatitude());
-			fuelStopObj.setGpsLongitude(idxMsg.getGpsLongitude());
-			fuelStopObj.setGpsHeading(idxMsg.getGpsHeading());
+
+			if (idxMsg.getVEvtID() != null)
+				fuelStopObj.setVEvtId(idxMsg.getVEvtID());
+			else
+				fuelStopObj.setVEvtId(FuelDeviationConstants.ZERO);
+
+			if (Objects.nonNull(idxMsg.getVDist()))
+				fuelStopObj.setVDist(idxMsg.getVDist());
+			else
+				fuelStopObj.setVDist(FuelDeviationConstants.ZERO_VAL);
+
+			if (Objects.nonNull(idxMsg.getGpsLatitude()))
+				fuelStopObj.setGpsLatitude(idxMsg.getGpsLatitude());
+			else
+				fuelStopObj.setGpsLatitude(FuelDeviationConstants.ZERO_DOUBLE_VAL);
+
+			if (Objects.nonNull(idxMsg.getGpsLongitude()))
+				fuelStopObj.setGpsLongitude(idxMsg.getGpsLongitude());
+			else
+				fuelStopObj.setGpsLatitude(FuelDeviationConstants.ZERO_DOUBLE_VAL);
+
+			if (Objects.nonNull(idxMsg.getGpsHeading()))
+				fuelStopObj.setGpsHeading(idxMsg.getGpsHeading());
+			else
+				fuelStopObj.setGpsHeading(FuelDeviationConstants.ZERO_DOUBLE_VAL);
 
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized Index object to fuelDeviationDuringStop object :: " + e);

@@ -17,8 +17,9 @@ import { VehicleService } from '../../../services/vehicle.service';
 export class CreateEditViewVehicleAccountAccessRelationshipComponent implements OnInit {
   @Input() accountGrpList: any;
   @Input() vehicleGrpList: any;
-  @Input() translationData: any;
+  @Input() translationData: any={};
   @Input() associationTypeId: any;
+  @Input() vehicleDisplayPreference: any;
   breadcumMsg: any = '';  
   @Output() accessRelationCreate = new EventEmitter<object>();
   accessRelationshipFormGroup: FormGroup;

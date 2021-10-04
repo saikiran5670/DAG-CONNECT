@@ -42,6 +42,13 @@ public class ETLQueries {
 			+ ", stsData.rpmSpeed, stsData.absRpmSpeed, stsData.ordRpmSpeed, stsData.nonZeroRpmSpeedMatrix, stsData.numValRpmSpeed, stsData.clmnIdnxRpmSpeed "
 			+ ", stsData.aclnSpeed, stsData.absAclnSpeed, stsData.ordAclnSpeed, stsData.nonZeroAclnSpeedMatrix "
 			+ ", stsData.nonZeroBrakePedalAclnSpeedMatrix, stsData.numValAclnSpeed, stsData.clmnIdnxAclnSpeed "
+			+ ", stsData.vTripIdlePTOFuelConsumed, stsData.vPtoDist"
+			+ ", if(0 <> stsData.vPtoDist, (CAST(stsData.vTripIdlePTOFuelConsumed as Double)/stsData.vPtoDist) *100, stsData.vTripIdlePTOFuelConsumed) as idlingConsumptionWithPTO"
+			+ ", stsData.vTripCruiseControlDuration, stsData.vTripIdleWithoutPTOFuelConsumed, stsData.vTripMotionFuelConsumed "
+			+ ", stsData.vTripMotionBrakeCount, stsData.vTripMotionBrakeDist, stsData.vTripMotionPTODuration, stsData.vTripMotionPTOFuelConsumed, stsData.aclnPedalDistr "
+			+ ", stsData.aclnMinRangeInt, stsData.aclnMaxRangeInt, stsData.aclnDistrStep, stsData.aclnDistrArrayTime, stsData.vRetarderTorqueActualDistr "
+			+ ", stsData.vRetarderTorqueMinRangeInt, stsData.vRetarderTorqueMaxRangeInt, stsData.vRetarderTorqueDistrStep, stsData.vRetarderTorqueDistrArrayTime "
+			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime "
 			+ " FROM tripStsData stsData";
 	
 	public static final String TRIP_STATUS_AGGREGATION_QRY_BCKUP = " select stsData.tripId, stsData.vid, stsData.vin, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
@@ -88,9 +95,16 @@ public class ETLQueries {
 			+ ", stsData.rpmSpeed, stsData.absRpmSpeed, stsData.ordRpmSpeed, stsData.nonZeroRpmSpeedMatrix, stsData.numValRpmSpeed, stsData.clmnIdnxRpmSpeed "
 			+ ", stsData.aclnSpeed, stsData.absAclnSpeed, stsData.ordAclnSpeed, stsData.nonZeroAclnSpeedMatrix "
 			+ ", stsData.nonZeroBrakePedalAclnSpeedMatrix, stsData.numValAclnSpeed, stsData.clmnIdnxAclnSpeed "
+			+ ", stsData.vTripIdlePTOFuelConsumed, stsData.vPtoDist, stsData.idlingConsumptionWithPTO, stsData.vTripCruiseControlDuration, stsData.vTripIdleWithoutPTOFuelConsumed, stsData.vTripMotionFuelConsumed "
+			+ ", stsData.vTripMotionBrakeCount, stsData.vTripMotionBrakeDist, stsData.vTripMotionPTODuration, stsData.vTripMotionPTOFuelConsumed, stsData.aclnPedalDistr "
+			+ ", stsData.aclnMinRangeInt, stsData.aclnMaxRangeInt, stsData.aclnDistrStep, stsData.aclnDistrArrayTime, stsData.vRetarderTorqueActualDistr "
+			+ ", stsData.vRetarderTorqueMinRangeInt, stsData.vRetarderTorqueMaxRangeInt, stsData.vRetarderTorqueDistrStep, stsData.vRetarderTorqueDistrArrayTime "
+			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime "
 			+ " FROM stsAggregatedData stsData LEFT JOIN secondLevelAggrData indxData ON stsData.tripId = indxData.f0 ";
 	
 	public static final String CO2_COEFFICIENT_QRY = " select coefficient from master.co2coefficient c join master.vehicle v on c.fuel_type = v.fuel_type and vin = ? ";
+	
+	public static final String VEH_FUELTYPE_QRY = " select fuel_type from master.vehicle where vin = ? ";
 	
 	public static final String TRIP_QRY = " select tripId ,vid ,vin ,startDateTime ,endDateTime ,gpsTripDist ,tripCalDist ,vIdleDuration, tripCalAvgSpeed "
 			+ ", vGrossWeightCombination ,gpsStartVehDist ,gpsStopVehDist ,gpsStartLatitude ,gpsStartLongitude ,gpsEndLatitude ,gpsEndLongitude ,vUsedFuel "
@@ -103,6 +117,10 @@ public class ETLQueries {
 			+ ", rpmTorque, absRpmTorque, ordRpmTorque, nonZeroRpmTorqueMatrix, numValRpmTorque, clmnIdnxRpmTorque, rpmSpeed, absRpmSpeed, ordRpmSpeed"
 			+ ", nonZeroRpmSpeedMatrix, numValRpmSpeed, clmnIdnxRpmSpeed, aclnSpeed, absAclnSpeed, ordAclnSpeed, nonZeroAclnSpeedMatrix"
 			+ ", nonZeroBrakePedalAclnSpeedMatrix, numValAclnSpeed, clmnIdnxAclnSpeed "
+			+ ", vTripIdlePTOFuelConsumed, vPtoDist, idlingConsumptionWithPTO, vTripCruiseControlDuration, vTripIdleWithoutPTOFuelConsumed, vTripMotionFuelConsumed, vTripMotionBrakeCount, vTripMotionBrakeDist"
+			+ ", vTripMotionPTODuration, vTripMotionPTOFuelConsumed, aclnPedalDistr, aclnMinRangeInt, aclnMaxRangeInt, aclnDistrStep, aclnDistrArrayTime, vRetarderTorqueActualDistr"
+			+ ", vRetarderTorqueMinRangeInt, vRetarderTorqueMaxRangeInt, vRetarderTorqueDistrStep, vRetarderTorqueDistrArrayTime, vEngineLoadAtEngineSpeedDistr, vEngineLoadMinRangeInt"
+			+ ", vEngineLoadMaxRangeInt, vEngineLoadDistrStep, vEngineLoadDistrArrayTime"
 			+ " from tripAggrData ";
 	
 	//tripCalPtoDuration, tripCalHeavyThrottleDuration
@@ -125,9 +143,15 @@ public class ETLQueries {
 			+ ", veh_message_idle_without_ptoduration, veh_message_idle_ptoduration"
 			+ ", rpm_torque, abs_rpm_torque, ord_rpm_torque, nonzero_matrix_val_rpm_torque, num_val_rpm_torque, col_index_rpm_torque, speed_rpm, abs_speed_rpm"
 			+ ", ord_speed_rpm, nonzero_matrix_val_speed_rpm, num_val_speed_rpm, col_index_speed_rpm, acceleration_speed, abs_acceleration_speed"
-			+ ", ord_acceleration_speed, nonzero_matrix_val_acceleration_speed, nonzero_matrix_val_brake_pedal_acceleration_speed, num_val_acceleration_speed"
-			+ ", col_index_acceleration_speed) "
-			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			+ ", ord_acceleration_speed, nonzero_matrix_val_acceleration_speed, nonzero_matrix_val_brake_pedal_acceleration_speed, num_val_acceleration_speed, col_index_acceleration_speed"
+			+ ", trip_idle_pto_fuel_consumed, duration_cruise_control_active, fuel_during_wheelbase_speed_zero, fuel_wheelbase_speed_over_zero, brake_pedal_counter_speed_over_zero, distance_brake_pedal_active_speed_over_zero"
+			+ ", pto_active_class_pto_duration, pto_active_class_pto_fuel_consumed, acceleration_pedal_pos_class_distr, acceleration_pedal_pos_class_min_range"
+			+ ", acceleration_pedal_pos_class_max_range,acceleration_pedal_pos_class_distr_step, acceleration_pedal_pos_class_distr_array_time, retarder_torque_class_distr"
+			+ ", retarder_torque_class_min_range,retarder_torque_class_max_range, retarder_torque_class_distr_step,retarder_torque_class_distr_array_time,engine_torque_engine_load_class_distr"
+			+ ", engine_torque_engine_load_class_min_range,engine_torque_engine_load_class_max_range,engine_torque_engine_load_class_distr_step"
+			+ ", engine_torque_engine_load_class_distr_array_time, pto_distance, idling_consumption_with_pto) "
+			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+			+ ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 			+ "  ON CONFLICT (trip_id) "
 			+ "  DO UPDATE SET  vin = ?, start_time_stamp = ?, end_time_stamp = ?, veh_message_distance = ?, etl_gps_distance = ?, idle_duration = ?, average_speed = ?"
 			+ ", average_weight = ?, start_odometer = ?, last_odometer = ?, start_position_lattitude = ?, start_position_longitude = ?, end_position_lattitude = ?"
@@ -143,8 +167,13 @@ public class ETLQueries {
 			+ ", veh_message_dpabraking_score = ?, veh_message_dpaanticipation_score = ?, veh_message_idle_without_ptoduration = ?, veh_message_idle_ptoduration = ? "
 			+ ", rpm_torque=?, abs_rpm_torque=?, ord_rpm_torque=?, nonzero_matrix_val_rpm_torque=?, num_val_rpm_torque=?, col_index_rpm_torque=?, speed_rpm=?, abs_speed_rpm=?"
 			+ ", ord_speed_rpm=?, nonzero_matrix_val_speed_rpm=?, num_val_speed_rpm=?, col_index_speed_rpm=?, acceleration_speed=?, abs_acceleration_speed=?"
-			+ ", ord_acceleration_speed=?, nonzero_matrix_val_acceleration_speed=?, nonzero_matrix_val_brake_pedal_acceleration_speed=?, num_val_acceleration_speed=?"
-			+ ", col_index_acceleration_speed=?";
+			+ ", ord_acceleration_speed=?, nonzero_matrix_val_acceleration_speed=?, nonzero_matrix_val_brake_pedal_acceleration_speed=?, num_val_acceleration_speed=?, col_index_acceleration_speed=?"
+			+ " ,trip_idle_pto_fuel_consumed = ?, duration_cruise_control_active = ?, fuel_during_wheelbase_speed_zero = ?, fuel_wheelbase_speed_over_zero = ?, brake_pedal_counter_speed_over_zero = ?"
+			+ ", distance_brake_pedal_active_speed_over_zero = ?, pto_active_class_pto_duration = ?, pto_active_class_pto_fuel_consumed = ?, acceleration_pedal_pos_class_distr = ?"
+			+ ", acceleration_pedal_pos_class_min_range = ?, acceleration_pedal_pos_class_max_range = ?, acceleration_pedal_pos_class_distr_step = ?, acceleration_pedal_pos_class_distr_array_time = ?"
+			+ ", retarder_torque_class_distr = ?, retarder_torque_class_min_range = ?, retarder_torque_class_max_range = ?, retarder_torque_class_distr_step = ?, retarder_torque_class_distr_array_time = ?"
+			+ ", engine_torque_engine_load_class_distr = ?, engine_torque_engine_load_class_min_range = ?, engine_torque_engine_load_class_max_range = ?, engine_torque_engine_load_class_distr_step = ?"
+			+ ", engine_torque_engine_load_class_distr_array_time= ?, pto_distance=?, idling_consumption_with_pto=?";
 
 	
 	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id "

@@ -30,5 +30,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int VehicleGroupId { get; set; }
         public string VehicleGroupName { get; set; }
         public int CreatedBy { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

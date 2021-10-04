@@ -127,7 +127,7 @@
       
       
       
-          <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen"
               (closed)="!isChartsOpen">
               <mat-expansion-panel-header class="full-width">
@@ -136,7 +136,7 @@
                     'Charts' }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div fxLayout="row wrap" fxLayoutAlign="start" class="full-width" fxLayoutGap="15px">
+              <div *ngIf='showGraph' fxLayout="row wrap" fxLayoutAlign="start" class="full-width" fxLayoutGap="15px">
       
                 <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
                 fxFlex.lt-sm="100%">
@@ -252,6 +252,8 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf='!showGraph'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
+  
             </mat-expansion-panel>
           </mat-card>
         </div>
@@ -457,7 +459,7 @@
                             || ' mpg') }})</span>              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
-                          <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>              
+                          <span>{{row.convertedTripFuelConsumption  | number : '.2-2'}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cO2Emission">              
@@ -481,7 +483,7 @@
                         <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_ptoduration')">{{ translationData.lblPTODuration || 'PTO Duration%' }}             
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_ptoduration')">              
-                          <span>{{row.ptoDuration}}</span>              
+                          <span>{{row.ptoDuration.toFixed(2)}}</span>              
                         </mat-cell>              
                       </ng-container>
                       <ng-container matColumnDef="cruiseControlDistance3050">      
@@ -533,7 +535,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification' }}     
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">     
-                  <span>{{row.averageTrafficClassification}}</span>     
+                  <span>{{row.averageTrafficClassificationValue}}</span>     
                 </mat-cell>      
               </ng-container>
               <ng-container matColumnDef="ccFuelConsumption">
@@ -544,7 +546,7 @@
                   || ' mpg') }})</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
-                    <span>{{row.ccFuelConsumption}}</span>
+                    <span>{{(row.ccFuelConsumption).toFixed(2)}}</span>
                   </mat-cell>
                 </ng-container>
     
@@ -564,7 +566,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}      
                 </mat-header-cell>      
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">      
-                  <span>{{row.idlingConsumption}}</span>      
+                  <span>{{row.idlingConsumptionValue}}</span>      
                 </mat-cell>     
               </ng-container>      
               <ng-container matColumnDef="dpaScore">     

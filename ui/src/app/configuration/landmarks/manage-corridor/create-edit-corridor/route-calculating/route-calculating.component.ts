@@ -17,7 +17,7 @@ declare var H: any;
   styleUrls: ['./route-calculating.component.less']
 })
 export class RouteCalculatingComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() exclusionList :  any;
   @Input() actionType: any; 
   @Input() selectedElementData : any;

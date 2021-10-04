@@ -14,7 +14,7 @@ import { PackageService } from 'src/app/services/package.service';
 })
 export class CreateEditPackageDetailsComponent implements OnInit {
   @Input() actionType: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Input() createStatus: boolean;
   @Input() viewFlag: boolean;
@@ -37,7 +37,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   userCreatedMsg: any = '';
   userName: string = '';
   duplicateMsg: boolean = false;
-  TypeList: any = [
+  menuFeatures: any;
+  showType: boolean = false;
+  TypeList1: any = [
     {
       name: 'Organization',
       value: 'Organization'
@@ -47,6 +49,21 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       value: 'VIN'
     }
   ];
+  TypeList2: any = [
+    {
+      name: 'Organization',
+      value: 'Organization'
+    },
+    {
+      name: 'VIN',
+      value: 'VIN'
+    },
+    {
+      name: 'Platform',
+      value: 'Platform'
+    }
+  ];
+  TypeList: any =[];
   columnCodes = ['name', 'select'];
   columnLabels = ['FeatureName','Include'];
   showLoadingIndicator: boolean = true;
@@ -59,6 +76,18 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   }
   
   ngOnInit() {
+    this.menuFeatures = localStorage.getItem("accountFeatures");
+    let data = JSON.parse(this.menuFeatures)["features"];
+    data.forEach(element => {
+      if(element.name == 'Admin.PackageManagement.PlatformPackage'){
+        this.showType = true;
+      }
+    });
+    if(this.showType){
+      this.TypeList = this.TypeList2;
+    } else {
+      this.TypeList = this.TypeList1;
+    }
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
@@ -236,7 +265,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "featureSetID" : 24,
       "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V"  : this.packageFormGroup.controls.type.value === "Platform" ? "P" : "O",
       "description": this.packageFormGroup.controls.description.value,
       "state": this.selectedStatus === "Inactive" ? "I" : "A" //TODO: For delete, add option "D"
     }
@@ -265,7 +294,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "featureSetID" : this.selectedElementData.featureSetID,
       "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : this.packageFormGroup.controls.type.value === "Platform" ? "P" : "O",
       "description": this.packageFormGroup.controls.description.value,
       "state": this.selectedStatus === "Inactive" ? "I" : "A"
     }

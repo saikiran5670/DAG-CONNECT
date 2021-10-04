@@ -11,7 +11,7 @@
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPackageFlag'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPackageDetails || 'Package Details' }}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPackageDetails  }}</span>
     </div>
   </div>
   
@@ -21,24 +21,24 @@
     <ng-template #topRightElements>
       <div>
         <button mat-flat-button (click)="importPackageCSV()">
-          <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
+          <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import'  }}
         </button>
       </div>
       <div *ngIf="!adminAccessType.adminReadOnlyAccess">
         <button mat-flat-button color="primary" (click)="createNewPackage()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage  }}
         </button>
       </div>
     </ng-template>
 
     <ng-template #actionColumnElements let-gridData='rowData'>
-      <button class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+      <button class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'view')" matTooltip="{{ translationData.lblView }}">
         <mat-icon>visibility</mat-icon>
       </button>
-      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="gridData.state == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="gridData.state == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(gridData, 'edit')" matTooltip="{{ translationData.lblEdit }}">
         <mat-icon [disabled]="gridData.state == 'Inactive'">create</mat-icon>
       </button>
-      <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deletePackage(gridData)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+      <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deletePackage(gridData)" matTooltip="{{ translationData.lblDelete }}">
         <mat-icon class="deleteIcon">delete_outline</mat-icon>
       </button>
     </ng-template>

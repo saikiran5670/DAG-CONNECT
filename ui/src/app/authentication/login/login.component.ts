@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
   maintenancePopupFlag: boolean = false;
   loginClicks = 0;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
-  translationData: any;
+  translationData: any = {};
   showLoadingIndicator: any = false;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
       'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'emailId': [null, Validators.compose([Validators.required, Validators.maxLength(120), Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")])]
+      'emailId': [null, Validators.compose([Validators.required, Validators.maxLength(120), Validators.pattern("^[A-Za-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")])]
     });
 
     this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;

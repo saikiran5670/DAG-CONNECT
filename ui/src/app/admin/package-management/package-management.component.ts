@@ -24,7 +24,7 @@ export class PackageManagementComponent implements OnInit {
   packageCreatedMsg : any = '';
   selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
-  translationData: any;
+  translationData: any = {};
   // dataSource: any;
   actionType: any;
   initData: any = [];
@@ -52,29 +52,29 @@ export class PackageManagementComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private route:Router
     ) { 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblPackageManagement: "Package Management",
-      lblPackageDetails: "Package Details",
-      lblNewPackage: "New Package",
-      lblNoRecordFound: "No Record Found",
-      lblPackageCode: "Package Code",
-      lblView: "View",
-      lblEdit: "Edit",
-      lblDelete: "Delete",
-      lblNew: "New",
-      lblType: "Type",
-      lblName : "Name",
-      lblFeatures : "Features",
-      lblStatus : "Status",
-      lblActive : "Active",
-      lblAction : "Action"
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblSearch: "Search",
+  //     lblPackageManagement: "Package Management",
+  //     lblPackageDetails: "Package Details",
+  //     lblNewPackage: "New Package",
+  //     lblNoRecordFound: "No Record Found",
+  //     lblPackageCode: "Package Code",
+  //     lblView: "View",
+  //     lblEdit: "Edit",
+  //     lblDelete: "Delete",
+  //     lblNew: "New",
+  //     lblType: "Type",
+  //     lblName : "Name",
+  //     lblFeatures : "Features",
+  //     lblStatus : "Status",
+  //     lblActive : "Active",
+  //     lblAction : "Action"
+  //   }
+  // }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -129,12 +129,12 @@ export class PackageManagementComponent implements OnInit {
 
   changePackageStatus(rowData: any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      title: this.translationData.lblAlert,
+      message: this.translationData.lblYouwanttoDetails,
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate  : this.translationData.lblActivate ,
       status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
@@ -164,10 +164,10 @@ export class PackageManagementComponent implements OnInit {
   deletePackage(rowData: any){
     let packageId = rowData.id;
     const options = {
-      title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDelete ,
+      message: this.translationData.lblAreyousureyouwanttodelete,
+      cancelText: this.translationData.lblCancel ,
+      confirmText: this.translationData.lblDelete 
     };
     this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -270,41 +270,41 @@ export class PackageManagementComponent implements OnInit {
 
   processTranslationForImport(){
     if(this.translationData){
-      this.importTranslationData.importTitle = this.translationData.lblImportNewPackage || 'Import New Package';
-      this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate|| 'Download a Template';
-      this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Download template from here and upload it again with updated details';
-      this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile|| 'Select Updated File';
-      this.importTranslationData.browse= this.translationData.lblbrowse || 'Browse';
-      this.importTranslationData.uploadButtonText= this.translationData.lbluploadPackage || 'Upload Package';
-      this.importTranslationData.selectFile= this.translationData.lblPleaseSelectAFile || 'Please select a file';
-      this.importTranslationData.totalSizeMustNotExceed= this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
-      this.importTranslationData.emptyFile= this.translationData.lblEmptyFile || 'Empty File';
-      this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails || 'Imported file details';
-      this.importTranslationData.new= this.translationData.lblNew || 'new';
-      this.importTranslationData.fileType= this.translationData.lblPackage || 'package';
-      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage || 'packages';
-      this.importTranslationData.imported= this.translationData.lblimport || 'Imported';
-      this.importTranslationData.rejected= this.translationData.lblrejected|| 'Rejected';
-      this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists  || 'Package code already exists';
-      this.importTranslationData.input1mandatoryReason = this.translationData.lblPackageCodeMandatoryReason || 'Package Code is mandatory input';
-      this.importTranslationData.input2mandatoryReason = this.translationData.lblPackageNameMandatoryReason || 'Package Name is mandatory input';
-      this.importTranslationData.maxAllowedLengthReason = this.translationData.lblExceedMaxLength || "'$' exceeds maximum allowed length of '#' chars";
-      this.importTranslationData.specialCharNotAllowedReason = this.translationData.lblSpecialCharNotAllowed || "Special characters not allowed in '$'";
-      this.importTranslationData.packageDescriptionCannotExceedReason = this.translationData.lblPackageDescriptionCannotExceed || 'Package Description cannot exceed 100 characters';
-      this.importTranslationData.packageTypeMandateReason = this.translationData.lblPackageTypeMandate|| 'Package Type is mandatory input';
-      this.importTranslationData.packageStatusMandateReason = this.translationData.lblPackageStatusMandate|| 'Package Status is mandatory input';
-      this.importTranslationData.packageTypeReason = this.translationData.lblPackageTypeValue || 'Package type should be VIN or Organization';
-      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue || 'Package status can be Active or Inactive';
-      this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty|| "Features should be comma separated and cannot be empty";
-      this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid|| "Feature is invalid";
-      this.tableTitle = this.translationData.lblTableTitle || 'Rejected Driver Details';
-      this.tableColumnName = [this.translationData.lblPackageCode || 'Package Code',
-                              this.translationData.lblPackageName ||'Package Name',
-                              this.translationData.lblPackageDescription || 'Package Description',
-                              this.translationData.lblPackageType || 'Package Type',
-                              this.translationData.lblPackageStatus ||'Package Status',
-                              this.translationData.lblPackageFeature ||'Package Feature',
-                              this.translationData.lblFailReason || 'Fail Reason'];
+      this.importTranslationData.importTitle = this.translationData.lblImportNewPackage;
+      this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate;
+      this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction;
+      this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile;
+      this.importTranslationData.browse= this.translationData.lblbrowse;
+      this.importTranslationData.uploadButtonText= this.translationData.lbluploadPackage;
+      this.importTranslationData.selectFile= this.translationData.lblPleaseSelectAFile ;
+      this.importTranslationData.totalSizeMustNotExceed= this.translationData.lblTotalSizeMustNotExceed;
+      this.importTranslationData.emptyFile= this.translationData.lblEmptyFile;
+      this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails;
+      this.importTranslationData.new= this.translationData.lblNew;
+      this.importTranslationData.fileType= this.translationData.lblPackage;
+      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage;
+      this.importTranslationData.imported= this.translationData.lblimport;
+      this.importTranslationData.rejected= this.translationData.lblrejected;
+      this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists;
+      this.importTranslationData.input1mandatoryReason = this.translationData.lblPackageCodeMandatoryReason;
+      this.importTranslationData.input2mandatoryReason = this.translationData.lblPackageNameMandatoryReason;
+      this.importTranslationData.maxAllowedLengthReason = this.translationData.lblExceedMaxLength;
+      this.importTranslationData.specialCharNotAllowedReason = this.translationData.lblSpecialCharNotAllowed;
+      this.importTranslationData.packageDescriptionCannotExceedReason = this.translationData.lblPackageDescriptionCannotExceed;
+      this.importTranslationData.packageTypeMandateReason = this.translationData.lblPackageTypeMandate;
+      this.importTranslationData.packageStatusMandateReason = this.translationData.lblPackageStatusMandate;
+      this.importTranslationData.packageTypeReason = this.translationData.lblPackageTypeValue;
+      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue ;
+      this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty;
+      this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid;
+      this.tableTitle = this.translationData.lblTableTitle;
+      this.tableColumnName = [this.translationData.lblPackageCode,
+                              this.translationData.lblPackageName,
+                              this.translationData.lblPackageDescription ,
+                              this.translationData.lblPackageType ,
+                              this.translationData.lblPackageStatus,
+                              this.translationData.lblPackageFeature,
+                              this.translationData.lblFailReason ];
     }
   }
 }

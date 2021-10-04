@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class TripReportPreferenceComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setTripReportFlag = new EventEmitter<any>();
   localStLanguage: any;
@@ -36,14 +36,14 @@ export class TripReportPreferenceComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Trip Report');
-    if(repoId.length > 0){
-      this.reportId = repoId[0].id; 
-    }else{
-      this.reportId = 1; //- hard coded for trip report
+    if (repoId.length > 0) {
+      this.reportId = repoId[0].id;
+      this.loadTripReportPreferences();
+    } else {
+      console.error("No report id found!")
     }
     this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
-    this.loadTripReportPreferences();
   }
 
   getUnitFormat(accPref: any){

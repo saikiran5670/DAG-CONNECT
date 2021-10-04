@@ -1,10 +1,10 @@
-<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'id="eco-score-report-driver" >
   <mat-expansion-panel [(expanded)]="overallPerformancePanel" class="full-width" fxLayoutGap="10px" [style.overflow]="'auto'">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <div fxLayout="row" fxLayoutAlign='center center'>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName || 'Driver Name' }}: {{ selectedDriverName }} -{{ translationData.lblOverallPerformance || 'Overall Performance'}}</span>
-          <span matTooltip="{{ translationData.lblOverallPerformanceInfo || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation.'}}">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName  }}: {{ selectedDriverName }} -{{ translationData.lblOverallPerformance }}</span>
+          <span matTooltip="{{ translationData.lblOverallPerformanceInfo}}">
             <mat-icon class='margin-right-10'>info</mat-icon></span>
         </div>
       </mat-panel-title>
@@ -13,32 +13,32 @@
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblFrom || 'From' }} </span>
+                  <span>{{ translationData.lblFrom  }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblTo|| 'To' }} </span>
+                  <span>{{ translationData.lblTo }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicle || 'Vehicle' }} </span>
+                  <span>{{ translationData.lblVehicle  }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </span>
+                  <span>{{ translationData.lblVehicleGroup  }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblDriverId || 'Driver ID' }} </span>
+                  <span>{{ translationData.lblDriverId  }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblDriverOption || 'Driver Option' }} </span>
+                  <span>{{ translationData.lblDriverOption  }} </span>
                 </span>
               </div>
             </div>
@@ -65,7 +65,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
               <div style="display: block">
-                <div class="text-center"><span><b>{{ translationData.lblEcoScore || 'Eco-Score' }}</b></span></div>
+                <div class="text-center"><span><b>{{ translationData.lblEcoScore  }}</b></span></div>
                 <canvas #chart1 baseChart
                   [data]="doughnutChartDataEcoScore"
                   [labels]="doughnutChartLabelsEcoScore"
@@ -76,7 +76,7 @@
                 </canvas>
               </div>
               <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblFuelConsumption || 'FuelConsumption' }}</b></span></div>
+                <div class="text-center"><span><b>{{ translationData.lblFuelConsumption  }}</b></span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataFuelConsumption"
                   [labels]="doughnutChartLabelsFuelConsumption"
@@ -87,7 +87,7 @@
                 </canvas>
               </div>
               <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblAnticipationScore || 'Anticipation Score' }}</b></span></div>
+                <div class="text-center"><span><b>{{ translationData.lblAnticipationScore  }}</b></span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataAnticipationScore"
                   [labels]="doughnutChartLabelsAnticipationScore"
@@ -98,7 +98,7 @@
                 </canvas>
               </div>
                <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblBrakingScore || 'Braking Score' }}</b></span></div>
+                <div class="text-center"><span><b>{{ translationData.lblBrakingScore  }}</b></span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataBrakingScore"
                   [labels]="doughnutChartLabelsBrakingScore"
@@ -116,22 +116,22 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines || 'Trendlines' }}</span>
-                    <span matTooltip="{{ translationData.lblTrendLinesInfo || 'The trendlines represent the following results on 1 or more KPI element(s) over a period of time:1. Driver results per vehicle 2. All drivers result per vehicle. 3. Driver results for all vehicles. 4. Company results for all vehicles. Each point on the trendline displays the results per day. By selecting 1 or more element(s) and a time frame, it is possible to see how the driver is performing on 1 or more element(s) in a time frame.' }}">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines }}</span>
+                    <span matTooltip="{{ translationData.lblTrendLinesInfo }}">
                       <mat-icon class='margin-right-10'>info</mat-icon>
                     </span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <span>{{ translationData.lblZoom || 'Zoom:' }}</span>
+              <span>{{ translationData.lblZoom  }}</span>
               <br/>
-              <button [disabled]="selectionTabTrend == 'today' " (click)="updateOptions('today')" [ngClass]="{'selectedBtn': selectionTabTrend == 'today'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblToday || 'Today' }}</button>
-              <button [disabled]="selectionTabTrend == 'yesterday' || selectionLimitYesterday" (click)="updateOptions('yesterday')" [ngClass]="{'selectedBtn': selectionTabTrend == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblYesterday || 'Yesterday' }}</button>
-              <button [disabled]="selectionTabTrend == 'lastweek' || selectionLimitLastWeek" (click)="updateOptions('lastweek')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastWeek || 'Last Week' }}</button>
-              <button [disabled]="selectionTabTrend == 'lastmonth' || selectionLimitLastMonth" (click)="updateOptions('lastmonth')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastMonth|| 'Last Month' }}</button>
-              <button [disabled]="selectionTabTrend == 'last3month' || selectionLimitLast3Month" (click)="updateOptions('last3month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last3month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
-              <button [disabled]="selectionTabTrend == 'last6month' || selectionLimitLast6Month" (click)="updateOptions('last6month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last6month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast6Month|| 'Last 6 Month' }}</button>
-              <button [disabled]="selectionTabTrend == 'lastYear' || selectionLimitLastYear" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear|| 'Last Year' }}</button>              
+              <button [disabled]="selectionTabTrend == 'today' " (click)="updateOptions('today')" [ngClass]="{'selectedBtn': selectionTabTrend == 'today'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblToday  }}</button>
+              <button [disabled]="selectionTabTrend == 'yesterday' || selectionLimitYesterday" (click)="updateOptions('yesterday')" [ngClass]="{'selectedBtn': selectionTabTrend == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblYesterday  }}</button>
+              <button [disabled]="selectionTabTrend == 'lastweek' || selectionLimitLastWeek" (click)="updateOptions('lastweek')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastWeek  }}</button>
+              <button [disabled]="selectionTabTrend == 'lastmonth' || selectionLimitLastMonth" (click)="updateOptions('lastmonth')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastMonth }}</button>
+              <button [disabled]="selectionTabTrend == 'last3month' || selectionLimitLast3Month" (click)="updateOptions('last3month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last3month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast3Months  }}</button>
+              <button [disabled]="selectionTabTrend == 'last6month' || selectionLimitLast6Month" (click)="updateOptions('last6month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last6month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast6Month }}</button>
+              <button [disabled]="selectionTabTrend == 'lastYear' || selectionLimitLastYear" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear }}</button>              
               <div id="wrapper">
                 <div id="chart-line">
                   <apx-chart #trendLineChart
@@ -163,8 +163,8 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }} </span>
-                    <span matTooltip="{{ translationData.lblGeneralInfo || 'The General pane represents the general elements. This provides context on how the driver was assigned, so that its performance details can be better understood. The Overall column represents the results of all vehicles per general element based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per general element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral  }} </span>
+                    <span matTooltip="{{ translationData.lblGeneralInfo }}">
                       <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
@@ -184,7 +184,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <span>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts }}</span>
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -192,16 +192,16 @@
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left">
                   <div class="chartSelection" [ngClass]="showGeneralBar ? 'enable' : 'disable'">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart }}</span></div>
                 </div>
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left">
                   <div class="chartSelection" [ngClass]="showGeneralPie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true"></i>
-                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart }}</span></div>
                 </div>
               </div>
                 <div style="float: right;" *ngIf="showGeneralPie">
-                  {{ translationData.lblVehicle || 'Vehicle' }}<br/>
+                  {{ translationData.lblVehicle  }}<br/>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChart($event.value)">
                       <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
@@ -215,7 +215,7 @@
               <br/>
               <div class="container-fluid chartContainer" *ngIf="showGeneralBar">
                 <div fxLayout="row" fxLayoutAlign='center'>  
-                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
+                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight  }}</span>
                 </div>
                     <canvas baseChart
                             [datasets]="barChartData"
@@ -229,7 +229,7 @@
               </div>
               <div class="container-fluid chartContainer" *ngIf="showGeneralPie">
                 <div fxLayout="row" fxLayoutAlign='center'>
-                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
+                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight  }}</span>
                 </div>
                 <canvas baseChart 
                 [data]="pieChartData" 
@@ -252,8 +252,8 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance || 'Driver Performance' }}</span>
-                    <span matTooltip="{{ translationData.lblGeneralInfo || 'The Driver Performance pane represents the elements the driver can influence by its driving style. The Overall column represents the results of all vehicles per Driver Performance element. This is based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per Driver Performance element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance }}</span>
+                    <span matTooltip="{{ translationData.lblGeneralInfo  }}">
                       <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
@@ -274,7 +274,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <span>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts }}</span>
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -282,16 +282,16 @@
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
                   <div class="chartSelection" [ngClass]="showPerformanceBar ? 'enable' : 'disable'">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart  }}</span></div>
                 </div>
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left">
                   <div class="chartSelection" [ngClass]="showPerformancePie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true">
-                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
+                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart  }}</span></div>
                 </div>
               </div>
               <div style="float: right;" *ngIf="showPerformancePie">
-                {{ translationData.lblVehicle || 'Vehicle' }}<br/>
+                {{ translationData.lblVehicle  }}<br/>
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChartPerformance($event.value)">
                     <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
@@ -303,7 +303,7 @@
               <br/><br/><br/>
               <div class="container-fluid chartContainer" *ngIf="showPerformanceBar">
                 <div fxLayout="row" fxLayoutAlign='center'>
-                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
+                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed  }}</span>
                 </div>
                 <canvas baseChart
                 [datasets]="barChartDataPerformance"
@@ -317,7 +317,7 @@
               </div>
               <div class="container-fluid chartContainer" *ngIf="showPerformancePie">
                 <div fxLayout="row" fxLayoutAlign='center'>
-                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
+                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed  }}</span>
                 </div>
                 <canvas baseChart 
                 [data]="pieChartDataPerformance" 
