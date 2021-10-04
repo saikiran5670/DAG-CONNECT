@@ -1032,7 +1032,7 @@ tripTraceArray: any = [];
         if(elem.liveFleetPosition.length > 1){
            // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
           if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
             let blueColorCode: any = '#436ddc';
             this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);

@@ -372,14 +372,14 @@
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime  }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="alert">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts  }}
+            <ng-container matColumnDef="totalAlerts">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : 0 }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.totalAlerts != '' ? row.totalAlerts : 0 }}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="events">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}

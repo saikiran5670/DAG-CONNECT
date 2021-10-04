@@ -61,7 +61,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   // displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
   // displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
   // displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
-  displayedColumns = ['All', 'vin', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'odometer', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alert'];
+  displayedColumns = ['All', 'vin', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'odometer', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'totalAlerts'];
   translationData: any = {};
   showMap: boolean = false;
   showBack: boolean = false;
@@ -125,7 +125,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     },
     {
       key: 'rp_tr_report_tripreportdetails_alerts',
-      value: 'alert'
+      value: 'totalAlerts'
     },
     {
       key: 'rp_tr_report_tripreportdetails_averageweight',
@@ -843,7 +843,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       worksheet.addRow([item.vin, item.vehicleName, item.registrationNo, item.convertedStartTime,
       item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
       item.convertedAverageWeight, item.convertedOdometer, item.startPosition, item.endPosition, item.convertedFuelConsumed,
-      item.convertedDrivingTime, item.alert]);
+      item.convertedDrivingTime, item.totalAlerts]);
     });
     worksheet.mergeCells('A1:D2');
     subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
@@ -917,7 +917,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       //tempObj.push(e.convertedFuelConsumed100Km);
       tempObj.push(e.convertedFuelConsumed);
       tempObj.push(e.convertedDrivingTime);
-      tempObj.push(e.alert);
+      tempObj.push(e.totalAlerts);
       //tempObj.push(e.events);
 
       prepare.push(tempObj);
