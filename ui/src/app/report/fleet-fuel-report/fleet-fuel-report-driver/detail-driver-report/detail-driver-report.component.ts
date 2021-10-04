@@ -2127,6 +2127,8 @@ createEndMarker(){
     this.lineChartPlugins=[];
     this.barChartLabels=[];
     this.barChartPlugins=[];
+    this.showGraph= false;
+    this.graphData= [];
   }
 
   processTranslation(transData: any) {
@@ -2320,6 +2322,8 @@ getLast3MonthDate(){
     this.detailSummaryObj =[];
     this.resetChartData();
     this.displayedColumns =[];
+    this.showGraph= false;
+    this.graphData= [];
     //this.rankingData =[];
     //this.rankingColumns=[];
     //this.displayedColumns =[];
