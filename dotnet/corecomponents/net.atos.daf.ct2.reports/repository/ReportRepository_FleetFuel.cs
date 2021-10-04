@@ -720,7 +720,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
 				  , round(fd.average_traffic_classification,4)  * 1000             as AverageTrafficClassification
-				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
+				  , round(fd.cc_fuel_consumption/100,5)                          as CCFuelConsumption
 				  , case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
