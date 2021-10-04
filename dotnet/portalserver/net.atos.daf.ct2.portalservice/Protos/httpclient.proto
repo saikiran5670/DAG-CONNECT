@@ -54,9 +54,7 @@ message Campaign
         repeated string Systems =4;
         string CampaignType =5;
         string CampaignCategory =6;
-        string UpdateStatus =7;
-        string EndDate = 8;
-        int64 ScheduleDateTime = 9;
+        tring UpdateStatus =7;
     }
 
 message VehicleUpdateDetails

@@ -23,5 +23,14 @@ namespace net.atos.daf.ct2.otasoftwareupdate
 
         }
         #endregion
+
+        #region Get GetSchduleCampaignByVin List
+        public async Task<IEnumerable<VehicleScheduleDetails>> GetSchduleCampaignByVin(string vin)
+        {
+
+            return await _otaSoftwareUpdateRepository.GetSchduleCampaignByVin(vin);
+
+        }
+        #endregion
     }
 }

@@ -569,7 +569,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
 				  , round(fd.average_traffic_classification,4) * 1000 as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5) as CCFuelConsumption
-				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactive
+				  , case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end  as FuelconsumptionCCnonactive
 				  , idling_consumption as IdlingConsumption
 				  , dpa_score as DPAScore
                   ,StartDate
@@ -664,7 +664,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (max_speed)                                                         as max_speed
 				  , (average_gross_weight_comb)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                                  as fuel_consumed
-				  , (fuel_consumption)                                                  as fuel_consumption
+				  , (etl_gps_fuel_consumed ::decimal/case when (etl_gps_distance::decimal) >0 then (etl_gps_distance::decimal) else 1 end) as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
                   , idle_duration as idle_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
@@ -709,7 +709,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
 				  , round((fd.fuel_consumed),2)         As FuelConsumed
-				  , round((fd.fuel_consumption),2)         As FuelConsumption
+				  , round((fd.fuel_consumption),4)         As FuelConsumption
 				  , round((fd.co2_emission),2)         As CO2Emission
 				  , round(fd.idle_duration,2)                            as IdleDuration
                   , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
@@ -721,7 +721,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
 				  , round(fd.average_traffic_classification,4)  * 1000             as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
-				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
+				  , case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
                   , StartDate
