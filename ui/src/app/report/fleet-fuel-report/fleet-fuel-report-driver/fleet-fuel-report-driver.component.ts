@@ -2139,7 +2139,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'idlingWithoutPTO' :{
-        pdfColumnHeads.push('Idling Without PTO(hh:mm:ss)');
+        pdfColumnHeads.push('Idling Without PTO (hh:mm:ss)');
         break;
       }  
       case 'idlingWithoutPTOpercent' :{
