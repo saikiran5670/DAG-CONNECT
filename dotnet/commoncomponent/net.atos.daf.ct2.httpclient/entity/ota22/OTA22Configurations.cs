@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.httpclientfactory.Entity.ota22
         public string CLIENT_SCOPE { get; set; }
         public string CLIENT_ID { get; set; }
         public string CLIENT_SECRET { get; set; }
+        public int RETRY_COUNT { get; set; }
     }
 }
