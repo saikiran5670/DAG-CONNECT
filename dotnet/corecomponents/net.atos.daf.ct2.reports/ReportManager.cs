@@ -570,7 +570,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });
