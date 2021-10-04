@@ -29,7 +29,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilter($event.target.value)"
-                  placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  placeholder="{{ translationData.lblSearch}}">
                 <span matPrefix>
                   <mat-icon>search</mat-icon>
                 </span>
@@ -75,7 +75,7 @@
                     [indeterminate]='selectedCategory.hasValue() && !isAllSelectedForCategory()'
                     [aria-label]='checkboxLabelForCategory()'>
                   </mat-checkbox>
-                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll}}</span>
                 </mat-header-cell>
                 <mat-cell class="max-width-10-per" *matCellDef="let row">
                   <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>

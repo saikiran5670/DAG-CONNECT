@@ -104,15 +104,15 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                                 SoftwareStatus = vinStatusResponse?.VehiclesStatusOverview?
                                                                                 .VehiclesStatusOverviewResults?.Where(w => w.Vin?.ToLower() == s.Vin?.ToLower())?
                                                                                 .FirstOrDefault()?.Status ?? string.Empty
-                }));
-                return await Task.FromResult(response);
-            }
+                                                            }));
+                    return await Task.FromResult(response);
+                }
                 return await Task.FromResult(new VehicleStatusResponse
                 {
                     Message = "No records found for in Vehicle Account visibility.",
                     Code = ResponseCode.Success
                 });
-        }
+            }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
@@ -120,10 +120,64 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = ResponseCode.InternalServerError
-    });
+                });
             }
         }
 
+        public override async Task<VehicleUpdateDetailResponse> GetVehicleUpdateDetails(VehicleUpdateDetailRequest request, ServerCallContext context)
+        {
+            try
+            {
 
+                var vinStatusResponse = await _httpClientServiceClient
+                    .GetVehicleUpdateDetailsAsync(new httpclientservice.VehicleUpdateDetailsRequest
+                    {
+                        Retention = request.Retention,
+                        Vin = request.Vin
+                    });
+                if (vinStatusResponse?.VehicleUpdateDetails?.Campaigns?.Count() > 0)
+                {
+                    var vehicleScheduleDetails = await _otaSoftwareUpdateManagement.GetSchduleCampaignByVin(request.Vin);
+                    var response = new VehicleUpdateDetailResponse
+                    {
+                        Message = "Successfully fetch records for Vehicle Software Status",
+                        HttpStatusCode = ResponseCode.Success
+                    };
+                    var count = vehicleScheduleDetails.Count();
+                    response.VehicleUpdateDetail.VehicleSoftwareStatus = vinStatusResponse.VehicleUpdateDetails?.VehicleSoftwareStatus;
+                    response.VehicleUpdateDetail.Vin = vinStatusResponse.VehicleUpdateDetails?.Vin;
+                    response.VehicleUpdateDetail.Campaigns.AddRange(
+                                                    vinStatusResponse.VehicleUpdateDetails.Campaigns.Select(s =>
+                                                            new Campaign
+                                                            {
+                                                                CampaignID = s.CampaignID,
+                                                                BaselineAssignment = s.BaselineAssignment,
+                                                                CampaignSubject = s.CampaignSubject,
+                                                                CampaignCategory = s.CampaignCategory,
+                                                                CampaignType = s.CampaignType,
+                                                                UpdateStatus = s.UpdateStatus,
+                                                                EndDate = s.EndDate,
+                                                                ScheduleDateTime = count > 0 ? vehicleScheduleDetails?
+                                                                                .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment?.ToLower() == s.BaselineAssignment?.ToLower())?
+                                                                                .FirstOrDefault()?.ScheduleDateTime ?? 0 : 0
+                                                            }));
+                    return await Task.FromResult(response);
+                }
+                return await Task.FromResult(new VehicleUpdateDetailResponse
+                {
+                    Message = "No records found for in Vehicle Campaigns.",
+                    HttpStatusCode = ResponseCode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleUpdateDetailResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    HttpStatusCode = ResponseCode.InternalServerError
+                });
+            }
+        }
     }
 }

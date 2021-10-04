@@ -36,5 +36,41 @@
             }
             return returnObj;
         }
+
+        internal httpclientfactory.entity.ota22.VehicleUpdateDetailsRequest MapGetVehicleUpdateDetailsRequest(VehicleUpdateDetailsRequest request)
+        {
+            var returnObj = new httpclientfactory.entity.ota22.VehicleUpdateDetailsRequest();
+
+            returnObj.Retention = request.Retention;
+            returnObj.Vin = request.Vin;
+            return returnObj;
+        }
+
+        internal VehicleUpdateDetailsResponse MapGetVehicleUpdateDetails(httpclientfactory.entity.ota22.VehicleUpdateDetailsResponse apiResponse)
+        {
+            var returnObj = new VehicleUpdateDetailsResponse();
+            returnObj.HttpStatusCode = apiResponse.HttpStatusCode;
+            returnObj.VehicleUpdateDetails = new VehicleUpdateDetails();
+            returnObj.VehicleUpdateDetails.Vin = apiResponse.VehicleUpdateDetails.Vin ?? string.Empty;
+            returnObj.VehicleUpdateDetails.VehicleSoftwareStatus = apiResponse.VehicleUpdateDetails.VehicleSoftwareStatus ?? string.Empty;
+
+
+            foreach (var item in apiResponse.VehicleUpdateDetails.Campaigns)
+            {
+                var campaign = new Campaign
+                {
+                    BaselineAssignment = item.BaselineAssignment,
+                    CampaignID = item.CampaignID,
+                    CampaignSubject = item.CampaignSubject,
+                    CampaignCategory = item.CampaignCategory,
+                    CampaignType = item.CampaignType,
+                    UpdateStatus = item.UpdateStatus
+                };
+                campaign.Systems.AddRange(item.Systems);
+                returnObj.VehicleUpdateDetails.Campaigns.Add();
+            }
+            return returnObj;
+
+        }
     }
 }
