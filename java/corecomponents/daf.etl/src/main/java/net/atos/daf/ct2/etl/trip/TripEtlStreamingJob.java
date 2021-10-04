@@ -68,7 +68,9 @@ public class TripEtlStreamingJob {
 			
 			// Map to status data
 			SingleOutputStreamOperator<TripStatusData> statusDataStream = FlinkKafkaStatusMsgConsumer
-					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
+					.consumeStatusMsgs(envParams, env)
+					.rebalance()
+					.map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
 						/**
 						 * 
 						 */

@@ -93,11 +93,11 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                          		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                          		  , SUM(etl_gps_distance)                                                  as veh_message_distance
-                                                         		  , SUM(etl_gps_distance)/SUM(etl_gps_trip_time)                           as average_speed
+                                                         		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end as average_speed
                                                          		  , MAX(max_speed)                                                         as max_speed
                                                          		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                          		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                         		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
+                                                         		  , (SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuel_consumption
                                                          		  , SUM(co2_emission)                                                      as co2_emission
                                                                   , SUM(idle_duration) as idle_duration
                                                          		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end               as idle_duration_percentage
@@ -117,7 +117,10 @@ namespace net.atos.daf.ct2.reports.repository
 	                                                              else 1 END)) 	   as DPAAnticipationScore       
                                                                   , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
                                                                   , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
-                                                    			  , SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
+                                                    			  --, SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
+                                                                  , SUM(veh_message_dpabraking_score/
+	                                                              (case when veh_message_dpabraking_score > 0 then veh_message_dpabraking_score
+	                                                              else 1 END)) 	   as DPABrakingScore 
                                                     			  --, SUM(veh_message_dpaanticipation_score) 								   as DPAAnticipationScore                     
                                                     			  , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
                                                     			  , SUM(veh_message_idle_ptoduration) 									   as IdlingPTO 
@@ -126,6 +129,7 @@ namespace net.atos.daf.ct2.reports.repository
 																  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
 																  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                                   , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
+                                                                  , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                                                          		From
                                                          			tripdetail.trip_statistics 
                                                                WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -150,6 +154,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
                                                          		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
                                                          		  , round(fd.co2_emission,2)                             					as CO2Emission
+                                                                  , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
@@ -161,7 +166,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
                                                          		  , round(fd.average_traffic_classification,4) * 1000            					as AverageTrafficClassification
                                                          		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
-                                                         		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end  as FuelconsumptionCCnonactive
+                                                                  ,case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
                                                          		  , idling_consumption                                   					as IdlingConsumption
                                                          		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
 																      else dpa_score  end  								                    as DPAScore
@@ -173,7 +178,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , round(fd.fuel_consumed - fd.CCFuelConsumed,2) 		 					as CCFuelConsumedNotActive
                                                                   , '' AS StartPosition					
                                                                   , '' AS EndPosition					
-                                                    			  , round(fd.DPABrakingScore,4) 							 				as DPABrakingScore                         
+                                                    			  ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
+                                                                     else fd.DPABrakingScore  end  		  as DPABrakingScore                         
                                                     			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
                                                     			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
                                                     			  , round(fd.FootBrake,4) 								 					as FootBrake
@@ -253,13 +259,13 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                   		  , SUM(etl_gps_distance)                                                  as veh_message_distance
-                                                  		  , SUM(etl_gps_distance)/SUM(etl_gps_trip_time)                           as average_speed
+                                                  		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end                          as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
-                                                  		  , (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))                     as fuel_consumption
+                                                  		  , (SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end)                     as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
-                                                         , SUM(idle_duration) as idle_duration
+                                                          , SUM(idle_duration) as idle_duration
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end                  as pto_duration
                                                   		  , SUM(harsh_brake_duration)                                              as harsh_brake_duration
@@ -274,7 +280,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , SUM(dpa_score)                                                         as dpa_score
                                                           , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
                                                           , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
-                                                		  , SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
+                                                          , SUM(veh_message_dpabraking_score/
+	                                                              (case when veh_message_dpabraking_score > 0 then veh_message_dpabraking_score
+	                                                              else 1 END)) 	   as DPABrakingScore  
                                                            , SUM(veh_message_dpaanticipation_score/
 	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
 	                                                              else 1 END)) 	   as DPAAnticipationScore       
@@ -285,6 +293,7 @@ namespace net.atos.daf.ct2.reports.repository
 														  , SUM(case when harsh_brake_duration>0 then 1 else 0 end)  as numoftripswithharshbreak
 														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                           , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
+                                                          , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                                                   		From
                                                   			tripdetail.trip_statistics
                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -311,6 +320,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , round(fd.fuel_consumed,2)                              					as FuelConsumed
                                                   		  , round((fd.fuel_consumed/fd.etl_gps_distance),5)                         as FuelConsumption
                                                   		  , round(fd.co2_emission,2)                               					as CO2Emission
+                                                          , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
@@ -322,7 +332,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
                                                   		  , round(fd.average_traffic_classification,4) * 1000              					as AverageTrafficClassification
                                                   		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
-                                                  		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end	as FuelconsumptionCCnonactive
+                                                  		  ,case when (fd.etl_gps_distance::decimal - fd.CCFuelDistance::decimal)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)::decimal/(fd.etl_gps_distance - fd.CCFuelDistance)::decimal),4) else round(fd.fuel_consumption,5) end as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     					as IdlingConsumption
                                                   		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
 																      else dpa_score  end  								                    as DPAScore
@@ -332,7 +342,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , round(fd.fuel_consumed - fd.CCFuelConsumed,2) 		   					as CCFuelConsumedNotActive
                                                          , '' AS StartPosition
                                                          , '' AS EndPosition
-                                                		 , round(fd.DPABrakingScore,4) 							   					as DPABrakingScore                         
+                                                         ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
+                                                                else fd.DPABrakingScore  end  		  as DPABrakingScore
                                                           ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
                                                                 else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
                                                          , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                

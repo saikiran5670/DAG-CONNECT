@@ -36,6 +36,7 @@
         public string VehicleGroupNames { get; set; } = string.Empty;
         public string ModelYear { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public string SoftwareStatus { get; set; } = string.Empty;
         //public int[] VehicleGroupIds { get; set; } = new int[] { };
     }
 

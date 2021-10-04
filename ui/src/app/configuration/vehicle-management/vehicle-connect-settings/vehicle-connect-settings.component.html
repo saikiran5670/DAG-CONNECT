@@ -156,14 +156,14 @@
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
             <mat-form-field appearance="outline">
-              <mat-select placeholder="{{ translationData.lblStatus || 'Select Status' }}"
+              <mat-select placeholder="{{ translationData.lblStatus }}"
                 (selectionChange)="filterChangeStatus($event)">
-                <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-                <mat-option value='C'>{{ translationData.lblOptIn || 'Connected On' }}</mat-option>
-                <mat-option value='O'>{{ translationData.lblOptOut || 'Connected Off' }}</mat-option>
-                <mat-option value='A'>{{ translationData.lblOTA || 'OTA' }}</mat-option>
-                <mat-option value='N'>{{ translationData.lblOptInOTA || 'Connected On + OTA' }}</mat-option>
-                <mat-option value='T'>{{ translationData.lblTerminate || 'Terminate' }}</mat-option>
+                <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
+                <mat-option value='C'>{{ translationData.lblOptIn  }}</mat-option>
+                <mat-option value='O'>{{ translationData.lblOptOut }}</mat-option>
+                <mat-option value='A'>{{ translationData.lblOTA }}</mat-option>
+                <mat-option value='N'>{{ translationData.lblOptInOTA }}</mat-option>
+                <mat-option value='T'>{{ translationData.lblTerminate  }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -179,31 +179,31 @@
                   <li>
                     <span class="connectedStatus">
                       <img src='assets/images/icons/vehicleStatus/Opt_In.svg' />
-                      {{ translationData.lblOptIn || 'Connected On' }}
+                      {{ translationData.lblOptIn }}
                     </span>
                   </li>
                   <li>
                     <span class="connectedStatus">
                       <img src='assets/images/icons/vehicleStatus/Opt_Out.svg' />
-                      {{ translationData.lblOptOut || 'Connected Off' }}
+                      {{ translationData.lblOptOut  }}
                     </span>
                   </li>
                   <li>
                     <span class="connectedStatus">
                       <img src='assets/images/icons/vehicleStatus/Ota.svg' />
-                      {{ translationData.lblOTA || 'OTA' }}
+                      {{ translationData.lblOTA  }}
                     </span>
                   </li>
                   <li>
                     <span class="connectedStatus">
                       <img src='assets/images/icons/vehicleStatus/Opt_In.svg' />
-                      {{ translationData.lblOptInOTA || 'Connected On + OTA' }}
+                      {{ translationData.lblOptInOTA }}
                     </span>
                   </li>
                   <li>
                     <span class="connectedStatus">
                       <img src='assets/images/icons/vehicleStatus/Terminate.svg' />
-                      {{ translationData.lblTerminate || 'Terminate' }}
+                      {{ translationData.lblTerminate  }}
                     </span>
                   </li>
                 </ul>
@@ -221,23 +221,23 @@
     
         <ng-template #viewStatusColumnElements let-gridData='rowData'>
           <span *ngIf="gridData.status == 'O'">
-            <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}"
+            <img matTooltip="{{ translationData.lblOptOut  }}"
               src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'C'">
-            <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg'
+            <img matTooltip="{{ translationData.lblOptIn  }}" src='assets/images/icons/vehicleStatus/Opt_In.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'N'">
-            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}"
+            <img matTooltip="{{ translationData.lblOptInOTA  }}"
               src='assets/images/icons/vehicleStatus/Ota+Optin.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'A'">
-            <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg'
+            <img matTooltip="{{ translationData.lblOTA }}" src='assets/images/icons/vehicleStatus/Ota.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'T'">
-            <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}"
+            <img matTooltip="{{ translationData.lblTerminate  }}"
               src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
         </ng-template>

@@ -73,10 +73,10 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setLong(4, 0);
 		
-		if(rec.getDriverId() != null)
+		if(rec.getDriverId() != null && !(DafConstants.BLANK).equals(rec.getDriverId()))
 			statement.setString(5, rec.getDriverId());
 		else
-			statement.setString(5, DafConstants.UNKNOWN);
+			statement.setString(5, DafConstants.UNKNOWN_CASE_VAL);
 		
 		if (rec.getTripCalDist() != null)
 			statement.setLong(6, rec.getTripCalDist());
@@ -202,10 +202,10 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setLong(31, 0);
 		
-		if(rec.getDriverId() != null)
+		if(rec.getDriverId() != null && !(DafConstants.BLANK).equals(rec.getDriverId()))
 			statement.setString(32, rec.getDriverId());
 		else
-			statement.setString(32, DafConstants.UNKNOWN);
+			statement.setString(32, DafConstants.UNKNOWN_CASE_VAL);
 		
 		if (rec.getTripCalDist() != null)
 			statement.setLong(33, rec.getTripCalDist());

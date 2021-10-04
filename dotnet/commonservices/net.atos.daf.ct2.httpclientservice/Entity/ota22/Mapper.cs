@@ -6,17 +6,20 @@
         {
             var returnObj = new VehiclesStatusOverviewResponse();
             returnObj.HttpStatusCode = vehiclesStatusOverviewResponses.HttpStatusCode;
-            //returnObj.Message =
-            foreach (var item in vehiclesStatusOverviewResponses.VehiclesStatusOverview.Results)
+            returnObj.VehiclesStatusOverview = new VehiclesStatusOverview();
+            if (vehiclesStatusOverviewResponses?.VehiclesStatusOverview?.Results != null)
             {
-                returnObj.VehiclesStatusOverview
-                    .VehiclesStatusOverviewResults
-                    .Add(new VehiclesStatusOverviewResults
-                    {
-                        Vin = item.Vin ?? string.Empty,
-                        Status = item.Status ?? string.Empty,
-                        Description = item.Description ?? string.Empty
-                    });
+                foreach (var item in vehiclesStatusOverviewResponses?.VehiclesStatusOverview?.Results)
+                {
+                    returnObj.VehiclesStatusOverview
+                        .VehiclesStatusOverviewResults
+                        .Add(new VehiclesStatusOverviewResults
+                        {
+                            Vin = item.Vin ?? string.Empty,
+                            Status = item.Status ?? string.Empty,
+                            Description = item.Description ?? string.Empty
+                        });
+                }
             }
             return returnObj;
         }
@@ -26,6 +29,7 @@
             var returnObj = new net.atos.daf.ct2.httpclientfactory.entity.ota22.VehiclesStatusOverviewRequest();
             returnObj.Language = vehiclesStatusOverviewRequest.Language;
             returnObj.Retention = vehiclesStatusOverviewRequest.Retention;
+            returnObj.Vins = new System.Collections.Generic.List<string>();
             foreach (var item in vehiclesStatusOverviewRequest.Vins)
             {
                 returnObj.Vins.Add(item);

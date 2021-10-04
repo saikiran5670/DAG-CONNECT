@@ -50,23 +50,23 @@ export class EditViewVehicleComponent implements OnInit {
     this.vehicleForm.get('relationship').setValue(this.selectedRowData.relationShip);
     switch(this.selectedRowData.status){ //-- status
       case "O":{
-        this.vehicleStatus = this.translationData.lblOptOut || 'Opt-Out'; //-- Off
+        this.vehicleStatus = this.translationData.lblOptOut ; //-- Off
         break;
       }
       case "C":{
-        this.vehicleStatus = this.translationData.lblOptIn || 'Opt-In'; //-- Connected
+        this.vehicleStatus = this.translationData.lblOptIn ; //-- Connected
         break;
       }
       case "N":{
-        this.vehicleStatus = this.translationData.lblOptInOTA || 'Opt-In + OTA'; // Connected-OTA
+        this.vehicleStatus = this.translationData.lblOptInOTA ; // Connected-OTA
         break;
       }
       case "A":{
-        this.vehicleStatus = this.translationData.lblOTA || 'OTA'; //-- OTA
+        this.vehicleStatus = this.translationData.lblOTA ; //-- OTA
         break;
       }
       case "T":{
-        this.vehicleStatus = this.translationData.lblTerminate || 'Terminate'; //-- Terminated
+        this.vehicleStatus = this.translationData.lblTerminate ; //-- Terminated
         break;
       }
     }

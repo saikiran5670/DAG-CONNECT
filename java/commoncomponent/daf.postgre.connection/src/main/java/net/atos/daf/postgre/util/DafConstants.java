@@ -9,6 +9,8 @@ public class DafConstants {
 		public static final String POSTGRE_SQL_SSL_MODE = "&sslmode=require";
 		
 		public static final String UNKNOWN = "UNKNOWN";
+		public static final String UNKNOWN_CASE_VAL = "Unknown";
+		public static final String BLANK = "";
 		public static  int RETRY_COUNTER=0;
 		public static final int MAX_RETRIES=3;
 		public static final int MAX_CONNECTIONS =30;

@@ -33,7 +33,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #region GetVehicleSoftwareStatus
-
         [HttpGet]
         [Route("getvehiclesoftwarestatus")]
         public async Task<IActionResult> GetVehicleSoftwareStatus()
@@ -63,12 +62,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
-
-
         #endregion
 
-
+        #region GetVehicleStatusList
+        [HttpGet]
+        [Route("getvehicletatuslist")]
+        public async Task<IActionResult> GetVehicleStatusList([FromQuery] string language, [FromQuery] string retention)
+        {
+            try
+            {
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+                var response = await _otaSoftwareUpdateServiceClient
+                    .GetVehicleStatusListAsync(new VehicleStatusRequest
+                    {
+                        AccountId = _userDetails.AccountId,
+                        OrgId = GetUserSelectedOrgId(),
+                        ContextOrgId = GetContextOrgId(),
+                        FeatureId = featureId,
+                        Language = language,
+                        Retention = retention
+                    });
+                if (response == null)
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
+                if (response.Code == ResponseCode.Success)
+                    return Ok(new { VehicleStatusList = response.VehicleStatusList, Message = response.Message });
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
+                 OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleSoftwareStatus", ex.Message), 1, 2, string.Empty,
+                  _userDetails);
+                // check for fk violation
+                if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))
+                {
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
 
 
     }
