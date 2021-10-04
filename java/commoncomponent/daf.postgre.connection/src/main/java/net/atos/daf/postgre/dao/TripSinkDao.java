@@ -259,12 +259,16 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(40, 0);
 
-		if(rec.getDriverId() != null)
+		if(rec.getDriverId() != null && !(DafConstants.BLANK).equals(rec.getDriverId()))
 			statement.setString(41, rec.getDriverId());
 		else
-			statement.setString(41, DafConstants.UNKNOWN);
+			statement.setString(41, DafConstants.UNKNOWN_CASE_VAL);
 		
-		statement.setString(42, rec.getDriver2Id());
+		if(rec.getDriver2Id() != null && !(DafConstants.BLANK).equals(rec.getDriver2Id()))
+			statement.setString(42, rec.getDriver2Id());
+		else
+			statement.setString(42, DafConstants.UNKNOWN_CASE_VAL);
+		
 
 		if(rec.getTripCalGpsVehTime() != null)
 			statement.setLong(43, rec.getTripCalGpsVehTime());
@@ -773,13 +777,16 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(140, 0);
 
-		if(rec.getDriverId() != null)
+		if(rec.getDriverId() != null  && !(DafConstants.BLANK).equals(rec.getDriverId()) )
 			statement.setString(141, rec.getDriverId());
 		else
-			statement.setString(141, DafConstants.UNKNOWN);
+			statement.setString(141, DafConstants.UNKNOWN_CASE_VAL);
 		
-		statement.setString(142, rec.getDriver2Id());
-
+		if(rec.getDriver2Id() != null  && !(DafConstants.BLANK).equals(rec.getDriver2Id()) )
+			statement.setString(142, rec.getDriver2Id());
+		else
+			statement.setString(142, DafConstants.UNKNOWN_CASE_VAL);
+		
 		if(rec.getTripCalGpsVehTime() != null)
 			statement.setLong(143, rec.getTripCalGpsVehTime());
 		else

@@ -333,7 +333,7 @@ export class ReportMapService {
                   <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
+                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.totalAlerts}</b></td>
                 </tr>
               </table>`
             });
@@ -358,7 +358,7 @@ export class ReportMapService {
                   <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
+                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.totalAlerts}</b></td>
                 </tr>
               </table>`
             });
@@ -372,7 +372,7 @@ export class ReportMapService {
           //this.calculateAtoB(trackType);
           if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
             let liveFleetPoints: any = elem.liveFleetPosition;
-            liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+            liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
             if(_displayRouteView == 'C'){ // classic route
               let blueColorCode: any = '#436ddc';
               this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
@@ -799,7 +799,7 @@ export class ReportMapService {
             this.removedDisabledGroup();
             data.forEach((element, _index) => {
               let liveFleetPoints: any = element.liveFleetPosition;
-              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+              liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); 
               this.selectionPolylineRoute(liveFleetPoints, _index);   
             });
             this.hereMap.addObject(this.disableGroup);
@@ -1151,13 +1151,24 @@ export class ReportMapService {
       element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
       element.endPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endPositionLattitude; 
       element.endPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endPositionLongitude; 
+      element.filterAlerts = this.filterAlerts(element.tripAlert); 
+      element.totalAlerts = element.filterAlerts.length;
     });
     return gridData;
   }
 
+  filterAlerts(alertData: any){
+    let alertArr: any = [];
+    if(alertData.length > 0){ // lat-> -90 to 90 & lng -> -180 to 180
+      let _s = alertData.filter(i => (i.alertLatitude >= -90 && i.alertLatitude <= 90) && (i.alertLongitude >= -180 && i.alertLongitude <= 180));
+      alertArr = _s.slice();
+    }
+    return alertArr;
+  }
+
   skipInvalidRecord(livePoints: any){
-    livePoints.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-    let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
+    livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // lat-> -90 to 90 & lng -> -180 to 180
+    let filterPoints = livePoints.filter(i => (i.gpsLatitude >= -90 && i.gpsLatitude <= 90) && (i.gpsLongitude >= -180 && i.gpsLongitude <= 180));
     return filterPoints;
   }
 
@@ -1555,6 +1566,9 @@ export class ReportMapService {
       element.startpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startpositionlongitude; 
       element.endpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endpositionlattitude; 
       element.endpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endpositionlongitude; 
+
+      element.convertedIdlingPTOScore = (element.idlingPTOScore != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingPTOScore)*1000) : '00:00:00';
+      element.convertedIdlingWithoutPTO = (element.idlingWithoutPTO != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingWithoutPTO)*1000) : '00:00:00';
     });
     return gridData;
   }

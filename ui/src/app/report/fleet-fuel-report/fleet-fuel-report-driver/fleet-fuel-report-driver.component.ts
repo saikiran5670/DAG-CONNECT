@@ -55,6 +55,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   driverSelected : boolean =false;
+  showGraph: boolean = false;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -842,6 +843,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
+      this.showGraph = true;
     });    
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
@@ -1981,7 +1983,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission, item.idleDurationPercentage, item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
+      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
     ]);
     });
@@ -2139,7 +2141,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'idlingWithoutPTO' :{
-        pdfColumnHeads.push('Idling Without PTO(hh:mm:ss)');
+        pdfColumnHeads.push('Idling Without PTO (hh:mm:ss)');
         break;
       }  
       case 'idlingWithoutPTOpercent' :{
@@ -2279,7 +2281,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingPTOScore' :{
-            tempObj.push(e.idlingPTOScore);
+            tempObj.push(e.convertedIdlingPTOScore);
             break;
           }
           case 'idlingPTO' :{
@@ -2287,7 +2289,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingWithoutPTO' :{
-            tempObj.push(e.idlingWithoutPTO);
+            tempObj.push(e.convertedIdlingWithoutPTO);
             break;
           }          
           case 'idlingWithoutPTOpercent' :{

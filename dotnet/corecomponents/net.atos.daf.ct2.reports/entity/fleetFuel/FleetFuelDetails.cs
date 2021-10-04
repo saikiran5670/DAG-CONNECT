@@ -51,12 +51,12 @@ namespace net.atos.daf.ct2.reports.entity
         public double IdleDurationPercentage { get; set; }
         public string DPAAnticipationScore { get; set; } = string.Empty;
         public string DPABrakingScore { get; set; } = string.Empty;
-        public string IdlingPTOScore { get; set; } = string.Empty;
-        public string IdlingPTO { get; set; } = string.Empty;
-        public string IdlingWithoutPTO { get; set; } = string.Empty;
-        public string IdlingWithoutPTOpercent { get; set; } = string.Empty;
+        public long IdlingPTOScore { get; set; }
+        public double IdlingPTO { get; set; }
+        public long IdlingWithoutPTO { get; set; }
+        public double IdlingWithoutPTOpercent { get; set; }
         public string FootBrake { get; set; } = string.Empty;
-        //public string CO2Emmision { get; set; } = string.Empty;
+        public double CO2Emmision { get; set; }
         public List<TripAlert> TripAlert { get; set; }
     }
 

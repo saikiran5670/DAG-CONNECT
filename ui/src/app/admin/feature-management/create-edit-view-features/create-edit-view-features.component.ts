@@ -276,7 +276,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       if (this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
       else
-        return ("New Details '$' Updated Successfully").replace('$', attrName);
+        return ("Feature '$' Updated Successfully").replace('$', attrName);
     }
   }
 
