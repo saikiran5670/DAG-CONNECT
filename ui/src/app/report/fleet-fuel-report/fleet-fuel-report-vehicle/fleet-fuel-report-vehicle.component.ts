@@ -67,6 +67,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
   showMap: boolean = false;
+  showGraph: boolean = false;
   showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
@@ -849,6 +850,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData= graphData;
+      this.showGraph = true;
     });
   }
   
