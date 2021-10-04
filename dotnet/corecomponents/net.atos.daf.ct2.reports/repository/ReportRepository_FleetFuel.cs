@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
                                                     			  --, SUM(veh_message_dpabraking_score) 									   as DPABrakingScore                         
                                                                   , SUM(veh_message_dpabraking_score/
-	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
+	                                                              (case when veh_message_dpabraking_count > 0 then veh_message_dpabraking_count
 	                                                              else 1 END)) 	   as DPABrakingScore 
                                                     			  --, SUM(veh_message_dpaanticipation_score) 								   as DPAAnticipationScore                     
                                                     			  , SUM(veh_message_idle_without_ptoduration) 							   as IdlingWithoutPTO                
@@ -281,7 +281,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , SUM(v_cruise_control_dist_for_cc_fuel_consumption) 					   as CCFuelDistance
                                                           , SUM(v_cruise_control_fuel_consumed_for_cc_fuel_consumption) 		   as CCFuelConsumed
                                                           , SUM(veh_message_dpabraking_score/
-	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
+	                                                              (case when veh_message_dpabraking_count > 0 then veh_message_dpabraking_count
 	                                                              else 1 END)) 	   as DPABrakingScore  
                                                            , SUM(veh_message_dpaanticipation_score/
 	                                                              (case when veh_message_dpaanticipation_count > 0 then veh_message_dpaanticipation_count
