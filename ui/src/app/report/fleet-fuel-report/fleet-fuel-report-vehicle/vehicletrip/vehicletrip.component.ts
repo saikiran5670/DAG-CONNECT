@@ -2026,6 +2026,8 @@ createEndMarker(){
     this.lineChartPlugins=[];
     this.barChartLabels=[];
     this.barChartPlugins=[];
+    this.showGraph= false;
+    this.graphData= [];
   }
 
   processTranslation(transData: any) {
@@ -2217,6 +2219,8 @@ getLast3MonthDate(){
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.showGraph= false;
+    this.graphData= [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);

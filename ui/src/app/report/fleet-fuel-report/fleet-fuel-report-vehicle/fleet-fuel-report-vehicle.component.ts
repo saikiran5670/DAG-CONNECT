@@ -1379,7 +1379,9 @@ miliLitreToGallon(_data: any){
     this.lineChartColors=[];
     this.lineChartPlugins=[];
     this.barChartLabels=[];
-    this.barChartPlugins=[];
+    this.barChartPlugins=[];  
+    this.showGraph= false;
+    this.graphData= []; 
   }
 
   processTranslation(transData: any) {
@@ -1578,6 +1580,8 @@ getLast3MonthDate(){
     this.displayData =[];
     this.vehicleSelected = false;
     this.showRanking = true;
+    this.showGraph= false;
+    this.graphData= [];
    this.updateDataSource(this.tripData);
     //this.resetTripFormControlValue();
     this.filterDateData();

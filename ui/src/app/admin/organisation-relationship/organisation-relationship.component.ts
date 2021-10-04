@@ -67,7 +67,6 @@ export class OrganisationRelationshipComponent implements OnInit {
   };
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
-//  this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
       this.viewRelationshipName = params["name"]; 
    });
@@ -222,21 +221,16 @@ export class OrganisationRelationshipComponent implements OnInit {
         });     
       }
 
-  // defaultTranslation () {
-  //   this.translationData = {
-  //     lblOrganisationRelationshipDetails : "Organisation Relationship Details",
-  //     lblSearch: "Search",
-  //     lblNewRelationship: "New Relationship",
-  //     lblNoRecordFound: "No Record Found",
-  //     lblOrganisationName: "Organisation Name",
-  //     lblVehicleGroup: "Vehicle Group Name",
-  //     lblSelectVehicleGroup: "Select Vehicle Group",
-  //     lblSelectOrganisation: "Select Organisation"
+  defaultTranslation () {
+    this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate || "Click to deactivate";
+    this.translationData.lblClickToActivate = this.translationData.lblClickToActivate || "Click to activate";
+    
+  }
 
-  //   }
-  // }
   processTranslation(transData: any){   
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.defaultTranslation();
+
     //console.log("process translationData:: ", this.translationData)
   }
 

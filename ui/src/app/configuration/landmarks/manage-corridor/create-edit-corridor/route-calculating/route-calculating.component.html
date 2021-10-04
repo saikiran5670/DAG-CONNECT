@@ -1,31 +1,31 @@
 <form [formGroup]="corridorFormGroup">
 <mat-card  class='mat-elevation-z'>
     <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
-        <span>{{ translationData.lblRouteCalculating || 'Route Calculating' }}</span>
+        <span>{{ translationData.lblRouteCalculating}}</span>
     </div>
 <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
-            <span>{{ translationData.lblCorridorLabel || 'Corridor Label' }}</span>
+            <span>{{ translationData.lblCorridorLabel}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
         <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width corridorLineHt">
-                <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterLabel}}" matInput
                     formControlName="label" required>
             </mat-form-field>
             <mat-error
                 *ngIf="corridorFormGroup.get('label').hasError('required') && corridorFormGroup.get('label').touched">
-                {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
+                {{translationData.lblPleaseEnterName}}
             </mat-error>
             <mat-error
                 *ngIf="!corridorFormGroup.get('label').hasError('required')  && corridorFormGroup.get('label').hasError('whitespace')">
-                {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace'
+                {{ translationData.lblNamecannotcontainonlywhitespace
                 }}
             </mat-error>
             <mat-error *ngIf="corridorFormGroup.get('label').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                {{ translationData.lblSpecialcharactersnotallowed}}
             </mat-error>
             <mat-error *ngIf="duplicateError">
                 {{duplicateErrorMsg}}
@@ -37,7 +37,7 @@
     </div>
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
-            <span>{{ translationData.lblStartAddress || 'Start Address' }}</span>
+            <span>{{ translationData.lblStartAddress}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
@@ -60,7 +60,7 @@
 
             <mat-error
                 *ngIf="searchStrError">
-                {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
+                {{translationData.lblPleaseEnterName}}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
@@ -69,7 +69,7 @@
     </div>
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
-            <span>{{ translationData.lblEndAddress || 'End Address' }}</span>
+            <span>{{ translationData.lblEndAddress}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
@@ -92,7 +92,7 @@
             </mat-form-field> -->
             <mat-error
                 *ngIf="searchEndStrError">
-                {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
+                {{translationData.lblPleaseEnterName}}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
@@ -102,7 +102,7 @@
 </div>
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-4 areaWidth">
-        <span>{{ translationData.lblWidth|| 'Width' }}
+        <span>{{ translationData.lblWidth}}
         ({{ translationData.lblKm|| 'km' }}):</span>
         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         <span>
@@ -127,7 +127,7 @@
     </div>
     <div *ngIf="viaRouteCount" class="col-sm-4 areaWidth">
         <mat-label>
-            <span>{{ translationData.lblViaRoute|| 'Via Route' }}</span>
+            <span>{{ translationData.lblViaRoute || 'Via Route'}}</span>
         </mat-label>
         <div  *ngIf="actionType != 'view'">
             <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
@@ -165,7 +165,7 @@
     </div>
     <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
         <button mat-flat-button color="primary" class="viaRouteBtn" (click)="addViaRoute()" [disabled]='viaRouteCount'>
-            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute}}
         </button>
     </div> 
     
@@ -174,10 +174,10 @@
 <div fxLayout="row" class="margin-bottom-sm">
 <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
     <button mat-button color="primary" (click)="searchRoute()" [disabled]='searchDisable'>
-        {{ translationData.lblSearch || 'Search'}}
+        {{ translationData.lblSearch}}
     </button> &nbsp;&nbsp;&nbsp;&nbsp;
     <button mat-button color="primary" (click)="onReset()" [disabled]='searchDisable'>
-        {{translationData.lblReset || 'Reset'}}
+        {{translationData.lblReset}}
     </button>
 </div> 
 </div>
@@ -288,7 +288,7 @@
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblWidth|| 'Width' }}:</span></mat-label>
+                                <mat-label><span>{{ translationData.lblWidth}}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="vehicleWidth">

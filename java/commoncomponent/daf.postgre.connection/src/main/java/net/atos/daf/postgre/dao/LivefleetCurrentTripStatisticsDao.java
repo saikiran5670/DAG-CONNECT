@@ -288,7 +288,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		if (tripStatistics.getVehicle_health_status_type() != null)
 			stmt_insert_current_trip.setString(21, String.valueOf(tripStatistics.getVehicle_health_status_type()));
 		else
-			stmt_insert_current_trip.setString(21, String.valueOf(Character.valueOf(' ')));
+			stmt_insert_current_trip.setString(21, String.valueOf(Character.valueOf('N')));
 
 		if (tripStatistics.getLatest_warning_class() != null)
 			stmt_insert_current_trip.setLong(22, tripStatistics.getLatest_warning_class());
