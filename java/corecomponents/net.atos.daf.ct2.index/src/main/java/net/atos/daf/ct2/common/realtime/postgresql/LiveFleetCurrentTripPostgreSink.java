@@ -246,8 +246,9 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setTrip_distance(0L);
 									currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
 
-									//NOTE: warning and vehicle health status fields - mapped NULL as populated from monitoring
+									//NOTE: warning and vehicle health status fields - to be populated from monitoring
 									// messages; ONLY - vehicle health status field - mapped 'N' at the time of trip start
+									// warning fields are mapped NULL at the time of trip start 
 									currentTripPojo.setVehicle_health_status_type('N');
 									currentTripPojo.setLatest_warning_class(null);
 									currentTripPojo.setLatest_warning_number(null);
