@@ -146,7 +146,7 @@ public class TripCalculations implements Serializable{
 								tripStsAggr.setVStopFuel(value.getVStopFuel());
 								tripStsAggr.setVStartFuel(value.getVStartFuel());
 								tripStsAggr.setVHarshBrakeDuration(value.getVHarshBrakeDuration());
-								tripStsAggr.setVBrakeDuration (value.getVBrakeDuration ());
+								tripStsAggr.setVBrakeDuration(value.getVBrakeDuration());
 								tripStsAggr.setVMaxThrottlePaddleDuration(value.getVMaxThrottlePaddleDuration());
 								tripStsAggr.setVTripAccelerationTime(value.getVTripAccelerationTime());
 								tripStsAggr.setVPTODuration(value.getVPTODuration());
@@ -219,7 +219,7 @@ public class TripCalculations implements Serializable{
 
 								
 
-							} catch (Exception e) {
+							} catch(Exception e) {
 								logger.error(" Issue in TripCalculations while processing : {}",value);
 								logger.error(" Issue in TripCalculations exception : {}",e);
 							}
