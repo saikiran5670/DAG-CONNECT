@@ -126,9 +126,10 @@
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
                   placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
+                    <span *ngIf="rer.vehicleId == 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId != 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' && rer.vehicleId != 0"> {{rer.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber' && rer.vehicleId != 0"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
                   </mat-option>
                 </mat-select>
               </mat-form-field>
