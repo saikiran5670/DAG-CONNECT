@@ -55,6 +55,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   driverSelected : boolean =false;
+  showGraph: boolean = false;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -842,6 +843,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
+      this.showGraph = true;
     });    
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
