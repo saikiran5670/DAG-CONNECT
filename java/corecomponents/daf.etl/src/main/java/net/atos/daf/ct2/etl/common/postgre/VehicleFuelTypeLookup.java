@@ -1,10 +1,6 @@
 package net.atos.daf.ct2.etl.common.postgre;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -18,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
+import net.atos.daf.postgre.connection.PostgreConnection;
 import net.atos.daf.postgre.dao.Co2MasterDao;
 
 public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, TripStatusData> {
@@ -41,15 +38,13 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
 					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));*/
 			
-			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
-			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
+			masterConnection = PostgreConnection.getInstance().getConnection(envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
 					envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.MASTER_POSTGRE_USER),
-					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
-			masterConnection = DriverManager.getConnection(dbUrl);
+					envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD),envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
 			
-			logger.info("In VehicleFuelTypeLookup sink connection done" + masterConnection);
+			logger.info("In VehicleFuelTypeLookup sink connection done::{}", masterConnection);
 			
 			cmDao = new Co2MasterDao();
 			cmDao.setConnection(masterConnection);
@@ -57,10 +52,10 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
-			logger.error("serverNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME) +" port :: "+Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
-			logger.error("databaseNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME) +" user :: "+envParams.get(ETLConstants.MASTER_POSTGRE_USER) + " pwd :: "+envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
-			logger.error("masterConnection :: " + masterConnection);
+			logger.error("Issue while establishing Postgre connection in Trip streaming Job ::{} ", e);
+			logger.error("serverNm ::{}, port ::{} ",envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME), Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
+			logger.error("databaseNm ::{}, user ::{}, pwd ::{} "+envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.MASTER_POSTGRE_USER), envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+			logger.error("masterConnection ::{} ", masterConnection);
 			throw e;
 		}
 
@@ -99,21 +94,4 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 		}
 	}
 
-	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
-			String password) throws Exception {
-
-		String encodedPassword = encodeValue(password);
-		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
-				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
-	
-		return url;
-	}
-	
-	private String encodeValue(String value) {
-		try {
-			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(ex.getCause());
-		}
-	}
 }
