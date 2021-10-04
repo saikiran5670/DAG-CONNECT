@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO.Compression;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,14 @@ namespace net.atos.daf.ct2.accountservice
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.MaxReceiveMessageSize = null;
+                options.MaxSendMessageSize = null;
+                options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                options.ResponseCompressionAlgorithm = "gzip";
+            });
+
             // Enable CORS for service
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
