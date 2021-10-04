@@ -159,7 +159,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
-                                                         		  , round(fd.average_traffic_classification)             					as AverageTrafficClassification
+                                                         		  , round(fd.average_traffic_classification,4) * 1000            					as AverageTrafficClassification
                                                          		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
                                                          		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end  as FuelconsumptionCCnonactive
                                                          		  , idling_consumption                                   					as IdlingConsumption
@@ -320,7 +320,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
-                                                  		  , round(fd.average_traffic_classification)               					as AverageTrafficClassification
+                                                  		  , round(fd.average_traffic_classification,4) * 1000              					as AverageTrafficClassification
                                                   		  , case when fd.CCFuelDistance::decimal >0 then round((fd.CCFuelConsumed::decimal/fd.CCFuelDistance::decimal),5) else fd.CCFuelConsumed end 	as CCFuelConsumption
                                                   		  , case when (fd.etl_gps_distance - fd.CCFuelDistance)>0 then round(((fd.fuel_consumed - fd.CCFuelConsumed)/(fd.etl_gps_distance - fd.CCFuelDistance))) else round(fd.fuel_consumption,5) end	as FuelconsumptionCCnonactive
                                                   		  , idling_consumption                                     					as IdlingConsumption
@@ -556,7 +556,7 @@ namespace net.atos.daf.ct2.reports.repository
                     , round(fd.cruise_control_distance_30_50, 2)                as CruiseControlDistance3050
 				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
-				  , round(fd.average_traffic_classification) as AverageTrafficClassification
+				  , round(fd.average_traffic_classification,4) * 1000 as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5) as CCFuelConsumption
 				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactive
 				  , idling_consumption as IdlingConsumption
@@ -708,7 +708,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance3050
 				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance5075
 				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
-				  , round(fd.average_traffic_classification)               as AverageTrafficClassification
+				  , round(fd.average_traffic_classification,4)  * 1000             as AverageTrafficClassification
 				  , round(fd.cc_fuel_consumption,5)                          as CCFuelConsumption
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactive
 				  , idling_consumption                                     as IdlingConsumption
