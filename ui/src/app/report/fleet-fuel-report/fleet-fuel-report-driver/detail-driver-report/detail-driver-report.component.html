@@ -665,7 +665,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || ' Gross Weight Combination(ton)' }}      
                   </mat-header-cell>     
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">      
-                    <span>{{row.averageGrossWeightComb}}</span>      
+                    <span>{{row.convertedAverageGrossWeightComb}}</span>      
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="averageTrafficClassification">      
