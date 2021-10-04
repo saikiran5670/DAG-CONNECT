@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO.Compression;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -32,14 +33,21 @@ namespace net.atos.daf.ct2.vehicleservice
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.MaxReceiveMessageSize = null;
+                options.MaxSendMessageSize = null;
+                options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                options.ResponseCompressionAlgorithm = "gzip";
+            });
+
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
- {
-     builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
- }));
+                         {
+                             builder.AllowAnyOrigin()
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader()
+                                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                         }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");

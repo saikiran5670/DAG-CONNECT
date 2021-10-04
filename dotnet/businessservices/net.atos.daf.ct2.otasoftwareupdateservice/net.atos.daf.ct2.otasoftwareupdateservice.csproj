@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\otasoftwareupdate.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\httpclient.proto" GrpcServices="Client" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
@@ -21,7 +22,17 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.otasoftwareupdate\net.atos.daf.ct2.otasoftwareupdate.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
-    
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.35.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.35.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.33.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entity\ota22\" />
   </ItemGroup>
 
 </Project>

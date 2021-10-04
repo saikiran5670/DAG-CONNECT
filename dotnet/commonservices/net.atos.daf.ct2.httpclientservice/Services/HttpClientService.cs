@@ -22,16 +22,23 @@ namespace net.atos.daf.ct2.httpclientservice.Services
         private readonly Mapper _mapper;
         public HttpClientManagementService(IHttpClientFactory httpClientFactory,
                                            IConfiguration configuration,
-                                           IOTA22HttpClientManager oTA22HttpClientManager,
-                                           Mapper mapper)
+                                           IOTA22HttpClientManager oTA22HttpClientManager)
         {
             _httpClientFactory = httpClientFactory;
             _oTA22HttpClientManager = oTA22HttpClientManager;
-            _mapper = mapper;
+            _mapper = new Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _oTA22Configurations = new OTA22Configurations();
             configuration.GetSection("OTA22Configurations").Bind(_oTA22Configurations);
         }
-
+        public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverviewTemp(VehiclesStatusOverviewRequestTemp request, ServerCallContext context)
+        {
+            return await Task.FromResult(new VehiclesStatusOverviewResponse
+            {
+                HttpStatusCode = 500,
+                Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-"
+            });
+        }
         public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverview(VehiclesStatusOverviewRequest request, ServerCallContext context)
         {
             try
