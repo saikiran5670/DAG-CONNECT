@@ -11,6 +11,7 @@ declare var H: any;
 })
 export class ReportMapService {
   platform: any;
+  alertMarker: any;
   clusteringLayer: any;
   markerClusterLayer: any = [];
   overlayLayer: any;
@@ -88,6 +89,7 @@ export class ReportMapService {
     this.disableGroup.removeAll();
     this.startMarker = null; 
     this.endMarker = null; 
+    this.alertMarker = null;
     if(this.clusteringLayer){
       this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
@@ -291,7 +293,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, row?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -383,15 +385,19 @@ export class ReportMapService {
               });
             }
           }
+
+          if(alertsChecked){
+            if(elem.filterAlerts.length > 0){
+              this.drawAlerts(elem.filterAlerts, _ui);
+            }
+          }
+
           this.hereMap.addObject(this.group);
-          //if(elem.id == row.id){
-            //let grp = new H.map.Group();
-            this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
-            this.hereMap.addObject(this.group);
-            this.hereMap.getViewModel().setLookAtData({
-              bounds: this.group.getBoundingBox()
-            });
-          //}
+          this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+          this.hereMap.addObject(this.group);
+          this.hereMap.getViewModel().setLookAtData({
+            bounds: this.group.getBoundingBox()
+          });
         }
       });
       this.makeCluster(_selectedRoutes, _ui);
@@ -401,6 +407,119 @@ export class ReportMapService {
       }
     }
    }
+
+   drawAlerts(_alertDetails: any, _ui: any){
+    if(_alertDetails.length > 0){
+      let _fillColor = '#D50017';
+      let _level = 'Critical';
+      let _type = 'Logistics Alerts';
+      // let alertList  = _alertDetails.map(data => data.alertId);
+      // let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
+      // let finalAlerts = [];
+      // distinctAlert.forEach(element => {
+      //   let _currentElem = _alertDetails.find(item=> item.urgencyLevelType === 'C' && item.alertId === element);
+      //   if(_currentElem == undefined){
+      //    _currentElem = _alertDetails.find(item=> item.alertId === element);
+      //   }
+      //   finalAlerts.push(_currentElem);
+      // });
+      _alertDetails.forEach(element => {
+        let _obj: any = this.setColorForAlerts(element, _fillColor, _level);
+        let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="path-1-outside-1" maskUnits="userSpaceOnUse" x="0.416748" y="0.666748" width="23" height="19" fill="black">
+        <rect fill="white" x="0.416748" y="0.666748" width="23" height="19"/>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z"/>
+        </mask>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z" fill="${_obj.color}"/>
+        <path d="M11.7501 4.66675L13.4809 3.66468L11.7501 0.675021L10.0192 3.66468L11.7501 4.66675ZM4.41675 17.3334L2.6859 16.3313L0.947853 19.3334H4.41675V17.3334ZM19.0834 17.3334V19.3334H22.5523L20.8143 16.3313L19.0834 17.3334ZM10.0192 3.66468L2.6859 16.3313L6.1476 18.3355L13.4809 5.66882L10.0192 3.66468ZM4.41675 19.3334H19.0834V15.3334H4.41675V19.3334ZM20.8143 16.3313L13.4809 3.66468L10.0192 5.66882L17.3526 18.3355L20.8143 16.3313Z" fill="white" mask="url(#path-1-outside-1)"/>
+        <path d="M12.4166 14H11.0833V15.3333H12.4166V14Z" fill="white"/>
+        <path d="M12.4166 10H11.0833V12.6667H12.4166V10Z" fill="white"/>
+        </svg>`;
+        let markerSize = { w: 23, h: 20 };
+        const icon = new H.map.Icon(_alertMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.alertMarker = new H.map.Marker({ lat: element.alertLatitude, lng: element.alertLongitude }, { icon: icon });
+        this.group.addObject(this.alertMarker);
+
+        //alert tooltip
+        var startBubble;
+        this.alertMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<table style='width: 300px; font-size:12px;'>
+              <tr>
+                <td style='width: 100px;'>Alert Name:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Type:</td> <td><b>${_obj.type}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Level:</td> <td><b>${_obj.level}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Time:</td> <td><b>${element.convertedAlertTime}</b></td>
+              </tr>
+            </table>`
+          });
+          // show info bubble
+          _ui.addBubble(startBubble);
+        }, false);
+        this.alertMarker.addEventListener('pointerleave', function(evt) {
+          startBubble.close();
+        }, false);
+
+      });
+    }
+   }
+
+  setColorForAlerts(element: any, _fillColor: any, _level: any){
+    let _type: any = '';
+      switch (element.urgencyLevelType) {
+        case 'C':
+          case 'Critical':{
+          _fillColor = '#D50017';
+          _level = 'Critical'
+        }
+        break;
+        case 'W':
+          case 'Warning':{
+          _fillColor = '#FC5F01';
+          _level = 'Warning'
+        }
+        break;
+        case 'A':
+          case 'Advisory':{
+          _fillColor = '#FFD80D';
+          _level = 'Advisory'
+        }
+        break;
+        default:
+          break;
+      }
+    
+      switch (element.categoryType) {
+        case 'L':
+          case 'Logistics Alerts':{
+          _type = 'Logistics Alerts'
+        }
+        break;
+        case 'F':
+          case 'Fuel and Driver Performance':{
+          _type = 'Fuel and Driver Performance'
+        }
+        break;
+        case 'R':
+          case 'Repair and Maintenance':{
+          _type = 'Repair and Maintenance'
+  
+        }
+        break;
+        default:
+          break;
+      }
+      return {color: _fillColor, level: _level, type: _type};
+  }
 
    makeCluster(_selectedRoutes: any, _ui: any){
     let _s: any = [];
@@ -1151,17 +1270,24 @@ export class ReportMapService {
       element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
       element.endPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endPositionLattitude; 
       element.endPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endPositionLongitude; 
-      element.filterAlerts = this.filterAlerts(element.tripAlert); 
+      element.filterAlerts = this.filterAlerts(element.tripAlert, dateFormat, timeFormat, timeZone); 
       element.totalAlerts = element.filterAlerts.length;
     });
     return gridData;
   }
 
-  filterAlerts(alertData: any){
+  filterAlerts(alertData: any, dateFormat: any, timeFormat: any, timeZone: any){
     let alertArr: any = [];
     if(alertData.length > 0){ // lat-> -90 to 90 & lng -> -180 to 180
       let _s = alertData.filter(i => (i.alertLatitude >= -90 && i.alertLatitude <= 90) && (i.alertLongitude >= -180 && i.alertLongitude <= 180));
       alertArr = _s.slice();
+      alertArr.forEach(element => {
+        if(element.alertTime && element.alertTime != 0){
+          element.convertedAlertTime = this.getStarttime(element.alertTime, dateFormat, timeFormat, timeZone, true);;
+        }else{
+          element.convertedAlertTime = '-';
+        }
+      });
     }
     return alertArr;
   }
@@ -1453,7 +1579,7 @@ export class ReportMapService {
     return _date; //returns dateTime if addTime is true or date if addTime is false
   }
    
-  getStarttime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
+  getStarttime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean, onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
