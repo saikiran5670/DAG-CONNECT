@@ -559,7 +559,7 @@
                       || ' mpg') }})</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
-                    <span>{{row.fuelconsumptionCCnonactive}}</span>
+                    <span>{{ row.convertedFuelConsumptionCCNonActive }}</span>
                   </mat-cell>
                 </ng-container>     
               <ng-container matColumnDef="idlingConsumption">      
