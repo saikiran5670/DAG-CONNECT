@@ -1,4 +1,9 @@
-/classes/
 /target/
 /test-classes/
 .classpath
+/classes/
+/.gitignore
+/.project
+/.settings/
+/pom.xml
+/src/

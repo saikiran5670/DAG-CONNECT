@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         protected IEnumerable<int> GetMappedFeatureIdByStartWithName(string featureStartWith)
         {
             return GetUserSubscribeFeatures()?.Where(x => x.Name.ToLower().StartsWith(featureStartWith.ToLower()))
-                                            ?.Select(x => x.FeatureId).ToList();
+                                            ?.Select(x => x.FeatureId)?.ToList();
         }
     }
 }

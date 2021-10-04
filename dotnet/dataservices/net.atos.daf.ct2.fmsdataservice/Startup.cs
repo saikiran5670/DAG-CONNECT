@@ -56,14 +56,14 @@ namespace net.atos.daf.ct2.fmsdataservice
                 };
             });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            var dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
 
             services.AddTransient<IAuditTraillib, AuditTraillib>();

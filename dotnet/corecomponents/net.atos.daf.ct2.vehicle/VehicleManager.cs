@@ -230,12 +230,21 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter)
+        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter, int loggedInOrgId, int accountId)
         {
             try
             {
-                var details = await GetVisibilityVehiclesByOrganization(vehiclefilter.OrganizationId);
-                var visibleVehicles = details.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
+                var contextOrgId = vehiclefilter.OrganizationId;
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+                if (loggedInOrgId != contextOrgId)
+                {
+                    resultDict = await GetVisibilityVehiclesByOrganization(contextOrgId);
+                }
+                else
+                {
+                    resultDict = await GetVisibilityVehicles(accountId, loggedInOrgId);
+                }
+                var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
                 var vehicleList = await _vehicleRepository.GetRelationshipVehicles(vehiclefilter);
                 return vehicleList.Where(e => visibleVehicles.Contains(e.VIN));
             }
@@ -245,7 +254,7 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId, int accountId, int contextOrgId)
+        public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId, int accountId, int contextOrgId, int adminRightsFeatureId = 0)
         {
             try
             {
@@ -280,6 +289,7 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
+
         public async Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle, int accountId, int contextOrgId)
         {
             try
