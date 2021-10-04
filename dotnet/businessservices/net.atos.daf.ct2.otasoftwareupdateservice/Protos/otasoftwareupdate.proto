@@ -7,6 +7,7 @@ package otasoftwareupdate;
 service OTASoftwareUpdateService {  
  rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponse);
  rpc GetVehicleStatusList (VehicleStatusRequest) returns (VehicleStatusResponse); 
+ rpc GetVehicleUpdateDetails (VehicleUpdateDetailRequest) returns (VehicleUpdateDetailResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -59,4 +60,33 @@ repeated VehicleStatusList VehicleStatusList = 2;
 string Message = 3;
 }
 
+message VehicleUpdateDetailRequest {
+string Vin = 1;
+string Retention =2;
+}
 
+message Campaign
+    {
+        string CampaignID =1;
+        string BaselineAssignment =2;
+        string CampaignSubject =3;
+        repeated string Systems =4;
+        string CampaignType =5;
+        string CampaignCategory =6;
+        string UpdateStatus =7;
+        string EndDate = 8;
+        int64 ScheduleDateTime = 9;
+    }
+
+message VehicleUpdateDetail
+    {
+        string Vin = 1;
+        string VehicleSoftwareStatus = 2;
+        repeated Campaign Campaigns = 3;
+    }
+message VehicleUpdateDetailResponse
+    {
+        ResponseCode HttpStatusCode =1;
+        VehicleUpdateDetail VehicleUpdateDetail = 2;
+        string Message = 3;
+    }

@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
 using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.httpclient;
 using net.atos.daf.ct2.httpclientfactory;
-using net.atos.daf.ct2.httpclientfactory.entity.ota22;
+using net.atos.daf.ct2.httpclientfactory.Entity.ota22;
 using net.atos.daf.ct2.httpclientservice.Entity.ota22;
 
 namespace net.atos.daf.ct2.httpclientservice.Services
@@ -31,14 +30,7 @@ namespace net.atos.daf.ct2.httpclientservice.Services
             _oTA22Configurations = new OTA22Configurations();
             configuration.GetSection("OTA22Configurations").Bind(_oTA22Configurations);
         }
-        public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverviewTemp(VehiclesStatusOverviewRequestTemp request, ServerCallContext context)
-        {
-            return await Task.FromResult(new VehiclesStatusOverviewResponse
-            {
-                HttpStatusCode = 500,
-                Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-"
-            });
-        }
+
         public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverview(VehiclesStatusOverviewRequest request, ServerCallContext context)
         {
             try
@@ -54,6 +46,28 @@ namespace net.atos.daf.ct2.httpclientservice.Services
             {
                 _logger.Error($"HttpClientManagementService:GetVehiclesStatusOverview.Error:-{ex.Message}");
                 return await Task.FromResult(new VehiclesStatusOverviewResponse
+                {
+                    HttpStatusCode = 500,
+                    Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-{ex.Message}"
+                });
+            }
+        }
+
+        public override async Task<VehicleUpdateDetailsResponse> GetVehicleUpdateDetails(VehicleUpdateDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("HttpClientManagementService:GetVehiclesStatusOverview Started.");
+
+                httpclientfactory.entity.ota22.VehicleUpdateDetailsResponse apiResponse
+                    = await _oTA22HttpClientManager.GetVehicleUpdateDetails(_mapper.MapGetVehicleUpdateDetailsRequest(request));
+                return await Task.FromResult(_mapper.MapGetVehicleUpdateDetails(apiResponse));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"HttpClientManagementService:GetVehiclesStatusOverview.Error:-{ex.Message}");
+                return await Task.FromResult(new VehicleUpdateDetailsResponse
                 {
                     HttpStatusCode = 500,
                     Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-{ex.Message}"

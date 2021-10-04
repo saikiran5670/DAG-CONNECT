@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.otasoftwareupdate
     public interface IOTASoftwareUpdateManager
     {
         Task<IEnumerable<VehicleSoftwareStatus>> GetVehicleSoftwareStatus();
+        Task<IEnumerable<VehicleScheduleDetails>> GetSchduleCampaignByVin(string vin);
     }
 }
