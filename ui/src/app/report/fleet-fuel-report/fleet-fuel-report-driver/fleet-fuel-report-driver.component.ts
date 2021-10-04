@@ -1445,6 +1445,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.lineChartPlugins=[];
     this.barChartLabels=[];
     this.barChartPlugins=[];
+    this.showGraph= false;
+    this.graphData= [];
   }
 
   processTranslation(transData: any) {
@@ -1643,6 +1645,8 @@ setDefaultTodayDate(){
     this.FuelData =[];
     this.tableInfoObj = [];
     this.detailSummaryObj =[];
+    this.showGraph= false;
+    this.graphData= [];
     this.resetChartData();
     this.displayData =[];
     this.driverSelected= false;
