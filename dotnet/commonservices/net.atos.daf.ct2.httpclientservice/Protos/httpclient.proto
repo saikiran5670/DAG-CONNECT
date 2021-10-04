@@ -6,7 +6,7 @@ package httpclient;
 
 service HttpClientService {  
  rpc GetVehiclesStatusOverview (VehiclesStatusOverviewRequest) returns (VehiclesStatusOverviewResponse);
- rpc GetVehiclesStatusOverviewTemp (VehiclesStatusOverviewRequestTemp) returns (VehiclesStatusOverviewResponse);
+ rpc GetVehicleUpdateDetails (VehicleUpdateDetailsRequest) returns (VehicleUpdateDetailsResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -18,11 +18,6 @@ enum ResponseCode{
 }
 message NoRequest{
 int32 Id = 1;
-}
-message VehiclesStatusOverviewRequestTemp {
-
-string Language = 1;
-
 }
 message VehiclesStatusOverviewRequest {
 repeated string Vins = 1;
@@ -45,3 +40,35 @@ int32 HttpStatusCode =1;
 VehiclesStatusOverview VehiclesStatusOverview =2;
 string Message = 3;
 }
+
+message VehicleUpdateDetailsRequest {
+string Vin = 1;
+string Retention =2;
+}
+
+message Campaign
+    {
+        string CampaignID =1;
+        string BaselineAssignment =2;
+        string CampaignSubject =3;
+        repeated string Systems =4;
+        string CampaignType =5;
+        string CampaignCategory =6;
+        string UpdateStatus =7;
+        string EndDate = 8;
+        int64 ScheduleDateTime = 9;
+    }
+
+message VehicleUpdateDetails
+    {
+        string Vin = 1;
+        string VehicleSoftwareStatus = 2;
+        repeated Campaign Campaigns = 3;
+    }
+
+    message VehicleUpdateDetailsResponse
+    {
+        int32 HttpStatusCode =1;
+        VehicleUpdateDetails VehicleUpdateDetails = 2;
+        string Message = 3;
+    }
