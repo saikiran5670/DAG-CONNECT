@@ -1981,7 +1981,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission, item.idleDurationPercentage, item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
+      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
     ]);
     });
@@ -2279,7 +2279,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingPTOScore' :{
-            tempObj.push(e.idlingPTOScore);
+            tempObj.push(e.convertedIdlingPTOScore);
             break;
           }
           case 'idlingPTO' :{
@@ -2287,7 +2287,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingWithoutPTO' :{
-            tempObj.push(e.idlingWithoutPTO);
+            tempObj.push(e.convertedIdlingWithoutPTO);
             break;
           }          
           case 'idlingWithoutPTOpercent' :{

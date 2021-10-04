@@ -1028,7 +1028,7 @@
                   PTO(hh:mm:ss) score' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
-                  <span>{{row.idlingPTOScore}}</span>
+                  <span>{{ row.convertedIdlingPTOScore }}</span>
                 </mat-cell>
               </ng-container>
               
@@ -1048,7 +1048,7 @@
                   PTO (hh:mm:ss)' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
-                  <span>{{row.idlingWithoutPTO}}</span>
+                  <span>{{ row.convertedIdlingWithoutPTO }}</span>
                 </mat-cell>
               </ng-container>
   

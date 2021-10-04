@@ -1555,6 +1555,9 @@ export class ReportMapService {
       element.startpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startpositionlongitude; 
       element.endpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endpositionlattitude; 
       element.endpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endpositionlongitude; 
+
+      element.convertedIdlingPTOScore = (element.idlingPTOScore != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingPTOScore)*1000) : '00:00:00';
+      element.convertedIdlingWithoutPTO = (element.idlingWithoutPTO != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingWithoutPTO)*1000) : '00:00:00';
     });
     return gridData;
   }
