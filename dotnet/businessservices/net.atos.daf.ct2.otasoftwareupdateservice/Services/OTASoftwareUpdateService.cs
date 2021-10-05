@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
+using Microsoft.Extensions.Caching.Memory;
 using net.atos.daf.ct2.otasoftwareupdate;
+using net.atos.daf.ct2.otasoftwareupdate.common;
 using net.atos.daf.ct2.otasoftwareupdateservice.Entity;
 using net.atos.daf.ct2.visibility;
 using static net.atos.daf.ct2.httpclientservice.HttpClientService;
@@ -18,17 +22,20 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         private readonly IOTASoftwareUpdateManager _otaSoftwareUpdateManagement;
         private readonly IVisibilityManager _visibilityManager;
         private readonly HttpClientServiceClient _httpClientServiceClient;
+        private readonly CampiagnDataCaching _campiagnDataCaching;
         private readonly Mapper _mapper;
 
         public OTASoftwareUpdateManagementService(IOTASoftwareUpdateManager otaSoftwareUpdateManagement
                                                   , IVisibilityManager visibilityManager,
-                                                    HttpClientServiceClient httpClientServiceClient)
+                                                    HttpClientServiceClient httpClientServiceClient,
+                                                    IMemoryCache cache)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _otaSoftwareUpdateManagement = otaSoftwareUpdateManagement;
             _visibilityManager = visibilityManager;
             _mapper = new Mapper();
             _httpClientServiceClient = httpClientServiceClient;
+            _campiagnDataCaching = new CampiagnDataCaching(cache);
         }
 
         public override async Task<VehicleSoftwareStatusResponse> GetVehicleSoftwareStatus(NoRequest request, ServerCallContext context)
@@ -184,17 +191,16 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         {
             try
             {
-                //Get Campaign from in memory
-
-                //Get Campaign from DB 
-
-                //Get Campaign from API
-
-
+                var releaseNotes = await GetCampaignData(request.CampaignId,
+                                                         request.Language,
+                                                         request.Retention,
+                                                         request.Vins);
 
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
                 {
-                    Message = "No records found for in Vehicle Campaigns.",
+                    ReleaseNote = releaseNotes,
+                    Message = string.IsNullOrEmpty(releaseNotes) ? "No records found for in Vehicle Campaigns." :
+                                                                   "Fetched campaign detials successfully.",
                     HttpStatusCode = ResponseCode.Success
                 });
             }
@@ -209,15 +215,57 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
         }
 
-        private async Task<string> GetCampaignDataFromAPI(string retention, string vin)
+        #region Get Campaign Data logic
+        private async Task<string> GetCampaignData(string campaignID, string code, string retention, IEnumerable<string> vins)
         {
-            net.atos.daf.ct2.httpclientservice.CampiagnSoftwareReleaseNoteResponse campiagnDataResponse = await _httpClientServiceClient
-                    .GetSoftwareReleaseNoteAsync(new httpclientservice.CampiagnSoftwareReleaseNoteRequest
-                    {
-                        Retention = retention,
-                        Vins = vin
-                    });
-            return campiagnDataResponse.ReleaseNote;
+            var releaseNotes = await _campiagnDataCaching
+                                .GetReleaseNotesFromCache(new CampiagnData
+                                {
+                                    CampaignId = campaignID,
+                                    Code = code
+                                });
+
+            if (string.IsNullOrEmpty(releaseNotes))
+            {
+                releaseNotes = await GetCampaignDataFromDB(campaignID, code, retention, vins);
+                if (!string.IsNullOrEmpty(releaseNotes))
+                {
+                    await _campiagnDataCaching
+                                .InsertReleaseNotesToCache(new CampiagnData
+                                {
+                                    CampaignId = campaignID,
+                                    Code = code,
+                                    ReleaseNotes = releaseNotes
+                                });
+                }
+            }
+            return releaseNotes;
         }
+        private async Task<string> GetCampaignDataFromDB(string campaignID, string code, string retention, IEnumerable<string> vins)
+        {
+            var releaseNotes = await _otaSoftwareUpdateManagement.GetReleaseNotes(campaignID, code);
+            if (string.IsNullOrEmpty(releaseNotes))
+            {
+                releaseNotes = await GetCampaignDataFromAPI(retention, vins);
+                if (!string.IsNullOrEmpty(releaseNotes))
+                {
+                    await _otaSoftwareUpdateManagement.InsertReleaseNotes(campaignID, code, releaseNotes);
+                }
+            }
+            return releaseNotes;
+        }
+        private async Task<string> GetCampaignDataFromAPI(string retention, IEnumerable<string> vins)
+        {
+            var request = new httpclientservice.CampiagnSoftwareReleaseNoteRequest
+            {
+                Retention = retention
+            };
+            request.Vins.AddRange(vins);
+            net.atos.daf.ct2.httpclientservice.CampiagnSoftwareReleaseNoteResponse 
+                campiagnDataResponse = await _httpClientServiceClient
+                                                            .GetSoftwareReleaseNoteAsync(request);
+            return campiagnDataResponse?.ReleaseNote;
+        }
+        #endregion
     }
 }

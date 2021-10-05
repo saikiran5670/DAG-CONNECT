@@ -1170,7 +1170,8 @@ let _type ='';
       let alertsData =[];  
       if(element.fleetOverviewAlert.length > 0){
         if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
-            _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+            // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+            _alertFound = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
             if(_alertFound){
               this.alertFoundFlag = true;
                alertsData.push(_alertFound);
