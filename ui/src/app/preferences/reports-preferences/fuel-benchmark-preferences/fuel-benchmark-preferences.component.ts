@@ -71,7 +71,6 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   }
 
   loadFuelBenchmarkReportPreferences() {
-
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
       this.initData = prefData['userPreferences'];
       this.getReportPreferenceResponse = this.initData;    
