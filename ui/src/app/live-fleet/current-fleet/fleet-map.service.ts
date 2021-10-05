@@ -602,7 +602,7 @@ export class FleetMapService {
        
         if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on messageTimeStamp
           if(_displayRouteView == 'C'){ // classic route
             let blueColorCode: any = '#436ddc';
             this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
@@ -1675,7 +1675,7 @@ let _type ='';
             this.removedDisabledGroup();
             data.forEach((element, _index) => {
               let liveFleetPoints: any = element.liveFleetPosition;
-              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+              liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); 
               this.selectionPolylineRoute(liveFleetPoints, _index);   
             });
             this.hereMap.addObject(this.disableGroup);
@@ -1872,7 +1872,7 @@ let _type ='';
   }
 
   skipInvalidRecord(livePoints: any){
-    livePoints.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    livePoints.sort((a, b) => parseInt(a.messageTimeStamp ) - parseInt(b.messageTimeStamp));
     let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
     return filterPoints;
   }

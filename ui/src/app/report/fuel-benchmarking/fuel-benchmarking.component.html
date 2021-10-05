@@ -140,7 +140,9 @@
         [startDateRange]="startDateRange" 
         [vehicleGroupSelected] = "vehicleGroupSelected"
         [translationData]="translationData"
-        [endDateRange]="endDateRange" #fuelBenchmarking></app-fuel-benchmarking-table>
+        [endDateRange]="endDateRange"
+        [reportPrefData]='reportPrefData' 
+        #fuelBenchmarking></app-fuel-benchmarking-table>
 
 
         <div *ngIf="!selectionValueBenchmarkBY">

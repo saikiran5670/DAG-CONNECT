@@ -124,7 +124,7 @@
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleGroup || 'Warning Type' }}: </span>
+                    <span>{{ translationData.lblWarningType || 'Warning Type' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ warningTypeDisplay }}</span>
                   </span>
                 </div>
@@ -146,19 +146,19 @@
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleGroup || 'Vehicle Name' }}: </span>
+                    <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ healthData.vehicleName }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblTo || 'Vehicle Reg No' }}: </span>
+                    <span>{{ translationData.lblVehicleRegNo || 'Vehicle Reg No' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.registrationNo}}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblTo || 'Driving Status' }}: </span>
+                    <span>{{ translationData.lblDrivingStatus || 'Driving Status' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.vehicleDrivingStatusType}}</span>
                   </span>
                 </div>
@@ -166,13 +166,13 @@
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblFrom || 'Alert' }}: </span>
+                    <span>{{ translationData.lblAlert || 'Alert' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(healthData.fleetOverviewAlert).length}}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleGroup || 'Address' }}: </span>
+                    <span>{{ translationData.lblAddress || 'Address' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.latestGeolocationAddress}}</span>
                   </span>
                 </div>
@@ -204,7 +204,7 @@
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) &&
-                (translationData.lblWarning || 'Warning History') || (translationData.lblWarning || 'Current Warning')
+                (translationData.lblWarningHistory || 'Warning History') || (translationData.lblCurrentWarning || 'Current Warning')
                 }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
