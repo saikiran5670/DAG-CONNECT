@@ -106,7 +106,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										messageTen, lastestProcessedMessageTimeStamp,row.getDocument().getVWarningClass(),row.getDocument().getVWarningNumber());
 
 								warningDao.warning_insert(warningDetail);
-								logger.info("warning inserted in warning table for VEvtId--63 :{)",
+								logger.info("warning inserted in warning table for VEvtId not 63 :{)",
 										warningDetail);
 								//System.out.println("warning message 10 Inserted");
 								warningDao.warningUpdateMessageTenCommonTrip(warningDetail);
@@ -346,7 +346,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			if (row.getDocument().getDriverID() != null) {
 				warningDetail.setDriverID(row.getDocument().getDriverID());
 			} else {
-				warningDetail.setDriverID(null);
+				warningDetail.setDriverID("Unknown");
 			}
 
 			// Warning Type

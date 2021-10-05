@@ -108,7 +108,10 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 							currentTripPojo.setEnd_time_stamp(TimeFormatter.getInstance().convertUTCToEpochMilli(
 									indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-							currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
+							if(indexValue.getDriverID()!=null && !indexValue.getDriverID().isEmpty() && indexValue.getDriverID()!=" ")
+								currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
+							else 
+								currentTripPojo.setDriver1ID("Unknown"); //Unknown, if null
 
 							if (indexValue.getVUsedFuel() != null)
 								currentTripPojo.setFuel_consumption(Long.valueOf(indexValue.getVUsedFuel().longValue()));

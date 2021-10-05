@@ -286,14 +286,22 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		if (driverIdentification == true) {
 			// Driver 1
 
-			driverActivity.setDriverID(row.getDocument().getDriverID());
+			if(row.getDocument().getDriverID()!=null && ! row.getDocument().getDriverID().isEmpty()) {
+				driverActivity.setDriverID(row.getDocument().getDriverID());
+			} else {
+				driverActivity.setDriverID("Unknown");
+			}
 			driverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
 			driverActivity.setIsDriver1(true);
 			driverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
 		} else {
 			// Driver 2
 
-			driverActivity.setDriverID(row.getDocument().getDriver2ID());
+			if(row.getDocument().getDriver2ID()!=null && ! row.getDocument().getDriver2ID().isEmpty()) {
+				driverActivity.setDriverID(row.getDocument().getDriver2ID());
+			} else {
+				driverActivity.setDriverID("Unknown");
+			}
 			driverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
 			driverActivity.setIsDriver1(false);
 			driverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());

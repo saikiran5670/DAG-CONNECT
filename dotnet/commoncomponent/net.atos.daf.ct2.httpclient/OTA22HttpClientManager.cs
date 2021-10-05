@@ -45,10 +45,10 @@ namespace net.atos.daf.ct2.httpclientfactory
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
                 {
-                    _logger.Info("Calling DAF rest API for sending data");
+                    _logger.Info("GetVehiclesStatusOverview:Calling OTA 22 rest API for sending data");
                     response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}vehiclesstatusoverview", data);
 
-                    _logger.Info("DAF Api respone is " + response.StatusCode);
+                    _logger.Info("GetVehiclesStatusOverview: OTA 22 Api respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
 
                     i++;
@@ -86,10 +86,10 @@ namespace net.atos.daf.ct2.httpclientfactory
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
                 {
-                    _logger.Info("Calling OTA 22 rest API for sending data");
+                    _logger.Info("GetVehicleUpdateDetails:Calling OTA 22 rest API for sending data");
                     response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}vehicles/vin", data);
 
-                    _logger.Info("OTA 22 respone is " + response.StatusCode);
+                    _logger.Info("GetVehicleUpdateDetails:OTA 22 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
 
                     i++;
@@ -110,6 +110,47 @@ namespace net.atos.daf.ct2.httpclientfactory
             {
                 _logger.Error($"OTA22HttpClientManager:GetVehicleUpdateDetails.Error:-{ex.Message}");
                 return new VehicleUpdateDetailsResponse { HttpStatusCode = 500 };
+            }
+        }
+
+        public async Task<CampiagnSoftwareReleaseNoteResponse> GetSoftwareReleaseNote(CampiagnSoftwareReleaseNoteRequest request)
+        {
+            int i = 0;
+            string result = null;
+            try
+            {
+                _logger.Info("OTA22HttpClientManager:GetSoftwareReleaseNote Started.");
+                var client = await GetHttpClient();
+                var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = new HttpResponseMessage();
+                response.StatusCode = HttpStatusCode.BadRequest;
+
+                while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
+                {
+                    _logger.Info("GetSoftwareReleaseNote:Calling OTA 22 rest API for sending data");
+                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}softwareupdateoverview", data);
+
+                    _logger.Info("GetSoftwareReleaseNote:OTA 22 respone is " + response.StatusCode);
+                    result = response.Content.ReadAsStringAsync().Result;
+
+                    i++;
+                }
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    _logger.Info(result);
+                }
+                else
+                {
+                    _logger.Error(result);
+                }
+
+                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"OTA22HttpClientManager:GetSoftwareReleaseNote.Error:-{ex.Message}");
+                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 500 };
             }
         }
 

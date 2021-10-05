@@ -1,0 +1,30 @@
+FROM flink:1.12.1
+
+COPY streaming.conti.messages-1.0-SNAPSHOT-jar-with-dependencies.jar .
+COPY configuration.properties .
+
+COPY net.atos.daf.ct2.index-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+COPY env.properties .
+
+COPY net.atos.daf.ct2.index-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+COPY tripIndexStreaming.properties .
+
+COPY net.atos.daf.ct2.monitoring-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+
+COPY net.atos.daf.ct2.status-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+
+COPY daf.mileage-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+COPY tripMileage.properties .
+
+COPY daf.fuel.deviation-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+COPY fuelDeviation.properties .
+
+COPY alert-processing-1.0-SNAPSHOT-jar-with-dependencies.jar .
+COPY alerts.properties .
+
+COPY alert-processing-1.0-SNAPSHOT-jar-with-dependencies.jar .
+
+COPY daf.etl-0.0.1-jar-with-dependencies.jar .
+COPY tripEnvironment.properties .
+
+ENTRYPOINT ["flink", "run", "-c", "net.atos.daf.ct2.common.realtime.dataprocess.StatusDataProcess", "net.atos.daf.ct2.status-0.0.1-SNAPSHOT-jar-with-dependencies.jar", "-input", "env.properties"]

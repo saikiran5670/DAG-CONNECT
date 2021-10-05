@@ -287,10 +287,14 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		if (row.getDocument().getVWheelBasedSpeed() != null)
 			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());
 
-		currentPosition.setDriver1Id(row.getDriverID());
+		if(row.getDriverID() !=null && ! row.getDriverID().isEmpty()) {
+			currentPosition.setDriver1Id(row.getDriverID());
+		} else {
+			currentPosition.setDriver1Id("Unknown");
+		}
+		//currentPosition.setDriver1Id(row.getDriverID());
 		currentPosition.setDrivingTime(drivingTime.intValue());
-		
-		//vehicle status API fields
+	//vehicle status API fields
 		currentPosition.setTotal_vehicle_distance(row.getVDist());
 		currentPosition.setTotal_engine_hours(row.getDocument().getVEngineTotalHours());
 		currentPosition.setTotal_engine_fuel_used(row.getVCumulatedFuel());
@@ -298,7 +302,11 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
 		currentPosition.setFuel_level1(row.getDocument().getVFuelLevel1());
 		currentPosition.setCatalyst_fuel_level(row.getDocument().getVDEFTankLevel());
-		currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
+		if(row.getDocument().getDriver2ID()!= null && ! row.getDocument().getDriver2ID().isEmpty()) {
+					currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
+				} else {
+					currentPosition.setDriver2_id("Unknown");
+				}
 		currentPosition.setDriver1_working_state(row.getDocument().getDriver1WorkingState());
 		currentPosition.setDriver2_working_state(row.getDocument().getDriver2WorkingState());
 		currentPosition.setAmbient_air_temperature(row.getDocument().getVAmbiantAirTemperature());
