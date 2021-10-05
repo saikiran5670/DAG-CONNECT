@@ -1303,23 +1303,27 @@ export class AppComponent {
     }
   }
 
-getOfflineNotifications(){
-  this.alertService.getOfflineNotifications().subscribe(data => {
-    if(data){
-      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-      this.signalRService.notificationData= data["notificationResponse"];
-    }
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
-
-  },
-  error => {
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
-  })
-}
+  getOfflineNotifications(){
+    this.alertService.getOfflineNotifications().subscribe(data => {
+      if(data){
+        this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+        data["notificationResponse"].forEach(element => {
+          element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
+        });
+        this.signalRService.notificationData= data["notificationResponse"];
+        this.signalRService.getDateAndTime();
+      }
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+  
+    },
+    error => {
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+    })
+  }
 
 connectWithSignalR(){
   this.signalRService.startConnection();
