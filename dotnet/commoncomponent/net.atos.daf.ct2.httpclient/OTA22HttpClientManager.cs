@@ -80,14 +80,21 @@ namespace net.atos.daf.ct2.httpclientfactory
             {
                 _logger.Info("OTA22HttpClientManager:GetVehicleUpdateDetails Started.");
                 var client = await GetHttpClient();
-                var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                //var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                var httpRequest = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"{_oTA22Configurations.API_BASE_URL}vehicles/vin");
+                httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
                 {
                     _logger.Info("GetVehicleUpdateDetails:Calling OTA 22 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}vehicles/vin", data);
+                    response = await client.SendAsync(httpRequest);
 
                     _logger.Info("GetVehicleUpdateDetails:OTA 22 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
@@ -163,9 +170,8 @@ namespace net.atos.daf.ct2.httpclientfactory
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+            client.Timeout = new TimeSpan(0, 0, 30);
             var token = await GetElibilityToken(client);
-            token.AccessToken = @"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Imwzc1EtNTBjQ0g0eEJWWkxIVEd3blNSNzY4MCJ9.eyJhdWQiOiI3M2U4ZWI1Yi1lNjVmLTRjOTUtODE2YS03YjU1NmQ2YzFkMjQiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZTIwMWFiZjktYzVhMy00M2Y4LThlMjktMTM1ZDRmZTY3ZTZiL3YyLjAiLCJpYXQiOjE2MzMzMjM0NTcsIm5iZiI6MTYzMzMyMzQ1NywiZXhwIjoxNjMzMzI3MzU3LCJhaW8iOiJFMlpnWUppM3p1WDlJWit5bTdyVHBoNll2V0gyWHdBPSIsImF6cCI6IjczZThlYjViLWU2NWYtNGM5NS04MTZhLTdiNTU2ZDZjMWQyNCIsImF6cGFjciI6IjEiLCJvaWQiOiJmNzYzMGE1Yy00YWU0LTQwY2QtYmJlZS05OTU5NjliN2FjYWQiLCJyaCI6IjAuQVFjQS1hc0I0cVBGLUVPT0tSTmRULVotYTF2cjZITmY1cFZNZ1dwN1ZXMXNIU1FIQUFBLiIsInJvbGVzIjpbImFjY2Vzc19hc19hcHBsaWNhdGlvbiJdLCJzdWIiOiJmNzYzMGE1Yy00YWU0LTQwY2QtYmJlZS05OTU5NjliN2FjYWQiLCJ0aWQiOiJlMjAxYWJmOS1jNWEzLTQzZjgtOGUyOS0xMzVkNGZlNjdlNmIiLCJ1dGkiOiJiNWxMN1NsU0wwaUs5NVU3bm1Vb0FBIiwidmVyIjoiMi4wIn0.jSScaAmwYQtLxCEEIA2FdnpNZYOC7Z1-WslKAoOk24ujzML1i61Eb2wqSe-AN7BeDa024BiI0YPnWpuounj5IwG9Mgw9_Butmf-wqLfLcy4yqNYh9xqsT3H-V5vueaoaGDIiWp7rKZVSV5yiMgIKWUBfvxHfeMni-8di3LVIdKXO-614BruOZN-kvJGBreVRT-bil7PuiFuNjhB_3I8nuZwy0BQlbYsDnH7BlC3yDNLHcAqYyID5COsrhukC31sJs7--q_ZdbGdAP_5KVrY3S0RPE5vnDvS4YZNr_95goZ9o4XGNkIiTv6kOAtHO-CSXk-aoYQzGzp7l-HSL9UnVRQ";
             //client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
             return client;
