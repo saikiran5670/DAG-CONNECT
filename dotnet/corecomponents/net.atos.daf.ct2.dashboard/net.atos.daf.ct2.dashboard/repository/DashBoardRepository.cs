@@ -84,21 +84,32 @@ namespace net.atos.daf.ct2.dashboard.repository
             {
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
+                //          string queryAlert24Hours = @"select                                       
+                //            COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
+                //               COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
+                //            (select COUNT(CASE WHEN ta.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance	                
+                //          		from 
+                //          		tripdetail.tripalert ta 
+                //          		where ta.vin = Any(@vins) and
+                //          		to_timestamp(ta.alert_generated_time/1000)::date >= (now()::date - 1)) 
+                //as RepairAndMaintenance,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
+                //          from tripdetail.trip_statistics trs
+                //          inner JOIN tripdetail.tripalert tra ON trs.trip_id = tra.trip_id
+                //          where trs.vin = Any(@vins) and
+                //          to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
+
                 string queryAlert24Hours = @"select                                       
 	                 COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
                      COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
-	                 (select COUNT(CASE WHEN ta.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance	                
-                		from 
-                		tripdetail.tripalert ta 
-                		where ta.vin = Any(@vins) and
-                		to_timestamp(ta.alert_generated_time/1000)::date >= (now()::date - 1)) 
-					 as RepairAndMaintenance,
+	                 COUNT(CASE WHEN tra.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance, 
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
-                from tripdetail.trip_statistics trs
-                inner JOIN tripdetail.tripalert tra ON trs.trip_id = tra.trip_id
-                where trs.vin = Any(@vins) and
+                from tripdetail.tripalert tra
+                where tra.vin = Any(@vins) and
                 to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
 
                 List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert24Hours, parameterOfFilters);
