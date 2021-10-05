@@ -679,7 +679,8 @@ setIconsOnMap(element) {
     if(element.fleetOverviewAlert.length > 0){
       // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
       if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
-      _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+      // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+       _alertFound = element.fleetOverviewAlert.sort((x,y) => y.time-x.time);
       if(_alertFound){
         alertsData.push(_alertFound);
       }
