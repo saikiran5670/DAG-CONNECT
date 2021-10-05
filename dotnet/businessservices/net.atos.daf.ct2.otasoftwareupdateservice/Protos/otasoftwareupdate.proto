@@ -8,6 +8,7 @@ service OTASoftwareUpdateService {
  rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponse);
  rpc GetVehicleStatusList (VehicleStatusRequest) returns (VehicleStatusResponse); 
  rpc GetVehicleUpdateDetails (VehicleUpdateDetailRequest) returns (VehicleUpdateDetailResponse);
+ rpc GetSoftwareReleaseNote (CampiagnSoftwareReleaseNoteRequest) returns (CampiagnSoftwareReleaseNoteResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -88,5 +89,18 @@ message VehicleUpdateDetailResponse
     {
         ResponseCode HttpStatusCode =1;
         VehicleUpdateDetail VehicleUpdateDetail = 2;
+        string Message = 3;
+    }
+message CampiagnSoftwareReleaseNoteRequest {
+        string CampaignId =1;
+        repeated string Vins =2;
+        string Language =3;
+        string Retention =4;
+}
+
+    message CampiagnSoftwareReleaseNoteResponse
+    {
+        ResponseCode HttpStatusCode =1;
+        string ReleaseNote = 2;
         string Message = 3;
     }

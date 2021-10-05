@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Entity
     public class Mapper
     {
         public httpclientservice.VehiclesStatusOverviewRequest MapVehiclesStatusOverviewRequest(string language,
-                                                                                                string retention ,
+                                                                                                string retention,
                                                                                                 IEnumerable<string> vins)
         {
             var returnObj = new httpclientservice.VehiclesStatusOverviewRequest();
