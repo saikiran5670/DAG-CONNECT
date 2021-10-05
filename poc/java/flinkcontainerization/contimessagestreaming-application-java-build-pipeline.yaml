@@ -1,0 +1,329 @@
+
+trigger:
+- none
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+  - TEST01
+  - TEST02
+  - ACC03
+  - ACC01
+  - ACC02
+  - PRD01
+
+pool: $(PRIVATEAGENT)
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST02') }}:
+  - group: TEST02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
+- ${{ if eq(parameters.ENV, 'PRD01') }}:
+  - group: PRD01-Build-Variables
+
+jobs:
+- job: Build
+  steps:
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/daf.common/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/daf.common/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/net.atos.daf.hbase.connection/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/net.atos.daf.hbase.connection/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/daf.postgre.connection/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/daf.postgre.connection/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+      
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/kafka.common/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/kafka.common/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+      
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.masterdata.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.conti.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.conti.messages/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.bosch.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.bosch.messages/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/sinking.externally.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/sinking.externally.messages/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.etl/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.etl/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.mileage/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.mileage/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.index/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.index/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.monitoring/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.monitoring/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.status/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.status/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.fuel.deviation/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.fuel.deviation/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.alerts/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.alerts/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/ContiStreaming_Dockerfile
+        imageName: contistreaming-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: contistreaming-image
+        
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/FuelDeviationJob_Dockerfile
+        imageName: fueldeviation-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: fueldeviation-image
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/IndexBasedAlert_Dockerfile
+        imageName: indexbasedalert-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: indexbasedalert-image
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/IndexDataProcess_Dockerfile
+        imageName: indexdataprocess-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: indexdataprocess-image
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/MileageStreamingJob_Dockerfile
+        imageName: milagestreaming-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: milagestreaming-image
+  
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/MonitorDataProcess_Dockerfile
+        imageName: monitordataprocess-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: monitordataprocess-image
+        
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/StatusDataProcess_Dockerfile
+        imageName: statusdataprocess-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: statusdataprocess-image
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/TripBasedAlert_Dockerfile
+        imageName: tripbasedalert-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: tripbasedalert-image
+        
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/TripStreaming_Dockerfile
+        imageName: tripindexstream-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: tripindexstream-image
+
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription:  $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        dockerFile: poc/java/flinkcontainerization/TripStreaming_Dockerfile
+        imageName: tripstream-image
+
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: $(Subscription)
+        azureContainerRegistry: $(ContainerRegistryFlink)
+        action: 'Push an image'
+        imageName: tripstream-image
+        
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'poc/java/flinkcontainerization'
+        artifact: manifestfiles
