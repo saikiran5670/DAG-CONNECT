@@ -78,6 +78,7 @@
             returnObj.CampaignId = request.CampaignId;
             returnObj.Language = request.Language;
             returnObj.Retention = request.Retention;
+            returnObj.Vins = new System.Collections.Generic.List<string>();
             foreach (var item in request.Vins)
             {
                 returnObj.Vins.Add(item);
@@ -87,7 +88,7 @@
         internal CampiagnSoftwareReleaseNoteResponse MapGetSoftwareReleaseNote(net.atos.daf.ct2.httpclientfactory.entity.ota22.CampiagnSoftwareReleaseNoteResponse apiResponse)
         {
             var returnObj = new CampiagnSoftwareReleaseNoteResponse();
-            returnObj.ReleaseNote = apiResponse.CampiagnSoftwareReleaseNote.ReleaseNotes;
+            returnObj.ReleaseNote = apiResponse.CampiagnSoftwareReleaseNote?.ReleaseNotes ?? string.Empty;
             return returnObj;
         }
     }
