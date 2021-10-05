@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.rfms
 
             if (!rfmsVehicleStatus.MoreDataAvailable)
             {
-                rfmsVehicleStatus.MoreDataAvailableLink = "/vehiclestatuses?LatestOnly=true&lastVin=" + lastVin;
+                rfmsVehicleStatus.MoreDataAvailableLink = "/vehiclestatus?LatestOnly=true&lastVin=" + lastVin;
                 rfmsVehicleStatus.MoreDataAvailable = true;
             }
             else

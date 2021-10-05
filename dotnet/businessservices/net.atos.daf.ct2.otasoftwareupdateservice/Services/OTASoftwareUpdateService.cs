@@ -179,5 +179,45 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                 });
             }
         }
+
+        public override async Task<CampiagnSoftwareReleaseNoteResponse> GetSoftwareReleaseNote(CampiagnSoftwareReleaseNoteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                //Get Campaign from in memory
+
+                //Get Campaign from DB 
+
+                //Get Campaign from API
+
+
+
+                return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
+                {
+                    Message = "No records found for in Vehicle Campaigns.",
+                    HttpStatusCode = ResponseCode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    HttpStatusCode = ResponseCode.InternalServerError
+                });
+            }
+        }
+
+        private async Task<string> GetCampaignDataFromAPI(string retention, string vin)
+        {
+            net.atos.daf.ct2.httpclientservice.CampiagnSoftwareReleaseNoteResponse campiagnDataResponse = await _httpClientServiceClient
+                    .GetSoftwareReleaseNoteAsync(new httpclientservice.CampiagnSoftwareReleaseNoteRequest
+                    {
+                        Retention = retention,
+                        Vins = vin
+                    });
+            return campiagnDataResponse.ReleaseNote;
+        }
     }
 }

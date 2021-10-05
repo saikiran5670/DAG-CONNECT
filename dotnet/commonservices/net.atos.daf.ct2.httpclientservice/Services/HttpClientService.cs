@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.httpclientservice.Services
         {
             try
             {
-                _logger.Info("HttpClientManagementService:GetVehiclesStatusOverview Started.");
+                _logger.Info("HttpClientManagementService:GetVehicleUpdateDetails Started.");
 
                 httpclientfactory.entity.ota22.VehicleUpdateDetailsResponse apiResponse
                     = await _oTA22HttpClientManager.GetVehicleUpdateDetails(_mapper.MapGetVehicleUpdateDetailsRequest(request));
@@ -66,11 +66,34 @@ namespace net.atos.daf.ct2.httpclientservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error($"HttpClientManagementService:GetVehiclesStatusOverview.Error:-{ex.Message}");
+                _logger.Error($"HttpClientManagementService:GetVehicleUpdateDetails.Error:-{ex.Message}");
                 return await Task.FromResult(new VehicleUpdateDetailsResponse
                 {
                     HttpStatusCode = 500,
-                    Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-{ex.Message}"
+                    Message = $"HttpClientManagementService:GetVehicleUpdateDetails- Error:-{ex.Message}"
+                });
+            }
+        }
+
+
+        public override async Task<CampiagnSoftwareReleaseNoteResponse> GetSoftwareReleaseNote(CampiagnSoftwareReleaseNoteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("HttpClientManagementService:GetSoftwareReleaseNote Started.");
+
+                net.atos.daf.ct2.httpclientfactory.entity.ota22.CampiagnSoftwareReleaseNoteResponse apiResponse
+                    = await _oTA22HttpClientManager.GetSoftwareReleaseNote(_mapper.MapCampiagnSoftwareReleaseNoteRequest(request));
+                return await Task.FromResult(_mapper.MapGetSoftwareReleaseNote(apiResponse));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"HttpClientManagementService:GetSoftwareReleaseNote.Error:-{ex.Message}");
+                return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
+                {
+                    HttpStatusCode = 500,
+                    Message = $"HttpClientManagementService:GetSoftwareReleaseNote- Error:-{ex.Message}"
                 });
             }
         }

@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.rfms.response
         internal VehicleStatus MapVehicleStatus(dynamic record, string contentFilter)
         {
             VehicleStatus vehicleStatus = new VehicleStatus();
-            vehicleStatus.RecordId = record.id;
+            vehicleStatus.RecordId = null;// record.id;
             vehicleStatus.Vin = record.vin;
 
             TriggerType triggerType = new TriggerType();
