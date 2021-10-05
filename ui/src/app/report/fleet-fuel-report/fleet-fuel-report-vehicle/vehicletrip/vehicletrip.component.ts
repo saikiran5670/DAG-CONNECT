@@ -968,7 +968,7 @@ viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
       if(elem.liveFleetPosition.length > 1){
          // required 2 points atleast to draw polyline
         let liveFleetPoints: any = elem.liveFleetPosition;
-        liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+        liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
         if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
           let blueColorCode: any = '#436ddc';
           this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
@@ -2026,6 +2026,8 @@ createEndMarker(){
     this.lineChartPlugins=[];
     this.barChartLabels=[];
     this.barChartPlugins=[];
+    this.showGraph= false;
+    this.graphData= [];
   }
 
   processTranslation(transData: any) {
@@ -2217,6 +2219,8 @@ getLast3MonthDate(){
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.showGraph= false;
+    this.graphData= [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);
@@ -2571,7 +2575,7 @@ setVehicleGroupAndVehiclePreSelection() {
             item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumptionValue,item.dpaScore]);
+            item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2872,7 +2876,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'fuelconsumptionCCnonactive' :{
-            tempObj.push(e.fuelconsumptionCCnonactive);
+            tempObj.push(e.convertedFuelConsumptionCCNonActive);
             break;
           }
           case 'idlingConsumption' :{

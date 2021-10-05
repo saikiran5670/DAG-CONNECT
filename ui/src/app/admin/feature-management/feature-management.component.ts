@@ -245,7 +245,7 @@ export class FeatureManagementComponent implements OnInit {
   deleteFeature(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      message: this.translationData.lblAreyousureyouwanttodeletefeature || "Are you sure you want to delete Feature '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };

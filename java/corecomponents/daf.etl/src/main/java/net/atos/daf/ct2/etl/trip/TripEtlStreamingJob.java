@@ -68,7 +68,9 @@ public class TripEtlStreamingJob {
 			
 			// Map to status data
 			SingleOutputStreamOperator<TripStatusData> statusDataStream = FlinkKafkaStatusMsgConsumer
-					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
+					.consumeStatusMsgs(envParams, env)
+					.rebalance()
+					.map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
 						/**
 						 * 
 						 */
@@ -133,7 +135,8 @@ public class TripEtlStreamingJob {
 			tripAggrData =tripAggregationNew.getTripGranularData(tripStsWithCo2Emission);
 						
 		DataStream<Trip> finalTripData = tripAggrData.map(new MapToTripData()).filter(rec -> Objects.nonNull(rec));
-		DataStream<EcoScore> ecoScoreData = tripAggregationNew.getEcoScoreData(tripAggrData, tableEnv).filter(rec -> Objects.nonNull(rec));
+		DataStream<EcoScore> ecoScoreData = tripAggrData.map(new MapToEcoScoreData()).filter(rec -> Objects.nonNull(rec));
+		//DataStream<EcoScore> ecoScoreData = tripAggregationNew.getEcoScoreData(tripAggrData, tableEnv).filter(rec -> Objects.nonNull(rec));
 	  	
 		ecoScoreData.addSink(new EcoScoreSink()).name("EcoScore Sink");
 		finalTripData.addSink(new TripSink()).name("Trip Sink");
@@ -688,6 +691,8 @@ public class TripEtlStreamingJob {
 				ecoScoreData.setKafkaProcessingTS(tripAggrData.getKafkaProcessingTS());
 				ecoScoreData.setVTripAccelerationTime(tripAggrData.getVTripAccelerationTime());
 				ecoScoreData.setVGrossWtCmbCount(tripAggrData.getVGrossWtCmbCount());
+				
+				logger.info("Final ecoScoreData ::{}",ecoScoreData);
 
 				return ecoScoreData;
 			} catch (Exception e) {

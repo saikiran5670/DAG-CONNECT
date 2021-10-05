@@ -173,8 +173,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
   setDefaultAdvanceAlert(){
     let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
+    if(positionVal.length > 0){
     this.selectedPoiSite = positionVal[0].positionType;
+    // this.isPoiSelected= true;
     this.alertAdvancedFilterForm.get('poiSite').setValue(this.selectedPoiSite);
+    }
     if (this.selectedPoiSite == 'X')
     {
       this.existingFlag =true;
@@ -197,10 +200,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOn == 'C'){
-      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
-      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
+      // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+      // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].startDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].endDate,'DD/MM/YYYY HH:MM').split(" ");
+      // this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
+      // this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
+      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0],'DD/MM/YYYY'));
+      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0], 'DD/MM/YYYY'));
 
       this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
       this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
@@ -1109,6 +1116,8 @@ if(this.selectedApplyOn == 'C'){
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
+    element["startDate"] =urgencylevelStartDate;
+    element["endDate"] =urgencylevelEndDate;
   });
 }
 else{
@@ -1294,11 +1303,12 @@ else{
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
-        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
-        obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+        obj["id"] = periodRefArr ? periodRefArr.id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
-        obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+        obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
+        obj["unitType"] = periodRefArr.unitType;
        }
       this.advancedAlertPayload.push(obj);
     }  
@@ -1371,11 +1381,11 @@ else{
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
-            let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
-            obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+            let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+            obj["id"] = periodRefArr ? periodRefArr.id : 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
-            obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+            obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
             obj["unitType"] = periodRefArr.unitType;
           }
           this.advancedAlertPayload.push(obj);
@@ -2011,12 +2021,13 @@ if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSele
   "alertTimingDetails": this.alertTimingDetail
 }
 if(this.actionType == 'edit'){
-  let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].id;
-  obj["id"] = periodRefArr;
+  let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+  obj["id"] = periodRefArr ? periodRefArr.id : 0;
   obj["alertId"] = this.selectedRowData.id;
   obj["state"] = 'A';
-  obj["alertTimingDetails"]["refId"] = periodRefArr;
-  }    
+  obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
+  obj["unitType"] = periodRefArr.unitType;
+ }   
   this.advancedAlertPayload.push(obj);  
 }
 }
@@ -2241,7 +2252,7 @@ private scrollToFuelInvalidControl() {
   setStartEndDateTime(date: any, timeObj: any, type: any){
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    
+    date = date._d;
     date.setHours(_x);
     date.setMinutes(_y);
     date.setSeconds(type == 'start' ? '00' : '59');

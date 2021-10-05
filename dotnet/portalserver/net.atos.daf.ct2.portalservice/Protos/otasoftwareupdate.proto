@@ -5,7 +5,9 @@ option csharp_namespace = "net.atos.daf.ct2.otasoftwareupdateservice";
 package otasoftwareupdate;
 
 service OTASoftwareUpdateService {  
- rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponce); 
+ rpc GetVehicleSoftwareStatus (NoRequest) returns (VehicleSoftwareStatusResponse);
+ rpc GetVehicleStatusList (VehicleStatusRequest) returns (VehicleStatusResponse); 
+ rpc GetVehicleUpdateDetails (VehicleUpdateDetailRequest) returns (VehicleUpdateDetailResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -26,11 +28,65 @@ string ParentEnum = 4;
 string Key = 5;
 int32 FeatureId = 6;
 }
-message VehicleSoftwareStatusResponce{
+message VehicleSoftwareStatusResponse{
 ResponseCode code=1;
 repeated VehicleSoftwareStatus VehicleSoftwareStatusList = 2;
 string Message = 3;
 }
 
+message VehicleStatusRequest{
+int32 AccountId = 1;
+int32 OrgId = 2;
+int32 ContextOrgId = 3;
+int32 FeatureId = 4;
+string Language = 5;
+string Retention = 6;
+}
 
+message VehicleStatusList{
+int32 VehicleId = 1;
+string VehicleName = 2;
+string Vin = 3;
+string RegistrationNo = 4;
+string VehicleGroupNames = 5;
+string ModelYear = 6;
+string Type = 7;
+string SoftwareStatus = 8;
+}
 
+message VehicleStatusResponse{
+ResponseCode code=1;
+repeated VehicleStatusList VehicleStatusList = 2;
+string Message = 3;
+}
+
+message VehicleUpdateDetailRequest {
+string Vin = 1;
+string Retention =2;
+}
+
+message Campaign
+    {
+        string CampaignID =1;
+        string BaselineAssignment =2;
+        string CampaignSubject =3;
+        repeated string Systems =4;
+        string CampaignType =5;
+        string CampaignCategory =6;
+        string UpdateStatus =7;
+        string EndDate = 8;
+        int64 ScheduleDateTime = 9;
+    }
+
+message VehicleUpdateDetail
+    {
+        string Vin = 1;
+        string VehicleSoftwareStatus = 2;
+        repeated Campaign Campaigns = 3;
+    }
+message VehicleUpdateDetailResponse
+    {
+        ResponseCode HttpStatusCode =1;
+        VehicleUpdateDetail VehicleUpdateDetail = 2;
+        string Message = 3;
+    }

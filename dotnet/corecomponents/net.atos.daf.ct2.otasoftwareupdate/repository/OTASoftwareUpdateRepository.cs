@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.otasoftwareupdate.entity;
 
@@ -35,5 +36,27 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             }
         }
         #endregion
+
+        #region Get GetSchduleCampaignByVin List
+        public async Task<IEnumerable<VehicleScheduleDetails>> GetSchduleCampaignByVin(string vin)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", vin);
+                var queryAlert = @"SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
+                                    FROM master.otascheduledcompaign
+                                    where vin=@vin";
+                return await _dataAccess.QueryAsync<VehicleScheduleDetails>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+
     }
 }

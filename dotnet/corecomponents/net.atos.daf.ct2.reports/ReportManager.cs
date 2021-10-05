@@ -486,13 +486,15 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters, bool isLiveFleetRequired = true)
         {
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters, isLiveFleetRequired);
-            return lstFleetFuelTripDetails;
+            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelTripDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
 
         public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters)
         {
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByDriver(fleetFuelFilters);
-            return lstFleetFuelTripDetails;
+            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelTripDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
         /// <summary>
         /// To apply formula and mapped values according to language code
@@ -531,7 +533,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });
@@ -570,7 +572,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });

@@ -137,7 +137,7 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblDisplayViews || 'Display View(s)'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <mat-checkbox>{{ translationData.lblAlerts  }}</mat-checkbox>
+                <mat-checkbox (change)='changeAlertSelection($event)'>{{ translationData.lblAlerts  }}</mat-checkbox>
               </div>
               <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>
@@ -342,7 +342,7 @@
             </ng-container>
             <ng-container matColumnDef="averageWeight">
               <!-- <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblton || 'ton') }})</span> -->
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight  }} <span style="font-weight: normal;">({{ translationData.lblton  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight  }} <span style="font-weight: normal;">({{ translationData.lblton || 't' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '0.00' }}</mat-cell>
             </ng-container>
@@ -367,19 +367,19 @@
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed100Km != '' ? row.convertedFuelConsumed100Km : '-' }}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="fuelConsumed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal ) : (translationData.lblltr ) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal' ) : (translationData.lblltr || 'ltr' ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime  }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="alert">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts  }}
+            <ng-container matColumnDef="totalAlerts">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : 0 }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.totalAlerts != '' ? row.totalAlerts : 0 }}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="events">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}

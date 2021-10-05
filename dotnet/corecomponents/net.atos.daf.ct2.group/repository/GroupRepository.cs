@@ -625,7 +625,7 @@ namespace net.atos.daf.ct2.group
                 string query = string.Empty;
                 int count = 0;
                 query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
-                and ag.state='A' where lower(a.type)='p' and ag.organization_id=@organization_id";
+                and ag.state='A' where ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
                 count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;

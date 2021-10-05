@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System;
+using System.IO.Compression;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.httpclientservice;
 using net.atos.daf.ct2.otasoftwareupdate;
 using net.atos.daf.ct2.otasoftwareupdate.repository;
 using net.atos.daf.ct2.otasoftwareupdateservice.Services;
@@ -29,6 +31,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //gRPC service configuration
+            var httpclientservice = Configuration["ServiceConfiguration:httpclientservice"];
             services.AddGrpc(options =>
             {
                 options.MaxReceiveMessageSize = null;
@@ -55,7 +59,13 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            // Enable support for unencrypted HTTP2  
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
+            services.AddGrpcClient<HttpClientService.HttpClientServiceClient>(o =>
+            {
+                o.Address = new Uri(httpclientservice);
+            });
             services.AddTransient<IOTASoftwareUpdateRepository, OTASoftwareUpdateRepository>();
             services.AddTransient<IOTASoftwareUpdateManager, OTASoftwareUpdateManager>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();

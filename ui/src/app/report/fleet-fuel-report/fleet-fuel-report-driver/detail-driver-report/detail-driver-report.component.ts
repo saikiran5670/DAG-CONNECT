@@ -1032,7 +1032,7 @@ tripTraceArray: any = [];
         if(elem.liveFleetPosition.length > 1){
            // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
           if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
             let blueColorCode: any = '#436ddc';
             this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
@@ -2127,6 +2127,8 @@ createEndMarker(){
     this.lineChartPlugins=[];
     this.barChartLabels=[];
     this.barChartPlugins=[];
+    this.showGraph= false;
+    this.graphData= [];
   }
 
   processTranslation(transData: any) {
@@ -2320,6 +2322,8 @@ getLast3MonthDate(){
     this.detailSummaryObj =[];
     this.resetChartData();
     this.displayedColumns =[];
+    this.showGraph= false;
+    this.graphData= [];
     //this.rankingData =[];
     //this.rankingColumns=[];
     //this.displayedColumns =[];
@@ -2662,8 +2666,8 @@ setVehicleGroupAndVehiclePreSelection() {
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.averageSpeed,
             item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
-            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumptionValue,item.dpaScore]);
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
+            item.convetedCCFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2912,7 +2916,7 @@ setVehicleGroupAndVehiclePreSelection() {
                break;
             }
             case 'averageGrossWeightComb' :{
-              tempObj.push(e.averageGrossWeightComb);
+              tempObj.push(e.convertedAverageGrossWeightComb);
               break;
             }
             case 'fuelConsumed' :{
@@ -2960,11 +2964,11 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'ccFuelConsumption' :{
-              tempObj.push(e.ccFuelConsumption);
+              tempObj.push(e.convetedCCFuelConsumption);
               break;
             }
             case 'fuelconsumptionCCnonactive' :{
-              tempObj.push(e.fuelconsumptionCCnonactive);
+              tempObj.push(e.convertedFuelConsumptionCCNonActive);
               break;
             }
             case 'idlingConsumption' :{

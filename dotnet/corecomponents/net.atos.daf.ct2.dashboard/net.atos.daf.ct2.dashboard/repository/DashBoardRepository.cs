@@ -87,7 +87,12 @@ namespace net.atos.daf.ct2.dashboard.repository
                 string queryAlert24Hours = @"select                                       
 	                 COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
                      COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
-	                 COUNT(CASE WHEN tra.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance,
+	                 (select COUNT(CASE WHEN ta.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance	                
+                		from 
+                		tripdetail.tripalert ta 
+                		where ta.vin = Any(@vins) and
+                		to_timestamp(ta.alert_generated_time/1000)::date >= (now()::date - 1)) 
+					 as RepairAndMaintenance,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning

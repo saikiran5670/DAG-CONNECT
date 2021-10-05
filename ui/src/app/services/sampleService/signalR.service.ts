@@ -25,7 +25,7 @@ export class SignalRService {
   prefData : any;
   preference : any;
   prefTimeFormat: any= 24; //-- coming from pref setting
-  prefTimeZone: any = 'dtimezone_Asia/Kolkata'; //-- coming from pref setting
+  prefTimeZone: any = '(UTC +05:30) Asia/Kolkata'; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   alertDateFormat: any = 'ddateformat_mm/dd/yyyy';;
@@ -79,7 +79,6 @@ export class SignalRService {
         }
       }  
       
-    this.getDateAndTime();
     });
 
   }

@@ -785,6 +785,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.driverDD = [];
     this.vehicleDD = [];
     this.vehicleGroupListData=[];
+    let finalVinList=[];
 
     let distinctDriver;
     if( driverList && driverList.length > 0){
@@ -801,7 +802,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               finalDriverList.push(element)
             });
           }
+          vinList.forEach(vin =>{
+            finalVinList.push(vin);
+          });
         });
+        vinList=finalVinList;
       }
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){

@@ -136,10 +136,11 @@
                   formControlName="vehicle">
   
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-  
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
+                    
+                    <span *ngIf="rer.vehicleId == 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId != 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' && rer.vehicleId != 0"> {{rer.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber' && rer.vehicleId != 0"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
   
                   </mat-option>
   
@@ -332,7 +333,7 @@
   
   
 
-    <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   
       <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen" (closed)="!isChartsOpen">
   
@@ -346,7 +347,7 @@
   
         </mat-expansion-panel-header>
   
-        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="15px" fxLayoutAlign="flex-start">
+        <div *ngIf='showGraph' fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="15px" fxLayoutAlign="flex-start">
   
           <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
@@ -511,7 +512,7 @@
           </div>
   
         </div>
-  
+        <div *ngIf='!showGraph'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
   
   
       </mat-expansion-panel>
@@ -960,7 +961,7 @@
                 || ' mpg') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
-                  <span>{{(row.ccFuelConsumption.toFixed(2))}}</span>
+                  <span>{{ row.convetedCCFuelConsumption }}</span>
                 </mat-cell>
               </ng-container>
   
@@ -973,7 +974,7 @@
                     || ' mpg') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
-                  <span>{{row.fuelconsumptionCCnonactive}}</span>
+                  <span>{{ row.convertedFuelConsumptionCCNonActive }}</span>
                 </mat-cell>
               </ng-container>
   
@@ -1025,10 +1026,10 @@
             <ng-container matColumnDef="idlingPTOScore">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling
                   with
-                  PTO(hh:mm:ss) score' }}
+                  PTO (hh:mm:ss) score' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
-                  <span>{{row.idlingPTOScore}}</span>
+                  <span>{{ row.convertedIdlingPTOScore }}</span>
                 </mat-cell>
               </ng-container>
               
@@ -1048,7 +1049,7 @@
                   PTO (hh:mm:ss)' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
-                  <span>{{row.idlingWithoutPTO}}</span>
+                  <span>{{ row.convertedIdlingWithoutPTO }}</span>
                 </mat-cell>
               </ng-container>
   

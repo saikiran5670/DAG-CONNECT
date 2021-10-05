@@ -108,7 +108,10 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 							currentTripPojo.setEnd_time_stamp(TimeFormatter.getInstance().convertUTCToEpochMilli(
 									indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-							currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
+							if(indexValue.getDriverID()!=null && !indexValue.getDriverID().isEmpty() && indexValue.getDriverID()!=" ")
+								currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
+							else 
+								currentTripPojo.setDriver1ID("Unknown"); //Unknown, if null
 
 							if (indexValue.getVUsedFuel() != null)
 								currentTripPojo.setFuel_consumption(Long.valueOf(indexValue.getVUsedFuel().longValue()));
@@ -157,17 +160,6 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							
 							System.out.println(
 									" aftr vWheelSpeed and vehicle_driving_status_type calculation, CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
-							
-							//NOTE: warning and vehicle health status fields - mapped NULL as populated from monitoring
-							// messages
-							currentTripPojo.setVehicle_health_status_type(null);
-							currentTripPojo.setLatest_warning_class(null);
-							currentTripPojo.setLatest_warning_number(null);
-							currentTripPojo.setLatest_warning_type(null);
-							currentTripPojo.setLatest_warning_timestamp(null);
-							currentTripPojo.setLatest_warning_position_latitude(null);
-							currentTripPojo.setLatest_warning_position_longitude(null);
-							currentTripPojo.setLatest_warning_geolocation_address_id(null);
 
 							
 							currentTripPojo.setModified_at(TimeFormatter.getInstance().getCurrentUTCTime());
@@ -257,6 +249,17 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setTrip_distance(0L);
 									currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
 
+									//NOTE: warning and vehicle health status fields - to be populated from monitoring
+									// messages; ONLY - vehicle health status field - mapped 'N' at the time of trip start
+									// warning fields are mapped NULL at the time of trip start 
+									currentTripPojo.setVehicle_health_status_type('N');
+									currentTripPojo.setLatest_warning_class(null);
+									currentTripPojo.setLatest_warning_number(null);
+									currentTripPojo.setLatest_warning_type(null);
+									currentTripPojo.setLatest_warning_timestamp(null);
+									currentTripPojo.setLatest_warning_position_latitude(null);
+									currentTripPojo.setLatest_warning_position_longitude(null);
+									currentTripPojo.setLatest_warning_geolocation_address_id(null);
 
 									System.out.println("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
 

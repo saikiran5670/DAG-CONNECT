@@ -67,6 +67,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
   showMap: boolean = false;
+  showGraph: boolean = false;
   showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
@@ -849,6 +850,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData= graphData;
+      this.showGraph = true;
     });
   }
   
@@ -1377,7 +1379,9 @@ miliLitreToGallon(_data: any){
     this.lineChartColors=[];
     this.lineChartPlugins=[];
     this.barChartLabels=[];
-    this.barChartPlugins=[];
+    this.barChartPlugins=[];  
+    this.showGraph= false;
+    this.graphData= []; 
   }
 
   processTranslation(transData: any) {
@@ -1576,6 +1580,8 @@ getLast3MonthDate(){
     this.displayData =[];
     this.vehicleSelected = false;
     this.showRanking = true;
+    this.showGraph= false;
+    this.graphData= [];
    this.updateDataSource(this.tripData);
     //this.resetTripFormControlValue();
     this.filterDateData();
@@ -1960,7 +1966,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassificationValue, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
-      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO,item.idlingWithoutPTO,item.idlingWithoutPTOpercent,
+      item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
     ]);
     });
@@ -2174,15 +2180,15 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'idlingPTOScore' :{
-        pdfColumnHeads.push('Idling PTO(hh:mm:ss) Score');
+        pdfColumnHeads.push('Idling PTO (hh:mm:ss) Score');
         break;
       }
       case 'idlingPTO' :{
-        pdfColumnHeads.push('Idling PTO%');
+        pdfColumnHeads.push('Idling PTO %');
         break;
       }
       case 'idlingWithoutPTO' :{
-        pdfColumnHeads.push('Idling Without PTO(hh:mm:ss)');
+        pdfColumnHeads.push('Idling Without PTO (hh:mm:ss)');
         break;
       }
       case 'idlingWithoutPTOpercent' :{
@@ -2314,7 +2320,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingPTOScore' :{
-            tempObj.push(e.idlingPTOScore);
+            tempObj.push(e.convertedIdlingPTOScore);
             break;
           }
           case 'idlingPTO' :{
@@ -2322,7 +2328,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingWithoutPTO' :{
-            tempObj.push(e.idlingPTO);
+            tempObj.push(e.convertedIdlingWithoutPTO);
             break;
           }
           case 'idlingWithoutPTOpercent' :{
