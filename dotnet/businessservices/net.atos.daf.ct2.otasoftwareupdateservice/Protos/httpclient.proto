@@ -7,6 +7,7 @@ package httpclient;
 service HttpClientService {  
  rpc GetVehiclesStatusOverview (VehiclesStatusOverviewRequest) returns (VehiclesStatusOverviewResponse);
  rpc GetVehicleUpdateDetails (VehicleUpdateDetailsRequest) returns (VehicleUpdateDetailsResponse);
+ rpc GetSoftwareReleaseNote (CampiagnSoftwareReleaseNoteRequest) returns (CampiagnSoftwareReleaseNoteResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -70,5 +71,19 @@ message VehicleUpdateDetails
     {
         int32 HttpStatusCode =1;
         VehicleUpdateDetails VehicleUpdateDetails = 2;
+        string Message = 3;
+    }
+
+message CampiagnSoftwareReleaseNoteRequest {
+        string CampaignId =1;
+        repeated string Vins =2;
+        string Language =3;
+        string Retention =4;
+}
+
+    message CampiagnSoftwareReleaseNoteResponse
+    {
+        int32 HttpStatusCode =1;
+        string ReleaseNote = 2;
         string Message = 3;
     }
