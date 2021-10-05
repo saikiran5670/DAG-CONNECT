@@ -192,7 +192,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         #region Vehicle Status endpoint
         [HttpGet]
         [Route("vehiclestatus")]
-        [Authorize(Policy = AccessPolicies.RFMS_VEHICLE_POSITION_ACCESS_POLICY)]
+        [Authorize(Policy = AccessPolicies.RFMS_VEHICLE_STATUS_ACCESS_POLICY)]
         public async Task<IActionResult> GetVehiclestatus([FromQuery] string datetype,
                                                             [FromQuery] string starttime,
                                                             [FromQuery] string stoptime,

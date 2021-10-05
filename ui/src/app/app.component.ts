@@ -93,6 +93,7 @@ export class AppComponent {
     dashboard: 'Dashboard',
     fleetoverview: 'Fleet Overview',
     logbook: 'Log Book',
+    vehicleupdates: 'Vehicle Updates',
     tripreport: 'Trip Report',
     triptracing: 'Trip Tracing',
     advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
@@ -149,6 +150,14 @@ export class AppComponent {
       pageTitles: {
         fleetoverview: 'Fleet Overview',
         logbook: 'Log Book'
+      }
+    },
+    vehicleupdates: {
+      open: false,
+      icon: "update",
+      externalLink: false,
+      pageTitles: {
+        vehicleupdates: 'Vehicle Updates'
       }
     },
     report: {
@@ -742,6 +751,7 @@ export class AppComponent {
       lblDashboard: "Dashboard",
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
+      lblVehicleUpdates: "Vehicle Updates",
       lblReports: "Reports",
       lblTripReport: 'Trip Report',
       lblTripTracing: 'Trip Tracing',
@@ -1293,23 +1303,27 @@ export class AppComponent {
     }
   }
 
-getOfflineNotifications(){
-  this.alertService.getOfflineNotifications().subscribe(data => {
-    if(data){
-      this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-      this.signalRService.notificationData= data["notificationResponse"];
-    }
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
-
-  },
-  error => {
-    // setTimeout(() => {
-    //   this.getOfflineNotifications();
-    // }, 180000);
-  })
-}
+  getOfflineNotifications(){
+    this.alertService.getOfflineNotifications().subscribe(data => {
+      if(data){
+        this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+        data["notificationResponse"].forEach(element => {
+          element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
+        });
+        this.signalRService.notificationData= data["notificationResponse"];
+        this.signalRService.getDateAndTime();
+      }
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+  
+    },
+    error => {
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+    })
+  }
 
 connectWithSignalR(){
   this.signalRService.startConnection();

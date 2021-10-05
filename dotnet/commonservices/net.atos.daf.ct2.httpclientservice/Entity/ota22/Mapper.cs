@@ -70,7 +70,25 @@
                 returnObj.VehicleUpdateDetails.Campaigns.Add(campaign);
             }
             return returnObj;
+        }
 
+        internal net.atos.daf.ct2.httpclientfactory.entity.ota22.CampiagnSoftwareReleaseNoteRequest MapCampiagnSoftwareReleaseNoteRequest(CampiagnSoftwareReleaseNoteRequest request)
+        {
+            var returnObj = new net.atos.daf.ct2.httpclientfactory.entity.ota22.CampiagnSoftwareReleaseNoteRequest();
+            returnObj.CampaignId = request.CampaignId;
+            returnObj.Language = request.Language;
+            returnObj.Retention = request.Retention;
+            foreach (var item in request.Vins)
+            {
+                returnObj.Vins.Add(item);
+            }
+            return returnObj;
+        }
+        internal CampiagnSoftwareReleaseNoteResponse MapGetSoftwareReleaseNote(net.atos.daf.ct2.httpclientfactory.entity.ota22.CampiagnSoftwareReleaseNoteResponse apiResponse)
+        {
+            var returnObj = new CampiagnSoftwareReleaseNoteResponse();
+            returnObj.ReleaseNote = apiResponse.CampiagnSoftwareReleaseNote.ReleaseNotes;
+            return returnObj;
         }
     }
 }

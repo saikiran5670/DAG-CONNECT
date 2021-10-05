@@ -128,7 +128,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   ui: any;
   isExpandedOpen: boolean = false;
   isExpandedOpenAlert: boolean = true;
-  filterDetailsErrorMsg:any;
+  filterDetailsErrorMsg:any= '';
   filterDetailsCheck:boolean = false;
   isNotificationFormValid: boolean= true;
   isNotifyEmailValid:  boolean= true;
@@ -2240,18 +2240,21 @@ PoiCheckboxClicked(event: any, row: any) {
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'levelType' + '"]');
           this.filterDetailsErrorMsg ='Please select atleast one alerts level';
         }
-        else if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && this.isCriticalLevelSelected && (this.alertForm.get('criticalLevelThreshold').value == '')))
+        else if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && this.isCriticalLevelSelected && (this.alertForm.get('criticalLevelThreshold').value == '' || this.alertForm.get('criticalLevelThreshold').value == null)))
         {
           this.alertForm.get('criticalLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Critical level threshold cannot be empty';
         }
-        else if((this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('warningLevelThreshold').value == ''))){
+        else if((this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('warningLevelThreshold').value == '' || this.alertForm.get('warningLevelThreshold').value == null))){
           this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Warning level threshold cannot be empty';
           }
-        else if((!this.isWarningLevelSelected && this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))){
+        else if((!this.isWarningLevelSelected && this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '' || this.alertForm.get('advisoryLevelThreshold').value == null))){
           this.alertForm.get('advisoryLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Advisory level threshold cannot be empty';
         }
         this.filterDetailsCheck=false;
       }
