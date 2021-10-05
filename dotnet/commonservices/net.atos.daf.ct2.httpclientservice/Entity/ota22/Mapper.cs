@@ -67,7 +67,7 @@
                     UpdateStatus = item.UpdateStatus
                 };
                 campaign.Systems.AddRange(item.Systems);
-                returnObj.VehicleUpdateDetails.Campaigns.Add();
+                returnObj.VehicleUpdateDetails.Campaigns.Add(campaign);
             }
             return returnObj;
 
