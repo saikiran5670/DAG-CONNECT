@@ -359,7 +359,7 @@ message NotificationDisplayResponse{
  string AlertCategoryKey =  16;
  string AlertTypeKey =  17;
  string UrgencyTypeKey =  18;
- string AlertUrgency =  19;
+ string UrgencyLevel =  19;
  string AlertName = 20;
 }
 
