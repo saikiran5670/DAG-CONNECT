@@ -206,7 +206,7 @@ namespace net.atos.daf.ct2.account
                 {
                     IDPToken token = JsonConvert.DeserializeObject<IDPToken>(Convert.ToString(idpResponse.Result));
                     AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(token.Access_token);
-                    if (accIDPclaims.Assertions.Where(x => x.Key.ToLower().Equals("email")).FirstOrDefault()?.Value?.Equals(user.UserName) ?? false)
+                    if (accIDPclaims.Assertions.Where(x => x.Key.ToLower().Equals("email")).FirstOrDefault()?.Value?.Equals(user.UserName.ToLower()) ?? false)
                         accIdentity.TokenIdentifier = token.Access_token;
                     return await Task.FromResult(accIdentity);
                 }
