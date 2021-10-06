@@ -291,7 +291,7 @@ ngOnDestroy(){
           if(this._state.fromDashboard == true){
           this.selectionTimeRange('today');}
                    
-          if(this._state.fromAlertsNotifications == true){
+          if(this._state && this._state.fromAlertsNotifications == true){
             this.fromAlertsNotifications = true;
             this.showMapPanel = true;
             this.setDefaultTodayDate();
@@ -310,7 +310,7 @@ ngOnDestroy(){
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
-    if(this._state.fromAlertsNotifications){
+    if(this._state &&  this._state.fromAlertsNotifications){
       this.showMapPanel = true;
     }
     setTimeout(() => {
@@ -585,7 +585,7 @@ ngOnDestroy(){
     // newDate.toString();
     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-    this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertUrgency);
+    this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
     this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
@@ -613,9 +613,9 @@ ngOnDestroy(){
       //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       this.filterDateData();
       this.loadUserPOI();
-      if(this._state && this._state.fromAlertsNotifications){
-        this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
-      }
+      // if(this._state && this._state.fromAlertsNotifications){
+      //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      // }
     }, (error)=>{
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
@@ -983,7 +983,7 @@ ngOnDestroy(){
       // newDate.toString();
       this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].alertUrgency);
+      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
       this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
       this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
       if(this._state.data[0].vehicleGroupId != 0){
@@ -1015,7 +1015,7 @@ ngOnDestroy(){
   }
 
   onVehicleGroupChange(value){
-    this.vehicleDD=[];
+    // this.vehicleDD=[];
     let newVehicleList=[];
     if(value == 0){
       let vehicleData = this.wholeLogBookData["associatedVehicleRequest"];
@@ -1023,12 +1023,13 @@ ngOnDestroy(){
       vehicleData.forEach(element => {
         if(this._state && this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
 
-          this.logBookForm.get('vehicle').setValue(element.vehicleId);
+          this.logBookForm.get('vehicle').setValue(element.vin);
       }
       });
     }
     }
     if(value == 'all'){
+      this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     }
