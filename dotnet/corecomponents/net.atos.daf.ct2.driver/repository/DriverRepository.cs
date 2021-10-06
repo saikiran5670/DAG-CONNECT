@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.driver
                 var queryStatement =
                        @"SELECT EXISTS (SELECT 1
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and email = @Email and drv.state='A'{0})";
+                            WHERE driver_id_ext = @DriverId and LOWER(email) = @Email and drv.state='A'{0})";
 
                 string predicate = organisationId.HasValue ? " and drv.organization_id = @OrganisationId" : string.Empty;
 
@@ -446,7 +446,7 @@ namespace net.atos.daf.ct2.driver
                         parameters.Add("@OrgId", request.OrgId);
 
                         string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId
-                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            from master.driver drv inner join master.account acc on LOWER(drv.email) = LOWER(acc.email)
                                             where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
                                             and drv.state='A' and acc.state='A'";
                         var driverAccount = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
