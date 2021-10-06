@@ -82,23 +82,23 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                 var vehicleStatusList = await _visibilityManager.GetVehicleByAccountVisibilityForOTA(request.AccountId, request.OrgId, request.ContextOrgId, request.FeatureId);
                 if (vehicleStatusList.Count() > 0)
                 {
+                    //call db to get OTA notification for above visibility
+                    var otaVehcles = await _otaSoftwareUpdateManagement.GetVinsFromOTAAlerts(vehicleStatusList.Select(s => s.Vin).Distinct());
+                    var vehicleFinalStatusList = vehicleStatusList.ToList();
+                    vehicleFinalStatusList.RemoveAll(r => !otaVehcles.Contains(r.Vin));
+
                     var vinStatusResponse = await _httpClientServiceClient
                         .GetVehiclesStatusOverviewAsync(
-                            _mapper.MapVehiclesStatusOverviewRequest(request.Language, request.Retention, vehicleStatusList.Select(s => s.Vin))
+                            _mapper.MapVehiclesStatusOverviewRequest(request.Language, request.Retention, vehicleFinalStatusList.Select(s => s.Vin).Distinct())
                             );
-                    //var vinStatusResponse = await _httpClientServiceClient
-                    //    .GetVehiclesStatusOverviewTempAsync(new httpclientservice.VehiclesStatusOverviewRequestTemp { Language = "testing" });
-                    //foreach (var item in vehicleStatusList)
-                    //{
-                    //    item.SoftwareStatus = 
-                    //}
+
                     var response = new VehicleStatusResponse
                     {
                         Message = "Successfully fetch records for Vehicle Software Status",
                         Code = ResponseCode.Success
                     };
                     response.VehicleStatusList.AddRange(
-                                                    vehicleStatusList.Select(s =>
+                                                    vehicleFinalStatusList.Select(s =>
                                                             new VehicleStatusList
                                                             {
                                                                 VehicleId = s.VehicleId,
@@ -151,23 +151,28 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                         HttpStatusCode = ResponseCode.Success
                     };
                     var count = vehicleScheduleDetails.Count();
+                    response.VehicleUpdateDetail = new VehicleUpdateDetail();
                     response.VehicleUpdateDetail.VehicleSoftwareStatus = vinStatusResponse.VehicleUpdateDetails?.VehicleSoftwareStatus;
                     response.VehicleUpdateDetail.Vin = vinStatusResponse.VehicleUpdateDetails?.Vin;
                     response.VehicleUpdateDetail.Campaigns.AddRange(
-                                                    vinStatusResponse.VehicleUpdateDetails.Campaigns.Select(s =>
-                                                            new Campaign
-                                                            {
-                                                                CampaignID = s.CampaignID,
-                                                                BaselineAssignment = s.BaselineAssignment,
-                                                                CampaignSubject = s.CampaignSubject,
-                                                                CampaignCategory = s.CampaignCategory,
-                                                                CampaignType = s.CampaignType,
-                                                                UpdateStatus = s.UpdateStatus,
-                                                                EndDate = s.EndDate,
-                                                                ScheduleDateTime = count > 0 ? vehicleScheduleDetails?
-                                                                                .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment?.ToLower() == s.BaselineAssignment?.ToLower())?
-                                                                                .FirstOrDefault()?.ScheduleDateTime ?? 0 : 0
-                                                            }));
+                                                    vinStatusResponse.VehicleUpdateDetails.Campaigns.Select((s) =>
+                                                    {
+                                                        var campiagn = new Campaign
+                                                        {
+                                                            CampaignID = s.CampaignID,
+                                                            BaselineAssignmentId = s.BaselineAssignment,
+                                                            CampaignSubject = s.CampaignSubject,
+                                                            CampaignCategory = GetCampaignCategory(s.CampaignCategory),
+                                                            CampaignType = GetCampaignType(s.CampaignType),
+                                                            Status = s.UpdateStatus,
+                                                            EndDate = s.EndDate,
+                                                            ScheduleDateTime = count > 0 ? vehicleScheduleDetails?
+                                                                            .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment?.ToLower() == s.BaselineAssignment?.ToLower())?
+                                                                            .FirstOrDefault()?.ScheduleDateTime ?? 0 : 0
+                                                        };
+                                                        campiagn.Systems.AddRange(s.Systems);
+                                                        return campiagn;
+                                                    }));
                     return await Task.FromResult(response);
                 }
                 return await Task.FromResult(new VehicleUpdateDetailResponse
@@ -198,7 +203,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
 
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
                 {
-                    ReleaseNote = releaseNotes,
+                    ReleaseNotes = releaseNotes,
                     Message = string.IsNullOrEmpty(releaseNotes) ? "No records found for in Vehicle Campaigns." :
                                                                    "Fetched campaign detials successfully.",
                     HttpStatusCode = ResponseCode.Success
@@ -261,11 +266,48 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                 Retention = retention
             };
             request.Vins.AddRange(vins);
-            net.atos.daf.ct2.httpclientservice.CampiagnSoftwareReleaseNoteResponse 
+            net.atos.daf.ct2.httpclientservice.CampiagnSoftwareReleaseNoteResponse
                 campiagnDataResponse = await _httpClientServiceClient
                                                             .GetSoftwareReleaseNoteAsync(request);
             return campiagnDataResponse?.ReleaseNote;
         }
+        #endregion
+
+        #region Campaign Categor and Type Mapping
+
+        private string GetCampaignCategory(string code)
+        {
+            switch (code)
+            {
+                case "SR":
+                case "SRSILENT":
+                    return "Safety Recall";
+                case "PSFA":
+                    return "Priority Service Field Action";
+                case "SFA":
+                    return "Service Field Action";
+                case "FaF":
+                    return "Fix-as-Failed";
+                case "SO":
+                    return "Sales Option";
+                default:
+                    return code;
+            }
+        }
+
+        private string GetCampaignType(string code)
+        {
+            switch (code)
+            {
+                case "OTAU":
+                    return "OTA Software Update";
+                case "OTAUSILENT":
+                    return "Critical OTA Software Update";
+                default:
+                    return code;
+            }
+        }
+
         #endregion
     }
 }

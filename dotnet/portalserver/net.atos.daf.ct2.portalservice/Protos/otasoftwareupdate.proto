@@ -53,6 +53,7 @@ string VehicleGroupNames = 5;
 string ModelYear = 6;
 string Type = 7;
 string SoftwareStatus = 8;
+bool IsAdminRight = 9;
 }
 
 message VehicleStatusResponse{
@@ -69,12 +70,12 @@ string Retention =2;
 message Campaign
     {
         string CampaignID =1;
-        string BaselineAssignment =2;
+        string BaselineAssignmentId =2;
         string CampaignSubject =3;
         repeated string Systems =4;
         string CampaignType =5;
         string CampaignCategory =6;
-        string UpdateStatus =7;
+        string Status =7;
         string EndDate = 8;
         int64 ScheduleDateTime = 9;
     }
@@ -101,6 +102,6 @@ message CampiagnSoftwareReleaseNoteRequest {
     message CampiagnSoftwareReleaseNoteResponse
     {
         ResponseCode HttpStatusCode =1;
-        string ReleaseNote = 2;
+        string ReleaseNotes = 2;
         string Message = 3;
     }

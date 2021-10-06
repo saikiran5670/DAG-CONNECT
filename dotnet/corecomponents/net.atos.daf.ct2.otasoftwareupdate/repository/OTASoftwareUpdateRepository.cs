@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -99,5 +100,26 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             }
         }
         #endregion
+
+        #region Get OTA Vin from DataMart
+        public async Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vins", vins.ToArray());
+                var queryAlert = @"SELECT vin
+                                    FROM tripdetail.tripalertotaconfigparam
+                                    where vin = ANY(@vins)";
+                return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
     }
 }

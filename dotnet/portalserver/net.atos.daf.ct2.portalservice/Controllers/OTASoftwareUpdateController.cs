@@ -71,6 +71,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
                 var response = await _otaSoftwareUpdateServiceClient
                     .GetVehicleStatusListAsync(new VehicleStatusRequest
@@ -79,8 +80,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         OrgId = GetUserSelectedOrgId(),
                         ContextOrgId = GetContextOrgId(),
                         FeatureId = featureId,
-                        Language = language.Substring(0, 2),
-                        Retention = retention
+                        Language = language?.Substring(0, 2),
+                        Retention = retention ?? "Active"
                     });
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
@@ -163,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.HttpStatusCode == ResponseCode.Success)
-                    return Ok(new { ReleaseNotes = response.ReleaseNote, Message = response.Message });
+                    return Ok(new { ReleaseNotes = response.ReleaseNotes, Message = response.Message });
                 if (response.HttpStatusCode == ResponseCode.InternalServerError)
                     return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.HttpStatusCode, response.Message);
