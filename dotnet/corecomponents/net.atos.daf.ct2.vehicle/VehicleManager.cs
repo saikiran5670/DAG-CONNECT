@@ -268,7 +268,7 @@ namespace net.atos.daf.ct2.vehicle
                     resultDict = await GetVisibilityVehicles(accountId, orgId);
                 }
                 var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
-                var vehicleList = await _vehicleRepository.GetAllRelationshipVehicles(orgId);
+                var vehicleList = await _vehicleRepository.GetAllRelationshipVehicles(contextOrgId);
                 var visibleVehicleList = vehicleList.Where(e => visibleVehicles.Contains(e.VIN)).ToList();
                 return visibleVehicleList;
             }
@@ -294,7 +294,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                var response = await _vehicleRepository.GetORGRelationshipVehicleGroupVehicles(organizationId, is_vehicle);
+                var response = await _vehicleRepository.GetORGRelationshipVehicleGroupVehicles(contextOrgId, is_vehicle);
 
                 IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId, accountId, contextOrgId);
                 foreach (var item in vehicles.ToList())
