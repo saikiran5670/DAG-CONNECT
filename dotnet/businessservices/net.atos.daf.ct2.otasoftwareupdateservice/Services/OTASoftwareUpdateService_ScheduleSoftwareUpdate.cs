@@ -15,10 +15,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
 {
     public partial class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
     {
-        public override async Task<ScheduleSoftwareUpdateResponse> GetScheduleSoftwareUpdate(ScheduleSoftwareUpdateRequest request, ServerCallContext context)
-        {
+        //public override async Task<ScheduleSoftwareUpdateResponse> GetScheduleSoftwareUpdate(ScheduleSoftwareUpdateRequest request, ServerCallContext context)
+        //{
 
-        }
+        //}
 
 
     }
