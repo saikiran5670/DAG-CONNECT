@@ -425,5 +425,10 @@ namespace net.atos.daf.ct2.visibility
         {
             return await _visibilityRepository.GetSubscribedVehicleByAlertFeature(featureid, organizationid);
         }
+
+        public async Task<List<int>> GetAccountsForOTA(string vin)
+        {
+            return await _visibilityRepository.GetAccountsForOTA(vin);
+        }
     }
 }

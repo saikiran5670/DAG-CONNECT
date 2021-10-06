@@ -65,4 +65,5 @@ message AlertVehicleDetails{
 	string AlertCategoryKey =  9;
 	string AlertTypeKey =  10;
 	string UrgencyTypeKey =  11;
+	repeated int32 OTAAccountIds = 12;
 }
