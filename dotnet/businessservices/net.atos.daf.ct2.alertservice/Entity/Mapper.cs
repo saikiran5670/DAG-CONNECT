@@ -641,7 +641,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notificationDisplayResponse.AlertCategoryKey = item.AlertCategoryKey ?? string.Empty;
                     notificationDisplayResponse.AlertType = item.AlertType ?? string.Empty;
                     notificationDisplayResponse.AlertTypeKey = item.AlertTypeKey ?? string.Empty;
-                    notificationDisplayResponse.AlertUrgency = item.UrgencyLevel ?? string.Empty;
+                    notificationDisplayResponse.UrgencyLevel = item.UrgencyLevel ?? string.Empty;
                     notificationDisplayResponse.UrgencyTypeKey = item.UrgencyTypeKey ?? string.Empty;
                     notificationDisplayResponse.TripId = item.TripId ?? string.Empty;
                     notificationDisplayResponse.TripAlertId = item.TripAlertId;

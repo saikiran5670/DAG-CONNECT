@@ -33,6 +33,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
         {
             //gRPC service configuration
             var httpclientservice = Configuration["ServiceConfiguration:httpclientservice"];
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
             services.AddGrpc(options =>
             {
                 options.MaxReceiveMessageSize = null;
@@ -66,6 +68,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             {
                 o.Address = new Uri(httpclientservice);
             });
+
             services.AddTransient<IOTASoftwareUpdateRepository, OTASoftwareUpdateRepository>();
             services.AddTransient<IOTASoftwareUpdateManager, OTASoftwareUpdateManager>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();

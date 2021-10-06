@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.otasoftwareupdate.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.otasoftwareupdate.repository
 {
@@ -57,6 +58,46 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
         }
         #endregion
 
+        #region Get Get Release Notes from DB
+        public async Task<string> GetReleaseNotes(string campaignID, string code)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", campaignID);
+                parameter.Add("@code", code);
+                var queryAlert = @" SELECT release_notes as ReleaseNotes
+                                    FROM master.otacampaigncatching
+                                    WHERE campaign_id=@campaign_id and code=@code";
+                return await _dataAccess.QueryFirstOrDefaultAsync<string>(queryAlert, parameter);
 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> InsertReleaseNotes(string campaignID, string code,string releaseNotes)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", campaignID);
+                parameter.Add("@code", code);
+                parameter.Add("@release_notes", releaseNotes);
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                var queryAlert = @" INSERT INTO master.otacampaigncatching(
+	                                 campaign_id, release_notes, code, created_at, modified_at)
+	                                VALUES ( @campaign_id, @release_notes, @code, @created_at, 0) RETURNING id";
+                return await _dataAccess.ExecuteAsync(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }
