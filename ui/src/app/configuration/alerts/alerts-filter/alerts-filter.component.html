@@ -11,7 +11,7 @@
             <mat-label>{{ translationData.lblName || 'Category' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="handleCategoryChange('category', $event.value.enum ,$event)" placeholder="{{translationData.lblSelectUserGroup || 'Select Category'}}" [(ngModel)]="alertCategory" >
-                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                       <mat-option *ngFor="let catList of alertCategoryList | removeDuplicates" [value]="catList">
                       {{ catList.value }}                                           
                     </mat-option>
@@ -24,7 +24,7 @@
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterAlertTypeChange('type',$event)" [(ngModel)]="alertType">
-                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option>
                 </mat-select>
             </mat-form-field> 
@@ -35,7 +35,7 @@
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" (selectionChange)="filterChange('vehicleGroupName',$event)" [(ngModel)]="alertVehicleGroup">
-                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
                     </mat-option>
                 </mat-select>
@@ -48,7 +48,7 @@
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectVehicle || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
-                <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                <mat-option value=''>{{ translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let vehList of vehicleList | removeDuplicates"  [value]="vehList">
                     {{vehList.vehicleName}}
                 </mat-option>
@@ -59,7 +59,7 @@
             <mat-label>{{ translationData.lblCriticality|| 'Criticality' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectCriticality || 'Select Criticality'}}" (selectionChange)="filterChange('highUrgencyLevel',$event)"  [(ngModel)]="alertCriticality">
-                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let critList of alertCriticalityList | removeDuplicates" [value]="critList"> {{critList.value}}
                     </mat-option>
                 </mat-select>
@@ -69,7 +69,7 @@
             <mat-label>{{ translationData.lblStatus || 'Status' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectStatus || 'Select Status'}}" (selectionChange)="filterChange('state',$event)" [(ngModel)]="alertStatus" >
-                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let statusList of alertStatusList | removeDuplicates" [value]="statusList"> {{statusList.key}}
                     </mat-option>
             </mat-select>
