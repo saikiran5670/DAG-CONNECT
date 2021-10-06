@@ -159,7 +159,14 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
     console.log("action type=" + this.actionType);
     console.log("critical" +this.criticalLevel);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+    
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [Validators.required]],
