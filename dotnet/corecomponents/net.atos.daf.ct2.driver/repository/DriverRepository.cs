@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.driver
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@DriverId", driverId);
-                parameter.Add("@Email", email);
+                parameter.Add("@Email", email.ToLower());
                 parameter.Add("@OrganisationId", organisationId);
 
                 var queryStatement =
