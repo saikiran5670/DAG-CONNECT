@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region GetSoftwareReleaseNote
-        [HttpGet]
+        [HttpPost]
         [Route("getsoftwarereleasenote")]
         public async Task<IActionResult> GetSoftwareReleaseNote([FromQuery] string campaignId, [FromQuery] string language, [FromQuery] string vin, [FromQuery] string retention)
         {
@@ -180,6 +180,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        #region schedulesoftwareupdate
+        public async Task<IActionResult> ScheduleSoftwareUpdate([FromQuery] string campaignId, [FromQuery] string baselineId, [FromQuery] string scheduledDatetime, [FromQuery] string vin)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
             }
         }
         #endregion

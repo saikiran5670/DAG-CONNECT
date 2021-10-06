@@ -5,6 +5,6 @@ namespace net.atos.daf.ct2.httpclientfactory
 {
     public interface IOTA14HttpClientManager
     {
-        Task<VehiclesStatusOverviewResponse> PostManagerApproval(VehiclesStatusOverviewRequest request);        
+        Task<VehiclesStatusOverviewResponse> PostManagerApproval(VehiclesStatusOverviewRequest request);
     }
 }
