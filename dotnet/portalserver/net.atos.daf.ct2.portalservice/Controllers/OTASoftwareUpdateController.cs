@@ -184,5 +184,46 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region schedulesoftwareupdate
+        [HttpPost]
+        [Route("getschedulesoftwareupdate")]
+        public async Task<IActionResult> GetScheduleSoftwareUpdate([FromQuery] string campaignId, [FromQuery] string baselineId, [FromQuery] long scheduledDatetime, [FromQuery] string vin)
+        {
+            try
+            {
+                var request = new ScheduleSoftwareUpdateRequest
+                {
+                    CampaignId = campaignId,
+                    BaseLineId = baselineId,
+                    ScheduleDateTime = scheduledDatetime
+
+                };
+                request.Vins.Add(vin);
+                var response = await _otaSoftwareUpdateServiceClient
+                                            .GetScheduleSoftwareUpdateAsync(request);
+                if (response == null)
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
+                if (response.HttpStatusCode == ResponseCode.Success)
+                    return Ok(new { Message = response.Message });
+                if (response.HttpStatusCode == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.HttpStatusCode, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
+                 OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "getschedulesoftwareupdate", ex.Message), 1, 2, string.Empty,
+                  _userDetails);
+                // check for fk violation
+                if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))
+                {
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

@@ -9,6 +9,7 @@ service OTASoftwareUpdateService {
  rpc GetVehicleStatusList (VehicleStatusRequest) returns (VehicleStatusResponse); 
  rpc GetVehicleUpdateDetails (VehicleUpdateDetailRequest) returns (VehicleUpdateDetailResponse);
  rpc GetSoftwareReleaseNote (CampiagnSoftwareReleaseNoteRequest) returns (CampiagnSoftwareReleaseNoteResponse);
+ rpc GetScheduleSoftwareUpdate (ScheduleSoftwareUpdateRequest) returns (ScheduleSoftwareUpdateResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -104,4 +105,15 @@ message CampiagnSoftwareReleaseNoteRequest {
         ResponseCode HttpStatusCode =1;
         string ReleaseNotes = 2;
         string Message = 3;
+    }
+message ScheduleSoftwareUpdateRequest{
+        string CampaignId =1;        
+        string BaseLineId =2;
+        int64 ScheduleDateTime =3;
+        repeated string Vins =4;
+}
+message ScheduleSoftwareUpdateResponse
+    {
+        ResponseCode HttpStatusCode =1;       
+        string Message = 2;
     }
