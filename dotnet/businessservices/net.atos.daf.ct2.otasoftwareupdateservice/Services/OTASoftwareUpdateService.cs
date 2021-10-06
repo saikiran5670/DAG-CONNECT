@@ -16,7 +16,7 @@ using static net.atos.daf.ct2.httpclientservice.HttpClientService;
 namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
 {
 
-    public class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
+    public partial class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
     {
         private readonly ILog _logger;
         private readonly IOTASoftwareUpdateManager _otaSoftwareUpdateManagement;

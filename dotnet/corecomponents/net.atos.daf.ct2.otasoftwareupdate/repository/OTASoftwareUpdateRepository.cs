@@ -73,13 +73,13 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
                 return await _dataAccess.QueryFirstOrDefaultAsync<string>(queryAlert, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-        public async Task<int> InsertReleaseNotes(string campaignID, string code,string releaseNotes)
+        public async Task<int> InsertReleaseNotes(string campaignID, string code, string releaseNotes)
         {
             try
             {
