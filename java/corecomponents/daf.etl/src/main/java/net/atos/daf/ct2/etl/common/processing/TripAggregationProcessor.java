@@ -59,7 +59,7 @@ public class TripAggregationProcessor implements Serializable{
 	{
 		Map<String, List<String>> tripIndxClmns = getTripIndexColumns();
 		SingleOutputStreamOperator<TripAggregatedData> indxData = hbaseStsData
-				.keyBy(value -> value.getTripId())
+				//.keyBy(value -> value.getTripId())
 				.flatMap(new HbaseLookupDataSource(envParams.get(ETLConstants.INDEX_TABLE_NM), tripIndxClmns, null));
 
 		return indxData;
@@ -68,7 +68,7 @@ public class TripAggregationProcessor implements Serializable{
 	public SingleOutputStreamOperator<TripAggregatedData> getTripGranularData(SingleOutputStreamOperator<TripAggregatedData> tripStatusData)
 	{
 		return tripStatusData
-				.keyBy(value -> value.getTripId())
+				//.keyBy(value -> value.getTripId())
 				.flatMap(new IndexDataSourceLookup());
 	}
 	
