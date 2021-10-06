@@ -262,8 +262,8 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   getDeletMsg(featureName: any){
-    if(this.translationData.lblFeatureRelationshipwassuccessfullydeleted)
-      return this.translationData.lblFeatureRelationshipwassuccessfullydeleted.replace('$', featureName);
+    if(this.translationData.lblFeaturewassuccessfullydeleted)
+      return this.translationData.lblFeaturewassuccessfullydeleted.replace('$', featureName);
     else
       return ("Feature '$' was successfully deleted").replace('$', featureName);
   }
