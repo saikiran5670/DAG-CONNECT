@@ -185,9 +185,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                     			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
                                                     			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
                                                     			  , round(fd.FootBrake,4) 								 					as FootBrake
-                                                                ,case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
+                                                                ,round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
                                                                 then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
-																      else 0  end  as IdlingConsumptionWithPto 
+																      else 0  end),4) as IdlingConsumptionWithPto 
                                                          		FROM
                                                          			CTE_FleetDeatils fd
                                                          			join
