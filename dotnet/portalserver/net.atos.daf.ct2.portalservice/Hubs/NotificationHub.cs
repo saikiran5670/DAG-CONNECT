@@ -242,7 +242,14 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                     CreatedBy = objAlertVehicleDetails.AlertCreatedAccountId,
                                     OrganizationId = objAlertVehicleDetails.OrganizationId
                                 };
-                                connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
+                                if (tripAlert.Alertid == 0 && tripAlert.CategoryType == "O")
+                                {
+                                    connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId)).Select(clients => clients.HubClientId).ToList();
+                                }
+                                else
+                                {
+                                    connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
+                                }
                                 _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
                                 await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
                             }

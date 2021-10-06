@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string AlertCategoryKey { get; set; }
         public string AlertTypeKey { get; set; }
         public string UrgencyTypeKey { get; set; }
+        public List<int> OtaAccountIds { get; set; }
     }
 }
