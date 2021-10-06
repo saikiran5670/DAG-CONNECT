@@ -195,11 +195,11 @@ spec:
       - backend:
           serviceName: fmsdataservice
           servicePort: 80
-        path: /vehicle/positions
+        path: /vehicle/position/current
       - backend:
           serviceName: fmsdataservice
           servicePort: 80
-        path: /vehicle/status
+        path: /vehicle/status/current
   tls:
   - hosts:
     - #{IngressURL}#
