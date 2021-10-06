@@ -192,6 +192,14 @@ spec:
           serviceName: accountdataservice
           servicePort: 80
         path: /account/preferences
+      - backend:
+          serviceName: fmsdataservice
+          servicePort: 80
+        path: /vehicle/positions
+      - backend:
+          serviceName: fmsdataservice
+          servicePort: 80
+        path: /vehicle/status
   tls:
   - hosts:
     - #{IngressURL}#
