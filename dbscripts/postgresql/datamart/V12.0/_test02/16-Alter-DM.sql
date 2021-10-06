@@ -17,7 +17,7 @@ CREATE TABLE if not exists livefleet.index_message_data
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.index_message_data 
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 	
 Do $$
 begin
