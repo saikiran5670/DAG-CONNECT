@@ -314,6 +314,27 @@ export class FleetMapService {
     return {_healthStatus,healthColor};
   }
 
+  getHealthStatus(element) {
+    let _healthStatus='';
+    switch (element.vehicleHealthStatusType) {
+      case 'T': // stop now;
+      case 'Stop Now':
+        _healthStatus = 'Stop Now';
+        break;
+      case 'V': // service now;
+      case 'Service Now':
+        _healthStatus = 'Service Now';
+        break;
+      case 'N': // no action;
+      case 'No Action':
+        _healthStatus = 'No Action';
+        break
+      default:
+        break;
+      }
+      return _healthStatus;
+  }
+
   getDrivingStatus(element,_drivingStatus){
     switch (element.vehicleDrivingStatusType) {
       case 'N': 
@@ -1094,7 +1115,8 @@ let _type ='';
         
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
-      let _healthStatus = '',_drivingStatus = '';
+      let _healthStatus = this.getHealthStatus(elem);
+      let _drivingStatus = this.getDrivingStatus(elem,'');
      
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
