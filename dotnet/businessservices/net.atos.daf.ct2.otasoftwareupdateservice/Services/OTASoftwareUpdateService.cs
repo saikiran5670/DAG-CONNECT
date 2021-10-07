@@ -313,7 +313,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             {
                 case "OTAU":
                     return "OTA Software Update";
-                case "OTAUSILENT":
+                case "OTAUCRITICAL":
                     return "Critical OTA Software Update";
                 default:
                     return code;
