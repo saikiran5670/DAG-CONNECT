@@ -51,6 +51,10 @@ namespace net.atos.daf.ct2.otasoftwareupdate
             return await _otaSoftwareUpdateRepository.GetVinsFromOTAAlerts(vins);
 
         }
-        #endregion
+        #endregion        
+        public async Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign)
+        {
+            return await _otaSoftwareUpdateRepository.InsertOtaScheduleCompaign(otaScheduleCompaign);
+        }
     }
 }

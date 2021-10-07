@@ -121,5 +121,39 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
         }
         #endregion
 
+        public async Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign)
+        {
+            string queryStatement = @"INSERT INTO master.otascheduledcompaign(	                                                    
+	                                                     compaign_id
+	                                                    , vin
+	                                                    , scheduledatetime	                                                   
+                                                        , created_at
+                                                        , created_by
+                                                        , timestamp_boash_api
+                                                        , status
+                                                        , baseline_id
+	                                                    )
+	                                                    VALUES ( @compaign_id
+			                                                    , @vin
+			                                                    , @scheduledatetime
+			                                                    , @created_at
+			                                                    , @created_by
+			                                                    , @timestamp_boash_api
+			                                                    , @status
+			                                                    , @baseline_id ;";
+            var parameter = new DynamicParameters();
+            parameter.Add("@compaign_id", otaScheduleCompaign.CompaignId);
+            parameter.Add("@vin", otaScheduleCompaign.Vin);
+            parameter.Add("@scheduledatetime", otaScheduleCompaign.ScheduleDateTime);
+            parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            parameter.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
+            parameter.Add("@status", 'S');
+            parameter.Add("@baseline_id", otaScheduleCompaign.BaselineId);
+            int tripAlertSentId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            otaScheduleCompaign.Id = tripAlertSentId;
+            return otaScheduleCompaign;
+        }
+
     }
 }
