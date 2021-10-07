@@ -34,19 +34,27 @@ export class CreateEditViewCategoryComponent implements OnInit {
   imageMaxMsg: boolean = false;
   clearInput: any;
   userType: any= "";
-  types = ['Global', 'Regular'];
+  types: any = [];
   duplicateCategory: boolean = false;
   duplicateCatMsg: any = '';
   isDisabledType= false;
   dataGlobalTypes:any=[];
   dataRegularTypes:any=[];
   typeCount: boolean = true;
+  adminAccessType: any;
+
   constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.userType= localStorage.getItem("userType");
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    if(this.adminAccessType.globalCategoryAccess){ // global category access
+      this.types = ['Global', 'Regular'];
+    }else{
+      this.types = ['Regular'];
+    }
     this.categoryForm = this._formBuilder.group({
       categoryName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       type: ['Regular', [Validators.required]],

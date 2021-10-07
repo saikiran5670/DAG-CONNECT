@@ -125,10 +125,10 @@
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                  <button *ngIf="((userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                  <button *ngIf="((userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>
