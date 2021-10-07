@@ -93,9 +93,10 @@ message CampiagnSoftwareReleaseNoteRequest {
         string BaseLineId =2;
         int64 ScheduleDateTime =3;
         repeated string Vins =4;
+        string ApprovalMessage = 5;
 }
 message ScheduleSoftwareUpdateResponse
     {
-        ResponseCode HttpStatusCode =1;       
+        int32 HttpStatusCode =1;       
         string Message = 2;
     }
