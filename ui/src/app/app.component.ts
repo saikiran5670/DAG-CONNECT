@@ -314,6 +314,7 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
+      this.router.navigate(['/switchorgrole']);
       localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
       //Global Search FIlter Persist Data
@@ -571,18 +572,18 @@ export class AppComponent {
       }
       if (elem.subMenus.length > 0) { //-- If subMenus
         elem.subMenus.forEach(subMenuItem => {
-          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}` });
+          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
         });
       } else {
         if (!elem.externalLink) { //-- external link not added
-          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}` });
+          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
         }
       }
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-
+    
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
@@ -598,12 +599,40 @@ export class AppComponent {
     let accessNameList = [];
     
     if(from && from == 'orgRoleChange'){
-      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
       let _link = '/menunotfound';
+      let landingPageFound : boolean = false;
+      let accountInfo = JSON.parse(localStorage.getItem('accountInfo'));
       if (this.menuPages.menus.length > 0) {
-        _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
-      } 
-      this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+        if(accountInfo.accountPreference && accountInfo.accountPreference.landingPageDisplayId) {
+          let landingpagedata = landingPageMenus.filter((item: any) => item.id == accountInfo.accountPreference.landingPageDisplayId);
+          if(landingpagedata.length > 0) {
+            let mainPage = this.menuPages.menus.filter((i: any) => i.menuId == landingpagedata[0].id);
+            if(mainPage.length > 0) {
+              landingPageFound = true;
+            }
+            this.menuPages.menus.forEach(element => {
+              if(element.subMenus.length > 0) {
+                let subPage = element.subMenus.filter((j: any) => j.menuId == landingpagedata[0].id);
+                if(subPage.length > 0) {
+                  landingPageFound = true;
+                }
+              }
+            });
+            if(landingPageFound) {
+              _link = `/${landingpagedata[0].url}`;
+            }
+          }
+        }
+        if(!landingPageFound) {
+          _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
+        }
+      } else {
+        _link = '/menunotfound';
+      }
+      
+      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+      // console.log(_link);
+      this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
       this.orgContextType = false;
@@ -683,7 +712,7 @@ export class AppComponent {
           if (_menu.length > 0) {
             _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
           } 
-          this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+          this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
           this.router.navigate([_routerLink]));
         }
         localStorage.removeItem('appRouterUrl'); 
