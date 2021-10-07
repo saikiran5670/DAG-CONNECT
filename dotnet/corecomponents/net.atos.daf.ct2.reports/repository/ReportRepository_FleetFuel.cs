@@ -259,6 +259,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	(
                                                   		Select
                                                   			VIN
+                                                          , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
+                                                          , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                   		  , driver1_id                                                             as DriverId
                                                   		  , count(trip_id)                                                         as numberoftrips
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
@@ -354,6 +356,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                
                                                          , round(fd.IdlingPTO,4) 								 	   				as IdlingPTO 
                                                          , round(fd.FootBrake,4) 								 	   				as FootBrake
+                                                         , round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
+                                                           then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
+													       else 0  end),4) as IdlingConsumptionWithPto 
                                                   		FROM
                                                   			CTE_FleetDeatils fd
                                                   		    left join
