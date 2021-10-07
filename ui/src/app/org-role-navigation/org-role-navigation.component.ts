@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OrgRoleNavigationComponent implements OnInit {
 
+  showLoadingIndicator:boolean = true;
   constructor() { }
 
   ngOnInit(): void {

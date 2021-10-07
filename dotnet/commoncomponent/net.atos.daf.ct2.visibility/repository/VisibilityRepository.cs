@@ -575,7 +575,9 @@ namespace net.atos.daf.ct2.visibility.repository
 	                    inner join master.featureset fset on fset.id=ors.feature_set_id
 	                    inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
 	                    inner join master.feature f on f.id=ff.feature_id
-	                    where f.id= @featureid
+	                    where f.id= @featureid and 
+                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
 	                    group by orm.owner_org_id, orm.vehicle_group_id, grp.group_type
                     ),
                     cte_g_vehicles as
