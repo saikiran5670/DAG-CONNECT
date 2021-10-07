@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -45,9 +46,9 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vin);
-                var queryAlert = @"SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
+                var queryAlert = @" SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
                                     FROM master.otascheduledcompaign
-                                    where vin=@vin";
+                                    where vin=@vin and status='S'";
                 return await _dataAccess.QueryAsync<VehicleScheduleDetails>(queryAlert, parameter);
 
             }
@@ -72,13 +73,13 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
                 return await _dataAccess.QueryFirstOrDefaultAsync<string>(queryAlert, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-        public async Task<int> InsertReleaseNotes(string campaignID, string code,string releaseNotes)
+        public async Task<int> InsertReleaseNotes(string campaignID, string code, string releaseNotes)
         {
             try
             {
@@ -99,5 +100,26 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             }
         }
         #endregion
+
+        #region Get OTA Vin from DataMart
+        public async Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vins", vins.ToArray());
+                var queryAlert = @"SELECT vin
+                                    FROM tripdetail.tripalertotaconfigparam
+                                    where vin = ANY(@vins)";
+                return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
     }
 }

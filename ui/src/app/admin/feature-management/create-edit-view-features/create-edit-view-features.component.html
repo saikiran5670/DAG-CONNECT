@@ -189,7 +189,7 @@
                                 </mat-slide-toggle>
                                 <span style="margin: 5px 0px 0px 5px;"
                                     [ngClass]="{'opacity-0-5': actionType == 'view'}">{{selectedSetType ?
-                                    (translationData.lblExclude || 'Exclude' ) : ( translationData.lblInclude || 'Include')}}</span>
+                                    (translationData.lblExclude ) : ( translationData.lblInclude )}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'

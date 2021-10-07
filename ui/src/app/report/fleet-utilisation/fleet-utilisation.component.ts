@@ -47,7 +47,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
-  displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageSpeed', 'averageWeight', 'averageDistancePerDay', 'odometer'];
+  displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
   translationData: any = {};
   fleetUtilizationSearchData: any = {};
   // hereMap: any;
@@ -1632,7 +1632,7 @@ getAllSummaryData(){
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
 
-    col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
+    col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
     return col;
   }
 
@@ -1689,8 +1689,8 @@ getAllSummaryData(){
    console.log("initData", this.initData);
     worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
       item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
-      item.convertedStopTime, item.convertedAverageSpeed, item.convertedAverageWeight,
-      item.convertedAverageDistance, item.convertedOdometer]);   
+      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight, 
+      item.convertedOdometer]);   
   }); 
   worksheet.mergeCells('A1:D2'); 
   subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
@@ -1753,16 +1753,16 @@ getAllSummaryData(){
             tempObj.push(e.convertedStopTime);
             break;
           }
+          case 'averageDistancePerDay' :{
+            tempObj.push(e.convertedAverageDistance);
+            break;
+          }
           case 'averageSpeed' :{
             tempObj.push(e.convertedAverageSpeed);
             break;
           }
           case 'averageWeight' :{
             tempObj.push(e.convertedAverageWeight);
-            break;
-          }
-          case 'averageDistancePerDay' :{
-            tempObj.push(e.convertedAverageDistance);
             break;
           }
           case 'odometer' :{
