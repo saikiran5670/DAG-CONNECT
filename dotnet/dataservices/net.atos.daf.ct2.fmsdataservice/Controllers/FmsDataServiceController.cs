@@ -9,11 +9,14 @@ using net.atos.daf.ct2.fmsdataservice.Entity;
 using Newtonsoft.Json;
 using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.entity;
+using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace net.atos.daf.ct2.fmsdataservice.Controllers
 {
     [Route("vehicle")]
     [ApiController]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FmsDataServiceController : ControllerBase
     {
         private readonly ILogger<FmsDataServiceController> _logger;
