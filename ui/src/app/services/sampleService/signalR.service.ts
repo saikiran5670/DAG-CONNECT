@@ -28,7 +28,7 @@ export class SignalRService {
   prefTimeZone: any = '(UTC +05:30) Asia/Kolkata'; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
-  alertDateFormat: any = 'ddateformat_mm/dd/yyyy';;
+  alertDateFormat: any = 'MM/DD/YYYY';;
   orgId: any;
   vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
   AlertNotifcaionList: any[] = [];

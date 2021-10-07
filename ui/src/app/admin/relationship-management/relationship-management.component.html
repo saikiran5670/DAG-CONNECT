@@ -33,10 +33,10 @@
                 </div>
                 <div fxLayout="row" class='areaWidth'>
                     <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export'  }}<mat-icon>more_vert</mat-icon></button>
                       <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-                        <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                        <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)'  }}</button>
+                        <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)'  }}</button>
                       </mat-menu>
                     </div>
                     <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
@@ -83,13 +83,13 @@
                         <ng-container matColumnDef="action">
                             <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction  }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" class="action">
-                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewRelationship(row)">
+                                <button class='actionBtn' mat-flat-button matTooltip="{{translationData.lblView || 'View'}}" (click)="viewRelationship(row)">
                                     <mat-icon>visibility</mat-icon>
                                 </button>
-                                <button class='actionBtn'  mat-flat-button (click)="editRelationship(row)" matTooltip="Edit">
+                                <button class='actionBtn'  mat-flat-button (click)="editRelationship(row)" matTooltip="{{translationData.lblEdit || 'Edit'}}">
                                     <mat-icon>create</mat-icon>
                                 </button>
-                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteRelationship(row)" matTooltip="Delete">
+                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteRelationship(row)" matTooltip="{{translationData.lblDelete || 'Delete'}}">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>

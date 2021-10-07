@@ -360,6 +360,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 where tripal.vin = Any(@vins) 
                                 and to_timestamp(tripal.alert_generated_time/1000)::date >= (now()::date -  @days)
                                  )
+                               ,CTE_Result_For_Filter as 
+                                (
                                 select
                                 CWVR.id as lcts_id,
                                 CWVR.trip_id,
@@ -397,31 +399,36 @@ namespace net.atos.daf.ct2.reports.repository
                                 left join 
                                 CTE_Alerts_By_Vin CABV
                                 ON CWVR.vin = CABV.tripal_Vin
-                                AND CWVR.warningrank=1 and CWVR.warning_type='A'
-                                where CWVR.row_num=1 
+                                AND CWVR.warningrank= 1 and CWVR.warning_type='A'
+                                where CWVR.row_num = 1
+                                )
+                                select * from CTE_Result_For_Filter
+                                where 1=1 
 ";
+                //For driver all data all should be return as driver id is not present in result 
                 if (fleetOverviewFilter.DriverId.Count > 0)
                 {
                     parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
-                    queryFleetOverview += " and driver1_id = Any(@driverids) ";
+                    //if passed any specific driver id then it should be false the condition and data should not return.
+                    queryFleetOverview += " and 1=2 ";
                 }
                 if (fleetOverviewFilter.HealthStatus.Count > 0)
                 {
                     parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
-                    queryFleetOverview += " and vehicle_health_status_type = Any(@healthstatus) ";
+                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
                 }
                 if (fleetOverviewFilter.AlertCategory.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
 
                     parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
-                    queryFleetOverview += " and tripal.category_type = Any(@alertcategory) ";
+                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
                 }
                 if (fleetOverviewFilter.AlertLevel.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
                     parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and tripal.urgency_level_type = Any(@alertlevel) ";
+                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
@@ -441,7 +448,8 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
                 //filter trip data by n days
                 //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
-                string queryFleetOverview = @"select
+                string queryFleetOverview = @"with CTE_Result_For_Filter as (
+                    select
                     veh.id as lcts_id,
                     '' as trip_id,
                     veh.vin as lcts_vin,
@@ -472,7 +480,34 @@ namespace net.atos.daf.ct2.reports.repository
                     coalesce(veh.registration_no,'') as veh_RegistrationNo,
                     coalesce(veh.name,'') as veh_name
                     FROM master.vehicle veh
-                    where  veh.vin = Any(@vins)  ";
+                    where  veh.vin = Any(@vins)  
+                    )
+                    select * from CTE_Result_For_Filter
+                    where 1=1 ";
+                //For driver all data all should be return as driver id is not present in result 
+                if (fleetOverviewFilter.DriverId.Count > 0)
+                {
+                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                    //if passed any specific driver id then it should be false the condition and data should not return.
+                    queryFleetOverview += " and 1=2 ";
+                }
+                if (fleetOverviewFilter.HealthStatus.Count > 0)
+                {
+                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                }
+                if (fleetOverviewFilter.AlertCategory.Count > 0)
+                {
+                    //if passed any specific category then it should be false the condition and data should not return.
+                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                }
+                if (fleetOverviewFilter.AlertLevel.Count > 0)
+                {
+                    //if passed any specific level then it should be false the condition and data should not return.
+                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
+                }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }

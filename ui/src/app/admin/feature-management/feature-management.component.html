@@ -49,13 +49,13 @@
     <ng-template #topRightElements>
       <div *ngIf="!adminAccessType.adminReadOnlyAccess">
         <button mat-flat-button color="primary" (click)="createNewFeature()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature }}
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature  }}
         </button>
       </div>
     </ng-template>
 
     <ng-template #selectColumnHeaderElements let-gridData='rowData'>
-      <span style="margin: 5px 0px 0px 5px;">{{  translationData.lblState || 'Status' }}</span>
+      <span style="margin: 5px 0px 0px 5px;">{{  translationData.lblStatus}}</span>
     </ng-template>
 
     <ng-template #selectColumnDataElements let-gridData='rowData'>

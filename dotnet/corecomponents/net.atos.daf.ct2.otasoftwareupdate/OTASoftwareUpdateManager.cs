@@ -45,5 +45,12 @@ namespace net.atos.daf.ct2.otasoftwareupdate
             return await _otaSoftwareUpdateRepository.InsertReleaseNotes(campaignID, code, releaseNotes);
         }
         #endregion
+        #region GetVinsFromOTAAlerts
+        public async Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins)
+        {
+            return await _otaSoftwareUpdateRepository.GetVinsFromOTAAlerts(vins);
+
+        }
+        #endregion
     }
 }
