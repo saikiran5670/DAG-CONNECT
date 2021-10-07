@@ -35,14 +35,16 @@ namespace net.atos.daf.ct2.httpclientfactory
             {
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
+                request.ApprovalMessage = _oTA14Configurations.Message_Approval;
                 var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
+                string baseline = request.BaseLineId;
                 response.StatusCode = HttpStatusCode.BadRequest;
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
                     _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL},{_oTA14Configurations.Message_Approval}", data);
+                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}", data);
 
                     _logger.Info("GetSoftwareScheduleUpdate:OTA 14 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
