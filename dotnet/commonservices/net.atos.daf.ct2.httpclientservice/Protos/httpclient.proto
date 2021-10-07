@@ -8,6 +8,7 @@ service HttpClientService {
  rpc GetVehiclesStatusOverview (VehiclesStatusOverviewRequest) returns (VehiclesStatusOverviewResponse);
  rpc GetVehicleUpdateDetails (VehicleUpdateDetailsRequest) returns (VehicleUpdateDetailsResponse);
  rpc GetSoftwareReleaseNote (CampiagnSoftwareReleaseNoteRequest) returns (CampiagnSoftwareReleaseNoteResponse);
+ rpc GetScheduleSoftwareUpdate (ScheduleSoftwareUpdateRequest) returns (ScheduleSoftwareUpdateResponse);
 }
 enum ResponseCode{
   None = 0;
@@ -86,4 +87,15 @@ message CampiagnSoftwareReleaseNoteRequest {
         int32 HttpStatusCode =1;
         string ReleaseNote = 2;
         string Message = 3;
+    }
+    message ScheduleSoftwareUpdateRequest{
+        string CampaignId =1;        
+        string BaseLineId =2;
+        int64 ScheduleDateTime =3;
+        repeated string Vins =4;
+}
+message ScheduleSoftwareUpdateResponse
+    {
+        ResponseCode HttpStatusCode =1;       
+        string Message = 2;
     }
