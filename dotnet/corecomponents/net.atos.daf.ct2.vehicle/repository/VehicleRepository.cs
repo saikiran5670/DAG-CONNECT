@@ -679,7 +679,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type S/G
@@ -690,7 +690,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type D, method O
@@ -700,7 +700,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
             var parameter = new DynamicParameters();
             parameter.Add("@organization_id", organizationId);
@@ -725,7 +725,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
@@ -736,7 +736,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
             var parameter = new DynamicParameters();
             parameter.Add("@organization_id", organizationId);
@@ -758,7 +758,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
 
             var parameter = new DynamicParameters();
@@ -848,7 +848,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    Left join master.group as grp on grp.id= gref.group_id and grp.object_type='V'
                                    where 1=1
                                    and os.state='A'
-                                   and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+                                   and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
                                    else COALESCE(end_date,0) =0 end ";
             var parameter = new DynamicParameters();
 
@@ -923,7 +923,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
@@ -935,7 +935,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
@@ -946,7 +946,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
 
                 var parameter = new DynamicParameters();
@@ -1148,7 +1148,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                               INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                               INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                               WHERE 
-	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                              ELSE COALESCE(end_date,0) = 0 END
                               GROUP BY grp.id, grp.name";
                 }
@@ -2082,7 +2082,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type S/G
@@ -2093,7 +2093,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type D, method O
@@ -2103,7 +2103,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", organizationId);
@@ -2129,7 +2129,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
 
                         UNION
@@ -2140,7 +2140,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
 
                 var parameter = new DynamicParameters();
@@ -2164,7 +2164,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
                         INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end";
 
                 var parameter = new DynamicParameters();
@@ -2253,10 +2253,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
 
                 string query =
-                                @"select veh.id, veh.vin, veh.name, license_plate_number as RegistrationNo, (veh.organization_id = grp.organization_id) as hasowned                               
-	                               from master.vehicle veh 
-                                   INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
-                                   INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";
+                    @"select DISTINCT veh.id, veh.vin, veh.name, license_plate_number as RegistrationNo, (veh.organization_id = grp.organization_id) as hasowned
+	                    from master.vehicle veh 
+                        INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
+                        INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id
+                        INNER JOIN master.orgrelationshipmapping as orm on orm.owner_org_id=veh.organization_id and orm.target_org_id=grp.organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A'
+                        WHERE case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+                        else COALESCE(end_date,0) = 0 end";
 
                 return await _dataAccess.QueryAsync<VisibilityVehicle>(query, parameter);
             }

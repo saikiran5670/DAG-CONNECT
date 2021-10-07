@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            --on orm.target_org_id=du2.Organization_Id and lower(ors.code) NOT IN ('owner','oem') and du2.function_enum='A'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
                             --select * from cte_account_vehicle_DynamicAll
@@ -233,7 +233,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            on ((orm.owner_org_id=du1.Organization_Id and lower(ors.code)='owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
 
                             )
@@ -263,7 +263,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id  ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
 	                            and lower(ors.code) NOT IN ('owner','oem')
                             )
@@ -370,7 +370,7 @@ namespace net.atos.daf.ct2.visibility.repository
                             where sub.organization_id in(@context_org_id)
                             and 
                             fea.name like @feature_name
-                            and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
+                            and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>now()::date
                                 else COALESCE(subscription_end_date,0) =0 end
                             order by 1
                             )
@@ -576,7 +576,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                    inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
 	                    inner join master.feature f on f.id=ff.feature_id
 	                    where f.id= @featureid and 
-                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
 	                    group by orm.owner_org_id, orm.vehicle_group_id, grp.group_type
                     ),

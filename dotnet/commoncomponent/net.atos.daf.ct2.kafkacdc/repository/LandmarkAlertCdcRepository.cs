@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
 	                            --on orm.target_org_id=du2.Organization_Id and lower(ors.code) NOT IN ('owner','oem') and du2.function_enum='A'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
                             --select * from cte_account_vehicle_DynamicAll
@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 	                            on ((orm.owner_org_id=du1.Organization_Id and lower(ors.code)='owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
                             --select * from cte_account_vehicle_DynamicOwned
@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
 	                            on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
 	                            and lower(ors.code) NOT IN ('owner','oem')
                             )
@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             where sub.organization_id in(cavc.Organization_Id)
                             and 
                             fea.id= enutra.feature_id
-                            and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
+                            and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>now()::date
                                 else COALESCE(subscription_end_date,0) =0 end
                             order by 1
                             )
