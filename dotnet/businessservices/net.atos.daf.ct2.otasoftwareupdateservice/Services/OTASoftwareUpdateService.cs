@@ -116,6 +116,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                                 VehicleGroupNames = s.VehicleGroupNames ?? string.Empty,
                                                                 ModelYear = s.ModelYear ?? string.Empty,
                                                                 Type = s.Type ?? string.Empty,
+                                                                IsAdminRight = s.HasAdminRights,
                                                                 SoftwareStatus = vinStatusResponse?.VehiclesStatusOverview?
                                                                                 .VehiclesStatusOverviewResults?.Where(w => w.Vin?.ToLower() == s.Vin?.ToLower())?
                                                                                 .FirstOrDefault()?.Status ?? string.Empty
