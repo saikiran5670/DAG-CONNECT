@@ -110,8 +110,37 @@ namespace net.atos.daf.ct2.httpclientfactory
                 {
                     _logger.Error(result);
                 }
-
-                return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(result) };
+                #region sample payload
+                var sampleJson = @"{
+  'vin':'XLR0998HGFFT76619',
+  'vehicleSoftwareStatus':'Update-to-date',
+  'campaigns':[
+    {'campaignID':'1',
+    'BaselineAssignment':'123456',
+    'campaignSubject':'subj 1234',
+    'systems':['system1','system2'
+      ],
+    'campaignType':'OTAU',
+    'campaignCategory':'SFA',
+    'updateStatus':'Installing',
+	'endDate':''
+    },
+{'campaignID':'2',
+    'BaselineAssignment':'12345',
+    'campaignSubject':'subj 1234',
+    'systems':['system13','system4'
+      ],
+    'campaignType':'OTAUSILENT',
+    'campaignCategory':'FaF',
+    'updateStatus':'pending',
+	'endDate':''
+    }
+    ]
+}
+";
+                return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(sampleJson) };
+                #endregion
+                //return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(result) };
             }
             catch (Exception ex)
             {
@@ -151,8 +180,41 @@ namespace net.atos.daf.ct2.httpclientfactory
                 {
                     _logger.Error(result);
                 }
+                #region sample payload
+                var sampleJson = @"{
+  'campaignID':'1',
+    'subject':'bla bla',
+    'affectedSystems':['System1', 'System2'],
+    'campaignType':'',
+    'campaignCategory':'',
+    'releaseNotes':'testing release nots 12345.',
+    'endDate':'',
+    'vins':[{
+	 “vin”:””
+      'Assignments':[{
+        'updateStatus':'',
+        'BaselineAssignmentId':''
+        },
+        {'updateStatus':'',
+        'BaselineAssignmentId':''
+        }]
+      },
+      {
+	  “Vin”:””,
+      'Assignments':[{
+        'updateStatus':'',
+        'BaselineAssignmentId':''
+        },
+        {'updateStatus':'',
+        'BaselineAssignmentId':''
+        }]
+      }]
+}
 
-                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
+";
+                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(sampleJson) };
+                #endregion
+                //return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
             }
             catch (Exception ex)
             {

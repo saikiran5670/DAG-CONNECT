@@ -172,7 +172,7 @@
         <ng-template #topRightElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
               <span (mouseover)="legendsDisabled=true" (mouseout)="legendsDisabled=false" class="connectedStatus"
-                style="font-size: 16px;margin-top: 4px;cursor:pointer;">Legends <mat-icon class="legendsIcon">error_outline</mat-icon></span>
+                style="font-size: 16px;margin-top: 4px;cursor:pointer;">{{ translationData.lblLegends || 'Legends'  }} <mat-icon class="legendsIcon">error_outline</mat-icon></span>
         
               <div *ngIf="legendsDisabled" class='areaWidth legendsDiv' fxLayoutGap="3px" style="padding-top: 10px;">
                 <ul>

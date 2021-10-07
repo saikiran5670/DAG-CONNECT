@@ -75,7 +75,14 @@ export class AlertsComponent implements OnInit {
   
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      if(localStorage.getItem('contextOrgId')){
+        this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+      }
+      else{
+        this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      } 
+      
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -236,7 +243,7 @@ export class AlertsComponent implements OnInit {
       roleId: 0,
       name: ""
     }    
-    this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
+    this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       this.initData =data; 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {      

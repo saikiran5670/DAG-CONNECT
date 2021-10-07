@@ -15,16 +15,16 @@ namespace net.atos.daf.ct2.otasoftwareupdate.common
 
     public class FixedSizedQueue
     {
-        ConcurrentQueue<CampiagnData> q = new ConcurrentQueue<CampiagnData>();
-        private object _lockObject = new object();
+        private readonly ConcurrentQueue<CampiagnData> _q = new ConcurrentQueue<CampiagnData>();
+        private readonly object _lockObject = new object();
 
         public int Limit { get; set; }
         public void Enqueue(CampiagnData obj)
         {
-            q.Enqueue(obj);
+            _q.Enqueue(obj);
             lock (_lockObject)
             {
-                while (q.Count > Limit && q.TryDequeue(out CampiagnData overflow)) ;
+                while (_q.Count > Limit && _q.TryDequeue(out CampiagnData overflow)) ;
             }
         }
 
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.otasoftwareupdate.common
         {
             lock (_lockObject)
             {
-                return q.Where(w => w.CampaignId == obj.CampaignId && w.Code == obj.Code).FirstOrDefault()?.ReleaseNotes;
+                return _q.Where(w => w.CampaignId == obj.CampaignId && w.Code == obj.Code).FirstOrDefault()?.ReleaseNotes;
             }
         }
     }

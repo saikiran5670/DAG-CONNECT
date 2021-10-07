@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.otasoftwareupdateservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate;
+using Newtonsoft.Json;
 using static net.atos.daf.ct2.otasoftwareupdateservice.OTASoftwareUpdateService;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
@@ -71,6 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
                 var response = await _otaSoftwareUpdateServiceClient
                     .GetVehicleStatusListAsync(new VehicleStatusRequest
@@ -79,8 +81,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         OrgId = GetUserSelectedOrgId(),
                         ContextOrgId = GetContextOrgId(),
                         FeatureId = featureId,
-                        Language = language.Substring(0, 2),
-                        Retention = retention
+                        Language = language?.Substring(0, 2),
+                        Retention = retention ?? "Active"
                     });
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
@@ -145,7 +147,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region GetSoftwareReleaseNote
-        [HttpPost]
+        [HttpGet]
         [Route("getsoftwarereleasenote")]
         public async Task<IActionResult> GetSoftwareReleaseNote([FromQuery] string campaignId, [FromQuery] string language, [FromQuery] string vin, [FromQuery] string retention)
         {
@@ -163,7 +165,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.HttpStatusCode == ResponseCode.Success)
-                    return Ok(new { ReleaseNotes = response.ReleaseNote, Message = response.Message });
+                    return Ok(new { ReleaseNotes = response.ReleaseNotes, Message = response.Message });
                 if (response.HttpStatusCode == ResponseCode.InternalServerError)
                     return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.HttpStatusCode, response.Message);
@@ -185,15 +187,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region schedulesoftwareupdate
-        public async Task<IActionResult> ScheduleSoftwareUpdate([FromQuery] string campaignId, [FromQuery] string baselineId, [FromQuery] string scheduledDatetime, [FromQuery] string vin)
+        [HttpPost]
+        [Route("getschedulesoftwareupdate")]
+        public async Task<IActionResult> GetScheduleSoftwareUpdate([FromBody] Entity.OTASoftwareUpdate.ScheduleSoftwareUpdateFilter scheduleSoftwareUpdateFilter)
         {
             try
             {
-
+                if (scheduleSoftwareUpdateFilter == null && !(scheduleSoftwareUpdateFilter.ScheduleDateTime > 0)) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
+                if (scheduleSoftwareUpdateFilter.Vins.Count <= 0) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG); }
+                string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
+                ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
+                _logger.Info("Schedulesoftware method in OtaSoftwareUpdate API called.");
+                var data = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
+                if (data != null)
+                {
+                    data.Message = OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_MSG);
+                }
             }
             catch (Exception ex)
             {
-
+                await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
+                 OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "getschedulesoftwareupdate", ex.Message), 1, 2, string.Empty,
+                  _userDetails);
+                // check for fk violation
+                if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))
+                {
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
         #endregion

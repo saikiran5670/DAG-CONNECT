@@ -141,7 +141,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+
     this.accountId= parseInt(localStorage.getItem("accountId"));
     let today = new Date();
     this.alertAdvancedFilterForm = this._formBuilder.group({

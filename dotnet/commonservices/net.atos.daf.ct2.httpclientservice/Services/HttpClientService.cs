@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.httpclientfactory;
 using net.atos.daf.ct2.httpclientfactory.Entity.ota22;
 using net.atos.daf.ct2.httpclientservice.Entity.ota22;
+using net.atos.daf.ct2.httpclientfactory.entity.ota14;
 
 namespace net.atos.daf.ct2.httpclientservice.Services
 {
@@ -18,13 +19,17 @@ namespace net.atos.daf.ct2.httpclientservice.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IOTA22HttpClientManager _oTA22HttpClientManager;
         private readonly OTA22Configurations _oTA22Configurations;
+        private readonly IOTA14HttpClientManager _oTA14HttpClientManager;
+        private readonly OTA14Configurations _oTA14Configurations;
         private readonly Mapper _mapper;
         public HttpClientManagementService(IHttpClientFactory httpClientFactory,
                                            IConfiguration configuration,
-                                           IOTA22HttpClientManager oTA22HttpClientManager)
+                                           IOTA22HttpClientManager oTA22HttpClientManager,
+                                           IOTA14HttpClientManager oTA14HttpClientManager)
         {
             _httpClientFactory = httpClientFactory;
             _oTA22HttpClientManager = oTA22HttpClientManager;
+            _oTA14HttpClientManager = oTA14HttpClientManager;
             _mapper = new Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _oTA22Configurations = new OTA22Configurations();
@@ -97,6 +102,8 @@ namespace net.atos.daf.ct2.httpclientservice.Services
                 });
             }
         }
+
+
 
     }
 }

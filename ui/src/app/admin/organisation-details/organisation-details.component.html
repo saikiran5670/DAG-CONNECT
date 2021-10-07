@@ -345,11 +345,11 @@
                         <div *ngIf="editPrefereneceFlag" fxLayout="column" fxLayoutAlign="center flex-end">
                             <div fxLayout="row" class='areaWidth'>
                                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
-                                    (click)='onCancel()'>Cancel</button>
+                                    (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
                                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button
-                                    color="primary" (click)='onReset()'>Reset</button>
+                                    color="primary" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                                 <button class='no-margin' [disabled]="!orgDetailsPreferenceForm.valid" mat-raised-button
-                                    color="primary" (click)='onCreateUpdate()'>Confirm</button>
+                                    color="primary" (click)='onCreateUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
                             </div>
                         </div>
                     </mat-card-actions>

@@ -122,14 +122,6 @@ namespace net.atos.daf.ct2.fmsdataservice
                     AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
                                     .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
-                options.AddPolicy(
-                    AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY,
-                    policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY)));
-                options.AddPolicy(
-                   AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY,
-                   policy => policy.RequireAuthenticatedUser()
-                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();

@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             string result = null;
             try
             {
-                _logger.Info("OTA14HttpClientManager:GetSoftwareReleaseNote Started.");
+                _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
                 var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
