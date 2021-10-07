@@ -322,7 +322,7 @@ export class LoginComponent implements OnInit {
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.dataInterchangeService.getDataInterface(true);
       this.dataInterchangeService.getOrgRoleInterface(this.data);
-      this.router.navigate(['/dashboard']);
+      // this.router.navigate(['/dashboard']);
     // }
   }
 
@@ -417,7 +417,7 @@ export class LoginComponent implements OnInit {
       }
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.dataInterchangeService.getDataInterface(true);
-      this.router.navigate(['/dashboard']);
+      // this.router.navigate(['/dashboard']);
     }
   }
 

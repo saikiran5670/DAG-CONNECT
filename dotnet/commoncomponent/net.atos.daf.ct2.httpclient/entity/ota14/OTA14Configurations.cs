@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota14
         public string CLIENT_ID { get; set; }
         public string CLIENT_SECRET { get; set; }
         public int RETRY_COUNT { get; set; }
+        public string Message_Approval { get; set; }
     }
 }

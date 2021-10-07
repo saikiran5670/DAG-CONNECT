@@ -83,11 +83,11 @@ namespace net.atos.daf.ct2.httpclientfactory
                 //var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 var httpRequest = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{_oTA22Configurations.API_BASE_URL}vehicles/vin");
+                $"{_oTA22Configurations.API_BASE_URL}vehicles/{request.Vin}?retention={request.Retention}");
                 httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));
-                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                //httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));
+                //httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
 
@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.httpclientfactory
     'releaseNotes':'testing release nots 12345.',
     'endDate':'',
     'vins':[{
-	 “vin”:””
+	 'vin':'',
       'Assignments':[{
         'updateStatus':'',
         'BaselineAssignmentId':''
@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         }]
       },
       {
-	  “Vin”:””,
+	  'Vin':'',
       'Assignments':[{
         'updateStatus':'',
         'BaselineAssignmentId':''
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.Timeout = new TimeSpan(0, 0, 30);
+
             var token = await GetElibilityToken(client);
             //client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);

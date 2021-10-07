@@ -11,6 +11,8 @@ using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.entity;
 using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
 using Microsoft.AspNetCore.Authorization;
+using net.atos.daf.ct2.utilities;
+using System.Net;
 
 namespace net.atos.daf.ct2.fmsdataservice.Controllers
 {
@@ -40,14 +42,24 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
             {
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Postion", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice position received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle position function called - " + vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-                net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-                if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
+
+                string since = vehiclePositionRequest.Since;
+                var isValid = ValidateParameter(ref since, out bool isNumeric);
+                if (isValid)
                 {
-                    return Ok(vehiclePositionResponse);
+                    net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+                    if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
+                    {
+                        return Ok(vehiclePositionResponse);
+                    }
+                    else
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
                 }
                 else
                 {
-                    return StatusCode(400, string.Empty);
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(since));
                 }
             }
             catch (Exception ex)
@@ -65,15 +77,23 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
             {
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
-
-                net.atos.daf.ct2.fms.entity.VehicleStatusResponse vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
-                if (vehicleStatusResponse != null)
+                string since = vehicleStatusRequest.Since;
+                var isValid = ValidateParameter(ref since, out bool isNumeric);
+                if (isValid)
                 {
-                    return Ok(vehicleStatusResponse);
+                    net.atos.daf.ct2.fms.entity.VehicleStatusResponse vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
+                    if (vehicleStatusResponse != null)
+                    {
+                        return Ok(vehicleStatusResponse);
+                    }
+                    else
+                    {
+                        return StatusCode(400, "No vehicle found with the VIN given");
+                    }
                 }
                 else
                 {
-                    return StatusCode(400, "No vehicle found with the VIN given");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(since));
                 }
             }
             catch (Exception ex)
@@ -82,6 +102,41 @@ namespace net.atos.daf.ct2.fmsdataservice.Controllers
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Fms Data Service", "Fms data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "fms data service status object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 return StatusCode(500, string.Empty);
             }
+        }
+        private bool ValidateParameter(ref string since, out bool isNumeric)
+        {
+            isNumeric = long.TryParse(since, out _);
+            if (isNumeric)
+            {
+                string sTimezone = "UTC";
+                try
+                {
+                    string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
+                    if (!DateTime.TryParse(converteddatetime, out DateTime dDate))
+                        return false;
+                    else
+                        since = converteddatetime;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (!(string.IsNullOrEmpty(since) || since.ToLower().Equals("yesterday") || since.ToLower().Equals("today")))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value)
+        {
+            return StatusCode((int)statusCode, new ErrorResponse()
+            {
+                ResponseCode = ((int)statusCode).ToString(),
+                Message = "INVALID_PARAMETER",
+                Value = value
+            });
         }
     }
 }

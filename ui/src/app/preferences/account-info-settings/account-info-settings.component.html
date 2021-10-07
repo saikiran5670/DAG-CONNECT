@@ -416,11 +416,18 @@
               </mat-select>
             </mat-form-field>
           </div> -->
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}" formControlName="landingPage" (selectionChange)="onDropdownChange($event, 'landingPage')">
-                <mat-option *ngFor="let rer of landingPageDisplayDropdownData" [value]="rer.id">
+              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}"
+                           formControlName="landingPage"
+                            (selectionChange)="onDropdownChange($event, 'landingPage')">
+                <mat-option>
+                  <ngx-mat-select-search (keyup)="filterLandingPageDisplay(landingpagesearch.value)" #landingpagesearch>
+                  <mat-icon (click) = "resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let rer of filteredLandingPageDisplay | async " [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>

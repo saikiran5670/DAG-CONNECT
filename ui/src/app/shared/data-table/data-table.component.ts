@@ -138,10 +138,34 @@ export class DataTableComponent implements OnInit {
     this.defaultSearchfilter();
   }
 
+  // defaultSearchfilter() {
+  //   this.dataSource.filterPredicate = (data, filter: any) => {
+  //     for(let col of this.columnCodes) {
+  //       return data[col].toLowerCase().includes(filter.toLowerCase())
+  //     }
+  //   }
+  // }
+
   defaultSearchfilter() {
     this.dataSource.filterPredicate = (data, filter: any) => {
-      for(let col of this.columnCodes) {
-        return data[col].toLowerCase().includes(filter.toLowerCase())
+      for(let col in data) {
+
+        if(data[col]) {
+
+          if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
+
+            return data;
+
+          } 
+
+          if(!(data[col] instanceof Number) && data[col].toString().includes(filter)) {
+
+            return data;         
+
+          }
+
+        }
+
       }
     }
   }

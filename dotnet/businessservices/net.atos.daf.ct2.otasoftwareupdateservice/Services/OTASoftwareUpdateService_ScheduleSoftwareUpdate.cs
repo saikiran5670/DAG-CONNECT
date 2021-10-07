@@ -15,10 +15,33 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
 {
     public partial class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
     {
-        //public override async Task<ScheduleSoftwareUpdateResponse> GetScheduleSoftwareUpdate(ScheduleSoftwareUpdateRequest request, ServerCallContext context)
-        //{
+        public override async Task<ScheduleSoftwareUpdateResponse> GetScheduleSoftwareUpdate(ScheduleSoftwareUpdateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var scheduleSoftwareStatusResponse = await _httpClientServiceClient
+                       .GetScheduleSoftwareUpdateAsync(
+                           _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
+                           );
 
-        //}
+                var response = new ScheduleSoftwareUpdateResponse
+                {
+                    Message = "Successfully fetch records for Schedule Software Status",
+                    HttpStatusCode = ResponseCode.Success
+                };
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ScheduleSoftwareUpdateResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    HttpStatusCode = ResponseCode.InternalServerError
+                }); ;
+            }
+
+        }
 
 
     }
