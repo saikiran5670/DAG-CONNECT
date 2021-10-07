@@ -14,5 +14,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
         public const string OTA_SERVICE_NAME = "OTA service";
         public const string OTA_EXCEPTION_LOG_MSG = "{0} method Failed. Error:{1}";
         public const string LANGUAGE_REQUIRED_MSG = "Language is reuired with 2 characters.";
+
+        public const string GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG = "Invalid Schedule date.";
+        public const string GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string GET_OTASOFTWAREUPDATE_SUCCESS_MSG = "Otasoftwareupdate details fetched successfully";
+        public const string GET_OTASOFTWAREUPDATE_MSG = "No Result Found";
     }
 }
