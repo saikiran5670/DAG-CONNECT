@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 //var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 var httpRequest = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{_oTA22Configurations.API_BASE_URL}vehicles/{request.Vin}");
+                $"{_oTA22Configurations.API_BASE_URL}vehicles/{request.Vin}?retention={request.Retention}");
                 httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 //httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));

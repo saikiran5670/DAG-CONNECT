@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vin);
-                var queryAlert = @" SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
+                var queryAlert = @" SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline::text as BaselineAssignment
                                     FROM master.otascheduledcompaign
                                     where vin=@vin and status='S'";
                 return await _dataAccess.QueryAsync<VehicleScheduleDetails>(queryAlert, parameter);

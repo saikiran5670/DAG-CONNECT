@@ -173,7 +173,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                             Status = s.UpdateStatus,
                                                             EndDate = s.EndDate,
                                                             ScheduleDateTime = count > 0 ? vehicleScheduleDetails?
-                                                                            .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment?.ToLower() == s.BaselineAssignment?.ToLower())?
+                                                                            .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment == s.BaselineAssignment)?
                                                                             .FirstOrDefault()?.ScheduleDateTime ?? 0 : 0
                                                         };
                                                         campiagn.Systems.AddRange(s.Systems);
