@@ -2206,15 +2206,17 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@organization_id", orgId);
 
                 string query =
-                    @"SELECT id, name, group_type as GroupType, function_enum as GroupMethod, ref_id as RefId FROM master.group
-                      WHERE id IN
-                      (
-	                      SELECT arship.vehicle_group_id FROM master.account acc
-	                      LEFT OUTER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
-	                      INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A'
-	                      INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id 
-	                      WHERE acc.id=@account_id AND grp.organization_id=@organization_id
-                      ) AND organization_id=@organization_id";
+                    @"SELECT DISTINCT id, name, group_type as GroupType, function_enum as GroupMethod, ref_id as RefId, AccessRelationType
+                    FROM master.group grp_outer
+                    INNER JOIN
+                    (
+                        SELECT arship.vehicle_group_id, arship.access_type as AccessRelationType 
+                        FROM master.account acc
+                        LEFT OUTER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A'
+                        INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id 
+                        WHERE acc.id=@account_id AND grp.organization_id=@organization_id
+                    ) vgs ON grp_outer.id = vgs.vehicle_group_id AND grp_outer.organization_id=@organization_id";
 
                 return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
             }

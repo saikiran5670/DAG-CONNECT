@@ -1165,9 +1165,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 //VehicleFilter objVehicleFilter = new VehicleFilter();
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                var adminRightsFeatureId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("admin_rights_featureId")).FirstOrDefault()?.Value ?? "0");
+                var adminRightsFeatureId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("admin_rights_featureid")).FirstOrDefault()?.Value ?? "0");
 
-                IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(loggedInOrgId, request.AccountId, request.OrganizationId);
+                IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(loggedInOrgId, request.AccountId, request.OrganizationId, adminRightsFeatureId);
                 VehiclesResponse response = new VehiclesResponse();
                 foreach (var item in objRetrieveVehicleList)
                 {
