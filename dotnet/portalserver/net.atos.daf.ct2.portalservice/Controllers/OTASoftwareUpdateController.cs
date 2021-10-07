@@ -147,16 +147,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region GetSoftwareReleaseNote
         [HttpGet]
-        [Route("getsoftwarereleasenote")]
+        [Route("getsoftwarereleasenotes")]
         public async Task<IActionResult> GetSoftwareReleaseNote([FromQuery] string campaignId, [FromQuery] string language, [FromQuery] string vin, [FromQuery] string retention)
         {
             try
             {
+                if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var request = new CampiagnSoftwareReleaseNoteRequest
                 {
                     Retention = retention,
                     CampaignId = campaignId,
-                    Language = language
+                    Language = language?.Substring(0, 2)
                 };
                 request.Vins.Add(vin);
                 var response = await _otaSoftwareUpdateServiceClient
