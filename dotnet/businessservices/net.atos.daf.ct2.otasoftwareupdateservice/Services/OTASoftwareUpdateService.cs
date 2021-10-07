@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.otasoftwareupdate;
 using net.atos.daf.ct2.otasoftwareupdate.common;
 using net.atos.daf.ct2.otasoftwareupdateservice.Entity;
+using net.atos.daf.ct2.otasoftwareupdateservice.Entity.ota22;
 using net.atos.daf.ct2.visibility;
 using static net.atos.daf.ct2.httpclientservice.HttpClientService;
 
@@ -24,11 +26,13 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         private readonly HttpClientServiceClient _httpClientServiceClient;
         private readonly CampiagnDataCaching _campiagnDataCaching;
         private readonly Mapper _mapper;
+        private readonly OTA22Configurations _oTA22Configurations;
 
         public OTASoftwareUpdateManagementService(IOTASoftwareUpdateManager otaSoftwareUpdateManagement
                                                   , IVisibilityManager visibilityManager,
                                                     HttpClientServiceClient httpClientServiceClient,
-                                                    IMemoryCache cache)
+                                                    IMemoryCache cache,
+                                                    IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _otaSoftwareUpdateManagement = otaSoftwareUpdateManagement;
@@ -36,6 +40,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             _mapper = new Mapper();
             _httpClientServiceClient = httpClientServiceClient;
             _campiagnDataCaching = new CampiagnDataCaching(cache);
+            _oTA22Configurations = new OTA22Configurations();
+            configuration.GetSection("OTA22Configurations").Bind(_oTA22Configurations);
         }
 
         public override async Task<VehicleSoftwareStatusResponse> GetVehicleSoftwareStatus(NoRequest request, ServerCallContext context)
@@ -66,7 +72,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleSoftwareStatus", ex);
                 return await Task.FromResult(new VehicleSoftwareStatusResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -122,7 +128,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleStatusList", ex);
                 return await Task.FromResult(new VehicleStatusResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -167,7 +173,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                             Status = s.UpdateStatus,
                                                             EndDate = s.EndDate,
                                                             ScheduleDateTime = count > 0 ? vehicleScheduleDetails?
-                                                                            .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment?.ToLower() == s.BaselineAssignment?.ToLower())?
+                                                                            .Where(w => w.CampaignId?.ToLower() == s.CampaignID?.ToLower() && w.BaselineAssignment == s.BaselineAssignment)?
                                                                             .FirstOrDefault()?.ScheduleDateTime ?? 0 : 0
                                                         };
                                                         campiagn.Systems.AddRange(s.Systems);
@@ -183,7 +189,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleUpdateDetails", ex);
                 return await Task.FromResult(new VehicleUpdateDetailResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -211,7 +217,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("OTASoftwareUpdateManagementService:GetSoftwareReleaseNote", ex);
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -241,7 +247,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                     CampaignId = campaignID,
                                     Code = code,
                                     ReleaseNotes = releaseNotes
-                                });
+                                }, Convert.ToInt32(_oTA22Configurations.CACHE_SIZE)
+                                , Convert.ToInt32(_oTA22Configurations.CACHE_EXPIRY_DAYS));
                 }
             }
             return releaseNotes;
@@ -251,7 +258,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             var releaseNotes = await _otaSoftwareUpdateManagement.GetReleaseNotes(campaignID, code);
             if (string.IsNullOrEmpty(releaseNotes))
             {
-                releaseNotes = await GetCampaignDataFromAPI(retention, vins);
+                releaseNotes = await GetCampaignDataFromAPI(campaignID, code, retention, vins);
                 if (!string.IsNullOrEmpty(releaseNotes))
                 {
                     await _otaSoftwareUpdateManagement.InsertReleaseNotes(campaignID, code, releaseNotes);
@@ -259,10 +266,12 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             }
             return releaseNotes;
         }
-        private async Task<string> GetCampaignDataFromAPI(string retention, IEnumerable<string> vins)
+        private async Task<string> GetCampaignDataFromAPI(string campaignId, string code, string retention, IEnumerable<string> vins)
         {
             var request = new httpclientservice.CampiagnSoftwareReleaseNoteRequest
             {
+                CampaignId = campaignId,
+                Language = code,
                 Retention = retention
             };
             request.Vins.AddRange(vins);

@@ -6,6 +6,6 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota14
 {
     public class ScheduleSoftwareUpdateResponse
     {
-        public string HttpStatusCode { get; set; }
+        public int HttpStatusCode { get; set; }
     }
 }
