@@ -1162,6 +1162,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 								INNER JOIN master.orgrelationship as os on om.relationship_id=os.id 
                                 WHERE (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and lower(os.code)='owner'))) 
                                     and vg.object_type='V' and vg.group_type in ('G','D') 
+                                    and CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                    ELSE COALESCE(end_date,0) = 0 END
                               ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
