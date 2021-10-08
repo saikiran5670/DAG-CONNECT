@@ -149,21 +149,14 @@ export class DataTableComponent implements OnInit {
   defaultSearchfilter() {
     this.dataSource.filterPredicate = (data, filter: any) => {
       for(let col in data) {
-
         if(data[col]) {
-
           if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
-
-            return data;
-
+           return data;
           } 
 
-          if(!(data[col] instanceof Number) && data[col].toString().includes(filter)) {
-
-            return data;         
-
+          if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
+            return data;  
           }
-
         }
 
       }
@@ -195,8 +188,8 @@ export class DataTableComponent implements OnInit {
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
     // if (columnName == "code" || columnName == "name") {
-      if (!(a instanceof Number)) a = a.toString().toUpperCase();
-      if (!(b instanceof Number)) b = b.toString().toUpperCase();
+      if (!(a instanceof Number)) a = a ?  a.toString().toUpperCase() : '';
+      if (!(b instanceof Number)) b = b ?  b.toString().toUpperCase() : '';
     // }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
