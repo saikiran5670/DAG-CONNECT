@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.alert.repository
         Task<int> UpdateAlertState(int alertId, char state, char checkState);
         Task<int> AlertStateToDelete(int alertId, char state);
         Task<bool> CheckIsNotificationExitForAlert(int alertId);
-        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid);
+        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds);
 
         #region Alert Category
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();

@@ -258,7 +258,11 @@ namespace net.atos.daf.ct2.alert.test
                 Notifications = new List<Notification>(),
                 AlertLandmarkRefs = new List<AlertLandmarkRef>(),
             };
-            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId).Result;
+            List<int> featureIds = new List<int>();
+            featureIds.Add(403);
+            featureIds.Add(405);
+            featureIds.Add(413);
+            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId, featureIds).Result;
             Assert.IsNotNull(result);
         }
 
