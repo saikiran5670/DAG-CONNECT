@@ -6,4 +6,5 @@
         public string Message { get; set; }
         public string Value { get; set; }
     }
+
 }

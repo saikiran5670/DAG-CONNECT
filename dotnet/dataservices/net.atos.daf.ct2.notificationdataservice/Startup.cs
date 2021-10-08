@@ -2,17 +2,28 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.notificationdataservice.Common;
 using net.atos.daf.ct2.notificationdataservice.CustomAttributes;
+using net.atos.daf.ct2.notificationengine;
+using net.atos.daf.ct2.notificationengine.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
+using AccountComponent = net.atos.daf.ct2.account;
+using AccountPreference = net.atos.daf.ct2.accountpreference;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.notificationdataservice
 {
@@ -51,8 +62,28 @@ namespace net.atos.daf.ct2.notificationdataservice
 
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
-
-
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
+            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
+            services.AddTransient<IOtaSoftwareNotificationRepository, OtaSoftwareNotificationRepository>();
+            services.AddTransient<IOtaSoftwareNotificationManager, OtaSoftwareNotificationManager>();
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
 

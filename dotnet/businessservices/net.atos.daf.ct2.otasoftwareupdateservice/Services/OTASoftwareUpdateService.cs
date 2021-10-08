@@ -85,7 +85,9 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         {
             try
             {
-                var vehicleStatusList = await _visibilityManager.GetVehicleByAccountVisibilityForOTA(request.AccountId, request.OrgId, request.ContextOrgId, request.FeatureId);
+                var adminRightsFeatureId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("admin_rights_featureid")).FirstOrDefault()?.Value ?? "0");
+
+                var vehicleStatusList = await _visibilityManager.GetVehicleByAccountVisibilityForOTA(request.AccountId, request.OrgId, request.ContextOrgId, request.FeatureId, adminRightsFeatureId);
                 if (vehicleStatusList.Count() > 0)
                 {
                     //call db to get OTA notification for above visibility
@@ -114,6 +116,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                                                                 VehicleGroupNames = s.VehicleGroupNames ?? string.Empty,
                                                                 ModelYear = s.ModelYear ?? string.Empty,
                                                                 Type = s.Type ?? string.Empty,
+                                                                IsAdminRight = s.HasAdminRights,
                                                                 SoftwareStatus = vinStatusResponse?.VehiclesStatusOverview?
                                                                                 .VehiclesStatusOverviewResults?.Where(w => w.Vin?.ToLower() == s.Vin?.ToLower())?
                                                                                 .FirstOrDefault()?.Status ?? string.Empty
@@ -310,7 +313,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
             {
                 case "OTAU":
                     return "OTA Software Update";
-                case "OTAUSILENT":
+                case "OTAUCRITICAL":
                     return "Critical OTA Software Update";
                 default:
                     return code;
