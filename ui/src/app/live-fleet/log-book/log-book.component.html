@@ -59,6 +59,9 @@
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event.value)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
+                  <mat-option>
+                    <ngx-mat-select-search></ngx-mat-select-search>
+                  </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
@@ -71,6 +74,9 @@
               <mat-form-field appearance="outline">
                 <!-- <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle"> -->
                  <mat-select [disabled]="vehicleGrpDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
+                  <mat-option>
+                    <ngx-mat-select-search></ngx-mat-select-search>
+                  </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vin">
                       {{ rer.vehicleName }}
