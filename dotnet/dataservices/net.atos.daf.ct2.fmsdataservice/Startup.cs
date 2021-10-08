@@ -22,7 +22,7 @@ using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.fmsdataservice.Common;
-using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
+using net.atos.daf.ct2.fmsdataservice.customattributes;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
@@ -30,6 +30,7 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.repository;
+using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -119,9 +120,16 @@ namespace net.atos.daf.ct2.fmsdataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MAIN_ACCESS_POLICY,
+                    AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();

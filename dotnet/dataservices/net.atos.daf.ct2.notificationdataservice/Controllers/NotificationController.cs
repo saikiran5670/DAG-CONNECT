@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.notificationdataservice.CustomAttributes;
 using net.atos.daf.ct2.notificationdataservice.Entity;
 using net.atos.daf.ct2.notificationengine;
 using net.atos.daf.ct2.notificationengine.entity;
@@ -19,7 +20,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
 {
     [ApiController]
     [Route("notification")]
-    //[Authorize(Policy = AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class NotificationController : ControllerBase
     {
         private readonly ILogger<NotificationController> _logger;

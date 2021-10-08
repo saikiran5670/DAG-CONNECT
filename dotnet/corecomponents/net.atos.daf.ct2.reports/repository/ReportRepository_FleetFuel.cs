@@ -378,6 +378,16 @@ namespace net.atos.daf.ct2.reports.repository
 
                 List<FleetFuelDetailsByDriver> lstFleetDetails = (List<FleetFuelDetailsByDriver>)await _dataMartdataAccess.QueryAsync<FleetFuelDetailsByDriver>(queryFleetUtilization, parameterOfFilters);
                 List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                List<string> lstDriverIds = lstFleetDetails.Select(a => a.DriverID).ToList();
+                //checking driverId of tripdetail.trip_statistics are opt-out or not in master.driver table
+                //Mostly tripdetail.trip_statistics driverid are not availeble in master,driver table
+                List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
+                for (int i = 0; i < lstOfOptOutDriver.Count; i++)
+                {
+                    FleetFuelDetailsByDriver obj = new FleetFuelDetailsByDriver();
+                    if (obj.DriverID == lstOfOptOutDriver[0])
+                    { lstFleetDetails.Remove(obj); }
+                }
                 if (lstTripAlert.Count() > 0)
                 {
                     foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)
@@ -389,6 +399,23 @@ namespace net.atos.daf.ct2.reports.repository
 
             }
             catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<List<string>> GetOptOutDriver(List<string> lstDriverIds)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("driverId", lstDriverIds);
+                string query = @"select driver_id_ext as DriverId  from master.driver 
+                where driver_id_ext = ANY(@driverId) and opt_in = 'U' and state='A'";
+                var data = await _dataAccess.QueryAsync<string>(query, parameterOfFilters);
+                return data.ToList();
+            }
+            catch (Exception)
             {
                 throw;
             }
