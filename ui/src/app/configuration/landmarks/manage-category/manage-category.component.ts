@@ -41,7 +41,7 @@ export class ManageCategoryComponent implements OnInit {
   userType: any= "";
   categorySelection: any = 0;
   subCategorySelection: any = 0;
-
+  adminAccessType: any;
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
@@ -49,6 +49,7 @@ export class ManageCategoryComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userType= localStorage.getItem("userType");
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.loadLandmarkCategoryData();
   }
 

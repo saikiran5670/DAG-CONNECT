@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -74,6 +76,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
+                var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
+                Metadata headers = new Metadata();
+                headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
+
                 var response = await _otaSoftwareUpdateServiceClient
                     .GetVehicleStatusListAsync(new VehicleStatusRequest
                     {
@@ -83,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         FeatureId = featureId,
                         Language = language?.Substring(0, 2),
                         Retention = retention ?? "Active"
-                    });
+                    }, headers);
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)

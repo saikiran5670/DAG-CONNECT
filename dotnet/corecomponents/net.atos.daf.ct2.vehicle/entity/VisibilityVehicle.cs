@@ -7,5 +7,6 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Name { get; set; }
         public string RegistrationNo { get; set; }
         public bool HasOwned { get; set; }
+        public long[] Btype_Features { get; set; }
     }
 }
