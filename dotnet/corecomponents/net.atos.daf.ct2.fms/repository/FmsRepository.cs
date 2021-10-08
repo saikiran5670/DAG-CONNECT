@@ -73,6 +73,56 @@ namespace net.atos.daf.ct2.fms.repository
             }
         }
 
+        public async Task<VehiclePositionResponse> GetVehiclePosition(List<string> vin, string since)
+        {
+            try
+            {
+                string queryStatement = string.Empty;
+                queryStatement = @"SELECT DISTINCT trip_id
+                                        ,vin
+                                        ,gps_altitude as altitude
+                                        ,gps_heading as heading
+                                        ,gps_latitude as latitude
+                                        ,gps_longitude as longitude
+                                        ,gps_datetime as gpstimestamp
+                                        ,gps_speed as speed
+                               from livefleet.livefleet_position_statistics
+                               WHERE 1=1";
+                var parameter = new DynamicParameters();
+                if (vin != null && vin.Count > 0)
+                {
+                    parameter.Add("@vin", vin);
+                    queryStatement = string.Format("{0} {1}", queryStatement, "and vin = ANY(@vin)");
+                }
+                if (!string.IsNullOrEmpty(since))
+                {
+                    switch (since.ToLower().Trim())
+                    {
+                        case "yesterday"://yesterday
+                            parameter.Add("@yesterdaytimestamp", GetDate(1));
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            break;
+                        case "today"://today
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            break;
+                        default:
+                            parameter.Add("@millies", Convert.ToInt64(since));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            break;
+                    }
+                }
+                var data = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                var result = ConvertPositionDynamicToModel(data);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         VehiclePositionResponse ConvertPositionDynamicToModel(IEnumerable<dynamic> data)
         {
             VehiclePositionResponse objVehiclePositionResponse = new VehiclePositionResponse();
@@ -124,6 +174,67 @@ namespace net.atos.daf.ct2.fms.repository
                 {
                     parameter.Add("@vin", vin);
                     queryStatement = string.Format("{0} {1}", queryStatement, "and vin = @vin");
+                }
+                if (!string.IsNullOrEmpty(since))
+                {
+                    switch (since.ToLower().Trim())
+                    {
+                        case "yesterday"://yesterday
+                            parameter.Add("@yesterdaytimestamp", GetDate(1));
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            break;
+                        case "today"://today
+                            parameter.Add("@timestamp", GetDate(0));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            break;
+                        default:
+                            parameter.Add("@millies", Convert.ToInt64(since));
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            break;
+                    }
+                }
+                var data = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                var result = ConvertDynamicToStatusModel(data);
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<VehicleStatusResponse> GetVehicleStatus(List<string> vin, string since)
+        {
+            try
+            {
+                string queryStatement = string.Empty;
+                queryStatement = @"SELECT DISTINCT trip_id
+                                        ,vin as VIN
+                                        ,gps_altitude as altitude
+                                        ,gps_heading as heading
+                                        ,gps_latitude as latitude
+                                        ,gps_longitude as longitude
+                                        ,gps_datetime as gpstimestamp
+                                        ,gps_speed as speed
+										,catalyst_fuel_level as CatalystFuelLevel
+										,driver1_id as Driver1Id
+										,driver1_working_state as Driver1WorkingState
+										,total_engine_fuel_used as EngineTotalFuelUsed
+										--,event time speed as EventTimestamp
+										,fuel_level1 as FuelLevel1
+										,gross_combination_vehicle_weight as GrossCombinationVehicleWeight
+										,total_vehicle_distance as HRTotalVehicleDistance
+										,tachgraph_speed as TachographSpeed
+										,total_engine_hours as TotalEngineHours
+										,wheelbased_speed as WheelBasedSpeed
+                               from livefleet.livefleet_position_statistics
+                               WHERE 1=1";
+                var parameter = new DynamicParameters();
+                if (vin != null && vin.Count > 0)
+                {
+                    parameter.Add("@vin", vin);
+                    queryStatement = string.Format("{0} {1}", queryStatement, "and vin = ANY(@vin)");
                 }
                 if (!string.IsNullOrEmpty(since))
                 {
