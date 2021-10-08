@@ -144,7 +144,35 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									}
 
 								}
-
+								
+								//opposite side to update in DB for EVTId =45
+								boolean warningPresent=false;
+								List<Integer> toDeactivate= new ArrayList<>();
+								List<WarningStastisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
+								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
+								for(WarningStastisticsPojo activeWarning :activeWarnings) {
+									int warningClass= activeWarning.getWarningClass();
+									int warningNumber= activeWarning.getWarningNumber();
+										for( Warning war63 : warningList63) {
+										 
+											if(war63.getWarningClass().equals(warningClass) && war63.getWarningNumber().equals(warningNumber)) {
+												warningPresent=true;
+												break;
+											} /*
+												 * else { //update toDeactivate.add(warning.getId()); }
+												 */ 
+											 
+									 }
+										 if(warningPresent==false) { //update database here to deactivate warning for
+											 toDeactivate.add(activeWarning.getId());
+											 
+									 }
+									
+										 warningPresent=false; 
+									
+								}
+								
+								
 							}
 
 						}
@@ -237,7 +265,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				warningDetail.setVehicleDrivingStatusType("I");
 			}
 
-		warningDetail.setDriverID("Unknown");
+			warningDetail.setDriverID(null);
 
 			// Warning Type
 			if (row.getVEvtID() != null) {

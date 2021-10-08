@@ -36,5 +36,7 @@ public class WarningStastisticsPojo implements Serializable{
 	private Long createdAt;
 	private  Long modifiedAt  ;
 	private Integer messageType;
+	
+	private Integer id;
 
 }
