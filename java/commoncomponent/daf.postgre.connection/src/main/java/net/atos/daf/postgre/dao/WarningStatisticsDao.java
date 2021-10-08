@@ -391,7 +391,7 @@ public class WarningStatisticsDao implements Serializable {
 		ResultSet rs_position = null;
 		//Long lastestProcessedMessageTimeStamp = null;
 		
-		List<WarningStastisticsPojo> warningActiveList=null;
+		List<WarningStastisticsPojo> warningActiveList=new ArrayList<>();
  
 		try {
 
@@ -405,10 +405,10 @@ public class WarningStatisticsDao implements Serializable {
 				rs_position = stmt_read_warning_statistics.executeQuery();
 				logger.info("readed list : " + stmt_read_warning_statistics);
 				
-				if(rs_position.getFetchSize()>0) {	
-					logger.info("size of list : " + rs_position.getFetchSize());
-					warningActiveList= new ArrayList<>();
-				}
+				/*
+				 * if(rs_position.getFetchSize()>0) { logger.info("size of list : " +
+				 * rs_position.getFetchSize()); warningActiveList= new ArrayList<>(); }
+				 */
 					
 
 				while (rs_position.next()) {
