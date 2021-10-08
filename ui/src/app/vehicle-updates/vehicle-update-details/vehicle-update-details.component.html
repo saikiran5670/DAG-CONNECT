@@ -1,1 +1,149 @@
-<p>vehicle-update-details works!</p>
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>BreadCrumb</span>
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <span class='custom-font' (click)="onCancel()">
+      <span>&nbsp;</span>
+      <span class='backBtnCss'>Back</span>
+    </span>
+  </div>
+</div>
+<form>
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Vehical Update Details</span>
+        </div>
+      </div>
+      <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
+        <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Vehicle Name: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>ABC31</span>
+            </span>
+          </div>
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Registration Number: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1234</span>
+            </span>
+          </div>
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Vehicle Group: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Group 1</span>
+            </span>
+          </div>
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Type: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Type 1</span>
+            </span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Model Year: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>2011</span>
+            </span>
+          </div>
+          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <span>Software Status: </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Update failed</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Applicable Update(s)</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+        <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search">
+            <span matPrefix>
+              <mat-icon>search</mat-icon>
+            </span>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class='margin-bottom-xlg' *ngIf='initData.length > 0'>
+        <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort>
+          <ng-container matColumnDef="campaignId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Campaign ID</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignID}}">
+              {{row.campaignID}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="subject">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Subject</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignSubject}}">
+              {{row.campaignSubject}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="affectedSystem(s)">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Affected System(s)</mat-header-cell>
+            <mat-cell *matCellDef="let row" matTooltip="{{ row.systems}}">
+              {{ row.systems}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignType}}">
+              <span>{{row.campaignType}}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignCategory}}">
+              {{row.campaignCategory}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.status}}">
+              {{row.status}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="endDate">
+            <mat-header-cell *matHeaderCellDef class="action"> End Date </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.status}}">
+              {{row.endDate}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="scheduledDateTime">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Scheduled Date/time</mat-header-cell>
+            <mat-cell *matCellDef="let row" matTooltip="{{row.status}}">
+              {{row.scheduleDateTime}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Action</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button class='actionBtn' mat-flat-button>
+                <mat-icon>message</mat-icon>
+              </button>
+              <button class='actionBtn' mat-flat-button>
+                <!-- <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
+                  [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate"> -->
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</form>

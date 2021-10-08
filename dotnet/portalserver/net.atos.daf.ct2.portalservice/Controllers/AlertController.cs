@@ -392,9 +392,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
                 if (orgnizationid == 0) return BadRequest(AlertConstants.ALERT_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
-                AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid }, headers);
 
                 if (response.AlertRequest != null && response.AlertRequest.Count > 0)
                 {
