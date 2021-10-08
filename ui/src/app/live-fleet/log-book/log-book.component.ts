@@ -294,11 +294,17 @@ ngOnDestroy(){
           if(this._state && this._state.fromAlertsNotifications == true){
             this.fromAlertsNotifications = true;
             this.showMapPanel = true;
+            setTimeout(() => {
+              this.initMap();
+             },0);
             this.setDefaultTodayDate();
           }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true; 
+            setTimeout(() => {
+              this.initMap();
+            },0);
             this.setDefaultTodayDate();
           }         
             
@@ -312,10 +318,11 @@ ngOnDestroy(){
     // }
     if(this._state &&  this._state.fromAlertsNotifications){
       this.showMapPanel = true;
+      setTimeout(() => {
+        this.initMap();
+        },0);
     }
-    setTimeout(() => {
-      this.initMap();
-      },0);
+    
 
   }
 
@@ -731,11 +738,11 @@ ngOnDestroy(){
           "end_time": _endTime     
         }
     
-// if(this.fromAlertsNotifications){
-//         setTimeout(() => {
-//           this.initMap();
-//         }, 0);
-//       }
+if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
+        setTimeout(() => {
+          this.initMap();
+        }, 0);
+      }
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         let newLogbookData = [];
@@ -1077,9 +1084,9 @@ ngOnDestroy(){
     if(this.initData.length > 0){
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
-        // setTimeout(() => {
-        //   this.initMap();
-        // }, 0);
+        setTimeout(() => {
+          this.initMap();
+        }, 0);
       }else{
         if(this._state && !this._state.fromAlertsNotifications && !this._state.fromMoreAlerts){
         this.clearRoutesFromMap();
