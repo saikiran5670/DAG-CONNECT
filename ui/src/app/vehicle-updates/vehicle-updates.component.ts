@@ -22,6 +22,7 @@ export class VehicleUpdatesComponent implements OnInit {
   accountId: any;
   accountRoleId: any;
   showLoadingIndicator: any = false;
+  showVehicalDetails: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   constructor(private translationService: TranslationService) { }
@@ -145,7 +146,7 @@ export class VehicleUpdatesComponent implements OnInit {
   //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   // }
   onViewVehicleList(row:any, type:any){
-   
+   this.getVehicleUpdateDetails();
   }
   filterVehicleGroupChange(type:any, event){
 
@@ -186,7 +187,22 @@ export class VehicleUpdatesComponent implements OnInit {
   }
 
   
-
+  getVehicleUpdateDetails(){
+    // this.showLoadingIndicator = true;
+    this.showVehicalDetails = true;
+    alert('component loaded');
+    // let accountStatus: any = this.isViewListDisabled ? true : false; 
+    // this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
+    //   this.hideloader();
+    //   this.accountGrpAccountDetails = data.account;
+    //   this.vehicleGrpVehicleDetails = data.vehicle;
+    //   this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
+    //   this.createVehicleAccountAccessRelation = true;
+    // }, (error) => {
+    //   this.hideloader();
+    //   console.log("error:: ", error)
+    // });
+  }
   
 
 }
