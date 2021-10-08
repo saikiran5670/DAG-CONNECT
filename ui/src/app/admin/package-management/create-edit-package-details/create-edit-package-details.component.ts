@@ -72,7 +72,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
 
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package Details') : (type == 'edit') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'Edit Package Details') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Add New Package')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackageDetails ? this.translationData.lblViewPackageDetails : 'View Package Details') : (type == 'edit') ? (this.translationData.lblEditPackageDetails ? this.translationData.lblEditPackageDetails : 'Edit Package Details') : (this.translationData.lblNewPackageDetails ? this.translationData.lblNewPackageDetails : 'New Package Details')}`;
   }
   
   ngOnInit() {

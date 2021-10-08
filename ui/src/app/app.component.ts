@@ -66,6 +66,7 @@ export class AppComponent {
   adminFullAccess: boolean = false;
   globalPOIAccess: boolean = false;
   systemAccountAccess: boolean = false;
+  globalCategoryAccess: boolean = false;
   accessType: object;
   userType: any = "";
   public landingPageForm: FormGroup;
@@ -648,6 +649,7 @@ export class AppComponent {
       this.adminReadOnlyAccess = false;
       this.globalPOIAccess = false;
       this.systemAccountAccess = false;
+      this.globalCategoryAccess = false;
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -662,13 +664,17 @@ export class AppComponent {
       if(accessNameList.includes('Admin.AccountManagement.SystemAccount')){
         this.systemAccountAccess = true;
       }
+      if(accessNameList.includes('Configuration.Landmarks.GlobalCategory')){
+        this.globalCategoryAccess = true;
+      }
   
       this.accessType = {
         adminFullAccess: this.adminFullAccess,
         adminContributorAccess: this.adminContributorAccess,
         adminReadOnlyAccess: this.adminReadOnlyAccess,
         globalPOIAccess: this.globalPOIAccess,
-        systemAccountAccess: this.systemAccountAccess
+        systemAccountAccess: this.systemAccountAccess,
+        globalCategoryAccess: this.globalCategoryAccess
       }
       localStorage.setItem("accessType", JSON.stringify(this.accessType));
       // For checking Type of the User auth hierarchy

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -74,6 +76,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
+                var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
+                Metadata headers = new Metadata();
+                headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
+
                 var response = await _otaSoftwareUpdateServiceClient
                     .GetVehicleStatusListAsync(new VehicleStatusRequest
                     {
@@ -83,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         FeatureId = featureId,
                         Language = language?.Substring(0, 2),
                         Retention = retention ?? "Active"
-                    });
+                    }, headers);
                 if (response == null)
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
@@ -96,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleSoftwareStatus", ex.Message), 1, 2, string.Empty,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleStatusList", ex.Message), 1, 2, string.Empty,
                   _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))
@@ -134,7 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleSoftwareStatus", ex.Message), 1, 2, string.Empty,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleUpdateDetails", ex.Message), 1, 2, vin,
                   _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))
@@ -148,16 +155,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region GetSoftwareReleaseNote
         [HttpGet]
-        [Route("getsoftwarereleasenote")]
+        [Route("getsoftwarereleasenotes")]
         public async Task<IActionResult> GetSoftwareReleaseNote([FromQuery] string campaignId, [FromQuery] string language, [FromQuery] string vin, [FromQuery] string retention)
         {
             try
             {
+                if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var request = new CampiagnSoftwareReleaseNoteRequest
                 {
                     Retention = retention,
                     CampaignId = campaignId,
-                    Language = language
+                    Language = language?.Substring(0, 2)
                 };
                 request.Vins.Add(vin);
                 var response = await _otaSoftwareUpdateServiceClient
@@ -174,7 +182,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleSoftwareStatus", ex.Message), 1, 2, string.Empty,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetSoftwareReleaseNotes", ex.Message), 1, 2, vin,
                   _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(OTASoftwareUpdateConstants.SOCKET_EXCEPTION_MSG))

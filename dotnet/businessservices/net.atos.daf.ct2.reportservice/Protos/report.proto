@@ -935,6 +935,7 @@ message FleetFuelDetailsByDriver {
     double CCFuelConsumedNotActive = 43;
     double IdleDurationPercentage = 44;
      repeated TripAlert TripAlert=45;
+      double IdlingConsumptionWithPto=46;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

@@ -13,7 +13,7 @@ using net.atos.daf.ct2.httpclientfactory.extensions;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.httpclientfactory
 {
-    public class OTA14HttpClientManager
+    public class OTA14HttpClientManager : IOTA14HttpClientManager
     {
         private readonly ILog _logger;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -35,14 +35,16 @@ namespace net.atos.daf.ct2.httpclientfactory
             {
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
+                request.ApprovalMessage = _oTA14Configurations.Message_Approval;
                 var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
+                string baseline = request.BaseLineId;
                 response.StatusCode = HttpStatusCode.BadRequest;
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
                     _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}softwareupdateoverview", data);
+                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}", data);
 
                     _logger.Info("GetSoftwareScheduleUpdate:OTA 14 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
@@ -58,16 +60,14 @@ namespace net.atos.daf.ct2.httpclientfactory
                 {
                     _logger.Error(result);
                 }
-
-
-                return new ScheduleSoftwareUpdateResponse { };
-                //return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
+                // return new ScheduleSoftwareUpdateResponse { };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200 };
             }
             catch (Exception ex)
             {
                 _logger.Error($"OTA14HttpClientManager:GetSoftwareScheduleUpdate.Error:-{ex.Message}");
-                return new ScheduleSoftwareUpdateResponse { };
-                //return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500 };
+                //return new ScheduleSoftwareUpdateResponse { };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500 };
             }
         }
 

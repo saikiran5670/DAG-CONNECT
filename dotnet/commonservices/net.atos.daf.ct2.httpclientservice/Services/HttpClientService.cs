@@ -9,6 +9,7 @@ using net.atos.daf.ct2.httpclientfactory;
 using net.atos.daf.ct2.httpclientfactory.Entity.ota22;
 using net.atos.daf.ct2.httpclientservice.Entity.ota22;
 using net.atos.daf.ct2.httpclientfactory.entity.ota14;
+using net.atos.daf.ct2.httpclientservice.Entity.ota14;
 
 namespace net.atos.daf.ct2.httpclientservice.Services
 {
@@ -22,6 +23,7 @@ namespace net.atos.daf.ct2.httpclientservice.Services
         private readonly IOTA14HttpClientManager _oTA14HttpClientManager;
         private readonly OTA14Configurations _oTA14Configurations;
         private readonly Mapper _mapper;
+        private readonly Ota14Mapper _otaMapper;
         public HttpClientManagementService(IHttpClientFactory httpClientFactory,
                                            IConfiguration configuration,
                                            IOTA22HttpClientManager oTA22HttpClientManager,
@@ -31,9 +33,12 @@ namespace net.atos.daf.ct2.httpclientservice.Services
             _oTA22HttpClientManager = oTA22HttpClientManager;
             _oTA14HttpClientManager = oTA14HttpClientManager;
             _mapper = new Mapper();
+            _otaMapper = new Ota14Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _oTA22Configurations = new OTA22Configurations();
+            _oTA14Configurations = new OTA14Configurations();
             configuration.GetSection("OTA22Configurations").Bind(_oTA22Configurations);
+            configuration.GetSection("OTA14Configurations").Bind(_oTA14Configurations);
         }
 
         public override async Task<VehiclesStatusOverviewResponse> GetVehiclesStatusOverview(VehiclesStatusOverviewRequest request, ServerCallContext context)
@@ -96,6 +101,27 @@ namespace net.atos.daf.ct2.httpclientservice.Services
             {
                 _logger.Error($"HttpClientManagementService:GetSoftwareReleaseNote.Error:-{ex.Message}");
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
+                {
+                    HttpStatusCode = 500,
+                    Message = $"HttpClientManagementService:GetSoftwareReleaseNote- Error:-{ex.Message}"
+                });
+            }
+        }
+        public override async Task<ScheduleSoftwareUpdateResponse> GetScheduleSoftwareUpdate(ScheduleSoftwareUpdateRequest scheduleRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("HttpClientManagementService:GetSoftwareScheduleUpdate Started.");
+
+                net.atos.daf.ct2.httpclientfactory.entity.ota14.ScheduleSoftwareUpdateResponse apiResponse
+                    = await _oTA14HttpClientManager.PostManagerApproval(_otaMapper.ScheduleSoftwareRequest(scheduleRequest));
+                return await Task.FromResult(_otaMapper.MapGetSoftwareScheduleUpdate(apiResponse));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"HttpClientManagementService:GetSoftwareReleaseNote.Error:-{ex.Message}");
+                return await Task.FromResult(new ScheduleSoftwareUpdateResponse
                 {
                     HttpStatusCode = 500,
                     Message = $"HttpClientManagementService:GetSoftwareReleaseNote- Error:-{ex.Message}"

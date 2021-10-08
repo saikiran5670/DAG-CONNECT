@@ -19,10 +19,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         {
             try
             {
-                //var scheduleSoftwareStatusResponse = await _httpClientServiceClient
-                //       .GetVehiclesStatusOverviewAsync(
-                //           _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime)
-                //           );
+                var scheduleSoftwareStatusResponse = await _httpClientServiceClient
+                       .GetScheduleSoftwareUpdateAsync(
+                           _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
+                           );
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {

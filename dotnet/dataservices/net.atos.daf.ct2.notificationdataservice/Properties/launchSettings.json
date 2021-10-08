@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "net.atos.daf.ct2.vehicledataservice": {
+    "net.atos.daf.ct2.notificationdataservice": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "notification-data/swagger",

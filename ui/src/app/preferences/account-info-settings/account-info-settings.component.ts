@@ -97,6 +97,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
   public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
               private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
@@ -215,6 +217,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       this.landingPageDisplayDropdownData = accountNavMenu;
+      console.log("landingPageDisplayDropDownData=>", this.landingPageDisplayDropdownData);
+      this.landingPageDisplayDropdownData.sort(this.compare);
+      this.resetLandingPageFilter();
       //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
@@ -259,6 +264,11 @@ export class AccountInfoSettingsComponent implements OnInit {
   resetTimezoneFilter(){
     this.filteredTimezones.next(this.timezoneDropdownData.slice());
   }
+
+  resetLandingPageFilter(){
+    this.filteredLandingPageDisplay.next(this.landingPageDisplayDropdownData.slice());
+  }
+ 
   
   compare(a, b) {
     if (a.name < b.name) {
@@ -694,6 +704,24 @@ export class AccountInfoSettingsComponent implements OnInit {
       );
       console.log("this.filteredTimezones", this.filteredTimezones);
    }
+
+   filterLandingPageDisplay(landingpagesearch){
+    console.log("LandingPageDisplay called");
+    if(!this.landingPageDisplayDropdownData){
+      return;
+    }
+    if(!landingpagesearch){
+      this.resetLandingPageFilter();
+      return;
+    } else{
+      landingpagesearch = landingpagesearch.toLowerCase();
+    }
+    this.filteredLandingPageDisplay.next(
+       this.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(landingpagesearch) > -1)
+    );
+     console.log("this.filteredLandingPageDisplay", this.filteredLandingPageDisplay);
+  }
+  
 
    keyPressNumbers(event: any){
     var charCode = (event.which) ? event.which : event.keyCode;
