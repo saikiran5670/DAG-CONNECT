@@ -671,7 +671,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                                 INNER JOIN master.orgrelationshipmapping as orm on orm.target_org_id=grp.organization_id and orm.owner_org_id=v.organization_id
                                                 INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                 WHERE 
-	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                else COALESCE(end_date,0) = 0 end
                                                 UNION
                                                 -- Vehicle Owner shared vehicle via vehicle group type 'D' 
@@ -681,7 +681,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                                 INNER JOIN master.orgrelationshipmapping as orm on orm.target_org_id=grp.organization_id and orm.owner_org_id=v.organization_id
                                                 INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                 WHERE 
-	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                else COALESCE(end_date,0) = 0 end
                                                 ) temp on arship.vehicle_group_id = temp.id";
                 var result = (List<int>)await _dataAccess.QueryAsync<int>(queryStatement, parameter);

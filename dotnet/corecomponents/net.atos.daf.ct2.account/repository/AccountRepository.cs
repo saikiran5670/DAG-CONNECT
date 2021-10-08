@@ -1006,7 +1006,9 @@ namespace net.atos.daf.ct2.account
                                     LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
 							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
-                                    WHERE vg.organization_id=@organization_id
+                                    WHERE vg.organization_id=@organization_id and 
+                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                        else COALESCE(end_date,0) = 0 end
                                     ORDER BY vg.id desc 
                                 ) vehiclegroup
 
