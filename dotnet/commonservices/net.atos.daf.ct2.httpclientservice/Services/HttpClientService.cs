@@ -11,7 +11,7 @@ using net.atos.daf.ct2.httpclientservice.Entity.ota22;
 using net.atos.daf.ct2.httpclientfactory.entity.ota14;
 using net.atos.daf.ct2.httpclientservice.Entity.ota14;
 
-namespace net.atos.daf.ct2.httpclientservice.Services
+namespace net.atos.daf.ct2.httpclientservice
 {
 
     public class HttpClientManagementService : HttpClientService.HttpClientServiceBase
