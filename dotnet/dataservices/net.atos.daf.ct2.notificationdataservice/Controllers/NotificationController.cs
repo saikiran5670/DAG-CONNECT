@@ -78,8 +78,8 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error occurred while processing Notification data.", ex);
-                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Notification Data Service", "Notification data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Notification dataservice modified object", 0, 0, ex.InnerException.ToString(), 0, 0);
-                return StatusCode(500, string.Empty);
+                //await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Notification Data Service", "Notification data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Notification dataservice modified object", 0, 0, ex.InnerException.ToString(), 0, 0);
+                return StatusCode(500, ex.Message + ex.StackTrace);
             }
         }
     }
