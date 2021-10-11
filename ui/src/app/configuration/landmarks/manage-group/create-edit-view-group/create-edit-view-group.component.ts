@@ -75,30 +75,61 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   loadLandmarkCategoryData(){
-    let objData = {
-      type:'C',
-      Orgid: this.OrgId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      this.categoryList = parentCategoryData.categories;
-      this.getSubCategoryData();
+    // let objData = {
+    //   type:'C',
+    //   Orgid: this.OrgId
+    // }
+    // this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
+    //   this.categoryList = parentCategoryData.categories;
+    //   this.getSubCategoryData();
+    // }, (error) => {
+    //   this.categoryList = [];
+    //   this.getSubCategoryData();
+    // });
+    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      this.fillDropdown(categoryData.categories); // fill dropdown
     }, (error) => {
-      this.categoryList = [];
-      this.getSubCategoryData();
     }); 
   }
 
-  getSubCategoryData(){
-    let objData = {
-      type:'S',
-      Orgid: this.OrgId
+  fillDropdown(categoryData: any){
+    this.categoryList = [];
+    this.subCategoryList = [];
+    if(categoryData.length > 0){
+      let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
+      let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
+      if(catDD && catDD.length > 0){ // category dropdown
+        catDD.forEach(element => {
+          this.categoryList.push({
+            id: element.parentCategoryId,
+            name: element.parentCategoryName,
+            organizationId: element.organizationId
+          });
+        });
+      } 
+      if(subCatDD && subCatDD.length > 0){ // sub-category dropdown
+        subCatDD.forEach(elem => {
+          this.subCategoryList.push({
+            id: elem.subCategoryId,
+            name: elem.subCategoryName,
+            organizationId: elem.organizationId
+          });
+        });
+      }
     }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
-      this.subCategoryList = subCategoryData.categories;
-    }, (error) => {
-      this.subCategoryList = [];
-    });
   }
+
+  // getSubCategoryData(){
+  //   let objData = {
+  //     type:'S',
+  //     Orgid: this.OrgId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
+  //     this.subCategoryList = subCategoryData.categories;
+  //   }, (error) => {
+  //     this.subCategoryList = [];
+  //   });
+  // }
 
 
   setDefaultValue(){
