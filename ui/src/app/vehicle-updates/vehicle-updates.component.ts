@@ -33,12 +33,14 @@ export class VehicleUpdatesComponent implements OnInit {
   vehicleFilterList:any=[];
   vehicleUpdatesForm: FormGroup;
   vehicleSoftwareStatus:any=[];
+  vehicleGroupArr:any=[]; 
+  vehicleNameArr:any=[];
   filterListValues = {};
   searchFilter= new FormControl();
   filteredValues = {
     search: ''
   };
-
+  ngVehicleName = ''; 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   public filteredSoftwareStatus: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -105,8 +107,7 @@ export class VehicleUpdatesComponent implements OnInit {
             element["value"]= this.translationData[element["key"]];
             this.vehicleSoftwareStatus.push(element);
         });
-      }
-        this.loadFiltersData(); 
+      }      
         this.resetSoftStatusFilter();       
         this.loadVehicleStatusData(); 
         this.searchAllDataFilter();       
@@ -121,26 +122,14 @@ export class VehicleUpdatesComponent implements OnInit {
  searchAllDataFilter(){
   this.dataSource.filterPredicate = this.createFilter();  
   this.searchFilter.valueChanges.subscribe(filterValue => {
-  this.filteredValues['search'] = filterValue.trim(); 
-  filterValue = filterValue.toLowerCase();
+  this.filteredValues['search'] = filterValue.trim().toLowerCase(); 
   this.dataSource.filter = JSON.stringify(this.filteredValues);  
   this.vehicleUpdatesForm.get('vehicle').setValue("all");
   this.vehicleUpdatesForm.get('vehicleGroup').setValue("all"); 
   this.vehicleUpdatesForm.get('softStatus').setValue("all");   
   }); 
 }
-  loadFiltersData(){ 
-    this.showLoadingIndicator = true;
-    // this.vehicleUpdatesService.getvehicleupdatefilterdata().subscribe((vehicleFilterData:any) =>{
-      this.reportService.getLogBookfilterdetails().subscribe((vehicleFilterData: any) => {
-      this.hideloader();
-      this.vehicleFilterList= vehicleFilterData['associatedVehicleRequest'];
-      this.getVehicleGroups();
-    }, (error)=>{
-      this.hideloader();
-    }); 
-   
-  }
+
   updateDataSource(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
@@ -219,75 +208,67 @@ export class VehicleUpdatesComponent implements OnInit {
     // }, (error) => {
 
     // })
+  
+    vehicleStatusList.filter((element) =>{
+    this.vehicleGroupArr.push(element.vehicleGroupNames);    
+    this.vehicleNameArr.push({'vehicleName': element.vehicleName.trim(),'vehicleGroup': element.vehicleGroupNames.trim()});    
+    });
+  
+    let vehGrp:any = [];
+    this.vehicleGroupArr.forEach(element => {
+     let vehGrpTemp = element.split(',');    
+     vehGrpTemp.forEach((ele:any )=> {
+       vehGrp.push({'vehicleGroup': ele.trim()});
+     })
+    });
+    this.vehicleGroup = this.removeDuplicates(vehGrp, "vehicleGroup");
+    this.vehicleName = this.removeDuplicates(this.vehicleNameArr, "vehicleName");
+    
     this.initData= vehicleStatusList;
-    this.showLoadingIndicator = false;  
+    this.showLoadingIndicator = false;      
     this.updateDataSource(this.initData); 
     
 }
-  getVehicleGroups(){ 
-    this.vehicleFilterList.forEach(element => {
-      let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
-      vehicleGroupDetails.forEach(item => {
-        let itemSplit = item.split("~");
-        if (itemSplit[2] != 'S') {
-          let vehicleGroupObj = {
-            "vehicleGroupId": itemSplit[0],
-            "vehicleGroupNames": itemSplit[1],
-            "vehicleId": element.vehicleId
-          }
-          this.vehicleGroup.push(vehicleGroupObj);
-        } else {
-          // this.vehicleName.push(element);
-        }
-      });
-      this.vehicleListArrany.push(element);
-    });
-    this.vehicleGroup = this.getUnique(this.vehicleGroup, "vehicleGroupId");
-    this.vehicleGroup.forEach(element => {
-      element.vehicleGroupId = parseInt(element.vehicleGroupId);
-    });
- }
 
- getUnique(arr, comp) {
-   const unique =  arr.map(e => e[comp])
-    .map((e, i, final) => final.indexOf(e) === i && i)
-  .filter((e) => arr[e]).map(e => arr[e]);
-  return unique;
+ removeDuplicates(originalArray, prop) {
+  var newArray = [];
+  var lookupObject  = {}; 
+  for(var i in originalArray) {
+     lookupObject[originalArray[i][prop]] = originalArray[i];
+  } 
+  for(i in lookupObject) {
+      newArray.push(lookupObject[i]);
+  }
+   return newArray;
 }
+
 onVehicleGroupChange(filter, event){
-  this.vehicleName=[];
-   let event_val;  
+   this.vehicleName=[];
+   this.ngVehicleName='all'
+   let event_val;    
+  
    if(event == 'all'){
-    // let vehicleData = this.vehicleListData.slice();
-    this.vehicleName = this.getUniqueVINs([...this.vehicleListArrany]);
+    this.vehicleName =  this.removeDuplicates(this.vehicleNameArr, "vehicleName");
     event_val = '';  
   }
   else{
-    let vehicle_group_selected:any = parseInt(event.vehicleGroupId);
-    this.vehicleGroup.forEach(element => {
-     let vehicle= this.vehicleFilterList.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
-     //let vehicle= element.filter(item => item.vehicleId == value);
-     if(vehicle.length > 0){
-      this.vehicleName.push(...vehicle);
-      }
+    let vehicle_group_selected = event.vehicleGroup;
+    let vehicle= this.vehicleNameArr.filter(item => item.vehicleGroup.includes(vehicle_group_selected+","));
+    console.log('vehicle',vehicle);
+    this.vehicleNameArr.forEach(element => {
+    if(element.vehicleGroup.includes(vehicle_group_selected)){
+      this.vehicleName.push(element);
+    }
     });
-    this.vehicleName = this.getUnique(this.vehicleName, "vehicleName"); 
-    event_val = event.vehicleGroupNames.trim();   
+    this.vehicleName = this.removeDuplicates(this.vehicleName, "vehicleName");    
+    event_val = event.vehicleGroup.trim(); 
   }  
+    this.filterListValues['vehicleName']='';
     this.filterListValues[filter] =event_val;
+    
     this.dataSource.filter = JSON.stringify(this.filterListValues);  
 }
 
-getUniqueVINs(vinList: any){
-  let uniqueVINList = [];
-  for(let vin of vinList){
-    let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
-    if(vinPresent == -1) {
-      uniqueVINList.push(vin);
-    }
-  }
-  return uniqueVINList;
-}
 
   onViewVehicleList(row:any, type:any){
    this.getVehicleUpdateDetails();
@@ -426,20 +407,20 @@ filterVehicleSoft(softStatus) {
            
         let searchData = '';
         searchData = data;
-          if(searchData["softwareStatus"].includes(searchTerms.search)){
+          if(searchData["softwareStatus"].toLowerCase().includes(searchTerms.search)){
             found = true;    
-        }else if(searchData["vehicleGroupNames"].includes(searchTerms.search)){
+        }else if(searchData["vehicleGroupNames"].toLowerCase().includes(searchTerms.search)){
           found = true;    
-            }else if(searchData["vehicleName"].includes(searchTerms.search)){
+            }else if(searchData["vehicleName"].toLowerCase().includes(searchTerms.search)){
               found = true;    
           }
-          else if(searchData["registrationNo"].includes(searchTerms.search)){
+          else if(searchData["registrationNo"].toLowerCase().includes(searchTerms.search)){
             found = true;    
         }
-        else if(searchData["modelYear"].includes(searchTerms.search)){
+        else if(searchData["modelYear"].toLowerCase().includes(searchTerms.search)){
           found = true;    
       }
-      else if(searchData["type"].includes(searchTerms.search)){
+      else if(searchData["type"].toLowerCase().includes(searchTerms.search)){
         found = true;    
       }
       else{
