@@ -94,34 +94,36 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                     var otaVehcles = await _otaSoftwareUpdateManagement.GetVinsFromOTAAlerts(vehicleStatusList.Select(s => s.Vin).Distinct());
                     var vehicleFinalStatusList = vehicleStatusList.ToList();
                     vehicleFinalStatusList.RemoveAll(r => !otaVehcles.Contains(r.Vin));
-
-                    var vinStatusResponse = await _httpClientServiceClient
-                        .GetVehiclesStatusOverviewAsync(
-                            _mapper.MapVehiclesStatusOverviewRequest(request.Language, request.Retention, vehicleFinalStatusList.Select(s => s.Vin).Distinct())
-                            );
-
-                    var response = new VehicleStatusResponse
+                    if (vehicleFinalStatusList.Count() > 0)
                     {
-                        Message = "Successfully fetch records for Vehicle Software Status",
-                        Code = ResponseCode.Success
-                    };
-                    response.VehicleStatusList.AddRange(
-                                                    vehicleFinalStatusList.Select(s =>
-                                                            new VehicleStatusList
-                                                            {
-                                                                VehicleId = s.VehicleId,
-                                                                VehicleName = s.VehicleName ?? string.Empty,
-                                                                Vin = s.Vin ?? string.Empty,
-                                                                RegistrationNo = s.RegistrationNo ?? string.Empty,
-                                                                VehicleGroupNames = s.VehicleGroupNames ?? string.Empty,
-                                                                ModelYear = s.ModelYear ?? string.Empty,
-                                                                Type = s.Type ?? string.Empty,
-                                                                IsAdminRight = s.HasAdminRights,
-                                                                SoftwareStatus = vinStatusResponse?.VehiclesStatusOverview?
-                                                                                .VehiclesStatusOverviewResults?.Where(w => w.Vin?.ToLower() == s.Vin?.ToLower())?
-                                                                                .FirstOrDefault()?.Status ?? string.Empty
-                                                            }));
-                    return await Task.FromResult(response);
+                        var vinStatusResponse = await _httpClientServiceClient
+                            .GetVehiclesStatusOverviewAsync(
+                                _mapper.MapVehiclesStatusOverviewRequest(request.Language, request.Retention, vehicleFinalStatusList.Select(s => s.Vin).Distinct())
+                                );
+
+                        var response = new VehicleStatusResponse
+                        {
+                            Message = "Successfully fetch records for Vehicle Software Status",
+                            Code = ResponseCode.Success
+                        };
+                        response.VehicleStatusList.AddRange(
+                                                        vehicleFinalStatusList.Select(s =>
+                                                                new VehicleStatusList
+                                                                {
+                                                                    VehicleId = s.VehicleId,
+                                                                    VehicleName = s.VehicleName ?? string.Empty,
+                                                                    Vin = s.Vin ?? string.Empty,
+                                                                    RegistrationNo = s.RegistrationNo ?? string.Empty,
+                                                                    VehicleGroupNames = s.VehicleGroupNames ?? string.Empty,
+                                                                    ModelYear = s.ModelYear ?? string.Empty,
+                                                                    Type = s.Type ?? string.Empty,
+                                                                    IsAdminRight = s.HasAdminRights,
+                                                                    SoftwareStatus = vinStatusResponse?.VehiclesStatusOverview?
+                                                                                    .VehiclesStatusOverviewResults?.Where(w => w.Vin?.ToLower() == s.Vin?.ToLower())?
+                                                                                    .FirstOrDefault()?.Status ?? string.Empty
+                                                                }));
+                        return await Task.FromResult(response);
+                    }
                 }
                 return await Task.FromResult(new VehicleStatusResponse
                 {
