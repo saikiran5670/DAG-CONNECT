@@ -12,7 +12,7 @@ using net.atos.daf.ct2.otasoftwareupdateservice.Entity;
 using net.atos.daf.ct2.visibility;
 using static net.atos.daf.ct2.httpclientservice.HttpClientService;
 
-namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
+namespace net.atos.daf.ct2.otasoftwareupdateservice
 {
     public partial class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
     {
