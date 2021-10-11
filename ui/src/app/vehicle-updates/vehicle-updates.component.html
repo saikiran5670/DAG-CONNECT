@@ -18,7 +18,8 @@
         </div>
     </div>
     <div>
-        <mat-card class='mat-elevation-z'>         
+      <mat-card class='mat-elevation-z' *ngIf="!showVehicalDetails"> 
+        <form [formGroup]="vehicleUpdatesForm">               
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
@@ -29,18 +30,21 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm vehicleStatusList_filter'>
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="margin-top: 24px;">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search'   }}">
+                    <input matInput [formControl]="searchFilter" placeholder="{{ translationData.lblSearch || 'Search' }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
-              </div>  
+              </div> 
+             
               <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-select placeholder="Select" (selectionChange)="filterVehicleGroupChange('type',$event)" >
-                        <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-                        <!-- <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option> -->
+                          <mat-select [disabled]="vehicleGroup.length == 0" (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" placeholder="Select"  formControlName="vehicleGroup">
+                          <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                             <mat-option *ngFor="let veh of vehicleGroup" [value]="veh">
+                          {{ veh.vehicleGroup }}
+                      </mat-option>
                     </mat-select>
                 </mat-form-field> 
             </div>
@@ -49,9 +53,11 @@
                     {{ translationData.lblVehicleName || 'Vehicle Name' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-select placeholder="Select" (selectionChange)="filterVehicleGroupChange('type',$event)" >
-                        <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-                        <!-- <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option> -->
+                  <mat-select [disabled]="vehicleName.length == 0" (selectionChange)="onVehicleChange('vehicleName',$event)" placeholder="Select" formControlName="vehicle"  [(ngModel)]="ngVehicleName">
+                        <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
+                        <mat-option *ngFor="let veh of vehicleName" [value]="veh.vehicleName">
+                          {{ veh.vehicleName }}
+                      </mat-option>
                     </mat-select>
                 </mat-form-field> 
             </div>
@@ -60,38 +66,47 @@
                     {{ translationData.lblVehicleGroup || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-select placeholder="Select" (selectionChange)="filterVehicleGroupChange('type',$event)" >
-                        <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-                        <!-- <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option> -->
-                    </mat-select>
-                </mat-form-field> 
+                <mat-select placeholder="Select or search details"
+                (selectionChange)="onVehicleChange('softwareStatus', $event)" formControlName="softStatus">
+                <mat-option>
+                    <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search software status' }}" #softStatus>
+                        <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                </mat-option>   
+                <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>            
+                <mat-option *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value">
+                    &nbsp;{{ soft.value }}
+                </mat-option>
+            </mat-select>  
+          </mat-form-field>             
             </div>                     
-          </div>
+          </div>        
+        </form>       
          <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
           <div *ngIf='initData.length > 0' id="vehicleListData">
             <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
               <ng-container matColumnDef="vehicleName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleName || 'Vehicle Name'}}</mat-header-cell>
-                <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.name}}">
+                <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleName}}" > 
                     {{row.vehicleName}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="registrationNo">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="min-width: 15%;">{{ translationData.lblregistrationNo || 'Registration No.' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" style="min-width: 15%;">         
+                <mat-cell *matCellDef="let row" style="min-width: 15%;"  matTooltip="{{ row.registrationNo }}" class="text-truncate">         
                   {{ row.registrationNo }}            
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="vehicleGroupNames">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleGroupNames || 'Vehicle Group'}}</mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">
+                <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupNames }}" class="text-truncate">
                  {{row.vehicleGroupNames}}
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell> -->
               </ng-container>
               <ng-container matColumnDef="modelYear">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblmodelYear || 'Model Year' }}</mat-header-cell>
-                 <mat-cell *matCellDef="let row">
+                 <mat-cell *matCellDef="let row" >
                     <span>{{row.modelYear}}</span>               
                   </mat-cell>  
                 </ng-container>
@@ -107,13 +122,13 @@
                     <span *ngIf="row.softwareStatus == 'Update Failed'">
                         <span [style]="{ 'color':'#f00e0e' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Update Avaiable'">
+                    <span *ngIf="row.softwareStatus == 'Update Available'">
                         <span [style]="{ 'color':'#0249cb' } ">{{row.softwareStatus}}</span> 
                     </span> 
                     <span *ngIf="row.softwareStatus == 'Update Running'">
                         <span [style]="{ 'color':'#FFBF00' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'UP-To-Date'">
+                    <span *ngIf="row.softwareStatus == 'Up-To Date'">
                         <span [style]="{ 'color':'#0ab90a' } ">{{row.softwareStatus}}</span> 
                     </span>  
               </mat-cell>            
@@ -133,6 +148,7 @@
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div> 
           <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
-        </mat-card>
+        </mat-card>   
     </div>
+    <app-vehicle-update-details *ngIf="showVehicalDetails"></app-vehicle-update-details>
   </div>

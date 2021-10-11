@@ -887,6 +887,7 @@ message FleetFuelDetails {
     string EndPosition = 50;
     double IdleDurationPercentage = 51;
     repeated TripAlert TripAlert=52;
+    double IdlingConsumptionWithPto=55;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -934,6 +935,7 @@ message FleetFuelDetailsByDriver {
     double CCFuelConsumedNotActive = 43;
     double IdleDurationPercentage = 44;
     repeated TripAlert TripAlert=45;
+    double IdlingConsumptionWithPto=46;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

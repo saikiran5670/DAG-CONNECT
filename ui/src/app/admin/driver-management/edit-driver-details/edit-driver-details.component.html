@@ -82,7 +82,7 @@
               {{ translationData.lblSpecialcharactersnotallowed }}
             </mat-error>
             <mat-error *ngIf="driverFormGroup.get('firstName').hasError('numberNotAllowed')">
-              {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
+              {{ translationData.lblNumbersNotAllowed }}
             </mat-error>
             <mat-error *ngIf="!driverFormGroup.get('firstName').hasError('required') && driverFormGroup.get('firstName').hasError('whitespace')">
               {{ translationData.lblFirstNamecannotcontainonlywhitespace }}

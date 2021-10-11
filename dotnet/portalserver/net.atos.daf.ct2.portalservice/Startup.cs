@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.portalservice
             var otasoftwareupdateservice = Configuration["ServiceConfiguration:otasoftwareupdateservice"];
             var reportschedulerservice = Configuration["ServiceConfiguration:reportschedulerservice"];
             string notificationservice = Configuration["ServiceConfiguration:notificationservice"];
-            var httpclientservice = Configuration["ServiceConfiguration:httpclientservice"];
+
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -255,12 +255,9 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<PushNotificationService.PushNotificationServiceClient>(o => o.Address = new Uri(notificationservice));
             services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(notificationservice));
             // Enable support for unencrypted HTTP2  
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<OTASoftwareUpdateService.OTASoftwareUpdateServiceClient>(o => o.Address = new Uri(otasoftwareupdateservice));
-            //services.AddGrpcClient<HttpClientService.HttpClientServiceClient>(o =>
-            //{
-            //    o.Address = new Uri(httpclientservice);
-            //});
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });

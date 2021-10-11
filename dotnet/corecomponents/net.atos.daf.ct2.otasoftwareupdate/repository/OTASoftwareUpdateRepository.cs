@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -45,9 +46,9 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vin);
-                var queryAlert = @"SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
+                var queryAlert = @" SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline::text as BaselineAssignment
                                     FROM master.otascheduledcompaign
-                                    where vin=@vin";
+                                    where vin=@vin and status='S'";
                 return await _dataAccess.QueryAsync<VehicleScheduleDetails>(queryAlert, parameter);
 
             }
@@ -72,13 +73,13 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
                 return await _dataAccess.QueryFirstOrDefaultAsync<string>(queryAlert, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-        public async Task<int> InsertReleaseNotes(string campaignID, string code,string releaseNotes)
+        public async Task<int> InsertReleaseNotes(string campaignID, string code, string releaseNotes)
         {
             try
             {
@@ -99,5 +100,70 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             }
         }
         #endregion
+
+        #region Get OTA Vin from DataMart
+        public async Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vins", vins.ToArray());
+                var queryAlert = @"SELECT vin
+                                    FROM tripdetail.tripalertotaconfigparam
+                                    where vin = ANY(@vins)";
+                return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        public async Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign)
+        {
+            try
+            {
+                string queryStatement = @"INSERT INTO master.otascheduledcompaign(	                                                    
+	                                                     campaign_id
+	                                                    , vin
+	                                                    , scheduled_datetime	                                                   
+                                                        , created_at
+                                                        , created_by
+                                                        , baseline
+                                                        , timestamp_boash_api
+                                                        , status
+	                                                    )
+	                                                    VALUES ( @campaign_id
+			                                                    , @vin
+			                                                    , @scheduled_datetime
+			                                                    , @created_at
+			                                                    , @created_by
+			                                                    , @baseline
+			                                                    , @timestamp_boash_api
+			                                                    , @status) RETURNING id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", otaScheduleCompaign.CompaignId);
+                parameter.Add("@vin", otaScheduleCompaign.Vin);
+                parameter.Add("@scheduled_datetime", otaScheduleCompaign.ScheduleDateTime);
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@created_by", otaScheduleCompaign.CreatedBy);
+                parameter.Add("@baseline", Guid.Parse(otaScheduleCompaign.BaselineId));
+                parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
+                parameter.Add("@status", 'S');
+                int tripAlertSentId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                otaScheduleCompaign.Id = tripAlertSentId;
+                return otaScheduleCompaign;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+
     }
 }

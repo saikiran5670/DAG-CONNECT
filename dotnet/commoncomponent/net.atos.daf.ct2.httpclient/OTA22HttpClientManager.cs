@@ -61,6 +61,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    return new VehiclesStatusOverviewResponse { HttpStatusCode = (int)response.StatusCode };
                 }
 
                 return new VehiclesStatusOverviewResponse { HttpStatusCode = 200, VehiclesStatusOverview = JsonConvert.DeserializeObject<VehiclesStatusOverview>(result) };
@@ -83,11 +84,11 @@ namespace net.atos.daf.ct2.httpclientfactory
                 //var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
                 var httpRequest = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{_oTA22Configurations.API_BASE_URL}vehicles/vin");
+                $"{_oTA22Configurations.API_BASE_URL}vehicles/{request.Vin}?retention={request.Retention}");
                 httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));
-                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                //httpRequest.Content = new StringContent(JsonConvert.SerializeObject(request));
+                //httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
 
@@ -109,8 +110,8 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    return new VehicleUpdateDetailsResponse { HttpStatusCode = (int)response.StatusCode };
                 }
-
                 return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(result) };
             }
             catch (Exception ex)
@@ -135,7 +136,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
                 {
                     _logger.Info("GetSoftwareReleaseNote:Calling OTA 22 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}softwareupdateoverview", data);
+                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}softwareupdatedetails", data);
 
                     _logger.Info("GetSoftwareReleaseNote:OTA 22 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
@@ -150,8 +151,8 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    _logger.Error(result); return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = (int)response.StatusCode };
                 }
-
                 return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
             }
             catch (Exception ex)
@@ -170,7 +171,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.Timeout = new TimeSpan(0, 0, 30);
+
             var token = await GetElibilityToken(client);
             //client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);

@@ -352,62 +352,84 @@ export class DriverTimeDetailComponent implements OnInit {
 
   createChart(data){
     let _data = data['driverActivitiesChartData'];
-    this.chartData = _data.sort((a, b) => parseInt(a.activityDate) - parseInt(b.activityDate));
+    // this.chartData = _data.sort((a, b) => parseInt(a.activityDate) - parseInt(b.activityDate));
     let _series = [];
-    let restArray =_data.filter(item => item.code === 0);
-    let availableArray =_data.filter(item => item.code === 1);
-    let workArray =_data.filter(item => item.code === 2);
-    let driveArray =_data.filter(item => item.code === 3);
 
-    let restData = [];
-    restArray.forEach(element => {
-      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
-      let restObj={
-        x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime],
-        fillColor: '#8ac543',
-      }
-      restData.push(restObj)
-    });
+    // let restArray =_data.filter(item => item.code === 0);
+    // let availableArray =_data.filter(item => item.code === 1);
+    // let workArray =_data.filter(item => item.code === 2);
+    // let driveArray =_data.filter(item => item.code === 3);
+
+    // let restData = [];
+    // restArray.forEach(element => {
+    //   let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+    //   let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
+    //   let restObj={
+    //     x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+    //     y : [_startTime,_endTime],
+    //     fillColor: '#8ac543',
+    //   }
+    //   restData.push(restObj)
+    // });
   
-    let availableData = [];
-    availableArray.forEach(element => {
-      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
-      let restObj={
-        x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime],
-        fillColor : '#dddee2'
-      }
-      availableData.push(restObj)
-    });
+    // let availableData = [];
+    // availableArray.forEach(element => {
+    //   let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+    //   let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
+    //   let restObj={
+    //     x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+    //     y : [_startTime,_endTime],
+    //     fillColor : '#dddee2'
+    //   }
+    //   availableData.push(restObj)
+    // });
 
-    let workData = [];
-    workArray.forEach(element => {
-      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
-      let restObj={
-        x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime],
-        fillColor : '#e85c2a'
-      }
-      workData.push(restObj)
-    });
+    // let workData = [];
+    // workArray.forEach(element => {
+    //   let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+    //   let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
+    //   let restObj={
+    //     x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+    //     y : [_startTime,_endTime],
+    //     fillColor : '#e85c2a'
+    //   }
+    //   workData.push(restObj)
+    // });
 
-    let driveData = [];
-    driveArray.forEach(element => {
+    // let driveData = [];
+    // driveArray.forEach(element => {
+    //   let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+    //   let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
+    //   let restObj={
+    //     x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+    //     y : [_startTime,_endTime],
+    //     fillColor : '#29539b'
+    //   }
+    //   driveData.push(restObj)
+    // });
+    
+    let driveData, workData, restData, availableData=[];
+    _data.forEach(element => {
       let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime],
-        fillColor : '#29539b'
+        y : [_startTime,_endTime]
       }
-      driveData.push(restObj)
+      if(element.code === 0){
+        restObj['fillColor']='#8ac543';
+        restData.push(restObj);
+      } else if(element.code === 1){
+        restObj['fillColor']='#dddee2';
+        availableData.push(restObj);
+      } else if(element.code === 2){
+        restObj['fillColor']='#e85c2a';
+        workData.push(restObj);
+      } else if(element.code === 3){
+        restObj['fillColor']='#29539b';
+        driveData.push(restObj);
+      }
     });
-    
-    
    // if(driveData.length>0)
     _series.push({
       'name': 'Drive',

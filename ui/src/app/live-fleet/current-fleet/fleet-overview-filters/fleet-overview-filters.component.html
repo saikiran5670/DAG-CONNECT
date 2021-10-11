@@ -25,8 +25,13 @@
         <mat-label>{{ translationData.lblSelectGroup || 'Select Group' }} </mat-label>
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
             <mat-select [disabled]="vehicleListData.length == 0" placeholder="Select Group" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
+                <mat-option>
+                    <ngx-mat-select-search (keyup)="filterSelectGroups(groupsearch.value)" #groupsearch>
+                    <mat-icon (click)="resetSelectGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                </mat-option>                
                 <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                <mat-option *ngFor="let item of groupList" [value]="item.vehicleGroupId">
+                <mat-option *ngFor="let item of filteredSelectGroups | async" [value]="item.vehicleGroupId">
                     {{item.vehicleGroupName}}
                 </mat-option>
             </mat-select>
@@ -93,8 +98,13 @@
       </mat-label>
       <mat-form-field appearance="outline" class="full-width">
           <mat-select [disabled]="driverList.length == 0" (selectionChange)="onChangeDriver($event.value)" formControlName="driver" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" >
-              <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
-              <mat-option *ngFor="let item of driverList" [value]="item.driverId">
+            <mat-option>
+                <ngx-mat-select-search (keyup)="filterSelectDrivers(driversearch.value)" #driversearch>
+                    <mat-icon (click)="resetDriverSearchFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                </ngx-mat-select-search>
+            </mat-option>
+            <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
+              <mat-option *ngFor="let item of filteredDrivers | async" [value]="item.driverId">
                   {{item.firstName + ' ' + item.lastName}}
               </mat-option>
           </mat-select>

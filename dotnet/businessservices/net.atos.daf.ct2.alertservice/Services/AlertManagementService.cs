@@ -279,7 +279,8 @@ namespace net.atos.daf.ct2.alertservice.Services
                 //Alert objalert = new Alert();
                 //objalert.OrganizationId = request.OrganizationId;
                 //objalert.CreatedBy = request.AccountId;
-                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId);
+                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds);
 
                 AlertListResponse response = new AlertListResponse();
                 foreach (var item in alertList)

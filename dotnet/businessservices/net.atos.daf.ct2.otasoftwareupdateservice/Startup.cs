@@ -10,7 +10,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.httpclientservice;
 using net.atos.daf.ct2.otasoftwareupdate;
 using net.atos.daf.ct2.otasoftwareupdate.repository;
-using net.atos.daf.ct2.otasoftwareupdateservice.Services;
+using net.atos.daf.ct2.otasoftwareupdateservice;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.visibility;

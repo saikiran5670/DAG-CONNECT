@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.notificationengine.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.notificationengine.repository
 {
@@ -18,97 +19,135 @@ namespace net.atos.daf.ct2.notificationengine.repository
             _dataAccess = dataAccess;
 
         }
-        public async Task<TripAlert> InsertTripAlert(TripAlert tripAlert)
+        public async Task<int> InsertTripAlert(TripAlert tripAlert)
         {
-            string queryStatement = @"INSERT INTO tripdetail.tripalert(	                                                    
-	                                                     trip_id
-	                                                    , vin
-	                                                    , categorytype
-	                                                    , type
-	                                                    , urgencyleveltype
-	                                                    , name
-	                                                    , alertid
-	                                                    , alertgeneratedtime
-	                                                    , lattitude
-                                                        , longitude
-                                                        , processmessagetime
-                                                        , createdat
-                                                        , modifiedat
+            try
+            {
+                string queryStatement = @"INSERT INTO tripdetail.tripalert(	                                                    
+	                                                     trip_id 
+	                                                     ,vin 
+	                                                     ,category_type
+	                                                     ,type
+	                                                     ,name
+	                                                     ,alert_id
+	                                                     ,latitude
+	                                                     ,longitude
+	                                                     ,alert_generated_time
+	                                                     ,processed_message_time_stamp
+	                                                     ,created_at
+	                                                     ,modified_at
+	                                                     ,urgency_level_type
 	                                                    )
 	                                                    VALUES ( @trip_id
 			                                                    , @vin
-			                                                    , @categorytype
-			                                                    , @type
-			                                                    , @urgencyleveltype
+			                                                    , @category_type
+			                                                    , @type			                                                    
 			                                                    , @name
-			                                                    , @alertid
-			                                                    , @alertgeneratedtime
-			                                                    , @lattitude
-                                                                , @longitude
-			                                                    , @processmessagetime
-			                                                    , @createdat
-                                                                , @modifiedat;";
-            var parameter = new DynamicParameters();
-            parameter.Add("@trip_id", tripAlert.Tripid);
-            parameter.Add("@vin", tripAlert.Vin);
-            parameter.Add("@categorytype", 'L');
-            parameter.Add("@type", 'W');
-            parameter.Add("@urgencyleveltype", tripAlert.UrgencyLevelType);
-            parameter.Add("@name", tripAlert.Name);
-            parameter.Add("@alertid", tripAlert.Alertid);
-            parameter.Add("@alertgeneratedtime", tripAlert.AlertGeneratedTime);
-            parameter.Add("@lattitude", tripAlert.Latitude);
-            parameter.Add("@longitude", tripAlert.Longitude);
-            parameter.Add("@processmessagetime", tripAlert.MessageTimestamp);
-            parameter.Add("@createdat", tripAlert.CreatedAt);
-            parameter.Add("@modifiedat", tripAlert.ModifiedAt);
-            int tripAlertSentId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-            tripAlert.Id = tripAlertSentId;
-            return tripAlert;
+			                                                    , @alert_id
+			                                                    , @latitude
+			                                                    , @longitude                                                               
+			                                                    , @alert_generated_time
+			                                                    , @processed_message_time_stamp
+                                                                , @created_at
+                                                                , @modified_at
+                                                                , @urgency_level_type)RETURNING id;";
+                var parameter = new DynamicParameters();
+                parameter.Add("@trip_id", tripAlert.Tripid);
+                parameter.Add("@vin", tripAlert.Vin);
+                parameter.Add("@category_type", tripAlert.CategoryType);
+                parameter.Add("@type", tripAlert.Type);
+                parameter.Add("@urgencyleveltype", tripAlert.UrgencyLevelType);
+                parameter.Add("@name", tripAlert.Name);
+                parameter.Add("@alert_id", tripAlert.Alertid);
+                parameter.Add("@alert_generated_time", tripAlert.AlertGeneratedTime);
+                parameter.Add("@latitude", tripAlert.Latitude);
+                parameter.Add("@longitude", tripAlert.Longitude);
+                parameter.Add("@processed_message_time_stamp", tripAlert.MessageTimestamp);
+                parameter.Add("@created_at", tripAlert.CreatedAt);
+                parameter.Add("@modified_at", tripAlert.ModifiedAt);
+                parameter.Add("@urgency_level_type", tripAlert.UrgencyLevelType);
+                int tripAlertId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                tripAlert.Id = tripAlertId;
+                return tripAlert.Id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
         }
-        public async Task<TripAlertOtaConfigParam> InsertTripAlertOtaConfigParam(TripAlertOtaConfigParam tripAlertOtaConfigParam)
+        public async Task<TripAlert> InsertTripAlertOtaConfigParam(TripAlertOtaConfigParam tripAlertOtaConfigParam)
         {
-            //Nedd to change here for tripid 
-            TripAlert tripAlert = new TripAlert();
-            await InsertTripAlert(tripAlert);
-
-            if (tripAlert.Tripid != null)
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
+            try
             {
-                string queryStatement = @"INSERT INTO tripdetail.tripalertotaconfigparam(	                                                     
+                //Nedd to change here for tripid 
+                TripAlert tripAlert = new TripAlert();
+                tripAlert.Tripid = string.Empty;
+                tripAlert.Vin = tripAlertOtaConfigParam.Vin;
+                tripAlert.CategoryType = "O";
+                tripAlert.Type = "W";
+                tripAlert.Name = string.Empty;
+                tripAlert.Alertid = 0;
+                tripAlert.ThresholdValue = 0;
+                tripAlert.ThresholdValueUnitType = string.Empty;
+                tripAlert.ValueAtAlertTime = 0;
+                tripAlert.Latitude = 0;
+                tripAlert.Longitude = 0;
+                tripAlert.AlertGeneratedTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                tripAlert.MessageTimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                tripAlert.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                tripAlert.UrgencyLevelType = string.Empty;
+                tripAlert.Id = await InsertTripAlert(tripAlert);
+
+                if (tripAlert.Id > 0)
+                {
+                    string queryStatement = @"INSERT INTO tripdetail.tripalertotaconfigparam(	                                                     
 	                                                     trip_alert_id
 	                                                    , vin
-	                                                    , compaign
+	                                                    , campaign
 	                                                    , baseline
 	                                                    , status_code
 	                                                    , status
-	                                                    , compaign_id
+	                                                    , campaign_id
 	                                                    , subject
 	                                                    , time_stamp	                                                    
 	                                                    )
 	                                                    VALUES ( @trip_alert_id
 			                                                    , @vin
-			                                                    , @compaign
+			                                                    , @campaign
 			                                                    , @baseline
 			                                                    , @status_code
 			                                                    , @status
-			                                                    , @compaign_id
+			                                                    , @campaign_id
 			                                                    , @subject
-			                                                    , @time_stamp;";
-                var parameter = new DynamicParameters();
-                parameter.Add("@trip_alert_id", tripAlertOtaConfigParam.TripAlertId);
-                parameter.Add("@vin", tripAlertOtaConfigParam.Vin);
-                parameter.Add("@compaign", tripAlertOtaConfigParam.Compaign);
-                parameter.Add("@baseline", tripAlertOtaConfigParam.Baseline);
-                parameter.Add("@status_code", tripAlertOtaConfigParam.StatusCode);
-                parameter.Add("@status", tripAlertOtaConfigParam.Status);
-                parameter.Add("@compaign_id", tripAlertOtaConfigParam.ComapignId);
-                parameter.Add("@subject", tripAlertOtaConfigParam.Subject);
-                parameter.Add("@time_stamp", tripAlertOtaConfigParam.TimeStamp);
-                int tripAlertOtaConfigSentId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-                tripAlertOtaConfigParam.Id = tripAlertOtaConfigSentId;
+			                                                    , @time_stamp)RETURNING id;";
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@trip_alert_id", tripAlert.Id);
+                    parameter.Add("@vin", tripAlertOtaConfigParam.Vin);
+                    parameter.Add("@campaign", Guid.Parse(tripAlertOtaConfigParam.Campaign));
+                    parameter.Add("@baseline", Guid.Parse(tripAlertOtaConfigParam.Baseline));
+                    parameter.Add("@status_code", tripAlertOtaConfigParam.StatusCode);
+                    parameter.Add("@status", tripAlertOtaConfigParam.Status);
+                    parameter.Add("@campaign_id", tripAlertOtaConfigParam.CampaignId);
+                    parameter.Add("@subject", tripAlertOtaConfigParam.Subject);
+                    parameter.Add("@time_stamp", tripAlertOtaConfigParam.TimeStamp);
+                    int tripAlertOtaConfigId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                    tripAlertOtaConfigParam.Id = tripAlertOtaConfigId;
+                }
+                transactionScope.Commit();
+                return tripAlert;
             }
-            return tripAlertOtaConfigParam;
+            catch (Exception)
+            {
+                transactionScope.Rollback();
+                throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
         }
 
     }

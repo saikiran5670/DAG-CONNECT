@@ -39,38 +39,46 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ 'Search Parameters' || 'Search Parameters' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchParameters || 'Search Parameters' }}</span>
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Time Range' || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
-                <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Today' || 'Today' }}</button>
-                <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Yesterday' || 'Yesterday' }}</button>
-                <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Week' || 'Last Week' }}</button>
-                <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Month'|| 'Last Month' }}</button>
-                <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last 3 Months' || 'Last 3 Months' }}</button>
+                <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday|| 'Today' }}</button>
+                <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months|| 'Last 3 Months' }}</button>
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event.value)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
+                  <mat-option>
+                    <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleGroupSearch.value)" #vehicleGroupSearch>
+                      <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                  </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                  <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                  <mat-option *ngFor="let rer of filteredVehicleGroups | async " [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} </mat-label>
+              <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }} </mat-label>
               <mat-form-field appearance="outline">
                 <!-- <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle"> -->
                  <mat-select [disabled]="vehicleGrpDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
+                  <mat-option>
+                    <ngx-mat-select-search></ngx-mat-select-search>
+                  </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vin">
                       {{ rer.vehicleName }}
@@ -103,7 +111,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ 'To' || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -169,9 +177,9 @@
           
           <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-              (click)='onReset()'>{{'Reset' || 'Reset' }}</button>
+              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button [disabled]="false" class='no-margin' mat-raised-button color="primary"
-              (click)='onSearch()'>{{ 'Search' || 'Search' }}</button>
+              (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
           </div>
         </div>
       </mat-expansion-panel>

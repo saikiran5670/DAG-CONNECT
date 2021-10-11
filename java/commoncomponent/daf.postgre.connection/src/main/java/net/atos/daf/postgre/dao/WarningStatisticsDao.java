@@ -6,11 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
+import net.atos.daf.postgre.bo.IndexTripData;
 import net.atos.daf.postgre.bo.WarningStastisticsPojo;
 import net.atos.daf.postgre.util.DafConstants;
 
@@ -25,17 +28,17 @@ public class WarningStatisticsDao implements Serializable {
 	/** SQL statement for insert. */
 
 	private static final String LIVEFLEET_WARNING_INSERT = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String LIVEFLEET_WARNING_READ = "select warning_time_stamp from livefleet.livefleet_warning_statistics where vin = ? AND vin IS NOT NULL order by id DESC limit 1";
-	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_FOUR = "UPDATE livefleet.livefleet_current_trip_statistics  SET  distance_until_next_service = ? ,latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? ,latest_processed_message_time_stamp = ? ,  latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ?, vehicle_driving_status_type = ? , trip_distance = ?  WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
-
+	private static final String LIVEFLEET_WARNING_READ = "select warning_time_stamp from livefleet.livefleet_warning_statistics where vin = ? AND message_type=10 order by id DESC limit 1";
+	
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ? WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
-	
-	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select * from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
-	
 
+	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select * from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
+
+	private static final String LIVEFLEET_WARNING_READLIST = "select * from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
+	private static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id = ANY (?)";
+	 
 	public void warning_insert(WarningStastisticsPojo warningDetail) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_warning_statistics;
-		
 
 		try {
 
@@ -47,8 +50,8 @@ public class WarningStatisticsDao implements Serializable {
 
 				stmt_insert_warning_statistics.addBatch();
 				stmt_insert_warning_statistics.executeBatch();
-				//System.out.println("data inserted in warning table");
-				logger.info("warning dao --inserted for message 10--"+ warningDetail.getVin());
+				// System.out.println("data inserted in warning table");
+				logger.info("warning dao --inserted for message 10--" + warningDetail.getVin());
 			}
 		} catch (SQLException e) {
 			// System.out.println("inside catch LiveFleetDriverActivityDao Insert");
@@ -64,123 +67,69 @@ public class WarningStatisticsDao implements Serializable {
 	public void warningUpdateMessageTenCommonTrip(WarningStastisticsPojo warningDetail)
 			throws TechnicalException, SQLException {
 		PreparedStatement updateWarningCommonTrip = null;
-		//System.out.println("warning dao udate for message ten before try in message 10");
+		// System.out.println("warning dao udate for message ten before try in message
+		// 10");
 		try {
 
 			if (null != warningDetail && null != (connection = getConnection())) {
-				//System.out.println("warning dao udate for message ten");
+				// System.out.println("warning dao udate for message ten");
 
 				updateWarningCommonTrip = connection.prepareStatement(LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-				//updateWarningCommonTrip = fillStatement(updateWarningCommonTrip, warningDetail);
+				// updateWarningCommonTrip = fillStatement(updateWarningCommonTrip,
+				// warningDetail);
 
 				updateWarningCommonTrip.setDouble(1, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(2, warningDetail.getLongitude());
 				updateWarningCommonTrip.setDouble(3, warningDetail.getHeading());
 				updateWarningCommonTrip.setDouble(4, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setString(5, warningDetail.getVehicleHealthStatusType());
-				
-				//System.out.println( " warningDetail.getWarningClass() ::"+warningDetail.getWarningClass());
-				if(warningDetail.getWarningClass() != null)
+
+				// System.out.println( " warningDetail.getWarningClass()
+				// ::"+warningDetail.getWarningClass());
+				if (warningDetail.getWarningClass() != null)
 					updateWarningCommonTrip.setInt(6, warningDetail.getWarningClass());
 				else
 					updateWarningCommonTrip.setInt(6, 0);
-				
-				//System.out.println( " warningDetail.getWarningNumber() ::"+warningDetail.getWarningNumber());
-				
-				if(warningDetail.getWarningNumber() != null)
-				updateWarningCommonTrip.setInt(7, warningDetail.getWarningNumber());
+
+				// System.out.println( " warningDetail.getWarningNumber()
+				// ::"+warningDetail.getWarningNumber());
+
+				if (warningDetail.getWarningNumber() != null)
+					updateWarningCommonTrip.setInt(7, warningDetail.getWarningNumber());
 				else
 					updateWarningCommonTrip.setInt(7, 0);
-				
+
 				updateWarningCommonTrip.setString(8, warningDetail.getWarningType());
 				updateWarningCommonTrip.setLong(9, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setDouble(10, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(11, warningDetail.getLongitude());
-				//updateWarningCommonTrip.setString(12, warningDetail.getVehicleDrivingStatusType());
-				if(warningDetail.getVin()!=null) {
+				// updateWarningCommonTrip.setString(12,
+				// warningDetail.getVehicleDrivingStatusType());
+				if (warningDetail.getVin() != null) {
 					updateWarningCommonTrip.setString(12, warningDetail.getVin());
 				} else {
 					updateWarningCommonTrip.setString(12, warningDetail.getVid());
 				}
 
 				updateWarningCommonTrip.executeUpdate();
-				//System.out.println("warning dao --updated for another table for message 10");
-				logger.info("warning dao --updated for another table for message 10--"+ warningDetail.getVin());
+				// System.out.println("warning dao --updated for another table for message 10");
+				logger.info("warning dao --updated for another table for message 10--" + warningDetail.getVin());
 			}
 		} catch (SQLException e) {
-			logger.error("Sql Issue while updating data in common trip statistics table : " +updateWarningCommonTrip);
-			//System.out.println("sql-exception in update for message 10" + e.getMessage());
+			logger.error("Sql Issue while updating data in common trip statistics table : " + updateWarningCommonTrip);
+			// System.out.println("sql-exception in update for message 10" +
+			// e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
 			logger.error("Issue while inserting data in common trip statistics table : " + e.getMessage());
-			//System.out.println("sql-exception in update for message 10" + e.getMessage());
+			// System.out.println("sql-exception in update for message 10" +
+			// e.getMessage());
 			e.printStackTrace();
 		}
 
 	}
 
-	public void warningUpdateMessageFourCommonTrip(WarningStastisticsPojo warningDetail)
-			throws TechnicalException, SQLException {
-		PreparedStatement updateWarningCommonTrip;
-		//System.out.println("warning dao insert class");
-		try {
-
-			if (null != warningDetail && null != (connection = getConnection())) {
-				
-				//System.out.println("warning dao udate for message four before try");
-
-				updateWarningCommonTrip = connection.prepareStatement(LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_FOUR,
-						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-				//updateWarningCommonTrip = fillStatement(updateWarningCommonTrip, warningDetail);
-
-				if(warningDetail.getDistanceUntilNextService() != null)
-				updateWarningCommonTrip.setLong(1, warningDetail.getDistanceUntilNextService());
-				else
-					updateWarningCommonTrip.setLong(1,0);
-					
-				updateWarningCommonTrip.setDouble(2, warningDetail.getLatitude());
-				updateWarningCommonTrip.setDouble(3, warningDetail.getLongitude());
-				updateWarningCommonTrip.setDouble(4, warningDetail.getHeading());
-				/*
-				 * updateWarningCommonTrip.setDouble(5, warningDetail.getCreatedAt());
-				 * updateWarningCommonTrip.setDouble(6, warningDetail.getCreatedAt());
-				 */
-				
-				updateWarningCommonTrip.setDouble(5, warningDetail.getWarningTimeStamp());
-				updateWarningCommonTrip.setDouble(6, warningDetail.getWarningTimeStamp());
-				
-				
-				updateWarningCommonTrip.setDouble(7, warningDetail.getLatitude());
-				updateWarningCommonTrip.setDouble(8, warningDetail.getLongitude());
-				updateWarningCommonTrip.setString(9, warningDetail.getVehicleDrivingStatusType());
-				
-				if(warningDetail.getOdometerVal()!=null) {
-				updateWarningCommonTrip.setDouble(10, warningDetail.getOdometerVal());
-				} else {
-					updateWarningCommonTrip.setDouble(10, 0);
-				}
-				
-				if(warningDetail.getVin()!=null) {
-					updateWarningCommonTrip.setString(11, warningDetail.getVin());
-				} else {
-					updateWarningCommonTrip.setString(11, warningDetail.getVid());
-				}
-
-				updateWarningCommonTrip.executeUpdate();
-				//System.out.println("warning dao --updated for another table for message 4");
-			}
-		} catch (SQLException e) {
-			logger.error("Sql Issue while updating data in common trip statistics table : " + e.getMessage());
-			//System.out.println("sql-exception in update for message 4" + e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
-			logger.error("Issue while inserting data in common trip statistics table : " + e.getMessage());
-			//System.out.println("exception in update for message 4" + e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
 
 	public Long read(Integer messageType, String vin) throws TechnicalException, SQLException {
 
@@ -238,7 +187,7 @@ public class WarningStatisticsDao implements Serializable {
 
 	private PreparedStatement fillStatement(PreparedStatement stmt_insert_warning_statistics,
 			WarningStastisticsPojo warningDetail) throws SQLException {
-		//System.out.println("warning dao fill statement");
+		// System.out.println("warning dao fill statement");
 
 		if (warningDetail.getTripId() != null)
 			stmt_insert_warning_statistics.setString(1, warningDetail.getTripId());
@@ -320,7 +269,8 @@ public class WarningStatisticsDao implements Serializable {
 
 		// stmt_insert_warning_statistics.setLong(15,
 		// warningDetail.getLastestProcessedMessageTimeStamp());
-		//System.out.println("last processed time stamp--" + warningDetail.getLastestProcessedMessageTimeStamp());
+		// System.out.println("last processed time stamp--" +
+		// warningDetail.getLastestProcessedMessageTimeStamp());
 		if (warningDetail.getLastestProcessedMessageTimeStamp() != null) {
 			stmt_insert_warning_statistics.setLong(15, warningDetail.getLastestProcessedMessageTimeStamp());
 		} else {
@@ -334,7 +284,7 @@ public class WarningStatisticsDao implements Serializable {
 		} else {
 			stmt_insert_warning_statistics.setInt(18, 18);
 		}
-		//System.out.println("warning dao fill statementFinished");
+		// System.out.println("warning dao fill statementFinished");
 
 		return stmt_insert_warning_statistics;
 	}
@@ -378,14 +328,14 @@ public class WarningStatisticsDao implements Serializable {
 	 * 
 	 * return stmt_insert_warning_statistics; }
 	 */
-	
-	
-	public Long readRepairMaintenamce(Integer messageType, String vin, Integer warningClass, Integer warningNumber) throws TechnicalException, SQLException {
+
+	public Long readRepairMaintenamce(Integer messageType, String vin, Integer warningClass, Integer warningNumber)
+			throws TechnicalException, SQLException {
 
 		PreparedStatement stmt_read_warning_statistics = null;
 		ResultSet rs_position = null;
 		Long lastestProcessedMessageTimeStamp = null;
-		String warningType= null;
+		String warningType = null;
 
 		try {
 
@@ -393,21 +343,19 @@ public class WarningStatisticsDao implements Serializable {
 
 				stmt_read_warning_statistics = connection.prepareStatement(REPAITM_MAINTENANCE_WARNING_READ);
 
-				
 				stmt_read_warning_statistics.setInt(1, messageType);
 				stmt_read_warning_statistics.setString(2, vin);
-				
+
 				stmt_read_warning_statistics.setInt(3, warningClass);
 				stmt_read_warning_statistics.setInt(4, warningNumber);
-				
+
 				rs_position = stmt_read_warning_statistics.executeQuery();
-				//System.out.println("query :" + stmt_read_warning_statistics);
+				// System.out.println("query :" + stmt_read_warning_statistics);
 
 				while (rs_position.next()) {
-					
-					warningType=
-							rs_position.getString("warning_type");
-					if(warningType.equals("A")) {
+
+					warningType = rs_position.getString("warning_type");
+					if (warningType.equals("A")) {
 						lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
 					}
 				}
@@ -434,6 +382,117 @@ public class WarningStatisticsDao implements Serializable {
 		}
 
 		return lastestProcessedMessageTimeStamp;
+
+	}
+	
+	public List<WarningStastisticsPojo> readReturnListofActiveMsg(Integer messageType, String vin) throws TechnicalException, SQLException {
+
+		PreparedStatement stmt_read_warning_statistics = null;
+		ResultSet rs_position = null;
+		//Long lastestProcessedMessageTimeStamp = null;
+		
+		List<WarningStastisticsPojo> warningActiveList=new ArrayList<>();
+ 
+		try {
+
+			if (null != messageType && null != (connection = getConnection())) {
+
+				stmt_read_warning_statistics = connection.prepareStatement(LIVEFLEET_WARNING_READLIST);
+
+				stmt_read_warning_statistics.setString(1, vin);
+				
+
+				rs_position = stmt_read_warning_statistics.executeQuery();
+				logger.info("readed list : " + stmt_read_warning_statistics);
+				
+				/*
+				 * if(rs_position.getFetchSize()>0) { logger.info("size of list : " +
+				 * rs_position.getFetchSize()); warningActiveList= new ArrayList<>(); }
+				 */
+					
+
+				while (rs_position.next()) {
+					warningActiveList.add(map(rs_position));
+					logger.info("warning list is ready ");
+					
+					//rs_position.getInt(0)
+					
+			//lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
+				}
+
+				rs_position.close();
+			}
+
+		} catch (SQLException e) {
+			logger.error("Error in Warning statistics read method : " + stmt_read_warning_statistics);
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error in Warning statistics read method : " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+
+			if (null != rs_position) {
+
+				try {
+					rs_position.close();
+				} catch (SQLException ignore) {
+					/** ignore any errors here */
+				}
+			}
+		}
+
+		return warningActiveList;
+
+	}
+	
+	private WarningStastisticsPojo map(ResultSet resultSet) throws SQLException {
+		WarningStastisticsPojo warningData= new WarningStastisticsPojo();
+		try {
+		
+		logger.info("inside map function--: ");
+		warningData.setVin(resultSet.getString("vin"));
+		warningData.setId(resultSet.getInt("id"));
+		warningData.setWarningClass(resultSet.getInt("warning_class"));
+		warningData.setWarningNumber(resultSet.getInt("warning_number"));
+		warningData.setWarningType(resultSet.getString("warning_type"));
+		logger.info("warningDataObject is ready to return: ");
+		} catch(Exception e) {
+			logger.error("Error in map method : " + e.getMessage());
+		}
+		//id
+		
+		return warningData;
+		
+	}
+	
+	public void DeactivatWarningUpdate(List<Integer> warningList)
+			throws TechnicalException, SQLException {
+		PreparedStatement updateWarningCommonTrip = null;
+		
+		try {
+
+			if (null != warningList && !warningList.isEmpty() &&null != (connection = getConnection())) {
+				
+				updateWarningCommonTrip = connection.prepareStatement(LIVEFLEET_WARNING_UPDATELIST,
+						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				
+				 updateWarningCommonTrip.setArray(1, connection.createArrayOf("integer", warningList.toArray()));
+				 
+				logger.info("query prepared for deactivate update " + updateWarningCommonTrip);
+				updateWarningCommonTrip.executeUpdate();
+				logger.info("update executed for 63 " + updateWarningCommonTrip);
+				
+			}
+		} catch (SQLException e) {
+			logger.error("Sql Issue while updating list in warning statistics : " + updateWarningCommonTrip);
+			
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Issue while inserting updating list in warning statistics  : " + e.getMessage());
+			// System.out.println("sql-exception in update for message 10" +
+			// e.getMessage());
+			e.printStackTrace();
+		}
 
 	}
 }
