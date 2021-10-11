@@ -391,7 +391,7 @@ public class WarningStatisticsDao implements Serializable {
 		ResultSet rs_position = null;
 		//Long lastestProcessedMessageTimeStamp = null;
 		
-		List<WarningStastisticsPojo> warningActiveList=null;
+		List<WarningStastisticsPojo> warningActiveList=new ArrayList<>();
  
 		try {
 
@@ -403,14 +403,17 @@ public class WarningStatisticsDao implements Serializable {
 				
 
 				rs_position = stmt_read_warning_statistics.executeQuery();
+				logger.info("readed list : " + stmt_read_warning_statistics);
 				
-				if(rs_position.getFetchSize()>0) {	
-					warningActiveList= new ArrayList<>();
-				}
+				/*
+				 * if(rs_position.getFetchSize()>0) { logger.info("size of list : " +
+				 * rs_position.getFetchSize()); warningActiveList= new ArrayList<>(); }
+				 */
 					
 
 				while (rs_position.next()) {
 					warningActiveList.add(map(rs_position));
+					logger.info("warning list is ready ");
 					
 					//rs_position.getInt(0)
 					
@@ -421,7 +424,7 @@ public class WarningStatisticsDao implements Serializable {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Error in Warning statistics read method : " + e.getMessage());
+			logger.error("Error in Warning statistics read method : " + stmt_read_warning_statistics);
 			e.printStackTrace();
 		} catch (Exception e) {
 			logger.error("Error in Warning statistics read method : " + e.getMessage());
@@ -443,16 +446,23 @@ public class WarningStatisticsDao implements Serializable {
 	}
 	
 	private WarningStastisticsPojo map(ResultSet resultSet) throws SQLException {
-		
 		WarningStastisticsPojo warningData= new WarningStastisticsPojo();
+		try {
+		
+		logger.info("inside map function--: ");
 		warningData.setVin(resultSet.getString("vin"));
 		warningData.setId(resultSet.getInt("id"));
 		warningData.setWarningClass(resultSet.getInt("warning_class"));
 		warningData.setWarningNumber(resultSet.getInt("warning_number"));
 		warningData.setWarningType(resultSet.getString("warning_type"));
+		logger.info("warningDataObject is ready to return: ");
+		} catch(Exception e) {
+			logger.error("Error in map method : " + e.getMessage());
+		}
 		//id
 		
 		return warningData;
+		
 	}
 	
 	public void DeactivatWarningUpdate(List<Integer> warningList)
@@ -470,9 +480,10 @@ public class WarningStatisticsDao implements Serializable {
 				// warningDetail);
 				
 				updateWarningCommonTrip.setObject(1, warningList); 
+				logger.info("query prepared for deactivate update " + updateWarningCommonTrip);
 				updateWarningCommonTrip.executeUpdate();
-				
-				System.out.println("query-->" + updateWarningCommonTrip);
+				logger.info("update executed for 63 " + updateWarningCommonTrip);
+				//System.out.println("query-->" + updateWarningCommonTrip);
 				
 				// System.out.println("warning dao --updated for another table for message 10");
 				//logger.info("warning dao --updated for another table for message 10--" + warningDetail.getVin());

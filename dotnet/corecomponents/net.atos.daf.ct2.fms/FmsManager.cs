@@ -16,10 +16,20 @@ namespace net.atos.daf.ct2.fms
         {
             return _fmsRepository.GetVehiclePosition(vin, since);
         }
+
+        public Task<VehiclePositionResponse> GetVehiclePosition(List<string> vin, string since)
+        {
+            return _fmsRepository.GetVehiclePosition(vin, since);
+        }
+
         public Task<VehicleStatusResponse> GetVehicleStatus(string vin, string since)
         {
             return _fmsRepository.GetVehicleStatus(vin, since);
         }
 
+        public Task<VehicleStatusResponse> GetVehicleStatus(List<string> vin, string since)
+        {
+            return _fmsRepository.GetVehicleStatus(vin, since);
+        }
     }
 }

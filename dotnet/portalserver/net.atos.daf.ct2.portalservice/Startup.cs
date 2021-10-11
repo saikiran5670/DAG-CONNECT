@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(notificationservice));
             // Enable support for unencrypted HTTP2  
             //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            //services.AddGrpcClient<OTASoftwareUpdateService.OTASoftwareUpdateServiceClient>(o => o.Address = new Uri(otasoftwareupdateservice));
+            services.AddGrpcClient<OTASoftwareUpdateService.OTASoftwareUpdateServiceClient>(o => o.Address = new Uri(otasoftwareupdateservice));
 
             services.AddSwaggerGen(c =>
             {

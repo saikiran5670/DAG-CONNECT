@@ -110,10 +110,16 @@ message ScheduleSoftwareUpdateRequest{
         string CampaignId =1;        
         string BaseLineId =2;
         int64 ScheduleDateTime =3;
-        repeated string Vins =4;
+        string Vin =4;
+        int64 CreatedAt = 5;
+        int64 CreatedBy = 6;
+        int64 TimeStampBoasch = 7;
+        string Status = 8;
+        
 }
 message ScheduleSoftwareUpdateResponse
     {
         ResponseCode HttpStatusCode =1;       
         string Message = 2;
+        ScheduleSoftwareUpdateRequest ScheduleSoftwareUpdateRequest=3;
     }
