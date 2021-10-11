@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Options;
 
-namespace net.atos.daf.ct2.fmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.fmsdataservice.customAttributes
 {
     public class BasicAuthenticationPostConfigureOptions : IPostConfigureOptions<BasicAuthenticationOptions>
     {

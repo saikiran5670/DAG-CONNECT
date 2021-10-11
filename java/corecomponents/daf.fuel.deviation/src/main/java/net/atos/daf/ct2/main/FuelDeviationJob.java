@@ -82,8 +82,8 @@ public class FuelDeviationJob {
 
 			FuelDeviationProcess fuelDeviation = new FuelDeviationProcess();
 			SingleOutputStreamOperator<FuelDeviationData> fuelDuringStopData = fuelDeviationData
-					.filter(rec -> (FuelDeviationConstants.INDEX_TRIP_START).intValue() == rec.getVEvtId().intValue()
-							|| (FuelDeviationConstants.INDEX_TRIP_END).intValue() == rec.getVEvtId().intValue());
+					.filter(rec -> Objects.nonNull(rec.getVEvtId()) && ((FuelDeviationConstants.INDEX_TRIP_START).intValue() == rec.getVEvtId().intValue()
+							|| (FuelDeviationConstants.INDEX_TRIP_END).intValue() == rec.getVEvtId().intValue()));
 
 			SingleOutputStreamOperator<FuelDeviation> fuelDeviationDuringStopData = fuelDeviation
 					.fuelDeviationProcessingDuringStop(fuelDuringStopData,
