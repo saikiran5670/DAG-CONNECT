@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
                 parameter.Add("@scheduled_datetime", otaScheduleCompaign.ScheduleDateTime);
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@created_by", otaScheduleCompaign.CreatedBy);
-                parameter.Add("@baseline", otaScheduleCompaign.BaselineId);
+                parameter.Add("@baseline", Guid.Parse(otaScheduleCompaign.BaselineId));
                 parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
                 parameter.Add("@status", 'S');
                 int tripAlertSentId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
