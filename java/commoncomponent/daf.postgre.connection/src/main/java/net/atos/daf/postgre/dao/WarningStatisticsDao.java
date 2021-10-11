@@ -35,7 +35,7 @@ public class WarningStatisticsDao implements Serializable {
 	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select * from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
 
 	private static final String LIVEFLEET_WARNING_READLIST = "select * from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
-	private static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id in(?)";
+	private static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id in ?";
 	 
 	public void warning_insert(WarningStastisticsPojo warningDetail) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_warning_statistics;
@@ -471,15 +471,15 @@ public class WarningStatisticsDao implements Serializable {
 		
 		try {
 
-			if (null != warningList && null != (connection = getConnection())) {
+			if (null != warningList && !warningList.isEmpty() &&null != (connection = getConnection())) {
 				// System.out.println("warning dao udate for message ten");
 
 				updateWarningCommonTrip = connection.prepareStatement(LIVEFLEET_WARNING_UPDATELIST,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				// updateWarningCommonTrip = fillStatement(updateWarningCommonTrip,
 				// warningDetail);
-				
-				updateWarningCommonTrip.setObject(1, warningList); 
+				String inWarningList=warningList.toString().replace('[', '(').replace(']', ')');
+				updateWarningCommonTrip.setObject(1, inWarningList); 
 				logger.info("query prepared for deactivate update " + updateWarningCommonTrip);
 				updateWarningCommonTrip.executeUpdate();
 				logger.info("update executed for 63 " + updateWarningCommonTrip);
