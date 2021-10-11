@@ -247,7 +247,12 @@ export class DriverTimeDetailComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.updateDataSource(this.detailConvertedData);
    // this.setGraphData();
-
+   this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
+    this.showLoadingIndicator = false;
+    this.createChart(data);
+    })
+    this.updateDataSource(this.detailConvertedData);
+    this.setGraphData();
   }
 
   // ngAfterViewInit() {
@@ -341,14 +346,14 @@ export class DriverTimeDetailComponent implements OnInit {
   //   });
   // }
 
-  ngOnChanges(){
-    this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
-      this.showLoadingIndicator = false;
-      this.createChart(data);
-    })
-    this.updateDataSource(this.detailConvertedData);
-    this.setGraphData();
-  }
+  // ngOnChanges(){
+  //   this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
+  //     this.showLoadingIndicator = false;
+  //     this.createChart(data);
+  //   })
+  //   this.updateDataSource(this.detailConvertedData);
+  //   this.setGraphData();
+  // }
 
   createChart(data){
     let _data = data['driverActivitiesChartData'];
@@ -408,7 +413,7 @@ export class DriverTimeDetailComponent implements OnInit {
     //   driveData.push(restObj)
     // });
     
-    let driveData, workData, restData, availableData=[];
+    let driveData=[], workData=[], restData=[], availableData=[];
     _data.forEach(element => {
       let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
