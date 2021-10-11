@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.entity;
 
@@ -1141,20 +1142,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (organizationId > 0 && is_vehicle)
                 {
                     query = @"-- Owned groups G/D
-                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group
+                              SELECT grp.id, grp.name, count(v.id) as count, true as is_group, grp.group_type, grp.function_enum
                               FROM master.vehicle v
                               LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                               INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.group_type='D') AND grp.object_type='V' AND grp.organization_id=@organization_id
-                              INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
-                              INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
-                              WHERE 
-	                              CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
-	                              ELSE COALESCE(end_date,0) = 0 END
-                              GROUP BY grp.id, grp.name";
+                              GROUP BY grp.id, grp.name, grp.group_type, grp.function_enum";
                 }
                 else
                 {
-                    query = @"SELECT DISTINCT id,name,0 as count,true as is_group 
+                    query = @"SELECT DISTINCT id,name,0 as count,true as is_group
                               FROM (
                                 SELECT vg.id,vg.name
                                 FROM master.group vg
@@ -1170,19 +1166,12 @@ namespace net.atos.daf.ct2.vehicle.repository
                 IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                 response = accessRelationship.ToList();
 
-                //setting this set of code to manager Level
-                //IEnumerable<VehicleManagementDto> vehicles = await GetAllRelationshipVehicles(organizationId);
-                //foreach (var item in vehicles.ToList())
-                //{
-                //    AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
-                //    accountVehicleEntity.Id = item.Id;
-                //    accountVehicleEntity.Name = item.Name;
-                //    accountVehicleEntity.Count = 0;
-                //    accountVehicleEntity.Is_group = false;
-                //    accountVehicleEntity.VIN = item.VIN;
-                //    accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
-                //    response.Add(accountVehicleEntity);
-                //}
+                foreach (var item in response.Where(x => x.Group_Type.Equals("D")))
+                {
+                    var ids = await GetDynamicVehicleCount(organizationId, (FunctionEnum)Convert.ToChar(item.Function_Enum));
+                    item.Count = ids.Distinct().Count();
+                }
+
                 return response;
             }
             catch (Exception)
@@ -2547,6 +2536,75 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         }
         #endregion
+
+        /// <summary>
+        /// Dynamic VEHICLE_QUERY
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <param name="organizationId"></param>
+        /// <returns></returns>
+        private async Task<IEnumerable<int>> GetDynamicVehicleCount(int organizationId, FunctionEnum functionEnum)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@OrganizationId", organizationId);
+                string queryOwned = string.Empty, queryVisible = string.Empty, queryUnion = "UNION";
+                string selectStatement = string.Empty;
+
+                queryOwned = @"                        
+                        SELECT DISTINCT v.id
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
+                        WHERE 
+	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                        ELSE COALESCE(end_date,0) = 0 END";
+
+                queryVisible =
+                        @"SELECT v.id
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@OrganizationId
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                        WHERE 
+	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                        ELSE COALESCE(end_date,0) = 0 END
+                        UNION
+                        SELECT v.id
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id 
+                                    AND orm.owner_org_id=grp.organization_id 
+                                    AND orm.target_org_id=@OrganizationId
+                                    AND grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                        ELSE COALESCE(end_date,0) = 0 END";
+
+                switch (functionEnum)
+                {
+                    case FunctionEnum.OwnedVehicles:
+                        selectStatement = queryOwned;
+                        break;
+                    case FunctionEnum.VisibleVehicles:
+                        selectStatement = queryVisible;
+                        break;
+                    case FunctionEnum.All:
+                        selectStatement = $"{ queryOwned } { queryUnion } { queryVisible }";
+                        break;
+                    default:
+                        break;
+                }
+                return await _dataAccess.QueryAsync<int>(selectStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
 
