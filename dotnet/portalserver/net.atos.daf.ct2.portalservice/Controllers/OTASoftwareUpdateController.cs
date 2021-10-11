@@ -80,7 +80,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
                 Metadata headers = new Metadata();
                 headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
-
+                await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
+                 OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleStatusList", string.Empty), 1, 2, $"{featureId} & {adminRightsFeatureId}",
+                  _userDetails);
                 var response = await _otaSoftwareUpdateServiceClient
                     .GetVehicleStatusListAsync(new VehicleStatusRequest
                     {

@@ -8,5 +8,7 @@
         public bool Is_group { get; set; }
         public string VIN { get; set; }
         public string RegistrationNo { get; set; }
+        public string Group_Type { get; set; }
+        public string Function_Enum { get; set; }
     }
 }

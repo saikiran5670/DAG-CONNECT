@@ -150,8 +150,9 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								List<Integer> toDeactivate= new ArrayList<>();
 								List<WarningStastisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
-								logger.info("activeWarnings list size ", activeWarnings.size());
-								logger.info("warningList63 list size ", warningList63.size());
+								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
+								logger.info("activeWarnings list size " + activeWarnings.size());
+								logger.info("warningList63 list size "  + warningList63.size());
 								for(WarningStastisticsPojo activeWarning :activeWarnings) {
 									int warningClass= activeWarning.getWarningClass();
 									int warningNumber= activeWarning.getWarningNumber();
@@ -173,10 +174,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									
 										 warningPresent=false; 
 									
-								}
-								logger.info("toDeactivate list size ", toDeactivate.size());
+								} }
+								logger.info("toDeactivate list size " + toDeactivate.size());
 								
 								warningDao.DeactivatWarningUpdate(toDeactivate);
+								logger.info("update done-sink class ");
 							}
 
 						}
