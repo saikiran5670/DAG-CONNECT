@@ -480,8 +480,9 @@ public class WarningStatisticsDao implements Serializable {
 				// warningDetail);
 				
 				updateWarningCommonTrip.setObject(1, warningList); 
-				updateWarningCommonTrip.executeUpdate();
 				logger.info("query prepared for deactivate update " + updateWarningCommonTrip);
+				updateWarningCommonTrip.executeUpdate();
+				logger.info("update executed for 63 " + updateWarningCommonTrip);
 				//System.out.println("query-->" + updateWarningCommonTrip);
 				
 				// System.out.println("warning dao --updated for another table for message 10");
