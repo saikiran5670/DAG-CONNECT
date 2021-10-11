@@ -63,11 +63,11 @@ public class MessageProcessing<U, T> implements Serializable {
 						
 					} else if ("Monitor".equalsIgnoreCase(key)) {
 						Monitor monitorObj = MessageParseUtil.processMonitorBoschMessage(value.getValue().toString(),
-								properties);
+								properties, value.getTimeStamp().toString());
 						if( monitorObj.getTransID() != null && monitorObj.getDocument().getTripID() != null &&
 								monitorObj.getMessageType()  != null && monitorObj.getVid() != null && monitorObj.getVin() != null ) {
 							
-							//monitorObj.setKafkaProcessingTS(value.getTimeStamp().toString());
+						
 							T record = JsonMapper.configuring().readValue(monitorObj.toString(), tClass);
 
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
