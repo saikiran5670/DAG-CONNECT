@@ -25,6 +25,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 {
     [Route("vehicle")]
     [ApiController]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FmsDataServiceController : ControllerBase
     {
         private readonly ILogger<FmsDataServiceController> _logger;
@@ -54,7 +55,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 
         [HttpGet]
         [Route("position/current")]
-        //[Authorize(Policy = AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)]
+        //[Authorize]//(Policy = AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)]
         public async Task<IActionResult> Position([FromQuery] VehiclePositionRequest vehiclePositionRequest)
         {
             try
@@ -80,9 +81,9 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 //    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
                 net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                 await GetUserDetails();
-                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId = 144, OrgId = 2);
                 List<string> objVisibilityVinList = new List<string>();
-                if (!string.IsNullOrEmpty(vehiclePositionRequest.VIN))
+                if (string.IsNullOrEmpty(vehiclePositionRequest.VIN))
                 {
                     var dataVisibleVehicle = visibleVehicles.Select(a => a.Value).ToList();
                     foreach (var item in dataVisibleVehicle)

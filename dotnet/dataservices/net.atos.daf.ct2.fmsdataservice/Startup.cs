@@ -131,6 +131,13 @@ namespace net.atos.daf.ct2.fmsdataservice
                     policy => policy.RequireAuthenticatedUser()
                                     .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)));
             });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.MAIN_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
+            });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
 
@@ -144,18 +151,41 @@ namespace net.atos.daf.ct2.fmsdataservice
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        //public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        //{
+        //    if (env.IsDevelopment())
+        //    {
+        //        app.UseDeveloperExceptionPage();
+        //        app.UseSwagger();
+        //        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "net.atos.daf.ct2.fmsdataservice v1"));
+        //    }
+
+        //    app.UseHttpsRedirection();
+
+        //    app.UseRouting();
+
+        //    app.UseAuthorization();
+        //    app.UseAuthentication();
+
+        //    app.UseEndpoints(endpoints =>
+        //    {
+        //        endpoints.MapControllers();
+        //    });
+        //}
+
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "net.atos.daf.ct2.fmsdataservice v1"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -163,6 +193,13 @@ namespace net.atos.daf.ct2.fmsdataservice
             {
                 endpoints.MapControllers();
             });
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "net.atos.daf.ct2.fmsdataservice v1"));
+            }
         }
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
         {
