@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
 {
     [ApiController]
     [Route("notification")]
-    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class NotificationController : ControllerBase
     {
         private readonly ILogger<NotificationController> _logger;

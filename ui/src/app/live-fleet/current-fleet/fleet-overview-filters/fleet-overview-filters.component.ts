@@ -45,6 +45,7 @@ driverList: any = [];
 categoryList : any= [];
 vehicleListData: any = [];
 driverListData: any = [];
+finalDriverList: any = [];
 levelList : any= [];
 healthList : any= [];
 otherList : any= [];
@@ -65,7 +66,9 @@ subscription: Subscription;
 status = new FormControl();
 
 public filteredSelectGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
- 
+
+public filteredDrivers: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
 constructor(private fleetMapService: FleetMapService, private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
     private dataInterchangeService: DataInterchangeService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
@@ -152,6 +155,10 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
         this.filterData["driverList"].forEach(item=>{
           this.driverList.push(item) });
           this.driverList = this.removeDuplicates(this.driverList, "driverId");
+          this.finalDriverList = this.driverList;
+          this.finalDriverList.sort(this.compare);
+          this.resetDriverSearchFilter();
+          
           this.loadDriverData();
       }   
       else{
@@ -186,7 +193,10 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
   resetSelectGroupFilter(){
     this.filteredSelectGroups.next(this.finalgroupList.slice());
   }
-
+  resetDriverSearchFilter(){
+    this.filteredDrivers.next(this.finalDriverList.slice());
+  }
+  
   loadDriverData(){  
     this.noRecordFlag = true;
     let newAlertCat=[];
@@ -870,4 +880,22 @@ filterSelectGroups(groupsearch){
     );
   console.log("this.filteredSelectGroups", this.filteredSelectGroups);
 }
+
+filterSelectDrivers(driversearch){
+  console.log("filterSelectDrivers called");
+  if(!this.finalDriverList){
+    return;
+  }
+  if(!driversearch){
+    this.resetDriverSearchFilter();
+    return;
+  } else{
+    driversearch = driversearch.toLowerCase();
+  }
+  this.filteredDrivers.next(
+    this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
+  );
+  console.log("this.filteredDrivers", this.filteredDrivers);
+}
+
 }
