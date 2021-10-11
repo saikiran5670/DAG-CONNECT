@@ -29,6 +29,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { treeExportFormatter } from 'angular-slickgrid';
+import { ReplaySubject } from 'rxjs';
 
 
 declare var H: any;
@@ -174,6 +175,8 @@ _state: any ;
 map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
+
+public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
@@ -816,6 +819,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     let aCtgry : any = '';
   
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
+    console.log("vhicleGrpDD1", this.vehicleGrpDD);
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
@@ -1039,19 +1043,44 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD1", this.vehicleDD);
+     
     }
     else{
       let vehicle_group_selected:any = parseInt(value);
       this.vehicleGrpDD.forEach(element => {
+        console.log("vhicleGrpDD2", this.vehicleGrpDD);
+    
        let vehicle= this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
       //  let vehicle= element.filter(item => item.vehicleId == value);
        if(vehicle.length > 0){
         this.vehicleDD.push(vehicle[0]);
+        console.log("vehicleDD2", this.vehicleDD);
+     
         }
       });
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
+      console.log("vehicleDD3", this.vehicleDD);
+      this.vehicleDD.sort(this.compare);
+      this.resetVehicleGroupFilter();
+   
     }   
   }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+
+  resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD);
+  }
+  
 
   getUniqueVINs(vinList: any){
     let uniqueVINList = [];
@@ -1504,7 +1533,8 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-     if(this.vehicleDD.length > 0){
+        console.log("vehicleDD4", this.vehicleDD);
+        if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
@@ -1525,13 +1555,22 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
+          console.log("vhicleGrpDD4", this.vehicleGrpDD);
+    
         } else {
           this.singleVehicle.push(element);
         }
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
+    console.log("vhicleGrpDD5", this.vehicleGrpDD);
+    this.vehicleGrpDD.sort(this.compare);
+    this.resetVehicleGroupFilter();
+ 
+    
     this.vehicleGrpDD.forEach(element => {
+      console.log("vhicleGrpDD6", this.vehicleGrpDD);
+    
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
  }
@@ -1967,4 +2006,21 @@ let prepare = []
     this.mapGroup.removeAll();
     this.vehicleIconMarker = null;
    }
+   filterVehicleGroups(vehicleGroupSearch){
+    console.log("filterVehicleGroups is called");
+    if(!this.filteredVehicleGroups){
+      return;
+    }
+    if(!vehicleGroupSearch){
+       this.resetVehicleGroupFilter();
+       return;
+    } else {
+      vehicleGroupSearch = vehicleGroupSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleGroupSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+  }
+
 }
