@@ -25,5 +25,6 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota14
     {
         public int HttpStatusCode { get; set; }
         public ScheduleStatusOverview ScheduleStatusOverview { get; set; }
+        public long BoashTimesStamp { get; internal set; }
     }
 }

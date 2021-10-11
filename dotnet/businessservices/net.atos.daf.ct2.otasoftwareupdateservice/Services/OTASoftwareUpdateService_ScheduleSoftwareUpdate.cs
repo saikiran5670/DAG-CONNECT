@@ -25,13 +25,14 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
                 //ScheduleSoftwareCompaign scheduleSoftwareCompaign = new ScheduleSoftwareCompaign();
                 OtaScheduleCompaign otaScheduleCompaign = new OtaScheduleCompaign();
                 otaScheduleCompaign = _mapper.ToScheduleSoftwareCompaign(request);
-                await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
 
                 var scheduleSoftwareStatusResponse = await _httpClientServiceClient
                        .GetScheduleSoftwareUpdateAsync(
                            _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
                            );
-
+                otaScheduleCompaign.Status = (int)scheduleSoftwareStatusResponse.HttpStatusCode == 200 ? "S" : "F";
+                //otaScheduleCompaign.TimeStampBoasch = scheduleSoftwareStatusResponse.
+                await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {
