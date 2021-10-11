@@ -184,7 +184,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
         icon: this.uploadIcon //-- base64
       }     
       this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
-        this.loadLandmarkCategoryData();
+        //this.loadLandmarkCategoryData();
+        this.getCategoryDetails();
       }, (error) => {
         if(error.status == 409){
           this.duplicateCategory = true;
@@ -202,7 +203,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
         organization_Id: (this.categoryForm.controls.type.value == "Regular") ? this.accountOrganizationId : 0
       }
       this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
-        this.loadLandmarkCategoryData();
+        //this.loadLandmarkCategoryData();
+        this.getCategoryDetails()
       }, (error) => {
         if(error.status == 409){
           this.duplicateCategory = true;
@@ -219,39 +221,39 @@ export class CreateEditViewCategoryComponent implements OnInit {
       this.duplicateCatMsg = ("Category Name '$' already exists.").replace('$', catName);
   }
 
-  loadLandmarkCategoryData(){
-    let categoryList: any = [];
-    let objData = {
-      type:'C',
-      Orgid: this.accountOrganizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      categoryList = parentCategoryData.categories;    
-      this.getSubCategoryData(categoryList);
-    }, (error) => {
-      categoryList = [];
-      this.getSubCategoryData(categoryList);
-    });  
-  }
+  // loadLandmarkCategoryData(){
+  //   let categoryList: any = [];
+  //   let objData = {
+  //     type:'C',
+  //     Orgid: this.accountOrganizationId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
+  //     categoryList = parentCategoryData.categories;    
+  //     this.getSubCategoryData(categoryList);
+  //   }, (error) => {
+  //     categoryList = [];
+  //     this.getSubCategoryData(categoryList);
+  //   });  
+  // }
 
-  getSubCategoryData(categoryList: any){
-    let subCategoryList: any = [];
-    let objData = {
-      type:'S',
-      Orgid: this.accountOrganizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
-      subCategoryList = subCategoryData.categories;
-      this.getCategoryDetails(categoryList, subCategoryList);
-    }, (error) => {
-      subCategoryList = [];
-      this.getCategoryDetails(categoryList, subCategoryList);
-    });
-  }
+  // getSubCategoryData(categoryList: any){
+  //   let subCategoryList: any = [];
+  //   let objData = {
+  //     type:'S',
+  //     Orgid: this.accountOrganizationId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
+  //     subCategoryList = subCategoryData.categories;
+  //     this.getCategoryDetails(categoryList, subCategoryList);
+  //   }, (error) => {
+  //     subCategoryList = [];
+  //     this.getCategoryDetails(categoryList, subCategoryList);
+  //   });
+  // }
 
-  getCategoryDetails(categoryList: any, subCategoryList: any){
+  getCategoryDetails(){
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
-      let emitObj = { stepFlag: false, gridData: categoryData.categories, successMsg: this.getCategoryCreatedUpdatedMessage(), categoryList: categoryList, subCategoryList: subCategoryList };
+      let emitObj = { stepFlag: false, gridData: categoryData.categories, successMsg: this.getCategoryCreatedUpdatedMessage()};
       this.backToPage.emit(emitObj);
     }, (error) => {
       if (error.status == 409) {
