@@ -134,6 +134,13 @@ namespace net.atos.daf.ct2.fmsdataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
+                    AccessPolicies.FMS_VEHICLE_VEHICLES_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_VEHICLES_ACCESS_POLICY)));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
                     AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
                                     .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
