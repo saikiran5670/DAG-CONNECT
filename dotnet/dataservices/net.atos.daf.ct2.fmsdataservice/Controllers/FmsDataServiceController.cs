@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 {
     [Route("vehicle")]
     [ApiController]
-    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    // [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FmsDataServiceController : ControllerBase
     {
         private readonly ILogger<FmsDataServiceController> _logger;
@@ -55,12 +55,22 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 
         [HttpGet]
         [Route("position/current")]
-        //[Authorize]//(Policy = AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)]
+        [Authorize(Policy = AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)]
         public async Task<IActionResult> Position([FromQuery] VehiclePositionRequest vehiclePositionRequest)
         {
             try
             {
-                //var selectedType = string.Empty;
+
+
+                this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
+                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                {
+                    _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
+                }
+                else
+                {
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                }
                 //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
                 //this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
@@ -161,7 +171,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
         }
         [HttpGet]
         [Route("status/current")]
-        //[Authorize(Policy = AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)]
+        [Authorize(Policy = AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)]
         public async Task<IActionResult> Status([FromQuery] VehicleStatusRequest vehicleStatusRequest)
         {
             try

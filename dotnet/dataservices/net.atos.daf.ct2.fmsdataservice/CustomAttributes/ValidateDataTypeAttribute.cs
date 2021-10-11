@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace net.atos.daf.ct2.fmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.fmsdataservice.customAttributes
 {
     public class ValidateDataType : ValidationAttribute
     {

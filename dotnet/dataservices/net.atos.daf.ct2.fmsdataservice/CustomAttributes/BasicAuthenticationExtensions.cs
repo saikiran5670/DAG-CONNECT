@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.fmsdataservice.Common;
 
-namespace net.atos.daf.ct2.fmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.fmsdataservice.customAttributes
 {
     public static class BasicAuthenticationExtensions
     {
