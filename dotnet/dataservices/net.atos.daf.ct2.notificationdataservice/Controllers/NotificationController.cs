@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
 {
     [ApiController]
     [Route("notification")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class NotificationController : ControllerBase
     {
         private readonly ILogger<NotificationController> _logger;
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while processing Notification data.");
+                _logger.LogError("Error occurred while processing Notification data.", ex);
                 return StatusCode(500, string.Empty);
             }
         }
