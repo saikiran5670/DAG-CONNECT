@@ -19,7 +19,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
   @Input() parentCategoryList: any;
-  
+  finalParentCatList: any = [];
   breadcumMsg: any = '';
   categoryForm: FormGroup;
   accountOrganizationId: any;
@@ -37,9 +37,9 @@ export class CreateEditViewCategoryComponent implements OnInit {
   types: any = [];
   duplicateCategory: boolean = false;
   duplicateCatMsg: any = '';
-  isDisabledType= false;
-  dataGlobalTypes:any=[];
-  dataRegularTypes:any=[];
+  isDisabledType = false;
+  dataGlobalTypes: any = [];
+  dataRegularTypes: any = [];
   typeCount: boolean = true;
   adminAccessType: any;
 
@@ -48,7 +48,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    this.userType= localStorage.getItem("userType");
+    this.userType = localStorage.getItem("userType");
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     if(this.adminAccessType.globalCategoryAccess){ // global category access
       this.types = ['Global', 'Regular'];
@@ -72,6 +72,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('categoryDescription')
       ]
     });
+    this.makeCategoryList();
     this.setDefaultIcon();
     this.selectedCategoryType = 'category';
     this.breadcumMsg = this.getBreadcum();
@@ -81,6 +82,23 @@ export class CreateEditViewCategoryComponent implements OnInit {
     }
     if(this.actionType == 'edit') {
       this.categoryForm.get('type').disable();
+    }
+  }
+
+  makeCategoryList(){
+    let regularArr: any = this.parentCategoryList.filter(i => i.organizationId != 0);
+    let globalArr: any = this.parentCategoryList.filter(i => i.organizationId == 0);
+    if(regularArr && regularArr.length > 0){ // regular category list
+      this.dataRegularTypes = regularArr.slice();
+    }
+    if(globalArr && globalArr.length > 0){ // global category list
+      this.dataGlobalTypes = globalArr.slice();
+    }
+
+    if(this.actionType == 'edit' || this.actionType == 'view'){ //-- view / edit
+      this.finalParentCatList = (this.selectedRowData.organizationId == 0) ? this.dataGlobalTypes.slice() : this.dataRegularTypes.slice();
+    }else{ // default regular selection
+      this.finalParentCatList = this.dataRegularTypes.slice(); 
     }
   }
 
@@ -150,9 +168,10 @@ export class CreateEditViewCategoryComponent implements OnInit {
 
   onCategoryChange(event: any){
     this.selectedCategoryType = event.value;
-    if(this.selectedCategoryType == 'subcategory'){
-      this.categoryForm.get('parentCategory').setValue((this.parentCategoryList.length > 0) ? this.parentCategoryList[0].id : 0);
-   }
+    if(this.selectedCategoryType == 'subcategory'){ // sub-category selected
+      this.finalParentCatList = (this.categoryForm.controls.type.value == "Regular") ? this.dataRegularTypes.slice() : this.dataGlobalTypes.slice();
+      this.categoryForm.get('parentCategory').setValue((this.finalParentCatList.length > 0) ? this.finalParentCatList[0].id : 0);
+    }
   }
   
   onParentCategoryChange(){
@@ -170,7 +189,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
     if(this.actionType == 'create'){ //-- create category
       let createdObj: any = {
         id: 0,
-        organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0,
+        organization_Id: (this.categoryForm.controls.type.value == "Regular") ? this.accountOrganizationId : 0,
         name: this.categoryForm.controls.categoryName.value.trim(),
         iconName: this.uploadIconName, //-- icon name
         type: (this.selectedCategoryType == 'category') ? 'C' : 'S',
@@ -280,34 +299,36 @@ export class CreateEditViewCategoryComponent implements OnInit {
     }
   }
  
-  onCategoryTypeChange(event){ 
-    
-      if(this.typeCount){
-      this.categoryForm.get('parentCategory').setValue((this.parentCategoryList.length > 0) ? this.parentCategoryList[0].id : 0);
-      this.dataRegularTypes=this.parentCategoryList;
-      this.typeCount = false;
+  onCategoryTypeChange(event: any){ 
+      //if(this.typeCount){
+        // this.categoryForm.get('parentCategory').setValue((this.parentCategoryList.length > 0) ? this.parentCategoryList[0].id : 0);
+        // this.dataRegularTypes = this.parentCategoryList;
+        // this.typeCount = false;
+      //}
+      if(event.value == 'Global'){ //-- global selected
+        this.finalParentCatList = this.dataGlobalTypes.slice();
+        this.isDisabledType = true;
+        // let objData = {
+        //   type:'C',
+        //   Orgid: 0
+        // }
+        // if(this.dataGlobalTypes.length > 0){
+        //   this.isDisabledType = true; 
+        //   this.parentCategoryList = this.dataGlobalTypes;
+        // }
+        // else{
+        // this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((data) => {
+        //   this.isDisabledType = true;
+        //   this.dataGlobalTypes = data["categories"];
+        //   this.parentCategoryList = this.dataGlobalTypes;
+        //   });
+        // }
       }
-      if(event.value == 'Global'){
-        let objData = {
-          type:'C',
-          Orgid: 0
-        }
-        if(this.dataGlobalTypes.length > 0)
-        {
-          this.isDisabledType=true; 
-          this.parentCategoryList= this.dataGlobalTypes;
-        }
-        else{
-        this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((data) => {
-          this.isDisabledType=true;
-          this.dataGlobalTypes= data["categories"];
-          this.parentCategoryList= this.dataGlobalTypes;
-          });
-        }
+      else{ //-- regular selecteed
+        //this.parentCategoryList = this.dataRegularTypes;
+        this.finalParentCatList = this.dataRegularTypes.slice();
       }
-      else{
-        this.parentCategoryList= this.dataRegularTypes;
-      }
+      this.categoryForm.get('parentCategory').setValue((this.finalParentCatList.length > 0) ? this.finalParentCatList[0].id : 0);
   }
 
 

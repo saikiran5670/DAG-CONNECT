@@ -105,7 +105,8 @@ export class ManageCategoryComponent implements OnInit {
         catDD.forEach(element => {
           this.categoryList.push({
             id: element.parentCategoryId,
-            name: element.parentCategoryName
+            name: element.parentCategoryName,
+            organizationId: element.organizationId
           });
         });
       } 
@@ -113,7 +114,8 @@ export class ManageCategoryComponent implements OnInit {
         subCatDD.forEach(elem => {
           this.subCategoryList.push({
             id: elem.subCategoryId,
-            name: elem.subCategoryName
+            name: elem.subCategoryName,
+            organizationId: elem.organizationId
           });
         });
       }
