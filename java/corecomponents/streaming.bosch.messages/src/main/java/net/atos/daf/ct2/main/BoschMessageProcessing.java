@@ -152,7 +152,7 @@ public class BoschMessageProcessing {
 		log.info("Stage 3. data filtering as per message type start ");
 		
 		DataStream<KafkaRecord<String>> boschIndexTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_INDEX_TRANSID));
-		//DataStream<KafkaRecord<String>> boschMoniterTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_MONITOR_TRANSID));
+		DataStream<KafkaRecord<String>> boschMoniterTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_MONITOR_TRANSID));
 		DataStream<KafkaRecord<String>> boschStatusTCUInputStream = MessageParseUtil.filterDataInputStream(boschInputStream,properties.getProperty(DAFCT2Constant.FILTER_STATUS_TRANSID));
 		
 		log.info("Stage 4. data filtering as per message type end "); 
@@ -162,9 +162,9 @@ public class BoschMessageProcessing {
 				properties.getProperty(DAFCT2Constant.INDEX_TRANSID), "Index",
 				properties.getProperty(DAFCT2Constant.SINK_INDEX_TOPIC_NAME), properties, Index.class);
 		
-//		new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMoniterTCUInputStream,
-//				properties.getProperty(DAFCT2Constant.MONITOR_TRANSID), "Monitor",
-//				properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME), properties, Monitor.class);
+		new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMoniterTCUInputStream,
+				properties.getProperty(DAFCT2Constant.MONITOR_TRANSID), "Monitor",
+				properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME), properties, Monitor.class);
 		
 		new MessageProcessing<String, Status>().consumeBoschMessage(boschStatusTCUInputStream,
 				properties.getProperty(DAFCT2Constant.STATUS_TRANSID), "Status",
@@ -172,35 +172,7 @@ public class BoschMessageProcessing {
 		
 		log.info("Stage 6. data parsing and publishing message on kafka topic end");
 		
-	/*	new MessageProcessing<String, Monitor>().consumeBoschMessage(boschMeasurementInputStream,
-				properties.getProperty(DAFCT2Constant.MONITOR_TRANSID), "Monitor",
-				properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME), properties, Monitor.class);
-		
-		new MessageProcessing<String, Status>().consumeBoschMessage(boschMeasurementInputStream,
-				properties.getProperty(DAFCT2Constant.STATUS_TRANSID), "Status",
-				properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME), properties, Status.class);*/
-		
-		//Bosch History
-		/*boschSourceStreamSts.map(new MapFunction<Tuple2<Integer, KafkaRecord<String>>, KafkaRecord<String>>() {
-
-			*//**
-			 * 
-			 *//*
-			private static final long serialVersionUID = 1L;
-
-			public KafkaRecord<String> map(Tuple2<Integer, KafkaRecord<String>> rec) throws Exception {
-			
-				return rec.f1;
-				
-			}
-		}).addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
-				properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
-				properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
-				properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
-				properties.getProperty(DAFCT2Constant.HBASE_MASTER),
-				properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
-				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_NAME),
-				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));*/
+	
 
 	}
 

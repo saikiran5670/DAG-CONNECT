@@ -36,13 +36,14 @@ namespace net.atos.daf.ct2.httpclientfactory
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
                 request.ApprovalMessage = _oTA14Configurations.Message_Approval;
-                var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/x-www-form-urlencoded");
                 HttpResponseMessage response = new HttpResponseMessage();
                 string baseline = request.BaseLineId;
                 response.StatusCode = HttpStatusCode.BadRequest;
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
+                    DateTime boashtimestamp = DateTime.Now;
                     _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 rest API for sending data");
                     response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}", data);
 
@@ -60,8 +61,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 {
                     _logger.Error(result);
                 }
-                // return new ScheduleSoftwareUpdateResponse { };
-                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200 };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, ScheduleStatusOverview = JsonConvert.DeserializeObject<ScheduleStatusOverview>(result) };
             }
             catch (Exception ex)
             {
@@ -69,6 +69,12 @@ namespace net.atos.daf.ct2.httpclientfactory
                 //return new ScheduleSoftwareUpdateResponse { };
                 return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500 };
             }
+        }
+
+        private async Task<HttpClient> GetEtag(HttpClient client)
+        {
+            await client.GetAsync($"{_oTA14Configurations.API_BASE_URL}");
+            return client;
         }
 
         /// <summary>
@@ -79,7 +85,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         {
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.Timeout = new TimeSpan(0, 0, 30);
             var token = await GetElibilityToken(client);
             //client.DefaultRequestHeaders.Accept.Clear();
@@ -96,7 +102,6 @@ namespace net.atos.daf.ct2.httpclientfactory
             var form = new Dictionary<string, string>
                 {
                     {"grant_type", _oTA14Configurations.GRANT_TYPE},
-                    {"scope", _oTA14Configurations.CLIENT_SCOPE},
                     {"client_id", _oTA14Configurations.CLIENT_ID},
                     {"client_secret", _oTA14Configurations.CLIENT_SECRET},
                 };

@@ -216,10 +216,11 @@ export class AppComponent {
     tachograph: {
       open: false,
       icon: "graphic_eq",
-      externalLink: false,
+      externalLink: true,
       pageTitles: {
         tachograph: 'Tachograph'
-      }
+      },
+      link: "https://www.my-fis.com/fleetservices/default.aspx"
     },
     mobileportal: {
       open: false,

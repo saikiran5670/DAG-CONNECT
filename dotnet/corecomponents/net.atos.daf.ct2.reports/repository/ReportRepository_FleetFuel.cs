@@ -384,9 +384,11 @@ namespace net.atos.daf.ct2.reports.repository
                 List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
                 for (int i = 0; i < lstOfOptOutDriver.Count; i++)
                 {
-                    FleetFuelDetailsByDriver obj = new FleetFuelDetailsByDriver();
-                    if (obj.DriverID == lstOfOptOutDriver[0])
-                    { lstFleetDetails.Remove(obj); }
+                    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
+                    if (data != null)
+                    {
+                        lstFleetDetails.Remove(data);
+                    }
                 }
                 if (lstTripAlert.Count() > 0)
                 {

@@ -61,6 +61,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    return new VehiclesStatusOverviewResponse { HttpStatusCode = (int)response.StatusCode };
                 }
 
                 return new VehiclesStatusOverviewResponse { HttpStatusCode = 200, VehiclesStatusOverview = JsonConvert.DeserializeObject<VehiclesStatusOverview>(result) };
@@ -108,39 +109,40 @@ namespace net.atos.daf.ct2.httpclientfactory
                 }
                 else
                 {
-                    _logger.Error(result);
+                    _logger.Error(result); 
+                    return new VehicleUpdateDetailsResponse { HttpStatusCode = (int)response.StatusCode };
                 }
                 #region sample payload
-                var sampleJson = @"{
-  'vin':'XLR0998HGFFT76619',
-  'vehicleSoftwareStatus':'Update-to-date',
-  'campaigns':[
-    {'campaignID':'1',
-    'BaselineAssignment':'123456',
-    'campaignSubject':'subj 1234',
-    'systems':['system1','system2'
-      ],
-    'campaignType':'OTAU',
-    'campaignCategory':'SFA',
-    'updateStatus':'Installing',
-	'endDate':''
-    },
-{'campaignID':'2',
-    'BaselineAssignment':'12345',
-    'campaignSubject':'subj 1234',
-    'systems':['system13','system4'
-      ],
-    'campaignType':'OTAUSILENT',
-    'campaignCategory':'FaF',
-    'updateStatus':'pending',
-	'endDate':''
-    }
-    ]
-}
-";
-                return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(sampleJson) };
+//                var sampleJson = @"{
+//  'vin':'XLR0998HGFFT76619',
+//  'vehicleSoftwareStatus':'Update-to-date',
+//  'campaigns':[
+//    {'campaignID':'1',
+//    'BaselineAssignment':'123456',
+//    'campaignSubject':'subj 1234',
+//    'systems':['system1','system2'
+//      ],
+//    'campaignType':'OTAU',
+//    'campaignCategory':'SFA',
+//    'updateStatus':'Installing',
+//	'endDate':''
+//    },
+//{'campaignID':'2',
+//    'BaselineAssignment':'12345',
+//    'campaignSubject':'subj 1234',
+//    'systems':['system13','system4'
+//      ],
+//    'campaignType':'OTAUSILENT',
+//    'campaignCategory':'FaF',
+//    'updateStatus':'pending',
+//	'endDate':''
+//    }
+//    ]
+//}
+//";
+//                return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(sampleJson) };
                 #endregion
-                //return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(result) };
+                return new VehicleUpdateDetailsResponse { HttpStatusCode = 200, VehicleUpdateDetails = JsonConvert.DeserializeObject<VehicleUpdateDetails>(result) };
             }
             catch (Exception ex)
             {
@@ -164,7 +166,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA22Configurations.RETRY_COUNT)
                 {
                     _logger.Info("GetSoftwareReleaseNote:Calling OTA 22 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}softwareupdateoverview", data);
+                    response = await client.PostAsync($"{_oTA22Configurations.API_BASE_URL}softwareupdatedetails", data);
 
                     _logger.Info("GetSoftwareReleaseNote:OTA 22 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
@@ -179,42 +181,43 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    _logger.Error(result); return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = (int)response.StatusCode };
                 }
                 #region sample payload
-                var sampleJson = @"{
-  'campaignID':'1',
-    'subject':'bla bla',
-    'affectedSystems':['System1', 'System2'],
-    'campaignType':'',
-    'campaignCategory':'',
-    'releaseNotes':'testing release nots 12345.',
-    'endDate':'',
-    'vins':[{
-	 'vin':'',
-      'Assignments':[{
-        'updateStatus':'',
-        'BaselineAssignmentId':''
-        },
-        {'updateStatus':'',
-        'BaselineAssignmentId':''
-        }]
-      },
-      {
-	  'Vin':'',
-      'Assignments':[{
-        'updateStatus':'',
-        'BaselineAssignmentId':''
-        },
-        {'updateStatus':'',
-        'BaselineAssignmentId':''
-        }]
-      }]
-}
+//                var sampleJson = @"{
+//  'campaignID':'1',
+//    'subject':'bla bla',
+//    'affectedSystems':['System1', 'System2'],
+//    'campaignType':'',
+//    'campaignCategory':'',
+//    'releaseNotes':'testing release nots 12345.',
+//    'endDate':'',
+//    'vins':[{
+//	 'vin':'',
+//      'Assignments':[{
+//        'updateStatus':'',
+//        'BaselineAssignmentId':''
+//        },
+//        {'updateStatus':'',
+//        'BaselineAssignmentId':''
+//        }]
+//      },
+//      {
+//	  'Vin':'',
+//      'Assignments':[{
+//        'updateStatus':'',
+//        'BaselineAssignmentId':''
+//        },
+//        {'updateStatus':'',
+//        'BaselineAssignmentId':''
+//        }]
+//      }]
+//}
 
-";
-                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(sampleJson) };
+//";
+//                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(sampleJson) };
                 #endregion
-                //return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
+                return new CampiagnSoftwareReleaseNoteResponse { HttpStatusCode = 200, CampiagnSoftwareReleaseNote = JsonConvert.DeserializeObject<CampiagnSoftwareReleaseNote>(result) };
             }
             catch (Exception ex)
             {
