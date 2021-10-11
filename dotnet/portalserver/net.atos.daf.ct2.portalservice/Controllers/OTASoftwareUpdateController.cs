@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region GetVehicleStatusList
         [HttpGet]
-        [Route("getvehicletatuslist")]
+        [Route("getvehiclestatuslist")]
         public async Task<IActionResult> GetVehicleStatusList([FromQuery] string language, [FromQuery] string retention)
         {
             try
