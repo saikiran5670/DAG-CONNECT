@@ -188,6 +188,15 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
         {
             try
             {
+                this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
+                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                {
+                    _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
+                }
+                else
+                {
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                }
                 //var selectedType = string.Empty;
                 //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
