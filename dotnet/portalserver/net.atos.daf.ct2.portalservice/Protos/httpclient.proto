@@ -75,7 +75,7 @@ message VehicleUpdateDetails
         string CampaignId =1;        
         string BaseLineId =2;
         int64 ScheduleDateTime =3;
-        repeated string Vins =4;
+        string Vin =4;
 }
 message ScheduleSoftwareUpdateResponse
     {

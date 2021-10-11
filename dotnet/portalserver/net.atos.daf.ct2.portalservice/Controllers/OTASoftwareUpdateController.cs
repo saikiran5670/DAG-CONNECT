@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (scheduleSoftwareUpdateFilter == null && !(scheduleSoftwareUpdateFilter.ScheduleDateTime > 0)) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
-                if (scheduleSoftwareUpdateFilter.Vins.Count <= 0) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG); }
+                //if (scheduleSoftwareUpdateFilter.Vins.Count <= 0) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG); }
                 string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
                 ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
                 _logger.Info("Schedulesoftware method in OtaSoftwareUpdate API called.");

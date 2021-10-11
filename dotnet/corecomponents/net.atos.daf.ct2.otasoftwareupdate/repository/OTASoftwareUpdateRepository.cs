@@ -123,37 +123,47 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
 
         public async Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign)
         {
-            string queryStatement = @"INSERT INTO master.otascheduledcompaign(	                                                    
-	                                                     compaign_id
+            try
+            {
+                string queryStatement = @"INSERT INTO master.otascheduledcompaign(	                                                    
+	                                                     campaign_id
 	                                                    , vin
-	                                                    , scheduledatetime	                                                   
+	                                                    , scheduled_datetime	                                                   
                                                         , created_at
                                                         , created_by
+                                                        , baseline
                                                         , timestamp_boash_api
                                                         , status
-                                                        , baseline_id
 	                                                    )
-	                                                    VALUES ( @compaign_id
+	                                                    VALUES ( @campaign_id
 			                                                    , @vin
-			                                                    , @scheduledatetime
+			                                                    , @scheduled_datetime
 			                                                    , @created_at
 			                                                    , @created_by
+			                                                    , @baseline
 			                                                    , @timestamp_boash_api
-			                                                    , @status
-			                                                    , @baseline_id ;";
-            var parameter = new DynamicParameters();
-            parameter.Add("@compaign_id", otaScheduleCompaign.CompaignId);
-            parameter.Add("@vin", otaScheduleCompaign.Vin);
-            parameter.Add("@scheduledatetime", otaScheduleCompaign.ScheduleDateTime);
-            parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            parameter.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
-            parameter.Add("@status", 'S');
-            parameter.Add("@baseline_id", otaScheduleCompaign.BaselineId);
-            int tripAlertSentId = await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-            otaScheduleCompaign.Id = tripAlertSentId;
-            return otaScheduleCompaign;
+			                                                    , @status) RETURNING id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", otaScheduleCompaign.CompaignId);
+                parameter.Add("@vin", otaScheduleCompaign.Vin);
+                parameter.Add("@scheduled_datetime", otaScheduleCompaign.ScheduleDateTime);
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@created_by", otaScheduleCompaign.CreatedBy);
+                parameter.Add("@baseline", otaScheduleCompaign.BaselineId);
+                parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
+                parameter.Add("@status", 'S');
+                int tripAlertSentId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                otaScheduleCompaign.Id = tripAlertSentId;
+                return otaScheduleCompaign;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
         }
+
 
     }
 }

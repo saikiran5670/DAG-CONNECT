@@ -7,6 +7,7 @@ using log4net;
 using Microsoft.Extensions.Caching.Memory;
 using net.atos.daf.ct2.otasoftwareupdate;
 using net.atos.daf.ct2.otasoftwareupdate.common;
+using net.atos.daf.ct2.otasoftwareupdate.entity;
 using net.atos.daf.ct2.otasoftwareupdateservice.Entity;
 using net.atos.daf.ct2.visibility;
 using static net.atos.daf.ct2.httpclientservice.HttpClientService;
@@ -19,10 +20,18 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
         {
             try
             {
+                ScheduleSoftwareUpdateResponse scheduleResoponse = new ScheduleSoftwareUpdateResponse();
+                scheduleResoponse.ScheduleSoftwareUpdateRequest = new ScheduleSoftwareUpdateRequest();
+                //ScheduleSoftwareCompaign scheduleSoftwareCompaign = new ScheduleSoftwareCompaign();
+                OtaScheduleCompaign otaScheduleCompaign = new OtaScheduleCompaign();
+                otaScheduleCompaign = _mapper.ToScheduleSoftwareCompaign(request);
+                await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
+
                 var scheduleSoftwareStatusResponse = await _httpClientServiceClient
                        .GetScheduleSoftwareUpdateAsync(
                            _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
                            );
+
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {
