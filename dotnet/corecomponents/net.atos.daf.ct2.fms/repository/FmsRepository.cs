@@ -51,15 +51,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
                             break;
                     }
                 }
@@ -101,15 +101,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
                             break;
                     }
                 }
@@ -182,15 +182,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
                             break;
                     }
                 }
@@ -243,15 +243,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (message_time_stamp >= @yesterdaytimestamp and message_time_stamp < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and message_time_stamp >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
                             break;
                     }
                 }

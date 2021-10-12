@@ -48,6 +48,7 @@ import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-i
 import { CommonImportComponent } from './common-import/common-import.component';
 import { CommonMapComponent } from './common-map/common-map.component';
 import { DataTableComponent } from './data-table/data-table.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 
 @NgModule({
@@ -94,7 +95,8 @@ import { DataTableComponent } from './data-table/data-table.component';
     DragDropModule,
     MaterialFileInputModule,
     NgxDropzoneModule,
-    MatTableExporterModule
+    MatTableExporterModule,
+    NgxMatSelectSearchModule
   ],
   entryComponents:[],
   exports: [
