@@ -119,7 +119,12 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="onSelectionChange($event)" formControlName="language" required>
-                                            <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
+                                            <mat-option>
+                                                <ngx-mat-select-search (keyup)="filterOrgLangList(orgLangSearch.value)" #orgLangSearch>
+                                                    <mat-icon (click)="resetOrgLangFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                                </ngx-mat-select-search>
+                                            </mat-option>
+                                            <mat-option *ngFor="let rer of filteredLangList | async" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
