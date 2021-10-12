@@ -827,7 +827,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else if (subReportResponse.HasSubReports == "N" && subReportResponse.FeatureId > 0)
                     {
-                        if (!sessionFeatures.Any(x => x.FeatureId == subReportResponse.FeatureId))
+                        if (!(sessionFeatures?.Any(x => x.FeatureId == subReportResponse.FeatureId) ?? false))
                             return StatusCode(404, "No data found.");
                     }
                 }
