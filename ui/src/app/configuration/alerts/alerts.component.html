@@ -89,7 +89,7 @@
             </ng-container>
             <ng-container matColumnDef="type">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertType || 'Alert Type'}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.type }}  </span></mat-cell>
+              <mat-cell *matCellDef="let row" matTooltip="{{ row.type }}"><span class="text-truncate">{{ row.type }}  </span></mat-cell>
             </ng-container>
             <ng-container matColumnDef="thresholdValue">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold || 'Threshold' }}</mat-header-cell>
