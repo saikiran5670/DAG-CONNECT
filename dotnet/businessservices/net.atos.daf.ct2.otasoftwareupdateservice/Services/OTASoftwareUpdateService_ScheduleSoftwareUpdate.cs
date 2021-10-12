@@ -36,8 +36,8 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {
-                    Message = "Successfully fetch records for Schedule Software Status",
-                    HttpStatusCode = ResponseCode.Success
+                    Message = otaScheduleCompaign.Status == "S" ? "OTA approval is successful" : "OTA approval is failed",
+                    HttpStatusCode = otaScheduleCompaign.Status == "S" ? ResponseCode.Success : ResponseCode.Failed
                 };
                 return await Task.FromResult(response);
             }
