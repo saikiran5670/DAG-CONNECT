@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 
 
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
@@ -162,7 +162,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
             try
             {
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
@@ -264,7 +264,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
             try
             {
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
