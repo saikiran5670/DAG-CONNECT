@@ -202,7 +202,7 @@ export class DriverTimeDetailComponent implements OnInit {
         //   }
           format: 'HH',
           // showDuplicates: false,
-          // offsetX: 0
+          offsetX: 0
         },
         offsetX: 0,
         // min: 0,
@@ -426,7 +426,7 @@ export class DriverTimeDetailComponent implements OnInit {
     
     let driveData=[], workData=[], restData=[], availableData=[];
     _data.forEach(element => {
-      let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
       let isValid=true;
