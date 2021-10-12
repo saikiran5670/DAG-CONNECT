@@ -66,6 +66,10 @@ export class OrganisationDetailsComponent implements OnInit {
 
   public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
+  public filteredLangList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
   constructor(private domSanitizer: DomSanitizer, private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     // this.defaultTranslation();
   }
@@ -131,6 +135,13 @@ export class OrganisationDetailsComponent implements OnInit {
   resetOrgListFilter(){
     this.filteredOrgList.next(this.organisationList.slice());
   }
+
+  resetOrgLangFilter(){
+    this.filteredLangList.next(this.languageDropdownData.slice());
+  }
+  resetTimezoneFilter(){
+    this.filteredTimezones.next(this.timezoneDropdownData.slice());
+  }
   compare(a, b) {
     if (a.name < b.name) {
       return -1;
@@ -146,7 +157,12 @@ export class OrganisationDetailsComponent implements OnInit {
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
+      console.log("languageDropdownData 1", this.languageDropdownData);
+      this.languageDropdownData.sort(this.compare);
+      this.resetOrgLangFilter();
       this.timezoneDropdownData = dropDownData.timezone;
+      this.timezoneDropdownData.sort(this.compare);
+      this.resetTimezoneFilter();
       this.currencyDropdownData = dropDownData.currency;
       this.unitDropdownData = dropDownData.unit;
       this.dateFormatDropdownData = dropDownData.dateformat;
@@ -186,6 +202,7 @@ export class OrganisationDetailsComponent implements OnInit {
 
   updatePrefDefault(orgData: any){
     let lng: any = this.languageDropdownData.filter(i=>i.id == parseInt(orgData.languageName));
+    console.log("languageDropdownData 2", this.languageDropdownData);
     let tz: any = this.timezoneDropdownData.filter(i=>i.id == parseInt(orgData.timezone));
     let unit: any = this.unitDropdownData.filter(i=>i.id == parseInt(orgData.unit));
     let cur: any = this.currencyDropdownData.filter(i=>i.id == parseInt(orgData.currency));
@@ -407,4 +424,39 @@ export class OrganisationDetailsComponent implements OnInit {
      );
 
    }
+
+   filterOrgLangList(orgLangSearch){
+    if(!this.languageDropdownData){
+     return;
+    }
+    if(!orgLangSearch){
+     this.resetOrgLangFilter(); 
+     return;
+    } else {
+      orgLangSearch = orgLangSearch.toLowerCase();
+    }
+    this.filteredLangList.next(
+       this.languageDropdownData.filter(item=> item.name.toLowerCase().indexOf(orgLangSearch) > -1)
+    );
+
+  }
+  filterTimezones(timesearch){
+    console.log("filterTimezones called");
+    if(!this.timezoneDropdownData){
+      return;
+    }
+    if(!timesearch){
+      this.resetTimezoneFilter();
+      return;
+     } else{
+       timesearch = timesearch.toLowerCase();
+     }
+     this.filteredTimezones.next(
+       this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
+     );
+     console.log("this.filteredTimezones", this.filteredTimezones);
+}
+
+
+
 }
