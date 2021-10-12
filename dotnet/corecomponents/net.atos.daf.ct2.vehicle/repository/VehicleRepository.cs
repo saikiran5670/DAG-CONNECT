@@ -1778,7 +1778,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                                MODEL_YEAR as Classification_ModelYear,
 	                                CABIN_TYPE as DriverLine_Cabin_Type,
 	                                CABIN_ROOFSPOILER as DriverLine_Cabin_RoofSpoiler,
-	                                ELECTRONIC_CONTROL_UNIT_TYPE as DriverLine_Cabin_RoofSpoiler,
+	                                ELECTRONIC_CONTROL_UNIT_TYPE as DriverLine_ElectronicControlUnit_Type,
 	                                ELECTRONIC_CONTROL_UNIT_NAME as DriverLine_ElectronicControlUnit_Name,
 	                                WEIGHT_TYPE as Dimensions_Size_Weight_Type,
 	                                CHASIS_SIDE_SKIRTS as Chassis_SideSkirts,
