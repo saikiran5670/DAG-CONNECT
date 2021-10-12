@@ -187,6 +187,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   alertsChecked: any = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
@@ -1211,7 +1212,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
             console.log("vehicleGrpDD", this.vehicleGrpDD);
             this.vehicleGrpDD.sort(this.compare);
+            this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
+            this.resetVehicleFilter();
           }
         });
         
@@ -1463,5 +1466,27 @@ export class TripReportComponent implements OnInit, OnDestroy {
     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+
 
 }
