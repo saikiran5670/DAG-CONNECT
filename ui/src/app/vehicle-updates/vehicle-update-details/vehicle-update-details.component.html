@@ -1,11 +1,11 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-    <span>BreadCrumb</span>
+    <span>{{ breadcumMsg }}</span>
   </div>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-    <span class='custom-font' (click)="onCancel()">
+    <span class='custom-font' (click)="toBack()">
       <span>&nbsp;</span>
-      <span class='backBtnCss'>Back</span>
+     <span class='backBtnCss'>Back</span>
     </span>
   </div>
 </div>
@@ -114,27 +114,29 @@
           </ng-container>
           <ng-container matColumnDef="endDate">
             <mat-header-cell *matHeaderCellDef class="action"> End Date </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.status}}">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.endDate}}">
               {{row.endDate}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="scheduledDateTime">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Scheduled Date/time</mat-header-cell>
-            <mat-cell *matCellDef="let row" matTooltip="{{row.status}}">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.scheduleDateTime}}">
               {{row.scheduleDateTime}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Action</mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button>
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row, selectedVin)">
                 <mat-icon>message</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button>
+              <button class='actionBtn' class="target" mat-flat-button [mdePopoverTriggerFor]="schedulerPopover"
+                mdePopoverTriggerOn="click" #popoverTrigger="mdePopoverTrigger">
                 <!-- <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
                   [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate"> -->
-                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                <mat-datepicker #endPicker></mat-datepicker>
+                <!-- <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker> -->
+                <mat-icon>date_range</mat-icon>
               </button>
             </mat-cell>
           </ng-container>
@@ -145,5 +147,51 @@
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
     </mat-card-content>
+    <mde-popover #schedulerPopover="mdePopover" [mdePopoverOverlapTrigger]="false" mdePopoverOffsetX="-300">
+      <div class="openSchedulerContainer">
+        <form [formGroup]="schedulerForm" style="border: 1px solid deepskyblue;">
+          <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+            <mat-card-content style="padding: 15px;">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Schedule Details</span>
+              <mat-icon style='cursor: pointer; float: right;'>close</mat-icon>
+              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                  <mat-label>Date <span class='mandatoryColor'>*</span></mat-label>
+                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-form-field appearance="outline">
+                      <input matInput (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate'
+                        [max]='endDateValue' [matDatepicker]="startPicker" formControlName="date">
+                      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #startPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <mat-label>Time<span class='mandatoryColor'>*</span></mat-label>
+                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker">
+                      <span class='timeAdjustSpan'></span>
+                      <input [max]='selectedEndTime' class='inputBox' [format]="prefTimeFormat"
+                        [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly>
+                      <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                      <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
+                      </ngx-material-timepicker>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: 10px;">
+                <button mat-flat-button color="primary" [disabled]="initData.length == 0" style='margin-right: 10px;'>
+                  Cancel
+                </button>
+                <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                  style='margin-right: 10px;'>Schedule
+                </button>
+              </div>
+
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </div>
+    </mde-popover>
   </mat-card>
+
 </form>

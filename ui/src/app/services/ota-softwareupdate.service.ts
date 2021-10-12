@@ -6,7 +6,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParameterCodec, HttpPar
 import { ConfigService } from '@ngx-config/core'
 
 @Injectable()
-export class VehicleService {
+export class OtaSoftwareUpdateService {
   otaSoftwareUpdateServiceUrl: string = '';
 
 
@@ -32,7 +32,7 @@ export class VehicleService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getvehicletatuslist?language=en&retention=active`, headers)
+      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getvehicletatuslist?language=en&retention=active`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -49,17 +49,19 @@ export class VehicleService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getvehicleupdatedetails?vin=${vin}&retention=active`, headers)
+      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getvehicleupdatedetails?vin=XLR000000BE000080&retention=active`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  getsoftwarereleasenotes(data: any): Observable<any[]>{
+  getsoftwarereleasenotes(data: any, vin: any): Observable<any[]>{
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getsoftwarereleasenotes?campaignId=${data.campaignId}&language=en&vin=${data.vin}&retention=active`, headers)
+      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getsoftwarereleasenotes?campaignId=EU-T000080&language=en&vin=XLR000000BE000080&retention=active`, headers)
+      //.get<any[]>(`https://api.dev1.ct2.atos.net/getsoftwarereleasenotes?campaignId=${data.campaignId}&language=en&vin=${vin}&retention=active`, headers)
+      
       .pipe(catchError(this.handleError));
   }
   
