@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.map
         {
 
             LookupAddress result = await _mapRepository.GetMapAddress(lookupAddress);
-            if (result == null)
+            if (result?.Id > 0)
             {
                 lookupAddress = AddMapAddress(lookupAddress).Result;
                 return lookupAddress;

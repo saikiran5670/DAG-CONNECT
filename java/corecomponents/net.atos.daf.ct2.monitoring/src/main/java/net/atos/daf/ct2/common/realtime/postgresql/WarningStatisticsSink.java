@@ -18,7 +18,7 @@ import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Warning;
-import net.atos.daf.postgre.bo.WarningStastisticsPojo;
+import net.atos.daf.postgre.bo.WarningStatisticsPojo;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.DTCWarningMasterDao;
 import net.atos.daf.postgre.dao.WarningStatisticsDao;
@@ -104,7 +104,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() != 63) {
 
-								WarningStastisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
+								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
 										messageTen, lastestProcessedMessageTimeStamp,
 										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
 
@@ -128,7 +128,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									if (lastProcessedTimeStamp == null) {
 										// System.out.println("warning not present in warning table");
 
-										WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(row,
+										WarningStatisticsPojo warningNewRowDetail = WarningStatisticsCalculation(row,
 												messageTen, lastestProcessedMessageTimeStamp, warning.getWarningClass(),
 												warning.getWarningNumber());
 										warningDao.warning_insert(warningNewRowDetail);
@@ -148,12 +148,15 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								//opposite side to update in DB for EVTId =45
 								boolean warningPresent=false;
 								List<Integer> toDeactivate= new ArrayList<>();
-								List<WarningStastisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
+								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
+
 								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
-								logger.info("activeWarnings list size ", activeWarnings.size());
-								logger.info("warningList63 list size ", warningList63.size());
-								for(WarningStastisticsPojo activeWarning :activeWarnings) {
+								logger.info("activeWarnings list size " + activeWarnings.size());
+								logger.info("warningList63 list size "  + warningList63.size());
+								for(WarningStatisticsPojo activeWarning :activeWarnings) {
+
+
 									int warningClass= activeWarning.getWarningClass();
 									int warningNumber= activeWarning.getWarningNumber();
 										for( Warning war63 : warningList63) {
@@ -175,9 +178,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										 warningPresent=false; 
 									
 								} }
-								logger.info("toDeactivate list size ", toDeactivate.size());
+								logger.info("toDeactivate list size " + toDeactivate.size());
 								
 								warningDao.DeactivatWarningUpdate(toDeactivate);
+								logger.info("update done-sink class ");
 							}
 
 						}
@@ -192,10 +196,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		// System.out.println("Invoke Finish Warning");
 	}
 
-	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType,
+	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType,
 			Long lastestProcessedMessageTimeStamp, Integer warningClass, Integer warningNumber) {
 
-		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
+		WarningStatisticsPojo warningDetail = new WarningStatisticsPojo();
 		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 		if (messageType == 10) {
 

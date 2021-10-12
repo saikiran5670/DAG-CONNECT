@@ -60,10 +60,12 @@
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event.value)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
                   <mat-option>
-                    <ngx-mat-select-search></ngx-mat-select-search>
+                    <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleGroupSearch.value)" #vehicleGroupSearch>
+                      <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
                   </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                  <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                  <mat-option *ngFor="let rer of filteredVehicleGroups | async " [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
@@ -75,10 +77,12 @@
                 <!-- <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle"> -->
                  <mat-select [disabled]="vehicleGrpDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
                   <mat-option>
-                    <ngx-mat-select-search></ngx-mat-select-search>
+                    <ngx-mat-select-search (keyup)="filterVehicleNames(vehicleNameSearch.value)" #vehicleNameSearch>
+                      <mat-icon (click)="resetVehicleNamesFilter()" ngxMatSelectSearchClear>close</mat-icon>     
+                    </ngx-mat-select-search>
                   </mat-option>
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vin">
+                  <mat-option *ngFor="let rer of filteredVehicleNames | async " [value]="rer.vin">
                       {{ rer.vehicleName }}
                   </mat-option>
                 </mat-select>

@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.processing;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -23,7 +24,8 @@ public class ConsumeSourceStream implements Serializable {
 				new FlinkKafkaConsumer<KafkaRecord<String>>(
 						properties.getProperty(topicNm),
 						new KafkaMessageDeSerializeSchema<String>(), 
-						properties));
+						properties))
+				.filter(rec -> Objects.nonNull(rec));
 	}
 
 }

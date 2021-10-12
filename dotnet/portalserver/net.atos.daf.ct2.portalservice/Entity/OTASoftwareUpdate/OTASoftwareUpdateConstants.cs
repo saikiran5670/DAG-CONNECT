@@ -9,6 +9,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
     {
         public const string INTERNAL_SERVER_ERROR_MSG = "Internal Server Error.{0}";
         public const string VEHICLE_SOFTWARE_STATUS_FAILURE_MSG = "Get Vehicle Software Status failed with error {0}";
+        public const string VEHICLE_SOFTWARE_STATUS_LIST_FAILURE_MSG = "Get Vehicle Software Status list failed with error {0}";
+        public const string SOFTWARE_UPDATE_FAILURE_MSG = "Software updated failed with error {0}";
+        public const string RELEASE_NOTES_FAILURE_MSG = "Get Software release notes failed with error {0}";
+        public const string VEHICLE_UPDATE_DETAILS_FAILURE_MSG = "Get Software update details failed with error {0}";
         public const string SOCKET_EXCEPTION_MSG = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public const string OTA_CONTROLLER_NAME = "OTA Controller";
         public const string OTA_SERVICE_NAME = "OTA service";
@@ -18,6 +22,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
         public const string GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG = "Invalid Schedule date.";
         public const string GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG = "Invalid VIN details.";
         public const string GET_OTASOFTWAREUPDATE_SUCCESS_MSG = "Otasoftwareupdate details fetched successfully";
+        public const string OTA14_SUCCESS_MSG = "OTA approval is successful.";
         public const string GET_OTASOFTWAREUPDATE_MSG = "No Result Found";
+        public const string NO_FEATURE_MSG = "OTA feature is not assigned to user.";
     }
 }

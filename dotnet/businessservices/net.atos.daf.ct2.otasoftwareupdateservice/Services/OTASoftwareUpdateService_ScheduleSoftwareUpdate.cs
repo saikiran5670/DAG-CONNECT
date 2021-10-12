@@ -12,7 +12,7 @@ using net.atos.daf.ct2.otasoftwareupdateservice.Entity;
 using net.atos.daf.ct2.visibility;
 using static net.atos.daf.ct2.httpclientservice.HttpClientService;
 
-namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
+namespace net.atos.daf.ct2.otasoftwareupdateservice
 {
     public partial class OTASoftwareUpdateManagementService : OTASoftwareUpdateService.OTASoftwareUpdateServiceBase
     {
@@ -25,18 +25,20 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Services
                 //ScheduleSoftwareCompaign scheduleSoftwareCompaign = new ScheduleSoftwareCompaign();
                 OtaScheduleCompaign otaScheduleCompaign = new OtaScheduleCompaign();
                 otaScheduleCompaign = _mapper.ToScheduleSoftwareCompaign(request);
-                await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
 
                 var scheduleSoftwareStatusResponse = await _httpClientServiceClient
                        .GetScheduleSoftwareUpdateAsync(
                            _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
                            );
+                otaScheduleCompaign.Status = (int)scheduleSoftwareStatusResponse.HttpStatusCode == 200 ? "S" : "F";
+                otaScheduleCompaign.TimeStampBoasch = scheduleSoftwareStatusResponse.BoashTimesStamp;
 
+                await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {
-                    Message = "Successfully fetch records for Schedule Software Status",
-                    HttpStatusCode = ResponseCode.Success
+                    Message = otaScheduleCompaign.Status == "S" ? "OTA approval is successful" : "OTA approval is failed",
+                    HttpStatusCode = otaScheduleCompaign.Status == "S" ? ResponseCode.Success : ResponseCode.Failed
                 };
                 return await Task.FromResult(response);
             }

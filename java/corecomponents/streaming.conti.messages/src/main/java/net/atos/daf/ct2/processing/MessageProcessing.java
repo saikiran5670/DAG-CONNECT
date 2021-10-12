@@ -47,11 +47,16 @@ public class MessageProcessing<U,R, T> {
 
 			@Override
               public boolean filter(KafkaRecord<U> value) throws Exception {
-                String transId =
-                    JsonMapper.configuring()
-                        .readTree((String) value.getValue())
-                        .get("TransID")
-                        .asText();
+				String transId = "UNKNOWN";
+                    try {
+                    	transId = JsonMapper.configuring()
+						    .readTree((String) value.getValue())
+						    .get("TransID")
+						    .asText();
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.info("Issue TransId is null for record ::{} ", value);
+					}
                 
                 return transId.equalsIgnoreCase(messageType);
               }
@@ -93,7 +98,7 @@ public class MessageProcessing<U,R, T> {
                 sinkTopicName,
                 new KafkaMessageSerializeSchema<T>(sinkTopicName),
                 properties,
-                FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
 
   }
   

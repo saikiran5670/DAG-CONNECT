@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace net.atos.daf.ct2.fmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.fmsdataservice.customAttributes
 {
     public class AuthorizeRequirement : IAuthorizationRequirement
     {

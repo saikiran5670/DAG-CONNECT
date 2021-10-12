@@ -1,40 +1,5 @@
 package net.atos.daf.ct2.main;
 
-import net.atos.daf.ct2.exception.DAFCT2Exception;
-import net.atos.daf.ct2.models.scheamas.CdcPayloadWrapper;
-import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
-import net.atos.daf.ct2.pojo.KafkaRecord;
-import net.atos.daf.ct2.pojo.Message;
-import net.atos.daf.ct2.pojo.standard.Index;
-import net.atos.daf.ct2.pojo.standard.Monitor;
-import net.atos.daf.ct2.pojo.standard.Status;
-import net.atos.daf.ct2.processing.BroadcastState;
-import net.atos.daf.ct2.processing.ConsumeSourceStream;
-import net.atos.daf.ct2.processing.EgressCorruptMessages;
-import net.atos.daf.ct2.processing.KafkaAuditService;
-import net.atos.daf.ct2.processing.MessageProcessing;
-import net.atos.daf.ct2.processing.ValidateSourceStream;
-import net.atos.daf.ct2.util.Utils;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.typeutils.RowTypeInfo;
-import org.apache.flink.streaming.api.datastream.BroadcastStream;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.Properties;
-
 import static net.atos.daf.ct2.constant.DAFCT2Constant.AUTO_OFFSET_RESET_CONFIG;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.BROADCAST_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.CONTI_CORRUPT_MESSAGE_TOPIC_NAME;
@@ -43,7 +8,6 @@ import static net.atos.daf.ct2.constant.DAFCT2Constant.GRPC_SERVER;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.INDEX_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.JOB_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.MASTER_DATA_TOPIC_NAME;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.MEASUREMENT_DATA;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.MONITOR_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_CDC_FETCH_DATA_QUERY;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_DATABASE_NAME;
@@ -58,6 +22,55 @@ import static net.atos.daf.ct2.constant.DAFCT2Constant.SINK_STATUS_TOPIC_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.SOURCE_TOPIC_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.STATUS_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.VEHICLE_STATUS_SCHEMA_DEF;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.time.Time;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
+import org.apache.flink.api.java.typeutils.RowTypeInfo;
+import org.apache.flink.runtime.state.StateBackend;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.constant.DAFCT2Constant;
+import net.atos.daf.ct2.exception.DAFCT2Exception;
+import net.atos.daf.ct2.models.scheamas.CdcPayloadWrapper;
+import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
+import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.Message;
+import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.ct2.pojo.standard.Status;
+import net.atos.daf.ct2.processing.BroadcastState;
+import net.atos.daf.ct2.processing.ConsumeSourceStream;
+import net.atos.daf.ct2.processing.EgressCorruptMessages;
+import net.atos.daf.ct2.processing.KafkaAuditService;
+import net.atos.daf.ct2.processing.MessageProcessing;
+import net.atos.daf.ct2.util.Utils;
+import net.atos.daf.ct2.utils.JsonMapper;
 
 public class ContiMessageProcessing implements Serializable {
 
@@ -89,7 +102,8 @@ public class ContiMessageProcessing implements Serializable {
             properties = configuration();
             contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
 
-            contiMessageProcessing.flinkConnection();
+            //contiMessageProcessing.flinkConnection();
+            contiMessageProcessing.flinkConnection(properties);
             contiMessageProcessing.processing(properties);
             contiMessageProcessing.startExecution();
 
@@ -106,12 +120,66 @@ public class ContiMessageProcessing implements Serializable {
         this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
         logger.info("Flink Processing Started.");
     }
+    
+    public void flinkConnection(Properties properties) {
+
+		// this.streamExecutionEnvironment =
+		// StreamExecutionEnvironment.getExecutionEnvironment();
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.PARALLELISM)));
+
+		// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
+		env.enableCheckpointing(Long.parseLong(properties.getProperty(DAFCT2Constant.CHECKPOINT_INTERVAL)),
+				CheckpointingMode.EXACTLY_ONCE);
+
+		// make sure 500 ms of progress happen between checkpoints
+		env.getCheckpointConfig().setMinPauseBetweenCheckpoints(
+				Long.parseLong(properties.getProperty(DAFCT2Constant.MINIMUM_PAUSE_BETWEEN_CHECKPOINTS)));
+
+		// checkpoints have to complete within one minute, or are discarded
+		env.getCheckpointConfig()
+				.setCheckpointTimeout(Long.parseLong(properties.getProperty(DAFCT2Constant.CHECKPOINT_TIMEOUT)));
+
+		// allow only one checkpoint to be in progress at the same time
+		env.getCheckpointConfig().setMaxConcurrentCheckpoints(
+				Integer.parseInt(properties.getProperty(DAFCT2Constant.MAX_CONCURRENT_CHECKPOINTS)));
+
+		env.setStateBackend(
+				(StateBackend) new FsStateBackend(properties.getProperty(DAFCT2Constant.CHECKPOINT_DIRECTORY), true));
+
+		// enable externalized checkpoints which are retained after job
+		// cancellation
+		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
+		logger.info("RESTART_FLAG :: " + properties.getProperty(DAFCT2Constant.RESTART_FLAG));
+		if ("true".equals(properties.getProperty(DAFCT2Constant.RESTART_FLAG))) {
+			if ("true".equals(properties.getProperty(DAFCT2Constant.FIXED_RESTART_FLAG))) {
+				env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
+						Integer.parseInt(properties.getProperty(DAFCT2Constant.RESTART_ATTEMPS)), // no of restart attempts
+						Long.parseLong(properties.getProperty(DAFCT2Constant.RESTART_INTERVAL))) // time in milliseconds between restarts
+				);
+			} else {
+				env.setRestartStrategy(RestartStrategies.failureRateRestart(
+						Integer.parseInt(properties.getProperty(DAFCT2Constant.RESTART_FAILURE_RATE)), // max failures per interval
+						Time.of(Long.parseLong(properties.getProperty(DAFCT2Constant.RESTART_FAILURE_INTERVAL)),
+								TimeUnit.MILLISECONDS), // time interval for measuring failure rate
+						Time.of(Long.parseLong(properties.getProperty(DAFCT2Constant.RESTART_FAILURE_DELAY)),
+								TimeUnit.MILLISECONDS) // delay
+				));
+			}
+		} else {
+			env.setRestartStrategy(RestartStrategies.noRestart());
+		}
+
+		logger.info("RestartStrategy ::{}",env.getRestartStrategy());
+		this.streamExecutionEnvironment = env;
+		logger.info("Flink Processing Started.");
+	}
 
     public void processing(Properties properties) {
 
         ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
-        ValidateSourceStream validateSourceStream = new ValidateSourceStream();
-
+       
         MapStateDescriptor<Message<String>, KafkaRecord<VehicleStatusSchema>> mapStateDescriptor =
                 new BroadcastState<String, VehicleStatusSchema>()
                         .stateInitialization(properties.getProperty(BROADCAST_NAME));
@@ -191,27 +259,48 @@ public class ContiMessageProcessing implements Serializable {
                 }))
                 .broadcast(mapStateDescriptor);
 
+        KeyedStream<KafkaRecord<String>, String> contiKeyedStream = consumeSrcStream.consumeSourceInputStream(
+                streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
+        		.keyBy(new KeySelector<KafkaRecord<String>, String>() {
+				
+				private static final long serialVersionUID = 1L;
 
-        DataStream<KafkaRecord<String>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
-                streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties);
+				@Override
+				public String getKey(KafkaRecord<String> value)
+					throws Exception {
+					JsonNode jsonNodeRec = null;
+					try{
+						jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+						//long kafkaProcessingTS = TimeFormatter.getInstance().getCurrentUTCTime();
+						((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
+						value.setKey(jsonNodeRec.get("VID").asText());
+						value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
+						return jsonNodeRec.get("VID").asText();
+					}catch(Exception e){
+						if(Objects.nonNull(jsonNodeRec)){
+							value.setKey(DAFCT2Constant.UNKNOWN);
+							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
+							return DAFCT2Constant.UNKNOWN;
+						}else{
+							value.setKey(DAFCT2Constant.CORRUPT);
+							return DAFCT2Constant.CORRUPT;
+						}
+					}
+				}
+			});
 
-
+        SingleOutputStreamOperator<KafkaRecord<String>> contiCorruptRecords = contiKeyedStream.filter(rec ->  "CORRUPT".equals(rec.getKey()));
+        SingleOutputStreamOperator<KafkaRecord<String>> contiValidInputStream = contiKeyedStream.filter(rec -> !"CORRUPT".equals(rec.getKey()));
+        
         new MessageProcessing<String, VehicleStatusSchema, String>()
-                .contiMessageForHistorical(
-                        contiInputStream,
-                        properties,
-                        broadcastStream);
-
-        DataStream<Tuple2<Integer, KafkaRecord<String>>> contiStreamValiditySts = validateSourceStream
-                .isValidJSON(contiInputStream);
-        DataStream<KafkaRecord<String>> contiValidInputStream = validateSourceStream
-                .getValidSourceMessages(contiStreamValiditySts, MEASUREMENT_DATA);
-
-        new EgressCorruptMessages().egressCorruptMessages(contiStreamValiditySts, properties,
+        .contiMessageForHistorical(
+        		contiValidInputStream,
+                properties,
+                broadcastStream);
+        
+        new EgressCorruptMessages().egressCorruptMessages(contiCorruptRecords, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
-
-        //contiValidInputStream.print();
-
+        
         new MessageProcessing<String, VehicleStatusSchema, Index>()
                 .consumeContiMessage(
                         contiValidInputStream,

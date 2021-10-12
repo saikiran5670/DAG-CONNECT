@@ -45,7 +45,12 @@
                             <mat-select (selectionChange)="onVehicleGroupChange($event)"
                                 placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                                 formControlName="vehicleGroup">
-                                <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                                <mat-option>
+                                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                                          <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                        </ngx-mat-select-search>
+                                      </mat-option>
+                                      <mat-option *ngFor="let rer of filteredVehicleGroups | async" [value]="rer.vehicleGroupId">
                                     {{ rer.vehicleGroupName }}
                                 </mat-option>
                             </mat-select>
@@ -63,7 +68,9 @@
                                 placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                                 formControlName="vehicleName">
                                 <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                                    {{ rer.vehicleName }}
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{ rer.vehicleName }} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

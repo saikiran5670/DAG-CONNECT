@@ -41,6 +41,7 @@ import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-
 import { LanguageSelectionComponent } from './translation-data-upload/language-selection/language-selection.component'
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehic
     LinkOrgPopupComponent,
     LanguageSelectionComponent,
     CreateEditViewVehicleAccountAccessRelationshipComponent
+    
   ],
   imports: [
       CommonModule,
@@ -85,7 +87,8 @@ import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehic
       ChartsModule,
       ImageCropperModule,
       DirectivesModule,
-      MatTableExporterModule
+      MatTableExporterModule,
+      NgxMatSelectSearchModule
     ],
     providers: [ConfirmDialogService, AccountService, VehicleService],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
