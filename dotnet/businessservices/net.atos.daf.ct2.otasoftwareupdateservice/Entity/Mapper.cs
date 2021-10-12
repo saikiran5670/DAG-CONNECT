@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.otasoftwareupdate.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.otasoftwareupdateservice.Entity
 {
@@ -22,7 +23,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Entity
             return returnObj;
         }
 
-        public httpclientservice.ScheduleSoftwareUpdateRequest ScheduleSoftwareUpdateRequest(long scheduleDateTime, string baseLineId)
+        public httpclientservice.ScheduleSoftwareUpdateRequest ScheduleSoftwareUpdateRequest(string scheduleDateTime, string baseLineId)
         {
             var returnObj = new httpclientservice.ScheduleSoftwareUpdateRequest();
             returnObj.ScheduleDateTime = scheduleDateTime;
@@ -34,7 +35,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Entity
             var scheduleSoftware = new OtaScheduleCompaign();
             scheduleSoftware.CompaignId = request.CampaignId;
             scheduleSoftware.Vin = request.Vin;
-            scheduleSoftware.ScheduleDateTime = request.ScheduleDateTime;
+            scheduleSoftware.ScheduleDateTime = UTCHandling.GetUTCFromDateTime(request.ScheduleDateTime);
             scheduleSoftware.CreatedAt = request.CreatedAt;
             scheduleSoftware.CreatedBy = request.CreatedBy;
             scheduleSoftware.TimeStampBoasch = request.TimeStampBoasch;

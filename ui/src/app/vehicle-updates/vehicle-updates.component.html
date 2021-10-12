@@ -43,7 +43,7 @@
                           <mat-select [disabled]="vehicleGroup.length == 0" (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" placeholder="Select"  formControlName="vehicleGroup">
                           <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                              <mat-option *ngFor="let veh of vehicleGroup" [value]="veh">
-                          {{ veh.vehicleGroupNames }}
+                          {{ veh.vehicleGroup }}
                       </mat-option>
                     </mat-select>
                 </mat-form-field> 
@@ -53,7 +53,7 @@
                     {{ translationData.lblVehicleName || 'Vehicle Name' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select [disabled]="vehicleName.length == 0" (selectionChange)="onVehicleChange('vehicleName',$event)" placeholder="Select" formControlName="vehicle">
+                  <mat-select [disabled]="vehicleName.length == 0" (selectionChange)="onVehicleChange('vehicleName',$event)" placeholder="Select" formControlName="vehicle"  [(ngModel)]="ngVehicleName">
                         <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
                         <mat-option *ngFor="let veh of vehicleName" [value]="veh.vehicleName">
                           {{ veh.vehicleName }}
@@ -147,8 +147,10 @@
             </mat-table>
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div> 
-          <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </mat-card>   
     </div>
-    <app-vehicle-update-details *ngIf="showVehicalDetails"></app-vehicle-update-details>
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData'
+    [actionType]='actionType'   [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
+    (backToPage)='onBackToPage($event)'></app-vehicle-update-details>
   </div>

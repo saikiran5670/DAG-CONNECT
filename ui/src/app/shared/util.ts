@@ -69,6 +69,32 @@ export class Util {
         return cTime;
     }
 
+    public static convertUtcToHour(_utc: any, timeZone: any){ // with current TZ
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format();
+        let _time = moment(date).valueOf();
+        let _addTz = (moment(date)['_tzm'])* 60000;
+        let cTime = _time;
+        // console.log("hour "+moment.utc(cTime).hour());
+        let hour: number = moment.utc(cTime).hour();
+        let minute: number = moment.utc(cTime).minute();
+        let second: number = moment.utc(cTime).second();
+        let millisecond: number = moment.utc(cTime).millisecond();
+        let fixedDay: any = moment([2007, 9, 17, hour, minute, second, millisecond]);
+        // let today: any = fixedDay({hour: moment.utc(cTime).hour(), minute: moment.utc(cTime).minute(), seconds: moment.utc(cTime).second(), milliseconds: moment.utc(cTime).millisecond()}); 
+        // console.log("hour "+fixedDay.utc(cTime).hour());
+        cTime = moment(fixedDay).valueOf() + _addTz;
+        return cTime;
+    }
+
+    public static getTimeHHMMSS(_utc: any){
+        return moment.utc(_utc).hour() + ':' + moment.utc(_utc).minute() + ':' + moment.utc(_utc).second() + '.' + moment.utc(_utc).millisecond();
+    }
+
     public static convertToDateTZ(cTime: any, dateFormat: any){ // with current TZ get date time
         let dFormat = 'dd/mm/yyyy';
         switch(dateFormat){

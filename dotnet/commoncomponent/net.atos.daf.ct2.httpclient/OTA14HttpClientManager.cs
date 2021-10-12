@@ -10,6 +10,7 @@ using log4net;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.httpclientfactory.entity.ota14;
 using net.atos.daf.ct2.httpclientfactory.extensions;
+using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
 namespace net.atos.daf.ct2.httpclientfactory
 {
@@ -40,12 +41,21 @@ namespace net.atos.daf.ct2.httpclientfactory
                 HttpResponseMessage response = new HttpResponseMessage();
                 string baseline = request.BaseLineId;
                 response.StatusCode = HttpStatusCode.BadRequest;
-
+                string etag = string.Empty;
+                client.DefaultRequestHeaders.Accept.Clear();
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
-                    DateTime boashtimestamp = DateTime.Now;
+                    response = await client.GetAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}");
+                    etag = response.Headers.ETag?.ToString();
+                }
+                client.DefaultRequestHeaders.Add("If-Match", etag);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                long boashtimestamp = 0;
+                while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
+                {
+                    boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                     _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 rest API for sending data");
-                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}", data);
+                    response = await client.PostAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}/managerApprove", data);
 
                     _logger.Info("GetSoftwareScheduleUpdate:OTA 14 respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
@@ -60,8 +70,9 @@ namespace net.atos.daf.ct2.httpclientfactory
                 else
                 {
                     _logger.Error(result);
+                    return new ScheduleSoftwareUpdateResponse { HttpStatusCode = (int)response.StatusCode, BoashTimesStamp = boashtimestamp };
                 }
-                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, ScheduleStatusOverview = JsonConvert.DeserializeObject<ScheduleStatusOverview>(result) };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, BoashTimesStamp = boashtimestamp };
             }
             catch (Exception ex)
             {

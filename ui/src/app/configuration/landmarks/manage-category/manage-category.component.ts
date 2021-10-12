@@ -98,6 +98,8 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   fillDropdown(categoryData: any){
+    this.categoryList = [];
+    this.subCategoryList = [];
     if(categoryData.length > 0){
       let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
       let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
@@ -105,7 +107,8 @@ export class ManageCategoryComponent implements OnInit {
         catDD.forEach(element => {
           this.categoryList.push({
             id: element.parentCategoryId,
-            name: element.parentCategoryName
+            name: element.parentCategoryName,
+            organizationId: element.organizationId
           });
         });
       } 
@@ -113,7 +116,8 @@ export class ManageCategoryComponent implements OnInit {
         subCatDD.forEach(elem => {
           this.subCategoryList.push({
             id: elem.subCategoryId,
-            name: elem.subCategoryName
+            name: elem.subCategoryName,
+            organizationId: elem.organizationId
           });
         });
       }
@@ -442,7 +446,7 @@ export class ManageCategoryComponent implements OnInit {
       this.showSuccessMessage(objData.successMsg);
     }
     if(objData.gridData){
-      this.allCategoryData = objData.gridData;
+      this.allCategoryData = objData.gridData.slice();
       this.fillDropdown(this.allCategoryData);
     }
     // if(objData.categoryList){

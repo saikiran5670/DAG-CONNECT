@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.apache.flink.shaded.curator4.org.apache.curator.shaded.com.google.common.base.Strings;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.CurrentTrip;
@@ -380,8 +383,12 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 					currentTripdata.setOdometer_val(rs_trip.getLong("odometer_val"));
 				}
 				// }
-				System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is "
+				
+				if(!Objects.isNull(currentTripdata))
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is "
 						+ currentTripdata.toString());
+				else 
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is NULL");
 
 				rs_trip.close();
 

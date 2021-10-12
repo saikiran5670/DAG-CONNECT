@@ -6,7 +6,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { ReportService } from '../services/report.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms'
+import { OtaSoftwareUpdateService } from 'src/app/services/ota-softwareupdate.service';
+
 @Component({
   selector: 'app-vehicle-updates',
   templateUrl: './vehicle-updates.component.html',
@@ -33,16 +35,24 @@ export class VehicleUpdatesComponent implements OnInit {
   vehicleFilterList:any=[];
   vehicleUpdatesForm: FormGroup;
   vehicleSoftwareStatus:any=[];
+  vehicleGroupArr:any=[]; 
+  vehicleNameArr:any=[];
   filterListValues = {};
   searchFilter= new FormControl();
   filteredValues = {
     search: ''
   };
+  ngVehicleName = ''; 
+  actionType: any;
+  selectedVehicleUpdateDetails: any = [];
+  selectedVehicleUpdateDetailsData: any;
+  viewVehicleUpdateDetailsFlag: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   public filteredSoftwareStatus: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  constructor(private translationService: TranslationService, private reportService:ReportService, private _formBuilder: FormBuilder) { }
+  constructor(private translationService: TranslationService, private reportService:ReportService, private _formBuilder: FormBuilder,
+    private otaSoftwareService: OtaSoftwareUpdateService) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -105,8 +115,7 @@ export class VehicleUpdatesComponent implements OnInit {
             element["value"]= this.translationData[element["key"]];
             this.vehicleSoftwareStatus.push(element);
         });
-      }
-        this.loadFiltersData(); 
+      }      
         this.resetSoftStatusFilter();       
         this.loadVehicleStatusData(); 
         this.searchAllDataFilter();       
@@ -115,32 +124,19 @@ export class VehicleUpdatesComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
   } 
  
  searchAllDataFilter(){
   this.dataSource.filterPredicate = this.createFilter();  
   this.searchFilter.valueChanges.subscribe(filterValue => {
-  this.filteredValues['search'] = filterValue.trim(); 
-  filterValue = filterValue.toLowerCase();
+  this.filteredValues['search'] = filterValue.trim().toLowerCase(); 
   this.dataSource.filter = JSON.stringify(this.filteredValues);  
   this.vehicleUpdatesForm.get('vehicle').setValue("all");
   this.vehicleUpdatesForm.get('vehicleGroup').setValue("all"); 
   this.vehicleUpdatesForm.get('softStatus').setValue("all");   
   }); 
 }
-  loadFiltersData(){ 
-    this.showLoadingIndicator = true;
-    // this.vehicleUpdatesService.getvehicleupdatefilterdata().subscribe((vehicleFilterData:any) =>{
-      this.reportService.getLogBookfilterdetails().subscribe((vehicleFilterData: any) => {
-      this.hideloader();
-      this.vehicleFilterList= vehicleFilterData['associatedVehicleRequest'];
-      this.getVehicleGroups();
-    }, (error)=>{
-      this.hideloader();
-    }); 
-   
-  }
+
   updateDataSource(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
@@ -219,79 +215,198 @@ export class VehicleUpdatesComponent implements OnInit {
     // }, (error) => {
 
     // })
+  
+    vehicleStatusList.filter((element) =>{
+    this.vehicleGroupArr.push(element.vehicleGroupNames);    
+    this.vehicleNameArr.push({'vehicleName': element.vehicleName.trim(),'vehicleGroup': element.vehicleGroupNames.trim()});    
+    });
+  
+    let vehGrp:any = [];
+    this.vehicleGroupArr.forEach(element => {
+     let vehGrpTemp = element.split(',');    
+     vehGrpTemp.forEach((ele:any )=> {
+       vehGrp.push({'vehicleGroup': ele.trim()});
+     })
+    });
+    this.vehicleGroup = this.removeDuplicates(vehGrp, "vehicleGroup");
+    this.vehicleName = this.removeDuplicates(this.vehicleNameArr, "vehicleName");
+    
     this.initData= vehicleStatusList;
-    this.showLoadingIndicator = false;  
+    this.showLoadingIndicator = false;      
     this.updateDataSource(this.initData); 
     
 }
-  getVehicleGroups(){ 
-    this.vehicleFilterList.forEach(element => {
-      let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
-      vehicleGroupDetails.forEach(item => {
-        let itemSplit = item.split("~");
-        if (itemSplit[2] != 'S') {
-          let vehicleGroupObj = {
-            "vehicleGroupId": itemSplit[0],
-            "vehicleGroupNames": itemSplit[1],
-            "vehicleId": element.vehicleId
-          }
-          this.vehicleGroup.push(vehicleGroupObj);
-        } else {
-          // this.vehicleName.push(element);
-        }
-      });
-      this.vehicleListArrany.push(element);
-    });
-    this.vehicleGroup = this.getUnique(this.vehicleGroup, "vehicleGroupId");
-    this.vehicleGroup.forEach(element => {
-      element.vehicleGroupId = parseInt(element.vehicleGroupId);
-    });
- }
 
- getUnique(arr, comp) {
-   const unique =  arr.map(e => e[comp])
-    .map((e, i, final) => final.indexOf(e) === i && i)
-  .filter((e) => arr[e]).map(e => arr[e]);
-  return unique;
+ removeDuplicates(originalArray, prop) {
+  var newArray = [];
+  var lookupObject  = {}; 
+  for(var i in originalArray) {
+     lookupObject[originalArray[i][prop]] = originalArray[i];
+  } 
+  for(i in lookupObject) {
+      newArray.push(lookupObject[i]);
+  }
+   return newArray;
 }
+
 onVehicleGroupChange(filter, event){
-  this.vehicleName=[];
-   let event_val;  
+   this.vehicleName=[];
+   this.ngVehicleName='all'
+   let event_val;    
+  
    if(event == 'all'){
-    // let vehicleData = this.vehicleListData.slice();
-    this.vehicleName = this.getUniqueVINs([...this.vehicleListArrany]);
+    this.vehicleName =  this.removeDuplicates(this.vehicleNameArr, "vehicleName");
     event_val = '';  
   }
   else{
-    let vehicle_group_selected:any = parseInt(event.vehicleGroupId);
-    this.vehicleGroup.forEach(element => {
-     let vehicle= this.vehicleFilterList.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
-     //let vehicle= element.filter(item => item.vehicleId == value);
-     if(vehicle.length > 0){
-      this.vehicleName.push(...vehicle);
-      }
+    let vehicle_group_selected = event.vehicleGroup;
+    let vehicle= this.vehicleNameArr.filter(item => item.vehicleGroup.includes(vehicle_group_selected+","));
+    this.vehicleNameArr.forEach(element => {
+    if(element.vehicleGroup.includes(vehicle_group_selected)){
+      this.vehicleName.push(element);
+    }
     });
-    this.vehicleName = this.getUnique(this.vehicleName, "vehicleName"); 
-    event_val = event.vehicleGroupNames.trim();   
+    this.vehicleName = this.removeDuplicates(this.vehicleName, "vehicleName");    
+    event_val = event.vehicleGroup.trim(); 
   }  
+    this.filterListValues['vehicleName']='';
     this.filterListValues[filter] =event_val;
+    
     this.dataSource.filter = JSON.stringify(this.filterListValues);  
 }
 
-getUniqueVINs(vinList: any){
-  let uniqueVINList = [];
-  for(let vin of vinList){
-    let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
-    if(vinPresent == -1) {
-      uniqueVINList.push(vin);
-    }
-  }
-  return uniqueVINList;
-}
 
-  onViewVehicleList(row:any, type:any){
+  onViewVehicleList(rowData:any, type:any){
+  this.actionType = type;
+  this.selectedVehicleUpdateDetails = rowData;
    this.getVehicleUpdateDetails();
   }
+
+  getVehicleUpdateDetails(){
+    this.showLoadingIndicator = true;
+    this.showVehicalDetails = true;
+     // Uncomment for Actual API
+    this.otaSoftwareService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
+      if(data && data.vehicleUpdateDetails){
+        this.selectedVehicleUpdateDetailsData = data.vehicleUpdateDetails;
+      }
+      this.hideloader();
+    }, (error) => {
+      this.hideloader();
+      console.log("error:: ", error)
+    });
+  //   this.selectedVehicleUpdateDetailsData  = {
+  //     vin: "XLR000000BE000080",
+  //     vehicleSoftwareStatus: "Update running.",
+  //     campaigns: [
+  //       {
+  //         campaignID: "EU-T000080",
+  //         baselineAssignmentId: "475d9b10-a9c9-410e-8a26-a00d14169852",
+  //         campaignSubject: "Rear light fix 1",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000081",
+  //         baselineAssignmentId: "88a0345c-80ad-4f97-beb1-98eb703efd78",
+  //         campaignSubject: "Rear light fix 2",
+  //         systems: [
+  //           'PCI-2'
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000088",
+  //         baselineAssignmentId: "2bd2fdfe-3e9b-47c1-96ce-22f4a4d64120",
+  //         campaignSubject: "PCI 2 fix",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000089",
+  //         baselineAssignmentId: "13cd89fb-48eb-4f0c-a80f-1c6aea4bac81",
+  //         campaignSubject: "PCI Fix 3",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTA Software Update",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 1678878368389
+  //       },
+  //       {
+  //         campaignID: "EU-T000101",
+  //         baselineAssignmentId: "4dc741a0-43d8-4fed-8afd-38df75235547",
+  //         campaignSubject: "PCI Fix (FM) 28-6 5",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTA Software Update",
+  //         campaignCategory: "Sales Option",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000103",
+  //         baselineAssignmentId: "ced986b3-db3e-4012-832c-5f167d8d485a",
+  //         campaignSubject: "PCI fix 29-6 2",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 1678878368389
+  //       },
+  //       {
+  //         campaignID: "EU-T000104",
+  //         baselineAssignmentId: "41805a61-53a9-4938-8edf-d39ff4aa5c36",
+  //         campaignSubject: "PCI fix 29-6 3",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Installing",
+  //         endDate: "",
+  //         scheduleDateTime: 0
+  //       }
+  //     ]
+  // };
+  
+  // this.hideloader();
+  
+  }
+  
+  checkViewVehicleUpdateDetails(item: any){
+    //this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
+    this.viewVehicleUpdateDetailsFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+   
+    // this.updatedTableData(this.initData);
+  }
+
 filterVehicleSoft(softStatus) { 
   if (!this.vehicleSoftwareStatus) {
     return;
@@ -342,22 +457,7 @@ filterVehicleSoft(softStatus) {
   }
 
   
-  getVehicleUpdateDetails(){
-    // this.showLoadingIndicator = true;
-    this.showVehicalDetails = true;
-    alert('component loaded');
-    // let accountStatus: any = this.isViewListDisabled ? true : false; 
-    // this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
-    //   this.hideloader();
-    //   this.accountGrpAccountDetails = data.account;
-    //   this.vehicleGrpVehicleDetails = data.vehicle;
-    //   this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
-    //   this.createVehicleAccountAccessRelation = true;
-    // }, (error) => {
-    //   this.hideloader();
-    //   console.log("error:: ", error)
-    // });
-  }
+  
   
 
   onVehicleChange(filter, event) {     
@@ -426,20 +526,20 @@ filterVehicleSoft(softStatus) {
            
         let searchData = '';
         searchData = data;
-          if(searchData["softwareStatus"].includes(searchTerms.search)){
+          if(searchData["softwareStatus"].toLowerCase().includes(searchTerms.search)){
             found = true;    
-        }else if(searchData["vehicleGroupNames"].includes(searchTerms.search)){
+        }else if(searchData["vehicleGroupNames"].toLowerCase().includes(searchTerms.search)){
           found = true;    
-            }else if(searchData["vehicleName"].includes(searchTerms.search)){
+            }else if(searchData["vehicleName"].toLowerCase().includes(searchTerms.search)){
               found = true;    
           }
-          else if(searchData["registrationNo"].includes(searchTerms.search)){
+          else if(searchData["registrationNo"].toLowerCase().includes(searchTerms.search)){
             found = true;    
         }
-        else if(searchData["modelYear"].includes(searchTerms.search)){
+        else if(searchData["modelYear"].toLowerCase().includes(searchTerms.search)){
           found = true;    
       }
-      else if(searchData["type"].includes(searchTerms.search)){
+      else if(searchData["type"].toLowerCase().includes(searchTerms.search)){
         found = true;    
       }
       else{
@@ -455,5 +555,13 @@ filterVehicleSoft(softStatus) {
       return nameSearch()
     }
     return filterFunction
+  }
+  
+  onBackToPage(objData){  
+    this.showVehicalDetails = false;
+    if(objData.successMsg && objData.successMsg != ''){
+      this.successMsgBlink(objData.successMsg);
+    }
+    this.loadVehicleStatusData();  
   }
 }
