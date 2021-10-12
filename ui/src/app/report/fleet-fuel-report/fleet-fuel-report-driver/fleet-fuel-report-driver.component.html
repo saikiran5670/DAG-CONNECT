@@ -1112,12 +1112,11 @@
             <ng-container matColumnDef="idlingConsumptionWithPTO">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue ||
                   'Idling Consumption With PTO' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
-            (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-            'pound') }})</span> 
+                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km || 'Ltr/100km') :
+                    (translationData.lblmpg || 'mpg')  }})</span> 
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">
-                  <span>{{row.idlingConsumptionValue}}</span>
+                  <span>{{row.convertedIdlingConsumptionWithPto}}</span>
                 </mat-cell>
               </ng-container>
   
