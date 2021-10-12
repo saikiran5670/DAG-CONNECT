@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (language == null || (language != null && language.Length < 2)) return StatusCode(400, OTASoftwareUpdateConstants.LANGUAGE_REQUIRED_MSG);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
-
+                if (featureId == 0) return StatusCode(400, OTASoftwareUpdateConstants.NO_FEATURE_MSG);
                 var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
                 Metadata headers = new Metadata();
                 headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.Code == ResponseCode.Success)
                     return Ok(new { VehicleStatusList = response.VehicleStatusList, Message = response.Message });
                 if (response.Code == ResponseCode.InternalServerError)
-                    return StatusCode((int)response.Code, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
+                    return StatusCode((int)response.Code, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_LIST_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
@@ -137,7 +137,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.HttpStatusCode == ResponseCode.Success)
                     return Ok(new { VehicleUpdateDetails = response.VehicleUpdateDetail, Message = response.Message });
                 if (response.HttpStatusCode == ResponseCode.InternalServerError)
-                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
+                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_UPDATE_DETAILS_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.HttpStatusCode, response.Message);
             }
             catch (Exception ex)
@@ -178,7 +178,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.HttpStatusCode == ResponseCode.Success)
                     return Ok(new { ReleaseNotes = response.ReleaseNotes, Message = response.Message });
                 if (response.HttpStatusCode == ResponseCode.InternalServerError)
-                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.VEHICLE_SOFTWARE_STATUS_FAILURE_MSG, response.Message));
+                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.RELEASE_NOTES_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.HttpStatusCode, response.Message);
             }
             catch (Exception ex)
@@ -204,21 +204,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (scheduleSoftwareUpdateFilter == null && !(scheduleSoftwareUpdateFilter.ScheduleDateTime > 0)) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
+                if (scheduleSoftwareUpdateFilter == null && !(string.IsNullOrEmpty(scheduleSoftwareUpdateFilter.ScheduleDateTime))) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
                 string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
                 ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
                 scheduleSoftwareUpdateRequest.CreatedBy = _userDetails.AccountId;
                 _logger.Info("Schedulesoftware method in OtaSoftwareUpdate API called.");
-                var data = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
-                if (data != null)
-                {
-                    data.Message = OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_SUCCESS_MSG;
-                    return Ok(data);
-                }
-                else
-                {
-                    return StatusCode(404, OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_MSG);
-                }
+                var response = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
+                if (response == null)
+                    return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 1));
+                if (response.HttpStatusCode == ResponseCode.Success)
+                    return Ok(new { Message = response.Message });
+                if (response.HttpStatusCode == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.HttpStatusCode, String.Format(OTASoftwareUpdateConstants.SOFTWARE_UPDATE_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.HttpStatusCode, response.Message);
+
             }
             catch (Exception ex)
             {

@@ -8,6 +8,8 @@ import { ReportService } from 'src/app/services/report.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Util } from '../../../shared/util';
 import { ReportMapService } from '../../report-map.service';
+import { ReplaySubject } from 'rxjs';
+import { TranslationService } from 'src/app/services/translation.service';
 
 @Component({
   selector: 'app-search-criteria',
@@ -20,9 +22,12 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Output() showSearchResult = new EventEmitter();
   @Output() hideSearchResult = new EventEmitter();
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   localStLanguage;
   accountPrefObj;
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   accountOrganizationId;
   accountId;
   searchForm: FormGroup;
@@ -49,7 +54,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService, private translationService: TranslationService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -68,6 +73,16 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       endDate: ['', []],
       startTime: ['00:00', []],
       endTime: ['23:59', []]
+    });
+
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
     });
   }
 
@@ -290,6 +305,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            this.vehicleGrpDD.sort(this.compare);
+            this.vehicleDD.sort(this.compare);
+            this.resetVehicleGroupFilter();
+            this.resetVehicleFilter();
           }
         });
       }
@@ -541,6 +560,59 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       this.showSearchResult.emit(searchData);
       this.setGlobalSearchData();
     }
+  }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGrpDD){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+  
+   resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
 
 }

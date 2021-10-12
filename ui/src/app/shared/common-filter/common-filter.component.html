@@ -17,6 +17,10 @@
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserGroup }}" [(ngModel)]="userGroup">
+                    <mat-option>
+                        <ngx-mat-select-search></ngx-mat-select-search>
+                    </mat-option>
+                    
                     <mat-option value='All'>{{ translationData.lblAll }}</mat-option>
                     <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
                     <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
@@ -31,6 +35,10 @@
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserRole }}" [(ngModel)]="role">
+                    <mat-option>
+                        <ngx-mat-select-search></ngx-mat-select-search>
+                    </mat-option>
+                    
                     <mat-option value='All'>{{ translationData.lblAll  }}</mat-option>
                     <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
                     <mat-option *ngFor="let role of roles" [value]="role">

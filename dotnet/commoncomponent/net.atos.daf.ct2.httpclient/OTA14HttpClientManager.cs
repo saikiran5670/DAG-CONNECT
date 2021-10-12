@@ -32,6 +32,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         {
             int i = 0;
             string result = null;
+            long boashtimestamp = 0;
             try
             {
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
@@ -50,7 +51,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                 }
                 client.DefaultRequestHeaders.Add("If-Match", etag);
                 response.StatusCode = HttpStatusCode.BadRequest;
-                long boashtimestamp = 0;
+
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
                     boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
@@ -72,13 +73,13 @@ namespace net.atos.daf.ct2.httpclientfactory
                     _logger.Error(result);
                     return new ScheduleSoftwareUpdateResponse { HttpStatusCode = (int)response.StatusCode, BoashTimesStamp = boashtimestamp };
                 }
-                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, ScheduleStatusOverview = JsonConvert.DeserializeObject<ScheduleStatusOverview>(result), BoashTimesStamp = boashtimestamp };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, BoashTimesStamp = boashtimestamp };
             }
             catch (Exception ex)
             {
                 _logger.Error($"OTA14HttpClientManager:GetSoftwareScheduleUpdate.Error:-{ex.Message}");
                 //return new ScheduleSoftwareUpdateResponse { };
-                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500 };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500, BoashTimesStamp = boashtimestamp };
             }
         }
 

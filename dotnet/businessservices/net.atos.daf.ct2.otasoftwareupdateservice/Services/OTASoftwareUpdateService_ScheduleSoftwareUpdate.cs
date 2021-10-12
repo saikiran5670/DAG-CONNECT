@@ -31,13 +31,14 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
                            _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
                            );
                 otaScheduleCompaign.Status = (int)scheduleSoftwareStatusResponse.HttpStatusCode == 200 ? "S" : "F";
-                //otaScheduleCompaign.TimeStampBoasch = scheduleSoftwareStatusResponse.
+                otaScheduleCompaign.TimeStampBoasch = scheduleSoftwareStatusResponse.BoashTimesStamp;
+
                 await _otaSoftwareUpdateManagement.InsertOtaScheduleCompaign(otaScheduleCompaign);
 
                 var response = new ScheduleSoftwareUpdateResponse
                 {
-                    Message = "Successfully fetch records for Schedule Software Status",
-                    HttpStatusCode = ResponseCode.Success
+                    Message = otaScheduleCompaign.Status == "S" ? "OTA approval is successful" : "OTA approval is failed",
+                    HttpStatusCode = otaScheduleCompaign.Status == "S" ? ResponseCode.Success : ResponseCode.Failed
                 };
                 return await Task.FromResult(response);
             }

@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
 
                         var response = new VehicleStatusResponse
                         {
-                            Message = "Successfully fetch records for Vehicle Software Status",
+                            Message = "Successfully fetch records for Vehicle Software Status List",
                             Code = ResponseCode.Success
                         };
                         response.VehicleStatusList.AddRange(
