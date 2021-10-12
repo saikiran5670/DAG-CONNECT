@@ -109,7 +109,7 @@ message CampiagnSoftwareReleaseNoteRequest {
 message ScheduleSoftwareUpdateRequest{
         string CampaignId =1;        
         string BaseLineId =2;
-        int64 ScheduleDateTime =3;
+        string ScheduleDateTime =3;
         string Vin =4;
         int64 CreatedAt = 5;
         int64 CreatedBy = 6;

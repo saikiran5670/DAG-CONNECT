@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                     _logger.Error(result);
                     return new ScheduleSoftwareUpdateResponse { HttpStatusCode = (int)response.StatusCode, BoashTimesStamp = boashtimestamp };
                 }
-                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, ScheduleStatusOverview = JsonConvert.DeserializeObject<ScheduleStatusOverview>(result), BoashTimesStamp = boashtimestamp };
+                return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, BoashTimesStamp = boashtimestamp };
             }
             catch (Exception ex)
             {

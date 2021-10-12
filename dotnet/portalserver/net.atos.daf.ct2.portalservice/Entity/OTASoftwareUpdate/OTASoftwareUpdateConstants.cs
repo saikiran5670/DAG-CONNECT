@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
         public const string GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG = "Invalid Schedule date.";
         public const string GET_OTASOFTWAREUPDATE_VINREQUIRED_MSG = "Invalid VIN details.";
         public const string GET_OTASOFTWAREUPDATE_SUCCESS_MSG = "Otasoftwareupdate details fetched successfully";
+        public const string OTA14_SUCCESS_MSG = "OTA approval is successful.";
         public const string GET_OTASOFTWAREUPDATE_MSG = "No Result Found";
     }
 }
