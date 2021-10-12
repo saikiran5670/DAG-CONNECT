@@ -80,13 +80,13 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
                 if (visibleVehicles != null & visibleVehicles.Count > 0)
                 {
-                    string since = vehiclePositionRequest.Since.Trim();
+                    string since = vehiclePositionRequest.Since;
                     var isValid = ValidateParameter(ref since, out bool isNumeric);
                     net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                     if (isValid)
                     {
                         var dataVisibleVehicle = visibleVehicles.Select(a => a.Value).ToList();
-                        if (string.IsNullOrEmpty(vehiclePositionRequest.VIN.Trim()))
+                        if (string.IsNullOrEmpty(vehiclePositionRequest.VIN))
                         {
                             List<string> objVisibilityVinList = new List<string>();//move to 207
                             foreach (var item in dataVisibleVehicle)
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                     objVisibilityVinList.Add(i.VIN);
                                 }
                             }
-                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(objVisibilityVinList, vehiclePositionRequest.Since.Trim());
+                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(objVisibilityVinList, vehiclePositionRequest.Since);
                             if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                             {
                                 return Ok(vehiclePositionResponse);
@@ -115,7 +115,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 {
                                     foreach (var i in item)
                                     {
-                                        if (i.VIN.Contains(vehiclePositionRequest.VIN.Trim()))
+                                        if (i.VIN.Contains(vehiclePositionRequest.VIN))
                                         {
                                             isPassedVinInVisibility = true;
                                         }
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 if (isPassedVinInVisibility)
                                 {
-                                    vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN.Trim(), vehiclePositionRequest.Since.Trim());
+                                    vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
                                     if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                                     {
                                         return Ok(vehiclePositionResponse);
@@ -190,10 +190,10 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                             {
                                 foreach (var i in item)
                                 {
-                                    objVisibilityVinList.Add(i.VIN.Trim());
+                                    objVisibilityVinList.Add(i.VIN);
                                 }
                             }
-                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(objVisibilityVinList, vehicleStatusRequest.Since.Trim());
+                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(objVisibilityVinList, vehicleStatusRequest.Since);
                             if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                             {
                                 return Ok(vehicleStatusResponse);
@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 {
                                     foreach (var i in item)
                                     {
-                                        if (i.VIN.Contains(vehicleStatusRequest.VIN.Trim()))
+                                        if (i.VIN.Contains(vehicleStatusRequest.VIN))
                                         {
                                             isPassedVinInVisibility = true;
                                         }
@@ -220,7 +220,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 if (isPassedVinInVisibility)
                                 {
-                                    vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN.Trim(), vehicleStatusRequest.Since.Trim());
+                                    vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
                                     if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                                     {
                                         return Ok(vehicleStatusResponse);
