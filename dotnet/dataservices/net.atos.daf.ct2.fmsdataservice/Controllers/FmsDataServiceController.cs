@@ -63,13 +63,13 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 
 
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Version", "NOT_ACCEPTABLE value in version - " + acceptHeader);
                 }
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
@@ -162,13 +162,13 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
             try
             {
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Version", "NOT_ACCEPTABLE value in version - " + acceptHeader);
                 }
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
@@ -264,15 +264,14 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
             try
             {
                 this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
-                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0)
+                if (this.Request.Headers.ContainsKey("Version") && acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Version", "NOT_ACCEPTABLE value in version - " + acceptHeader);
                 }
-
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Vehicle", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice vehicle received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms Vehicle function called - ");
