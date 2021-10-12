@@ -724,6 +724,13 @@ setIconsOnMap(element) {
         alertsData.push(_alertFound);
       }
     }
+    else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
+      _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+      if (_alertFound) {
+        alertsData.push(_alertFound);
+      }
+    }
+    
     else{
         //only for never moved type of driving status
           if(_drivingStatus == "Never Moved"){

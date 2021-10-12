@@ -98,6 +98,8 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   fillDropdown(categoryData: any){
+    this.categoryList = [];
+    this.subCategoryList = [];
     if(categoryData.length > 0){
       let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
       let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
@@ -444,7 +446,7 @@ export class ManageCategoryComponent implements OnInit {
       this.showSuccessMessage(objData.successMsg);
     }
     if(objData.gridData){
-      this.allCategoryData = objData.gridData;
+      this.allCategoryData = objData.gridData.slice();
       this.fillDropdown(this.allCategoryData);
     }
     // if(objData.categoryList){

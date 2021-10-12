@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while processing Notification data.");
+                _logger.LogError("Error occurred while processing Notification data.", ex);
                 return StatusCode(500, string.Empty);
             }
         }

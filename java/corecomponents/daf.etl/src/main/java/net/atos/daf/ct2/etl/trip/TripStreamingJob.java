@@ -76,7 +76,7 @@ public class TripStreamingJob {
 						}
 					}).filter(rec -> { if(rec.getTripId() == null){
 							logger.info("Data Issue TripId is null, ignoring :: "+ rec); 
-							System.out.println("Data Issue TripId is null, ignoring :: "+ rec);}
+							}
 						return null !=  rec.getTripId();});
 					/*.assignTimestampsAndWatermarks(
 							WatermarkStrategy.<TripStatusData>forBoundedOutOfOrderness(Duration.ofSeconds(1))

@@ -1199,6 +1199,15 @@ let _type ='';
                alertsData.push(_alertFound);
                 }
         }
+        else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
+          // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+          _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+          if (_alertFound) {
+            this.alertFoundFlag = true;
+            alertsData.push(_alertFound);
+          }
+        }
+
         else{
           //only for never moved type of driving status
             if(_drivingStatus == "Never Moved"){
@@ -1885,11 +1894,22 @@ let _type ='';
 
   processedLiveFLeetData(fleetData: any){
     fleetData.forEach(element => {
+      if(element.tripId != "" && element.liveFleetPosition.length > 0){
       element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
       element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
       element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
       element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
       element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+      }
+      else if(element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0){
+        element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude; 
+        element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude; 
+   
+      }
+      else{
+        element.latestReceivedPositionLattitude = 48.8566;
+        element.latestReceivedPositionLongitude = 2.3522;
+      }
     })
     return fleetData;
   }
