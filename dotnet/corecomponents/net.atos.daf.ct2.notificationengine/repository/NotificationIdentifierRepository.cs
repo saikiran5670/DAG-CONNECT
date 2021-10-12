@@ -349,23 +349,26 @@ namespace net.atos.daf.ct2.notificationengine.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@alert_id", alertMessageEntity.AlertId);
-                string query =
-                    @"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
+                AlertVehicleEntity alertVehicledetails = new AlertVehicleEntity();
+                if (alertMessageEntity.AlertId > 0)
+                {
+                    parameter.Add("@alert_id", alertMessageEntity.AlertId);
+                    string query =
+                        @"select case when grp.group_type = 'S' then 0 else grp.id end  VehicleGroupId,
 	                         case when grp.group_type = 'S' then '' else grp.name end VehicleGroupName,
                              ale.created_by as AlertCreatedAccountId,
                              ale.organization_id as OrganizationId
                                 from master.alert ale
                                 inner join master.group grp
                                 on ale.vehicle_group_id=grp.id where ale.id=@alert_id";
-
-                AlertVehicleEntity alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
+                    alertVehicledetails = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(query, parameter);
+                }
 
                 string alertVehicleQuery = @"select name as VehicleName,license_plate_number as VehicleRegNo from master.vehicle where vin =@vin";
                 parameter.Add("@vin", alertMessageEntity.Vin);
                 AlertVehicleEntity alertVeh = await _dataAccess.QueryFirstOrDefaultAsync<AlertVehicleEntity>(alertVehicleQuery, parameter);
-                alertVehicledetails.VehicleName = alertVeh?.VehicleName;
-                alertVehicledetails.VehicleRegNo = alertVeh?.VehicleRegNo;
+                alertVehicledetails.VehicleName = alertVeh?.VehicleName ?? string.Empty;
+                alertVehicledetails.VehicleRegNo = alertVeh?.VehicleRegNo ?? string.Empty;
                 alertVehicledetails.AlertCategoryKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = alertMessageEntity.AlertCategory });
                 alertVehicledetails.AlertTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where parent_enum=@parentEnum and enum=@typeEnum", new { parentEnum = alertMessageEntity.AlertCategory, typeEnum = alertMessageEntity.AlertType });
                 alertVehicledetails.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = alertMessageEntity.AlertUrgency });
