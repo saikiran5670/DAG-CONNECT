@@ -50,7 +50,9 @@
                 <mat-select placeholder="{{translationData.lblSelectVehicle || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
                 <mat-option value=''>{{ translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let vehList of vehicleList | removeDuplicates"  [value]="vehList">
-                    {{vehList.vehicleName}}
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehList.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehList.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehList.registrationNo ? vehList.registrationNo : vehList.vehicleName}} </span>
                 </mat-option>
             </mat-select>
             </mat-form-field>

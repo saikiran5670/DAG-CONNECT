@@ -67,13 +67,10 @@
                             <mat-select (selectionChange)="onVehicleChange($event)"
                                 placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                                 formControlName="vehicleName">
-                                <mat-option>
-                                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" #VehicleSearch>
-                                          <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
-                                        </ngx-mat-select-search>
-                                      </mat-option>
-                                  <mat-option *ngFor="let rer of filteredVehicle | async" [value]="rer.vehicleId">
-                                    {{ rer.vehicleName }}
+                                <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{ rer.vehicleName }} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
+                                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

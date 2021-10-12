@@ -925,7 +925,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleGroupListData = finalVehicleList;
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-        //this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
 
       }
           if(this.driverListData.length>1){
