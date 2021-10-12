@@ -279,6 +279,8 @@ public class ContiMessageProcessing implements Serializable {
 					}catch(Exception e){
 						if(Objects.nonNull(jsonNodeRec)){
 							value.setKey(DAFCT2Constant.UNKNOWN);
+							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
 							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
 							return DAFCT2Constant.UNKNOWN;
 						}else{
