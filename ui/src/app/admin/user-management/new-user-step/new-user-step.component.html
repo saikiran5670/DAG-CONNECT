@@ -59,12 +59,12 @@
                   </span>
                 </div>
                 <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
-                  <span style="color: grey;">
-                    <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
+                  <span style="color: grey; display: flex; align-items: center; padding-top: 5px;">
+                    <mat-icon style='margin-right: 5px;'>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb Accepted format: png, jpg, gif' }}
                   </span>
                 </div>
                 <div fxLayout="row" *ngIf="imageError!=''">
-                  <span style="color:red">{{imageError}}</span>
+                  <span style="color:red">{{ imageError }}</span>
                 </div>
               </div>
               
@@ -158,6 +158,7 @@
                 </div>
                 <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
               </div>
+              <div *ngIf="changePictureFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width height-70" fxLayoutGap="10px"></div>
             </div>
           </div>
           <div style='padding: 20px; position: relative;'>
