@@ -5,6 +5,7 @@ import { OrganizationService } from '../../services/organization.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { FileValidator } from 'ngx-material-file-input';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-organisation-details',
@@ -63,6 +64,8 @@ export class OrganisationDetailsComponent implements OnInit {
   uploadLogo: any = "";
   isDefaultBrandLogo: any = false;
 
+  public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(private domSanitizer: DomSanitizer, private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     // this.defaultTranslation();
   }
@@ -77,6 +80,9 @@ export class OrganisationDetailsComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     this.organisationList = this.accountDetails["organization"];
+    console.log("organizationList", this.organisationList);
+    this.organisationList.sort(this.compare);
+    this.resetOrgListFilter();
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     if(localStorage.getItem('contextOrgId')){
@@ -121,6 +127,18 @@ export class OrganisationDetailsComponent implements OnInit {
       this.processTranslation(data);
       this.getTranslatedPref();
     });
+  }
+  resetOrgListFilter(){
+    this.filteredOrgList.next(this.organisationList.slice());
+  }
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
   }
 
   getTranslatedPref(){
@@ -373,4 +391,20 @@ export class OrganisationDetailsComponent implements OnInit {
     this.uploadLogo = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + btoa(binaryString));
    }
   
+
+   filterOrgList(orgListSearch){
+     if(!this.organisationList){
+      return;
+     }
+     if(!orgListSearch){
+      this.resetOrgListFilter(); 
+      return;
+     } else {
+       orgListSearch = orgListSearch.toLowerCase();
+     }
+     this.filteredOrgList.next(
+        this.organisationList.filter(item=> item.name.toLowerCase().indexOf(orgListSearch) > -1)
+     );
+
+   }
 }

@@ -178,6 +178,10 @@ vehicleIconMarker : any;
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
+public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
+
+
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
   // setTimeout(() => {
@@ -712,6 +716,7 @@ ngOnDestroy(){
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;     
     }
@@ -824,6 +829,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vehicleName;
      
@@ -1043,7 +1049,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD1", this.vehicleDD);
+      console.log("vehicleDD 2", this.vehicleDD);
      
     }
     else{
@@ -1055,14 +1061,14 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       //  let vehicle= element.filter(item => item.vehicleId == value);
        if(vehicle.length > 0){
         this.vehicleDD.push(vehicle[0]);
-        console.log("vehicleDD2", this.vehicleDD);
+        console.log("vehicleDD 3", this.vehicleDD);
      
         }
       });
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-      console.log("vehicleDD3", this.vehicleDD);
+      console.log("vehicleDD 4", this.vehicleDD);
       this.vehicleDD.sort(this.compare);
-      this.resetVehicleGroupFilter();
+      this.resetVehicleNamesFilter();
    
     }   
   }
@@ -1080,6 +1086,10 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
   resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD);
   }
+  resetVehicleNamesFilter(){
+    this.filteredVehicleNames.next(this.vehicleDD);
+  }
+
   
 
   getUniqueVINs(vinList: any){
@@ -1533,7 +1543,7 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD4", this.vehicleDD);
+        console.log("vehicleDD 5", this.vehicleDD);
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
@@ -2022,5 +2032,22 @@ let prepare = []
     );
     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
+  filterVehicleNames(vehicleNameSearch){
+    console.log("filterVehicleNames is called");
+    if(!this.filteredVehicleNames){
+      return;
+    }
+    if(!vehicleNameSearch){
+       this.resetVehicleNamesFilter();
+       return;
+    } else {
+      vehicleNameSearch = vehicleNameSearch.toLowerCase();
+    }
+    this.filteredVehicleNames.next(
+       this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
+    );
+    console.log("this.filteredVehicleNames", this.filteredVehicleNames);
+  }
+
 
 }

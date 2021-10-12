@@ -19,12 +19,12 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota14
         public string Filename { get; set; }
         public DateTime LastChangedOn { get; set; }
         public DateTime CreatedOn { get; set; }
-        public long ScheduleDateTime { get; set; }
+        public string ScheduleDateTime { get; set; }
     }
     public class ScheduleSoftwareUpdateResponse
     {
         public int HttpStatusCode { get; set; }
-        public ScheduleStatusOverview ScheduleStatusOverview { get; set; }
+        //public ScheduleStatusOverview ScheduleStatusOverview { get; set; }
         public long BoashTimesStamp { get; internal set; }
     }
 }

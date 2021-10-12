@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.httpclientservice.Entity.ota14
         {
             var returnObj = new ScheduleSoftwareUpdateResponse();
             returnObj.HttpStatusCode = apiResponse.HttpStatusCode;
-            //returnObj.
+            returnObj.BoashTimesStamp = apiResponse.BoashTimesStamp;
             return returnObj;
         }
     }

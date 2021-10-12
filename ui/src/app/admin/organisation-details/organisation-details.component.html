@@ -17,7 +17,12 @@
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start" class='areaWidth'>
                  <mat-form-field appearance="outline">
                     <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
-                      <mat-option *ngFor="let data of organisationList" [value]="data.id">
+                        <mat-option>
+                            <ngx-mat-select-search (keyup)="filterOrgList(orgListSearch.value)" #orgListSearch>
+                                <mat-icon (click)="resetOrgListFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let data of filteredOrgList | async" [value]="data.id">
                         {{ data.name }}
                       </mat-option>
                     </mat-select>

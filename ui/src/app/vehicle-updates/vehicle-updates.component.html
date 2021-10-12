@@ -147,8 +147,10 @@
             </mat-table>
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div> 
-          <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </mat-card>   
     </div>
-    <app-vehicle-update-details *ngIf="showVehicalDetails"></app-vehicle-update-details>
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData'
+    [actionType]='actionType'   [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
+    (backToPage)='onBackToPage($event)'></app-vehicle-update-details>
   </div>
