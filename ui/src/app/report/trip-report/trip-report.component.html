@@ -94,9 +94,14 @@
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicle  }} <span class='mandatoryColor'>*</span></mat-label>
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline">              
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
+                    <mat-option>
+                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" #VehicleSearch>
+                          <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                        </ngx-mat-select-search>
+                      </mat-option>
+                  <mat-option *ngFor="let rer of filteredVehicle | async" [value]="rer.vehicleId">
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>

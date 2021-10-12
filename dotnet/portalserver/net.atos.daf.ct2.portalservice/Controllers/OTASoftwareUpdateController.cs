@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (scheduleSoftwareUpdateFilter == null && !(scheduleSoftwareUpdateFilter.ScheduleDateTime > 0)) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
+                if (scheduleSoftwareUpdateFilter == null && !(string.IsNullOrEmpty(scheduleSoftwareUpdateFilter.ScheduleDateTime))) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
                 string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
                 ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
                 scheduleSoftwareUpdateRequest.CreatedBy = _userDetails.AccountId;
@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
                 if (data != null)
                 {
-                    data.Message = OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_SUCCESS_MSG;
+                    data.Message = OTASoftwareUpdateConstants.OTA14_SUCCESS_MSG;
                     return Ok(data);
                 }
                 else

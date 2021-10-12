@@ -6,7 +6,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { ReportService } from '../services/report.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms'
+import { OtaSoftwareUpdateService } from 'src/app/services/ota-softwareupdate.service';
+
 @Component({
   selector: 'app-vehicle-updates',
   templateUrl: './vehicle-updates.component.html',
@@ -41,10 +43,16 @@ export class VehicleUpdatesComponent implements OnInit {
     search: ''
   };
   ngVehicleName = ''; 
+  actionType: any;
+  selectedVehicleUpdateDetails: any = [];
+  selectedVehicleUpdateDetailsData: any;
+  viewVehicleUpdateDetailsFlag: boolean = false;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   public filteredSoftwareStatus: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  constructor(private translationService: TranslationService, private reportService:ReportService, private _formBuilder: FormBuilder) { }
+  constructor(private translationService: TranslationService, private reportService:ReportService, private _formBuilder: FormBuilder,
+    private otaSoftwareService: OtaSoftwareUpdateService) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -116,7 +124,6 @@ export class VehicleUpdatesComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
   } 
  
  searchAllDataFilter(){
@@ -254,7 +261,6 @@ onVehicleGroupChange(filter, event){
   else{
     let vehicle_group_selected = event.vehicleGroup;
     let vehicle= this.vehicleNameArr.filter(item => item.vehicleGroup.includes(vehicle_group_selected+","));
-    console.log('vehicle',vehicle);
     this.vehicleNameArr.forEach(element => {
     if(element.vehicleGroup.includes(vehicle_group_selected)){
       this.vehicleName.push(element);
@@ -270,9 +276,137 @@ onVehicleGroupChange(filter, event){
 }
 
 
-  onViewVehicleList(row:any, type:any){
+  onViewVehicleList(rowData:any, type:any){
+  this.actionType = type;
+  this.selectedVehicleUpdateDetails = rowData;
    this.getVehicleUpdateDetails();
   }
+
+  getVehicleUpdateDetails(){
+    this.showLoadingIndicator = true;
+    this.showVehicalDetails = true;
+     // Uncomment for Actual API
+    this.otaSoftwareService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
+      if(data && data.vehicleUpdateDetails){
+        this.selectedVehicleUpdateDetailsData = data.vehicleUpdateDetails;
+      }
+      this.hideloader();
+    }, (error) => {
+      this.hideloader();
+      console.log("error:: ", error)
+    });
+  //   this.selectedVehicleUpdateDetailsData  = {
+  //     vin: "XLR000000BE000080",
+  //     vehicleSoftwareStatus: "Update running.",
+  //     campaigns: [
+  //       {
+  //         campaignID: "EU-T000080",
+  //         baselineAssignmentId: "475d9b10-a9c9-410e-8a26-a00d14169852",
+  //         campaignSubject: "Rear light fix 1",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000081",
+  //         baselineAssignmentId: "88a0345c-80ad-4f97-beb1-98eb703efd78",
+  //         campaignSubject: "Rear light fix 2",
+  //         systems: [
+  //           'PCI-2'
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000088",
+  //         baselineAssignmentId: "2bd2fdfe-3e9b-47c1-96ce-22f4a4d64120",
+  //         campaignSubject: "PCI 2 fix",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: 1678878368389,
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000089",
+  //         baselineAssignmentId: "13cd89fb-48eb-4f0c-a80f-1c6aea4bac81",
+  //         campaignSubject: "PCI Fix 3",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTA Software Update",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 1678878368389
+  //       },
+  //       {
+  //         campaignID: "EU-T000101",
+  //         baselineAssignmentId: "4dc741a0-43d8-4fed-8afd-38df75235547",
+  //         campaignSubject: "PCI Fix (FM) 28-6 5",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTA Software Update",
+  //         campaignCategory: "Sales Option",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 0
+  //       },
+  //       {
+  //         campaignID: "EU-T000103",
+  //         baselineAssignmentId: "ced986b3-db3e-4012-832c-5f167d8d485a",
+  //         campaignSubject: "PCI fix 29-6 2",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Waiting for update condition",
+  //         endDate: "",
+  //         scheduleDateTime: 1678878368389
+  //       },
+  //       {
+  //         campaignID: "EU-T000104",
+  //         baselineAssignmentId: "41805a61-53a9-4938-8edf-d39ff4aa5c36",
+  //         campaignSubject: "PCI fix 29-6 3",
+  //         systems: [
+  //           "PCI-2"
+  //         ],
+  //         campaignType: "OTAUCRITICAL",
+  //         campaignCategory: "Safety Recall",
+  //         status: "Installing",
+  //         endDate: "",
+  //         scheduleDateTime: 0
+  //       }
+  //     ]
+  // };
+  
+  // this.hideloader();
+  
+  }
+  
+  checkViewVehicleUpdateDetails(item: any){
+    //this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
+    this.viewVehicleUpdateDetailsFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+   
+    // this.updatedTableData(this.initData);
+  }
+
 filterVehicleSoft(softStatus) { 
   if (!this.vehicleSoftwareStatus) {
     return;
@@ -323,22 +457,7 @@ filterVehicleSoft(softStatus) {
   }
 
   
-  getVehicleUpdateDetails(){
-    // this.showLoadingIndicator = true;
-    this.showVehicalDetails = true;
-    alert('component loaded');
-    // let accountStatus: any = this.isViewListDisabled ? true : false; 
-    // this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
-    //   this.hideloader();
-    //   this.accountGrpAccountDetails = data.account;
-    //   this.vehicleGrpVehicleDetails = data.vehicle;
-    //   this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
-    //   this.createVehicleAccountAccessRelation = true;
-    // }, (error) => {
-    //   this.hideloader();
-    //   console.log("error:: ", error)
-    // });
-  }
+  
   
 
   onVehicleChange(filter, event) {     
@@ -436,5 +555,13 @@ filterVehicleSoft(softStatus) {
       return nameSearch()
     }
     return filterFunction
+  }
+  
+  onBackToPage(objData){  
+    this.showVehicalDetails = false;
+    if(objData.successMsg && objData.successMsg != ''){
+      this.successMsgBlink(objData.successMsg);
+    }
+    this.loadVehicleStatusData();  
   }
 }

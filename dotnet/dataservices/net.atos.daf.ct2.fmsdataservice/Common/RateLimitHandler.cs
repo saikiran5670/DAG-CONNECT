@@ -38,6 +38,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
             string authorizedfeature = Convert.ToString(context.Items["AuthorizedFeature"]);
             bool hasVin = context.Request.Query.ContainsKey("vin");
             bool hasSince = context.Request.Query.ContainsKey("since");
+            var requestParameter = context.Request.Query.ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
             //Null Check for authorized feature
             //Necessary check though this is mandatory and will never be null
             //Before it would come to this point if it is null a 403 unauthorized response would have been already sent
@@ -50,7 +51,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                 if (emailClaim != null && !string.IsNullOrEmpty(emailClaim.Value))
                 {
                     emailAddress = emailClaim.Value;
-                    _logger.Info($"[rFMSDataService - Rate Limiter] Email claim received for Rate Limit Management: {emailClaim}");
+                    _logger.Info($"[FMSDataService - Rate Limiter] Email claim received for Rate Limit Management: {emailClaim}");
                     //Get Associated Rate for the given API Feature
                     //var featureRateName = await _rfmsManager.GetRFMSFeatureRate(emailAddress, RateLimitConstants.RATE_LIMIT_FEATURE_NAME);
                     //if (featureRateName != null)
@@ -58,8 +59,15 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                         //Fetch Max Rate & Period from Configuration
                         var maxRate = 1;
                         var period = 60;
-                        string cacheKeyExtention = hasVin == true ? "_vin" : string.Empty;
-                        cacheKeyExtention = hasSince == true ? "_since" : string.Empty;
+                        string cacheKeyExtention = string.Empty;
+                        if (hasVin)
+                        {
+                            cacheKeyExtention = requestParameter["vin"];
+                        }
+                        if (hasSince)
+                        {
+                            cacheKeyExtention += requestParameter["since"];
+                        }
                         string cacheKey = $"{emailAddress}_{authorizedfeature}{cacheKeyExtention}";
                         RateLimitData rateLimitCacheEntry = _cache.GetFromCache<RateLimitData>(cacheKey);
                         if (rateLimitCacheEntry == null)
@@ -75,7 +83,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
 
                             // Save data in cache.
                             _cache.SetCache(cacheKey, rateLimitData, cacheEntryOptions);
-                            _logger.Info($"[rFMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
+                            _logger.Info($"[FMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
 
                             //Generate Response with expected response headers
                             WriteResponseHeader(context,
@@ -134,7 +142,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                 context.Response.Headers.Add("x-rate-limit-remaining", remainingRate.ToString());
                 context.Response.Headers.Add("X-Rate-Limit-Reset", resetTime.ToString());
 
-                _logger.Info($"[rFMSDataService - Rate Limiter] " +
+                _logger.Info($"[FMSDataService - Rate Limiter] " +
                                                  $"Cache Key:{cacheKey}, " +
                                                  $"Max Rate: {maxRate}, " +
                                                  $"Remaining Limit: {remainingRate}, " +
@@ -144,7 +152,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
             {
                 context.Response.StatusCode = 429;
                 context.Response.Headers.Add("Retry-After", resetTime.ToString());
-                _logger.Info($"[rFMSDataService - Rate Limiter] " +
+                _logger.Info($"[FMSDataService - Rate Limiter] " +
                              $"Cache Key:{cacheKey}, " +
                              $"Max Rate Limit reached, response 429 sent. Retry after: {resetTime}");
             }
