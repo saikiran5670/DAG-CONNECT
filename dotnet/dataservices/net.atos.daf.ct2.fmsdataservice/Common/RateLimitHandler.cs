@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                 if (emailClaim != null && !string.IsNullOrEmpty(emailClaim.Value))
                 {
                     emailAddress = emailClaim.Value;
-                    _logger.Info($"[rFMSDataService - Rate Limiter] Email claim received for Rate Limit Management: {emailClaim}");
+                    _logger.Info($"[FMSDataService - Rate Limiter] Email claim received for Rate Limit Management: {emailClaim}");
                     //Get Associated Rate for the given API Feature
                     //var featureRateName = await _rfmsManager.GetRFMSFeatureRate(emailAddress, RateLimitConstants.RATE_LIMIT_FEATURE_NAME);
                     //if (featureRateName != null)
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
 
                             // Save data in cache.
                             _cache.SetCache(cacheKey, rateLimitData, cacheEntryOptions);
-                            _logger.Info($"[rFMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
+                            _logger.Info($"[FMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
 
                             //Generate Response with expected response headers
                             WriteResponseHeader(context,
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                 context.Response.Headers.Add("x-rate-limit-remaining", remainingRate.ToString());
                 context.Response.Headers.Add("X-Rate-Limit-Reset", resetTime.ToString());
 
-                _logger.Info($"[rFMSDataService - Rate Limiter] " +
+                _logger.Info($"[FMSDataService - Rate Limiter] " +
                                                  $"Cache Key:{cacheKey}, " +
                                                  $"Max Rate: {maxRate}, " +
                                                  $"Remaining Limit: {remainingRate}, " +
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
             {
                 context.Response.StatusCode = 429;
                 context.Response.Headers.Add("Retry-After", resetTime.ToString());
-                _logger.Info($"[rFMSDataService - Rate Limiter] " +
+                _logger.Info($"[FMSDataService - Rate Limiter] " +
                              $"Cache Key:{cacheKey}, " +
                              $"Max Rate Limit reached, response 429 sent. Retry after: {resetTime}");
             }
