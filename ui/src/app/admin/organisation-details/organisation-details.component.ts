@@ -68,7 +68,8 @@ export class OrganisationDetailsComponent implements OnInit {
 
   public filteredLangList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
-
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
   constructor(private domSanitizer: DomSanitizer, private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     // this.defaultTranslation();
   }
@@ -138,6 +139,9 @@ export class OrganisationDetailsComponent implements OnInit {
   resetOrgLangFilter(){
     this.filteredLangList.next(this.languageDropdownData.slice());
   }
+  resetTimezoneFilter(){
+    this.filteredTimezones.next(this.timezoneDropdownData.slice());
+  }
   compare(a, b) {
     if (a.name < b.name) {
       return -1;
@@ -155,7 +159,10 @@ export class OrganisationDetailsComponent implements OnInit {
       this.languageDropdownData = dropDownData.language;
       console.log("languageDropdownData 1", this.languageDropdownData);
       this.languageDropdownData.sort(this.compare);
+      this.resetOrgLangFilter();
       this.timezoneDropdownData = dropDownData.timezone;
+      this.timezoneDropdownData.sort(this.compare);
+      this.resetTimezoneFilter();
       this.currencyDropdownData = dropDownData.currency;
       this.unitDropdownData = dropDownData.unit;
       this.dateFormatDropdownData = dropDownData.dateformat;
@@ -433,6 +440,22 @@ export class OrganisationDetailsComponent implements OnInit {
     );
 
   }
+  filterTimezones(timesearch){
+    console.log("filterTimezones called");
+    if(!this.timezoneDropdownData){
+      return;
+    }
+    if(!timesearch){
+      this.resetTimezoneFilter();
+      return;
+     } else{
+       timesearch = timesearch.toLowerCase();
+     }
+     this.filteredTimezones.next(
+       this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
+     );
+     console.log("this.filteredTimezones", this.filteredTimezones);
+}
 
 
 
