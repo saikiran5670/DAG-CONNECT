@@ -38,20 +38,24 @@ namespace net.atos.daf.ct2.httpclientfactory
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
                 request.ApprovalMessage = _oTA14Configurations.Message_Approval;
-                var data = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/x-www-form-urlencoded");
+                var reqObj = new ScheduleSoftwareUpdateReq { ApprovalMessage = request.ApprovalMessage, SchedulingTime = request.SchedulingTime };
+                var data = new StringContent(JsonConvert.SerializeObject(reqObj), Encoding.UTF8, "application/json");
+
                 HttpResponseMessage response = new HttpResponseMessage();
-                string baseline = request.BaseLineId;
                 response.StatusCode = HttpStatusCode.BadRequest;
                 string etag = string.Empty;
                 client.DefaultRequestHeaders.Accept.Clear();
+
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
                     response = await client.GetAsync($"{_oTA14Configurations.API_BASE_URL}{request.BaseLineId}");
                     etag = response.Headers.ETag?.ToString();
+                    i++;
                 }
                 client.DefaultRequestHeaders.Add("If-Match", etag);
+                client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
                 response.StatusCode = HttpStatusCode.BadRequest;
-
+                i = 0;
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
                 {
                     boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);

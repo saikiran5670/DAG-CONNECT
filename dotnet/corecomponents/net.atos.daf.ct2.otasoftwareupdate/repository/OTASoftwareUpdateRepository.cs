@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vins", vins.ToArray());
-                var queryAlert = @"SELECT vin
+                var queryAlert = @"SELECT distinct vin
                                     FROM tripdetail.tripalertotaconfigparam
                                     where vin = ANY(@vins)";
                 return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
