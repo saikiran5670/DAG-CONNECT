@@ -34,8 +34,6 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.idle_duration as IdleDuration
 	                    , ROUND(trpst.average_speed,7) as AverageSpeed
 	                    , ROUND(trpst.average_weight,5) as AverageWeight
-                        , startgeoaddr.id AS StartPositionId
-                        , endgeoaddr.id AS EndPositionId
                         , coalesce(startgeoaddr.address,'') AS StartPosition
                         , coalesce(endgeoaddr.address,'') AS EndPosition
 	                    , trpst.etl_gps_fuel_consumed as FuelConsumed
@@ -44,7 +42,6 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
-                        , geoaddr.id as GeoLocationAddressId
 	                    , coalesce(geoaddr.address,'') as GeoLocationAddress
                         , trpst.start_position_lattitude AS StartPositionLattitude
 	                    , trpst.start_position_longitude AS StartPositionLongitude
