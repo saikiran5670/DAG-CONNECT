@@ -78,7 +78,7 @@
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                <button mat-flat-button color="warn" (click)="deleteOrgRelationship()">
+                <button mat-flat-button color="warn" [disabled]="selectedOrgRelations?.selected?.length == 0" (click)="deleteOrgRelationship()">
                     <i class="fa fa-chain-broken mr-1" aria-hidden="true"></i> {{ translationData.lblEndRelationship }}
                 </button>
             </div>
