@@ -33,6 +33,7 @@ import { MapService } from '../../../fleet-fuel-report/report-mapservice';
 import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
+import { ReplaySubject } from 'rxjs';
 
 declare var H: any;
 
@@ -248,6 +249,8 @@ tripTraceArray: any = [];
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -2316,6 +2319,10 @@ getLast3MonthDate(){
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            this.vehicleGrpDD.sort(this.compare);
+            this.vehicleDD.sort(this.compare);
+            this.resetVehicleGroupFilter();
+            this.resetVehicleFilter();
           }
         });
       }
@@ -3060,6 +3067,59 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     }
     return true;
+  }
+
+  filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGrpDD){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+
+  resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
+  }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
   }
 
 }

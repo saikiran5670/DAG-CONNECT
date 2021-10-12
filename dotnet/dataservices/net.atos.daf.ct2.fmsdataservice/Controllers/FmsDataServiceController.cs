@@ -197,26 +197,9 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 {
                     return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
                 }
-                //var selectedType = string.Empty;
-                //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-
-                //this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
-
-                //this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
-
-                //if (!this.Request.Headers.ContainsKey("X-Correlation-ID") || (this.Request.Headers.ContainsKey("X-Correlation-ID") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "X-Correlation-ID", "INVALID_PARAMETER");
-
-                //if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
-
-                //if (acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                //    selectedType = FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON;
-                //else
-                //    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
                 await GetUserDetails();
                 var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
                 if (visibleVehicles != null & visibleVehicles.Count > 0)
@@ -307,26 +290,20 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
         {
             try
             {
-                //var selectedType = string.Empty;
-                //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                this.Request.Headers.TryGetValue("Version", out StringValues acceptHeader);
+                if (!this.Request.Headers.ContainsKey("Version") || (this.Request.Headers.ContainsKey("Version") && acceptHeader.Count() > 0))
+                {
+                    _logger.LogInformation(FMSResponseTypeConstants.ACCPET_TYPE_VERSION_JSON);
+                }
+                else
+                {
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+                }
 
-                //this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
-
-                //this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
-
-                //if (!this.Request.Headers.ContainsKey("X-Correlation-ID") || (this.Request.Headers.ContainsKey("X-Correlation-ID") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "X-Correlation-ID", "INVALID_PARAMETER");
-
-                //if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Vehicle", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice vehicle received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms Vehicle function called - ");
 
-                //if (acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                //    selectedType = FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON;
-                //else
-                //    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
                 await GetUserDetails();
                 var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
                 List<string> objVisibilityVinList = new List<string>();
