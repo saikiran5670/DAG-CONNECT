@@ -49,10 +49,14 @@ public class MessageProcessing<U,R, T> {
               public boolean filter(KafkaRecord<U> value) throws Exception {
 				String transId = "UNKNOWN";
                     try {
+                    	if(Objects.nonNull(value.getValue()) && Objects.nonNull(JsonMapper.configuring()
+    						    .readTree((String) value.getValue())
+    						    .get("TransID"))){
                     	transId = JsonMapper.configuring()
 						    .readTree((String) value.getValue())
 						    .get("TransID")
 						    .asText();
+                    	}
 					} catch (Exception e) {
 						e.printStackTrace();
 						logger.info("Issue TransId is null for record ::{} ", value);
