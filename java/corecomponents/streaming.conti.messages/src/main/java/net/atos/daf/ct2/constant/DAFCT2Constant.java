@@ -41,6 +41,7 @@ public class DAFCT2Constant {
 
     public static final String BROADCAST_NAME = "broadcast.name";
     public static final String UNKNOWN = "UNKNOWN";
+    public static final String CORRUPT = "CORRUPT";
 
     public static final String SINK_JSON_STRING_TOPIC_NAME = "sink.external.topic.name";
 
@@ -97,4 +98,20 @@ public class DAFCT2Constant {
             BasicTypeInfo.STRING_TYPE_INFO,
             BasicTypeInfo.STRING_TYPE_INFO
     };
+    
+    
+    //Streaming environment 
+  	public static final String PARALLELISM = "parallelism";
+  	public static final String CHECKPOINT_INTERVAL = "checkpoint.interval";
+  	public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min.checkpoint.pause";
+  	public static final String CHECKPOINT_TIMEOUT = "checkpoint.timeout";
+  	public static final String MAX_CONCURRENT_CHECKPOINTS = "max.concurrent.checkpoints";
+  	public static final String CHECKPOINT_DIRECTORY = "checkpoint.directory";
+  	public static final String RESTART_ATTEMPS = "restart.attempts";
+  	public static final String RESTART_INTERVAL = "restart.interval";
+  	public static final String RESTART_FLAG = "restart.flag";
+  	public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+  	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+  	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+  	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
 }

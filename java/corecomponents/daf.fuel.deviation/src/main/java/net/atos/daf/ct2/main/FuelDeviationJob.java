@@ -187,7 +187,6 @@ public class FuelDeviationJob {
 					message);
 		} catch (FuelDeviationAuditServiceException e) {
 			logger.info("FuelDeviation Streaming Job :: ", e.getMessage());
-			System.out.println("FuelDeviation Streaming Job :: " + e);
 		}
 
 	}
