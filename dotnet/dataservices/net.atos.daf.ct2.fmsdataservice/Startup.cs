@@ -31,6 +31,7 @@ using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.repository;
 using net.atos.daf.ct2.fmsdataservice.customAttributes;
+using net.atos.daf.ct2.fmsdataservice.Common;
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -72,7 +73,9 @@ namespace net.atos.daf.ct2.fmsdataservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
-
+            services.AddDistributedMemoryCache();
+            services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
@@ -170,6 +173,8 @@ namespace net.atos.daf.ct2.fmsdataservice
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseRateLimitation();
 
             app.UseEndpoints(endpoints =>
             {
