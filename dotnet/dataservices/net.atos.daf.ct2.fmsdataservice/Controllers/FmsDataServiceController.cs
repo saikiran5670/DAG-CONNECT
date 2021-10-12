@@ -71,49 +71,22 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 {
                     return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
                 }
-                //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-
-                //this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
-
-                //this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
-
-                //if (!this.Request.Headers.ContainsKey("X-Correlation-ID") || (this.Request.Headers.ContainsKey("X-Correlation-ID") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "X-Correlation-ID", "INVALID_PARAMETER");
-
-                //if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
-
-                //var selectedType = string.Empty;
-                //long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-
-                //this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
-
-                //this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
-
-                //if (!this.Request.Headers.ContainsKey("X-Correlation-ID") || (this.Request.Headers.ContainsKey("X-Correlation-ID") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "X-Correlation-ID", "INVALID_PARAMETER");
-
-                //if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                //    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
 
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
                 _logger.LogInformation($"Fms vehicle status function called - {vehiclePositionRequest.VIN}", vehiclePositionRequest.Since);
 
-                //if (acceptHeader.Any(x => x.Trim().Equals(FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON, StringComparison.CurrentCultureIgnoreCase)))
-                //    selectedType = FMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON;
-                //else
-                //    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
+
                 await GetUserDetails();
                 var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
                 if (visibleVehicles != null & visibleVehicles.Count > 0)
                 {
-                    string since = vehiclePositionRequest.Since;
+                    string since = vehiclePositionRequest.Since.Trim();
                     var isValid = ValidateParameter(ref since, out bool isNumeric);
                     net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                     if (isValid)
                     {
                         var dataVisibleVehicle = visibleVehicles.Select(a => a.Value).ToList();
-                        if (string.IsNullOrEmpty(vehiclePositionRequest.VIN))
+                        if (string.IsNullOrEmpty(vehiclePositionRequest.VIN.Trim()))
                         {
                             List<string> objVisibilityVinList = new List<string>();//move to 207
                             foreach (var item in dataVisibleVehicle)
@@ -123,7 +96,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                     objVisibilityVinList.Add(i.VIN);
                                 }
                             }
-                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(objVisibilityVinList, vehiclePositionRequest.Since);
+                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(objVisibilityVinList, vehiclePositionRequest.Since.Trim());
                             if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                             {
                                 return Ok(vehiclePositionResponse);
@@ -142,7 +115,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 {
                                     foreach (var i in item)
                                     {
-                                        if (i.VIN.Contains(vehiclePositionRequest.VIN))
+                                        if (i.VIN.Contains(vehiclePositionRequest.VIN.Trim()))
                                         {
                                             isPassedVinInVisibility = true;
                                         }
@@ -150,7 +123,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 if (isPassedVinInVisibility)
                                 {
-                                    vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+                                    vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN.Trim(), vehiclePositionRequest.Since.Trim());
                                     if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                                     {
                                         return Ok(vehiclePositionResponse);
@@ -217,17 +190,17 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                             {
                                 foreach (var i in item)
                                 {
-                                    objVisibilityVinList.Add(i.VIN);
+                                    objVisibilityVinList.Add(i.VIN.Trim());
                                 }
                             }
-                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(objVisibilityVinList, vehicleStatusRequest.Since);
+                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(objVisibilityVinList, vehicleStatusRequest.Since.Trim());
                             if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                             {
                                 return Ok(vehicleStatusResponse);
                             }
                             else
                             {
-                                return StatusCode(400, string.Empty);
+                                return StatusCode(304, string.Empty);
                             }
                         }
                         else
@@ -239,7 +212,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 {
                                     foreach (var i in item)
                                     {
-                                        if (i.VIN.Contains(vehicleStatusRequest.VIN))
+                                        if (i.VIN.Contains(vehicleStatusRequest.VIN.Trim()))
                                         {
                                             isPassedVinInVisibility = true;
                                         }
@@ -247,7 +220,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 if (isPassedVinInVisibility)
                                 {
-                                    vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
+                                    vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN.Trim(), vehicleStatusRequest.Since.Trim());
                                     if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                                     {
                                         return Ok(vehicleStatusResponse);
