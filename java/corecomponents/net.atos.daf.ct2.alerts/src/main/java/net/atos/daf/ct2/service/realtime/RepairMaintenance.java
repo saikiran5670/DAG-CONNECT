@@ -17,7 +17,7 @@ import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Warning;
 import net.atos.daf.ct2.props.AlertConfigProp;
 
-import net.atos.daf.postgre.bo.WarningStastisticsPojo;
+import net.atos.daf.postgre.bo.WarningStatisticsPojo;
 import net.atos.daf.postgre.dao.DTCWarningMasterDao;
 import net.atos.daf.postgre.dao.WarningStatisticsDao;
 
@@ -65,7 +65,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 								lastProcessedTimeStamp, moniter.getJobName());
 
 					} else {
-						WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
+						WarningStatisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
 								lastProcessedTimeStamp,moniter.getDocument().getVWarningClass(),moniter.getDocument().getVWarningNumber());
 						warningDao.warning_insert(warningNewRowDetail);
 						logger.info("warning inserted in warning table for VEvtId--46 :{} msg UUD :: {} from alert",
@@ -96,7 +96,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 						if (lastProcessedTimeStamp == null) {
 							logger.info("warning not present in warning table");
 
-							WarningStastisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
+							WarningStatisticsPojo warningNewRowDetail = WarningStatisticsCalculation(moniter,
 									lastProcessedTimeStamp,warning.getWarningClass(), warning.getWarningNumber());
 							warningDao.warning_insert(warningNewRowDetail);
 							logger.info("warning inserted in warning table for VEvtId--63 :{} msg UUD :: {} from alert",
@@ -120,9 +120,9 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 		}
 	}
 
-	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp, Integer warningClass, Integer warningNumber) {
+	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Long lastestProcessedMessageTimeStamp, Integer warningClass, Integer warningNumber) {
 
-		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
+		WarningStatisticsPojo warningDetail = new WarningStatisticsPojo();
 		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 
 		logger.info("Inside warning calculation type 10");
