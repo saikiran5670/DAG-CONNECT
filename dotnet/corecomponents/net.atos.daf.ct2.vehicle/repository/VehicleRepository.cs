@@ -1195,6 +1195,76 @@ namespace net.atos.daf.ct2.vehicle.repository
                 int VehiclePropertiesId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
                 int vehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
                 int OrgId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
+                if (VehiclePropertiesId > 0)
+                {
+                    VehicleProperty existingVehicleProperty = new VehicleProperty();
+                    existingVehicleProperty = await GetExistingVehicleProperties(vehicleproperty);
+                    vehicleproperty.License_Plate_Number ??= existingVehicleProperty.License_Plate_Number;
+                    vehicleproperty.ManufactureDate = (vehicleproperty.ManufactureDate == null || vehicleproperty.ManufactureDate == Convert.ToDateTime("01 - 01 - 0001 00:00:00")) ? Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(existingVehicleProperty.ManuDate, "UTC", "yyyy-MM-ddTHH:mm:ss")) : vehicleproperty.ManufactureDate;
+                    vehicleproperty.DeliveryDate = (vehicleproperty.DeliveryDate == null || vehicleproperty.DeliveryDate == Convert.ToDateTime("01 - 01 - 0001 00:00:00")) ? Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(existingVehicleProperty.DeliDate, "UTC", "yyyy-MM-ddTHH:mm:ss")) : vehicleproperty.DeliveryDate;
+                    vehicleproperty.Classification_Make ??= existingVehicleProperty.Classification_Make;
+                    vehicleproperty.Dimensions_Size_Length ??= existingVehicleProperty.Dimensions_Size_Length;
+                    vehicleproperty.Dimensions_Size_Height ??= existingVehicleProperty.Dimensions_Size_Height;
+                    vehicleproperty.Dimensions_Size_Weight_Value ??= existingVehicleProperty.Dimensions_Size_Weight_Value;
+                    vehicleproperty.Engine_ID ??= existingVehicleProperty.Engine_ID;
+                    vehicleproperty.Engine_Type ??= existingVehicleProperty.Engine_Type;
+                    vehicleproperty.Engine_Power ??= existingVehicleProperty.Engine_Power;
+                    vehicleproperty.Engine_Coolant ??= existingVehicleProperty.Engine_Coolant;
+                    vehicleproperty.Engine_EmissionLevel ??= existingVehicleProperty.Engine_EmissionLevel;
+                    vehicleproperty.Chassis_Id ??= existingVehicleProperty.Chassis_Id;
+                    vehicleproperty.Chassis_RearOverhang ??= existingVehicleProperty.Chassis_RearOverhang;
+                    vehicleproperty.DriverLine_AxleConfiguration ??= existingVehicleProperty.DriverLine_AxleConfiguration;
+                    vehicleproperty.DriverLine_Wheelbase ??= existingVehicleProperty.DriverLine_Wheelbase;
+                    vehicleproperty.DriverLine_Tire_Size ??= existingVehicleProperty.DriverLine_Tire_Size;
+                    vehicleproperty.GearBox_Id ??= existingVehicleProperty.GearBox_Id;
+                    vehicleproperty.GearBox_Type ??= existingVehicleProperty.GearBox_Type;
+                    vehicleproperty.DriverLine_Cabin_ID ??= existingVehicleProperty.DriverLine_Cabin_ID;
+                    vehicleproperty.Classification_Series_Id ??= existingVehicleProperty.Classification_Series_Id;
+                    vehicleproperty.Classification_Series_VehicleRange ??= existingVehicleProperty.Classification_Series_VehicleRange;
+                    vehicleproperty.Classification_ModelYear ??= existingVehicleProperty.Classification_ModelYear;
+                    vehicleproperty.DriverLine_Cabin_Type ??= existingVehicleProperty.DriverLine_Cabin_Type;
+                    vehicleproperty.DriverLine_Cabin_RoofSpoiler ??= existingVehicleProperty.DriverLine_Cabin_RoofSpoiler;
+                    vehicleproperty.DriverLine_ElectronicControlUnit_Type ??= existingVehicleProperty.DriverLine_ElectronicControlUnit_Type;
+                    vehicleproperty.DriverLine_ElectronicControlUnit_Name ??= existingVehicleProperty.DriverLine_ElectronicControlUnit_Name;
+                    vehicleproperty.Dimensions_Size_Weight_Type ??= existingVehicleProperty.Dimensions_Size_Weight_Type;
+                    vehicleproperty.Chassis_SideSkirts ??= existingVehicleProperty.Chassis_SideSkirts;
+                    vehicleproperty.Chassis_SideCollars ??= existingVehicleProperty.Chassis_SideCollars;
+                    vehicleproperty.Dimensions_Size_Width ??= existingVehicleProperty.Dimensions_Size_Width;
+                    vehicleproperty.Classification_Type_Id ??= existingVehicleProperty.Classification_Type_Id;
+                    vehicleproperty.Classification_Model_Id ??= existingVehicleProperty.Classification_Model_Id;
+                    vehicleproperty.Fuel ??= existingVehicleProperty.Fuel;
+
+                    if (vehicleproperty.VehicleFuelTankProperties == null || vehicleproperty.VehicleFuelTankProperties.Count == 0)
+                    {
+                        vehicleproperty.VehicleFuelTankProperties = new List<VehicleFuelTankProperties>();
+                        foreach (var tank in existingVehicleProperty.VehicleFuelTankProperties)
+                        {
+                            vehicleproperty.VehicleFuelTankProperties.Add(new VehicleFuelTankProperties()
+                            {
+                                VehicleId = tank.VehicleId,
+                                Chassis_Tank_Nr = tank.Chassis_Tank_Nr,
+                                Chassis_Tank_Volume = tank.Chassis_Tank_Volume
+                            });
+                        }
+                    }
+                    if (vehicleproperty.VehicleAxelInformation == null || vehicleproperty.VehicleAxelInformation.Count == 0)
+                    {
+                        vehicleproperty.VehicleAxelInformation = new List<VehicleAxelInformation>();
+                        foreach (var frontAxel in existingVehicleProperty.VehicleAxelInformation)
+                        {
+                            VehicleAxelInformation vehicleFrontAxelInfo = new VehicleAxelInformation();
+                            vehicleFrontAxelInfo.AxelType = frontAxel.AxelTypeEnum == "F" ? AxelType.FrontAxle : AxelType.RearAxle;
+                            vehicleFrontAxelInfo.Load = frontAxel.Load;
+                            vehicleFrontAxelInfo.Ratio = frontAxel.Ratio;
+                            vehicleFrontAxelInfo.Type = frontAxel.Type;
+                            vehicleFrontAxelInfo.Position = frontAxel.Position;
+                            vehicleFrontAxelInfo.Springs = frontAxel.Springs;
+                            vehicleFrontAxelInfo.Size = frontAxel.Size;
+                            vehicleFrontAxelInfo.Is_Wheel_Tire_Size_Replaced = frontAxel.Is_Wheel_Tire_Size_Replaced;
+                            vehicleproperty.VehicleAxelInformation.Add(vehicleFrontAxelInfo);
+                        }
+                    }
+                }
 
                 vehicleproperty.ID = VehiclePropertiesId;
                 objVeh.Organization_Id = OrgId;
@@ -1676,6 +1746,89 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
             }
             return VehVIN;
+        }
+
+
+        private async Task<VehicleProperty> GetExistingVehicleProperties(VehicleProperty vehicleproperty)
+        {
+            try
+            {
+                var queryStatement = @"SELECT VEHPRO.ID,
+	                                MANUFACTURE_DATE as ManuDate,
+	                                DELIVERY_DATE as DeliDate,
+	                                MAKE as Classification_Make,
+	                                LENGTH as Dimensions_Size_Length,
+	                                HEIGHT as Dimensions_Size_Height,
+	                                WEIGHT as Dimensions_Size_Weight_Value,
+	                                ENGINE_ID as Engine_ID,
+	                                ENGINE_TYPE as Engine_Type,
+	                                ENGINE_POWER as Engine_Power,
+	                                ENGINE_COOLANT as Engine_Coolant,
+	                                ENGINE_EMISSION_LEVEL as Engine_EmissionLevel,
+	                                CHASIS_ID as Chassis_Id,
+	                                CHASIS_REAR_OVERHANG as Chassis_RearOverhang,
+	                                DRIVELINE_AXLE_CONFIGURATION as DriverLine_AxleConfiguration,
+	                                DRIVELINE_WHEEL_BASE as DriverLine_Wheelbase,
+	                                DRIVELINE_TIRE_SIZE as DriverLine_Tire_Size,
+	                                TRANSMISSION_GEARBOX_ID as GearBox_Id,
+	                                TRANSMISSION_GEARBOX_TYPE as GearBox_Type,
+	                                CABIN_ID as DriverLine_Cabin_ID,
+	                                SERIES_ID as Classification_Series_Id,
+	                                SERIES_VEHICLE_RANGE as Classification_Series_VehicleRange,
+	                                MODEL_YEAR as Classification_ModelYear,
+	                                CABIN_TYPE as DriverLine_Cabin_Type,
+	                                CABIN_ROOFSPOILER as DriverLine_Cabin_RoofSpoiler,
+	                                ELECTRONIC_CONTROL_UNIT_TYPE as DriverLine_Cabin_RoofSpoiler,
+	                                ELECTRONIC_CONTROL_UNIT_NAME as DriverLine_ElectronicControlUnit_Name,
+	                                WEIGHT_TYPE as Dimensions_Size_Weight_Type,
+	                                CHASIS_SIDE_SKIRTS as Chassis_SideSkirts,
+	                                CHASIS_SIDE_COLLAR as Chassis_SideCollars,
+	                                WIDTH as Dimensions_Size_Width,
+	                                TYPE_ID as Classification_Type_Id,
+	                                VEH.FUEL_type AS Fuel,
+	                                VEH.ID AS VehicleId,
+                                    VEH.Model_ID as Classification_Model_Id,
+                                    VEH.license_plate_number as License_Plate_Number
+                                FROM MASTER.VEHICLEPROPERTIES VEHPRO
+                                INNER JOIN MASTER.VEHICLE VEH ON VEH.VEHICLE_PROPERTY_ID = VEHPRO.ID
+                                WHERE VEH.VIN = @vin;";
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", vehicleproperty.VIN);
+                VehicleProperty existingVehicleProperties = (VehicleProperty)await _dataAccess.QueryFirstOrDefaultAsync<VehicleProperty>(queryStatement, parameter);
+
+                var queryAxleStatement = @"SELECT ID,
+	                                    VEHICLE_ID as VehicleId,
+	                                    AXLE_TYPE as AxelTypeEnum,
+	                                    position as Position,
+                                        TYPE as Type,
+	                                    SPRINGS as Springs,
+	                                    LOAD as Load,
+	                                    RATIO as Ratio,
+	                                    IS_WHEEL_TIRE_SIZE_REPLACED as Is_Wheel_Tire_Size_Replaced,
+	                                    SIZE as Size
+                                    FROM MASTER.VEHICLEAXLEPROPERTIES
+                                    where VEHICLE_ID = @VEHICLE_ID; ";
+                parameter.Add("@VEHICLE_ID", existingVehicleProperties.VehicleId);
+                existingVehicleProperties.VehicleAxelInformation = new List<VehicleAxelInformation>();
+                existingVehicleProperties.VehicleAxelInformation = (List<VehicleAxelInformation>)await _dataAccess.QueryAsync<VehicleAxelInformation>(queryAxleStatement, parameter);
+
+                var queryFuelStatement = @"SELECT ID,
+	                                    VEHICLE_ID as VehicleId,
+	                                    CHASIS_FUEL_TANK_NUMBER as Chassis_Tank_Nr,
+	                                    CHASIS_FUEL_TANK_VOLUME as Chassis_Tank_Volume
+                                    FROM MASTER.VEHICLEFUELTANKPROPERTIES
+                                    where VEHICLE_ID=@VEHICLE_ID;";
+                parameter.Add("@VEHICLE_ID", existingVehicleProperties.VehicleId);
+                existingVehicleProperties.VehicleFuelTankProperties = new List<VehicleFuelTankProperties>();
+                existingVehicleProperties.VehicleFuelTankProperties = (List<VehicleFuelTankProperties>)await _dataAccess.QueryAsync<VehicleFuelTankProperties>(queryFuelStatement, parameter);
+
+                return existingVehicleProperties;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         #endregion
