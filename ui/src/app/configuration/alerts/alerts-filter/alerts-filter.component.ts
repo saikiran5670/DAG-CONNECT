@@ -25,6 +25,8 @@ export class AlertsFilterComponent implements OnInit {
   localData : any; 
   tempData: any; 
  
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  accountPrefObj: any;
   alertTypeEnum:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
@@ -51,6 +53,7 @@ export class AlertsFilterComponent implements OnInit {
    
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     if(localStorage.getItem('contextOrgId')){
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -72,7 +75,18 @@ export class AlertsFilterComponent implements OnInit {
      this.processTranslation(data);     
      this.updatedTableData(this.initData);     
      this.dataSource.filterPredicate = this.createFilter();  
+
+     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
     });
+    });
+   
   } 
 
   processTranslation(transData: any) {

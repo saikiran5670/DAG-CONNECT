@@ -9,6 +9,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 import { Util } from '../../../shared/util';
 import { ReportMapService } from '../../report-map.service';
 import { ReplaySubject } from 'rxjs';
+import { TranslationService } from 'src/app/services/translation.service';
 
 @Component({
   selector: 'app-search-criteria',
@@ -26,6 +27,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   localStLanguage;
   accountPrefObj;
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   accountOrganizationId;
   accountId;
   searchForm: FormGroup;
@@ -52,7 +54,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService, private translationService: TranslationService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -71,6 +73,16 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       endDate: ['', []],
       startTime: ['00:00', []],
       endTime: ['23:59', []]
+    });
+
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
     });
   }
 
