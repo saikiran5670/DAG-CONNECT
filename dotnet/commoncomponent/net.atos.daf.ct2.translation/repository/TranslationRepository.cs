@@ -151,18 +151,21 @@ namespace net.atos.daf.ct2.translation.repository
             {
                 list.Add(Map(item));
             }
-            var names = list.Where(T => T.Type == ((char)TranslationType.Dropdown).ToString()).SelectMany(p => p.Name.Split('_')).Distinct().Where(K => K[0] == 'd');
+            var names = list.Where(T => T.Type == ((char)TranslationType.Dropdown).ToString()).Select(p => p.Name.Split('_')[0]).Distinct().Where(k => k.ElementAt(0) == 'd').ToList();
             foreach (var name in names)
             {
+
                 IEnumerable<Translations> dropdowntranslation = await GetTranslationsForDropDowns(name.Substring(1), "");
                 foreach (var item in dropdowntranslation)
                 {
                     list.Where(P => P.Name == item.Name).ToList().ForEach(i =>
-                                                                                  {
-                                                                                      i.Id = item.Id;
-                                                                                      i.Filter = name.Substring(1);
-                                                                                  });
+                    {
+                        i.Id = item.Id;
+                        i.Filter = name.Substring(1);
+                    });
                 }
+
+
 
             }
 
