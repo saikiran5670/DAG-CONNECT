@@ -31,7 +31,6 @@ using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.repository;
 using net.atos.daf.ct2.fmsdataservice.customAttributes;
-using net.atos.daf.ct2.fmsdataservice.Common;
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -140,13 +139,13 @@ namespace net.atos.daf.ct2.fmsdataservice
                     policy => policy.RequireAuthenticatedUser()
                                     .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)));
             });
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy(
-            //        AccessPolicies.MAIN_ACCESS_POLICY,
-            //        policy => policy.RequireAuthenticatedUser()
-            //                        .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
-            //});
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.MAIN_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_VEHICLES_ACCESS_POLICY)));
+            });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
 

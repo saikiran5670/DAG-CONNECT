@@ -110,7 +110,9 @@ namespace net.atos.daf.ct2.dashboard.repository
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
                 from tripdetail.tripalert tra
                 where tra.vin = Any(@vins) and
-                to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
+                and tra.category_type <> 'O'
+                and tra.type <> 'W'
+                and to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
 
                 List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert24Hours, parameterOfFilters);
                 return lstAlert;

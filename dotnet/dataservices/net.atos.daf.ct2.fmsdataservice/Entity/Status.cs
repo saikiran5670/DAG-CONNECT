@@ -7,8 +7,18 @@ namespace net.atos.daf.ct2.fmsdataservice.entity
 {
     public class VehicleStatusRequest
     {
-        public string VIN { get; set; }
-        public string Since { get; set; }
+        private string _vin;
+        public string VIN
+        {
+            get { return this._vin; }
+            set { _vin = value?.Trim(); }
+        }
+        public string Since
+        {
+            get { return this._since; }
+            set { _since = value?.Trim(); }
+        }
+        private string _since;
     }
     public class VehicleStatus
     {

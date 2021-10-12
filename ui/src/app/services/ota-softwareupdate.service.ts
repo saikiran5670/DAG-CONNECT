@@ -3,17 +3,16 @@ import { Observable, throwError } from 'rxjs';
 import { of } from 'rxjs';
 import { delay, catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
-import { ConfigService } from '@ngx-config/core'
+import { ConfigService } from '@ngx-config/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class OtaSoftwareUpdateService {
   otaSoftwareUpdateServiceUrl: string = '';
-
-
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.otaSoftwareUpdateServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
-
-  }
+    constructor(private httpClient: HttpClient, private config: ConfigService) {
+      this.otaSoftwareUpdateServiceUrl = config.getSettings("foundationServices").vehicleUpdateRESTServiceUrl;
+    }
 
   generateHeader() {
     let genericHeader: object = {
@@ -25,14 +24,13 @@ export class OtaSoftwareUpdateService {
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
-
-  getvehicletatuslist(): Observable<any[]> {
+  getVehicleStatusList(data: any): Observable<any[]>{
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getvehicletatuslist?language=en&retention=active`, headers)
+      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getvehiclestatuslist?language=${data.languageCode}&retention=${data.retention}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -49,7 +47,7 @@ export class OtaSoftwareUpdateService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getvehicleupdatedetails?vin=XLR000000BE000080&retention=active`, headers)
+      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getvehicleupdatedetails?vin=XLR000000BE000080&retention=active`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -59,13 +57,13 @@ export class OtaSoftwareUpdateService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`https://api.dev1.ct2.atos.net/otasoftwareupdate/getsoftwarereleasenotes?campaignId=EU-T000080&language=en&vin=XLR000000BE000080&retention=active`, headers)
+      .get<any[]>(`${this.otaSoftwareUpdateServiceUrl}/getsoftwarereleasenotes?campaignId=EU-T000080&language=en&vin=XLR000000BE000080&retention=active`, headers)
       //.get<any[]>(`https://api.dev1.ct2.atos.net/getsoftwarereleasenotes?campaignId=${data.campaignId}&language=en&vin=${vin}&retention=active`, headers)
       
       .pipe(catchError(this.handleError));
   }
   
-  getvehiclesoftwarestatus(): Observable<any[]>{
+  getVehicleSoftwareStatus(): Observable<any[]>{
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),

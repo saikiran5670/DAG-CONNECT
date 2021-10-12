@@ -1064,7 +1064,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.driver1_id, CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+                                            (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1391,7 +1392,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.driver1_id, CASE WHEN SUM(eco.trip_distance)<>0 THEN
+                                            (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1683,7 +1685,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.organization_id , (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.organization_id , CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+                                            (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ) ,
@@ -1977,7 +1980,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.vin,  (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.vin, CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+                                        (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2274,7 +2278,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.organization_id, eco.vin, (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.organization_id, eco.vin, CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+                                        (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) 
+                                        ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2765,7 +2771,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.driver1_id,eco.Day, (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.driver1_id,eco.Day, CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+                                        (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -3172,7 +3179,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 FuelConsumption as 
                                 (
-                                    SELECT eco.vin, eco.Day, (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) as FuelConsumption
+                                    SELECT eco.vin, eco.Day, CASE WHEN SUM(eco.trip_distance)<>0 THEN 
+		                                    (CAST(SUM(eco.used_fuel)/SUM(eco.trip_distance) AS DOUBLE PRECISION )) ELSE null END as FuelConsumption
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
                                 ),

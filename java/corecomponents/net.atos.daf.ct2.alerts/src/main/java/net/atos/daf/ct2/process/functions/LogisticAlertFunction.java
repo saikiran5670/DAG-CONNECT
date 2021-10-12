@@ -28,20 +28,22 @@ public class LogisticAlertFunction implements Serializable {
         Status status = (Status) s.getPayload().get();
         Map<String,Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveDistanceDone");
-        Double value = Double.valueOf(status.getGpsStopVehDist()) - Double.valueOf(status.getGpsStartVehDist());
-
-        List<String> priorityList = Arrays.asList("C", "W", "A");
-        for(String priority : priorityList){
-            for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
-                if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                    if (thresholdBreach(value, Double.valueOf(urgency.getThresholdValue()))) {
-                        logger.info("alert found excessiveDistanceDone ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
-                        return getTarget(status, urgency,value);
+        try{
+            Double value = Double.valueOf(status.getGpsStopVehDist()) - Double.valueOf(status.getGpsStartVehDist());
+            List<String> priorityList = Arrays.asList("C", "W", "A");
+            for(String priority : priorityList){
+                for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
+                    if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                        if (thresholdBreach(value, Double.valueOf(urgency.getThresholdValue()))) {
+                            logger.info("alert found excessiveDistanceDone ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
+                            return getTarget(status, urgency,value);
+                        }
                     }
                 }
             }
+        }catch (Exception ex){
+            logger.error("Error while checking excessiveDistanceDone :: {}",ex);
         }
-
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
 
@@ -49,19 +51,21 @@ public class LogisticAlertFunction implements Serializable {
         Status status = (Status) s.getPayload().get();
         Map<String,Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
         List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("excessiveGlobalMileage");
-
-        List<String> priorityList = Arrays.asList("C", "W", "A");
-        for(String priority : priorityList){
-            for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
-                if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
-                    if (thresholdBreach(Double.valueOf(status.getGpsStopVehDist()), Double.valueOf(urgency.getThresholdValue()))) {
-                        logger.info("alert found excessiveGlobalMileage ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
-                        return getTarget(status, urgency,status.getGpsStopVehDist());
+        try{
+            List<String> priorityList = Arrays.asList("C", "W", "A");
+            for(String priority : priorityList){
+                for (AlertUrgencyLevelRefSchema urgency : urgencyLevelRefSchemas) {
+                    if (urgency.getUrgencyLevelType().equalsIgnoreCase(priority)) {
+                        if (thresholdBreach(Double.valueOf(status.getGpsStopVehDist()), Double.valueOf(urgency.getThresholdValue()))) {
+                            logger.info("alert found excessiveGlobalMileage ::type {} , threshold {} , status {}", urgency.getAlertType(), urgency.getThresholdValue(), status);
+                            return getTarget(status, urgency,status.getGpsStopVehDist());
+                        }
                     }
                 }
             }
+        }catch (Exception ex){
+            logger.error("Error while checking excessiveGlobalMileage :: {}",ex);
         }
-
         return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
     };
 
