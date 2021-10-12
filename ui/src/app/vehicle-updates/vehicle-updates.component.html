@@ -119,16 +119,16 @@
               <ng-container matColumnDef="softwareStatus">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="min-width: 15%;">{{ translationData.lblsoftwareStatus || 'Software Status' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row" style="min-width: 15%;">
-                    <span *ngIf="row.softwareStatus == 'Update Failed'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update failed')">
                         <span [style]="{ 'color':'#f00e0e' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Update Available'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update available')">
                         <span [style]="{ 'color':'#0249cb' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Update Running'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update running')">
                         <span [style]="{ 'color':'#FFBF00' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Up-To Date'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('up-to-date')">
                         <span [style]="{ 'color':'#0ab90a' } ">{{row.softwareStatus}}</span> 
                     </span>  
               </mat-cell>            
