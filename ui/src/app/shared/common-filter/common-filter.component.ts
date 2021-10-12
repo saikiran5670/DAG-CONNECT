@@ -39,6 +39,7 @@ export class CommonFilterComponent implements OnInit {
 
  public filteredGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
+ public filteredRoles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(
     private accountService: AccountService,
@@ -65,6 +66,9 @@ export class CommonFilterComponent implements OnInit {
     this.roleService.getUserRoles(this.roleObj).subscribe((roleData) => {
      roleData.forEach(item => {
        this.roles.push(item.roleName);
+       console.log("roles", this.roles);
+       this.roles.sort(this.compare);
+       this.resetRolesFilter();
      })
     });
   
@@ -133,6 +137,9 @@ export class CommonFilterComponent implements OnInit {
   resetuserGroupsFilter(){
     this.filteredGroups.next(this.userGroups.slice());
   }
+  resetRolesFilter(){
+    this.filteredRoles.next(this.roles.slice());
+  }
 
 
   filter(){
@@ -178,5 +185,24 @@ export class CommonFilterComponent implements OnInit {
      );
 
   }
+ 
+  filterRoles(roleSearch){
+    if(!this.roles){
+      return;
+    }
+    if(!roleSearch){
+      this.resetRolesFilter();
+      return;
+     } else{
+      roleSearch = roleSearch.toLowerCase();
+     }
+     this.filteredRoles.next(
+       this.roles.filter(item=> item.toLowerCase().indexOf(roleSearch) > -1)
+     );
+
+  }
+
+  
+
 
 }

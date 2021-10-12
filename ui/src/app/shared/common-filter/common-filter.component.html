@@ -38,12 +38,14 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserRole }}" [(ngModel)]="role">
                     <mat-option>
-                        <ngx-mat-select-search></ngx-mat-select-search>
+                        <ngx-mat-select-search (keyup)="filterRoles(roleSearch.value)" #roleSearch>
+                            <mat-icon (click)="resetRolesFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                        </ngx-mat-select-search>
                     </mat-option>
                     
                     <mat-option value='All'>{{ translationData.lblAll  }}</mat-option>
                     <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                    <mat-option *ngFor="let role of roles" [value]="role">
+                    <mat-option *ngFor="let role of filteredRoles | async " [value]="role">
                         {{role}}
                     </mat-option>
                 </mat-select>
