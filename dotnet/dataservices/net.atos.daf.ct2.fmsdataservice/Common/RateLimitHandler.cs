@@ -38,6 +38,7 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
             string authorizedfeature = Convert.ToString(context.Items["AuthorizedFeature"]);
             bool hasVin = context.Request.Query.ContainsKey("vin");
             bool hasSince = context.Request.Query.ContainsKey("since");
+            var requestParameter = context.Request.Query.ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
             //Null Check for authorized feature
             //Necessary check though this is mandatory and will never be null
             //Before it would come to this point if it is null a 403 unauthorized response would have been already sent
@@ -58,8 +59,15 @@ namespace net.atos.daf.ct2.fmsdataservice.Common
                         //Fetch Max Rate & Period from Configuration
                         var maxRate = 1;
                         var period = 60;
-                        string cacheKeyExtention = hasVin == true ? "_vin" : string.Empty;
-                        cacheKeyExtention = hasSince == true ? "_since" : string.Empty;
+                        string cacheKeyExtention = string.Empty;
+                        if (hasVin)
+                        {
+                            cacheKeyExtention = requestParameter["vin"];
+                        }
+                        if (hasSince)
+                        {
+                            cacheKeyExtention += requestParameter["since"];
+                        }
                         string cacheKey = $"{emailAddress}_{authorizedfeature}{cacheKeyExtention}";
                         RateLimitData rateLimitCacheEntry = _cache.GetFromCache<RateLimitData>(cacheKey);
                         if (rateLimitCacheEntry == null)
