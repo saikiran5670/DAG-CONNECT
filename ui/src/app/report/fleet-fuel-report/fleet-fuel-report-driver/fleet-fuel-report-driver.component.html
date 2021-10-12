@@ -35,7 +35,12 @@
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup">
-                  <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                  <mat-option>
+                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                        <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                      </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let rer of filteredVehicleGroups | async" [value]="rer.vehicleGroupId">
                     {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
@@ -135,7 +140,12 @@
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                   formControlName="vehicle">
   
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
+                  <mat-option>
+                      <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" #VehicleSearch>
+                        <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                      </ngx-mat-select-search>
+                    </mat-option>
+                <mat-option *ngFor="let rer of filteredVehicle | async" [value]="rer.vehicleId">
                     
                     <span *ngIf="rer.vehicleId == 0"> {{rer.vehicleName}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId != 0"> {{rer.vehicleName}} </span>
