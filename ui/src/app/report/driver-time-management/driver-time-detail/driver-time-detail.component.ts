@@ -195,7 +195,18 @@ export class DriverTimeDetailComponent implements OnInit {
         type: 'solid'
       },
       xaxis: {
-        type: 'datetime'
+        type: 'datetime',
+        labels: {
+        //   formatter: function (value) {
+        //     return value;
+        //   }
+          format: 'HH',
+          // showDuplicates: false,
+          // offsetX: 0
+        },
+        offsetX: 0,
+        // min: 0,
+        // max: 24
       },
       legend : {
         position: 'bottom',
@@ -247,7 +258,12 @@ export class DriverTimeDetailComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.updateDataSource(this.detailConvertedData);
    // this.setGraphData();
-
+  //  this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
+  //   this.showLoadingIndicator = false;
+  //   this.createChart(data);
+  //   })
+  //   this.updateDataSource(this.detailConvertedData);
+  //   this.setGraphData();
   }
 
   // ngAfterViewInit() {
@@ -408,27 +424,34 @@ export class DriverTimeDetailComponent implements OnInit {
     //   driveData.push(restObj)
     // });
     
-    let driveData, workData, restData, availableData=[];
+    let driveData=[], workData=[], restData=[], availableData=[];
     _data.forEach(element => {
-      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
-      let restObj={
-        x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime]
+      let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
+      let isValid=true;
+      if(_startTime == _endTime || (_startTime) > (_endTime)){
+        isValid=false;
       }
-      if(element.code === 0){
-        restObj['fillColor']='#8ac543';
-        restData.push(restObj);
-      } else if(element.code === 1){
-        restObj['fillColor']='#dddee2';
-        availableData.push(restObj);
-      } else if(element.code === 2){
-        restObj['fillColor']='#e85c2a';
-        workData.push(restObj);
-      } else if(element.code === 3){
-        restObj['fillColor']='#29539b';
-        driveData.push(restObj);
-      }
+      if(isValid){
+        let restObj={
+          x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+          y : [_startTime,_endTime]
+        }
+        if(element.code === 0){
+          restObj['fillColor']='#8ac543';
+          restData.push(restObj);
+        } else if(element.code === 1){
+          restObj['fillColor']='#dddee2';
+          availableData.push(restObj);
+        } else if(element.code === 2){
+          restObj['fillColor']='#e85c2a';
+          workData.push(restObj);
+        } else if(element.code === 3){
+          restObj['fillColor']='#29539b';
+          driveData.push(restObj);
+        }
+    }
     });
    // if(driveData.length>0)
     _series.push({
@@ -478,11 +501,12 @@ export class DriverTimeDetailComponent implements OnInit {
           let activityType = values.seriesName.split(":")[0];
           let calculatedDiff = values.end - values.start;
           let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff)// 24- default time format to be changed to prefTimeFormat
+          // let diffDuration=calculatedDiff;
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = Util.convertToDateTZ(fromTime,this.prefDateFormat);
+          let fromDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(fromTime);
           let toTime = (values.end);
-          let toDisplay  = Util.convertToDateTZ(toTime,this.prefDateFormat);
+          let toDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(toTime);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (

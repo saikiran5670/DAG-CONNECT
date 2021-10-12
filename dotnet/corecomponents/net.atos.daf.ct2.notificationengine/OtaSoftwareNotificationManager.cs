@@ -22,12 +22,19 @@ namespace net.atos.daf.ct2.notificationengine
 
         public async Task<int> CreateCampaignEvent(TripAlertOtaConfigParam tripAlertOtaConfigParam, KafkaConfiguration kafkaEntity)
         {
-            TripAlert tripAlert = await _otaSoftwareNotificationRepository.InsertTripAlertOtaConfigParam(tripAlertOtaConfigParam);
+            try
+            {
+                TripAlert tripAlert = await _otaSoftwareNotificationRepository.InsertTripAlertOtaConfigParam(tripAlertOtaConfigParam);
 
-            //TripAlert object conver into json
-            kafkaEntity.ProducerMessage = JsonConvert.SerializeObject(tripAlert);
-            await KafkaConfluentWorker.Producer(kafkaEntity);
-            return tripAlert.Id;
+                //TripAlert object conver into json
+                kafkaEntity.ProducerMessage = JsonConvert.SerializeObject(tripAlert);
+                await KafkaConfluentWorker.Producer(kafkaEntity);
+                return tripAlert.Id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
     }
