@@ -46,7 +46,7 @@ export class ReportSchedulerComponent implements OnInit {
   dialogVeh: MatDialogRef<CommonTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  adminAccessType: any = {};
   reportTypeSelection: any= 0;
   statusSelection: any= 0;
   ReportTypeList: any= [];
@@ -72,7 +72,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-
+      this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
