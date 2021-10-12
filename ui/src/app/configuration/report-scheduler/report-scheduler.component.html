@@ -171,7 +171,7 @@
         </ng-template>
 
         <ng-template #topRightElements let-gridData='rowData'>
-          <div *ngIf="!adminAccessType.adminReadOnlyAccess" class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
+          <div *ngIf="adminAccessType.adminFullAccess" class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
               <button mat-flat-button color="primary" (click)="onClickNewReportScheduler()">
               <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblScheduleReport || 'Schedule Report'}}
               </button>
