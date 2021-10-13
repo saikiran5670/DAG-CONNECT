@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         public async Task<ScheduleSoftwareUpdateResponse> PostManagerApproval(ScheduleSoftwareUpdateRequest request)
         {
             int i = 0;
-            long boashtimestamp = 0;
+            long boashtimestamp;
             try
             {
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
@@ -52,7 +52,8 @@ namespace net.atos.daf.ct2.httpclientfactory
                 _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data {etag}");
                 client = await GetHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.TryAddWithoutValidation("If-Match", etag.Replace("\"", ""));
+                if (etag != null)
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("If-Match", etag.Replace("\"", ""));
                 client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
                 var reqObj = new ScheduleSoftwareUpdateReq { ApprovalMessage = request.ApprovalMessage, SchedulingTime = request.SchedulingTime };
                 var httpRequest = new HttpRequestMessage(
@@ -82,6 +83,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             catch (Exception ex)
             {
                 _logger.Error($"OTA14HttpClientManager:GetSoftwareScheduleUpdate.Error:-{ex.Message}");
+                boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500, BoashTimesStamp = boashtimestamp };
             }
         }
