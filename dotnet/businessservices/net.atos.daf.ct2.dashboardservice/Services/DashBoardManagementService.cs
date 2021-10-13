@@ -71,7 +71,9 @@ namespace net.atos.daf.ct2.dashboardservice
                 Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
                 {
                     VINs = request.VINs.ToList<string>()
+
                 };
+               // List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(alert24HoursFilter);
                 List<dashboard.entity.Alert24Hours> reportDetails = await _dashBoardManager.GetLastAlert24Hours(alert24HoursFilter);
                 Alert24HoursResponse alert24HoursResponse = new Alert24HoursResponse
                 {

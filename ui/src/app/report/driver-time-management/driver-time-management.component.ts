@@ -18,6 +18,7 @@ import 'jspdf-autotable';
 import { OrganizationService } from '../../services/organization.service';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -26,6 +27,9 @@ import * as fs from 'file-saver';
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   selectionTab: any;
@@ -909,6 +913,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
+              this.vehicleGroupListData.sort(this.compare);
+              this.vehicleDD.sort(this.compare);
+              this.driverDD.sort(this.compare);
+              this.resetVehicleGroupFilter();
+              this.resetVehicleFilter();
+              this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
@@ -1429,6 +1439,78 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.filterDateData();
   }
 
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGroupListData){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+
+  filterDriver(DriverSearch){
+    console.log("vehicle dropdown called");
+    if(!this.driverDD){
+      return;
+    }
+    if(!DriverSearch){
+      this.resetDriverFilter();
+      return;
+    }else{
+      DriverSearch = DriverSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.driverDD.filter(item => item.driverName.toLowerCase().indexOf(DriverSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+  
+   resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGroupListData.slice());
+  }
+
+  resetDriverFilter(){
+    this.filteredDriver.next(this.driverDD.slice());
+  }
 
 }
