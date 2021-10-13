@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -42,6 +43,7 @@ public class DriverMangementTest {
     }
 
     @Test
+    @Ignore
     public void testDriveTime() throws Exception {
         logger.info("Testing started.......");
         DataStreamSource<Monitor> monitorDataStreamSource = env.fromCollection(getMonitorTestData());
