@@ -743,7 +743,7 @@ setIconsOnMap(element) {
     } 
 
     if(_alertFound){
-      if(alertsData.length > 1){ //check for criticality
+      if(alertsData[0].length > 1){ //check for criticality
         alertsData.forEach(element => {
           let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
           if(_currentElem){
@@ -758,7 +758,7 @@ setIconsOnMap(element) {
           }
         });
       }
-      else if(alertsData.length == 1){
+      else if(alertsData[0].length == 1){
         _alertConfig = this.getAlertConfig(_alertFound);
       }  
     }
