@@ -1290,12 +1290,40 @@ let _type ='';
           //only for never moved type of driving status
             if(_drivingStatus == "Never Moved"){
               let latestAlert :any =[];
+              if(element.latestWarningClass ==0){
               latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
               this.endAddressPositionLat = _alertFound.latitude;
               this.endAddressPositionLong =_alertFound.longitude;
+              }
+              else{
+                // need to display never moved icon on map if alert/warning is present.
+                latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time);
+                let a = latestAlert[0].time;
+                let b = element.latestWarningTimestamp;
+                let newDate = Math.max(a, b);
+                if(newDate == a){//for alert
+                  _alertFound = latestAlert[0];
+                  alertsData.push(_alertFound);
+                  this.endAddressPositionLat = _alertFound.latitude;
+                  this.endAddressPositionLong =_alertFound.longitude;
+                }
+                else{ //for warning
+                  _alertFound = latestAlert[0];
+                  alertsData.push(_alertFound);
+                  this.endAddressPositionLat = element.latestWarningPositionLatitude;
+                  this.endAddressPositionLong = element.latestWarningPositionLongitude;
+                }
+
+              }
             }
+        }
+      }
+      else{ //if alert is not present then need to display warning lat long for never moved vehicle.
+        if(_drivingStatus == "Never Moved"){
+        this.endAddressPositionLat = element.latestWarningPositionLatitude;
+        this.endAddressPositionLong = element.latestWarningPositionLongitude;
         }
       }
 
