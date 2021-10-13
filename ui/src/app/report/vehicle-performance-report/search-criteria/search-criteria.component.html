@@ -46,7 +46,7 @@
                                 placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                                 formControlName="vehicleGroup">
                                 <mat-option>
-                                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                                           <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                         </ngx-mat-select-search>
                                       </mat-option>
@@ -67,7 +67,12 @@
                             <mat-select (selectionChange)="onVehicleChange($event)"
                                 placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                                 formControlName="vehicleName">
-                                <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
+                                <mat-option>
+                                    <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)"  placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #VehicleSearch>
+                                        <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let rer of filteredVehicle | async " [value]="rer.vehicleId">
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{ rer.vehicleName }} </span>
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
                                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
