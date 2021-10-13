@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.reports.repository
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
                              and tripalert.category_type <> 'O'
-                             and tripalert.type <> 'W
+                             and tripalert.type <> 'W'
                            and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
