@@ -117,7 +117,7 @@
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                     <mat-option>
-                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                         <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
@@ -142,7 +142,12 @@
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
-                      <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
+                    <mat-option>
+                      <ngx-mat-select-search (keyup)="filterVehicles(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
+                        <mat-icon (click)="resetVehiclesFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                      </ngx-mat-select-search>
+                    </mat-option>  
+                    <mat-option *ngFor="let vehicle of filteredVehicles | async" [value]="vehicle.vehicleId">
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehicle.vehicleName}} </span>
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehicle.vin}} </span>
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehicle.registrationNo ? vehicle.registrationNo : vehicle.vehicleName}} </span>

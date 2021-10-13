@@ -157,6 +157,7 @@ export class VehicleUpdatesComponent implements OnInit {
         this.resetSoftStatusFilter(); 
       
     }, (error) => {
+      this.showLoadingIndicator = false;
     })   
 }
 
