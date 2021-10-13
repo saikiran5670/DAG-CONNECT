@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error("OTASoftwareUpdateManagementService:GetScheduleSoftwareUpdate", ex);
                 return await Task.FromResult(new ScheduleSoftwareUpdateResponse
                 {
                     Message = "Exception :-" + ex.Message,
