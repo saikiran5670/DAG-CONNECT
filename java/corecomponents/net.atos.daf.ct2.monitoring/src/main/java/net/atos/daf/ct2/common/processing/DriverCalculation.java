@@ -82,7 +82,7 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                     logger.info("Driver 1 not found in map hence updating inbuild cahe {} {}",monitor.getDocument().getDriverID(),uuID);
                     updateDriverState(driverPreviousInfo, monitor);
                 }else{
-                    logger.info("Driver 1 previous stage :: {} current state {} {}",twoMinuteRulePojo.getCode(),monitor.getDocument().getDriverID(),uuID);
+                    logger.info("Driver 1 previous stage :: {} current state {} {}",twoMinuteRulePojo.getCode(),monitor.getDocument().getDriver1WorkingState(),uuID);
                     monitorTmpList.add(monitor);
                 }
             }
@@ -94,19 +94,35 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                 net.atos.daf.ct2.common.models.Monitor monitorEnd = new net.atos.daf.ct2.common.models.Monitor()
                         .constructFromParent(monitorTmpList.get(monitorTmpList.size()-1));
 
-//                long startTime
-                monitorEnd.setStartTime(twoMinuteRulePojo.getStart_time());
-                monitorEnd.setEndTime(convertDateToMillis(monitorEnd.getEvtDateTime()));
-                monitorEnd.setDuration(monitorEnd.getEndTime()-monitorEnd.getStartTime());
-                monitorEnd.setDriverState(String.valueOf(monitorEnd.getDocument().getDriver1WorkingState()));
+                Integer driver1WorkingState = monitorStartIndex.getDocument().getDriver1WorkingState();
+                if(driver1WorkingState==3 && twoMinuteRulePojo.getCode().equals("7")){
+                    // make an entry for rest
+                    long startTime = twoMinuteRulePojo.getEnd_time();
+                    populateDriverSaveList(monitorSaveList, twoMinuteRulePojo, monitorEnd, startTime,7);
+                }
+
+                long startTime = monitorTmpList.size() == 1 ?
+                        Integer.valueOf(twoMinuteRulePojo.getCode()) == driver1WorkingState
+                        ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime())
+                        : convertDateToMillis(monitorStartIndex.getEvtDateTime());
                 //add into save list
-                monitorSaveList.add(monitorEnd);
-                //update drive state
-                updateDriverState(twoMinuteRulePojo, monitorEnd);
+                populateDriverSaveList(monitorSaveList, twoMinuteRulePojo, monitorEnd, startTime,monitorEnd.getDocument().getDriver1WorkingState());
             }
         }
 
         return  monitorSaveList;
+    }
+
+    private void populateDriverSaveList(List<Monitor> monitorSaveList, TwoMinuteRulePojo twoMinuteRulePojo, net.atos.daf.ct2.common.models.Monitor monitorEnd, long startTime,int driverWorkingState) throws Exception {
+        monitorEnd.setStartTime(startTime);
+        monitorEnd.setEndTime(convertDateToMillis(monitorEnd.getEvtDateTime()));
+        monitorEnd.setDuration(monitorEnd.getEndTime()- monitorEnd.getStartTime());
+        monitorEnd.setDriverState(String.valueOf(monitorEnd.getDocument().getDriver1WorkingState()));
+        //add into save list
+        monitorEnd.getDocument().setDriver1WorkingState(driverWorkingState);
+        monitorSaveList.add(monitorEnd);
+        //update drive state
+        updateDriverState(twoMinuteRulePojo, monitorEnd);
     }
 
     private void updateDriverState(TwoMinuteRulePojo driverPreviousInfo, Monitor monitor) throws Exception {
