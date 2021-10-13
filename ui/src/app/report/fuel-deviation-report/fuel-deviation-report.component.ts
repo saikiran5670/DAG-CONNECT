@@ -709,6 +709,7 @@ export class FuelDeviationReportComponent implements OnInit {
         });
       }
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
+      this.resetVehicleGroupFilter();
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
@@ -718,6 +719,7 @@ export class FuelDeviationReportComponent implements OnInit {
 
     if(this.vehicleDD.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
+      this.resetVehicleFilter();
       this.resetFuelDeviationFormControlValue();
     }
     this.setVehicleGroupAndVehiclePreSelection();
@@ -1077,6 +1079,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       console.log("vehicleDD 2", this.vehicleDD);
         
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
+      this.resetVehicleFilter();
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
       if(search.length > 0){
