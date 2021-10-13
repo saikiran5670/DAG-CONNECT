@@ -18,7 +18,7 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserGroup }}" [(ngModel)]="userGroup">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterUserGroups(groupSearch.value)" #groupSearch>
+                        <ngx-mat-select-search (keyup)="filterUserGroups(groupSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #groupSearch>
                             <mat-icon (click)="resetuserGroupsFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                     </mat-option>
@@ -38,7 +38,7 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserRole }}" [(ngModel)]="role">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterRoles(roleSearch.value)" #roleSearch>
+                        <ngx-mat-select-search (keyup)="filterRoles(roleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #roleSearch>
                             <mat-icon (click)="resetRolesFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                     </mat-option>
