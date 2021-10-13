@@ -1665,10 +1665,12 @@ getLast3MonthDate(){
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            console.log("vehicleGrpDD 1", this.vehicleGrpDD);
+
             this.vehicleGrpDD.sort(this.compare);
-            this.vehicleDD.sort(this.compare);
+            //this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
-            this.resetVehicleFilter();
+            //this.resetVehicleFilter();
           }
         });
       }
@@ -1678,6 +1680,10 @@ getLast3MonthDate(){
 
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+    console.log("vehicleDD 1", this.vehicleDD);
+    this.vehicleDD.sort(this.compare);
+    this.resetVehicleFilter();
+
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
@@ -1701,12 +1707,14 @@ setVehicleGroupAndVehiclePreSelection() {
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        console.log("vehicleDD 2", this.vehicleDD);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
-            this.vehicleDD.push(element);  
+            this.vehicleDD.push(element); 
+            console.log("vehicleDD 3", this.vehicleDD); 
           });
         }
       }
@@ -2445,6 +2453,8 @@ setVehicleGroupAndVehiclePreSelection() {
   onVehicleSelected(vehData:any){
     this.resetChartData(); 
     let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+    console.log("vehicleGrpDD 2", this.vehicleGrpDD);
+            
     let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
     this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
@@ -2555,7 +2565,7 @@ setVehicleGroupAndVehiclePreSelection() {
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }

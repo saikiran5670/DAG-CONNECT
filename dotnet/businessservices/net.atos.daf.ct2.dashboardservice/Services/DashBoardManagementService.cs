@@ -68,12 +68,15 @@ namespace net.atos.daf.ct2.dashboardservice
         {
             try
             {
+                int contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgid").Value);
+                List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(contextOrgId);
+
                 Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
                 {
-                    VINs = request.VINs.ToList<string>()
-
+                    VINs = request.VINs.ToList<string>(),
+                    AlertIds = alerts.Select(x => x.Id).Distinct().ToList()
                 };
-               // List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(alert24HoursFilter);
+
                 List<dashboard.entity.Alert24Hours> reportDetails = await _dashBoardManager.GetLastAlert24Hours(alert24HoursFilter);
                 Alert24HoursResponse alert24HoursResponse = new Alert24HoursResponse
                 {

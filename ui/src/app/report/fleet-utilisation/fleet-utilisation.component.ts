@@ -906,9 +906,9 @@ calendarOptions: CalendarOptions = {
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
             this.vehicleGrpDD.sort(this.compare);
-            this.vehicleDD.sort(this.compare);
+           // this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
-            this.resetVehicleFilter();
+           // this.resetVehicleFilter();
           }
         });
       }
@@ -919,6 +919,10 @@ calendarOptions: CalendarOptions = {
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+    console.log("vehicleDD 1", this.vehicleDD);
+    this.vehicleDD.sort(this.compare);
+    this.resetVehicleFilter();
+
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
@@ -1291,13 +1295,17 @@ calendarOptions: CalendarOptions = {
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        console.log("vehicleDD 2", this.vehicleDD);
+    
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
-            this.vehicleDD.push(element);  
+            this.vehicleDD.push(element); 
+            console.log("vehicleDD 3", this.vehicleDD);
+     
           });
         }
       }
@@ -1887,7 +1895,7 @@ getAllSummaryData(){
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
