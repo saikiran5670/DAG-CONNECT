@@ -120,7 +120,7 @@
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="onSelectionChange($event)" formControlName="language" required>
                                             <mat-option>
-                                                <ngx-mat-select-search (keyup)="filterOrgLangList(orgLangSearch.value)" #orgLangSearch>
+                                                <ngx-mat-select-search (keyup)="filterOrgLangList(orgLangSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #orgLangSearch>
                                                     <mat-icon (click)="resetOrgLangFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                                 </ngx-mat-select-search>
                                             </mat-option>
@@ -143,7 +143,7 @@
                                         <mat-select (selectionChange)="onSelectionChange($event)"
                                             formControlName="timeZone" required>
                                             <mat-option>
-                                                <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch>
+                                                <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #timesearch>
                                                   <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                                 </ngx-mat-select-search>
                                               </mat-option>

@@ -26,7 +26,7 @@
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
             <mat-select [disabled]="vehicleListData.length == 0" placeholder="Select Group" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
                 <mat-option>
-                    <ngx-mat-select-search (keyup)="filterSelectGroups(groupsearch.value)" #groupsearch>
+                    <ngx-mat-select-search (keyup)="filterSelectGroups(groupsearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #groupsearch>
                     <mat-icon (click)="resetSelectGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                 </mat-option>                
@@ -99,7 +99,7 @@
       <mat-form-field appearance="outline" class="full-width">
           <mat-select [disabled]="driverList.length == 0" (selectionChange)="onChangeDriver($event.value)" formControlName="driver" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" >
             <mat-option>
-                <ngx-mat-select-search (keyup)="filterSelectDrivers(driversearch.value)" #driversearch>
+                <ngx-mat-select-search (keyup)="filterSelectDrivers(driversearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #driversearch>
                     <mat-icon (click)="resetDriverSearchFilter()" ngxMatSelectSearchClear>close</mat-icon>
                 </ngx-mat-select-search>
             </mat-option>
