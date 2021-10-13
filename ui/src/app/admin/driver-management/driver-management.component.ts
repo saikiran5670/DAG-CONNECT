@@ -71,7 +71,7 @@ export class DriverManagementComponent implements OnInit {
   driverDialogRef: MatDialogRef<CommonTableComponent>;
   excelEmptyMsg: boolean = false;
   newDriverCount: any = 0;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  adminAccessType: any = {};
   userType: any = localStorage.getItem("userType");
   organizationData: any;
 
@@ -82,6 +82,7 @@ export class DriverManagementComponent implements OnInit {
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.importDriverFormGroup = this._formBuilder.group({
       uploadFile: [
         undefined,

@@ -125,8 +125,7 @@
           <button class='actionBtn' (click)="editViewVehicle(gridData, 'view')" mat-flat-button matTooltip="View">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button class='actionBtn' mat-flat-button (click)="editViewVehicle(gridData, 'edit')" matTooltip="Edit"
-            *ngIf="gridData.hasOwned">
+          <button *ngIf="!adminAccessType.adminReadOnlyAccess && gridData.hasOwned" class='actionBtn' mat-flat-button (click)="editViewVehicle(gridData, 'edit')" matTooltip="Edit">
             <mat-icon>create</mat-icon>
           </button>
         </ng-template>
