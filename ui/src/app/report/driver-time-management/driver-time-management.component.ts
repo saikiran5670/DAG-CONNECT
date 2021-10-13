@@ -1508,7 +1508,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       DriverSearch = DriverSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.driverDD.filter(item => item.driverName.toLowerCase().indexOf(DriverSearch) > -1)
+      this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }

@@ -37,7 +37,7 @@
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup  }}"  formControlName="vehicleGroup">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                           <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                       </mat-option>
@@ -101,7 +101,7 @@
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" #VehicleSearch>
+                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}"  #VehicleSearch>
                           <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                       </mat-option>
@@ -154,7 +154,7 @@
               <mat-form-field appearance="outline">
               <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
                   <mat-option>
-                      <ngx-mat-select-search (keyup)="filterDriver(DriverSearch.value)" #DriverSearch>
+                      <ngx-mat-select-search (keyup)="filterDriver(DriverSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #DriverSearch>
                         <mat-icon (click)="resetDriverFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
