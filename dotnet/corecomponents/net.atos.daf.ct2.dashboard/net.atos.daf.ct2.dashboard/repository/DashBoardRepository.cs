@@ -124,15 +124,19 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
-        public async Task<List<AlertNameList>> GetAlertNameOrgList(List<int> alertids)
+        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId, List<string> vins)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@AlertIds", alertids);
-                string queryAlert = @"select id, Name, organization_id as org_id from master.alert where id = ANY(@AlertIds)";
-                var result = await _dataAccess.QueryAsync<AlertNameList>(queryAlert, parameter);
-                return result.AsList<AlertNameList>();
+                parameter.Add("@orgId", organizationId);
+                parameter.Add("@vins", vins);
+                string queryAlert = @"select id, Name, organization_id as org_id 
+                                        from master.alert 
+                                        where vin = ANY(@vins)
+                                        and organization_id = @orgId ";
+                var result = await _dataAccess.QueryAsync<AlertOrgMap>(queryAlert, parameter);
+                return result.AsList<AlertOrgMap>();
             }
             catch (System.Exception)
             {
