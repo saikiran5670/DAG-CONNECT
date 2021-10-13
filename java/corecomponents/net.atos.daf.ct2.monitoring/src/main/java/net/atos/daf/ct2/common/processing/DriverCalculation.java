@@ -100,7 +100,7 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                     // make an entry for rest
                     long startTime = twoMinuteRulePojo.getEnd_time();
                     populateDriverSaveList(monitorSaveList, monitorEnd, startTime,7);
-                    monitorEnd.getDocument().setDriver1WorkingState(3);
+                    populateDriverSaveList(monitorSaveList, monitorEnd, convertDateToMillis(monitorStartIndex.getEvtDateTime()),3);
                 }else{
                     long startTime = monitorTmpList.size() == 1 ?
                             Integer.valueOf(twoMinuteRulePojo.getCode()) == driver1WorkingState
@@ -124,7 +124,8 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
         monitorEnd.setDriverState(String.valueOf(monitorEnd.getDocument().getDriver1WorkingState()));
         //add into save list
         monitorEnd.getDocument().setDriver1WorkingState(driverWorkingState);
-        monitorSaveList.add(monitorEnd);
+
+        monitorSaveList.add(net.atos.daf.ct2.common.models.Monitor.copyOf(monitorEnd));
 
     }
 

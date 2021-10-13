@@ -39,6 +39,16 @@ public class Monitor extends net.atos.daf.ct2.pojo.standard.Monitor  implements 
         return child;
     }
 
+    public static Monitor copyOf(Monitor monitor){
+        Monitor copy = new Monitor();
+        try {
+            copy= (Monitor)Utils.readValueAsObject(Utils.writeValueAsString(monitor), Monitor.class);
+        } catch (Exception e) {
+            logger.error("Error while constructing copy object from  monitor {} {}",e,String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+        }
+        return copy;
+    }
+
     @Override
     public String toString() {
         return Utils.writeValueAsString(this);
