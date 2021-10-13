@@ -19,6 +19,7 @@ import { OrganizationService } from '../../services/organization.service';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-eco-score-report',
@@ -33,6 +34,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   driverPerformanceColumnData: any = [];
   driverPerformanceGraphColumnData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   selectionTab: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -544,12 +548,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.ecoScoreForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 1", this.vehicleDD);
     }else{
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element);  
+          console.log("vehicleDD 2", this.vehicleDD);
         });
       }
       // this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -575,6 +581,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   onVehicleChange(event: any){
     if(event.value==0){
       this.driverDD = this.driverListData;
+      console.log("driverDD 1", this.driverDD);
       // this.driverListData = this.finalDriverList;
     }else{
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
@@ -584,6 +591,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.driverDD = [];
         search.forEach(element => {
           this.driverDD.push(element);  
+          console.log("driverDD 2", this.driverDD);
         });
       }
     }
@@ -817,6 +825,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
+              this.vehicleGroupListData.sort(this.compared);
+              //this.vehicleDD.sort(this.compared);
+             // this.driverDD.sort(this.compared);
+              this.resetVehicleGroupFilter();
+              //this.resetVehicleFilter();
+              //this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
@@ -839,7 +853,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 3", this.vehicleDD);
+      this.vehicleDD.sort(this.compared);
+      this.resetVehicleFilter();
       this.driverDD = this.driverListData;
+      console.log("driverDD 3", this.driverDD);
+      this.driverDD.sort(this.compared);
+      this.resetDriverFilter();
 
       this.ecoScoreForm.get('vehicleGroup').setValue(0);
     }
@@ -1568,6 +1588,80 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   
   onClose(){
     this.titleVisible = false;
+  }
+
+  compared(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGroupListData){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+
+  filterDriver(DriverSearch){
+    console.log("vehicle dropdown called");
+    if(!this.driverDD){
+      return;
+    }
+    if(!DriverSearch){
+      this.resetDriverFilter();
+      return;
+    }else{
+      DriverSearch = DriverSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+  
+   resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGroupListData.slice());
+  }
+
+  resetDriverFilter(){
+    this.filteredDriver.next(this.driverDD.slice());
   }
 
 }

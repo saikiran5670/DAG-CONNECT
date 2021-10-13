@@ -180,6 +180,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
+  public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  
   constructor(private _formBuilder: FormBuilder,
               private poiService: POIService,
               private geofenceService: GeofenceService, 
@@ -691,7 +694,9 @@ proceedStep(prefData: any, preference: any){
   resetVehicleGroupFilter(){
 		this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
 	  }
-
+ resetVehiclesFilter(){
+   this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
+ }
   getVehiclesForAlertType(alertTypeObj: any){
     this.vehicleByVehGroupList= [];
     let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
@@ -705,12 +710,16 @@ proceedStep(prefData: any, preference: any){
         let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
         if(vehicle.length > 0){
           this.vehicleByVehGroupList.push(vehicle[0]);
+          console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+          this.vehicleByVehGroupList.sort(this.compare);
+          this.resetVehiclesFilter();
         }
       });
     }
  
     //subscribed vehicles
     this.vehicleByVehGroupList.forEach(element => {
+      console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
       element["subcriptionStatus"] = true;
       this.vehicleListForTable.push(element);
     });
@@ -2585,5 +2594,23 @@ ngOnChanges(changes: SimpleChanges) {
      );
      console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 }
+
+filterVehicles(search){
+  console.log("filterVehicles called");
+  if(!this.vehicleByVehGroupList){
+    return;
+  }
+  if(!search){
+    this.resetVehiclesFilter();
+    return;
+   } else{
+    search = search.toLowerCase();
+   }
+   this.filteredVehicles.next(
+     this.vehicleByVehGroupList.filter(item=> item.vin.toLowerCase().indexOf(search) > -1)
+   );
+   console.log("this.filteredVehicles", this.filteredVehicles);
+}
+
   
 }

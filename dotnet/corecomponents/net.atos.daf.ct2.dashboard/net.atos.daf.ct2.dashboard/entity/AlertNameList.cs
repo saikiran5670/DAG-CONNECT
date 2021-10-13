@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.reports.entity
+namespace net.atos.daf.ct2.dashboard.entity
 {
-    public class AlertNameList
+    public class AlertOrgMap
     {
         public int Id { get; set; }
         public string Name { get; set; }

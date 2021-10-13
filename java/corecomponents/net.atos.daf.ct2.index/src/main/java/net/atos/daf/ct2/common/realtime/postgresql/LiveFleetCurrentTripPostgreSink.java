@@ -86,7 +86,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		Index row = index.getValue();
 		System.out.println("Invoke Started trip statistic Sink :: " + row);
 
-		currentTripPojo = new TripStatisticsPojo();
+		
 
 		try {
 			queue.add(row);
@@ -96,6 +96,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 					queue.clear();
 
 					for (Index indexValue : synchronizedCopy) {
+						
+						currentTripPojo = new TripStatisticsPojo();
 
 						System.out.println("INDEX-VALUE FOR CURRENT TRIP : " + indexValue);
 
@@ -212,17 +214,31 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 										idleDuration=(indexValue.getVIdleDuration()) * 1000;  //later we will keep in constant
 									}
 									
-									driving_time += (currentTripPojo.getEnd_time_stamp()
-											- currentTripPojo.getStart_time_stamp())- idleDuration;
+									
+									  driving_time += (currentTripPojo.getEnd_time_stamp() -
+									  currentTripPojo.getStart_time_stamp())- idleDuration;
+									 
+									
+									/*
+									 * driving_time = driving_time +
+									 * (TimeFormatter.getInstance().convertUTCToEpochMilli(
+									 * indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT) -
+									 * currentTripPojo.getStart_time_stamp()) - idleDuration;
+									 */
+									
+									System.out.println("driving_time-->" + driving_time);
+									
 									currentTripPojo.setDriving_time(driving_time);
 									
 									//calculate the trip distance
 									long totalTripDistance = current_trip_start_var.getTrip_distance();
 									long prevOdometerVal = current_trip_start_var.getOdometer_val();
 									if (indexValue.getVDist() != null) {
-										totalTripDistance += ( indexValue.getVDist().longValue() - prevOdometerVal );
+										totalTripDistance = totalTripDistance + ( indexValue.getVDist().longValue() - prevOdometerVal );
 									}
 									currentTripPojo.setTrip_distance(Long.valueOf(totalTripDistance));
+									log.info("distance covered-->" + totalTripDistance);
+									System.out.println("distance covered-->" + totalTripDistance);
 									
 
 									System.out.println("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);

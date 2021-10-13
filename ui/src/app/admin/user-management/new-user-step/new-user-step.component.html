@@ -175,7 +175,7 @@
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'language')" (selectionChange)="onDropdownChange($event, 'language')" placeholder="{{ translationData.lblLanguage  }}" formControlName="language">
                   <mat-option>
-                    <ngx-mat-select-search (keyup)="filterLanguages(languageSearch.value)" #languageSearch>
+                    <ngx-mat-select-search (keyup)="filterLanguages(languageSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #languageSearch>
                       <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                   </mat-option>
@@ -190,7 +190,7 @@
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'timeZone')" (selectionChange)="onDropdownChange($event, 'timeZone')" placeholder="{{ translationData.lblTimeZone  }}" formControlName="timeZone">
                   <mat-option>
-                    <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch>
+                    <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}"  #timesearch>
                       <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                   </mat-option>
@@ -269,7 +269,7 @@
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'landingPage')" (selectionChange)="onDropdownChange($event, 'landingPage')" placeholder="{{ translationData.lblLandingPageDisplayDefault  }}" formControlName="landingPage">
                   <mat-option>
-                    <ngx-mat-select-search (keyup)="filterLandingPageDisplay(search.value)" #search>
+                    <ngx-mat-select-search (keyup)="filterLandingPageDisplay(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
                       <mat-icon (click)="resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                   </mat-option>

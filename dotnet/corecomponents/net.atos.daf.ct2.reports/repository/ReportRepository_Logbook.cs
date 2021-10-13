@@ -52,8 +52,6 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
-            List<LogbookDetails> logbookDetailsFilters = new List<LogbookDetails>();
-
             try
             {
                 var parameter = new DynamicParameters();
@@ -90,7 +88,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp)::timestamp)
                                 and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))
                                 and ta.category_type <> 'O'
-                				and ta.type <> 'W'";
+                				and ta.type <> 'W' ";
 
 
                 if (logbookFilter.VIN.Count > 0)
@@ -118,14 +116,19 @@ namespace net.atos.daf.ct2.reports.repository
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)
                 {
                     parameter.Add("@AlertIds", logBookDetailsResult.Select(x => x.AlertId).ToArray());
-                    string queryAlert = @"select id, Name from master.alert where id = ANY(@AlertIds)";
+                    string queryAlert = @"select id, Name, organization_id as org_id from master.alert where id = ANY(@AlertIds)";
                     var alertNames = await _dataAccess.QueryAsync<AlertNameList>(queryAlert, parameter);
 
-                    foreach (var item in logBookDetailsResult)
+                    var alertids = alertNames.Where(x => x.Org_Id == logbookFilter.Org_Id).Distinct();
+                    var logbookDetails = from logbookresult in logBookDetailsResult
+                                         join alert in alertids
+                                        on logbookresult.AlertId equals alert.Id
+                                         select logbookresult;
+                    foreach (var item in logbookDetails)
                     {
                         item.AlertName = alertNames.Where(x => x.Id == item.AlertId).Select(x => x.Name).FirstOrDefault();
                     }
-                    return logBookDetailsResult.AsList<LogbookDetails>();
+                    return logbookDetails.AsList<LogbookDetails>();
                 }
                 else
                 {

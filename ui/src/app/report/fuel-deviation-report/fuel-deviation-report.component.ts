@@ -702,18 +702,24 @@ export class FuelDeviationReportComponent implements OnInit {
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
             this.vehicleGrpDD.sort(this.compare);
-            this.vehicleDD.sort(this.compare);
+            //this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
-            this.resetVehicleFilter();
+            //this.resetVehicleFilter();
           }
         });
       }
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
+      this.resetVehicleGroupFilter();
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        console.log("vehicleDD 1", this.vehicleDD);
+        this.vehicleDD.sort(this.compare);
+        this.resetVehicleFilter();
+
     if(this.vehicleDD.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
+      this.resetVehicleFilter();
       this.resetFuelDeviationFormControlValue();
     }
     this.setVehicleGroupAndVehiclePreSelection();
@@ -1070,13 +1076,18 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.vehicleDD = [];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 2", this.vehicleDD);
+        
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
+      this.resetVehicleFilter();
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
-          this.vehicleDD.push(element);  
+          this.vehicleDD.push(element); 
+          console.log("vehicleDD 3", this.vehicleDD);
+         
         });
       }
     }
@@ -1840,7 +1851,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
