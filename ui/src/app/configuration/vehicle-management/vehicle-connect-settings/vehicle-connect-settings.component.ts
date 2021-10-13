@@ -46,6 +46,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
   loadVehData: any = [];
   connectedOn:any=[];
   connectedOff:any=[];
+  adminAccessType: any = {};
  
   constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, private dialog: MatDialog,) {
     this.defaultTranslation();  
@@ -65,6 +66,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.titleVisible = false;
   }
   ngOnInit(): void {
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     // this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     // this.localStLanguage = JSON.parse(localStorage.getItem("language"));

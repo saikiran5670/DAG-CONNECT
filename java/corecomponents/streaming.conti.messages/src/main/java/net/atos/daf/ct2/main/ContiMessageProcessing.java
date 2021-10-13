@@ -271,15 +271,18 @@ public class ContiMessageProcessing implements Serializable {
 					JsonNode jsonNodeRec = null;
 					try{
 						jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-						//long kafkaProcessingTS = TimeFormatter.getInstance().getCurrentUTCTime();
 						((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
-						value.setKey(jsonNodeRec.get("VID").asText());
 						value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
+						value.setKey(jsonNodeRec.get("VID").asText());
 						return jsonNodeRec.get("VID").asText();
 					}catch(Exception e){
 						if(Objects.nonNull(jsonNodeRec)){
 							value.setKey(DAFCT2Constant.UNKNOWN);
+							logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
+							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
 							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
+							logger.info(" after explict setting TS for unknown VID :{}",value.getValue());
 							return DAFCT2Constant.UNKNOWN;
 						}else{
 							value.setKey(DAFCT2Constant.CORRUPT);

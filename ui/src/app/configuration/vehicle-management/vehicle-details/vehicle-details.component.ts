@@ -39,6 +39,8 @@ export class VehicleDetailsComponent implements OnInit {
   // localStLanguage: any;
   actionBtn:any; 
   updateViewStatus: boolean = false;
+  adminAccessType: any = {};
+  userType: any = localStorage.getItem("userType");
 
   constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, ) {
     this.defaultTranslation();
@@ -59,6 +61,7 @@ export class VehicleDetailsComponent implements OnInit {
   }
   
   ngOnInit() {
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     // let translationObj = {
