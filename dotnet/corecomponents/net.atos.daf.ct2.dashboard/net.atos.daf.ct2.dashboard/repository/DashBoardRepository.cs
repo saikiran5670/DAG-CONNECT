@@ -124,7 +124,23 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
+        public async Task<List<AlertNameList>> GetAlertNameOrgList(List<int> alertids)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@AlertIds", alertids);
+                string queryAlert = @"select id, Name, organization_id as org_id from master.alert where id = ANY(@AlertIds)";
+                var result = await _dataAccess.QueryAsync<AlertNameList>(queryAlert, parameter);
+                return result.AsList<AlertNameList>();
+            }
+            catch (System.Exception)
+            {
 
+                throw;
+            }
+
+        }
         #region TodayLive Functionality
         public async Task<List<TodayLiveVehicleData>> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {

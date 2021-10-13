@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.reports.entity
         public List<string> AlertType { get; set; }
         public long Start_Time { get; set; }
         public long End_time { get; set; }
+        public int Org_Id { get; set; }
 
 
     }
