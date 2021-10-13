@@ -12,6 +12,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-new-user-step',
@@ -88,6 +89,13 @@ export class NewUserStepComponent implements OnInit {
   }
   mapRoleIds: any = [];
 
+  public filteredLanguges: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+
   constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngAfterViewInit() {
@@ -109,7 +117,15 @@ export class NewUserStepComponent implements OnInit {
     if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-
+  resetLanguageFilter(){
+    this.filteredLanguges.next(this.defaultSetting.languageDropdownData.slice());
+  }
+  resetTimezoneFilter(){
+    this.filteredTimezones.next(this.defaultSetting.timezoneDropdownData.slice());
+  }
+  resetLandingPageFilter(){
+    this.filteredLandingPageDisplay.next(this.defaultSetting.landingPageDisplayDropdownData.slice());
+  }
   ngOnInit() {
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -220,13 +236,24 @@ export class NewUserStepComponent implements OnInit {
     }
     else{ //-- set org default setting
       this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
+      console.log("languagedropdowndata 1", this.defaultSetting.languageDropdownData);
+      this.defaultSetting.languageDropdownData.sort(this.compare);
+      this.resetLanguageFilter();
       this.firstFormGroup.get('timeZone').setValue((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id);
+      console.log("timezonedropdowndata 1", this.defaultSetting.timezoneDropdownData);
+      this.defaultSetting.timezoneDropdownData.sort(this.compare);
+      this.resetTimezoneFilter();
+      
       this.firstFormGroup.get('unit').setValue((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id);
       this.firstFormGroup.get('currency').setValue((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id);
       this.firstFormGroup.get('dateFormat').setValue((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id);
       this.firstFormGroup.get('vehDisplay').setValue((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id);
       this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      console.log("landingPageDisplayDropdownData 1", this.defaultSetting.landingPageDisplayDropdownData);
+      this.defaultSetting.landingPageDisplayDropdownData.sort(this.compare);
+      this.resetLandingPageFilter();
+      
       this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);
       this.setDefaultOrgVal();
     }
@@ -279,6 +306,7 @@ export class NewUserStepComponent implements OnInit {
           pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
           
         }
+        console.log("languagedropdowndata 2", this.defaultSetting.languageDropdownData);
         let createPrefFlag = false;
         for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
           if(!value){
@@ -811,5 +839,52 @@ export class NewUserStepComponent implements OnInit {
   onOpenChange(event: any, value: any){
     //console.log("event:: ", event);
   }
+
+  filterLanguages(languageSearch){
+    if(!this.defaultSetting.languageDropdownData){
+      return;
+    }
+    if(!languageSearch){
+      this.resetLanguageFilter();
+      return;
+     } else{
+      languageSearch = languageSearch.toLowerCase();
+     }
+     this.filteredLanguges.next(
+       this.defaultSetting.languageDropdownData.filter(item=> item.value.toLowerCase().indexOf(languageSearch) > -1)
+     );
+  }
+
+  filterTimezones(timesearch){
+    console.log("filterTimezones called");
+    if(!this.defaultSetting.timezoneDropdownData){
+      return;
+    }
+    if(!timesearch){
+      this.resetTimezoneFilter();
+      return;
+     } else{
+       timesearch = timesearch.toLowerCase();
+     }
+     this.filteredTimezones.next(
+       this.defaultSetting.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
+     );
+     console.log("this.filteredTimezones", this.filteredTimezones);
+}
+
+filterLandingPageDisplay(search){
+  if(!this.defaultSetting.landingPageDisplayDropdownData){
+    return;
+  }
+  if(!search){
+    this.resetLandingPageFilter();
+    return;
+   } else{
+    search = search.toLowerCase();
+   }
+   this.filteredLandingPageDisplay.next(
+     this.defaultSetting.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(search) > -1)
+   );
+}
 
 }

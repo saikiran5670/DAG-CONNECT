@@ -89,14 +89,22 @@ message CampiagnSoftwareReleaseNoteRequest {
         string Message = 3;
     }
     message ScheduleSoftwareUpdateRequest{
+        
         string CampaignId =1;        
         string BaseLineId =2;
-        int64 ScheduleDateTime =3;
-        repeated string Vins =4;
-        string ApprovalMessage = 5;
+        string ScheduleDateTime =3;
+        string Vin =4;
+        int64 CreatedAt = 5;
+        int64 CreatedBy = 6;
+        int64 TimeStampBoasch = 7;
+        string Status = 8;
+        string AccountEmailId = 9;
+        string ApprovalMessage = 10;
 }
 message ScheduleSoftwareUpdateResponse
     {
-        int32 HttpStatusCode =1;       
-        string Message = 2;
+        int32 HttpStatusCode =1;
+        int64 BoashTimesStamp = 2;
+        string Message = 3;
+        string AccountEmailId = 9;
     }

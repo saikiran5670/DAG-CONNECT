@@ -10,6 +10,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
         public string CampaignId { get; set; }
         public string Vin { get; set; }
         public string BaseLineId { get; set; }
-        public long ScheduleDateTime { get; set; }
+        public string ScheduleDateTime { get; set; }
     }
 }

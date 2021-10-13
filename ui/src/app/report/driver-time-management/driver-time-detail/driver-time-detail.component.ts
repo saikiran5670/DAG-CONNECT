@@ -78,6 +78,15 @@ export class DriverTimeDetailComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   @Input() displayedColumns:any;// = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   @Output() backToMainPage = new EventEmitter<any>();
+  dayWiseSummary:  {
+    date: string;
+    driveTime: number;
+    workTime: number;
+    availableTime: number;
+    serviceTime: number;
+    restTime: number;
+  }
+  dayWiseSummaryList: any =[];
   
   // barChartOptions: ChartOptions = {
   //   responsive: true
@@ -195,7 +204,18 @@ export class DriverTimeDetailComponent implements OnInit {
         type: 'solid'
       },
       xaxis: {
-        type: 'datetime'
+        type: 'datetime',
+        labels: {
+        //   formatter: function (value) {
+        //     return value;
+        //   }
+          format: 'HH',
+          // showDuplicates: false,
+          offsetX: 0
+        },
+        offsetX: 0,
+        // min: 0,
+        // max: 24
       },
       legend : {
         position: 'bottom',
@@ -247,7 +267,12 @@ export class DriverTimeDetailComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.updateDataSource(this.detailConvertedData);
    // this.setGraphData();
-
+  //  this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
+  //   this.showLoadingIndicator = false;
+  //   this.createChart(data);
+  //   })
+  //   this.updateDataSource(this.detailConvertedData);
+  //   this.setGraphData();
   }
 
   // ngAfterViewInit() {
@@ -408,27 +433,55 @@ export class DriverTimeDetailComponent implements OnInit {
     //   driveData.push(restObj)
     // });
     
-    let driveData, workData, restData, availableData=[];
+    let driveData=[], workData=[], restData=[], availableData=[];
+    let date='';
+    let currentArray;
     _data.forEach(element => {
-      let _startTime = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToDateTZ(element.endTime,this.prefTimeZone);
-      let restObj={
-        x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [_startTime,_endTime]
+      // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
+      let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
+      let isValid=true;
+      if(_startTime == _endTime || (_startTime) > (_endTime)){
+        isValid=false;
       }
-      if(element.code === 0){
-        restObj['fillColor']='#8ac543';
-        restData.push(restObj);
-      } else if(element.code === 1){
-        restObj['fillColor']='#dddee2';
-        availableData.push(restObj);
-      } else if(element.code === 2){
-        restObj['fillColor']='#e85c2a';
-        workData.push(restObj);
-      } else if(element.code === 3){
-        restObj['fillColor']='#29539b';
-        driveData.push(restObj);
-      }
+      // console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
+      if(isValid && element.duration > 0){
+        date=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
+        let restObj={
+          x :  date,
+          y : [_startTime,_endTime]
+        }
+        const found = this.dayWiseSummaryList.some(el => el.date === date);
+        if (!found) this.dayWiseSummaryList.push({ date: date, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
+        currentArray=this.dayWiseSummaryList.filter(el => el.date === date)[0];
+        // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
+        if(element.code === 0){
+          restObj['fillColor']='#8ac543';
+          restData.push(restObj);
+          currentArray['restTime'] = currentArray.restTime + element.duration;
+        } else if(element.code === 1){
+          restObj['fillColor']='#dddee2';
+          availableData.push(restObj);
+          currentArray['availableTime']= currentArray.availableTime + element.duration;
+        } else if(element.code === 2){
+          restObj['fillColor']='#e85c2a';
+          workData.push(restObj);
+          currentArray['workTime']= currentArray.workTime + element.duration;
+        } else if(element.code === 3){
+          restObj['fillColor']='#29539b';
+          driveData.push(restObj);
+          currentArray['driveTime']= currentArray.driveTime + element.duration;
+        }
+        // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
+    }
+    });
+    this.dayWiseSummaryList.forEach(element => {
+      element['serviceTime'] = Util.getHhMmTimeFromMS(element.availableTime + element.workTime + element.driveTime - element.restTime);
+      element['restTime'] = Util.getHhMmTimeFromMS(element.restTime);
+      element['availableTime'] = Util.getHhMmTimeFromMS(element.availableTime);
+      element['workTime'] = Util.getHhMmTimeFromMS(element.workTime);
+      element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
+      console.log(element);
     });
    // if(driveData.length>0)
     _series.push({
@@ -478,11 +531,12 @@ export class DriverTimeDetailComponent implements OnInit {
           let activityType = values.seriesName.split(":")[0];
           let calculatedDiff = values.end - values.start;
           let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff)// 24- default time format to be changed to prefTimeFormat
+          // let diffDuration=calculatedDiff;
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = Util.convertToDateTZ(fromTime,this.prefDateFormat);
+          let fromDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(fromTime);
           let toTime = (values.end);
-          let toDisplay  = Util.convertToDateTZ(toTime,this.prefDateFormat);
+          let toDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(toTime);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (

@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vins", vins.ToArray());
-                var queryAlert = @"SELECT vin
+                var queryAlert = @"SELECT distinct vin
                                     FROM tripdetail.tripalertotaconfigparam
                                     where vin = ANY(@vins)";
                 return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
@@ -151,9 +151,9 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
                 parameter.Add("@created_by", otaScheduleCompaign.CreatedBy);
                 parameter.Add("@baseline", Guid.Parse(otaScheduleCompaign.BaselineId));
                 parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
-                parameter.Add("@status", 'S');
-                int tripAlertSentId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-                otaScheduleCompaign.Id = tripAlertSentId;
+                parameter.Add("@status", otaScheduleCompaign.Status);
+                int scheduleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                otaScheduleCompaign.Id = scheduleId;
                 return otaScheduleCompaign;
             }
             catch (Exception ex)

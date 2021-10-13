@@ -26,7 +26,7 @@
               style="cursor: pointer; margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange || 'Change' }}</span>
           </div>
           <div *ngIf="changePictureFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
-            <input *ngIf="!isSelectPictureConfirm" type="file" (change)="fileChangeEvent($event)" />
+            <input *ngIf="!isSelectPictureConfirm" type="file" accept="image/png, image/gif, image/jpeg" (change)="fileChangeEvent($event)" />
             <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;" 
               [imageChangedEvent]="imageChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
               [resizeToWidth]="100" format="png" roundCropper=true (imageCropped)="imageCropped($event)"
@@ -55,13 +55,19 @@
             </div>
             
           </div>
-          <div class="linkBtn" style="margin-top: 10px;">
-            <a style='margin-left: 20px;'
-              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
+            </span>
           </div>
           <div fxLayout="row" *ngIf="imageError!=''">
             <span style="color:red">{{imageError}}</span>
           </div>
+          <div class="linkBtn" style="margin-top: 10px;">
+            <a style='margin-left: 20px;'
+              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          </div>
+          
         </div>
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
@@ -327,7 +333,9 @@
                           formControlName="language"
                            (selectionChange)="onDropdownChange($event, 'language')"> 
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search><mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
+                    <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredLanguages | async" [value]="rer.id">
                   {{ rer.value }}
@@ -344,7 +352,9 @@
                           formControlName="timeZone"
                            (selectionChange)="onDropdownChange($event, 'timeZone')">
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch><mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #timesearch>
+                    <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredTimezones | async" [value]="rer.id">
                   {{ rer.value }}
@@ -423,7 +433,7 @@
                            formControlName="landingPage"
                             (selectionChange)="onDropdownChange($event, 'landingPage')">
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterLandingPageDisplay(landingpagesearch.value)" #landingpagesearch>
+                  <ngx-mat-select-search (keyup)="filterLandingPageDisplay(landingpagesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #landingpagesearch>
                   <mat-icon (click) = "resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
                   </ngx-mat-select-search>
                 </mat-option>

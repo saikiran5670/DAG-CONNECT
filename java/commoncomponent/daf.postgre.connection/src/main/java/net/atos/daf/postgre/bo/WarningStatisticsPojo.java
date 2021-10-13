@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class WarningStastisticsPojo implements Serializable{
+public class WarningStatisticsPojo implements Serializable{
 	
 	private static final long serialVersionUID = 1L;  
 	
@@ -37,6 +37,6 @@ public class WarningStastisticsPojo implements Serializable{
 	private  Long modifiedAt  ;
 	private Integer messageType;
 	
-	private Integer id;
+	private Integer id; 
 
 }

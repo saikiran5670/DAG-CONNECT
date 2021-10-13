@@ -22,7 +22,8 @@
       "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
       "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler",
       "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard",
-      "signalRServiceURL": "#{AUTHENTICATIONSERVICEURL}#/notificationhub"
+      "signalRServiceURL": "#{AUTHENTICATIONSERVICEURL}#/notificationhub",
+      "vehicleUpdateRESTServiceUrl": "#{AUTHENTICATIONSERVICEURL}#/otasoftwareupdate"
 
     },
     "hereMap":{
