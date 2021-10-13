@@ -24,6 +24,7 @@ import { OrganizationService } from '../../../services/organization.service';
 import { SimpleChanges } from '@angular/core';
 import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 import { ConfigService } from '@ngx-config/core';
+import { ReplaySubject } from 'rxjs';
 
 declare var H: any;
 
@@ -176,6 +177,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   
   @ViewChild("map")
   private mapElement: ElementRef;
+  
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
   constructor(private _formBuilder: FormBuilder,
               private poiService: POIService,
@@ -669,16 +672,25 @@ proceedStep(prefData: any, preference: any){
             "vehicleId" : element.vehicleId
           }
           this.vehicleGroupList.push(vehicleGroupObj);
+          console.log("vehicleGroupList 1", this.vehicleGroupList);
         } else {
           this.singleVehicle.push(element);
         }
        });
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
+     console.log("vehicleGroupList 2", this.vehicleGroupList); 
+     this.vehicleGroupList.sort(this.compare);
+     this.resetVehicleGroupFilter();
+
      this.vehicleGroupList.forEach(element => {
        element.vehicleGroupId = parseInt(element.vehicleGroupId);
      });
   }
+ 
+  resetVehicleGroupFilter(){
+		this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
+	  }
 
   getVehiclesForAlertType(alertTypeObj: any){
     this.vehicleByVehGroupList= [];
@@ -2556,5 +2568,22 @@ ngOnChanges(changes: SimpleChanges) {
     const cur1  = JSON.stringify(chng1.currentValue);
 
   }}
+
+  filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGroupList){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+     } else{
+       vehicleSearch = vehicleSearch.toLowerCase();
+     }
+     this.filteredVehicleGroups.next(
+       this.vehicleGroupList.filter(item=> item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+     );
+     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+}
   
 }
