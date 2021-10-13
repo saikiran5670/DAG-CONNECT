@@ -32,7 +32,7 @@
                             <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
                         </mat-menu>
                         </div> -->
-                        <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                             <button mat-flat-button color="primary" (click)="newLandmarkGroup()">
                             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewGroup || 'New Group'}}
                             </button>
