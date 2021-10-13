@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -98,22 +99,25 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                 if(driver1WorkingState==3 && twoMinuteRulePojo.getCode().equals("7")){
                     // make an entry for rest
                     long startTime = twoMinuteRulePojo.getEnd_time();
-                    populateDriverSaveList(monitorSaveList, twoMinuteRulePojo, monitorEnd, startTime,7);
+                    populateDriverSaveList(monitorSaveList, monitorEnd, startTime,7);
+                    monitorEnd.getDocument().setDriver1WorkingState(3);
+                }else{
+                    long startTime = monitorTmpList.size() == 1 ?
+                            Integer.valueOf(twoMinuteRulePojo.getCode()) == driver1WorkingState
+                                    ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime())
+                            : convertDateToMillis(monitorStartIndex.getEvtDateTime());
+                    //add into save list
+                    populateDriverSaveList(monitorSaveList, monitorEnd, startTime,monitorStartIndex.getDocument().getDriver1WorkingState());
                 }
-
-                long startTime = monitorTmpList.size() == 1 ?
-                        Integer.valueOf(twoMinuteRulePojo.getCode()) == driver1WorkingState
-                        ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime())
-                        : convertDateToMillis(monitorStartIndex.getEvtDateTime());
-                //add into save list
-                populateDriverSaveList(monitorSaveList, twoMinuteRulePojo, monitorEnd, startTime,monitorEnd.getDocument().getDriver1WorkingState());
+                //update drive state
+                updateDriverState(twoMinuteRulePojo, monitorTmpList.get(monitorTmpList.size()-1));
             }
         }
-
-        return  monitorSaveList;
+        //filter record with duration less than 0
+        return  monitorSaveList.stream().filter(monitor -> ((net.atos.daf.ct2.common.models.Monitor)monitor).getDuration() > 0).collect(Collectors.toList());
     }
 
-    private void populateDriverSaveList(List<Monitor> monitorSaveList, TwoMinuteRulePojo twoMinuteRulePojo, net.atos.daf.ct2.common.models.Monitor monitorEnd, long startTime,int driverWorkingState) throws Exception {
+    private void populateDriverSaveList(List<Monitor> monitorSaveList, net.atos.daf.ct2.common.models.Monitor monitorEnd, long startTime,int driverWorkingState) throws Exception {
         monitorEnd.setStartTime(startTime);
         monitorEnd.setEndTime(convertDateToMillis(monitorEnd.getEvtDateTime()));
         monitorEnd.setDuration(monitorEnd.getEndTime()- monitorEnd.getStartTime());
@@ -121,8 +125,7 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
         //add into save list
         monitorEnd.getDocument().setDriver1WorkingState(driverWorkingState);
         monitorSaveList.add(monitorEnd);
-        //update drive state
-        updateDriverState(twoMinuteRulePojo, monitorEnd);
+
     }
 
     private void updateDriverState(TwoMinuteRulePojo driverPreviousInfo, Monitor monitor) throws Exception {
