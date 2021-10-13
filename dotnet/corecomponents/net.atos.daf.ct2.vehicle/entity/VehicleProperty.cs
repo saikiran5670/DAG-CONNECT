@@ -53,6 +53,8 @@ namespace net.atos.daf.ct2.vehicle.entity
         // public string Party_Role_Name_2 { get; set; }
         public int VehicleId { get; set; }
         public string Fuel { get; set; }
+        public long ManuDate { get; set; }
+        public long DeliDate { get; set; }
     }
 
     public class VehiclePropertyForOTA
@@ -74,6 +76,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Ratio { get; set; }
         public bool Is_Wheel_Tire_Size_Replaced { get; set; }
         public string Size { get; set; }
+        public string AxelTypeEnum { get; set; }
     }
 
     public class VehicleFuelTankProperties
