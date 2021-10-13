@@ -174,7 +174,12 @@
               <mat-label>{{ translationData.lblLanguage  }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'language')" (selectionChange)="onDropdownChange($event, 'language')" placeholder="{{ translationData.lblLanguage  }}" formControlName="language">
-                  <mat-option *ngFor="let rer of defaultSetting.languageDropdownData" [value]="rer.id">
+                  <mat-option>
+                    <ngx-mat-select-search (keyup)="filterLanguages(languageSearch.value)" #languageSearch>
+                      <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let rer of filteredLanguges | async " [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
                 </mat-select>
@@ -184,7 +189,12 @@
               <mat-label>{{ translationData.lblTimeZone }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'timeZone')" (selectionChange)="onDropdownChange($event, 'timeZone')" placeholder="{{ translationData.lblTimeZone  }}" formControlName="timeZone">
-                  <mat-option *ngFor="let rer of defaultSetting.timezoneDropdownData" [value]="rer.id">
+                  <mat-option>
+                    <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch>
+                      <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let rer of filteredTimezones | async" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
                 </mat-select>
@@ -258,7 +268,12 @@
               <mat-label>{{ translationData.lblLandingPageDisplayDefault  }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-select (openedChange)="onOpenChange($event, 'landingPage')" (selectionChange)="onDropdownChange($event, 'landingPage')" placeholder="{{ translationData.lblLandingPageDisplayDefault  }}" formControlName="landingPage">
-                  <mat-option *ngFor="let rer of defaultSetting.landingPageDisplayDropdownData" [value]="rer.id">
+                  <mat-option>
+                    <ngx-mat-select-search (keyup)="filterLandingPageDisplay(search.value)" #search>
+                      <mat-icon (click)="resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                    </ngx-mat-select-search>
+                  </mat-option>
+               <mat-option *ngFor="let rer of filteredLandingPageDisplay | async" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
                 </mat-select>
