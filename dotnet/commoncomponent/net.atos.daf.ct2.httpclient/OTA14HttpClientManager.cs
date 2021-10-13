@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         private readonly ILog _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly OTA14Configurations _oTA14Configurations;
-        private OTA14Token token;
+        private OTA14Token _token;
 
         public OTA14HttpClientManager(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -32,13 +32,12 @@ namespace net.atos.daf.ct2.httpclientfactory
         public async Task<ScheduleSoftwareUpdateResponse> PostManagerApproval(ScheduleSoftwareUpdateRequest request)
         {
             int i = 0;
-            string result = null;
             long boashtimestamp = 0;
             try
             {
                 _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
-                request.ApprovalMessage = _oTA14Configurations.Message_Approval;
+                request.ApprovalMessage = $"{_oTA14Configurations.Message_Approval} {request?.AccountEmailId}";
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
                 string etag = string.Empty;
@@ -50,9 +49,10 @@ namespace net.atos.daf.ct2.httpclientfactory
                     etag = response.Headers.ETag?.ToString();
                     i++;
                 }
+                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data {etag}");
                 client = await GetHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("If-Match", etag);
+                client.DefaultRequestHeaders.TryAddWithoutValidation("If-Match", etag.Replace("\"", ""));
                 client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
                 var reqObj = new ScheduleSoftwareUpdateReq { ApprovalMessage = request.ApprovalMessage, SchedulingTime = request.SchedulingTime };
                 var httpRequest = new HttpRequestMessage(
@@ -61,19 +61,12 @@ namespace net.atos.daf.ct2.httpclientfactory
 
                 httpRequest.Content = new StringContent(JsonConvert.SerializeObject(reqObj), Encoding.UTF8, "application/json");
 
-                response.StatusCode = HttpStatusCode.BadRequest;
-                i = 0;
-                while (!(response.StatusCode == HttpStatusCode.OK) && i < _oTA14Configurations.RETRY_COUNT)
-                {
-                    boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                    _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 rest API for sending data");
-                    response = await client.SendAsync(httpRequest);
+                boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 Post API for sending data");
+                response = await client.SendAsync(httpRequest);
 
-                    _logger.Info("GetSoftwareScheduleUpdate:OTA 14 respone is " + response.StatusCode);
-                    result = response.Content.ReadAsStringAsync().Result;
-
-                    i++;
-                }
+                _logger.Info("GetSoftwareScheduleUpdate:OTA 14 Post respone is " + response.StatusCode);
+                string result = response.Content.ReadAsStringAsync().Result;
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -89,7 +82,6 @@ namespace net.atos.daf.ct2.httpclientfactory
             catch (Exception ex)
             {
                 _logger.Error($"OTA14HttpClientManager:GetSoftwareScheduleUpdate.Error:-{ex.Message}");
-                //return new ScheduleSoftwareUpdateResponse { };
                 return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 500, BoashTimesStamp = boashtimestamp };
             }
         }
@@ -110,12 +102,13 @@ namespace net.atos.daf.ct2.httpclientfactory
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.Timeout = new TimeSpan(0, 0, 30);
-            if (token == null)
+            if (_token == null)
             {
-                token = await GetElibilityToken(client);
+                _token = await GetElibilityToken(client);
+                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Token API for sending data.");
             }
             //client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
             return client;
         }
 

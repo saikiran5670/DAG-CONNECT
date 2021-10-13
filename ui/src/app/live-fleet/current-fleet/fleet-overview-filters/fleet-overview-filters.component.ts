@@ -221,7 +221,7 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
       "otherFilter": ['all'],
       "driverId": [selectedDriverId],
       "days": selectedDriverDays,
-      "languagecode":"cs-CZ"
+      "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
     }   
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
@@ -520,7 +520,7 @@ removeDuplicates(originalArray, prop) {
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 90,
-        "languagecode":"cs-CZ"
+        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
     }}
     if(this.todayFlagClicked  && this.selectedIndex == 0)
     {
@@ -532,7 +532,7 @@ removeDuplicates(originalArray, prop) {
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 0,
-        "languagecode":"cs-CZ"
+        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
@@ -744,16 +744,27 @@ setIconsOnMap(element) {
 
     if(_alertFound){
       if(alertsData[0].length > 1){ //check for criticality
-        alertsData.forEach(element => {
-          let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
+        alertsData[0].forEach(element => {
+        //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element.alertId);
+        //   if(_currentElem == undefined && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        let _currentElem = element.level === 'C' ? true : false;
           if(_currentElem){
             _alertConfig = this.getAlertConfig(element);  
           }
-          let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element.alertId);
-          if(_currentElem == undefined && warnElem){
+          let warnElem = element.level === 'W' ? true : false;
+          if(!_currentElem && warnElem){
             _alertConfig = this.getAlertConfig(element); 
           }
-         if(_currentElem == undefined && warnElem == undefined ){ //advisory
+         if(!_currentElem && !warnElem){ //advisory
             _alertConfig = this.getAlertConfig(element); 
           }
         });

@@ -84,6 +84,7 @@ namespace net.atos.daf.ct2.dashboard.repository
             {
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
+                parameterOfFilters.Add("@Alertids", alert24HoursFilter.AlertIds);
                 //          string queryAlert24Hours = @"select                                       
                 //            COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
                 //               COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
@@ -109,7 +110,8 @@ namespace net.atos.daf.ct2.dashboard.repository
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
                 from tripdetail.tripalert tra
-                where tra.vin = Any(@vins) 
+                where tra.id = Any(@Alertids) 
+                and tra.vin = Any(@vins) 
                 and tra.category_type <> 'O'
                 and tra.type <> 'W'
                 and to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
@@ -124,17 +126,15 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
-        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId, List<string> vins)
+        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@orgId", organizationId);
-                parameter.Add("@vins", vins);
                 string queryAlert = @"select id, Name, organization_id as org_id 
                                         from master.alert 
-                                        where vin = ANY(@vins)
-                                        and organization_id = @orgId ";
+                                        where organization_id = @orgId ";
                 var result = await _dataAccess.QueryAsync<AlertOrgMap>(queryAlert, parameter);
                 return result.AsList<AlertOrgMap>();
             }

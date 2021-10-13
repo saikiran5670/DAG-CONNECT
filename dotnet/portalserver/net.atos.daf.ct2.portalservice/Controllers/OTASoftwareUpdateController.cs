@@ -208,6 +208,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
                 ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
                 scheduleSoftwareUpdateRequest.CreatedBy = _userDetails.AccountId;
+                scheduleSoftwareUpdateRequest.AccountEmailId = _userDetails?.AccountEmailId ?? string.Empty;
                 _logger.Info("Schedulesoftware method in OtaSoftwareUpdate API called.");
                 var response = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
                 if (response == null)

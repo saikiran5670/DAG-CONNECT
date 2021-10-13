@@ -249,19 +249,19 @@ export class DriverManagementComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){
-          case 'Driver ID Country Code':
+          case this.translationData.lblDriverIDCountryCode: // 'Driver ID Country Code'
             _txt.countryCode = value;
           break;
-          case 'Driver ID Number':
+          case this.translationData.lblDriverIDNumber: // 'Driver ID Number'
             _txt.driverNumber = value;
           break;
-          case 'E-mail':
+          case this.translationData.lblEmail: // 'E-mail'
             _txt.email = value;
           break;
-          case 'First Name':
+          case this.translationData.lblFirstName: // 'First Name'
             _txt.firstName = value;
           break;
-          case 'Last Name':
+          case this.translationData.lblLastName: // 'Last Name'
             _txt.lastName = value;
           break;
         }
