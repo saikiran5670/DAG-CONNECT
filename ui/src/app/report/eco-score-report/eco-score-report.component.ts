@@ -548,12 +548,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.ecoScoreForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 1", this.vehicleDD);
     }else{
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element);  
+          console.log("vehicleDD 2", this.vehicleDD);
         });
       }
       // this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -579,6 +581,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   onVehicleChange(event: any){
     if(event.value==0){
       this.driverDD = this.driverListData;
+      console.log("driverDD 1", this.driverDD);
       // this.driverListData = this.finalDriverList;
     }else{
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
@@ -588,6 +591,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.driverDD = [];
         search.forEach(element => {
           this.driverDD.push(element);  
+          console.log("driverDD 2", this.driverDD);
         });
       }
     }
@@ -822,11 +826,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               this.vehicleGroupListData.sort(this.compared);
-              this.vehicleDD.sort(this.compared);
-              this.driverDD.sort(this.compared);
+              //this.vehicleDD.sort(this.compared);
+             // this.driverDD.sort(this.compared);
               this.resetVehicleGroupFilter();
-              this.resetVehicleFilter();
-              this.resetDriverFilter();
+              //this.resetVehicleFilter();
+              //this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
@@ -849,7 +853,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 3", this.vehicleDD);
+      this.vehicleDD.sort(this.compared);
+      this.resetVehicleFilter();
       this.driverDD = this.driverListData;
+      console.log("driverDD 3", this.driverDD);
+      this.driverDD.sort(this.compared);
+      this.resetDriverFilter();
 
       this.ecoScoreForm.get('vehicleGroup').setValue(0);
     }
@@ -1620,7 +1630,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
@@ -1637,7 +1647,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       DriverSearch = DriverSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.driverDD.filter(item => item.driverName.toLowerCase().indexOf(DriverSearch) > -1)
+      this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
