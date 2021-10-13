@@ -313,6 +313,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         });
       }
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.resetVehicleGroupFilter();
     }
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
