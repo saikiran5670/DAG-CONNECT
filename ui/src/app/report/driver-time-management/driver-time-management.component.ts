@@ -519,6 +519,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 1", this.vehicleDD);
     }else{
 
       //this.vehicleListData = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -526,7 +527,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
-          this.vehicleDD.push(element);  
+          this.vehicleDD.push(element);
+          console.log("vehicleDD 2", this.vehicleDD);  
         });
       }
     
@@ -562,7 +564,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       if(search.length > 0){
         this.driverDD = [];
         search.forEach(element => {
-          this.driverDD.push(element);  
+          this.driverDD.push(element); 
+          console.log("driverDD 1", this.driverDD);
+
         });
       }
     }
@@ -778,6 +782,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.onSearchData = [];
     this.vehicleGroupListData = this.vehicleGroupListData;
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    console.log("vehicleGroupListData 1", this.vehicleGroupListData);
     //this.updateDataSource(this.tripData);
     this.resetdriverTimeFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -914,11 +919,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               this.vehicleGroupListData.sort(this.compare);
-              this.vehicleDD.sort(this.compare);
-              this.driverDD.sort(this.compare);
+             // this.vehicleDD.sort(this.compare);
+             // this.driverDD.sort(this.compare);
               this.resetVehicleGroupFilter();
-              this.resetVehicleFilter();
-              this.resetDriverFilter();
+              //this.resetVehicleFilter();
+              //this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
@@ -933,6 +938,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
+      console.log("vehicleGroupListData 2", this.vehicleGroupListData);
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
@@ -946,7 +952,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           // }
           let vehicleData = this.vehicleListData.slice();
           this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+          console.log("vehicleDD 3", this.vehicleDD);
+          this.vehicleDD.sort(this.compare);
+          this.resetVehicleFilter();
           this.driverDD = this.driverListData;
+          console.log("driverDD 2", this.driverDD);
+          this.driverDD.sort(this.compare);
+          this.resetDriverFilter();
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
           this.driverTimeForm.get('vehicle').setValue(0);
@@ -1479,7 +1491,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
