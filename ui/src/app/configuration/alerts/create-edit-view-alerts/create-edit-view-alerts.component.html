@@ -142,7 +142,12 @@
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
-                      <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
+                    <mat-option>
+                      <ngx-mat-select-search (keyup)="filterVehicles(search.value)" #search>
+                        <mat-icon (click)="resetVehiclesFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                      </ngx-mat-select-search>
+                    </mat-option>  
+                    <mat-option *ngFor="let vehicle of filteredVehicles | async" [value]="vehicle.vehicleId">
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehicle.vehicleName}} </span>
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehicle.vin}} </span>
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehicle.registrationNo ? vehicle.registrationNo : vehicle.vehicleName}} </span>
