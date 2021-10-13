@@ -76,6 +76,7 @@
           </mat-form-field>
         </div>
       </div>
+      <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
       <div class='margin-bottom-xlg' *ngIf='initData.length > 0'>
         <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort>
           <ng-container matColumnDef="campaignId">
@@ -97,7 +98,7 @@
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="type">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicletype || 'Type' }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type'}}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignType}}">
               <span>{{row.campaignType}}</span>
             </mat-cell>
@@ -129,17 +130,19 @@
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAction || 'Action' }} </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="releaseNote(row, selectedVin)">
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)">
                 <mat-icon>message</mat-icon>
               </button>
-              <button class='actionBtn' class="target" mat-flat-button [mdePopoverTriggerFor]="schedulerPopover"
-                mdePopoverTriggerOn="click" #popoverTrigger="mdePopoverTrigger">
-                <!-- <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
-                  [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate"> -->
-                <!-- <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                <mat-datepicker #endPicker></mat-datepicker> -->
+              <button *ngIf="row.scheduleDateTime == '-' " class='actionBtn' class="target" mat-flat-button
+                [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click"
+                #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" matTooltip="Click to Schedule">
                 <mat-icon>date_range</mat-icon>
               </button>
+              <button style="margin-left: 14px;" *ngIf="row.scheduleDateTime !== '-' " class='actionBtn' mat-flat-button
+                matTooltip="Scheduled">
+                <mat-icon>check</mat-icon>
+              </button>
+
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -149,30 +152,35 @@
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
     </mat-card-content>
-    <mde-popover #schedulerPopover="mdePopover" [mdePopoverOverlapTrigger]="false" mdePopoverOffsetX="-300">
+    <mde-popover #schedulerPopover="mdePopover" mdePopoverOffsetX="-300" [mdePopoverCloseOnClick]="false">
       <div class="openSchedulerContainer">
         <form [formGroup]="schedulerForm" style="border: 1px solid deepskyblue;">
-          <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
-            <mat-card-content style="padding: 15px;">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduleDetails || 'Schedule Details' }}</span>
-              <mat-icon style='cursor: pointer; float: right;'>{{ translationData.lblSchedulerClose || 'Close' }}</mat-icon>
-              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                  <mat-label>{{ translationData.lblSchedulerDate || 'Date' }} <span class='mandatoryColor'>*</span></mat-label>
-                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-form-field appearance="outline">
-                      <input matInput (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate'
-                        [max]='endDateValue' [matDatepicker]="startPicker" formControlName="date">
-                      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-card class='mat-elevation-z no-padding'>
+            <mat-card-content style="padding: 20px;">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduleDetails || 'Schedule Details'}}</span>
+              <mat-icon style='cursor: pointer; float: right;' matTooltip="Close" (click)="onCancel()">close</mat-icon>
+              <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="3px"
+                  style='padding: 10px !important; background: #ECF7FE;'>
+                  <div class='areaWidth max-width-45-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
+                    style="margin-right: 10px;">
+                    <mat-label>{{ translationData.lblDate || 'Date'}} <span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput [(ngModel)]="scheduledDate" (dateChange)="changeScheduleDateEvent($event)"
+                      [min]="today" [matDatepicker]="startPicker" formControlName="date">
+                      <mat-datepicker-toggle matSuffix [for]="startPicker" style="margin-top: 5px;">
+                      </mat-datepicker-toggle>
                       <mat-datepicker #startPicker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                  <mat-label>{{ translationData.lblSchedulerTime || 'Time' }} <span class='mandatoryColor'>*</span></mat-label>
-                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth max-width-45-per" fxLayout="column" fxLayoutAlign="left"
+                    style="margin-left: 25px!important;">
+                    <mat-label>{{ translationData.lblTime || 'Time'}} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker">
                       <span class='timeAdjustSpan'></span>
-                      <input [max]='selectedEndTime' class='inputBox' [format]="prefTimeFormat"
-                        [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly>
+                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefTimeFormat"
+                        [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly
+                        style="margin-top: 5px!important;">
                       <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                       <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
                       </ngx-material-timepicker>
@@ -181,19 +189,14 @@
                 </div>
               </div>
               <div style="margin-top: 10px;">
-                <button mat-flat-button color="primary" [disabled]="initData.length == 0" style='margin-right: 10px;'>
-                  {{ translationData.lblSchedulerCancel || 'Cancel' }}  
-                </button>
-                <button mat-flat-button color="primary" [disabled]="initData.length == 0"
-                  style='margin-right: 10px;'>  {{ translationData.lblScheduler || 'Schedule' }} 
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onCancel()>{{ translationData.lblCancel || 'Cancel'}} </button>
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onSubmitScheduler()>{{ translationData.lblSchedule || 'Schedule'}} 
                 </button>
               </div>
-
             </mat-card-content>
           </mat-card>
         </form>
       </div>
     </mde-popover>
   </mat-card>
-
 </form>
