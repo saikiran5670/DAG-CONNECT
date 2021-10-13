@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota14
         public string SchedulingTime { get; set; }
         public string ApprovalMessage { get; set; }
         public string BaseLineId { get; set; }
+        public string AccountEmailId { get; set; }
     }
 
     public class ScheduleSoftwareUpdateReq

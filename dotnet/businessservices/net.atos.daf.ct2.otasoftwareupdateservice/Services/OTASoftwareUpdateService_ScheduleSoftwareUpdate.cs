@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
 
                 var scheduleSoftwareStatusResponse = await _httpClientServiceClient
                        .GetScheduleSoftwareUpdateAsync(
-                           _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId)
+                           _mapper.ScheduleSoftwareUpdateRequest(request.ScheduleDateTime, request.BaseLineId, request.AccountEmailId)
                            );
                 otaScheduleCompaign.Status = (int)scheduleSoftwareStatusResponse.HttpStatusCode == 200 ? "S" : "F";
                 otaScheduleCompaign.TimeStampBoasch = scheduleSoftwareStatusResponse.BoashTimesStamp;

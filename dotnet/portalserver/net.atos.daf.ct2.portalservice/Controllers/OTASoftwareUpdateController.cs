@@ -207,7 +207,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (scheduleSoftwareUpdateFilter == null && !(string.IsNullOrEmpty(scheduleSoftwareUpdateFilter.ScheduleDateTime))) { return BadRequest(OTASoftwareUpdateConstants.GET_OTASOFTWAREUPDATE_VALIDATION_STARTDATE_MSG); }
                 string filters = JsonConvert.SerializeObject(scheduleSoftwareUpdateFilter);
                 ScheduleSoftwareUpdateRequest scheduleSoftwareUpdateRequest = JsonConvert.DeserializeObject<ScheduleSoftwareUpdateRequest>(filters);
-                scheduleSoftwareUpdateRequest.CreatedBy = _userDetails.AccountId;
+                scheduleSoftwareUpdateRequest.CreatedBy = 144;// _userDetails.AccountId;
+                scheduleSoftwareUpdateRequest.AccountEmailId = "namita.patil@atos.net";//_userDetails.AccountEmailId;
                 _logger.Info("Schedulesoftware method in OtaSoftwareUpdate API called.");
                 var response = await _otaSoftwareUpdateServiceClient.GetScheduleSoftwareUpdateAsync(scheduleSoftwareUpdateRequest);
                 if (response == null)

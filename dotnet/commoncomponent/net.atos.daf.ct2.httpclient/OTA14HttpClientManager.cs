@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.httpclientfactory
         private readonly ILog _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly OTA14Configurations _oTA14Configurations;
-        private OTA14Token token;
+        private OTA14Token _token;
 
         public OTA14HttpClientManager(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -110,12 +110,12 @@ namespace net.atos.daf.ct2.httpclientfactory
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.Timeout = new TimeSpan(0, 0, 30);
-            if (token == null)
+            if (_token == null)
             {
-                token = await GetElibilityToken(client);
+                _token = await GetElibilityToken(client);
             }
             //client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
             return client;
         }
 
