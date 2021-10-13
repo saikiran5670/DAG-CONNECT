@@ -45,6 +45,7 @@ public class DriverMangementTest {
     @Test
     @Ignore
     public void testDriveTime() throws Exception {
+
         logger.info("Testing started.......");
         DataStreamSource<Monitor> monitorDataStreamSource = env.fromCollection(getMonitorTestData());
         driverProcessing.driverManagementProcessing(monitorDataStreamSource, 3000)
