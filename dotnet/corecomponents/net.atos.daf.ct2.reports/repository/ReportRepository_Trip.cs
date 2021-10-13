@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,etl_gps_distance AS Distance
 	                        ,idle_duration AS IdleDuration
 	                        ,ROUND(average_speed,5) AS AverageSpeed
-	                        ,average_weight AS AverageWeight
+	                        ,ROUND(average_gross_weight_comb,4) AS AverageWeight
 	                        ,last_odometer AS Odometer
                             , coalesce(startgeoaddr.address,'') AS StartPosition
                             , coalesce(endgeoaddr.address,'') AS EndPosition
