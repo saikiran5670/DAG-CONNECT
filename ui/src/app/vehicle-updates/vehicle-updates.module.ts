@@ -11,9 +11,10 @@ import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.se
 import { OtaSoftwareUpdateService } from '../services/ota-softwareupdate.service';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MdePopoverModule } from '@material-extended/mde';
+import { ScheduleConfirmComponent } from './vehicle-update-details/schedule-confirm/schedule-confirm.component'
 
 @NgModule({
-  declarations: [VehicleUpdatesComponent,VehicleUpdateDetailsComponent,ReleaseNoteComponent],
+  declarations: [VehicleUpdatesComponent,VehicleUpdateDetailsComponent,ReleaseNoteComponent,ScheduleConfirmComponent],
   imports: [
     CommonModule,
     SharedModule,

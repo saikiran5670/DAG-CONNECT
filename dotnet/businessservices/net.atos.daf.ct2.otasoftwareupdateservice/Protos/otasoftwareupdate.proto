@@ -115,7 +115,8 @@ message ScheduleSoftwareUpdateRequest{
         int64 CreatedBy = 6;
         int64 TimeStampBoasch = 7;
         string Status = 8;
-        
+        string AccountEmailId = 9;
+         string ApprovalMessage = 10;
 }
 message ScheduleSoftwareUpdateResponse
     {

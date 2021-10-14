@@ -10,9 +10,10 @@ namespace net.atos.daf.ct2.httpclientservice.Entity.ota14
         internal net.atos.daf.ct2.httpclientfactory.entity.ota14.ScheduleSoftwareUpdateRequest ScheduleSoftwareRequest(ScheduleSoftwareUpdateRequest request)
         {
             var returnObj = new net.atos.daf.ct2.httpclientfactory.entity.ota14.ScheduleSoftwareUpdateRequest();
-            returnObj.ScheduleDateTime = request.ScheduleDateTime;
+            returnObj.SchedulingTime = request.ScheduleDateTime;
             returnObj.ApprovalMessage = request.ApprovalMessage;
             returnObj.BaseLineId = request.BaseLineId;
+            returnObj.AccountEmailId = request.AccountEmailId;
             return returnObj;
         }
         internal ScheduleSoftwareUpdateResponse MapGetSoftwareScheduleUpdate(net.atos.daf.ct2.httpclientfactory.entity.ota14.ScheduleSoftwareUpdateResponse apiResponse)

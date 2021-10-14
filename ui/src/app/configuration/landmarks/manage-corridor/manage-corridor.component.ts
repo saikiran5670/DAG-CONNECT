@@ -17,7 +17,7 @@ declare var H: any;
 })
 
 export class ManageCorridorComponent implements OnInit {
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  adminAccessType: any = {};
   @Input() translationData: any = {};
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   displayedColumns = ['All', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width', 'action'];
@@ -64,6 +64,7 @@ export class ManageCorridorComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.loadCorridorData();
   }
 

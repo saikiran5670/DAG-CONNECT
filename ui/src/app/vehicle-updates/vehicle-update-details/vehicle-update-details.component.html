@@ -5,7 +5,7 @@
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
       <span>&nbsp;</span>
-     <span class='backBtnCss'>Back</span>
+     <span class='backBtnCss'>  {{ translationData.lblVehicleUpdateBack || 'Back' }}     </span>
     </span>
   </div>
 </div>
@@ -14,129 +14,133 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Vehical Update Details</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+            {{ translationData.lblVehicleUpdateDetails || 'Vehical Update Details' }}              
+          </span>
         </div>
       </div>
       <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Vehicle Name: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>ABC31</span>
+              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }} </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleName}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Registration Number: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1234</span>
+              <span>{{ translationData.lblregistrationNo || 'Registration Number:' }} </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.registrationNo}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Vehicle Group: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Group 1</span>
+              <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleGroupNames}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Type: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Type 1</span>
+              <span>{{ translationData.lblvehicletype || 'Type:' }}</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.type}}</span>
             </span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Model Year: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>2011</span>
+              <span>{{ translationData.lblmodelYear || 'Model Year:' }} </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.modelYear}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>Software Status: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Update failed</span>
+              <span>{{ translationData.lblsoftwareStatus || 'Software Status:' }} </span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.softwareStatus}}</span>
             </span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Applicable Update(s)</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblApplicableUpdate || 'Applicable Update(s)' }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
         <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <mat-form-field appearance="outline">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
             <span matPrefix>
               <mat-icon>search</mat-icon>
             </span>
           </mat-form-field>
         </div>
       </div>
+      <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
       <div class='margin-bottom-xlg' *ngIf='initData.length > 0'>
         <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort>
           <ng-container matColumnDef="campaignId">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Campaign ID</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCampaignID || 'Campaign ID' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignID}}">
               {{row.campaignID}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="subject">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Subject</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubject || 'Subject' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignSubject}}">
               {{row.campaignSubject}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="affectedSystem(s)">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Affected System(s)</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAffectedSystem || 'Affected System(s)' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" matTooltip="{{ row.systems}}">
               {{ row.systems}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="type">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type'}}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignType}}">
               <span>{{row.campaignType}}</span>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="category">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.campaignCategory}}">
               {{row.campaignCategory}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="status">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.status}}">
               {{row.status}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="endDate">
-            <mat-header-cell *matHeaderCellDef class="action"> End Date </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblEndDate || 'End Date' }}  </mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.endDate}}">
               {{row.endDate}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="scheduledDateTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Scheduled Date/time</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblScheduledDateTime || 'Scheduled Date/time' }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.scheduleDateTime}}">
               {{row.scheduleDateTime}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="action">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Action</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAction || 'Action' }} </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="releaseNote(row, selectedVin)">
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)">
                 <mat-icon>message</mat-icon>
               </button>
-              <button class='actionBtn' class="target" mat-flat-button [mdePopoverTriggerFor]="schedulerPopover"
-                mdePopoverTriggerOn="click" #popoverTrigger="mdePopoverTrigger">
-                <!-- <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
-                  [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate"> -->
-                <!-- <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                <mat-datepicker #endPicker></mat-datepicker> -->
+              <button *ngIf="row.scheduleDateTime == '-' " [disabled] = "campaignOverFlag == true || selectedVehicleUpdateDetails.isAdminRight == false"class='actionBtn' class="target" mat-flat-button
+                [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click"
+                #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" matTooltip="Click to Schedule">
                 <mat-icon>date_range</mat-icon>
+              </button>
+              <button style="margin-left: 14px;" *ngIf="row.scheduleDateTime !== '-' " class='actionBtn' mat-flat-button
+                matTooltip="Scheduled">
+                <mat-icon>check</mat-icon>
               </button>
             </mat-cell>
           </ng-container>
@@ -147,30 +151,35 @@
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
     </mat-card-content>
-    <mde-popover #schedulerPopover="mdePopover" [mdePopoverOverlapTrigger]="false" mdePopoverOffsetX="-300">
+    <mde-popover #schedulerPopover="mdePopover" mdePopoverOffsetX="-300" [mdePopoverCloseOnClick]="false">
       <div class="openSchedulerContainer">
         <form [formGroup]="schedulerForm" style="border: 1px solid deepskyblue;">
-          <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
-            <mat-card-content style="padding: 15px;">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Schedule Details</span>
-              <mat-icon style='cursor: pointer; float: right;'>close</mat-icon>
-              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                  <mat-label>Date <span class='mandatoryColor'>*</span></mat-label>
-                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-form-field appearance="outline">
-                      <input matInput (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate'
-                        [max]='endDateValue' [matDatepicker]="startPicker" formControlName="date">
-                      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-card class='mat-elevation-z no-padding'>
+            <mat-card-content style="padding: 20px;">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduleDetails || 'Schedule Details'}}</span>
+              <mat-icon style='cursor: pointer; float: right;' matTooltip="Close" (click)="onCancel()">close</mat-icon>
+              <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="3px"
+                  style='padding: 10px !important; background: #ECF7FE;'>
+                  <div class='areaWidth max-width-45-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
+                    style="margin-right: 10px;">
+                    <mat-label>{{ translationData.lblDate || 'Date'}} <span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput [(ngModel)]="scheduledDate" (dateChange)="changeScheduleDateEvent($event)"
+                      [min]="today" [matDatepicker]="startPicker" formControlName="date">
+                      <mat-datepicker-toggle matSuffix [for]="startPicker" style="margin-top: 5px;">
+                      </mat-datepicker-toggle>
                       <mat-datepicker #startPicker></mat-datepicker>
                     </mat-form-field>
                   </div>
-                  <mat-label>Time<span class='mandatoryColor'>*</span></mat-label>
-                  <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth max-width-45-per" fxLayout="column" fxLayoutAlign="left"
+                    style="margin-left: 25px!important;">
+                    <mat-label>{{ translationData.lblTime || 'Time'}} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker">
                       <span class='timeAdjustSpan'></span>
-                      <input [max]='selectedEndTime' class='inputBox' [format]="prefTimeFormat"
-                        [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly>
+                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefTimeFormat"
+                        [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly
+                        style="margin-top: 5px!important;">
                       <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                       <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
                       </ngx-material-timepicker>
@@ -179,19 +188,14 @@
                 </div>
               </div>
               <div style="margin-top: 10px;">
-                <button mat-flat-button color="primary" [disabled]="initData.length == 0" style='margin-right: 10px;'>
-                  Cancel
-                </button>
-                <button mat-flat-button color="primary" [disabled]="initData.length == 0"
-                  style='margin-right: 10px;'>Schedule
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onCancel()>{{ translationData.lblCancel || 'Cancel'}} </button>
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onSubmitScheduler()>{{ translationData.lblSchedule || 'Schedule'}} 
                 </button>
               </div>
-
             </mat-card-content>
           </mat-card>
         </form>
       </div>
     </mde-popover>
   </mat-card>
-
 </form>

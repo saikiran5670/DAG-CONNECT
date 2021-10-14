@@ -40,7 +40,7 @@
                     {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                          <mat-select [disabled]="vehicleGroup.length == 0" (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" placeholder="Select"  formControlName="vehicleGroup">
+                          <mat-select [disabled]="vehicleGroup.length == 0" (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" placeholder="{{ translationData.lblSelectVehicle || 'Select' }}"  formControlName="vehicleGroup">
                           <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                              <mat-option *ngFor="let veh of vehicleGroup" [value]="veh">
                           {{ veh.vehicleGroup }}
@@ -53,7 +53,7 @@
                     {{ translationData.lblVehicleName || 'Vehicle Name' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select [disabled]="vehicleName.length == 0" (selectionChange)="onVehicleChange('vehicleName',$event)" placeholder="Select" formControlName="vehicle"  [(ngModel)]="ngVehicleName">
+                  <mat-select [disabled]="vehicleName.length == 0" (selectionChange)="onVehicleChange('vehicleName',$event)" placeholder="{{ translationData.lblSelectVehicle || 'Select' }}" formControlName="vehicle"  [(ngModel)]="ngVehicleName">
                         <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
                         <mat-option *ngFor="let veh of vehicleName" [value]="veh.vehicleName">
                           {{ veh.vehicleName }}
@@ -63,7 +63,7 @@
             </div>
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
-                    {{ translationData.lblVehicleGroup || 'Vehicle Software Status' }}
+                    {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="Select or search details"
@@ -98,7 +98,7 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="vehicleGroupNames">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleGroupNames || 'Vehicle Group'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleGroup || 'Vehicle Group'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupNames }}" class="text-truncate">
                  {{row.vehicleGroupNames}}
                 </mat-cell>
@@ -119,16 +119,16 @@
               <ng-container matColumnDef="softwareStatus">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="min-width: 15%;">{{ translationData.lblsoftwareStatus || 'Software Status' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row" style="min-width: 15%;">
-                    <span *ngIf="row.softwareStatus == 'Update Failed'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update failed')">
                         <span [style]="{ 'color':'#f00e0e' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Update Available'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update available')">
                         <span [style]="{ 'color':'#0249cb' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Update Running'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('update running')">
                         <span [style]="{ 'color':'#FFBF00' } ">{{row.softwareStatus}}</span> 
                     </span> 
-                    <span *ngIf="row.softwareStatus == 'Up-To Date'">
+                    <span *ngIf="row.softwareStatus.toLowerCase().includes('up-to-date')">
                         <span [style]="{ 'color':'#0ab90a' } ">{{row.softwareStatus}}</span> 
                     </span>  
               </mat-cell>            

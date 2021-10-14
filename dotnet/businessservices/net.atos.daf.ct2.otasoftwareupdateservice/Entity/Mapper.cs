@@ -23,11 +23,12 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice.Entity
             return returnObj;
         }
 
-        public httpclientservice.ScheduleSoftwareUpdateRequest ScheduleSoftwareUpdateRequest(string scheduleDateTime, string baseLineId)
+        public httpclientservice.ScheduleSoftwareUpdateRequest ScheduleSoftwareUpdateRequest(string scheduleDateTime, string baseLineId, string accountEmailId)
         {
             var returnObj = new httpclientservice.ScheduleSoftwareUpdateRequest();
             returnObj.ScheduleDateTime = scheduleDateTime;
             returnObj.BaseLineId = baseLineId;
+            returnObj.AccountEmailId = accountEmailId;
             return returnObj;
         }
         public OtaScheduleCompaign ToScheduleSoftwareCompaign(ScheduleSoftwareUpdateRequest request)

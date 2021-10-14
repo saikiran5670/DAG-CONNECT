@@ -159,7 +159,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     AlertType = logbookDetailsRequest.AlertType.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertType.ToList(),
                     Start_Time = logbookDetailsRequest.StartTime,
                     End_time = logbookDetailsRequest.EndTime,
-                    VIN = vins.ToList()
+                    VIN = vins.ToList(),
+                    Org_Id = logbookDetailsRequest.OrganizationId
                 };
 
                 var result = await _reportManager.GetLogbookDetails(logbookFilter);

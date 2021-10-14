@@ -36,7 +36,7 @@
                 <mat-select (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup">
                   <mat-option>
-                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                         <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
@@ -141,7 +141,7 @@
                   formControlName="vehicle">
   
                   <mat-option>
-                      <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" #VehicleSearch>
+                      <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #VehicleSearch>
                         <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
@@ -1112,12 +1112,11 @@
             <ng-container matColumnDef="idlingConsumptionWithPTO">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue ||
                   'Idling Consumption With PTO' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
-            (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-            'pound') }})</span> 
+                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km || 'Ltr/100km') :
+                    (translationData.lblmpg || 'mpg')  }})</span> 
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">
-                  <span>{{row.idlingConsumptionValue}}</span>
+                  <span>{{row.convertedIdlingConsumptionWithPto}}</span>
                 </mat-cell>
               </ng-container>
   

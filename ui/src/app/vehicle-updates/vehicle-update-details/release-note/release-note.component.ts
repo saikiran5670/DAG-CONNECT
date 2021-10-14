@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener, Inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { TranslationService } from 'src/app/services/translation.service';
 
 
 @Component({
@@ -16,6 +17,8 @@ export class ReleaseNoteComponent implements OnInit {
   organizationName: any;
   releaseNote: any;
   message: any;
+  translationData: any = {};
+  localStLanguage: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
@@ -23,7 +26,7 @@ export class ReleaseNoteComponent implements OnInit {
     vin: any,
     message: any,
     releaseNotes: any,
-  }, private mdDialogRef: MatDialogRef<ReleaseNoteComponent>) {
+  }, private mdDialogRef: MatDialogRef<ReleaseNoteComponent>,private translationService: TranslationService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.getReleaseNotes(data);
   }
@@ -31,6 +34,22 @@ export class ReleaseNoteComponent implements OnInit {
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    let translationObj = {
+      id: 0,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 17 //-- for alerts
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);
+    })
+  }
+
+  processTranslation(transData: any) {
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
   getReleaseNotes(data) {

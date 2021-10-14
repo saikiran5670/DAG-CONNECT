@@ -78,6 +78,15 @@ export class DriverTimeDetailComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   @Input() displayedColumns:any;// = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   @Output() backToMainPage = new EventEmitter<any>();
+  dayWiseSummary:  {
+    date: string;
+    driveTime: number;
+    workTime: number;
+    availableTime: number;
+    serviceTime: number;
+    restTime: number;
+  }
+  dayWiseSummaryList: any =[];
   
   // barChartOptions: ChartOptions = {
   //   responsive: true
@@ -202,7 +211,7 @@ export class DriverTimeDetailComponent implements OnInit {
         //   }
           format: 'HH',
           // showDuplicates: false,
-          // offsetX: 0
+          offsetX: 0
         },
         offsetX: 0,
         // min: 0,
@@ -425,33 +434,54 @@ export class DriverTimeDetailComponent implements OnInit {
     // });
     
     let driveData=[], workData=[], restData=[], availableData=[];
+    let date='';
+    let currentArray;
     _data.forEach(element => {
-      let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
+      // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
       let isValid=true;
       if(_startTime == _endTime || (_startTime) > (_endTime)){
         isValid=false;
       }
-      if(isValid){
+      // console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
+      if(isValid && element.duration > 0){
+        date=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
         let restObj={
-          x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+          x :  date,
           y : [_startTime,_endTime]
         }
+        const found = this.dayWiseSummaryList.some(el => el.date === date);
+        if (!found) this.dayWiseSummaryList.push({ date: date, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
+        currentArray=this.dayWiseSummaryList.filter(el => el.date === date)[0];
+        // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
         if(element.code === 0){
           restObj['fillColor']='#8ac543';
           restData.push(restObj);
+          currentArray['restTime'] = currentArray.restTime + element.duration;
         } else if(element.code === 1){
           restObj['fillColor']='#dddee2';
           availableData.push(restObj);
+          currentArray['availableTime']= currentArray.availableTime + element.duration;
         } else if(element.code === 2){
           restObj['fillColor']='#e85c2a';
           workData.push(restObj);
+          currentArray['workTime']= currentArray.workTime + element.duration;
         } else if(element.code === 3){
           restObj['fillColor']='#29539b';
           driveData.push(restObj);
+          currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
+        // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
     }
+    });
+    this.dayWiseSummaryList.forEach(element => {
+      element['serviceTime'] = Util.getHhMmTimeFromMS(element.availableTime + element.workTime + element.driveTime - element.restTime);
+      element['restTime'] = Util.getHhMmTimeFromMS(element.restTime);
+      element['availableTime'] = Util.getHhMmTimeFromMS(element.availableTime);
+      element['workTime'] = Util.getHhMmTimeFromMS(element.workTime);
+      element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
+      console.log(element);
     });
    // if(driveData.length>0)
     _series.push({

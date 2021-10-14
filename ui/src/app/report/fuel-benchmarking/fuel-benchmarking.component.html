@@ -43,7 +43,7 @@
                     <mat-select [disabled]="vehicleGrpDD.length == 0 || makeDisableVehicleGroup" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
     
                         <mat-option>
-                            <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" #vehicleSearch>
+                            <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                               <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                             </ngx-mat-select-search>
                           </mat-option>

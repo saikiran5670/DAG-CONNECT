@@ -35,9 +35,9 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , SUM(idle_duration)            as idle_duration
                                             		  , SUM(etl_gps_distance)     as veh_message_distance
                                             		  , SUM(average_speed)            as average_speed
-                                            		  , SUM(average_weight)           as average_weight
+                                            		  , SUM(average_gross_weight_comb)           as average_weight
                                             		  , Max(last_odometer)           as last_odometer
-                                                      , SUM(case when average_weight>0 then 1 else 0 end)  as numoftripswithavgweight
+                                                      , SUM(case when average_gross_weight_comb >0 then 1 else 0 end)  as numoftripswithavgweight
                                             		FROM
                                             			tripdetail.trip_statistics
                                             		where
@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
                         SUM(average_speed) as totalaverageSpeed,
-                        sum(average_weight) as totalaverageweightperprip,
+                        sum(average_gross_weight_comb) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
                         where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
                         SUM(average_speed) as totalaverageSpeed,
-                        sum(average_weight) as totalaverageweightperprip,
+                        sum(average_gross_weight_comb) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
                         where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime)

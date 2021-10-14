@@ -18,9 +18,8 @@ import { Util } from 'src/app/shared/util';
 
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
-  translationData: any = {};
   selectedStartTime: any = '00:00';
-  localStLanguage: any;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
   accountPrefObj: any;
   prefData : any;
   preference : any;
@@ -40,20 +39,6 @@ export class SignalRService {
   accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   constructor(private httpClient: HttpClient, private config: ConfigService, private translationService: TranslationService, private organizationService: OrganizationService, @Inject(MAT_DATE_FORMATS) private dateFormats) {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
-  
-    let translationObj = {
-      id: 0,
-      code: _langCode,
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);      
-    });  
-
     this.signalRServiceURL = config.getSettings("foundationServices").signalRServiceURL;  
     
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
@@ -81,11 +66,6 @@ export class SignalRService {
       
     });
 
-  }
-
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
   }
 
   setInitialPref(prefData,preference){
@@ -267,7 +247,7 @@ get24Time(_time: any){
        this.notificationCount++;
        console.log("PushNotificationForAlertResponse = ",notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
-       notificationMessage["alertTypeValue"] = this.translationData[notificationMessage["alertTypeKey"]] 
+      //  notificationMessage["alertTypeValue"] = this.translationData[notificationMessage["alertTypeKey"]] 
         if(this.notificationData.length < 5){
           this.notificationData.push(notificationMessage);
         }

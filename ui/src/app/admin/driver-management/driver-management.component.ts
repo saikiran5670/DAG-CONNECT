@@ -71,7 +71,7 @@ export class DriverManagementComponent implements OnInit {
   driverDialogRef: MatDialogRef<CommonTableComponent>;
   excelEmptyMsg: boolean = false;
   newDriverCount: any = 0;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  adminAccessType: any = {};
   userType: any = localStorage.getItem("userType");
   organizationData: any;
 
@@ -82,6 +82,7 @@ export class DriverManagementComponent implements OnInit {
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.importDriverFormGroup = this._formBuilder.group({
       uploadFile: [
         undefined,
@@ -248,19 +249,19 @@ export class DriverManagementComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){
-          case 'Driver ID Country Code':
+          case this.translationData.lblDriverIDCountryCode: // 'Driver ID Country Code'
             _txt.countryCode = value;
           break;
-          case 'Driver ID Number':
+          case this.translationData.lblDriverIDNumber: // 'Driver ID Number'
             _txt.driverNumber = value;
           break;
-          case 'E-mail':
+          case this.translationData.lblEmail: // 'E-mail'
             _txt.email = value;
           break;
-          case 'First Name':
+          case this.translationData.lblFirstName: // 'First Name'
             _txt.firstName = value;
           break;
-          case 'Last Name':
+          case this.translationData.lblLastName: // 'Last Name'
             _txt.lastName = value;
           break;
         }

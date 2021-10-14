@@ -324,6 +324,7 @@ export class AppComponent {
       //this.getAccountInfo();
       // this.getNavigationMenu();
       if (this.isLogedIn) {
+        this.getOfflineNotifications();
         this.connectWithSignalR();
       }
     });
@@ -397,7 +398,6 @@ export class AppComponent {
           }
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
-          this.getOfflineNotifications();
           // this.connectWithSignalR();
         }
         this.setPageTitle();
@@ -1343,9 +1343,9 @@ export class AppComponent {
     this.alertService.getOfflineNotifications().subscribe(data => {
       if(data){
         this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-        data["notificationResponse"].forEach(element => {
-          element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
-        });
+        // data["notificationResponse"].forEach(element => {
+        //   element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
+        // });
         this.signalRService.notificationData= data["notificationResponse"];
         this.signalRService.getDateAndTime();
       }

@@ -34,6 +34,9 @@
               <mat-error *ngIf="duplicateVehicleGroupMsg">
                 {{ translationData.lblDuplicateVehicleGroupName || 'Duplicate Vehicle Group Name' }}
               </mat-error>
+              <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupName').hasError('specialCharsNotAllowed')">
+                {{ translationData.lblSpecialcharactersnotallowed }}
+            </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
               <span style='font-weight: 500!important;'>{{ selectedRowData.groupName ? selectedRowData.groupName : '--' }}</span>
