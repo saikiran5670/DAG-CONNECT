@@ -65,12 +65,16 @@ export class AccountInfoSettingsComponent implements OnInit {
   imageError= '';
   profilePicture: any= '';
   croppedImageTemp= '';
-  readonly maxSize= 5242880; //5 MB
+  readonly maxSize= 1024*200; //200 KB
   imageEmptyMsg: boolean= false;
   clearInput: any;
   imageMaxMsg: boolean = false;
   file: any;
   uploadLogo: any = "";
+  brandLogoFileValidated= false;
+  brandLogoChangedEvent= '';
+  droppedBrandLogo: any= '';
+  hideImgCropper= true;
   salutationList: any = [
     {
       name: 'Mr'
@@ -396,6 +400,9 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
+    if(!this.brandLogoFileValidated){
+      this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
+    }
     this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
     let objData: any = {
       id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
@@ -548,6 +555,15 @@ export class AccountInfoSettingsComponent implements OnInit {
       // show message
   }
 
+  brandLogoLoaded() {
+    this.brandLogoFileValidated = true;
+    // show cropper
+  }
+
+  brandLogoCropperReady() {
+      // cropper ready
+  }
+
   filesDroppedMethod(event : any): boolean {
     this.imageError= CustomValidators.validateImageFile(event);
     if(this.imageError != '')
@@ -642,7 +658,9 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.messageService.sendTimerValue(num);
   }
 
-  addfile(event: any, clearInput: any){ 
+  addfile(event: any, clearInput: any){
+    this.brandLogoChangedEvent = event; 
+    this.brandLogoFileValidated= false;
     this.isDefaultBrandLogo= false;
     this.clearInput = clearInput;
     this.imageEmptyMsg = false;  
@@ -663,6 +681,7 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   _handleReaderLoaded(readerEvt: any) {
     var binaryString = readerEvt.target.result;
+    this.droppedImage= readerEvt.target.result;
     this.uploadLogo = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + btoa(binaryString));
    }
 
