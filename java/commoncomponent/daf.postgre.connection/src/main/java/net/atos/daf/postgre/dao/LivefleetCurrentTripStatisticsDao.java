@@ -32,6 +32,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
 			+ "modified_at = ? WHERE trip_id = ? ";
 
+	
 	public void insert(TripStatisticsPojo row) throws TechnicalException, SQLException {
 		PreparedStatement trip_stats_insert_stmt = null;
 		try {
@@ -464,5 +465,6 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
+
 
 }
