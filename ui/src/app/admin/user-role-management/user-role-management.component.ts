@@ -178,7 +178,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   newUserRole() {
-    this.titleText = this.translationData.lblCreateNewUserRole || "Create New Account Role";
+    this.titleText = this.translationData.lblCreateNewUserRole ;
     this.rowsData = [];
     this.rowsData = this.initData; 
     this.editFlag = true;
@@ -190,7 +190,7 @@ export class UserRoleManagementComponent implements OnInit {
     if(action == 'duplicate'){
       this.duplicateFlag = true;
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Account Role" : this.translationData.lblEditUserRoleDetails || "Edit Account Role Details";
+    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole : this.translationData.lblEditUserRoleDetails;
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
@@ -198,7 +198,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   viewUserRole(row: any){
-    this.titleText = this.translationData.lblViewUserRole || "View Account Role";
+    this.titleText = this.translationData.lblViewUserRole;
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -207,10 +207,10 @@ export class UserRoleManagementComponent implements OnInit {
 
   deleteUserRole(row: any) {
     const options = {
-      title: this.translationData.lblDeleteRole || 'Delete Role',
-      message: this.translationData.lblAreyousureyouwanttodeleterole || "Are you sure you want to delete '$' role?",
-      cancelText: this.translationData.lblCancel || 'Cancel',
-      confirmText: this.translationData.lblDelete || 'Delete'
+      title: this.translationData.lblDeleteRole ,
+      message: this.translationData.lblAreyousureyouwanttodeleterole ,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     let name = row.roleName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -231,10 +231,10 @@ export class UserRoleManagementComponent implements OnInit {
             errorList = errorList.slice(0,-2);
           }
           const options = {
-            title: this.translationData.lblAlert || "Alert",
-            message: this.translationData.lblRoleCantBeDeletedmsg || `This role is in use by the following ${err.error.role.length} users, hence cannot be deleted.`,
+            title: this.translationData.lblAlert,
+            message: this.translationData.lblRoleCantBeDeletedmsg ,
             list: errorList,
-            confirmText: this.translationData.lblOk || "OK"
+            confirmText: this.translationData.lblOk 
           };
       
           const dialogConfig = new MatDialogConfig();

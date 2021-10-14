@@ -1,37 +1,54 @@
 package net.atos.daf.ct2.processing;
 
+import java.util.Properties;
+
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
+import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
+import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
 import net.atos.daf.ct2.utils.JsonMapper;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
-import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
-import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Properties;
 
-public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>> {
+public class BroadcastMessageProcessor<U,R> extends KeyedBroadcastProcessFunction<String, KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(BroadcastMessageProcessor.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger(BroadcastMessageProcessor.class);
 
     private Properties properties;
     private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor;
-
+    
     public BroadcastMessageProcessor(Properties properties){
         this.properties = properties;
         broadcastStateDescriptor = new BroadcastState<U,R>()
                 .stateInitialization(this.properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
     }
-
-
-    @Override
-    public void processElement(KafkaRecord<U> value, ReadOnlyContext ctx, Collector<KafkaRecord<U>> out) throws Exception {
-        logger.info("Single record from topic :: {}",value);
+    
+	@Override
+	public void processBroadcastElement(KafkaRecord<R> value,
+			KeyedBroadcastProcessFunction<String, KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>>.Context ctx,
+			Collector<KafkaRecord<U>> arg2) throws Exception {
+		    logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , value);
+	        ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
+	}
+	
+	@Override
+	public void processElement(KafkaRecord<U> value,
+			KeyedBroadcastProcessFunction<String, KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>>.ReadOnlyContext ctx,
+			Collector<KafkaRecord<U>> out) throws Exception {
+		logger.info("Single record from topic :: {}",value);
 
         String valueRecord = "UNKNOWN";
         try {
@@ -80,11 +97,7 @@ public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<Kaf
             logger.info("VID and VIN mapping not found for message. VID and VIN:{} value: {}",valueRecord, ignoredKafkaRecord);
             out.collect(ignoredKafkaRecord);
         }
-    }
+		
+	}
 
-    @Override
-    public void processBroadcastElement(KafkaRecord<R> value, Context ctx, Collector<KafkaRecord<U>> out) throws Exception {
-        logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , value);
-        ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
-    }
 }

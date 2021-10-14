@@ -250,19 +250,19 @@ export class LiveFleetMapComponent implements OnInit {
   makeHerePOIList(){
     this.herePOIList = [{
       key: 'Hotel',
-      translatedName: this.translationData.lblHotel || 'Hotel'
+      translatedName: this.translationData.lblHotel
     },
     {
       key: 'Parking',
-      translatedName: this.translationData.lblParking || 'Parking'
+      translatedName: this.translationData.lblParking
     },
     {
       key: 'Petrol Station',
-      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+      translatedName: this.translationData.lblPetrolStation
     },
     {
       key: 'Railway Station',
-      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+      translatedName: this.translationData.lblRailwayStation
     }];
   }
 

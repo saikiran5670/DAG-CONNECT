@@ -7,7 +7,7 @@
                 <span class='custom-font'>{{ data.tableHeader }}</span>
             </div>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
-                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
+                <mat-icon matTooltip="{{ data.translationData.lblClose }}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="start space-around">
@@ -23,14 +23,14 @@
                   </div> -->
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectLanguagesToInclude || 'Select Languages to Include' }}</span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectLanguagesToInclude }}</span>
                     </div>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                         <span style='display: flex; '>
                             <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
                             <!-- <a [download]="templateFileName" [href]="templateFileUrl" -->
                             <a (click)="onClickDownloadTemplate()"    
-                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline; cursor: pointer;'>{{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
+                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline; cursor: pointer;'>{{ translationData.lblDownloadTranslatedData }}
                             </a>
                         </span>
                     </div>

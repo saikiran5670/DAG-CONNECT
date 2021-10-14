@@ -62,7 +62,7 @@
                         (translationData.lblRelationshipName ) }}<span
                             class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterRelationshipName || 'Enter Relationship Name' }}"
+                        <input placeholder="{{ translationData.lblEnterRelationshipName }}"
                             (keyup)="isRelationshipExist=false; doneFlag=false" matInput
                             formControlName="relationshipName" required maxlength="50">
                         <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
