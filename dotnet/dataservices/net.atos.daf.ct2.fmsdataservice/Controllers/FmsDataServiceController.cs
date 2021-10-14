@@ -81,7 +81,8 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 if (visibleVehicles != null & visibleVehicles.Count > 0)
                 {
                     string since = vehiclePositionRequest.Since;
-                    var isValid = ValidateParameter(ref since, out bool isNumeric);
+                    string vin = vehiclePositionRequest.VIN;
+                    var isValid = ValidateParameter(ref since, vin, out string feild);
                     net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                     if (isValid)
                     {
@@ -135,14 +136,14 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 else
                                 {
-                                    return StatusCode(400, "Vin not in Visiblity");
+                                    return StatusCode(404, "Vin Not Found");
                                 }
                             }
                         }
                     }
                     else
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(since));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, feild);
                     }
                 }
                 return StatusCode(400, $"No vehicle found for Account Id {AccountId} and Organization Id {OrgId}");
@@ -178,7 +179,8 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 if (visibleVehicles != null & visibleVehicles.Count > 0)
                 {
                     string since = vehicleStatusRequest.Since;
-                    var isValid = ValidateParameter(ref since, out bool isNumeric);
+                    string vin = vehicleStatusRequest.VIN;
+                    var isValid = ValidateParameter(ref since, vin, out string feild);
                     net.atos.daf.ct2.fms.entity.VehicleStatusResponse vehicleStatusResponse = null;
                     if (isValid)
                     {
@@ -232,14 +234,14 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                                 }
                                 else
                                 {
-                                    return StatusCode(400, "Vin not in Visiblity");
+                                    return StatusCode(404, "Vin Not Found");
                                 }
                             }
                         }
                     }
                     else
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(since));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, feild);
                     }
                 }
                 else
@@ -296,9 +298,10 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        private bool ValidateParameter(ref string since, out bool isNumeric)
+        private bool ValidateParameter(ref string since, string vin, out string field)
         {
-            isNumeric = long.TryParse(since, out _);
+            field = string.Empty;
+            bool isNumeric = long.TryParse(since, out _);
             if (isNumeric)
             {
                 string sTimezone = "UTC";
@@ -312,12 +315,26 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 }
                 catch (Exception)
                 {
+                    field = nameof(since);
                     return false;
                 }
             }
             else if (!(string.IsNullOrEmpty(since) || since.ToLower().Equals("yesterday") || since.ToLower().Equals("today")))
             {
+                field = nameof(since);
                 return false;
+            }
+
+            //validate vin
+            if (!string.IsNullOrEmpty(vin))
+            {
+
+                Task<int> vinNo = Task.Run<int>(async () => await _vehicleManager.IsVINExists(vin));
+                if (vinNo.Result == 0)
+                {
+                    field = nameof(vin);
+                    return false;
+                }
             }
             return true;
         }
