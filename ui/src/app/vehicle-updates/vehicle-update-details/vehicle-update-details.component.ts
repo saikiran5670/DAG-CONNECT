@@ -18,6 +18,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { OrganizationService } from '../../services/organization.service';
 
 
+
 @Component({
   selector: 'app-vehicle-update-details',
   templateUrl: './vehicle-update-details.component.html',
@@ -87,6 +88,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -185,6 +187,50 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       }
     }
   }
+  formStartDate(date: any, prefTimeFormat: any, prefDateFormat:any) {
+    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
+    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
+    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
+    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
+    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
+    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if (prefTimeFormat == 12) {
+      if (date.getHours() == 12) {
+        _time = ((date.getHours() == 12 || date.getMinutes() > 0 || date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+      else {
+        _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+    }
+    else {
+      _time = `${h}:${m}:${s}`;
+    }
+    switch (prefDateFormat) {
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default: {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -202,7 +248,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       this.selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
         var todaysDate = moment();
         if (element.endDate) {
-          element.endDate = moment(parseInt(element.endDate)).format('MM/DD/YYYY');
+          element.endDate = moment(parseInt(element.endDate)).format(this.dateFormats.display.dateInput);
          if(moment(element.endDate).isBefore(todaysDate['_d'])){
             this.campaignOverFlag = true;
          }
@@ -211,7 +257,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
           element.endDate = '-';
         }
         if (element.scheduleDateTime) {
-          element.scheduleDateTime = moment(parseInt(element.scheduleDateTime)).format('MM/DD/YYYY HH:mm:ss');
+          element.scheduleDateTime = new Date( element.scheduleDateTime);
+          element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefTimeFormat, this.prefDateFormat);
         } else {
           element.scheduleDateTime = '-';
         }
@@ -264,7 +311,6 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   showReleaseNoteDailog(releaseNoteData: any, vin) {
-    console.log(releaseNoteData,'releaseNoteData');
     const dialogReleaseNote = new MatDialogConfig();
     dialogReleaseNote.disableClose = true;
     dialogReleaseNote.autoFocus = true;
@@ -343,7 +389,7 @@ onCancel(){
 }
 showConfirmDailog(schedulerData: any) {
   let scheduledDateTime = this.scheduledDate +  this.scheduledTime;
-  const formattedDate = moment(this.scheduledDate).format("MM/DD/YYYY").toString();
+  const formattedDate = moment(this.scheduledDate).format(this.dateFormats.display.dateInput).toString();
   const isoDate = moment(formattedDate +' '+ this.scheduledTime).toISOString();
   this.schedulerData.scheduleDateTime = isoDate;
   const dialogScheduler = new MatDialogConfig();
@@ -362,6 +408,7 @@ showConfirmDailog(schedulerData: any) {
       this.showLoadingIndicator = true;
       if(res){ 
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
+          this.hideloader();
           let emitObj;
           if(sheduleData){
           emitObj = {
@@ -378,7 +425,8 @@ showConfirmDailog(schedulerData: any) {
          }
         }, (error) => {
           this.hideloader();
-          console.log("error:: ", error)
+          alert('API Failed');
+          console.log("error:: ", error);
         });
       }
     });

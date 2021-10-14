@@ -4,7 +4,7 @@
             <div fxLayout="row" fxLayoutAlign="start space-around"
                 style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>Confirm Details</span>
+                    <span class='custom-font'>{{ translationData.lblConfirmDetails || 'Confirm Details'}}</span>
                 </div>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
                     <mat-icon (click)='onCancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
@@ -18,8 +18,8 @@
               </div>
               <mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
                 <div fxLayout="row" fxLayoutAlign="center center" class="areaWidth full-width">
-                    <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onCancel()">cancel</button>
-                    <button   class='confirmBtnColor no-margin' mat-raised-button color="primary" (click)="onSchedule()">confirm</button>
+                    <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onCancel()">{{ translationData.lblCancel || 'Cancel'}}</button>
+                    <button   class='confirmBtnColor no-margin' mat-raised-button color="primary" (click)="onSchedule()">{{ translationData.lblConfirm || 'Confirm'}}</button>
                 </div>
             </mat-card-actions>
         </mat-card-content>
