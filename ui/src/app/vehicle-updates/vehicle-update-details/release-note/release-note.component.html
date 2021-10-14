@@ -4,7 +4,7 @@
             <div fxLayout="row" fxLayoutAlign="start space-around"
                 style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>Release Note</span>
+                    <span class='custom-font'>{{ translationData.lblReleaseNote || 'Release Note'}}</span>
                 </div>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
                     <mat-icon (click)='onCancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
@@ -12,11 +12,11 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #f1f1f1;'>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
-                    <span>Campaign Id: <span
+                    <span>{{ translationData.lblCampaignId || 'Campaign Id:'}} <span
                             style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{data?.releaseNoteData['campaignID']}}</span> </span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
-                    <span>End Date:<span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; '>{{data?.releaseNoteData['endDate']}}</span>
+                    <span>{{ translationData.lblEndDate || 'End Date:'}}<span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; '>{{data?.releaseNoteData['endDate']}}</span>
                     </span>
                 </div>
             </div>
