@@ -45,13 +45,18 @@ export class SignalrAlertNotificationComponent implements OnInit {
   }
 
   gotoLogBook(item: any){
+    if(item.alertTypeKey =='enumtype_otasoftwarestatus' || item.alertTypeKey =='enumcategory_ota'){
+      this.router.navigate(['vehicleupdates']);
+    }
+    else{
     const navigationExtras: NavigationExtras = {
       state: {
         fromAlertsNotifications: true,
         data: [item]
       }
-    };
+    };    
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
   }
   
   gotoLogBookForMoreAlerts(){

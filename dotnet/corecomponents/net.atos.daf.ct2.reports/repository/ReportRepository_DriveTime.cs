@@ -109,11 +109,12 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
+        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin, int organizationId)
         {
             var parameterOfReport = new DynamicParameters();
             parameterOfReport.Add("@FromDate", startDateTime);
             parameterOfReport.Add("@ToDate", endDateTime);
+            parameterOfReport.Add("@organizationId", organizationId);
             parameterOfReport.Add("@Vins", vin.ToArray());
             string queryDriversPull = @"SELECT da.vin VIN,
                                                da.driver_id DriverId,
@@ -121,7 +122,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                d.last_name LastName,
                                                array_agg(distinct da.activity_date) ActivityDateTime
                                             FROM livefleet.livefleet_trip_driver_activity da
-                                            Left join master.driver d on d.driver_id=da.driver_id
+                                            join master.driver d on d.driver_id=da.driver_id and d.organization_id = @organizationId
                                             where da.is_driver1 = true and (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
                                             GROUP BY da.driver_id, da.vin,d.first_name,d.last_name
                                             --,da.activity_date

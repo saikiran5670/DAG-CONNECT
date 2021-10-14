@@ -56,13 +56,17 @@ export class OrganisationDetailsComponent implements OnInit {
   driverOptIn: string;
   vehicleOptIn: string;
   showLoadingIndicator: boolean = false;
-  readonly maxSize = 5242880; //5 MB
+  readonly maxSize = 1024*200; //200 kb
   imageEmptyMsg: boolean = false;
   clearInput: any;
   imageMaxMsg: boolean = false;
   file: any;
   uploadLogo: any = "";
   isDefaultBrandLogo: any = false;
+  brandLogoFileValidated= false;
+  brandLogoChangedEvent= '';
+  droppedBrandLogo: any= '';
+  hideImgCropper= true;
 
   public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -325,7 +329,10 @@ export class OrganisationDetailsComponent implements OnInit {
     }
   }
 
-  createUpdatePreferences(){  
+  createUpdatePreferences(){ 
+    if(!this.brandLogoFileValidated){
+      this.uploadLogo = this.organisationData["icon"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.organisationData["icon"]);
+    }
     let preferenceUpdateObj: any = {
       id: this.preferenceId,
       refId: this.organizationIdNo,
@@ -385,6 +392,8 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   addfile(event: any, clearInput: any){ 
+    this.brandLogoChangedEvent = event; 
+    this.brandLogoFileValidated= false;
     this.isDefaultBrandLogo = false;
     this.clearInput = clearInput;
     this.imageEmptyMsg = false;  
@@ -455,8 +464,18 @@ export class OrganisationDetailsComponent implements OnInit {
        this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
      );
      console.log("this.filteredTimezones", this.filteredTimezones);
-}
+  }
 
+  brandLogoLoaded() {
+    this.brandLogoFileValidated = true;
+    // show cropper
+  }
 
+  brandLogoCropperReady() {
+      // cropper ready
+  }
+  loadImageFailed() {
+    // show message
+  }
 
 }

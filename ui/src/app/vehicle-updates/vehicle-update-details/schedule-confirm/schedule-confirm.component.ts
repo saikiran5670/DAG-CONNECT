@@ -4,31 +4,31 @@ import { TranslationService } from 'src/app/services/translation.service';
 
 
 @Component({
-  selector: 'app-release-note',
-  templateUrl: './release-note.component.html',
-  styleUrls: ['./release-note.component.less'],
+  selector: 'app-schedule-confirm',
+  templateUrl: './schedule-confirm.component.html',
+  styleUrls: ['./schedule-confirm.component.less'],
   encapsulation: ViewEncapsulation.None
 })
 
-export class ReleaseNoteComponent implements OnInit {
+export class ScheduleConfirmComponent implements OnInit {
   closePopup: boolean = true;
   accountOrganizationId: any = 0;
   accountId: any = 0;
   organizationName: any;
   releaseNote: any;
   message: any;
-  translationData: any = {};
   localStLanguage: any;
+  translationData: any = {};
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
-    releaseNoteData: any,
-    vin: any,
-    message: any,
-    releaseNotes: any,
-  }, private mdDialogRef: MatDialogRef<ReleaseNoteComponent>,private translationService: TranslationService) {
+    campaignName: any,
+    vehicalName: any,
+    baseLineId: any,
+    scheduleDateTime: any,
+  }, private mdDialogRef: MatDialogRef<ScheduleConfirmComponent>,private translationService: TranslationService) {
     this.organizationName = localStorage.getItem('organizationName');
-    this.getReleaseNotes(data);
+    this.getSchedulerConfirmationData(data);
   }
 
   ngOnInit(): void {
@@ -52,13 +52,7 @@ export class ReleaseNoteComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
-  getReleaseNotes(data) {
-    if (data?.releaseNotes) {
-      this.releaseNote = data.releaseNotes;
-    }
-    if (data?.message) {
-      this.message = data.message;
-    }
+  getSchedulerConfirmationData(data) {
   }
 
   public onClose(value: any) {
@@ -67,6 +61,11 @@ export class ReleaseNoteComponent implements OnInit {
   }
  
   onCancel(){
-    this.onClose(false);
+    this.onClose(true);
   }
+
+  public onSchedule() {
+    this.onClose(true);
+  }
+  
 }

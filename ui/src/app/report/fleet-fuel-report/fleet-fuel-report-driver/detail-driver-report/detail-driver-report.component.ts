@@ -1222,11 +1222,18 @@ createEndMarker(){
 
   public ngAfterViewInit() { }
   loadfleetFuelDetails(driverDetails: any){
+    let driverID = 0;
+    if(driverDetails.driverID.includes('~*')){
+      driverID = driverDetails.driverID.split('~')[0];
+    }
+    else{
+      driverID =driverDetails.driverID;
+    }
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime": this.dateDetails.endTime,
       "vin": driverDetails.vin,
-      "driverId": driverDetails.driverID
+      "driverId": driverID
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
     //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
@@ -1677,7 +1684,7 @@ createEndMarker(){
        vin : this.driverDetails.vin,
        plateNo :this.driverDetails.vehicleRegistrationNo,
        driverName : this.driverDetails.driverName,
-       driverID : this.driverDetails.driverID
+       driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID 
 
      }     
   }
