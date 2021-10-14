@@ -278,6 +278,7 @@ public class ContiMessageProcessing implements Serializable {
 					}catch(Exception e){
 						if(Objects.nonNull(jsonNodeRec)){
 							value.setKey(DAFCT2Constant.UNKNOWN);
+							logger.info("Issue Mandatory VID attribute is Null ::{}",value);
 							logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
 							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
 							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
@@ -292,14 +293,16 @@ public class ContiMessageProcessing implements Serializable {
 				}
 			});
 
-        SingleOutputStreamOperator<KafkaRecord<String>> contiCorruptRecords = contiKeyedStream.filter(rec ->  "CORRUPT".equals(rec.getKey()));
-        SingleOutputStreamOperator<KafkaRecord<String>> contiValidInputStream = contiKeyedStream.filter(rec -> !"CORRUPT".equals(rec.getKey()));
+        SingleOutputStreamOperator<KafkaRecord<String>> contiCorruptRecords = contiKeyedStream.filter(rec ->  "CORRUPT".equals(rec.getKey())).name("Filter corrupt Records");
+        SingleOutputStreamOperator<KafkaRecord<String>> contiValidInputStream = contiKeyedStream.filter(rec -> !"CORRUPT".equals(rec.getKey())).name("Filter Valid Records");
         
-        new MessageProcessing<String, VehicleStatusSchema, String>()
-        .contiMessageForHistorical(
+        if("true".equals(properties.getProperty(DAFCT2Constant.STORE_HISTORICAL_DATA))){
+        	new MessageProcessing<String, VehicleStatusSchema, String>()
+        	.contiMessageForHistorical(
         		contiValidInputStream,
                 properties,
                 broadcastStream);
+        }
         
         new EgressCorruptMessages().egressCorruptMessages(contiCorruptRecords, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
