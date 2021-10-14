@@ -334,6 +334,7 @@ export class OrganisationRelationshipComponent implements OnInit {
         this.organizationService
         .deleteOrgRelationship(selectedOptions) 
         .subscribe((d) => {
+          this.selectedOrgRelations.clear();
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
         });
@@ -418,6 +419,7 @@ export class OrganisationRelationshipComponent implements OnInit {
        {
         this.organizationService.deleteOrgRelationship(relId) //need to change
         .subscribe((d) => {
+          this.selectedOrgRelations.clear();
           this.successMsgBlink(this.getDeletMsg(relList));
           this.loadInitData();
         });
