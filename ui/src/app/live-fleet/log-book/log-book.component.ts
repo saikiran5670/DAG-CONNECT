@@ -1454,22 +1454,23 @@ let prepare = []
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      }else{
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
+    // let _x = timeObj.split(":")[0];
+    // let _y = timeObj.split(":")[1];
+    // if(this.prefTimeFormat == 12){
+    //   if(_y.split(' ')[1] == 'AM' && _x == 12) {
+    //     date.setHours(0);
+    //   }else{
+    //     date.setHours(_x);
+    //   }
+    //   date.setMinutes(_y.split(' ')[0]);
+    // }else{
+    //   date.setHours(_x);
+    //   date.setMinutes(_y);
+    // }
 
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+    // date.setSeconds(type == 'start' ? '00' : '59');
+    // return date;
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   setGlobalSearchData(globalSearchFilterData:any) {

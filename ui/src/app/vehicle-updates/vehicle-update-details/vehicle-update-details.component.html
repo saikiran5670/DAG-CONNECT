@@ -130,12 +130,12 @@
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAction || 'Action' }} </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)">
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="View Release Note">
                 <mat-icon>message</mat-icon>
               </button>
-              <button *ngIf="row.scheduleDateTime == '-' " [disabled] = "campaignOverFlag == true || selectedVehicleUpdateDetails.isAdminRight == false"class='actionBtn' class="target" mat-flat-button
+              <button *ngIf="row.scheduleDateTime == '-' " [disabled] = "campaignOverFlag == true || selectedVehicleUpdateDetails.isAdminRight == false" class='actionBtn' class="target" mat-flat-button
                 [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click"
-                #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" matTooltip="Click to Schedule">
+                #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" matTooltip="{{campaignOverFlag ? 'Not allowed, campaign date has passed' : 'Click to Schedule'}}">
                 <mat-icon>date_range</mat-icon>
               </button>
               <button style="margin-left: 14px;" *ngIf="row.scheduleDateTime !== '-' " class='actionBtn' mat-flat-button

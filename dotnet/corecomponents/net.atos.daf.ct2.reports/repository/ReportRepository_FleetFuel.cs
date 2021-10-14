@@ -261,7 +261,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   			VIN
                                                           , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
                                                           , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
-                                                  		  , driver1_id                                                             as DriverId
+                                                  		  , driver1_id                                                             as tripDriverId
                                                   		  , count(trip_id)                                                         as numberoftrips
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
@@ -316,7 +316,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , '' as tripid				    
                                                   		  , fd.vin             									   				    as VIN
                                                   		  , vh.registration_no 									   				    as VehicleRegistrationNo
-                                                  		  , fd.DriverId				    
+                                                  		  , fd.tripDriverId				    
                                                   		  , round ( fd.etl_gps_distance,2)                         				    as Distance
                                                   		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
                                                   		  , round (fd.average_speed,7)                             					as AverageSpeed
@@ -368,13 +368,15 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	)
                                                   SELECT
                                                   	COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
+                                                    ,cmb.tripDriverId || case when COALESCE(dr.driver_id,'~*') != '~*'
+                                                        then '' Else '~*' END   as driverid
                                                     , cmb.*
                                                   FROM
                                                   	cte_combine cmb
                                                   	left join
                                                   		master.driver dr
                                                   		on
-                                                  dr.driver_id = cmb.driverId";
+                                                  dr.driver_id = cmb.tripDriverId";
 
                 List<FleetFuelDetailsByDriver> lstFleetDetails = (List<FleetFuelDetailsByDriver>)await _dataMartdataAccess.QueryAsync<FleetFuelDetailsByDriver>(queryFleetUtilization, parameterOfFilters);
                 List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
@@ -498,7 +500,7 @@ namespace net.atos.daf.ct2.reports.repository
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin
-                        join master.driver dr on
+                        Left join master.driver dr on
 						dr.driver_id = CT.driver1_id
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
@@ -694,7 +696,7 @@ namespace net.atos.daf.ct2.reports.repository
 					VIN
                   , id as Id
                   ,trip_id                                                                 as tripid
-				  , driver1_id                                                             as DriverId
+				  , driver1_id                                                             as tripDriverId
 				  , 1                                                         as numberoftrips
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
@@ -740,7 +742,7 @@ namespace net.atos.daf.ct2.reports.repository
                    ,tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
-				  , fd.DriverId
+				  , fd.tripDriverId
 				  , round ( fd.etl_gps_distance,2)                       as Distance
 				  , round ((fd.veh_message_distance),2) as AverageDistancePerDay
 				  , round (fd.average_speed,7)                           as AverageSpeed
@@ -790,14 +792,16 @@ namespace net.atos.daf.ct2.reports.repository
 
 			)
 		SELECT
-			COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
-		  , cmb.*
-		FROM
-			cte_combine cmb
-			left join
-				master.driver dr
-				on
-		dr.driver_id = cmb.driverId";
+            COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
+			,cmb.tripDriverId || case when COALESCE(dr.driver_id,'~*') != '~*'
+                                                        then '' Else '~*' END   as driverid
+                                                    , cmb.*
+                                                  FROM
+                                                  	cte_combine cmb
+                                                  	left join
+                                                  		master.driver dr
+                                                  		on
+                                                  dr.driver_id = cmb.tripDriverId";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
                 if (lstFleetDetails?.Count > 0)

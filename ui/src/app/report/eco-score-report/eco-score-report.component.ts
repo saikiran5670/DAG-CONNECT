@@ -845,19 +845,21 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.vehicleGroupListData = finalVehicleList;
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
+        this.resetVehicleGroupFilter();
       }
-      if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
+      if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0){
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll  });
+        this.resetVehicleFilter();
+      }
       if(this.driverListData.length>0){
         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
+        this.resetDriverFilter();
       }
       let vehicleData = this.vehicleListData.slice();
-      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 3", this.vehicleDD);
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);      
       this.vehicleDD.sort(this.compared);
       this.resetVehicleFilter();
       this.driverDD = this.driverListData;
-      console.log("driverDD 3", this.driverDD);
       this.driverDD.sort(this.compared);
       this.resetDriverFilter();
 

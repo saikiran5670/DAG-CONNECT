@@ -33,6 +33,9 @@ public class DAFCT2Constant {
     public static final String MASTER_DATA_TOPIC_NAME = "master.data.topic.name";
     public static final String CONTI_CORRUPT_MESSAGE_TOPIC_NAME = "conti.corrupt.message.topic.name";
     public static final Integer MEASUREMENT_DATA = 1;
+    public static final String STORE_HISTORICAL_DATA = "conti.store.historical.data";
+    public static final String HBASE_PARALLELISM = "conti.hbase.parallelism";
+    
     
 
     public static final String INDEX_TRANSID = "index.transid";

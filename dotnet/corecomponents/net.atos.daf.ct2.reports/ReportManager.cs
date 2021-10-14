@@ -99,9 +99,9 @@ namespace net.atos.daf.ct2.reports
         /// <returns></returns>
         public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter) => await _reportRepository.GetDriversActivity(driverActivityFilter);
 
-        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
+        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin, int organizationId)
         {
-            return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin);
+            return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin, organizationId);
         }
         public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin)
         {
@@ -513,14 +513,14 @@ namespace net.atos.daf.ct2.reports
             {
                 // Mapping expected value (as Modrate, Good, Very Good) from range
                 double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
-                if (item.IdlingConsumption > idlConsumptionHighValue)
+                if (((float)item.IdlingConsumption / 1000) > idlConsumptionHighValue)
                 {
                     string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
                 else
                 {
-                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= item.IdlingConsumption && idl.MinValue >= item.IdlingConsumption).Select(item => item.Value).FirstOrDefault();
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= ((float)item.IdlingConsumption / 1000) && idl.MinValue >= ((float)item.IdlingConsumption / 1000)).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
 

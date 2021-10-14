@@ -17,10 +17,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static net.atos.daf.ct2.common.util.Utils.convertMillisecondToDateTime;
 
@@ -31,6 +30,7 @@ public class DriverMangementTest {
     private DriverProcessing driverProcessing;
     private static final Logger logger = LogManager.getLogger(DriverMangementTest.class);
     private static ObjectMapper mapper;
+    private DriverCalculation driverCalculation;
 
 
 
@@ -38,6 +38,7 @@ public class DriverMangementTest {
     public void init(){
         env = StreamExecutionEnvironment.getExecutionEnvironment();
         driverProcessing = new DriverProcessing();
+        driverCalculation = new DriverCalculation();
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
@@ -54,6 +55,31 @@ public class DriverMangementTest {
 
     }
 
+
+    @Test
+    @Ignore
+    public void testDriveTimeMap() throws Exception {
+        logger.info("Testing started.......");
+        final List<Monitor> monitorTestData = getMonitorTestData();
+        final int chunkSize = 3;
+        final AtomicInteger counter = new AtomicInteger();
+        final Collection<List<Monitor>> chucks = monitorTestData.stream()
+                .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / chunkSize))
+                .values();
+        logger.info("chunk of list size:: {}",chucks.size());
+        /*chucks.stream()
+                .forEach(lst -> {
+            try {
+                driverCalculation.getStartEndTime(lst);
+            } catch (Exception e) {
+                logger.error("Error in test :: {}",e);
+            }
+        });*/
+        List<Monitor> predefineData = getPredefineData(3, 2, 2,3);
+        driverCalculation.getStartEndTime(predefineData);
+
+    }
+
     @After
     public void execute() throws Exception {
 
@@ -61,19 +87,37 @@ public class DriverMangementTest {
 
 
     public static Monitor getDriverData(long timeMillis){
+        return getDriverData(timeMillis,3);
+    }
+
+    public static Monitor getDriverData(long timeMillis,Integer driverWorkingState){
         Monitor mdx = new Monitor();
-//        mdx.setVid("XLRAE75PC0E348696");
-//        mdx.setVin("XLRAE75PC0E348696");
         mdx.setReceivedTimestamp(timeMillis);
         MonitorDocument monitorDoc = new MonitorDocument();
-        monitorDoc.setTripID("tripTest1"/*+(int)(Math.random()*3)*/);
+        monitorDoc.setTripID("tripTest1");
         monitorDoc.setDriverID("Raju");
-        monitorDoc.setDriver1WorkingState(3);
+        monitorDoc.setDriver1WorkingState(driverWorkingState);
         monitorDoc.setDriver2ID("Bholu");
         monitorDoc.setDriver2WorkingState(2);
         mdx.setDocument(monitorDoc);
         mdx.setEvtDateTime(convertMillisecondToDateTime(timeMillis));
         return mdx;
+    }
+
+    public static List<Monitor> getPredefineData(Integer... states){
+       return Arrays.stream(states).map(state -> {
+            Monitor driverData=new Monitor();
+            try {
+                if(state==7)
+                Thread.sleep(3000);
+                else Thread.sleep(1000);
+                long currentTimeMillis = System.currentTimeMillis();
+                driverData = getDriverData(currentTimeMillis,state);
+            } catch (InterruptedException e) {
+                logger.error("error while creating data {}",e);
+            }
+            return driverData;
+        }).collect(Collectors.toList());
     }
 
     public static List<Monitor> getMonitorTestData() throws InterruptedException {

@@ -864,7 +864,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     //this.resetdriverTimeFormControlValue();
     //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
     let driverList = [];
-    this.onLoadData.driverList.forEach(element => {
+    this.onLoadData?.driverList?.forEach(element => {
       if(element.activityDateTime && element.activityDateTime.length > 0){
         let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
         if(search.length > 0){
@@ -941,11 +941,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       console.log("vehicleGroupListData 2", this.vehicleGroupListData);
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+        this.resetVehicleGroupFilter();
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.resetVehicleFilter();
 
       }
           if(this.driverListData.length>1){
           this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+          this.resetDriverFilter();
           }
           // if(this.vehicleListData.length>0){
           //   this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
