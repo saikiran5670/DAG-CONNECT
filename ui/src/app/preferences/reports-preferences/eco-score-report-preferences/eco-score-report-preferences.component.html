@@ -6,8 +6,7 @@
             [checked]='selectionForGeneralColumns.hasValue() && isAllSelectedForGeneralColumns()'
             [indeterminate]='selectionForGeneralColumns.hasValue() && !isAllSelectedForGeneralColumns()'
             [aria-label]='checkboxLabelForGeneralColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblGeneral || 'General'
-                }}</span>
+                translationData.lblGeneral }}</span>
         </mat-checkbox>
     </div>
 </div>
@@ -73,8 +72,7 @@
             [checked]='selectionForGeneralGraphColumns.hasValue() && isAllSelectedForGeneralGraphColumns()'
             [indeterminate]='selectionForGeneralGraphColumns.hasValue() && !isAllSelectedForGeneralGraphColumns()'
             [aria-label]='checkboxLabelForGeneralGraphColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblGeneralGraph || 'General Graph'
-                }}</span>
+                translationData.lblGeneralGraph }}</span>
         </mat-checkbox>
     </div>
 </div>
@@ -109,8 +107,7 @@
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForDriverPerformanceColumns($event) : null'
             [checked]='mainParent.isChecked'
             [aria-label]='checkboxLabelForDriverPerformanceColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblDriverPerformance || 'Driver Performance'
-                }}</span>
+                translationData.lblDriverPerformance }}</span>
         </mat-checkbox>
     </div>
 </div>
@@ -285,8 +282,7 @@
             [checked]='selectionForDriverPerformanceGraphColumns.hasValue() && isAllSelectedForDriverPerformanceGraphColumns()'
             [indeterminate]='selectionForDriverPerformanceGraphColumns.hasValue() && !isAllSelectedForDriverPerformanceGraphColumns()'
             [aria-label]='checkboxLabelForDriverPerformanceGraphColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblDriverPerformanceGraph || 'Driver Performance Graph'
-                }}</span>
+                translationData.lblDriverPerformanceGraph }}</span>
         </mat-checkbox>
     </div>
 </div>
@@ -318,11 +314,10 @@
 <div *ngIf='(generalColumnData.length > 0 || generalGraphColumnData.length > 0 || driverPerformanceColumnData.length > 0 || driverPerformanceGraphColumnData.length > 0) && editFlag'
     fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-        translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel}}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-        translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset }}</button>
     <button
         [disabled]='selectionForGeneralColumns.selected.length == 0 || selectionForGeneralGraphColumns.selected.length == 0 || (driverPerformanceColumnData.length > 0 && !driverPerformanceColumnData[0].isChecked && !driverPerformanceColumnData[1].isChecked && !driverPerformanceColumnData[2].isChecked && !driverPerformanceColumnData[3].isChecked) || selectionForDriverPerformanceGraphColumns.selected.length == 0'
-        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
-        'Confirm') }}</button>
+        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>

@@ -37,7 +37,7 @@
                             [indeterminate]='selectionForFleetKPIColumns.hasValue() && !isAllSelected("FleetKPI")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblFleetKPI || 'Fleet KPI' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
+                                translationData.lblFleetKPI }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
 
@@ -71,17 +71,14 @@
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>Ton</span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelconsumption'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblltr100km || 'Ltr/100km') :
-                                        (translationData.lblmpg || 'MPG')}}
+                                        {{prefUnit == 'Metric' ? (translationData.lblltr100km ) :
+                                        (translationData.lblmpg)}}
                                     </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_totaldistance'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') : (translationData.lblmile
-                                        ||
-                                        'Miles')}} </span>
+                                        {{prefUnit == 'Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelusedidling' || 
                         field.key =='rp_db_dashboard_fleetkpi_fuelconsumed'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lbl || 'L') : (translationData.lbl ||
-                                        'G')}}
+                                        {{prefUnit == 'Metric' ? (translationData.lbl ) : (translationData.lbl)}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         No negative values allowed
@@ -151,7 +148,7 @@
                             [indeterminate]='selectionForTodayLiveVehicleColumns.hasValue() && !isAllSelected("TodayLiveVehicle")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblTodayLiveVehicle || 'Today Live Vehicle' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
+                                translationData.lblTodayLiveVehicle }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
 
@@ -212,9 +209,7 @@
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') : (translationData.lblmile
-                                        ||
-                                        'Miles')}}
+                                        {{prefUnit == 'Metric' ? (translationData.lblkms) : (translationData.lblmile)}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         No negative values allowed
@@ -257,7 +252,7 @@
                             [indeterminate]='selectionForVehicleUtilizationColumns.hasValue() && !isAllSelected("VehicleUtilization")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblVehicleUtilization || 'Vehicle Utilization' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
+                                translationData.lblVehicleUtilization }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
@@ -317,7 +312,7 @@
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'" placeholder="{{ 'Set Target' }}">
-                                      <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') : (translationData.lblmile || 'Miles')}}
+                                      <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms) : (translationData.lblmile)}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         No negative values allowed
@@ -367,7 +362,7 @@
                             [indeterminate]='selectionForAlertLast24HoursColumns.hasValue() && !isAllSelected("AlertLast24Hours")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblAlertLast24Hours || 'Alert Last 24 Hours' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
+                                translationData.lblAlertLast24Hours }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
                 </div>
@@ -395,13 +390,12 @@
                 <div *ngIf='editDashboardFlag && (fleetKPIColumnData.length > 0 || todayLiveVehicleColumnData.length > 0 || vehicleUtilizationColumnData.length > 0 || alertLast24HoursColumnData.length > 0)' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
                     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button
                         color="primary">{{
-                        translationData.lblCancel || 'Cancel' }}</button>
+                        translationData.lblCancel }}</button>
                     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button
                         color="primary">{{
-                        translationData.lblReset || 'Reset' }}</button>
+                        translationData.lblReset }}</button>
                     <button [disabled]='!dashboardPreferenceForm.valid ||(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
-                        (translationData.lblConfirm ||
-                        'Confirm') }}</button>
+                        (translationData.lblConfirm) }}</button>
                 </div>
 
             </mat-expansion-panel>
