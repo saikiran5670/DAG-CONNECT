@@ -1554,8 +1554,8 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   compareVehicleList(a: any | String, b: any | String, isAsc: boolean) {
-    a = parseInt(a.vehicleGroupId);
-    b = parseInt(b.vehicleGroupId);
+    a = a.vehicleId;
+    b = b.vehicleId;
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

@@ -6,8 +6,8 @@
             [checked]='selectionForLoogbookColumns.hasValue() && isAllSelectedForLogbookColumns()'
             [indeterminate]='selectionForLoogbookColumns.hasValue() && !isAllSelectedForLogbookColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblDetails || 'Details' }} ({{
-                translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+                translationData.lblDetails }} ({{
+                translationData.lblTablecolumnviewsettings }})</span>
         </mat-checkbox>
     </div>
 </div>
@@ -118,16 +118,15 @@
 
 <!-- error msg -->
 <div *ngIf='logbookPrefData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
-    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
-        Registration Number' }}</span>
+    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg }}</span>
 </div>
 
 <!-- buttons -->
 <div *ngIf='logbookPrefData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-        translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-        translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset }}</button>
     <button [disabled]='reqField || (selectionForLoogbookColumns.selected.length == 0 && logbookPrefData.length > 0)' class='no-margin' mat-raised-button
-        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
