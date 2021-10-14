@@ -2,8 +2,10 @@
         <mat-card class="card1" (click)="gotoLogBook(item)">
         <div fxLayout="row" class="areaWidth min-width-50-per" fxLayoutAlign="start"
         fxLayoutGap="1px">
-        <div fxLayout="column" class="areaWidth min-width-10-per">
+        <div fxLayout="column" class="areaWidth min-width-10-per">          
             <!-- <mat-icon class="line3">{{item.icons}}</mat-icon> -->
+            <span *ngIf="item.alertCategory == 'O' && item.urgencyLevel == '' && item.alertType == 'W'">
+                <img src='assets/images/icons/vehicleStatus/Ota.svg' /> </span> 
             <span *ngIf="item.alertUrgency == 'C' || item.urgencyLevel == 'C'">
                 <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
               </span> 
