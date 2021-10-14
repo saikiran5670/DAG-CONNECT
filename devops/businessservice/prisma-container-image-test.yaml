@@ -91,7 +91,7 @@ steps:
     artifact: 'mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim'
 
 - task: Palo-Alto-Networks.build-release-task.custom-build-release-task.prisma-cloud-compute-scan@3
-  displayName: 'Prisma Cloud Compute Scan'
+  displayName: 'Prisma Cloud Compute Scan2'
   inputs:
     twistlockService: 'DAF DTA Prisma Cloud Compute Connection'
     artifact: 'mcr.microsoft.com/dotnet/core/sdk:3.1-buster'
