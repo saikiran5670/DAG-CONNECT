@@ -2,7 +2,7 @@ package net.atos.daf.ct2.common.realtime.dataprocess;
 
 import static net.atos.daf.ct2.common.util.DafConstants.AUTO_OFFSET_RESET_CONFIG;
 import static net.atos.daf.ct2.common.util.DafConstants.BROADCAST_NAME;
-
+import static net.atos.daf.ct2.common.util.DafConstants.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.MEASUREMENT_DATA;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.MONITOR_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_CDC_FETCH_DATA_QUERY;
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -35,8 +36,6 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
@@ -50,22 +49,29 @@ import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.models.scheamas.CdcPayloadWrapper;
 import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
+import net.atos.daf.ct2.common.processing.DriverProcessing;
 import net.atos.daf.ct2.common.realtime.dataprocess.MonitorDataProcess;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
+
 import net.atos.daf.ct2.processing.BroadcastState;
 import net.atos.daf.ct2.processing.ConsumeSourceStream;
 import net.atos.daf.ct2.processing.EgressCorruptMessages;
 import net.atos.daf.ct2.processing.MessageProcessing;
 import net.atos.daf.ct2.processing.ValidateSourceStream;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.atos.daf.ct2.util.Utils;
 
 public class MonitorDataProcess {
 	
-    private static final Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+//    private static final Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+    private static final Logger log = LogManager.getLogger(MonitorDataProcess.class);
     public static String FILE_PATH;
     private StreamExecutionEnvironment streamExecutionEnvironment;
     private static final long serialVersionUID = 1L;
@@ -108,38 +114,39 @@ public class MonitorDataProcess {
 			DataStream<KafkaRecord<Monitor>> consumerStream =flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			//consumerStream.print();
 			
-			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
+			//consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
 
-			//KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin());
 			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
 			
-			consumerKeyedStream.addSink(new DriverTimeManagementSink());  // Drive Time Management
-			consumerKeyedStream.addSink(new WarningStatisticsSink()); // Warning Statistics
-			//consumerKeyedStream.addSink(new LiveFleetPositionPostgreSink());
-																		
-			/*
-			 * KeyedStream<KafkaRecord<Monitor>, String> keyedMonitorData =
-			 * flinkKafkaConsumer.connectToKafkaTopic(envParams, env) .keyBy(kafkaRecord ->
-			 * kafkaRecord.getValue().getVin());
-			 * 
-			 * SingleOutputStreamOperator<KafkaRecord<Monitor>> consumerStream =
-			 * keyedMonitorData .map(monitorKafkaRecord -> monitorKafkaRecord);
-			 */
+			DriverProcessing driverProcess= new DriverProcessing();
 			
-			//consumerKeyedStream.addSink(new DriverTimeManagementSink()); 
+			Integer valueSeven=7;
+			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class).filter(monitor -> monitor.getMessageType().equals(valueSeven)).returns(Monitor.class);
+			
+			
+			SingleOutputStreamOperator<Monitor> driverManagementProcessing = driverProcess.driverManagementProcessing(monitorStream, Long.valueOf("3000"));
+			
+			driverManagementProcessing.map(monitor -> {
+                log.info("monitor message received after driver calculation processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+                return monitor;
+            });
+			//driverManagementProcessing.addSink(new DriverTimeManagementSink());  // Drive Time Management
+			
+			consumerKeyedStream.addSink(new WarningStatisticsSink()); 
 			
 
 			log.info("after addsink");
 			try {
 
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
-						"Realtime Data Monitoring processing Job Started");
-
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				/*
+				 * auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				 * Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				 * 
+				 * auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
+				 * "Realtime Data Monitoring processing Job Started");
+				 * 
+				 * auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 */
 			} catch (Exception e) {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
@@ -147,17 +154,20 @@ public class MonitorDataProcess {
 			env.execute(" Realtime_MonitorDataProcess");
 
 		} catch (Exception e) {
+			e.printStackTrace();
 
 			log.error("Error in Message Data Processing - " + e.getMessage());
 
 			try {
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
-						"Realtime Data Monitoring processing Job Failed, reason :: " + e.getMessage());
-
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				/*
+				 * auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
+				 * "Realtime Data Monitoring processing Job Failed, reason :: " +
+				 * e.getMessage());
+				 * 
+				 * auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				 * Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				 * auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 */
 			} catch (Exception ex) {
 				log.error("Issue while auditing :: " + ex.getMessage());
 			}
