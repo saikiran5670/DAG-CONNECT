@@ -248,9 +248,11 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   applyFilter(filterValue: string) {
-
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
   }
-
+  
   pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
