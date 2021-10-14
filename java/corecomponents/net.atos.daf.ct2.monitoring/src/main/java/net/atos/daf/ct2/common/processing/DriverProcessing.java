@@ -43,7 +43,7 @@ public class DriverProcessing implements Serializable {
                                 try {
                                     return convertDateToMillis(monitor.getEvtDateTime());
                                 } catch (Exception ex) {
-                                    logger.error("Error while converting event time stamp {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+                                    logger.error("Error while converting event time stamp {} {} {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()),ex);
                                 }
                                 return getCurrentTimeInUTC();
                             }
