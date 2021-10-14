@@ -81,7 +81,7 @@ export class OtaSoftwareUpdateService {
       campaignId: data.campaignId,
       vin: data.vin,
       baseLineId: data.baseLineId,
-      scheduleDateTime: "2021-10-05T12:51:51.125653Z"
+      scheduleDateTime: data.scheduleDateTime
     }
    return this.httpClient
       .post<any>(`${this.otaSoftwareUpdateServiceUrl}/getschedulesoftwareupdate`, scheduleData ,headers)

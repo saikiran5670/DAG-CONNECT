@@ -276,6 +276,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       }
       this.dialogRef = this.dialog.open(ReleaseNoteComponent, dialogReleaseNote);
 
+    }, (error) => {
+      this.hideloader();
+      console.log("error:: ", error)
     });
   }
 
@@ -338,6 +341,9 @@ onCancel(){
 }
 showConfirmDailog(schedulerData: any) {
   let scheduledDateTime = this.scheduledDate +  this.scheduledTime;
+  const formattedDate = moment(this.scheduledDate).format("MM/DD/YYYY").toString();
+  const isoDate = moment(formattedDate +' '+ this.scheduledTime).toISOString();
+  this.schedulerData.scheduleDateTime = isoDate;
   const dialogScheduler = new MatDialogConfig();
   dialogScheduler.disableClose = true;
   dialogScheduler.autoFocus = true;
@@ -346,11 +352,12 @@ showConfirmDailog(schedulerData: any) {
       campaignName: schedulerData.campaignName,
       vehicalName: this.selectedVehicalName,
       baseLineId: schedulerData.baseLineId,
-      scheduleDateTime: "2021-10-05T12:51:51.125653Z"
+      scheduleDateTime: isoDate
     }
 
     this.dialogRefConfirm = this.dialog.open(ScheduleConfirmComponent, dialogScheduler);
     this.dialogRefConfirm.afterClosed().subscribe(res => {
+      this.showLoadingIndicator = true;
       if(res){ 
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
           let emitObj;
@@ -359,13 +366,17 @@ showConfirmDailog(schedulerData: any) {
             stepFlag: false,
             msg: "sheduleData success"
           }
+          this.backToPage.emit(emitObj);
          } else{
           emitObj = {
             stepFlag: false,
             msg: ""
           }
+          this.backToPage.emit(emitObj);
          }
-
+        }, (error) => {
+          this.hideloader();
+          console.log("error:: ", error)
         });
       }
     });
