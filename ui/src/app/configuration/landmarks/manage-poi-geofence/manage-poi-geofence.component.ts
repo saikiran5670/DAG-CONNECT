@@ -76,7 +76,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
-    ['GeoFence','51.07','57.07','CategoryName','SubCategoryName','Banglore','612304','Banglore','India']];
+    ['GeoFence', 51.07 , 57.07 ,'CategoryName','SubCategoryName','Banglore','612304','Banglore','India']];
   // [
   //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
   //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];

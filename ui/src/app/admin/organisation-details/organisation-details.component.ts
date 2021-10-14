@@ -229,13 +229,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateVehicleDefault(){
     switch (this.organisationData.vehicleOptIn) {
       case 'U':
-                this.vehicleOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.vehicleOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.vehicleOptIn = this.translationData.lblOptIn || 'Opt In'
+                this.vehicleOptIn = this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.vehicleOptIn = this.translationData.lblInherit || 'Inherit'
+                this.vehicleOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -245,13 +245,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateDriverDefault(){
     switch (this.organisationData.driverOptIn) {
       case 'U':
-                this.driverOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.driverOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.driverOptIn= this.translationData.lblOptIn || 'Opt In'
+                this.driverOptIn= this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.driverOptIn = this.translationData.lblInherit || 'Inherit'
+                this.driverOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -370,9 +370,9 @@ export class OrganisationDetailsComponent implements OnInit {
   successStatus(createStatus: any){
     let successMsg: any = '';
     if(createStatus){ // create
-      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully || "Organisation Details Created Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully;
     }else{ // update
-      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully || "Organisation Details Updated Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully;
     }
     this.successMsgBlink(successMsg); 
   }

@@ -170,16 +170,16 @@ export class UserGroupManagementComponent implements OnInit {
 
   deleteGroup(item: any) {
     const options = {
-      title: this.translationData.lblDeleteGroup || "Delete Group",
-      message: this.translationData.lblAreyousureyouwanttodeleteusergroup || "Are you sure you want to delete '$' account group?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteGroup,
+      message: this.translationData.lblAreyousureyouwanttodeleteusergroup,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     this.openDeleteDialog(options, item);
   }
 
   onNewUserGroup() {
-    this.titleText = this.translationData.lblNewUserGroupName || "New Account Group Name";
+    this.titleText = this.translationData.lblNewUserGroupName;
     this.actionType = 'create';
     this.createViewEditStatus = true;
   }
@@ -312,9 +312,9 @@ export class UserGroupManagementComponent implements OnInit {
 
   onUserClick(data: any) {
     const colsList = ['firstName', 'emailId', 'roles', 'accountGroupList'];
-    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role', 
-    this.translationData.lblUserGroup || 'Account Group' ];
-    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`;
+    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailID , this.translationData.lblUserRole, 
+    this.translationData.lblUserGroup ];
+    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers }`;
     let obj: any = {
       accountId: 0,
       organizationId: data.organizationId,
@@ -331,8 +331,8 @@ export class UserGroupManagementComponent implements OnInit {
 
   onVehicleClick(data: any) {
     const colsList = ['name', 'vin', 'licensePlateNumber','associatedGroups'];
-    const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number',this.translationData.lblVehicleGroup || 'vehicle Group'];
-    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName = [this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber,this.translationData.lblVehicleGroup ];
+    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblVehicles }`;
     this.vehicleService.getVehiclesDataByAccGrpID(data.groupId, data.organizationId).subscribe((data) => {
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
