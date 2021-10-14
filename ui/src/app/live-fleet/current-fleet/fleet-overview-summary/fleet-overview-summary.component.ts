@@ -22,7 +22,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   serviceNow: number = 0;
   stopNow: number = 0;
   vehicleGroup: string;
-  barChartLabels: Label[] = [(this.translationData.lblMovedVehicle || 'Moved Vehicle'), (this.translationData.lblTotalVehicle || 'Total Vehicle')];
+  barChartLabels: Label[] = [(this.translationData.lblMovedVehicle), (this.translationData.lblTotalVehicle)];
   barChartType: ChartType = 'bar';
   barChartLegend = true;
   barChartPlugins = [];
@@ -41,7 +41,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   filterInvoked: boolean = false;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService) {
-    this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
     this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
@@ -150,7 +150,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     }
    ];
     // Doughnut - Fleet Mileage Rate
-   doughnutChartLabelsMileage: Label[] = [(this.translationData.lblFleetMileageRate || 'Fleet Mileage Rate'), ''];
+   doughnutChartLabelsMileage: Label[] = [(this.translationData.lblFleetMileageRate ), ''];
    doughnutChartDataMileage: MultiDataSet = [ [0, 0] ];
    doughnutChartOptionsMileage: ChartOptions = {
     responsive: true,
@@ -168,7 +168,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   };
 
   // Doughnut - Fleet Utilization Rate
-  doughnutChartLabelsUtil: Label[] = [(this.translationData.lblFleetUtilizationRate || 'Fleet Utilization Rate'), '', ''];
+  doughnutChartLabelsUtil: Label[] = [(this.translationData.lblFleetUtilizationRate), '', ''];
   doughnutChartDataUtil: MultiDataSet = [ [0, 0] ];
 
   doughnutChartOptionsUtil: ChartOptions = {
@@ -231,7 +231,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
-  this.driveTime = totDriveTime[0] + (this.translationData.lblhh || ' hh ') + totDriveTime[1] + (this.translationData.lblmm || ' mm');
+  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + totDriveTime[1] + (this.translationData.lblmm);
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
@@ -257,7 +257,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   this.doughnutChartDataMileage = [ [0 , 0] ];
   this.doughnutChartDataUtil = [ [0, 0] ];
   this.mileageDone = '00' + this.unitValkm;
-  this.driveTime = '00' + (this.translationData.lblhh || ' hh ') + '00' + (this.translationData.lblmm || ' mm');
+  this.driveTime = '00' + (this.translationData.lblhh ) + '00' + (this.translationData.lblmm);
   this.drivers=0;
  }
  getDistance(distance: any, unitFormat: any){

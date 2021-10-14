@@ -52,10 +52,10 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export'  }}<mat-icon>more_vert</mat-icon></button>
+      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)' }}</button>
-          <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
+          <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF }}</button>
+          <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
         </mat-menu>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound }}</div>

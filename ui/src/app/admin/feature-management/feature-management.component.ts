@@ -182,12 +182,12 @@ export class FeatureManagementComponent implements OnInit {
 
   changeFeatureStatus(rowData: any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      // cancelText: this.translationData.lblNo || "No",
-      // confirmText: this.translationData.lblYes || "Yes",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      title: this.translationData.lblAlert ,
+      message: this.translationData.lblYouwanttoDetails,
+      // cancelText: this.translationData.lblNo,
+      // confirmText: this.translationData.lblYes,
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
@@ -244,10 +244,10 @@ export class FeatureManagementComponent implements OnInit {
 
   deleteFeature(rowData: any){
     const options = {
-      title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodeletefeature || "Are you sure you want to delete Feature '$' ?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDelete,
+      message: this.translationData.lblAreyousureyouwanttodeletefeature,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {

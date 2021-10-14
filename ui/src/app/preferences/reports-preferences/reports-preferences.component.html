@@ -16,7 +16,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblTripReportComponent || 'Trip Report Component' }}</span>
+              translationData.lblTripReportComponent }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editTripFlag' (click)="editTripReportPreferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -39,7 +39,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblFleetUtilisation || 'Fleet Utilisation' }}</span>
+              translationData.lblFleetUtilisation }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editFleetUtilisationFlag' (click)="editFleetUtilisationPreferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -61,7 +61,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblDriveTimeManagement || 'Drive Time Management' }}</span>
+              translationData.lblDriveTimeManagement }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editDriverTimePerferencesFlag' (click)="editDriverTimePerferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -83,7 +83,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblEcoScoreReport || 'Eco Score Report' }}</span>
+              translationData.lblEcoScoreReport }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editEcoScorePerferencesFlag' (click)="editEcoScorePerferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -106,7 +106,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblFuelBenchmarking || 'Fuel Benchmarking' }}</span>
+              translationData.lblFuelBenchmarking }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editFuelBenchmarkPerferencesFlag' (click)="editFuelBenchmarkPerferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -129,7 +129,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetFuelReport
-              || 'Fleet Fuel Report' }}</span>
+              }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editFleetFuelPerferencesFlag' (click)="editFleetFuelPerferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -140,13 +140,13 @@
       </mat-expansion-panel-header>
       <div class="tabs fleetFuelPerferences">
         <mat-tab-group (selectedTabChange)="onTabChanged($event);">
-          <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
+          <mat-tab label="{{ translationData.lblVehicle }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
               [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle>
             </app-fleet-fuel-preferences>
           </mat-tab>
-          <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
+          <mat-tab label="{{ translationData.lblDriver }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
               [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver>
@@ -158,11 +158,10 @@
           *ngIf='editFleetFuelPerferencesFlag'
           fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
           <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-            translationData.lblCancel || 'Cancel' }}</button>
+            translationData.lblCancel }}</button>
           <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-            translationData.lblReset || 'Reset' }}</button>
-          <button [disabled]="validateRequiredField()" class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
-            'Confirm') }}</button>
+            translationData.lblReset }}</button>
+          <button [disabled]="validateRequiredField()" class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
         </div>
       </div>
     </mat-expansion-panel>
@@ -173,7 +172,7 @@
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblFuelDeviationReport || 'Fuel Deviation Report' }}</span>
+              translationData.lblFuelDeviationReport}}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editFuelDeviationPerferencesFlag' (click)="editFuelDeviationPerferences()"
                 style="cursor: pointer; font-size: 20px;">

@@ -44,7 +44,7 @@
             </div>
           </div>
         <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label>{{ translationData.lblGroupType }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="groupTypeChange($event)" placeholder="{{ translationData.lblGroupType  }}" formControlName="groupType" required>
@@ -96,7 +96,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset  }}</button>
             <button class='no-margin' [disabled]="!userGroupForm.valid" mat-raised-button color="primary"

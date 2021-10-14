@@ -2,21 +2,21 @@
     <div class="preferences-container" *ngIf="userPreferencesFlag" [ngStyle]="{'width': userPreferencesFlag ? '1000px' : '0px' }">
         <div fxLayout="row" style="background: rgb(209, 208, 208); padding: 10px 25px;" >
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span class='custom-font'>{{ translationData.lblPreferences || 'Preferences' }} ({{ translationData.lblPersonaliseyourowndisplaysettings || 'Personalise your own display settings' }})</span>
+                <span class='custom-font'>{{ translationData.lblPreferences }} ({{ translationData.lblPersonaliseyourowndisplaysettings || 'Personalise your own display settings' }})</span>
             </div>
         </div>
         <div style="background: rgb(241, 242, 243); padding: 0px 25px;">
             <mat-tab-group [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
-                <mat-tab label="{{ translationData.lblAccountInfoSettings || 'Account Info & Settings' }}"> 
+                <mat-tab label="{{ translationData.lblAccountInfoSettings }}"> 
                     <app-account-info-settings *ngIf="selectedIndex == 0" [translationData]='translationData'></app-account-info-settings>
                 </mat-tab>
-                <mat-tab label="{{ translationData.lblDashboard || 'Dashboard' }}">
+                <mat-tab label="{{ translationData.lblDashboard }}">
                     <app-dashboard-preferences *ngIf="selectedIndex == 1" [translationData]='translationData'></app-dashboard-preferences>
                 </mat-tab>
-                <mat-tab label="{{ translationData.lblReports || 'Reports' }}">
+                <mat-tab label="{{ translationData.lblReports }}">
                     <app-reports-preferences *ngIf="selectedIndex == 2" [translationData]='translationData'></app-reports-preferences>
                 </mat-tab>
-                <mat-tab label="{{ translationData.lblFleetOverview || 'Fleet Overview' }}">
+                <mat-tab label="{{ translationData.lblFleetOverview }}">
                     <app-fleet-overview-preferences *ngIf="selectedIndex == 3"></app-fleet-overview-preferences>    
                 </mat-tab>
             </mat-tab-group>

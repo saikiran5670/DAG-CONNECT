@@ -9,7 +9,7 @@
             [indeterminate]='selectionForSummary.hasValue() && !isAllSelectedForSummaryColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblSummary || 'Summary' }}</span>
+                translationData.lblSummary }}</span>
         </mat-checkbox>
     </div>
 </div>
@@ -48,11 +48,11 @@
             [checked]='selectionForCharts.hasValue() && isAllSelectedForChartsColumns()'
             [indeterminate]='selectionForCharts.hasValue() && !isAllSelectedForChartsColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblChartsComponent || 'Charts-Component' }}</span>
+                translationData.lblChartsComponent }}</span>
         </mat-checkbox>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
-        <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
+        <span class='headerFont'>{{ translationData.lblChartType }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
 </div>
@@ -69,7 +69,7 @@
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                 (selectionChange)="onlineBarDDChange($event)"
-                placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="increaseEventChart">
+                placeholder="{{ translationData.lblChartType }}" formControlName="increaseEventChart">
                 <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
                     {{ rer.name }}
                 </mat-option>
@@ -91,7 +91,7 @@
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                 (selectionChange)="onlineBarDDChange($event)"
-                placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="decreaseEventChart">
+                placeholder="{{ translationData.lblChartType }}" formControlName="decreaseEventChart">
                 <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
                     {{ rer.name }}
                 </mat-option>
@@ -113,7 +113,7 @@
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
                 (selectionChange)="onDonutPieDDChange($event)"
-                placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="deviationEventChart">
+                placeholder="{{ translationData.lblChartType }}" formControlName="deviationEventChart">
                 <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
                     {{ rer.name }}
                 </mat-option>
@@ -132,7 +132,7 @@
             [indeterminate]='selectionForDetails.hasValue() && !isAllSelectedForDetailColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblDetails || 'Details' }} <span>({{ translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span></span>
+                translationData.lblDetails }} <span>({{ translationData.lblTablecolumnviewsettings }})</span></span>
         </mat-checkbox>
     </div>
 </div>
@@ -292,20 +292,18 @@
 <!-- Error msg -->
 <div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start"
 *ngIf='editFlag && reqField && detailsData.length > 0'>
-<span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
-    Registration Number' }}</span>
+<span style='color: red;'>{{ translationData.lblRequiredFieldMsg }}</span>
 </div>
 
 <!-- Button -->
 <div *ngIf='(summaryData.length > 0 || chartsData.length > 0 || detailsData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-        translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-        translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset }}</button>
     <button
         [disabled]='reqField || (selectionForSummary.selected.length == 0 && summaryData.length > 0) || (selectionForCharts.selected.length == 0 && chartsData.length > 0) || (selectionForDetails.selected.length == 0 && detailsData.length > 0)'
-        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
-        'Confirm') }}</button>
+        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
 
 </form>

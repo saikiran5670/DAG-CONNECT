@@ -1,58 +1,37 @@
 import { Component, ElementRef, Inject, Input, OnInit, ViewChild, Output,EventEmitter } from '@angular/core';
-import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ReportService } from '../../../services/report.service';
-import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { Util } from '../../../shared/util';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { color } from 'html2canvas/dist/types/css/types/color';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import * as Highcharts from 'highcharts';
+import ColumnRange from 'highcharts/highcharts-more';
+ColumnRange(Highcharts);
 
-import {
-  ChartComponent,
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexFill,
-  ApexTooltip,
-  ApexXAxis,
-  ApexLegend,
-  ApexDataLabels,
-  ApexTitleSubtitle,
-  ApexYAxis,
-  ChartType,
-  ApexPlotOptions
-} from "ng-apexcharts";
-import { Color } from 'jspdf-autotable';
-import { Colors } from 'ng2-charts';
-import { ColGroupConfig, ColProps } from '@fullcalendar/angular';
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  xaxis: ApexXAxis;
-  markers: any; //ApexMarkers;
-  stroke: any; //ApexStroke;
-  yaxis: ApexYAxis | ApexYAxis[];
-  dataLabels: ApexDataLabels;
-  title: ApexTitleSubtitle;
-  legend: ApexLegend;
-  fill: ApexFill;
-  tooltip: ApexTooltip;
-  plotOptions : ApexPlotOptions,
-  colors: string[]
-};
 @Component({
   selector: 'app-driver-time-detail',
   templateUrl: './driver-time-detail.component.html',
-  styleUrls: ['./driver-time-detail.component.less']
+  styleUrls: ['./driver-time-detail.component.less'],
+  template: `<highcharts-chart 
+  [Highcharts]="Highcharts"
+  [constructorType]="'chart'"
+  [options]="chartOptions"
+  [callbackFunction]="chartCallback"
+  [(update)]="updateFlag"
+  [oneToOne]="oneToOneFlag"
+  [runOutsideAngular]="runOutsideAngularFlag"
+  (chartInstance)="getInstance($event)"
+  style="width: 100%; height: 400px; display: block;"
+></highcharts-chart>`
 })
 export class DriverTimeDetailComponent implements OnInit {
+   Highcharts = Highcharts;
   @Input() translationData : any;
   @Input() driverSelected : boolean;
   @Input() driverDetails : any;
@@ -79,7 +58,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() displayedColumns:any;// = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   @Output() backToMainPage = new EventEmitter<any>();
   dayWiseSummary:  {
-    date: string;
+    startTime: string;
     driveTime: number;
     workTime: number;
     availableTime: number;
@@ -87,25 +66,149 @@ export class DriverTimeDetailComponent implements OnInit {
     restTime: number;
   }
   dayWiseSummaryList: any =[];
-  
-  // barChartOptions: ChartOptions = {
-  //   responsive: true
-  // };
-  //barChartType: ChartType = 'horizontalBar';
-  barChartLegend = true;
-  // barChartColors: Array<any> = [
-  //   {
-  //     backgroundColor :['rgba(255, 165, 0,1)','rgba(0, 0, 255, 1)','rgba(0, 128, 0, 1)','rgba(128, 128, 128, 1)']
-  //   }
-  // ];
+  chartOptions: any;
+  // chartOptions = {
+  //   title: {
+  //     enabled: false
+  //   },
+  //   chart: {
+  //     type: 'columnrange',
+  //     inverted: true
+  //   },
+  //   exporting: {
+  //     enabled: false
+  //   },
+  //   series: [{
+  //     data: [{
+  //         x: 0,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 0,
+  //         low: Date.UTC(2010, 0, 1, 12, 30, 0),
+  //         high: Date.UTC(2010, 0, 1, 14, 0, 0),
+  //         color: 'blue'
+  //       },{
+  //         x: 0,
+  //         low: Date.UTC(2010, 0, 1, 14, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 16, 0, 0),
+  //         color: 'red'
+  //       },
 
-  //barChartData: ChartDataSets[] = [] ;
-  // [
-  //   { data: [1, 2, 3], label: 'Work', stack: 'a' },
-  //   { data: [1, 2, 3], label: 'Drive', stack: 'a' },
-  //   { data: [1, 2, 3], label: 'Rest', stack: 'a' },
-  //   { data: [1, 2, 3], label: 'Available', stack: 'a' },
-  // ];
+  //       {
+  //         x: 1,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 1,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //       {
+  //         x: 2,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 2,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //       {
+  //         x: 3,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 3,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //       {
+  //         x: 4,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 4,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //       {
+  //         x: 5,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 5,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //       {
+  //         x: 6,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       }, {
+  //         x: 6,
+  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
+  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
+  //         color: 'blue'
+  //       },
+
+  //     ]
+  //   }],
+  //   plotOptions: {
+  //     series: {
+  //       pointWidth: 10,
+  //     }
+  //   },
+  //   // title: {
+  //   //   text: 'Where are the data ?'
+  //   // },
+  //   xAxis: {
+  //     // categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  //     type: 'category'
+  //   },
+  //   yAxis: {
+  //     min: Date.UTC(2010, 0, 1, 0, 0, 0),
+  //     max: Date.UTC(2010, 0, 2, 0, 0, 0),
+  //     type: 'datetime',
+  //     tickPositioner: function() {
+  //       var info = this.tickPositions.info;
+  //       var positions = [];
+  //       for (let i = Date.UTC(2010, 0, 1, 0, 0, 0); i <= Date.UTC(2010, 0, 2, 0, 0, 0); i += 3600 * 1000) {
+  //         positions.push(i);
+  //       }
+  //       this.tickPositions.info = info;
+  //       return this.tickPositions;
+  //     },
+  //     lineWidth: 1,
+  //     dateTimeLabelFormats: {
+  //       day: '%H:%M'
+  //     },
+  //   },
+  // }
+    ;
+   chart: Highcharts.Chart;
+  getInstance(chart: Highcharts.Chart) {
+    this.chart = chart;
+    console.log(Date.UTC(2010, 0, 1, 9, 0, 0),);
+    console.log(Date.UTC(2010, 0, 1, 12, 0, 0),);
+  }
+  barChartLegend = true;
   barChartLabels: string[] = [];
 
   canvas: any;
@@ -114,264 +217,18 @@ export class DriverTimeDetailComponent implements OnInit {
   zoomMsg : boolean = true;
   summaryObj:any=[];
 
-  @ViewChild("chart") chart: ChartComponent;
-  public chartOptions: Partial<ChartOptions>;
+  constructor(private reportMapService:ReportMapService, private reportService: ReportService) {}
 
-  constructor(private reportMapService:ReportMapService, private reportService: ReportService) { 
-    this.chartOptions = {
-      series: [
-        // George Washington
-        {
-          name: 'Drive',
-          data: [
-            {
-              x: '22/07/2021',
-              y: [
-                1626912000000,
-                1626948000000
-              ],
-              fillColor: '#29539b',
-            },
-          ]
-        },
-        // John Adams
-        {
-          name: 'Work',
-          data: [
-            {
-              x: '21/07/2021',
-              y: [
-                1626825600000,
-                1626868800000
-              ],
-              fillColor: '#e85c2a'
-            },
-            {
-              x: '21/07/2021',
-              y: [
-                1626868800000,
-                1626904800000
-              ],
-              
-              fillColor: '#e85c2a'
-            }
-          ]
-        },
-        {
-          name: 'Rest',
-          data: [
-            {
-              x: '22/07/2021',
-              y: [
-                1626912000000,
-                1626948000000
-              ],
-              fillColor: '#8ac543',
-            },
-          ]
-        },
-        {
-          name: 'Available',
-          data: [
-            {
-              x: '22/07/2021',
-              y: [
-                1626912000000,
-                1626948000000
-              ],
-              fillColor: '#dddee2',
-            },
-          ]
-        },
-      ],
-      colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
-      chart: {
-        height: 'auto',
-        type: 'rangeBar'
-      },
-      stroke: {
-        width: 1,
-        colors: ["#fff"]
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          barHeight: '30%',
-          rangeBarGroupRows: true // should be false but due to inappropriate data kept true
-        }
-      },
-      fill: {
-        type: 'solid'
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: {
-        //   formatter: function (value) {
-        //     return value;
-        //   }
-          format: 'HH',
-          // showDuplicates: false,
-          offsetX: 0
-        },
-        offsetX: 0,
-        // min: 0,
-        // max: 24
-      },
-      legend : {
-        position: 'bottom',
-        showForNullSeries : true,
-        showForZeroSeries : true,
-        markers:{
-          width: 12,
-          height: 12,
-          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
-        },
-        onItemClick: {
-          toggleDataSeries: true
-      },
-        labels: {
-        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
-        useSeriesColors: false
-    }
-  },
-      tooltip: {
-        custom:(opts)=>{
-          const values = opts.ctx.rangeBar.getTooltipValues(opts);
-          let activityType = values.seriesName.split(":")[0];
-          let calculatedDiff = values.end - values.start;
-          let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff) // 24- default time format to be changed to prefTimeFormat
-          let diffDisplay= diffDuration;
-          let fromTime = (values.start);
-          let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
-          let toTime = (values.end);
-          let toDisplay  = this.reportMapService.getStartTime(toTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
-          let getIconName = activityType.toLowerCase();
-          let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
-          return (
-            `<div class='chartTT'> 
-              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
-              <div>From:${fromDisplay}</div>
-              <div>To:${toDisplay} </div>
-              <div>Duration: ${diffDisplay}</div>
-            </div>`
-          )
-        }
-      }
-    }
-  }
-
-  
   ngOnInit(): void {
-  //console.log(this.driverDetails)
-    //this.setGeneralDriverValue();
     this.showLoadingIndicator = true;
-    this.updateDataSource(this.detailConvertedData);
-   // this.setGraphData();
-  //  this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
-  //   this.showLoadingIndicator = false;
-  //   this.createChart(data);
-  //   })
-  //   this.updateDataSource(this.detailConvertedData);
-  //   this.setGraphData();
   }
-
-  // ngAfterViewInit() {
-  //   this.canvas = document.getElementById('chartCanvas');
-  //   this.ctx = this.canvas.getContext('2d');
-  //   let dateArray = this.detailConvertedData.map(data=>data.startTime);
-
-  //   let graphchart: Chart = new Chart(this.ctx,  {
-  //     "type": "horizontalBar",
-  //     "data": {
-  //         "labels": [10,11,12],
-  //         "datasets": 
-  //           [
-  //             { data: [6.0,6.0,6.0], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
-  //             { data: [6.0,6.0,6.0], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
-  //             { data: [6.0,6.0,6.0], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
-  //             { data: [6.0,6.0,6.0], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
-  //           ]
-        
-  //     },
-  //     options: {
-  //       // ... other options ...
-  //       tooltips: {
-  //         intersect: false
-  //       },
-  //       scales: {
-  //         xAxes: [
-  //           {
-  //             stacked: true,
-              
-  //             gridLines: {
-  //               display: true,
-  //               drawBorder:true,
-  //               drawOnChartArea:false,
-  //               color:'#00000'
-  //             },
-  //            ticks: {
-  //             beginAtZero: true,
-  //             min:0,
-  //             max: 24
-  //           },
-  //           },
-  //         ],
-  //         yAxes: [
-  //           {
-  //             //stacked: true,
-  //             gridLines: {
-  //               display: true,
-  //               drawBorder:true,
-  //               drawOnChartArea:false,
-  //               color:'#00000'
-  
-  //             },
-  //             ticks: {
-  //               beginAtZero: true,
-  //               //    max: 0
-  //             },
-  //           },
-  //         ],
-  //       },
-  //       plugins: {
-  //         crosshair: {
-  //           line: {
-  //             color: '#F66',  // crosshair line color
-  //             width: 1        // crosshair line width
-  //           },
-  //           sync: {
-  //             enabled: true,            // enable trace line syncing with other charts
-  //             group: 1,                 // chart group
-  //             suppressTooltips: false   // suppress tooltips when showing a synced tracer
-  //           },
-  //           zoom: {
-  //             enabled: true,                                      // enable zooming
-  //             zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
-  //             zoomboxBorderColor: '#48F',                         // border color of zoom box
-  //             zoomButtonText: 'Reset Zoom',                       // reset zoom button text
-  //             zoomButtonClass: 'reset-zoom',                      // reset zoom button class
-  //           },
-  //           callbacks: {
-  //             beforeZoom: function(start, end) {                  // called before zoom, return false to prevent zoom
-  //               return true;
-  //             },
-  //             afterZoom: function(start, end) {                   // called after zoom
-  //             }
-  //           }
-  //         }
-  //       },
-        
-  //     },
-      
-  //   });
-  // }
 
   ngOnChanges(){
     this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data : any)=>{
       this.showLoadingIndicator = false;
       this.createChart(data);
     })
-    this.updateDataSource(this.detailConvertedData);
+    // this.updateDataSource(this.detailConvertedData);
     this.setGraphData();
   }
 
@@ -434,42 +291,64 @@ export class DriverTimeDetailComponent implements OnInit {
     // });
     
     let driveData=[], workData=[], restData=[], availableData=[];
-    let date='';
+    let startTime='';
     let currentArray;
+    let newObj=[];
     _data.forEach(element => {
       // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
+      let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
       let isValid=true;
       if(_startTime == _endTime || (_startTime) > (_endTime)){
         isValid=false;
       }
       // console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
       if(isValid && element.duration > 0){
-        date=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
+        console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
+        
+        startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
+        console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
         let restObj={
-          x :  date,
-          y : [_startTime,_endTime]
+          x :  _startTimeDate,
+          // actualDate: this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
+          actualDate: Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone),
+          duration: element.duration,
+          low : _startTime,
+          high:_endTime
         }
-        const found = this.dayWiseSummaryList.some(el => el.date === date);
-        if (!found) this.dayWiseSummaryList.push({ date: date, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
-        currentArray=this.dayWiseSummaryList.filter(el => el.date === date)[0];
+        let restObjN={
+          x :  Util.convertUtcToDateStart(element.startTime, this.prefTimeZone),
+          low : _startTime,
+          high:_endTime
+        }
+        const found = this.dayWiseSummaryList.some(el => el.startTime === startTime);
+        if (!found) this.dayWiseSummaryList.push({ startTime: startTime, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
+        currentArray=this.dayWiseSummaryList.filter(el => el.startTime === startTime)[0];
         // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
         if(element.code === 0){
-          restObj['fillColor']='#8ac543';
+          restObj['color']='blue';
+          restObj['type']='Rest';
           restData.push(restObj);
+          newObj.push(restObj);
           currentArray['restTime'] = currentArray.restTime + element.duration;
         } else if(element.code === 1){
-          restObj['fillColor']='#dddee2';
+          restObj['color']='green';
+          restObj['type']='Available';
           availableData.push(restObj);
+          newObj.push(restObj);
           currentArray['availableTime']= currentArray.availableTime + element.duration;
         } else if(element.code === 2){
-          restObj['fillColor']='#e85c2a';
+          restObj['color']='blue';
+          restObj['type']='Work';
           workData.push(restObj);
+          newObj.push(restObj);
           currentArray['workTime']= currentArray.workTime + element.duration;
         } else if(element.code === 3){
-          restObj['fillColor']='#29539b';
+          restObj['color']='orange';
+          restObj['type']='Drive';
           driveData.push(restObj);
+          newObj.push(restObj);
           currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
         // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
@@ -481,77 +360,168 @@ export class DriverTimeDetailComponent implements OnInit {
       element['availableTime'] = Util.getHhMmTimeFromMS(element.availableTime);
       element['workTime'] = Util.getHhMmTimeFromMS(element.workTime);
       element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
-      console.log(element);
+      // console.log(element);
     });
+    const convert=this.getActualDate;
+    const tz=this.prefTimeZone;
+    this.updateDataSource(this.dayWiseSummaryList);
    // if(driveData.length>0)
     _series.push({
-      'name': 'Drive',
+      // 'name': 'Drive',
       'data': driveData,
     })
     //  if(workData.length>0)
       _series.push({
-        'name': 'Work',
+        // 'name': 'Work',
         'data': workData,
       });
       
      // if(restData.length>0)
       _series.push({
-        'name': 'Rest',
+        // 'name': 'Rest',
         'data': restData,
       });
     //  if(availableData.length>0)
       _series.push({
-        'name': 'Available',
+        // 'name': 'Available',
         'data': availableData,
       });
-      this.chartOptions.series = _series;
-      this.chartOptions.legend = {
-        position: 'bottom',
-        show : true,
-        showForNullSeries : true,
-        showForZeroSeries : true,
-        showForSingleSeries : true,
-        markers:{
-          width: 12,
-          height: 12,
-          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+      let _seriesN=[];
+      _seriesN.push({
+        'data' : newObj
+      })
+      console.log("newObj" +JSON.stringify(newObj));
+      this.chartOptions = {
+        title: {
+          enabled: false
         },
-        onItemClick: {
-          toggleDataSeries: false
-      },
-        labels: {
-        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
-        useSeriesColors: false
-    }
-  }
-      this.chartOptions.colors =  ['#29539b','#e85c2a','#8ac543' ,'#dddee2'];
-      this.chartOptions.tooltip = {
-        custom:(opts)=>{
-          const values = opts.ctx.rangeBar.getTooltipValues(opts);
-          let activityType = values.seriesName.split(":")[0];
-          let calculatedDiff = values.end - values.start;
-          let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff)// 24- default time format to be changed to prefTimeFormat
-          // let diffDuration=calculatedDiff;
-          let diffDisplay= diffDuration;
-          let fromTime = (values.start);
-          let fromDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(fromTime);
-          let toTime = (values.end);
-          let toDisplay  = values.ylabel + ' ' + Util.getTimeHHMMSS(toTime);
-          let getIconName = activityType.toLowerCase();
-          let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
-          return (
-            `<div class='chartTT'> 
-              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
-              <div>From: ${fromDisplay}</div>
-              <div>To: ${toDisplay} </div>
-              <div>Duration: ${diffDisplay}</div>
-            </div>`
-          )
+        chart: {
+          type: 'columnrange',
+          inverted: true,
+          zoomType: 'y',
+          panning: true,
+          panKey: 'shift'
+        },
+        // exporting: {
+        //   enabled: false
+        // },
+        tooltip:{
+          formatter(e){
+            console.log(this);
+            // let yAxisValues = e.chart.yAxis[0].ticks
+            return (
+              `<div class='chartTT'> 
+                <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${this.point.type} style="width: 16px; height: 16px;" />${this.point.type} </div>
+                <br/><div>From:${this.point.actualDate}&nbsp;${this.point.low}</div>
+                <br/><div>To:${this.point.actualDate}&nbsp;${this.point.high} </div>
+                <br/><div>Duration: ${Util.getTimeHHMMSS(this.point.duration)}</div>
+              </div>`
+            )
+            // console.log(yAxisValues)
+        }},
+        series: [{
+          data: newObj
+        }],
+        //   data: [{"x":1626805800000,"actualDate":"07/21/2021","duration":604000,"low":8.5,"high":8.53,"color":"blue","type":"Work"},{"x":1626805800000,"actualDate":"07/21/2021","duration":263926000,"low":7.8,"high":8.27,"color":"blue","type":"Work"},{"x":1626892200000,"actualDate":"07/22/2021","duration":44000,"low":2.53,"high":2.54,"color":"orange","type":"Drive"},]
+        // }],
+        //   data: [{"x":1625423400000,"duration":10899000,"low":0.1,"high":0.21,"color":"orange","type":"Drive"},{"x":1625423400000,"duration":1998000,"low":0.21,"high":0.25,"color":"orange","type":"Drive"}]
+        // }],
+          // data: JSON.stringify(newObj)        }],
+        // series: [{
+        //   data: [{
+        //     color: "blue",
+        //       high: 15,
+        //       low: 12,
+        //       x: 1625509800000,
+        //   },{
+        //     color: "red",
+        //     high: 17,
+        //     low: 16,
+        //     x: 1625337000000,
+        //   }
+        // ]
+        // }],
+        // series : [{
+        //   data : [{
+        //     low: 1262336400000,
+        //     high: 1262347200000,
+        //     color: 'blue',
+        //     x: 1262336400000
+        //   }]
+        // }],
+        // series: _seriesN,
+        // series : [{data:[ {
+        //           x: 2,
+        //           low: 1262336400000,//Date.UTC(2010, 0, 1, 9, 0, 0),
+        //           high: 1262347200000,//Date.UTC(2010, 0, 1, 12, 0, 0),
+        //           color: 'blue'
+        //         }]}],
+        // series: newObj,
+        // series: [{
+        //   data: [{
+        //       x: 0,
+        //       low: Date.UTC(2010, 0, 1, 9, 0, 0),
+        //       high: Date.UTC(2010, 0, 1, 12, 0, 0),
+        //       color: 'blue'
+        //     }
+    
+        //   ]
+        // }],
+        plotOptions: {
+          series: {
+            pointWidth: 10,
+          }
+        },
+        // title: {
+        //   text: 'Where are the data ?'
+        // },
+        xAxis: {
+          // categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+          // type: 'datetime',
+        //   dateTimeLabelFormats: {
+        //     // day: '%e. %b.'
+        //     hour: '%Y-%m-%d',
+        //   },
+          labels: {
+            formatter: function() {
+                return Util.convertUtcToDateFormat2(this.value, tz);
+            },
+        },
+        // tickInterval: 3600*1000*24,
+        // lineWidth: 0,
+        //   minorGridLineWidth: 0,
+        //   lineColor: 'transparent',
+        },
+        yAxis: {
+          type: 'numeric',
+          min: 0,
+          max: 24,
+          tickInterval: 1,
+          lineWidth: 0,
+          minorGridLineWidth: 0,
+          lineColor: 'transparent',
+          // min: Date.UTC(2010, 0, 1, 0, 0, 0),
+          // max: Date.UTC(2010, 0, 2, 0, 0, 0),
+          // type: 'datetime',
+          // tickPositioner: function() {
+          //   var info = this.tickPositions.info;
+          //   var positions = [];
+          //   for (let i = Date.UTC(2010, 0, 1, 0, 0, 0); i <= Date.UTC(2010, 0, 2, 0, 0, 0); i += 3600 * 1000) {
+          //     positions.push(i);
+          //   }
+          //   this.tickPositions.info = info;
+          //   return this.tickPositions;
+          // },
+          // lineWidth: 1,
+          // dateTimeLabelFormats: {
+          //   day: '%H:%M'
+          // },
+        },
+        toolbar: {
+          
         }
-        
-
       }
-   
+
   }
 
   setGraphData(){
@@ -560,129 +530,14 @@ export class DriverTimeDetailComponent implements OnInit {
     let workTimeArray = this.detailConvertedData.map(data=>data.workTime);
     let restTimeArray = this.detailConvertedData.map(data=>data.restTime);
     let availableTimeArray = this.detailConvertedData.map(data=>data.availableTime);
-//console.log(workTimeArray)
-    // this.barChartData = [
-    //   { data: [6.0,6.0,6.0], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
-    //   { data: [6.0,6.0,6.0], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
-    //   { data: [6.0,6.0,6.0], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
-    //   { data: [6.0,6.0,6.0], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
-    // ]
     
     this.barChartLabels = dateArray;
+  }
 
-    // this.barChartOptions = {
-    //   responsive: true,
-    //   legend: {
-    //     position: 'bottom',
-    //   },
-    //   scales: {
-    //     xAxes: [
-    //       {
-    //         //stacked: true,
-            
-    //         gridLines: {
-    //           display: true,
-    //           drawBorder:true,
-    //           drawOnChartArea:false,
-    //           color:'#00000'
-    //         },
-    //        ticks: {
-    //         beginAtZero: true,
-    //         min:0,
-    //         max: 24
-    //       },
-    //       },
-    //     ],
-    //     yAxes: [
-    //       {
-    //         //stacked: true,
-    //         gridLines: {
-    //           display: true,
-    //           drawBorder:true,
-    //           drawOnChartArea:false,
-    //           color:'#00000'
-
-    //         },
-    //         ticks: {
-    //           beginAtZero: true,
-    //           //    max: 0
-    //         },
-    //       },
-    //     ],
-    //   },
-    //   // plugins: {
-    //   //     crosshair: {
-    //   //       line: {
-    //   //         color: '#F66',  // crosshair line color
-    //   //         width: 1        // crosshair line width
-    //   //       },
-    //   //       sync: {
-    //   //         enabled: true,            // enable trace line syncing with other charts
-    //   //         group: 1,                 // chart group
-    //   //         suppressTooltips: false   // suppress tooltips when showing a synced tracer
-    //   //       },
-    //   //       pan: {
-    //   //                 enabled: true,
-    //   //                 mode: 'x'
-    //   //       },
-    //   //       zoom: {
-    //   //         enabled: true,                                      // enable zooming
-    //   //         zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
-    //   //         zoomboxBorderColor: '#48F',                         // border color of zoom box
-    //   //         zoomButtonText: 'Reset Zoom',                       // reset zoom button text
-    //   //         zoomButtonClass: 'reset-zoom',                      // reset zoom button class
-    //   //       },
-    //   //       callbacks: {
-    //   //         beforeZoom: (start, end) =>{ 
-    //   //           this.zoomMsg = true;                 // called before zoom, return false to prevent zoom
-    //   //           return true;
-    //   //         },
-    //   //         afterZoom: (start, end)=>{       
-    //   //           this.zoomMsg = false;            // called after zoom
-    //   //         }
-             
-    //   //       }
-    //   //     },
-    //   //     zoom: {
-    //   //           pan: {
-    //   //               enabled: true,
-    //   //               mode: 'x',
-    //   //               rangeMin: {
-    //   //                 x: 0,
-    //   //               },
-    //   //               rangeMax: {
-    //   //                 x: 24,
-    //   //               },   
-    //   //           },
-    //   //     }
-    //     // zoom: {
-    //     //     pan: {
-    //     //         enabled: true,
-    //     //         mode: 'x',
-    //     //         rangeMin: {
-    //     //           x: 0,
-    //     //         },
-    //     //         rangeMax: {
-    //     //           x: 24,
-    //     //         },   
-    //     //     },
-    //     //     zoom: {
-    //     //         enabled: true,
-    //     //         mode: 'x',
-    //     //         rangeMin: {
-    //     //           x: 1,
-    //     //         },
-    //     //         rangeMax: {
-    //     //           x: 24,
-    //     //         }
-    //     //     }
-    //     // }
-    //  //},
-     
-    
-    // };
-
-    
+  getActualDate(_utc: any){
+    let date=this.reportMapService.getStartTime(_utc,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
+    console.log(date);
+    return date;
   }
 
   totalDriveTime =0;
@@ -691,14 +546,11 @@ export class DriverTimeDetailComponent implements OnInit {
   totalAvailableTime =0;
   selectedDriverName = '';
   selectedDriverId = '';
-
   tableInfoObj = {};
  
-
   onZoomReset(){
     console.log('reset')
   }
-
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
@@ -831,10 +683,7 @@ export class DriverTimeDetailComponent implements OnInit {
     doc.save('DriverDetailsTimeReport.pdf');
   }
 
-
-  pageSizeUpdated(_evt){
-
-  }
+  pageSizeUpdated(_evt){}
   
   backToMainPageCall(){
     let emitObj = {

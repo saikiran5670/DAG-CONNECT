@@ -683,7 +683,7 @@ proceedStep(prefData: any, preference: any){
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
      console.log("vehicleGroupList 2", this.vehicleGroupList); 
-     this.vehicleGroupList.sort(this.compare);
+     this.vehicleGroupList.sort(this.compareVehicleGroupList);
      this.resetVehicleGroupFilter();
 
      this.vehicleGroupList.forEach(element => {
@@ -711,7 +711,7 @@ proceedStep(prefData: any, preference: any){
         if(vehicle.length > 0){
           this.vehicleByVehGroupList.push(vehicle[0]);
           console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
-          this.vehicleByVehGroupList.sort(this.compare);
+          this.vehicleByVehGroupList.sort(this.compareVehicleList);
           this.resetVehiclesFilter();
         }
       });
@@ -1547,6 +1547,18 @@ PoiCheckboxClicked(event: any, row: any) {
     }, 2000);
   }
 
+  compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
+    a = parseInt(a.vehicleGroupId);
+    b = parseInt(b.vehicleGroupId);
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareVehicleList(a: any | String, b: any | String, isAsc: boolean) {
+    a = a.vehicleId;
+    b = b.vehicleId;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
     if(!(a instanceof Number)) a = a.toUpperCase();
     if(!(b instanceof Number)) b = b.toUpperCase();
@@ -1728,7 +1740,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1740,7 +1752,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1752,7 +1764,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -2549,13 +2561,15 @@ PoiCheckboxClicked(event: any, row: any) {
 }
 
 keyPressNumbers(event) {    
-  var limit = parseInt(event.currentTarget.maxLength);
+  // var limit = parseInt(event.currentTarget.maxLength);
   // var max = parseInt(event.currentTarget.max);
   var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
   var value = Number.parseFloat(event.target.value + '' + event.key);
-  if(event.key=='-' || value < min || (value).toString().length == limit) event.preventDefault();
-return true;   
+  var parts = event.target.value.split('.');
+  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
+  if(event.key=='-' || value < min) event.preventDefault();
+    return true;   
 }
 
 onKey(event: any) { // without type info
