@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
                     //string VINs = "'" + string.Join("','", vinList) + "'";
-                    var lstDriver = await _reportManager.GetDriversByVIN(request.StartDateTime, request.EndDateTime, vinList);
+                    var lstDriver = await _reportManager.GetDriversByVIN(request.StartDateTime, request.EndDateTime, vinList, request.OrganizationId);
                     if (lstDriver.Count() > 0)
                     {
                         string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);

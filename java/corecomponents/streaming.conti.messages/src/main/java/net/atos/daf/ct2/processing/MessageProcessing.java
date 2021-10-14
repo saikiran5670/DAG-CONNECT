@@ -58,15 +58,15 @@ public class MessageProcessing<U,R, T> {
 						    .asText();
                     	}
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 						logger.info("Issue TransId is null for record ::{} ", value);
 					}
                 
                 return transId.equalsIgnoreCase(messageType);
               }
-            })
+            }).name("Filter Message Type")
         .connect(broadcastStream)
-        .process(new BroadcastMessageProcessor<>(properties))
+        .process(new BroadcastMessageProcessor<>(properties)).name("Broadcast Processing")
         .map(
             new MapFunction<KafkaRecord<U>, KafkaRecord<T>>() {
               /**
@@ -95,14 +95,14 @@ public class MessageProcessing<U,R, T> {
                return null;
                 
               }
-            })
+            }).name("Map Kafka Record")
         .filter( rec -> Objects.nonNull(rec))
         .addSink(
             new FlinkKafkaProducer<KafkaRecord<T>>(
                 sinkTopicName,
                 new KafkaMessageSerializeSchema<T>(sinkTopicName),
                 properties,
-                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
+                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Sink Topic : "+sinkTopicName);
 
   }
   
@@ -152,7 +152,7 @@ public class MessageProcessing<U,R, T> {
 						logger.info("Broadcast updated from history :" + value);
 						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
 					}
-				})
+				}).setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
 				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
 						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
 						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
@@ -160,7 +160,9 @@ public class MessageProcessing<U,R, T> {
 						properties.getProperty(DAFCT2Constant.HBASE_MASTER),
 						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
 						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
-						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)));
+						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)))
+				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
+				.name("Historial Data");
 	}
 	  
 }
