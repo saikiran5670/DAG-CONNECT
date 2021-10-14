@@ -3,14 +3,14 @@
   <mat-expansion-panel style="width:100%;" class="full-width"> 
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter || 'Filter' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblName || 'Category' }}</mat-label>
+            <mat-label>{{ translationData.lblName }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select (selectionChange)="handleCategoryChange('category', $event.value.enum ,$event)" placeholder="{{translationData.lblSelectUserGroup || 'Select Category'}}" [(ngModel)]="alertCategory" >
+                <mat-select (selectionChange)="handleCategoryChange('category', $event.value.enum ,$event)" placeholder="{{translationData.lblSelectUserGroup}}" [(ngModel)]="alertCategory" >
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                       <mat-option *ngFor="let catList of alertCategoryList | removeDuplicates" [value]="catList">
                       {{ catList.value }}                                           
@@ -20,7 +20,7 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblGroup || 'Type' }}
+                {{ translationData.lblGroup }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterAlertTypeChange('type',$event)" [(ngModel)]="alertType">
@@ -31,10 +31,10 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblRole || 'Vehicle Group' }}
+                {{ translationData.lblRole }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" (selectionChange)="filterChange('vehicleGroupName',$event)" [(ngModel)]="alertVehicleGroup">
+                <mat-select placeholder="{{ translationData.lblSelectUserRole }}" (selectionChange)="filterChange('vehicleGroupName',$event)" [(ngModel)]="alertVehicleGroup">
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
                     </mat-option>
@@ -45,9 +45,9 @@
     <br>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+            <mat-label>{{ translationData.lblVehicle }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectVehicle || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
+                <mat-select placeholder="{{translationData.lblSelectVehicle }}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
                 <mat-option value=''>{{ translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let vehList of vehicleList | removeDuplicates"  [value]="vehList">
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehList.vehicleName}} </span>
@@ -58,9 +58,9 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblCriticality|| 'Criticality' }}</mat-label>
+            <mat-label>{{ translationData.lblCriticality }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectCriticality || 'Select Criticality'}}" (selectionChange)="filterChange('highUrgencyLevel',$event)"  [(ngModel)]="alertCriticality">
+                <mat-select placeholder="{{translationData.lblSelectCriticality}}" (selectionChange)="filterChange('highUrgencyLevel',$event)"  [(ngModel)]="alertCriticality">
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let critList of alertCriticalityList | removeDuplicates" [value]="critList"> {{critList.value}}
                     </mat-option>
@@ -68,9 +68,9 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblStatus || 'Status' }}</mat-label>
+            <mat-label>{{ translationData.lblStatus }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectStatus || 'Select Status'}}" (selectionChange)="filterChange('state',$event)" [(ngModel)]="alertStatus" >
+                <mat-select placeholder="{{translationData.lblSelectStatus }}" (selectionChange)="filterChange('state',$event)" [(ngModel)]="alertStatus" >
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
                     <mat-option *ngFor="let statusList of alertStatusList | removeDuplicates" [value]="statusList"> {{statusList.key}}
                     </mat-option>

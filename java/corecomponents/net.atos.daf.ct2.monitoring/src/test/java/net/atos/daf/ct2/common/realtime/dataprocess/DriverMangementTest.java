@@ -75,8 +75,9 @@ public class DriverMangementTest {
                 logger.error("Error in test :: {}",e);
             }
         });*/
-        List<Monitor> predefineData = getPredefineData(3, 2, 2,3);
-        driverCalculation.getStartEndTime(predefineData);
+        List<Monitor> predefineData = getPredefineData(3,2,2,3,3,2,2,2,7,3);
+        driverCalculation.getStartEndTime(predefineData)
+                .forEach(System.out::println);
 
     }
 
@@ -114,7 +115,7 @@ public class DriverMangementTest {
                 long currentTimeMillis = System.currentTimeMillis();
                 driverData = getDriverData(currentTimeMillis,state);
             } catch (InterruptedException e) {
-                logger.error("error while creating data {}",e);
+                logger.error("Error while creating data {}",e);
             }
             return driverData;
         }).collect(Collectors.toList());

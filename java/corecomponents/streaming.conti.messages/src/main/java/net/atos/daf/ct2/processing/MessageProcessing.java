@@ -105,7 +105,7 @@ public class MessageProcessing<U,R, T> {
 
   }
   
-  public void contiMessageForHistorical(
+  public void contiMessageForHistoricalBckUp(
 	      DataStream<KafkaRecord<String>> messageDataStream,
 	      Properties properties,
 		  BroadcastStream<KafkaRecord<R>> broadcastStream) {
@@ -168,7 +168,7 @@ public class MessageProcessing<U,R, T> {
 				.name("Historial Data");
 	}
   
-  public void contiMessageForHistoricalBckUp(
+  public void contiMessageForHistorical(
 	      DataStream<KafkaRecord<String>> messageDataStream,
 	      Properties properties,
 		  BroadcastStream<KafkaRecord<R>> broadcastStream) {

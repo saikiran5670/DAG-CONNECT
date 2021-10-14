@@ -7,14 +7,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
+
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.DriverActivityPojo;
 import net.atos.daf.postgre.bo.TwoMinuteRulePojo;
 import net.atos.daf.postgre.util.DafConstants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LiveFleetDriverActivityDao implements Serializable {
 
@@ -22,7 +25,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Logger log = LoggerFactory.getLogger(LiveFleetDriverActivityDao.class);
+	 private static final Logger log = LogManager.getLogger(LiveFleetDriverActivityDao.class);
 	private Connection connection;
 	/** SQL statement for insert. */
 	private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1, logical_code    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?, ?)";
@@ -37,7 +40,6 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		PreparedStatement stmt_insert_driver_activity;
 
 		boolean result = false;
-
 		try {
 
 			if (null != row && null != (connection = getConnection())) {
@@ -47,6 +49,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				
 				stmt_insert_driver_activity.addBatch();
 				stmt_insert_driver_activity.executeBatch();
+				
 			}
 		} catch (SQLException e) {
 			log.error("inside catch LiveFleetDriverActivityDao Insert" + e.getMessage());
@@ -61,7 +64,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 
 		boolean result = false;
 		try {
-
+			log.info("inside insert for Driver management ");
 			if (null != DriverDetails && null != (connection = getConnection())) {
 
 				stmt_insert_driver_activity = connection.prepareStatement(LIVEFLEET_DRIVER_INSERT,
@@ -70,6 +73,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				log.info("Insert Driver query--" + stmt_insert_driver_activity);
 				stmt_insert_driver_activity.addBatch();
 				stmt_insert_driver_activity.executeBatch();
+				log.info("data inserted for driver-->" + DriverDetails.getDriverID());
 			}
 		} catch (SQLException e) {
 			log.error("inside catch LiveFleetDriverActivityDao Driver Insert" + e.getMessage());

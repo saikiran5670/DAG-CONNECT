@@ -282,12 +282,12 @@ namespace net.atos.daf.ct2.fms.repository
                 objVehicleStatus.FuelLevel1 = item.FuelLevel1 ?? 0;
                 objVehicleStatus.GrossCombinationVehicleWeight = item.GrossCombinationVehicleWeight ?? 0;
                 objVehicleStatus.VehiclePosition = new VehiclePositionForStatus();
-                objVehicleStatus.VehiclePosition.Altitude = item.altitude;
-                objVehicleStatus.VehiclePosition.Heading = item.heading;
-                objVehicleStatus.VehiclePosition.Latitude = item.latitude;
-                objVehicleStatus.VehiclePosition.Longitude = item.longitude;
-                objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp;
-                objVehicleStatus.VehiclePosition.Speed = item.speed;
+                objVehicleStatus.VehiclePosition.Altitude = item.altitude ?? 0;
+                objVehicleStatus.VehiclePosition.Heading = item.heading ?? 0;
+                objVehicleStatus.VehiclePosition.Latitude = item.latitude ?? 0;
+                objVehicleStatus.VehiclePosition.Longitude = item.longitude ?? 0;
+                objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
+                objVehicleStatus.VehiclePosition.Speed = item.speed ?? 0;
                 objVehicleStatusResponse.VehicleStatus.Add(objVehicleStatus);
             }
             return objVehicleStatusResponse;

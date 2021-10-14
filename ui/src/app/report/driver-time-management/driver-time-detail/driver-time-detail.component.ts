@@ -67,146 +67,9 @@ export class DriverTimeDetailComponent implements OnInit {
   }
   dayWiseSummaryList: any =[];
   chartOptions: any;
-  // chartOptions = {
-  //   title: {
-  //     enabled: false
-  //   },
-  //   chart: {
-  //     type: 'columnrange',
-  //     inverted: true
-  //   },
-  //   exporting: {
-  //     enabled: false
-  //   },
-  //   series: [{
-  //     data: [{
-  //         x: 0,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 0,
-  //         low: Date.UTC(2010, 0, 1, 12, 30, 0),
-  //         high: Date.UTC(2010, 0, 1, 14, 0, 0),
-  //         color: 'blue'
-  //       },{
-  //         x: 0,
-  //         low: Date.UTC(2010, 0, 1, 14, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 16, 0, 0),
-  //         color: 'red'
-  //       },
-
-  //       {
-  //         x: 1,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 1,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //       {
-  //         x: 2,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 2,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //       {
-  //         x: 3,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 3,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //       {
-  //         x: 4,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 4,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //       {
-  //         x: 5,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 5,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //       {
-  //         x: 6,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       }, {
-  //         x: 6,
-  //         low: Date.UTC(2010, 0, 1, 9, 0, 0),
-  //         high: Date.UTC(2010, 0, 1, 12, 0, 0),
-  //         color: 'blue'
-  //       },
-
-  //     ]
-  //   }],
-  //   plotOptions: {
-  //     series: {
-  //       pointWidth: 10,
-  //     }
-  //   },
-  //   // title: {
-  //   //   text: 'Where are the data ?'
-  //   // },
-  //   xAxis: {
-  //     // categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  //     type: 'category'
-  //   },
-  //   yAxis: {
-  //     min: Date.UTC(2010, 0, 1, 0, 0, 0),
-  //     max: Date.UTC(2010, 0, 2, 0, 0, 0),
-  //     type: 'datetime',
-  //     tickPositioner: function() {
-  //       var info = this.tickPositions.info;
-  //       var positions = [];
-  //       for (let i = Date.UTC(2010, 0, 1, 0, 0, 0); i <= Date.UTC(2010, 0, 2, 0, 0, 0); i += 3600 * 1000) {
-  //         positions.push(i);
-  //       }
-  //       this.tickPositions.info = info;
-  //       return this.tickPositions;
-  //     },
-  //     lineWidth: 1,
-  //     dateTimeLabelFormats: {
-  //       day: '%H:%M'
-  //     },
-  //   },
-  // }
-    ;
-   chart: Highcharts.Chart;
+  chart: Highcharts.Chart;
   getInstance(chart: Highcharts.Chart) {
     this.chart = chart;
-    console.log(Date.UTC(2010, 0, 1, 9, 0, 0),);
-    console.log(Date.UTC(2010, 0, 1, 12, 0, 0),);
   }
   barChartLegend = true;
   barChartLabels: string[] = [];
@@ -317,11 +180,6 @@ export class DriverTimeDetailComponent implements OnInit {
           low : _startTime,
           high:_endTime
         }
-        let restObjN={
-          x :  Util.convertUtcToDateStart(element.startTime, this.prefTimeZone),
-          low : _startTime,
-          high:_endTime
-        }
         const found = this.dayWiseSummaryList.some(el => el.startTime === startTime);
         if (!found) this.dayWiseSummaryList.push({ startTime: startTime, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
         currentArray=this.dayWiseSummaryList.filter(el => el.startTime === startTime)[0];
@@ -329,27 +187,27 @@ export class DriverTimeDetailComponent implements OnInit {
         if(element.code === 0){
           restObj['color']='blue';
           restObj['type']='Rest';
-          restData.push(restObj);
+          // restData.push(restObj);
           newObj.push(restObj);
-          currentArray['restTime'] = currentArray.restTime + element.duration;
+          // currentArray['restTime'] = currentArray.restTime + element.duration;
         } else if(element.code === 1){
           restObj['color']='green';
           restObj['type']='Available';
-          availableData.push(restObj);
+          // availableData.push(restObj);
           newObj.push(restObj);
-          currentArray['availableTime']= currentArray.availableTime + element.duration;
+          // currentArray['availableTime']= currentArray.availableTime + element.duration;
         } else if(element.code === 2){
           restObj['color']='blue';
           restObj['type']='Work';
-          workData.push(restObj);
+          // workData.push(restObj);
           newObj.push(restObj);
-          currentArray['workTime']= currentArray.workTime + element.duration;
+          // currentArray['workTime']= currentArray.workTime + element.duration;
         } else if(element.code === 3){
           restObj['color']='orange';
           restObj['type']='Drive';
-          driveData.push(restObj);
+          // driveData.push(restObj);
           newObj.push(restObj);
-          currentArray['driveTime']= currentArray.driveTime + element.duration;
+          // currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
         // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
     }
@@ -362,38 +220,39 @@ export class DriverTimeDetailComponent implements OnInit {
       element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
       // console.log(element);
     });
-    const convert=this.getActualDate;
+    // const convert=this.getActualDate;
     const tz=this.prefTimeZone;
     this.updateDataSource(this.dayWiseSummaryList);
    // if(driveData.length>0)
-    _series.push({
-      // 'name': 'Drive',
-      'data': driveData,
-    })
-    //  if(workData.length>0)
-      _series.push({
-        // 'name': 'Work',
-        'data': workData,
-      });
+    // _series.push({
+    //   // 'name': 'Drive',
+    //   'data': driveData,
+    // })
+    // //  if(workData.length>0)
+    //   _series.push({
+    //     // 'name': 'Work',
+    //     'data': workData,
+    //   });
       
-     // if(restData.length>0)
-      _series.push({
-        // 'name': 'Rest',
-        'data': restData,
-      });
-    //  if(availableData.length>0)
-      _series.push({
-        // 'name': 'Available',
-        'data': availableData,
-      });
-      let _seriesN=[];
-      _seriesN.push({
-        'data' : newObj
-      })
+    //  // if(restData.length>0)
+    //   _series.push({
+    //     // 'name': 'Rest',
+    //     'data': restData,
+    //   });
+    // //  if(availableData.length>0)
+    //   _series.push({
+    //     // 'name': 'Available',
+    //     'data': availableData,
+    //   });
+    //   let _seriesN=[];
+    //   _seriesN.push({
+    //     'data' : newObj
+    //   })
       console.log("newObj" +JSON.stringify(newObj));
       this.chartOptions = {
         title: {
-          enabled: false
+          enabled: false,
+          text: ''
         },
         chart: {
           type: 'columnrange',
@@ -417,7 +276,6 @@ export class DriverTimeDetailComponent implements OnInit {
                 <br/><div>Duration: ${Util.getTimeHHMMSS(this.point.duration)}</div>
               </div>`
             )
-            // console.log(yAxisValues)
         }},
         series: [{
           data: newObj
@@ -472,9 +330,6 @@ export class DriverTimeDetailComponent implements OnInit {
             pointWidth: 10,
           }
         },
-        // title: {
-        //   text: 'Where are the data ?'
-        // },
         xAxis: {
           // categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
           // type: 'datetime',
@@ -487,10 +342,11 @@ export class DriverTimeDetailComponent implements OnInit {
                 return Util.convertUtcToDateFormat2(this.value, tz);
             },
         },
+        // visible: false,
         // tickInterval: 3600*1000*24,
-        // lineWidth: 0,
-        //   minorGridLineWidth: 0,
-        //   lineColor: 'transparent',
+        lineWidth: 0,
+          minorGridLineWidth: 0,
+          lineColor: 'transparent',
         },
         yAxis: {
           type: 'numeric',
@@ -500,28 +356,14 @@ export class DriverTimeDetailComponent implements OnInit {
           lineWidth: 0,
           minorGridLineWidth: 0,
           lineColor: 'transparent',
-          // min: Date.UTC(2010, 0, 1, 0, 0, 0),
-          // max: Date.UTC(2010, 0, 2, 0, 0, 0),
-          // type: 'datetime',
-          // tickPositioner: function() {
-          //   var info = this.tickPositions.info;
-          //   var positions = [];
-          //   for (let i = Date.UTC(2010, 0, 1, 0, 0, 0); i <= Date.UTC(2010, 0, 2, 0, 0, 0); i += 3600 * 1000) {
-          //     positions.push(i);
-          //   }
-          //   this.tickPositions.info = info;
-          //   return this.tickPositions;
-          // },
-          // lineWidth: 1,
-          // dateTimeLabelFormats: {
-          //   day: '%H:%M'
-          // },
+          title: false,
         },
-        toolbar: {
-          
-        }
+        toolbar: {          
+        },
+        legend: {
+          enabled: false
+        },
       }
-
   }
 
   setGraphData(){
