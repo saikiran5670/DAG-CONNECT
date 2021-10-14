@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.models.scheamas.CdcPayloadWrapper;
@@ -279,11 +278,11 @@ public class ContiMessageProcessing implements Serializable {
 						if(Objects.nonNull(jsonNodeRec)){
 							value.setKey(DAFCT2Constant.UNKNOWN);
 							logger.info("Issue Mandatory VID attribute is Null ::{}",value);
-							logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
+							/*logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
 							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
 							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
 							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
-							logger.info(" after explict setting TS for unknown VID :{}",value.getValue());
+							logger.info(" after explict setting TS for unknown VID :{}",value.getValue());*/
 							return DAFCT2Constant.UNKNOWN;
 						}else{
 							value.setKey(DAFCT2Constant.CORRUPT);

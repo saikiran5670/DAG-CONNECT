@@ -63,7 +63,7 @@
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDataAttributeDescription }}
                             <mat-icon *ngIf="actionType != 'view'"
-                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription || 'New Feature description will auto create same as Data Attribute description'}}"
+                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription }}"
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>
@@ -116,7 +116,7 @@
                                 style='margin-right: 20px;' value="ACTIVE">{{ translationData.lblActive  }}
                             </mat-radio-button>
                             <mat-radio-button [checked]="selectedStatus ===  'INACTIVE' ? true : false"
-                                style='margin-right: 20px;' value="INACTIVE">{{ translationData.lblInactive || 'Inactive' }}
+                                style='margin-right: 20px;' value="INACTIVE">{{ translationData.lblInactive }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
@@ -170,7 +170,7 @@
             </div>
             <div class='margin-bottom-xlg'>
                     <mat-icon class='margin-right-10'>info</mat-icon>
-                    <span>{{ translationData.lblMessage || 'Select atleast one Data attritute.' }}<span class='mandatoryColor'>*</span></span>
+                    <span>{{ translationData.lblDataAttributeMessage }}<span class='mandatoryColor'>*</span></span>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container matColumnDef="name">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute }}</mat-header-cell>

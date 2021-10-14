@@ -2439,9 +2439,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicle_group_ids", vehicleGroupIds);
 
                 string query =
-                    @"SELECT id, group_type as GroupType, function_enum as GroupMethod, ref_id as RefId 
-                      FROM master.group
-                      WHERE id = ANY (@vehicleGroupIds)";
+                    @"SELECT DISTINCT grp.id, grp.name, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
+                      FROM master.group grp
+                      WHERE id = ANY (@vehicle_group_ids)";
 
                 return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
             }

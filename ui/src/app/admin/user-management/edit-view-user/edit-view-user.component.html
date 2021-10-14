@@ -56,7 +56,7 @@
                   <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser ) : (translationData.lblSystemUser )) : '--' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
+                  <mat-label>{{ translationData.lblOrganisation }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.organization ? accountInfoData.organization : '--' }}</mat-label>
                 </div>
                 <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -174,7 +174,7 @@
                     </mat-error>
                   </div>
                   <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblUserType }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select placeholder="{{ translationData.lblUserType  }}" formControlName="userType">
                         <mat-option *ngFor="let rer of userTypeList" [value]="rer.value">
@@ -187,9 +187,9 @@
                     </mat-error> -->
                   </div>
                   <div class="areaWidth min-width-30-per"style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
+                    <mat-label>{{ translationData.lblOrganisation }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput formControlName="organization">
+                      <input placeholder="{{ translationData.lblOrganisation  }}" matInput formControlName="organization">
                     </mat-form-field>
                   </div>
                   <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -211,7 +211,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting  }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting  }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings }})</span></span>
               <!-- <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
                 <mat-icon *ngIf='!editGeneralSettingsFlag' style="cursor: pointer;" (click)="editGeneralSettings()">create</mat-icon>
               </button> -->
@@ -259,7 +259,7 @@
             <mat-label class='custom-font'>{{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : defaultSetting.landingPageDisplayDropdownData[0].value }}</mat-label>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+            <mat-label>{{ translationData.lblSetPageRefreshTime }}</mat-label>
             <mat-label class='custom-font'>{{ pageRefreshTime ? pageRefreshTime : '--'}}</mat-label>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -361,7 +361,7 @@
                 </mat-form-field>
               </div>
               <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+                <mat-label>{{ translationData.lblSetPageRefreshTime }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
                   <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
                   <span matSuffix>min</span>  
@@ -409,7 +409,7 @@
                       <mat-cell *matCellDef="let row"> {{ row.roleName }} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="featureIds">
-                      <mat-header-cell *matHeaderCellDef>{{ translationData.Services || 'Services' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef>{{ translationData.Services }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">  
                         <span *ngIf='row.featureIds.length > 0'>
                           <span *ngFor='let item of [].constructor(row.featureIds.length > 4 ? 4 : row.featureIds.length); let i = index'>

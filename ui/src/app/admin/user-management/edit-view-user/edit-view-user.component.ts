@@ -628,8 +628,8 @@ export class EditViewUserComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
+      colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

@@ -13,11 +13,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        private readonly IVisibilityManager _visibilityManager;
-        public ReportSchedulerRepository(IVisibilityManager visibilityManager)
-        {
-            _visibilityManager = visibilityManager;
-        }
         public Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList(int reportCreationRangeInMinutes)
         {
             try
@@ -26,7 +21,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameter.Add("@from_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(-reportCreationRangeInMinutes)));
                 parameter.Add("@now_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 #region Query GetReportCreationScheduler
-                var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, r.feature_id as FeatureId
+                var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, r.feature_id as FeatureId,
                             r.name as ReportName, trim(r.key) as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 
                             rs.type as Type, rs.start_date as StartDate, rs.end_date as EndDate,
                             trim(rs.code) as Code, rs.last_schedule_run_date as LastScheduleRunDate, 
@@ -58,7 +53,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
+        public Task<IEnumerable<VehicleList>> GetVehicleListTemp(int reprotSchedulerId, int organizationId)
         {
             try
             {
@@ -242,18 +237,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-        public async Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId)
+        public async Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
-                //parameter.Add("@organization_id", organizationId);
+
                 var query = @"select distinct vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id =@report_schedule_id
                             ";
-                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter), 0);//need to pass parameter
-
-                return await Task.FromResult(vehicles.Select(s => new VehicleList { Id = s.Id, VIN = s.VIN }));
+                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter), organizationId);//need to pass parameter
+                var vehicleList = new List<VehicleList>();
+                foreach (var item in vehicles)
+                {
+                    foreach (var v in item.Value)
+                    {
+                        vehicleList.Add(new VehicleList { Id = v.Id, VIN = v.VIN });
+                    }
+                }
+                return await Task.FromResult(vehicleList);
             }
             catch (Exception)
             {

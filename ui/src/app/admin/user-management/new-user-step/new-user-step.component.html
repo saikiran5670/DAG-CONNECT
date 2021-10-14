@@ -151,9 +151,9 @@
                   </mat-error> -->
                 </div>
                 <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
+                  <mat-label>{{ translationData.lblOrganisation }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput formControlName="organization">
+                    <input placeholder="{{ translationData.lblOrganisation }}" matInput formControlName="organization">
                   </mat-form-field>
                 </div>
                 <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -166,7 +166,7 @@
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings }})</span></span>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -280,7 +280,7 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-30-per targetSpanIcon" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time'}}</mat-label>
+              <mat-label>{{ translationData.lblSetPageRefreshTime }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
                 <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
                 <span matSuffix>min</span>  
@@ -289,10 +289,10 @@
                 {{ translationData.lblPleaseEnterTimerValue  }}
               </mat-error>
               <mat-error  *ngIf="firstFormGroup.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
-                  {{ translationData.lbl  }}
+                  {{ translationData.lblCannotExceedMaxValue  }}
               </mat-error>
               <mat-error  *ngIf="firstFormGroup.get('pageRefreshTime').hasError('cannotExceedMinValue')">
-                  {{ translationData.lbl  }}
+                  {{ translationData.lblCannotExceedMinValue  }}
               </mat-error>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -326,7 +326,7 @@
             <div fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign='center center'>
                   <mat-icon class='margin-right-10'>info</mat-icon>
-                  <span>{{ translationData.lblMessage || 'Select atleast one role.'}}<span class='mandatoryColor'>*</span></span>
+                  <span>{{ translationData.lblMessage }}<span class='mandatoryColor'>*</span></span>
               </div>
             </div>
           </div>

@@ -56,13 +56,17 @@ export class OrganisationDetailsComponent implements OnInit {
   driverOptIn: string;
   vehicleOptIn: string;
   showLoadingIndicator: boolean = false;
-  readonly maxSize = 5242880; //5 MB
+  readonly maxSize = 1024*200; //200 kb
   imageEmptyMsg: boolean = false;
   clearInput: any;
   imageMaxMsg: boolean = false;
   file: any;
   uploadLogo: any = "";
   isDefaultBrandLogo: any = false;
+  brandLogoFileValidated= false;
+  brandLogoChangedEvent= '';
+  droppedBrandLogo: any= '';
+  hideImgCropper= true;
 
   public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -225,13 +229,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateVehicleDefault(){
     switch (this.organisationData.vehicleOptIn) {
       case 'U':
-                this.vehicleOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.vehicleOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.vehicleOptIn = this.translationData.lblOptIn || 'Opt In'
+                this.vehicleOptIn = this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.vehicleOptIn = this.translationData.lblInherit || 'Inherit'
+                this.vehicleOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -241,13 +245,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateDriverDefault(){
     switch (this.organisationData.driverOptIn) {
       case 'U':
-                this.driverOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.driverOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.driverOptIn= this.translationData.lblOptIn || 'Opt In'
+                this.driverOptIn= this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.driverOptIn = this.translationData.lblInherit || 'Inherit'
+                this.driverOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -325,7 +329,10 @@ export class OrganisationDetailsComponent implements OnInit {
     }
   }
 
-  createUpdatePreferences(){  
+  createUpdatePreferences(){ 
+    if(!this.brandLogoFileValidated){
+      this.uploadLogo = this.organisationData["icon"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.organisationData["icon"]);
+    }
     let preferenceUpdateObj: any = {
       id: this.preferenceId,
       refId: this.organizationIdNo,
@@ -363,9 +370,9 @@ export class OrganisationDetailsComponent implements OnInit {
   successStatus(createStatus: any){
     let successMsg: any = '';
     if(createStatus){ // create
-      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully || "Organisation Details Created Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully;
     }else{ // update
-      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully || "Organisation Details Updated Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully;
     }
     this.successMsgBlink(successMsg); 
   }
@@ -385,6 +392,8 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   addfile(event: any, clearInput: any){ 
+    this.brandLogoChangedEvent = event; 
+    this.brandLogoFileValidated= false;
     this.isDefaultBrandLogo = false;
     this.clearInput = clearInput;
     this.imageEmptyMsg = false;  
@@ -455,8 +464,18 @@ export class OrganisationDetailsComponent implements OnInit {
        this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
      );
      console.log("this.filteredTimezones", this.filteredTimezones);
-}
+  }
 
+  brandLogoLoaded() {
+    this.brandLogoFileValidated = true;
+    // show cropper
+  }
 
+  brandLogoCropperReady() {
+      // cropper ready
+  }
+  loadImageFailed() {
+    // show message
+  }
 
 }
