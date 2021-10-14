@@ -110,6 +110,7 @@ public class DafConstants {
 		public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
 		
 		public static final String AUTO_OFFSET_RESET ="auto.offset.reset";
+	public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
 		
 		
 	

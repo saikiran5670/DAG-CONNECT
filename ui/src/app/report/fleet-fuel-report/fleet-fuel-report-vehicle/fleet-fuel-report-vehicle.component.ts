@@ -1675,6 +1675,7 @@ getLast3MonthDate(){
         });
       }
      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+     this.resetVehicleGroupFilter();
 
     }
 
@@ -1686,6 +1687,7 @@ getLast3MonthDate(){
 
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.resetVehicleFilter();
       this.resetTripFormControlValue();
     };
     this.setVehicleGroupAndVehiclePreSelection();
