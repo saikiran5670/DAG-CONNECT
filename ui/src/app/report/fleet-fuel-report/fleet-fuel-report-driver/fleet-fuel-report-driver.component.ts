@@ -682,6 +682,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
+    this.FuelData.forEach(element => {
+      if(element.driverID.includes('~*')){
+        element["unknownDriver"] = true;
+      }
+      else{
+        element["unknownDriver"] = false;
+      }
+    });
+    
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     })
