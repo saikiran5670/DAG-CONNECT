@@ -21,7 +21,7 @@
     <ng-template #topRightElements>
       <div>
         <button mat-flat-button (click)="importPackageCSV()">
-          <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import'  }}
+          <mat-icon>file_download</mat-icon>{{ translationData.lblImport }}
         </button>
       </div>
       <div *ngIf="!adminAccessType.adminReadOnlyAccess">

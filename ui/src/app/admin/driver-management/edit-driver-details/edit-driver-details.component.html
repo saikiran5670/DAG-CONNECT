@@ -73,7 +73,7 @@
           <mat-label>{{ translationData.lblFirstName }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName">
+              <input maxlength="30" placeholder="{{ translationData.lblFirstName}}" matInput formControlName="firstName">
             </mat-form-field>
             <mat-error *ngIf="driverFormGroup.get('firstName').hasError('required')">
               {{ translationData.lblPleaseenterFirstName }}

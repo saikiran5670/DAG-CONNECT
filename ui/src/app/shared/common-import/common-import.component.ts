@@ -398,12 +398,10 @@ export class CommonImportComponent implements OnInit {
       packagesToImport.push(
         {
           
-            "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
-            "categoryId": this.filelist[i]["CategoryId"],
+            "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],          
             "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
-            "subCategoryId":this.filelist[i]["SubCategoryId"],
             "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
-            "name": this.filelist[i]["POIName"],
+            "name": this.filelist[i]["POIName"] || this.filelist[i]["Name"],
             "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
             "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
             "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
@@ -424,7 +422,7 @@ export class CommonImportComponent implements OnInit {
   validatePOIData(packagesToImport,removableInput){
     let validData: any = [];
     let invalidData: any = [];
-    let orgFlag = false, categoryFlag = false, subcategoryFlag = false,nameFlag= false,longitudeFlag=false,latitudeFlag=false;
+    let orgFlag = false, categoryFlag = true, subcategoryFlag = true,nameFlag= false,longitudeFlag=false,latitudeFlag=false;
     packagesToImport.forEach((item: any) => {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {

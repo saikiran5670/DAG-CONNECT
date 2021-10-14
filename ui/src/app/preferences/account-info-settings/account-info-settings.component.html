@@ -471,6 +471,11 @@
                 <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon>cancel</mat-icon>
                 </button>
+                <image-cropper *ngIf="uploadLogo != ''" [hidden]="hideImgCropper" style="height: 30px; width: 30px;" 
+                  [imageChangedEvent]="brandLogoChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
+                  [resizeToWidth]="100" format="png"
+                  (imageLoaded)="brandLogoLoaded()" (cropperReady)="brandLogoCropperReady()" (loadImageFailed)="loadImageFailed()">
+                </image-cropper>
                 <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
               </div>
               <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
@@ -486,7 +491,10 @@
                 </div> -->
               </div>
             </div>
-            <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
+            <!-- <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span> -->
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
+            </span>
             <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
                 The total size must not exceed {{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                 | byteFormat}}).

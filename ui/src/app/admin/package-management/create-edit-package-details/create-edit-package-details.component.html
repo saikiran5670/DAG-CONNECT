@@ -15,7 +15,7 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package Details') : (translationData.lblViewPacakge|| 'View Package Details') }}
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage) : actionType == 'edit' ? (translationData.lblEditPackage) : (translationData.lblViewPacakge) }}
                     <mat-icon *ngIf="actionType == 'view' && selectedElementData.status == 'Active'" (click)="editPackage()" style="cursor: pointer;" [disabled]="selectedElementData.status == 'Inactive'">edit</mat-icon></span>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                         <mat-radio-group (change)='onStatusChange($event)' >
                             <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="Inactive" >{{ translationData.lblInactive || 'Inactive'}}
+                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="Inactive" >{{ translationData.lblInactive }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
