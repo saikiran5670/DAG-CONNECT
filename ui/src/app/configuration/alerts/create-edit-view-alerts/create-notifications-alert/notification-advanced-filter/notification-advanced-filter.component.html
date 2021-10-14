@@ -5,7 +5,7 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                translationData.lblFrequency || 'Frequency' }}<span class='mandatoryColor'>*</span></span>
+                translationData.lblFrequency}}<span class='mandatoryColor'>*</span></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -13,18 +13,18 @@
                 <div *ngIf="actionType != 'view'" class="margin-bottom-sm">
                     <mat-radio-group [disabled]="alert_type_selected === 'D' || alert_type_selected === 'U' || alert_type_selected === 'G'" formControlName="notificationFrequency">
                         <mat-radio-button style='margin-right: 20px;' value="O">
-                            {{ translationData.lblOnce || 'Once' }}
+                            {{ translationData.lblOnce }}
                         </mat-radio-button>
                         <mat-radio-button style='margin-right: 20px;' value="T">
-                            {{ translationData.lblEachTime || 'Each Time' }}
+                            {{ translationData.lblEachTime }}
                         </mat-radio-button>
                         <mat-radio-button style='margin-right: 20px;' value="E">
-                            {{ translationData.lblEachNumberOfOccurences || 'Each Number of Occurences' }}
+                            {{ translationData.lblEachNumberOfOccurences }}
                         </mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  Frequency : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce || 'Once') : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime || 'Each Time') : (translationData.lblEachNumberOfOccurences || 'Each Number of Occurences')) }}</span>
+                  Frequency : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
                 </div>
                 <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
             </div>
@@ -38,7 +38,7 @@
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                  translationData.lblValidity || 'Validity' }}<span class='mandatoryColor'>*</span></span>
+                  translationData.lblValidity}}<span class='mandatoryColor'>*</span></span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -46,15 +46,15 @@
                   <div *ngIf="actionType != 'view'" class="margin-bottom-sm">
                       <mat-radio-group formControlName="validityAlwaysCustom" (change)="onChangeValidityType($event.value)">
                           <mat-radio-button style='margin-right: 20px;' value="A">
-                              {{ translationData.lblAlways || 'Always' }}
+                              {{ translationData.lblAlways}}
                           </mat-radio-button>
                           <mat-radio-button style='margin-right: 20px;' value="C">
-                              {{ translationData.lblCustom || 'Custom' }}
+                              {{ translationData.lblCustom}}
                           </mat-radio-button>
                       </mat-radio-group>
                   </div>
                   <div *ngIf="actionType == 'view'">
-                    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways || 'Always') :  (translationData.lblCustom || 'Custom') }}</span>
+                    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
                   </div>
                   <p *ngIf="actionType != 'view'" style="color: darkgray;">Define a time range when the alert will be active. This can be 'Always' or a 'Custom' time range.</p>
               </div>
@@ -62,13 +62,12 @@
 
             <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
                 <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
-                    <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectPeriod || 'Select Period' }}
+                    <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectPeriod }}
                     </mat-label>
-                    <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
+                    <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays }} <span
                         class='mandatoryColor'>*</span>
-                      <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
-                        day)'}}</mat-label>
-                        <mat-label style="color: red;" *ngIf="weekDaySelected == false">{{ translationData.lblPleaseSelectAtLeastOneDay || 'Please select at least one day'}}</mat-label>
+                      <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday}}</mat-label>
+                        <mat-label style="color: red;" *ngIf="weekDaySelected == false">{{ translationData.lblPleaseSelectAtLeastOneDay}}</mat-label>
                     </mat-label>
                     <!-- calendar -->
                     <div formArrayName="FormArrayItems">
@@ -84,10 +83,10 @@
                               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                                   <mat-radio-group [disabled]="item['controls']['daySelection'].value != true" formControlName="fulldayCustom">
                                     <mat-radio-button style='margin-right: 20px;' value="A">
-                                        {{ translationData.lblFullDay || 'Full Day' }}
+                                        {{ translationData.lblFullDay}}
                                     </mat-radio-button>
                                     <mat-radio-button style='margin-right: 20px;' value="C">
-                                        {{ translationData.lblCustomPeriod || 'Custom Period' }}
+                                        {{ translationData.lblCustomPeriod}}
                                     </mat-radio-button>
                                   </mat-radio-group>
                               </div> 
@@ -101,20 +100,20 @@
                                     <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right: 5px;"  class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                                       <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
                                         <div class="max-width-42-per" fxLayout="column">
-                                          <mat-label style="margin-left: 5px;">{{ translationData.lblFrom || 'From' }}</mat-label>
+                                          <mat-label style="margin-left: 5px;">{{ translationData.lblFrom}}</mat-label>
                                           <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
                                               <input type="time" matInput formControlName="fromTime" >
                                           </mat-form-field>
                                         </div>
                                         <div class="max-width-42-per" fxLayout="column">
-                                          <mat-label style="margin-left: 5px;">{{ translationData.lblTo || 'To' }}</mat-label>
+                                          <mat-label style="margin-left: 5px;">{{ translationData.lblTo}}</mat-label>
                                           <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
                                               <input type="time" matInput formControlName="toTime" >
                                           </mat-form-field>
                                         </div>
                                         <div class="max-width-5-per" fxLayout="column">
                                           <!-- <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
-                                            <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">delete_outline</mat-icon>
+                                            <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete}}">delete_outline</mat-icon>
                                           <!-- </button> -->
                                         </div>
                 
@@ -127,7 +126,7 @@
                               <div fxLayout="row">
                                 <div  fxLayout="column"  fxLayoutAlign="left" fxLayoutGap="10px">
                                     <button mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
-                                      {{ translationData.lblAdd || 'Add' }}</button>
+                                      {{ translationData.lblAdd}}</button>
                                   </div>
                               </div>
 
@@ -146,7 +145,7 @@
                   <div *ngIf="actionType == 'view' && selectedRowData.notifications[0].validityType == 'C'">
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
                       fxLayoutGap="10px">
-                      <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectedDays || 'Selected Days'}}
+                      <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectedDays}}
                       </mat-label>
                     </div>
                   
@@ -164,11 +163,11 @@
                           <div class="areaWidth min-width-30-per" fxLayout="row" fxLayoutAlign="left">
                   
                             <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                              <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+                              <mat-label>{{ translationData.lblFrom}}</mat-label>
                               <span style='font-weight: 500!important;'>{{ item.startDate }}</span>
                             </div>
                             <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                              <mat-label>{{ translationData.lblFrom || 'To' }}</mat-label>
+                              <mat-label>{{ translationData.lblFrom }}</mat-label>
                               <span style='font-weight: 500!important;'>{{ item.endDate }}</span>
                             </div>
                           </div>
