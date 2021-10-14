@@ -53,10 +53,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		 logger.info("PID value {}",  pId);
 
 		driverDAO = new LiveFleetDriverActivityDao();
-		// System.out.println("read Query--->" +
-		// net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_READ);
-		// System.out.println("update Query--->" +
-		// net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_UPDATE);
 		try {
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
@@ -78,7 +74,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	
 	public void invoke(Monitor monitor) throws Exception {
 		 net.atos.daf.ct2.common.models.Monitor monitorChild=(net.atos.daf.ct2.common.models.Monitor)monitor;
-		 System.out.println("inside invoke");
+		 logger.info("inside invoke of driver Management ");
 		 
 		DriverActivityPojo DriverDetailsD1 = driverActivityCalculation(monitorChild, true);
 		driverDAO.driver_insert(DriverDetailsD1);
@@ -95,26 +91,12 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 
 		DriverActivityPojo driverActivity = new DriverActivityPojo();
 		System.out.println("inside calculation");
+		 logger.info("inside driver calculation ");
 
 		driverActivity.setTripId(row.getDocument().getTripID());
 		driverActivity.setVid(row.getVid());
-		// DriverActivity.setVin(null);
-		// DriverActivity.setTripStartTimeStamp(Types);
-		// DriverActivity.setTripEndTimeStamp(null);
-		try {
-			/*
-			 * driverActivity.setActivityDate(TimeFormatter.getInstance()
-			 * .convertUTCToEpochMilli(row.getEvtDateTime().toString(),
-			 * DafConstants.DTM_TS_FORMAT));
-			 */
-			
-			driverActivity.setActivityDate(row.getStartTime());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error in Live fleet position, ActivityDate calculation" + e.getMessage());
-			e.printStackTrace();
-		}
-
+		driverActivity.setActivityDate(row.getStartTime());
+		
 		if (driverIdentification == true) {
 			// Driver 1
 
@@ -126,7 +108,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 			//driverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
 			driverActivity.setCode(row.getDriverState());
 			driverActivity.setIsDriver1(true);
-			driverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
+			//driverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
 		} else {
 			// Driver 2
 
@@ -135,40 +117,24 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 			} else {
 				driverActivity.setDriverID("Unknown");
 			}
-			driverActivity.setCode(row.getDriverState());
+			driverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
 			driverActivity.setIsDriver1(false);
-			driverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());
+			//driverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());
 		}
 
-		/*
-		 * try { driverActivity.setStartTime(TimeFormatter.getInstance()
-		 * .convertUTCToEpochMilli(row.getEvtDateTime().toString(),
-		 * DafConstants.DTM_TS_FORMAT)); } catch (ParseException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } // start time
-		 * 
-		 * try { driverActivity.setEndTime(TimeFormatter.getInstance()
-		 * .convertUTCToEpochMilli(row.getEvtDateTime().toString(),
-		 * DafConstants.DTM_TS_FORMAT)); } catch (ParseException e) { // TODO
-		 * Auto-generated catch block
-		 * logger.error("Error in Live fleet position, setEndDate" + e.getMessage());
-		 * e.printStackTrace(); } // end-time
-		 */
-		
 		driverActivity.setStartTime(row.getStartTime());
 		driverActivity.setEndTime(row.getEndTime());
 		
 		driverActivity.setDuration(row.getDuration()); // it will be null when record creates.
 
 		driverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-		// DriverActivity.setCreated_at_kafka(row.getReceivedTimestamp());
 		driverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
 		driverActivity.setCreatedAtM2m(row.getReceivedTimestamp());
-		// DriverActivity.setModified_at(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		driverActivity.setModifiedAt(null); // it will be null when record
 											// creates.
 		driverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		driverActivity.setVin(row.getVin());
-		System.out.println("in driver activity sink class---" + row.getVin());
+		//System.out.println("in driver activity sink class---" + row.getVin());
 		return driverActivity;
 
 	}
