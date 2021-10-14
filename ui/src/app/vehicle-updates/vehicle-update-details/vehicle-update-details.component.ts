@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter,Inject, Input, OnChanges, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { TranslationService } from 'src/app/services/translation.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -13,6 +13,9 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { MdePopoverTrigger } from '@material-extended/mde';
 import { Util } from '../../shared/util';
 import * as moment from 'moment-timezone';
+import { ScheduleConfirmComponent } from './schedule-confirm/schedule-confirm.component';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { OrganizationService } from '../../services/organization.service';
 
 
 @Component({
@@ -33,32 +36,57 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   accountOrganizationSetting: any;
   breadcumMsg: any = '';
   selectedVin: any;
-  openScheduler: boolean = false;
-  selectedEndTime;
-  selectedStartTime: any;
+  selectedVehicalName: any;
+  openSchedulerFlag: boolean = false;
+  backdropClose: boolean = false;
+  campaignOverFlag: boolean = false;
+  selectedScheduledTime: any = '12:00 AM'
   public schedulerForm: FormGroup;
-  prefTimeFormat: any; //-- coming from pref setting
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  scheduledTime: any;
+  scheduledDate: any;
+  prefTimeFormat: any = 12; //-- coming from pref setting
+  prefDateFormat: any = ''; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
-  startDateValue: any;
-  endDateValue: any;
-  last3MonthDate: any;
+  schedulerData: any ={
+    campaignName: "",
+    vehicalName: "",
+    baseLineId: "",
+    scheduleDateTime: "",
+    vin: '',
+    campaignId: ''
+
+  }
+  today= new Date();
   @Output() backToPage = new EventEmitter<any>();
   @Input() selectedVehicleUpdateDetailsData: any;
   @Input() selectedVehicleUpdateDetails: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger;
+  @ViewChild(MdePopoverTrigger) trigger: MdePopoverTrigger;
   @Input('mdePopoverPositionX') positionX;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ReleaseNoteComponent>;
+  dialogRefConfirm: MatDialogRef<ScheduleConfirmComponent>;
+  accountId: number;
+  accountRoleId: number;
+  accountPrefObj: any;
+  selectedStartTime: string;
+  startDateValue: any;
+  todayDate: any;
+ 
 
-  constructor(private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
-    private otaSoftwareService: OtaSoftwareUpdateService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
+    private otaSoftwareService: OtaSoftwareUpdateService, private organizationService: OrganizationService) {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -75,11 +103,87 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     this.breadcumMsg = this.getBreadcum();
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }  
+      });
     });
+  }
+  proceedStep(prefData: any, preference: any) {
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if (_search.length > 0) {
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    } else {
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+    }
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
   }
 
   ngOnChanges() {
     this.loadVehicleDetailsData(this.selectedVehicleUpdateDetailsData);
+  }
+
+  setDefaultStartEndTime() {
+    this.setPrefFormatTime();
+  }
+
+  setPrefFormatTime() {
+    if (this.prefTimeFormat == 24) {
+      this.startTimeDisplay = '00:00:00';
+      this.selectedStartTime = "00:00";
+    } else {
+      this.startTimeDisplay = '12:00:00 AM';
+      this.selectedStartTime = "12:00 AM";
+    
+    }
+  }
+
+  setDefaultTodayDate() {
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.todayDate = this.getTodayDate();
+  }
+
+  getTodayDate() {
+    let todayDate = new Date(); //-- UTC
+    return todayDate;
+  }
+  
+  setPrefFormatDate() {
+    switch (this.prefDateFormat) {
+      case 'dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default: {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
   }
 
   processTranslation(transData: any) {
@@ -92,17 +196,21 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
+    console.log(this.selectedVehicleUpdateDetails, 'this.selectedVehicleUpdateDetails');
     this.showLoadingIndicator = true;
     if (this.selectedVehicleUpdateDetailsData) {
       this.selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
+        var todaysDate = moment();
         if (element.endDate) {
-          var date = new Date(element.endDate).toISOString();
           element.endDate = moment(parseInt(element.endDate)).format('MM/DD/YYYY');
+         if(moment(element.endDate).isBefore(todaysDate['_d'])){
+            this.campaignOverFlag = true;
+         }
         } else {
+          this.campaignOverFlag = false;
           element.endDate = '-';
         }
         if (element.scheduleDateTime) {
-          //  let shceduledDateTime = new Date(element.scheduleDateTime).toISOString();
           element.scheduleDateTime = moment(parseInt(element.scheduleDateTime)).format('MM/DD/YYYY HH:mm:ss');
         } else {
           element.scheduleDateTime = '-';
@@ -111,6 +219,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       });
       this.initData = this.selectedVehicleUpdateDetailsData.campaigns;
       this.selectedVin = this.selectedVehicleUpdateDetails.vin;
+      this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;
       this.updateDataSource(this.initData);
     }
     this.hideloader();
@@ -121,12 +230,6 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
-      //   const isAsc = sort.direction === 'asc';
-      //   return data.sort((a: any, b: any) => {
-      //     return this.compare(a[sort.active], b[sort.active], isAsc);
-      //   });
-      //  }
     });
   }
   getBreadcum() {
@@ -142,26 +245,28 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       msg: ""
     }
     this.backToPage.emit(emitObj);
-
   }
+
   applyFilter(filterValue: string) {
 
   }
+
   pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
 
-  releaseNote(releaseNoteData: any, vin) { //--- single opt-in/out mode
-    this.showReleaseNoteDailog(releaseNoteData, vin);
+  releaseNote(releaseNoteData: any) { //--- single opt-in/out mode
+    this.showReleaseNoteDailog(releaseNoteData, this.selectedVin);
   }
 
-  showReleaseNoteDailog(releaseNoteData: any, vin: any) {
+  showReleaseNoteDailog(releaseNoteData: any, vin) {
+    console.log(releaseNoteData,'releaseNoteData');
     const dialogReleaseNote = new MatDialogConfig();
     dialogReleaseNote.disableClose = true;
     dialogReleaseNote.autoFocus = true;
-    this.otaSoftwareService.getsoftwarereleasenotes(releaseNoteData['campaignID'], 'XLR000000BE000080').subscribe((value: any) => {
+    this.otaSoftwareService.getsoftwarereleasenotes(releaseNoteData, vin).subscribe((value: any) => {
       dialogReleaseNote.data = {
         translationData: this.translationData,
         releaseNoteData: releaseNoteData,
@@ -171,53 +276,109 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       }
       this.dialogRef = this.dialog.open(ReleaseNoteComponent, dialogReleaseNote);
 
+    }, (error) => {
+      this.hideloader();
+      console.log("error:: ", error)
     });
-
-    // this.dialogRef.afterClosed().subscribe(res => {
-    //   if(res){
-    //     console.log(res, 'gfhgfhjg');
-    //     // if(res.tableData && res.tableData.length > 0){
-    //     //   this.selectedConsentType = 'All';
-    //     // if(res.consentMsg) { 
-    //     //   if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
-    //     //     var msg = res.tableData.length + " drivers were successfully Opted-In.";
-    //     //   } else if(dialogConfig.data.consentType == 'U') {
-    //     //     var msg = res.tableData.length + " drivers were successfully Opted-Out.";
-    //     //   }
-    //     // }
-    //     // this.successMsgBlink(msg);
-    //     // // if(res.consentMsg && res.consentMsg != ''){
-    //     // //   this.successMsgBlink(res.consentMsg);
-    //     // }
-    //   }
-    // });
-  }
-  OpenScheduler(rowData: any) { //--- single opt-in/out mode
-    this.showScheduler(rowData);
-    this.openScheduler = true;
-  }
-  showScheduler(rowData) {
-
-  }
-  changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
-    // this.internalSelection = true;
-    // this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
-    // this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    // this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  openScheduler(rowData: any) { //--- single opt-in/out mode
+  this.schedulerData.campaignName = rowData.campaignSubject;
+  this.schedulerData.baseLineId = rowData.baselineAssignmentId;
+  this.schedulerData.campaignId = rowData.campaignID;
+  this.schedulerData.vin = this.selectedVin;
+  }
+ 
+  changeScheduleDateEvent (event: MatDatepickerInputEvent<any>) {
+    this.scheduledDate = this.setStartEndDateTime(event.value._d, this.scheduledTime, 'start');
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any) {
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if (this.prefTimeFormat == 12) {
+      if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
+      }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
+      date.setMinutes(_y.split(' ')[0]);
+    } else {
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  
   startTimeChanged(selectedTime: any) {
-    // this.internalSelection = true;
-    // this.selectedStartTime = selectedTime;
-    // if (this.prefTimeFormat == 24) {
-    //   this.startTimeDisplay = selectedTime + ':00';
-    // }
-    // else {
-    //    this.startTimeDisplay = selectedTime;
-    //  }
-    // this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
-    // this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    // this.filterDateData(); // extra addded as per discuss with Atul
+    this.trigger.openPopover();
+    if(selectedTime){
+      this.scheduledTime = selectedTime;
+    }
   }
 
+  onSubmitScheduler(){
+    this.trigger.closePopover();
+    this.showConfirmDailog(this.schedulerData);
+   
+}
+
+onCancel(){
+  this.trigger.closePopover();
+}
+showConfirmDailog(schedulerData: any) {
+  let scheduledDateTime = this.scheduledDate +  this.scheduledTime;
+  const formattedDate = moment(this.scheduledDate).format("MM/DD/YYYY").toString();
+  const isoDate = moment(formattedDate +' '+ this.scheduledTime).toISOString();
+  this.schedulerData.scheduleDateTime = isoDate;
+  const dialogScheduler = new MatDialogConfig();
+  dialogScheduler.disableClose = true;
+  dialogScheduler.autoFocus = true;
+  dialogScheduler.data = {
+      translationData: this.translationData,
+      campaignName: schedulerData.campaignName,
+      vehicalName: this.selectedVehicalName,
+      baseLineId: schedulerData.baseLineId,
+      scheduleDateTime: isoDate
+    }
+
+    this.dialogRefConfirm = this.dialog.open(ScheduleConfirmComponent, dialogScheduler);
+    this.dialogRefConfirm.afterClosed().subscribe(res => {
+      this.showLoadingIndicator = true;
+      if(res){ 
+        this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
+          let emitObj;
+          if(sheduleData){
+          emitObj = {
+            stepFlag: false,
+            msg: "sheduleData success"
+          }
+          this.backToPage.emit(emitObj);
+         } else{
+          emitObj = {
+            stepFlag: false,
+            msg: ""
+          }
+          this.backToPage.emit(emitObj);
+         }
+        }, (error) => {
+          this.hideloader();
+          console.log("error:: ", error)
+        });
+      }
+    });
+  }
 }

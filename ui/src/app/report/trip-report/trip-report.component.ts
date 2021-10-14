@@ -1225,6 +1225,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
       // this.resetTripFormControlValue();
+      this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
