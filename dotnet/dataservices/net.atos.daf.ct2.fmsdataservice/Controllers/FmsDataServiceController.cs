@@ -20,6 +20,8 @@ using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.fmsdataservice.Entity;
 using System.Collections.Generic;
+using net.atos.daf.ct2.vehicle.entity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.fmsdataservice.controllers
 {
@@ -175,27 +177,19 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
                 await GetUserDetails();
-                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
-                if (visibleVehicles != null & visibleVehicles.Count > 0)
+                var result = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVINs = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(a => a.VIN).ToList();
+                if (visibleVINs != null & visibleVINs.Count > 0)
                 {
                     string since = vehicleStatusRequest.Since;
                     string vin = vehicleStatusRequest.VIN;
                     var isValid = ValidateParameter(ref since, vin, out string feild);
-                    net.atos.daf.ct2.fms.entity.VehicleStatusResponse vehicleStatusResponse = null;
+                    fms.entity.VehicleStatusResponse vehicleStatusResponse = null;
                     if (isValid)
                     {
-                        var dataVisibleVehicle = visibleVehicles.Select(a => a.Value).ToList();
                         if (string.IsNullOrEmpty(vehicleStatusRequest.VIN))
                         {
-                            List<string> objVisibilityVinList = new List<string>();//move to 207
-                            foreach (var item in dataVisibleVehicle)
-                            {
-                                foreach (var i in item)
-                                {
-                                    objVisibilityVinList.Add(i.VIN);
-                                }
-                            }
-                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(objVisibilityVinList, vehicleStatusRequest.Since);
+                            vehicleStatusResponse = await _fmsManager.GetVehicleStatus(visibleVINs, vehicleStatusRequest.Since);
                             if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                             {
                                 return Ok(vehicleStatusResponse);
@@ -207,35 +201,21 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                         }
                         else
                         {
-                            bool isPassedVinInVisibility = false;
-                            if (dataVisibleVehicle != null && dataVisibleVehicle.Count > 0)
+                            if (visibleVINs.Contains(vehicleStatusRequest.VIN))
                             {
-                                foreach (var item in dataVisibleVehicle)
+                                vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
+                                if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
                                 {
-                                    foreach (var i in item)
-                                    {
-                                        if (i.VIN.Contains(vehicleStatusRequest.VIN))
-                                        {
-                                            isPassedVinInVisibility = true;
-                                        }
-                                    }
-                                }
-                                if (isPassedVinInVisibility)
-                                {
-                                    vehicleStatusResponse = await _fmsManager.GetVehicleStatus(vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
-                                    if (vehicleStatusResponse != null && vehicleStatusResponse.VehicleStatus.Count > 0)
-                                    {
-                                        return Ok(vehicleStatusResponse);
-                                    }
-                                    else
-                                    {
-                                        return StatusCode(304, "No data has been found");
-                                    }
+                                    return Ok(vehicleStatusResponse);
                                 }
                                 else
                                 {
-                                    return StatusCode(404, "Vin Not Found");
+                                    return StatusCode(304, "No data has been found");
                                 }
+                            }
+                            else
+                            {
+                                return StatusCode(404, "Vin Not Found");
                             }
                         }
                     }
@@ -248,7 +228,6 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 {
                     return StatusCode(400, $"No vehicle found for Account Id {AccountId} and Organization Id {OrgId}");
                 }
-                return StatusCode(400, $"No vehicle found for Account Id {AccountId} and Organization Id {OrgId}");
             }
             catch (Exception ex)
             {
@@ -366,6 +345,33 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
             var orgs = await _accountManager.GetAccountOrg(account.Id);
             OrgId = orgs.First().Id;
             AccountId = account.Id;
+        }
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
         }
     }
 }
