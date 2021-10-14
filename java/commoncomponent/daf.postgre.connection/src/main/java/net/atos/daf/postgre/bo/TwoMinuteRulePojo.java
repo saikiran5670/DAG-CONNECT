@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 public class TwoMinuteRulePojo {
 	private  Long start_time;
+	private  Long end_time;
 	private  String code;
 	private Long duration;
 }
