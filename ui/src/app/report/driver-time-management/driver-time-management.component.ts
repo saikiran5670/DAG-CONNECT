@@ -941,11 +941,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       console.log("vehicleGroupListData 2", this.vehicleGroupListData);
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+        this.resetVehicleGroupFilter();
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.resetVehicleFilter();
 
       }
           if(this.driverListData.length>1){
           this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+          this.resetDriverFilter();
           }
           // if(this.vehicleListData.length>0){
           //   this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
