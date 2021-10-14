@@ -7,8 +7,8 @@
             [indeterminate]='selectionForAllDriver.hasValue() && !isAllSelectedForAllDetailsColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblAllDetails || 'All Details' }} ({{
-                translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+                translationData.lblAllDetails }} ({{
+                translationData.lblTablecolumnviewsettings }})</span>
             <!-- <span class='headerFont'>{{
                 allDetailsData ? allDetailsData.translatedName : 'All Details' }} ({{
                     translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span> -->
@@ -106,7 +106,7 @@
             [indeterminate]='selectionForChart.hasValue() && !isAllSelectedForAllChartsColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblChart|| 'Chart' }}</span>
+                translationData.lblChart }}</span>
             <!-- <span class='headerFont'>{{
                 allChartsData > 0 ? allChartsData.translatedName : 'Chart' }}</span> -->
         </mat-checkbox>
@@ -135,7 +135,7 @@
             [indeterminate]='selectionForDriver.hasValue() && !isAllSelectedForAllGeneralColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblByDriver|| 'By Driver' }}</span>
+                translationData.lblByDriver }}</span>
             <!-- <span class='headerFont'>{{
                 allSpecificData ? allSpecificData.translatedName : 'By Driver' }}</span> -->
         </mat-checkbox>
@@ -206,9 +206,9 @@
 <!-- buttons -->
 <div *ngIf='(allDriverTableData.length > 0 || chartData.length > 0 || specificDriverData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-        translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-        translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset }}</button>
     <button [disabled]='(selectionForAllDriver.selected.length == 0 && allDriverTableData.length > 0) || (selectionForChart.selected.length == 0 && chartData.length > 0) || (selectionForDriver.selected.length == 0 && specificDriverData.length > 0)' class='no-margin' mat-raised-button
-        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
