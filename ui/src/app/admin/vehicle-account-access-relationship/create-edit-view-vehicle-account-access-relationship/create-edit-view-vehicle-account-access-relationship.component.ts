@@ -52,21 +52,21 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
     this.accessTypeList = [
       {
         type: 'F',
-        name: this.translationData.lblFullAccess || 'Full Access'
+        name: this.translationData.lblFullAccess
       },
       {
         type: 'V',
-        name: this.translationData.lblViewOnly || 'View Only'
+        name: this.translationData.lblViewOnly
       }
     ];
     this.associationTypeList =  [
       {
         id: 1,
-        name: this.translationData.lblVehicle || 'Vehicle'
+        name: this.translationData.lblVehicle
       },
       {
         id: 2,
-        name: this.translationData.lblAccount || 'Account'
+        name: this.translationData.lblAccount
       }
     ];
     this.setAssociationType();
@@ -298,8 +298,8 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
+    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailID, this.translationData.lblUserRole];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers }`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -342,8 +342,8 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
 
   showVehiclePopup(row: any){
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles}`;
     this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
       let data: any = [];
       data = vehData;

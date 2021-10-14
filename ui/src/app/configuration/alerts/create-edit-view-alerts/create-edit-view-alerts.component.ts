@@ -683,7 +683,7 @@ proceedStep(prefData: any, preference: any){
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
      console.log("vehicleGroupList 2", this.vehicleGroupList); 
-     this.vehicleGroupList.sort(this.compare);
+     this.vehicleGroupList.sort(this.compareVehicleGroupList);
      this.resetVehicleGroupFilter();
 
      this.vehicleGroupList.forEach(element => {
@@ -711,7 +711,7 @@ proceedStep(prefData: any, preference: any){
         if(vehicle.length > 0){
           this.vehicleByVehGroupList.push(vehicle[0]);
           console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
-          this.vehicleByVehGroupList.sort(this.compare);
+          this.vehicleByVehGroupList.sort(this.compareVehicleList);
           this.resetVehiclesFilter();
         }
       });
@@ -1545,6 +1545,18 @@ PoiCheckboxClicked(event: any, row: any) {
       //   });
       //  }
     }, 2000);
+  }
+
+  compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
+    a = parseInt(a.vehicleGroupId);
+    b = parseInt(b.vehicleGroupId);
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareVehicleList(a: any | String, b: any | String, isAsc: boolean) {
+    a = a.vehicleId;
+    b = b.vehicleId;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {

@@ -163,7 +163,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                         (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by lps.vehicle_msg_trigger_type_id asc))) as last_odometer_val,
                         lcts.driving_time,
                         ta.urgency_level_type,
-					    lps.vehicle_msg_trigger_type_id
+					    lps.vehicle_msg_trigger_type_id,
+                        trip_distance
                         FROM livefleet.livefleet_current_trip_statistics lcts
 					    LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
@@ -179,7 +180,8 @@ namespace net.atos.daf.ct2.dashboard.repository
 					    (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val, 
                         lps.driving_time,
                         ta.urgency_level_type,
-						lps.vehicle_msg_trigger_type_id	
+						lps.vehicle_msg_trigger_type_id,
+                        trip_distance
                         FROM livefleet.livefleet_position_statistics lps
                         LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
@@ -192,12 +194,12 @@ namespace net.atos.daf.ct2.dashboard.repository
                         --GROUP BY TodayVin--,position.trip_id                                           	
                         ), cte_union as (
            select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
-				   ,vehicle_msg_trigger_type_id from cte_filterToday 
+				   ,vehicle_msg_trigger_type_id,trip_distance from cte_filterToday 
                    WHERE vehicle_msg_trigger_type_id = 5			
 				--GROUP BY vin			
 			UNION 
 		   select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
-					,vehicle_msg_trigger_type_id from cte_filterTripEndedToday
+					,vehicle_msg_trigger_type_id,trip_distance from cte_filterTripEndedToday
 			        WHERE vehicle_msg_trigger_type_id = 5
 				--GROUP BY vin		
 						)
@@ -207,7 +209,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 						,todaydistance
 						,todaydrivingtime,todayalertcount--trip_id,*/
 						vin as TodayVin,
-                        SUM(todaydistance) as TodayDistance,
+                        SUM(trip_distance) as TodayDistance,
                         SUM(todaydrivingtime) as TodayDrivingTime,
                         COUNT(todayalertcount) as TodayAlertCount 
                         FROM cte_union 

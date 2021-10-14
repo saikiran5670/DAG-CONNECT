@@ -10,6 +10,7 @@ import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
+import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -49,13 +50,11 @@ public class MessageProcessing<U,R, T> {
               public boolean filter(KafkaRecord<U> value) throws Exception {
 				String transId = "UNKNOWN";
                     try {
-                    	if(Objects.nonNull(value.getValue()) && Objects.nonNull(JsonMapper.configuring()
-    						    .readTree((String) value.getValue())
-    						    .get("TransID"))){
-                    	transId = JsonMapper.configuring()
-						    .readTree((String) value.getValue())
-						    .get("TransID")
-						    .asText();
+                    	if(Objects.nonNull(value.getValue()) ){
+                    	JsonNode jsonNode = JsonMapper.configuring()
+                    		    .readTree((String) value.getValue())
+    						    .get("TransID");
+                    	transId = jsonNode.asText();
                     	}
 					} catch (Exception e) {
 						//e.printStackTrace();
@@ -105,6 +104,69 @@ public class MessageProcessing<U,R, T> {
                 FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Sink Topic : "+sinkTopicName);
 
   }
+  
+  public void contiMessageForHistoricalBckUp(
+	      DataStream<KafkaRecord<String>> messageDataStream,
+	      Properties properties,
+		  BroadcastStream<KafkaRecord<R>> broadcastStream) {
+
+		messageDataStream.connect(broadcastStream)
+				.process(new KeyedBroadcastProcessFunction<String, KafkaRecord<String>, KafkaRecord<R>, KafkaRecord<String>>() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+					private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor = new BroadcastState<U,R>()
+							.stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
+
+					@Override
+					public void processElement(KafkaRecord<String> value,
+							KeyedBroadcastProcessFunction<String, KafkaRecord<String>, KafkaRecord<R>, KafkaRecord<String>>.ReadOnlyContext ctx,
+							Collector<KafkaRecord<String>> out) throws Exception {
+			
+						try {
+							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							String vid = jsonNodeRec.get("VID").asText();
+							logger.info("History Record for VID: {}" , vid);
+							String vin = vid;
+
+							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
+							Message<U> keyMessage = new Message<>((U) vid);
+							if(mapBrodcast.contains(keyMessage)){
+								KafkaRecord<R> rKafkaRecord = mapBrodcast.get(keyMessage);
+								VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)rKafkaRecord.getValue();
+								vin = vinStatusRecord.getVin();
+							}
+							
+							value.setKey(jsonNodeRec.get("TransID").asText() + "_" + vin + "_"
+									+ TimeFormatter.getInstance().getCurrentUTCTime());
+
+						} catch (Exception e) {
+							value.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
+						}
+						out.collect(value);
+					}
+					
+					@Override
+					public void processBroadcastElement(KafkaRecord<R> value,
+							KeyedBroadcastProcessFunction<String, KafkaRecord<String>, KafkaRecord<R>, KafkaRecord<String>>.Context ctx,
+							Collector<KafkaRecord<String>> out) throws Exception {
+						logger.info("Broadcast updated from history :" + value);
+						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
+					}
+					
+				}).setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
+				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
+						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
+						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
+						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
+						properties.getProperty(DAFCT2Constant.HBASE_MASTER),
+						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
+						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
+						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)))
+				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
+				.name("Historial Data");
+	}
   
   public void contiMessageForHistorical(
 	      DataStream<KafkaRecord<String>> messageDataStream,
@@ -164,5 +226,6 @@ public class MessageProcessing<U,R, T> {
 				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
 				.name("Historial Data");
 	}
+
 	  
 }

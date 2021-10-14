@@ -2070,7 +2070,7 @@ export class ReportMapService {
       }
     }
     // return distance.toFixed(2); 
-    return Math.round(distance);
+    return distance;
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
