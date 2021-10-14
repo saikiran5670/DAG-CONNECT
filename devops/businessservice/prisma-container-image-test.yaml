@@ -42,50 +42,56 @@ variables:
   - group: ACC02-Build-Variables
   
 steps:
-- task: replacetokens@3
-  inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.Production.json'
-    encoding: 'auto'
-    writeBOM: true
-    actionOnMissing: 'warn'
-    keepToken: false
-    tokenPrefix: '#{'
-    tokenSuffix: '}#'
-    useLegacyPattern: false
-    enableTelemetry: true
+#- task: replacetokens@3
+#  inputs:
+#    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.Production.json'
+#    encoding: 'auto'
+#    writeBOM: true
+#    actionOnMissing: 'warn'
+#    keepToken: false
+#    tokenPrefix: '#{'
+#    tokenSuffix: '}#'
+#    useLegacyPattern: false
+#    enableTelemetry: true
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.Production.json
+#- task: CmdLine@2
+#  inputs:
+#    script: |
+#      cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.Production.json
 
-- task: replacetokens@3
-  inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
-    encoding: 'auto'
-    writeBOM: true
-    actionOnMissing: 'warn'
-    keepToken: false
-    tokenPrefix: '#{'
-    tokenSuffix: '}#'
-    useLegacyPattern: false
-    enableTelemetry: true
+#- task: replacetokens@3
+#  inputs:
+#    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
+#    encoding: 'auto'
+#    writeBOM: true
+#    actionOnMissing: 'warn'
+#    keepToken: false
+#    tokenPrefix: '#{'
+#    tokenSuffix: '}#'
+#    useLegacyPattern: false
+#    enableTelemetry: true
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+#- task: CmdLine@2
+#  inputs:
+#    script: |
+#      cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
 
-- task: Docker@0
-  displayName: 'Build an image'
-  inputs:
-    azureSubscription:  $(Subscription)
-    azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AccountService_Dockerfile
-    imageName: testservice-grpc-image
+#- task: Docker@0
+#  displayName: 'Build an image'
+#  inputs:
+#    azureSubscription:  $(Subscription)
+#    azureContainerRegistry: $(ContainerRegistry)
+#    dockerFile: dotnet/AccountService_Dockerfile
+#    imageName: testservice-grpc-image
 
 - task: Palo-Alto-Networks.build-release-task.custom-build-release-task.prisma-cloud-compute-scan@3
   displayName: 'Prisma Cloud Compute Scan'
   inputs:
     twistlockService: 'DAF DTA Prisma Cloud Compute Connection'
-    artifact: 'acraksvyajhwtrez6ou.azurecr.io/testservice-grpc-image:latest'
+    artifact: 'mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim'
+
+- task: Palo-Alto-Networks.build-release-task.custom-build-release-task.prisma-cloud-compute-scan@3
+  displayName: 'Prisma Cloud Compute Scan2'
+  inputs:
+    twistlockService: 'DAF DTA Prisma Cloud Compute Connection'
+    artifact: 'mcr.microsoft.com/dotnet/core/sdk:3.1-buster'
