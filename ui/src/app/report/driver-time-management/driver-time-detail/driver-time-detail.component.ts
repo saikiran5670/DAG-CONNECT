@@ -48,6 +48,11 @@ export class DriverTimeDetailComponent implements OnInit {
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
+  totalDriveTime: string = '';
+  totalWorkTime: string = '';
+  totalAvailableTime: string = '';
+  totalRestTime: string = '';
+  totalServiceTime: string = '';
 
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -83,6 +88,7 @@ export class DriverTimeDetailComponent implements OnInit {
   constructor(private reportMapService:ReportMapService, private reportService: ReportService) {}
 
   ngOnInit(): void {
+    // this.createChart(this.chartData);
     this.showLoadingIndicator = true;
   }
 
@@ -157,6 +163,7 @@ export class DriverTimeDetailComponent implements OnInit {
     let startTime='';
     let currentArray;
     let newObj=[];
+    this.dayWiseSummaryList=[];
     _data.forEach(element => {
       // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
@@ -168,14 +175,15 @@ export class DriverTimeDetailComponent implements OnInit {
       }
       // console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
       if(isValid && element.duration > 0){
-        console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
+        // console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
         
-        startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
-        console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
+        startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);
+        // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
+        // console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
         let restObj={
           x :  _startTimeDate,
           // actualDate: this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-          actualDate: Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone),
+          actualDate: startTime,
           duration: element.duration,
           low : _startTime,
           high:_endTime
@@ -185,70 +193,59 @@ export class DriverTimeDetailComponent implements OnInit {
         currentArray=this.dayWiseSummaryList.filter(el => el.startTime === startTime)[0];
         // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
         if(element.code === 0){
-          restObj['color']='blue';
+          restObj['color']='#8ac543';
           restObj['type']='Rest';
           // restData.push(restObj);
           newObj.push(restObj);
-          // currentArray['restTime'] = currentArray.restTime + element.duration;
+          currentArray['restTime'] = currentArray.restTime + element.duration;
         } else if(element.code === 1){
-          restObj['color']='green';
+          restObj['color']='#dddee2';
           restObj['type']='Available';
           // availableData.push(restObj);
           newObj.push(restObj);
-          // currentArray['availableTime']= currentArray.availableTime + element.duration;
+          currentArray['availableTime']= currentArray.availableTime + element.duration;
         } else if(element.code === 2){
-          restObj['color']='blue';
+          restObj['color']='#fc5f01';
           restObj['type']='Work';
           // workData.push(restObj);
           newObj.push(restObj);
-          // currentArray['workTime']= currentArray.workTime + element.duration;
+          currentArray['workTime']= currentArray.workTime + element.duration;
         } else if(element.code === 3){
-          restObj['color']='orange';
+          restObj['color']='#00529b';
           restObj['type']='Drive';
           // driveData.push(restObj);
           newObj.push(restObj);
-          // currentArray['driveTime']= currentArray.driveTime + element.duration;
+          currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
         // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
     }
     });
+    let totDriveTime=0;
+    let totAvailableTime=0;
+    let totWorkTime=0;
+    let totRestTime=0;
+    let totServiceTime=0;
     this.dayWiseSummaryList.forEach(element => {
-      element['serviceTime'] = Util.getHhMmTimeFromMS(element.availableTime + element.workTime + element.driveTime - element.restTime);
+      totDriveTime += element.driveTime;
+      totAvailableTime += element.availableTime;
+      totWorkTime += element.workTime;
+      totRestTime += element.restTime;
+      totServiceTime += element.availableTime + element.workTime + element.driveTime;
+      element['serviceTime'] = Util.getHhMmTimeFromMS(element.availableTime + element.workTime + element.driveTime);
       element['restTime'] = Util.getHhMmTimeFromMS(element.restTime);
       element['availableTime'] = Util.getHhMmTimeFromMS(element.availableTime);
       element['workTime'] = Util.getHhMmTimeFromMS(element.workTime);
       element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
       // console.log(element);
     });
-    // const convert=this.getActualDate;
+    this.totalDriveTime = Util.getHhMmTimeFromMS(totDriveTime);
+    this.totalAvailableTime = Util.getHhMmTimeFromMS(totAvailableTime);
+    this.totalWorkTime = Util.getHhMmTimeFromMS(totWorkTime);
+    this.totalRestTime = Util.getHhMmTimeFromMS(totRestTime);
+    this.totalServiceTime = Util.getHhMmTimeFromMS(totServiceTime);
     const tz=this.prefTimeZone;
     this.updateDataSource(this.dayWiseSummaryList);
-   // if(driveData.length>0)
-    // _series.push({
-    //   // 'name': 'Drive',
-    //   'data': driveData,
-    // })
-    // //  if(workData.length>0)
-    //   _series.push({
-    //     // 'name': 'Work',
-    //     'data': workData,
-    //   });
-      
-    //  // if(restData.length>0)
-    //   _series.push({
-    //     // 'name': 'Rest',
-    //     'data': restData,
-    //   });
-    // //  if(availableData.length>0)
-    //   _series.push({
-    //     // 'name': 'Available',
-    //     'data': availableData,
-    //   });
-    //   let _seriesN=[];
-    //   _seriesN.push({
-    //     'data' : newObj
-    //   })
-      console.log("newObj" +JSON.stringify(newObj));
+      // console.log("newObj" +JSON.stringify(newObj));
       this.chartOptions = {
         title: {
           enabled: false,
@@ -266,7 +263,7 @@ export class DriverTimeDetailComponent implements OnInit {
         // },
         tooltip:{
           formatter(e){
-            console.log(this);
+            // console.log(this);
             // let yAxisValues = e.chart.yAxis[0].ticks
             return (
               `<div class='chartTT'> 
@@ -327,21 +324,17 @@ export class DriverTimeDetailComponent implements OnInit {
         // }],
         plotOptions: {
           series: {
-            pointWidth: 10,
+            pointWidth: 16,
           }
         },
         xAxis: {
-          // categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-          // type: 'datetime',
-        //   dateTimeLabelFormats: {
-        //     // day: '%e. %b.'
-        //     hour: '%Y-%m-%d',
-        //   },
           labels: {
             formatter: function() {
                 return Util.convertUtcToDateFormat2(this.value, tz);
             },
         },
+        // lineWidth: 2,
+        // tickInterval: 24*3600*1000*1,
         // visible: false,
         // tickInterval: 3600*1000*24,
         lineWidth: 0,
@@ -363,7 +356,20 @@ export class DriverTimeDetailComponent implements OnInit {
         legend: {
           enabled: false
         },
+      //   legend :{
+      //     useHTML: true,
+      //     symbolWidth: 0,
+      //     labelFormatter: function () {
+      //                  return '<div><div class="legend-color" style="background: rgb(0, 82, 155); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Drive &nbsp;&nbsp;</div>'+
+      //                  '<div class="legend-color" style="background: rgb(252, 95, 1); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Work &nbsp;&nbsp;</div>'+
+      //                  '<div class="legend-color" style="background: rgb(138, 197, 67); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Rest &nbsp;&nbsp;</div>'+
+      //                  '<div class="legend-color" style="background: rgb(221, 222, 226); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Available &nbsp;&nbsp;</div></div>'
+      //              }
+
+      // },
       }
+      // this.setGraphData();
+      // this.showLoadingIndicator=false;
   }
 
   setGraphData(){
@@ -382,10 +388,10 @@ export class DriverTimeDetailComponent implements OnInit {
     return date;
   }
 
-  totalDriveTime =0;
-  totalWorkTime =0;
-  totalRestTime =0;
-  totalAvailableTime =0;
+  // totalDriveTime =0;
+  // totalWorkTime =0;
+  // totalRestTime =0;
+  // totalAvailableTime =0;
   selectedDriverName = '';
   selectedDriverId = '';
   tableInfoObj = {};
