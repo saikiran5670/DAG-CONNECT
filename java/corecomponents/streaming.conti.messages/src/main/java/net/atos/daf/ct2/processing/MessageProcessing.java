@@ -32,80 +32,6 @@ public class MessageProcessing<U,R, T> {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
-  public void consumeContiMessage(
-      DataStream<KafkaRecord<U>> messageDataStream,
-      String messageType,
-      String key,
-      String sinkTopicName,
-      Properties properties,
-      Class<T> tClass,
-      BroadcastStream<KafkaRecord<R>> broadcastStream) {
-    messageDataStream
-        .filter(
-            new FilterFunction<KafkaRecord<U>>() {
-              /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-              public boolean filter(KafkaRecord<U> value) throws Exception {
-				String transId = "UNKNOWN";
-                    try {
-                    	if(Objects.nonNull(value.getValue()) ){
-                    	JsonNode jsonNode = JsonMapper.configuring()
-                    		    .readTree((String) value.getValue())
-    						    .get("TransID");
-                    	transId = jsonNode.asText();
-                    	}
-					} catch (Exception e) {
-						//e.printStackTrace();
-						logger.info("Issue TransId is null for record ::{} ", value);
-					}
-                
-                return transId.equalsIgnoreCase(messageType);
-              }
-            }).name("Filter Message Type")
-        .connect(broadcastStream)
-        .process(new BroadcastMessageProcessor<>(properties)).name("Broadcast Processing")
-        .map(
-            new MapFunction<KafkaRecord<U>, KafkaRecord<T>>() {
-              /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-              public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
-               // logger.info("map after process record value.getValue() :: {}",value.getValue());
-                try{
-                	 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
-
-                     KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
-                     //kafkaRecord.setKey(key);
-                     kafkaRecord.setKey(value.getKey());
-                     kafkaRecord.setValue(record);
-                     logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
-                     
-                     return kafkaRecord;
-                }catch(Exception e){
-                	logger.error("Issue while Json convertion to Object : {} record : {}",sinkTopicName , value);
-                	logger.error("Issue while Json convertion to Object : {} ",e.getMessage());
-                }
-               
-               return null;
-                
-              }
-            }).name("Map Kafka Record")
-        .filter( rec -> Objects.nonNull(rec))
-        .addSink(
-            new FlinkKafkaProducer<KafkaRecord<T>>(
-                sinkTopicName,
-                new KafkaMessageSerializeSchema<T>(sinkTopicName),
-                properties,
-                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Sink Topic : "+sinkTopicName);
-
-  }
   
   public void consumeKeyedContiMessage(
 	      DataStream<KafkaRecord<Tuple3<String, String, Object>>> messageDataStream,
@@ -114,10 +40,12 @@ public class MessageProcessing<U,R, T> {
 	      String sinkTopicName,
 	      Properties properties,
 	      Class<T> tClass,
-	      BroadcastStream<KafkaRecord<R>> broadcastStream) {
+	      BroadcastStream<KafkaRecord<VehicleStatusSchema>> broadcastStream) {
 	    messageDataStream
 	        .connect(broadcastStream)
-	        .process(new BroadcastMessageProcessor<>(properties)).name("Broadcast Processing").name("Broadcast processing "+key)
+	        .process(new BroadcastMessageProcessor(properties))
+				.name("Broadcast Processing")
+				.name("Broadcast processing "+key)
 	       // .keyBy(rec -> rec.getKey())
 	        .map(
 	            new MapFunction<KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<T>>() {
