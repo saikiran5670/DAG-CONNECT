@@ -37,6 +37,15 @@ public class WarningStatisticsPojo implements Serializable{
 	private  Long modifiedAt  ;
 	private Integer messageType;
 	
-	private Integer id; 
+	private Integer id;
+
+	@Override
+	public String toString() {
+		return "WarningStatisticsPojo [tripId=" + tripId + ", vid=" + vid + ", vin=" + vin + ", warningTimeStamp="
+				+ warningTimeStamp + ", warningClass=" + warningClass + ", warningNumber=" + warningNumber
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", vehicleHealthStatusType="
+				+ vehicleHealthStatusType + ", vehicleDrivingStatusType=" + vehicleDrivingStatusType + ", messageType="
+				+ messageType + ", id=" + id + "]";
+	} 
 
 }
