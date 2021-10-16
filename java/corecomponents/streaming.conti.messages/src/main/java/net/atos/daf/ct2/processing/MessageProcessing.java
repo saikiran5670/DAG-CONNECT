@@ -123,7 +123,7 @@ public class MessageProcessing<U,R, T> {
 									+ TimeFormatter.getInstance().getCurrentUTCTime());
 							
 							historyRec.setValue(JsonMapper.configuring().writeValueAsString(inputRec.getValue().f2));
-							logger.info("History Record key :: {} ",inputRec.getKey());
+							logger.info("History Record key :: {} ",historyRec.getKey());
 
 						} catch (Exception e) {
 							historyRec.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
