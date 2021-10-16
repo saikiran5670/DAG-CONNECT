@@ -42,7 +42,7 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 									   KafkaRecord<VehicleStatusSchema>,
 									   KafkaRecord<Tuple3<String, String, Object>>>.ReadOnlyContext ctx,
 							   Collector<KafkaRecord<Tuple3<String, String, Object>>> out) throws Exception {
-		logger.info("Single record from processBroadcastElement :: {}",inputRec);
+		//logger.info("Single record from processBroadcastElement :: {}",inputRec);
 
 		Message<String> msgVid = new Message<>((String) ctx.getCurrentKey());
 		ReadOnlyBroadcastState<Message<String>, KafkaRecord<VehicleStatusSchema>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);

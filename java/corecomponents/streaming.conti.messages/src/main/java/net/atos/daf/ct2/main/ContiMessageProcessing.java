@@ -260,42 +260,7 @@ public class ContiMessageProcessing implements Serializable {
                 }))
                 .broadcast(mapStateDescriptor);
 
-        /*KeyedStream<KafkaRecord<String>, String> contiKeyedStream = consumeSrcStream.consumeSourceInputStream(
-                streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
-        		.keyBy(new KeySelector<KafkaRecord<String>, String>() {
-				
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public String getKey(KafkaRecord<String> value)
-					throws Exception {
-					JsonNode jsonNodeRec = null;
-					try{
-						jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-						((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
-						value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
-						value.setKey(jsonNodeRec.get("VID").asText());
-						return jsonNodeRec.get("VID").asText();
-					}catch(Exception e){
-						if(Objects.nonNull(jsonNodeRec)){
-							value.setKey(DAFCT2Constant.UNKNOWN);
-							logger.info("Issue Mandatory VID attribute is Null ::{}",value);
-							logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
-							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
-							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
-							logger.info(" after explict setting TS for unknown VID :{}",value.getValue());
-							return DAFCT2Constant.UNKNOWN;
-						}else{
-							value.setKey(DAFCT2Constant.CORRUPT);
-							return DAFCT2Constant.CORRUPT;
-						}
-					}
-				}
-			});*/
-        
-        
-        
+                
         SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
                 streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
         		.rebalance()
@@ -325,8 +290,6 @@ public class ContiMessageProcessing implements Serializable {
 					if (Objects.nonNull(jsonVid))
 						vid = jsonVid.asText();
 
-					
-					Object record = null;
 					kafkaRec.setKey(transId);
 					
 					if (DAFCT2Constant.TRANSID_INDEX.equals(transId)){

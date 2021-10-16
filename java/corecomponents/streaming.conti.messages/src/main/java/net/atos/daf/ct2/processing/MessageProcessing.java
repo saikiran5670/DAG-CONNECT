@@ -56,7 +56,7 @@ public class MessageProcessing<U,R, T> {
 
 				@Override
 	              public KafkaRecord<T> map(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-	               logger.info("KafkaRecord before converting to object : {}", value);
+	              // logger.info("KafkaRecord before converting to object : {}", value);
 	                try{
 	                	// T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
