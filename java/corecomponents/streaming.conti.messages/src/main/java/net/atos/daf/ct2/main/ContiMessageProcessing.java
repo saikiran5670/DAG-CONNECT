@@ -38,7 +38,6 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.runtime.state.StateBackend;
@@ -442,19 +441,19 @@ public class ContiMessageProcessing implements Serializable {
         		});
         
         if("true".equals(properties.getProperty(DAFCT2Constant.STORE_HISTORICAL_DATA))){
-        	new MessageProcessing<String, VehicleStatusSchema, String>()
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
         			contiKeyedIndexStream,
         			properties,
         			broadcastStream);
         	
-        	new MessageProcessing<String, VehicleStatusSchema, String>()
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
         			contiKeyedMonitorStream,
         			properties,
         			broadcastStream);
         	
-        	new MessageProcessing<String, VehicleStatusSchema, String>()
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
         			contiKeyedStatusStream,
         			properties,
@@ -465,7 +464,7 @@ public class ContiMessageProcessing implements Serializable {
         new EgressCorruptMessages().egressCorruptMessages(contiCorruptRecords, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
         
-        new MessageProcessing<String, VehicleStatusSchema, Index>()
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Index>()
                 .consumeKeyedContiMessage(
                 		contiKeyedIndexStream,
                         properties.getProperty(INDEX_TRANSID),
@@ -475,7 +474,7 @@ public class ContiMessageProcessing implements Serializable {
                         Index.class,
                         broadcastStream);
 
-        new MessageProcessing<String, VehicleStatusSchema, Status>()
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Status>()
                 .consumeKeyedContiMessage(
                 		contiKeyedStatusStream,
                         properties.getProperty(STATUS_TRANSID),
@@ -485,7 +484,7 @@ public class ContiMessageProcessing implements Serializable {
                         Status.class,
                         broadcastStream);
 
-        new MessageProcessing<String, VehicleStatusSchema, Monitor>()
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Monitor>()
                 .consumeKeyedContiMessage(
                 		contiKeyedMonitorStream,
                         properties.getProperty(MONITOR_TRANSID),

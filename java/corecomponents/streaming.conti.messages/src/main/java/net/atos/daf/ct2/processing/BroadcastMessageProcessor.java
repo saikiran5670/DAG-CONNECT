@@ -28,11 +28,11 @@ public class BroadcastMessageProcessor<U,R> extends KeyedBroadcastProcessFunctio
 	private static final Logger logger = LoggerFactory.getLogger(BroadcastMessageProcessor.class);
 
     private Properties properties;
-    private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor;
+    private final MapStateDescriptor<Message<String>, KafkaRecord<R>> broadcastStateDescriptor;
     
     public BroadcastMessageProcessor(Properties properties){
         this.properties = properties;
-        broadcastStateDescriptor = new BroadcastState<U,R>()
+        broadcastStateDescriptor = new BroadcastState<String,R>()
                 .stateInitialization(this.properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
     }
    
@@ -41,7 +41,7 @@ public class BroadcastMessageProcessor<U,R> extends KeyedBroadcastProcessFunctio
 			KeyedBroadcastProcessFunction<String, KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>>.Context ctx,
 			Collector<KafkaRecord<U>> arg2) throws Exception {
 		    logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , value);
-	        ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
+	        ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<String>( value.getKey()), value);
 	}
 	
 	@Override
@@ -50,8 +50,8 @@ public class BroadcastMessageProcessor<U,R> extends KeyedBroadcastProcessFunctio
 			Collector<KafkaRecord<U>> out) throws Exception {
 		logger.info("Single record from processBroadcastElement :: {}",inputRec);
 
-        Message<U> msgVid = new Message<>((U) ctx.getCurrentKey());
-        ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);
+        Message<String> msgVid = new Message<>((String) ctx.getCurrentKey());
+        ReadOnlyBroadcastState<Message<String>, KafkaRecord<R>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);
        
         if(broadcastStateMap.contains(msgVid)){
             KafkaRecord<R> kafkaRecord = broadcastStateMap.get(msgVid);
