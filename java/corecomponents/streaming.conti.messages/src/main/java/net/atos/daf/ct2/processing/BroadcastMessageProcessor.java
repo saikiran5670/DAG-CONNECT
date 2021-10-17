@@ -53,7 +53,8 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 			if(vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_OFF) || vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_ON)){
 				//JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
 				Tuple3 value = (Tuple3)inputRec.getValue();
-
+				inputRec.setKey(vinStatusRecord.getVin());
+				
 				if(value.f2 instanceof Index){
 					Index indx = ((Index)value.f2);
 					indx.setVin(vinStatusRecord.getVin());
@@ -85,7 +86,8 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 
 		}else {
 			Tuple3<String, String, Object> value = (Tuple3<String, String, Object>)inputRec.getValue();
-
+			inputRec.setKey(ctx.getCurrentKey());
+			 
 			if(value.f2 instanceof Index){
 				Index indx = ((Index)value.f2);
 				if("UNKNOWN".equals(ctx.getCurrentKey()))

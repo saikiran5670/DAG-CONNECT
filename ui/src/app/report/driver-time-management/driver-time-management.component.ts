@@ -1295,24 +1295,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   setDefaultTodayDate(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-      //console.log("---if searchFilterpersistData startDateStamp exist")
-      if(this.searchFilterpersistData.timeRangeSelection !== ""){
-        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
-      }else{
-        this.selectionTab = 'today';
-      }
-      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-      let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
-    }else{
+    // if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+    //   //console.log("---if searchFilterpersistData startDateStamp exist")
+    //   if(this.searchFilterpersistData.timeRangeSelection !== ""){
+    //     this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+    //   }else{
+    //     this.selectionTab = 'today';
+    //   }
+    //   let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+    //   let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
+    //   this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    // }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
-    }
+    // }
   }
 
   setVehicleGroupAndVehiclePreSelection() {
