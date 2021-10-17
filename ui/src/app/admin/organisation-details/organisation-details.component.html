@@ -327,14 +327,17 @@
                                 </div>
                                 <!-- <span *ngIf="editPrefereneceFlag">{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span> -->
                                 <span *ngIf="editPrefereneceFlag" style="color: grey;">
-                                    <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint }}
+                                    <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint  ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
                                   </span>
-                                <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                                <!-- <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
                                     The total size must not exceed {{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat }} ({{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                                     | byteFormat }}).
-                                </mat-error>
+                                </mat-error> -->
                                 <mat-error *ngIf="imageEmptyMsg">
                                     {{ translationData.lblEmptyFile }}
+                                </mat-error>
+                                <mat-error *ngIf="brandLogoError != ''">
+                                    {{ brandLogoError }}
                                 </mat-error>
                             </div>
                         </div>
