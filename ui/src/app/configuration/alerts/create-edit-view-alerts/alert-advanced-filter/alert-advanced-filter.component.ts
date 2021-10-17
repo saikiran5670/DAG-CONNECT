@@ -296,15 +296,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
   setUnitsAsPrefData(){
     if(this.prefUnitFormat == 'dunit_Metric'){
       this.distanceEnum = 'M';
-      this.distanceUnit = this.translationData.lblMeter || 'm';
+      this.distanceUnit = this.translationData.lblMeter;
       this.POIEnum = 'K';
-      this.poiUnit = this.translationData.lblKilometer || 'Km';
+      this.poiUnit = this.translationData.lblKilometer;
   }
     else{
       this.distanceEnum = 'F';
-      this.distanceUnit = this.translationData.lblFeet || 'ft';
+      this.distanceUnit = this.translationData.lblFeet;
       this.POIEnum = 'L';
-      this.poiUnit = this.translationData.lblMiles || 'Miles';
+      this.poiUnit = this.translationData.lblMiles;
     }
   }
 
@@ -908,8 +908,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
         onPOIClick(row: any){
           const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-          const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
-          const tableTitle = this.translationData.lblPOI || 'POI';
+          const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+          const tableTitle = this.translationData.lblPOI;
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
@@ -947,8 +947,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
         onGeofenceClick(row: any){
           const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
-          const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-          const tableTitle = this.translationData.lblGeofence || 'Geofence';
+          const colsName = ['Name', this.translationData.lblCategory, this.translationData.lblSubCategory];
+          const tableTitle = this.translationData.lblGeofence;
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id

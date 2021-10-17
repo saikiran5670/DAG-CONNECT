@@ -52,31 +52,31 @@
           <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblTotalDriveTime }}: </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.driveTime }} (hh:mm)</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalDriveTime }} (hh:mm)</div>
             </span>
           </div>
             <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblTotalWorkTime  }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.workTime }} (hh:mm)</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalWorkTime }} (hh:mm)</div>
               </span>
             </div>
             <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblTotalAvailableTime }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.availableTime }} (hh:mm)</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalAvailableTime }} (hh:mm)</div>
               </span>
             </div>
             <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblTotalRestTime  }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.restTime }} (hh:mm)</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalRestTime }} (hh:mm)</div>
               </span>
             </div>
             <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblTotalServiceTime }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.serviceTime }} (hh:mm)</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalServiceTime }} (hh:mm)</div>
               </span>
             </div>
         </div>
@@ -109,6 +109,10 @@
                 (chartInstance)="getInstance($event)"
                 style="width: 100%; height: 400px; display: block;"
                 ></highcharts-chart>
+                <div><div class="legend-color" style="background: rgb(0, 82, 155); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Drive &nbsp;&nbsp;</div>
+                       <div class="legend-color" style="background: rgb(252, 95, 1); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Work &nbsp;&nbsp;</div>
+                       <div class="legend-color" style="background: rgb(138, 197, 67); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Rest &nbsp;&nbsp;</div>
+                       <div class="legend-color" style="background: rgb(221, 222, 226); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Available &nbsp;&nbsp;</div></div>
                 <!-- <apx-chart
                   [series]="chartOptions.series"
                   [chart]="chartOptions.chart"

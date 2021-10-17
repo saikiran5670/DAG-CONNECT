@@ -117,4 +117,8 @@ public class DAFCT2Constant {
   	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
   	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
   	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+  	
+  	public static final String TRANSID_INDEX = "03000";
+  	public static final String TRANSID_MONITOR = "03030";
+  	public static final String TRANSID_STATUS = "03010";
 }
