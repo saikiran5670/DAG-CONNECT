@@ -148,12 +148,12 @@ export class DashboardComponent implements OnInit {
 
     let translationObj = {
       id: 0,
-      code:_langCode,
+      code: _langCode,
       type: "Menu",
       name: "",
       value: "",
       filter: "",
-      menuId: 18 //-- for landmark
+      menuId: 1 //-- for dashboard
     }
    
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
