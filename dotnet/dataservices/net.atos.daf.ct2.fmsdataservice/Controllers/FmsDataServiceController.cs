@@ -77,15 +77,12 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehiclePositionRequest), 0, 0);
                 _logger.LogInformation($"Fms vehicle status function called - {vehiclePositionRequest.VIN}", vehiclePositionRequest.Since);
 
-
+                var isValid = ValidateParameter(vehiclePositionRequest.Since, vehiclePositionRequest.VIN, out string feild);
                 await GetUserDetails();
                 var result = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
                 var visibleVINs = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(a => a.VIN).ToList();
                 if (visibleVINs != null & visibleVINs.Count > 0)
                 {
-                    string since = vehiclePositionRequest.Since;
-                    string vin = vehiclePositionRequest.VIN;
-                    var isValid = ValidateParameter(ref since, vin, out string feild);
                     fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                     if (isValid)
                     {
@@ -152,7 +149,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 {
                     return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Version", "NOT_ACCEPTABLE value in version - " + acceptHeader);
                 }
-
+                var isValid = ValidateParameter(vehicleStatusRequest.Since, vehicleStatusRequest.VIN, out string feild);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "FMS Data Service Status", "FMS data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "FMS dataservice status received object", 0, 0, JsonConvert.SerializeObject(vehicleStatusRequest), 0, 0);
                 _logger.LogInformation("Fms vehicle status function called - " + vehicleStatusRequest.VIN, vehicleStatusRequest.Since);
                 await GetUserDetails();
@@ -160,9 +157,9 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 var visibleVINs = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(a => a.VIN).ToList();
                 if (visibleVINs != null & visibleVINs.Count > 0)
                 {
-                    string since = vehicleStatusRequest.Since;
-                    string vin = vehicleStatusRequest.VIN;
-                    var isValid = ValidateParameter(ref since, vin, out string feild);
+                    //string since = vehicleStatusRequest.Since;
+                    //string vin = vehicleStatusRequest.VIN;
+                    //var isValid = ValidateParameter(ref since, vin, out string feild);
                     fms.entity.VehicleStatusResponse vehicleStatusResponse = null;
                     if (isValid)
                     {
@@ -256,16 +253,17 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        private bool ValidateParameter(ref string since, string vin, out string field)
+        private bool ValidateParameter(string since, string vin, out string field)
         {
             field = string.Empty;
             bool isNumeric = long.TryParse(since, out _);
-            if (isNumeric)
+            if (isNumeric && since.Length == 13) // validation for millisec
             {
                 string sTimezone = "UTC";
+                string dateformat = "yyyy-MM-ddThh:mm:ss.fffZ";
                 try
                 {
-                    string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
+                    string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, dateformat);
                     if (!DateTime.TryParse(converteddatetime, out DateTime dDate))
                         return false;
                     else
