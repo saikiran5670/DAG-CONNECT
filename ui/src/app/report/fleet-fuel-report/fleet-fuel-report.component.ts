@@ -24,7 +24,7 @@ export class FleetFuelReportComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 
+      menuId: 9 // fleet fuel report
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);

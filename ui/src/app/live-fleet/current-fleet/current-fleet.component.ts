@@ -177,7 +177,7 @@ export class CurrentFleetComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 2 
+      menuId: 3 
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);

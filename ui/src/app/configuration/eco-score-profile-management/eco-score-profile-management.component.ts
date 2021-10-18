@@ -95,7 +95,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 44
+      menuId: 44 // Eco-score profilemgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);

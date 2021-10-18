@@ -231,10 +231,10 @@ export class UserRoleManagementComponent implements OnInit {
             errorList = errorList.slice(0,-2);
           }
           const options = {
-            title: this.translationData.lblAlert,
-            message: this.translationData.lblRoleCantBeDeletedmsg ,
+            title: this.translationData.lblAlert || 'Alert',
+            message: this.translationData.lblRoleCantBeDeletedmsg || 'Role cannot be deleted.',
             list: errorList,
-            confirmText: this.translationData.lblOk 
+            confirmText: this.translationData.lblOk || 'OK' 
           };
       
           const dialogConfig = new MatDialogConfig();

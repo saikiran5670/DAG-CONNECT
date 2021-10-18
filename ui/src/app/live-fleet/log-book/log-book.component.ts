@@ -274,7 +274,7 @@ ngOnDestroy(){
       name: "",
       value: "",
       filter: "",
-      menuId: 17 //-- for alert
+      menuId: 4 //-- for log-book
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
