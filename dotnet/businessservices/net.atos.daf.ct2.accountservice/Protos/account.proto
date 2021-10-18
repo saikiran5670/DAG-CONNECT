@@ -52,7 +52,8 @@ service AccountService
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
-  rpc RemoveGroup (IdRequest) returns (AccountGroupResponce);
+  rpc RemoveGroup (IdRequest) returns (AccountGroupRemoveResponce);
+  rpc CanRemoveGroup (IdRequest) returns (AccountGroupCanRemoveResponce);
   rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
   rpc GetAccountGroupDetail (AccountGroupDetailsRequest) returns (AccountGroupDetailsDataList);
   rpc AddAccountToGroups(AccountGroupRefRequest) returns (AccountGroupRefResponce);
@@ -297,6 +298,17 @@ message AccountGroupResponce{
   Responcecode code=1;  
   string message = 2; 
   AccountGroupRequest AccountGroup=3;   
+}
+message AccountGroupCanRemoveResponce{
+  Responcecode code=1;  
+  string message = 2; 
+  bool Result=3;   
+}
+message AccountGroupRemoveResponce{
+  Responcecode code=1;  
+  string message = 2; 
+  bool IsDeleted=3;   
+  bool CanDelete=4;   
 }
 message AccountGroupDataList
     {
