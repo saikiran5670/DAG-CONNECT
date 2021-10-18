@@ -1055,14 +1055,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     
   // }
   exportAsExcelFile(){
-    const title = 'POIData';
+    //const title = 'POIData';
     const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country']
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('PoiData');
     //Add Row and formatting
-    let titleRow = worksheet.addRow([title]);
-    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-    worksheet.addRow([]);
+    //let titleRow = worksheet.addRow([title]);
+    //titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    //worksheet.addRow([]);
     let headerRow = worksheet.addRow(poiData); 
     headerRow.eachCell((cell, number) => {
       cell.fill = {
