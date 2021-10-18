@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.fms.entity
         public VehiclePositionForStatus VehiclePosition { get; set; }
         public decimal CatalystFuelLevel { get; set; }
         public string Driver1Id { get; set; }
-        public int Driver1WorkingState { get; set; }
+        public string Driver1WorkingState { get; set; }
         public long EngineTotalFuelUsed { get; set; }
         public long EventTimestamp { get; set; }
         public decimal FuelLevel1 { get; set; }
