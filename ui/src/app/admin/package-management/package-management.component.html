@@ -19,12 +19,12 @@
     [columnCodes]="columnCodes" [columnLabels]="columnLabels" [topRightElements]="topRightElements" [actionColumnElements]="actionColumnElements" showExport="true" exportFileName="Package Details">
   
     <ng-template #topRightElements>
-      <div>
+      <div *ngIf="adminAccessType.adminFullAccess">
         <button mat-flat-button (click)="importPackageCSV()">
           <mat-icon>file_download</mat-icon>{{ translationData.lblImport }}
         </button>
       </div>
-      <div *ngIf="!adminAccessType.adminReadOnlyAccess">
+      <div *ngIf="adminAccessType.adminFullAccess">
         <button mat-flat-button color="primary" (click)="createNewPackage()">
           <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage  }}
         </button>
