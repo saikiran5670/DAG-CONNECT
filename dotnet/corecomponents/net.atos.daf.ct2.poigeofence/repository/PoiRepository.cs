@@ -83,9 +83,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = string.Empty;
                 query = @"SELECT l.id, 
                             l.organization_id as organizationid,
-                            l.category_id as categoryid,
+                            c.id as categoryid,
                             c.name as categoryname,                            
-                            l.sub_category_id as subcategoryid, 
+                            s.id as subcategoryid, 
                             s.name as subcategoryname,
                             l.name as name,
                             l.address as address,
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id  and l.state in ('A','I') and c.state in ('A','I') 
                             LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id and l.state in ('A','I') and s.state in ('A','I') 
                             LEFT JOIN MASTER.icon icon on  c.icon_id=icon.id  and icon.state in ('A','I') and c.state in ('A','I') 
-                            WHERE 1=1 ";
+                            WHERE  l.state in ('A','I') ";
 
                 if (poiFilter.Id > 0)
                 {

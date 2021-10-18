@@ -225,8 +225,8 @@ public class HbaseLookupDataSource extends
 				if(4 != indxData.getVEvtId()){
 					vDistDiff =indxData.getVDist() - prevVDist ;
 					
-					if(vDistDiff == 0)
-						vDistDiff = 1;
+					/*if(vDistDiff == 0)
+						vDistDiff = 1;*/
 				}/*else{
 					prevVDist = indxData.getVDist();
 				}*/

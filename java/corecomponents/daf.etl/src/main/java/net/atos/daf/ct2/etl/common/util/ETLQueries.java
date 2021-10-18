@@ -48,7 +48,7 @@ public class ETLQueries {
 			+ ", stsData.vTripMotionBrakeCount, stsData.vTripMotionBrakeDist, stsData.vTripMotionPTODuration, stsData.vTripMotionPTOFuelConsumed, stsData.aclnPedalDistr "
 			+ ", stsData.aclnMinRangeInt, stsData.aclnMaxRangeInt, stsData.aclnDistrStep, stsData.aclnDistrArrayTime, stsData.vRetarderTorqueActualDistr "
 			+ ", stsData.vRetarderTorqueMinRangeInt, stsData.vRetarderTorqueMaxRangeInt, stsData.vRetarderTorqueDistrStep, stsData.vRetarderTorqueDistrArrayTime "
-			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime "
+			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime, stsData.roName"
 			+ " FROM tripStsData stsData";
 	
 	public static final String TRIP_STATUS_AGGREGATION_QRY_BCKUP = " select stsData.tripId, stsData.vid, stsData.vin, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
@@ -99,7 +99,7 @@ public class ETLQueries {
 			+ ", stsData.vTripMotionBrakeCount, stsData.vTripMotionBrakeDist, stsData.vTripMotionPTODuration, stsData.vTripMotionPTOFuelConsumed, stsData.aclnPedalDistr "
 			+ ", stsData.aclnMinRangeInt, stsData.aclnMaxRangeInt, stsData.aclnDistrStep, stsData.aclnDistrArrayTime, stsData.vRetarderTorqueActualDistr "
 			+ ", stsData.vRetarderTorqueMinRangeInt, stsData.vRetarderTorqueMaxRangeInt, stsData.vRetarderTorqueDistrStep, stsData.vRetarderTorqueDistrArrayTime "
-			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime "
+			+ ", stsData.vEngineLoadAtEngineSpeedDistr, stsData.vEngineLoadMinRangeInt, stsData.vEngineLoadMaxRangeInt, stsData.vEngineLoadDistrStep, stsData.vEngineLoadDistrArrayTime, stsData.roName"
 			+ " FROM stsAggregatedData stsData LEFT JOIN secondLevelAggrData indxData ON stsData.tripId = indxData.f0 ";
 	
 	public static final String CO2_COEFFICIENT_QRY = " select coefficient from master.co2coefficient c join master.vehicle v on c.fuel_type = v.fuel_type and vin = ? ";
@@ -120,7 +120,7 @@ public class ETLQueries {
 			+ ", vTripIdlePTOFuelConsumed, vPtoDist, idlingConsumptionWithPTO, vTripCruiseControlDuration, vTripIdleWithoutPTOFuelConsumed, vTripMotionFuelConsumed, vTripMotionBrakeCount, vTripMotionBrakeDist"
 			+ ", vTripMotionPTODuration, vTripMotionPTOFuelConsumed, aclnPedalDistr, aclnMinRangeInt, aclnMaxRangeInt, aclnDistrStep, aclnDistrArrayTime, vRetarderTorqueActualDistr"
 			+ ", vRetarderTorqueMinRangeInt, vRetarderTorqueMaxRangeInt, vRetarderTorqueDistrStep, vRetarderTorqueDistrArrayTime, vEngineLoadAtEngineSpeedDistr, vEngineLoadMinRangeInt"
-			+ ", vEngineLoadMaxRangeInt, vEngineLoadDistrStep, vEngineLoadDistrArrayTime"
+			+ ", vEngineLoadMaxRangeInt, vEngineLoadDistrStep, vEngineLoadDistrArrayTime, roName"
 			+ " from tripAggrData ";
 	
 	//tripCalPtoDuration, tripCalHeavyThrottleDuration

@@ -207,6 +207,7 @@ public class TripStreamingJob {
 			tripStsData.setVid(stsMsg.getVid());
 			tripStsData.setVin(stsMsg.getVin());
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
+			tripStsData.setRoName(stsMsg.getRoName());
 			
 			/*if (stsMsg.getEventDateTimeFirstIndex() != null) {
 				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
