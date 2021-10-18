@@ -4,7 +4,7 @@
   </div>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
-      <span>&nbsp;</span>
+      <span><&nbsp;</span>
      <span class='backBtnCss'>  {{ translationData.lblVehicleUpdateBack || 'Back' }}     </span>
     </span>
   </div>
@@ -23,7 +23,7 @@
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }} </span>
+              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }}: </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleName}}</span>
             </span>
           </div>
@@ -35,13 +35,13 @@
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}</span>
+              <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}: </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleGroupNames}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>{{ translationData.lblvehicletype || 'Type:' }}</span>
+              <span>{{ translationData.lblvehicletype || 'Type:' }} </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.type}}</span>
             </span>
           </div>
