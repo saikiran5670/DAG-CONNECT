@@ -8,7 +8,7 @@
             <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
             </div>
         </div>
-        <mat-card *ngIf="!adminAccessType.adminReadOnlyAccess" class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card *ngIf="adminAccessType.adminFullAccess" class='mat-elevation-z margin-bottom-xlg'>
             <form [formGroup]="uploadTranslationDataFormGroup">
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -30,7 +30,7 @@
                             <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblUploadTranslationDataFile || 'Upload Translation Data file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                        <mat-label>{{ translationData.lblUploadTranslationDataFile }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
                                             <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedXLSXFile }}" ></ngx-mat-file-input>
                                             <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse  }}</button>

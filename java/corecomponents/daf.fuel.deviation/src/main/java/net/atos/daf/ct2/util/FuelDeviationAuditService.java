@@ -45,7 +45,7 @@ public class FuelDeviationAuditService implements Serializable {
 	      log.info("Audit Trial Started for job :: "+jobName);
 	          
 	    } catch (Exception e) {
-	    	System.out.println("Issue ::"+e.getMessage());
+	    	log.info("Issue ::"+e.getMessage());
 	    	throw new FuelDeviationAuditServiceException(" Issue while calling audit service ", e);
 	    }finally{
 	    	if(auditETLJobClient != null)

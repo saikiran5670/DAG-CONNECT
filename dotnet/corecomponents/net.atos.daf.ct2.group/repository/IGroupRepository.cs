@@ -7,7 +7,8 @@ namespace net.atos.daf.ct2.group
     {
         Task<Group> Create(Group group);
         Task<Group> Update(Group group);
-        Task<bool> Delete(long groupid, ObjectType objectType);
+        Task<VehicleGroupDelete> Delete(long groupId, ObjectType objectType);
+        Task<bool> CanDelete(long groupid, ObjectType objectType);
         Task<List<Group>> Get(GroupFilter groupFilter);
         Task<bool> AddRefToGroups(List<GroupRef> groupRef);
         Task<bool> UpdateRef(Group group);

@@ -69,6 +69,52 @@ export class Util {
         return cTime;
     }
 
+    public static convertUtcToHour(_utc: any, timeZone: any){ // with current TZ
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format();
+        let _time = moment(date).valueOf();
+        let _addTz = (moment(date)['_tzm'])* 60000;
+        let cTime = _time;
+        let hour: number = moment.utc(cTime).hour();
+        let minute: number = moment.utc(cTime).minute();
+        let second: number = moment.utc(cTime).second();
+        let millisecond: number = moment.utc(cTime).millisecond();
+        let fixedDay: any = moment([2010, 0, 1, hour, minute, second, millisecond]);
+        cTime = moment(fixedDay).valueOf() + _addTz;
+        let hh=moment.utc(cTime).hour();
+        let mm=moment.utc(cTime).minute();
+        let hhMM=Number.parseFloat(hh+'.'+mm);
+        return hhMM;
+    }
+
+    public static convertUtcToDateFormat2(_utc: any, _timezone: any){
+        // let cTime = Util.convertUtcToDateTZ(_utc, timeZOne);
+        let cDate = moment.utc(_utc).format("MM/DD/YYYY");
+        return cDate;
+    }
+
+    public static convertUtcToDateStart(_utc: any, timeZone: any){
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format();
+        let _time = moment(date).valueOf();
+        let _addTz = (moment(date)['_tzm'])* 60000;
+        let cTime = moment(_time).valueOf() + _addTz;
+        let fixedDay: any = moment([moment.utc(cTime).year(), moment.utc(cTime).month(), moment.utc(cTime).date(), 0, 0, 0, 0]);
+        return moment.utc(fixedDay).valueOf();
+    }
+
+    public static getTimeHHMMSS(_utc: any){
+        return moment.utc(_utc).hour() + ':' + moment.utc(_utc).minute() + ':' + moment.utc(_utc).second() + '.' + moment.utc(_utc).millisecond();
+    }
+
     public static convertToDateTZ(cTime: any, dateFormat: any){ // with current TZ get date time
         let dFormat = 'dd/mm/yyyy';
         switch(dateFormat){
@@ -235,7 +281,7 @@ export class Util {
         let diff = localTimeZoneOffset + PrefTzToGMT;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);       
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        console.log('_convertedUtc:' +_convertedUtc );
+        // console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
         //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();     

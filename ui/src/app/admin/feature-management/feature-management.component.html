@@ -47,21 +47,21 @@
     [actionColumnElements]="actionColumnElements" [selectColumnDataElements]="selectColumnDataElements" [selectColumnHeaderElements]="selectColumnHeaderElements" showExport="true" exportFileName="Feature Details">
 
     <ng-template #topRightElements>
-      <div *ngIf="!adminAccessType.adminReadOnlyAccess">
+      <div *ngIf="adminAccessType.adminFullAccess">
         <button mat-flat-button color="primary" (click)="createNewFeature()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature }}
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature  }}
         </button>
       </div>
     </ng-template>
 
     <ng-template #selectColumnHeaderElements let-gridData='rowData'>
-      <span style="margin: 5px 0px 0px 5px;">{{  translationData.lblState || 'Status' }}</span>
+      <span style="margin: 5px 0px 0px 5px;">{{  translationData.lblStatus}}</span>
     </ng-template>
 
     <ng-template #selectColumnDataElements let-gridData='rowData'>
-      {{ gridData.status }}<button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(gridData)"
+      {{ gridData.status }}<button [disabled]="adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="changeFeatureStatus(gridData)"
               matTooltip="{{ gridData.state == 'ACTIVE' ? (translationData.lblActive ) : translationData.lblInActive  }}">
-              <mat-slide-toggle color="primary" [checked]="gridData.state == 'ACTIVE' ? true : false">
+              <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess" color="primary" [checked]="gridData.state == 'ACTIVE' ? true : false">
               </mat-slide-toggle>
               <span>{{ gridData.state == 'ACTIVE' ? (translationData.lblActive ) : translationData.lblInActive }}</span>
       </button>

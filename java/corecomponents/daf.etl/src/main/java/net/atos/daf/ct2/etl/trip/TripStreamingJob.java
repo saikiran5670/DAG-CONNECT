@@ -76,7 +76,7 @@ public class TripStreamingJob {
 						}
 					}).filter(rec -> { if(rec.getTripId() == null){
 							logger.info("Data Issue TripId is null, ignoring :: "+ rec); 
-							System.out.println("Data Issue TripId is null, ignoring :: "+ rec);}
+							}
 						return null !=  rec.getTripId();});
 					/*.assignTimestampsAndWatermarks(
 							WatermarkStrategy.<TripStatusData>forBoundedOutOfOrderness(Duration.ofSeconds(1))
@@ -207,6 +207,7 @@ public class TripStreamingJob {
 			tripStsData.setVid(stsMsg.getVid());
 			tripStsData.setVin(stsMsg.getVin());
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
+			tripStsData.setRoName(stsMsg.getRoName());
 			
 			/*if (stsMsg.getEventDateTimeFirstIndex() != null) {
 				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(

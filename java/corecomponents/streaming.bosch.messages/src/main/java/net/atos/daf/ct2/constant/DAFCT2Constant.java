@@ -76,4 +76,8 @@ public class DAFCT2Constant {
 	public static final String FILTER_INDEX_TRANSID = "filter.index.transid";
 	public static final String FILTER_MONITOR_TRANSID = "filter.monitor.transid";
 	public static final String FILTER_STATUS_TRANSID = "filter.status.transid";
+	public static final String INDEXKEY = "INDEXKEY";
+	public static final String MONITORKEY = "MONITORKEY";
+	public static final String STATUSKEY = "STATUSKEY";
+	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 }

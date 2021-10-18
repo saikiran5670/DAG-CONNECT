@@ -48,6 +48,7 @@ export class CommonImportComponent implements OnInit {
   @Input() tableTitle : string;
   @Input() defaultGpx:any;
   @Input() breadcumMsg : any;
+  @Input() poiData : any;
   fileExtension = '.csv';
   parsedGPXData : any;
   accountOrganizationId: any = 0;
@@ -390,6 +391,27 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
+  getCategoryId(name:string,id:any)
+  {
+    switch(id){
+      case 'C' : for(let i=0; i< this.poiData.length; i++)
+                {
+                  if(this.poiData[i].categoryName == name)
+                  {
+                    return this.poiData[i].categoryId;
+                  }
+                }
+                break;
+      case 'S'  : for(let i=0; i< this.poiData.length; i++)
+                  {
+                    if(this.poiData[i].subCategoryName == name)
+                    {
+                      return this.poiData[i].subCategoryId;
+                    }
+                  }
+                  break;
+    }   
+  }
 
   // POI import functions
   preparePOIDataToImport(removableInput){
@@ -397,13 +419,12 @@ export class CommonImportComponent implements OnInit {
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {
-          
             "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
-            "categoryId": this.filelist[i]["CategoryId"],
+            "categoryId": this.getCategoryId(this.filelist[i]["CategoryName"],'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),
             "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
-            "subCategoryId":this.filelist[i]["SubCategoryId"],
+            "subCategoryId":this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),//this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),
             "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
-            "name": this.filelist[i]["POIName"],
+            "name": this.filelist[i]["POIName"] || this.filelist[i]["Name"],
             "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
             "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
             "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
@@ -412,12 +433,10 @@ export class CommonImportComponent implements OnInit {
             "longitude": this.filelist[i]["Longitude"],
             "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
             "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
-        
+            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]       
         }
       )
-    }
- 
+    } 
     this.validatePOIData(packagesToImport,removableInput);
   }
 
@@ -488,8 +507,6 @@ export class CommonImportComponent implements OnInit {
             break;
         }
       }
-      
-         
     if(orgFlag && categoryFlag && subcategoryFlag && nameFlag && longitudeFlag && latitudeFlag){
       validData.push(item);
     }
@@ -497,15 +514,12 @@ export class CommonImportComponent implements OnInit {
       invalidData.push(item);
     }
     });
-   
-    
-    this.callPOIImportAPI(validData,invalidData,removableInput)
-  
+       
+    this.callPOIImportAPI(validData,invalidData,removableInput)  
     //console.log(validData , invalidData)
     //return { validDriverList: validData, invalidDriverList: invalidData };
   }
-
-  
+ 
   callPOIImportAPI(validData,invalidData,removableInput){
     this.rejectedList = invalidData;
     this.rejectedCount = invalidData.length;
@@ -896,6 +910,58 @@ export class CommonImportComponent implements OnInit {
   basicValidation(value: any,type:any){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    if(type== 'latitude')
+    {
+      if(value < -90 || value > 90){
+        obj.status = false;
+        obj.reason = 'invalid latitude';
+      }
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
+    if(type== 'longitude')
+    {
+      if(value < -180 || value > 180){
+        obj.status = false;
+        obj.reason = 'invalid longitude';    
+      }
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
+    if(type == 'categoryId'){
+      if(value == 0 || value == '' || !value)
+      {
+        obj.status = false;
+        obj.reason = 'Category name blank or invalid';    
+      } 
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
+    if(type == 'subCategoryId'){
+      if(value == 0 || value == '' || !value)
+      {
+        obj.status = false;
+        obj.reason = ' Sub Category name blank or invalid';    
+      } 
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+  
     if(!value || value == ''){
       obj.status = false;
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
@@ -1013,8 +1079,8 @@ export class CommonImportComponent implements OnInit {
         populateRejectedList.push(
           {
             "organizationId":this.rejectedList[i]["organizationId"],
-            "categoryId": this.rejectedList[i]["categoryId"],
-            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "categoryName": this.rejectedList[i]["categoryName"],
+            "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
             "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
             "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,

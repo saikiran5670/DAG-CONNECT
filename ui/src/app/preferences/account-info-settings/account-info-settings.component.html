@@ -26,7 +26,7 @@
               style="cursor: pointer; margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange || 'Change' }}</span>
           </div>
           <div *ngIf="changePictureFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
-            <input *ngIf="!isSelectPictureConfirm" type="file" (change)="fileChangeEvent($event)" />
+            <input *ngIf="!isSelectPictureConfirm" type="file" accept="image/png, image/gif, image/jpeg" (change)="fileChangeEvent($event)" />
             <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;" 
               [imageChangedEvent]="imageChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
               [resizeToWidth]="100" format="png" roundCropper=true (imageCropped)="imageCropped($event)"
@@ -55,13 +55,19 @@
             </div>
             
           </div>
-          <div class="linkBtn" style="margin-top: 10px;">
-            <a style='margin-left: 20px;'
-              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
+            </span>
           </div>
           <div fxLayout="row" *ngIf="imageError!=''">
             <span style="color:red">{{imageError}}</span>
           </div>
+          <div class="linkBtn" style="margin-top: 10px;">
+            <a style='margin-left: 20px;'
+              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          </div>
+          
         </div>
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
@@ -216,7 +222,7 @@
                 (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
                 (click)='onResetAccountSettings()'>{{ translationData.lblReset || 'Reset' }}</button>  
-              <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
+              <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid || imageError != ''"
                 (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
             </div>
           </form>
@@ -327,7 +333,9 @@
                           formControlName="language"
                            (selectionChange)="onDropdownChange($event, 'language')"> 
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search><mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
+                    <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredLanguages | async" [value]="rer.id">
                   {{ rer.value }}
@@ -344,7 +352,9 @@
                           formControlName="timeZone"
                            (selectionChange)="onDropdownChange($event, 'timeZone')">
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch><mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #timesearch>
+                    <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredTimezones | async" [value]="rer.id">
                   {{ rer.value }}
@@ -416,11 +426,18 @@
               </mat-select>
             </mat-form-field>
           </div> -->
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}" formControlName="landingPage" (selectionChange)="onDropdownChange($event, 'landingPage')">
-                <mat-option *ngFor="let rer of landingPageDisplayDropdownData" [value]="rer.id">
+              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}"
+                           formControlName="landingPage"
+                            (selectionChange)="onDropdownChange($event, 'landingPage')">
+                <mat-option>
+                  <ngx-mat-select-search (keyup)="filterLandingPageDisplay(landingpagesearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #landingpagesearch>
+                  <mat-icon (click) = "resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let rer of filteredLandingPageDisplay | async " [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>
@@ -454,6 +471,11 @@
                 <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon>cancel</mat-icon>
                 </button>
+                <image-cropper *ngIf="uploadLogo != ''" [hidden]="hideImgCropper" style="height: 30px; width: 30px;" 
+                  [imageChangedEvent]="brandLogoChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
+                  [resizeToWidth]="100" format="png"
+                  (imageLoaded)="brandLogoLoaded()" (cropperReady)="brandLogoCropperReady()" (loadImageFailed)="loadImageFailed()">
+                </image-cropper>
                 <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
               </div>
               <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
@@ -469,13 +491,19 @@
                 </div> -->
               </div>
             </div>
-            <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
-            <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
+            <!-- <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span> -->
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
+            </span>
+            <!-- <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
                 The total size must not exceed {{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                 | byteFormat}}).
-            </mat-error>
+            </mat-error> -->
             <mat-error *ngIf="imageEmptyMsg">
                 {{ translationData.lblEmptyFile || 'Empty File' }}
+            </mat-error>
+            <mat-error *ngIf="brandLogoError != ''">
+              {{ brandLogoError }}
             </mat-error>
           </div>
         </div>

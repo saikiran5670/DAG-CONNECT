@@ -1,10 +1,11 @@
-﻿namespace net.atos.daf.ct2.fmsdataservice.CustomAttributes
+﻿namespace net.atos.daf.ct2.fmsdataservice.customattributes
 {
     public static class AccessPolicies
     {
-        public const string MAIN_ACCESS_POLICY = "api.fmsdata";
-        public const string MAIN_MILEAGE_ACCESS_POLICY = "api.vehicle-mileage";
-        public const string MAIN_NAMELIST_ACCESS_POLICY = "api.vehicle-namelist";
+        public const string FMS_VEHICLE_VEHICLES_ACCESS_POLICY = "api.fms3.vehicles";
+        public const string FMS_VEHICLE_POSITION_ACCESS_POLICY = "api.fms3.positions";
+        public const string FMS_VEHICLE_STATUS_ACCESS_POLICY = "api.fms3.status";
+        public const string MAIN_ACCESS_POLICY = "api.fms3-data";
 
     }
 

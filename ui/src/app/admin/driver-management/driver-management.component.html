@@ -9,7 +9,7 @@
             <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
             </div>
         </div>
-        <mat-card class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card *ngIf="adminAccessType.adminFullAccess" class='mat-elevation-z margin-bottom-xlg'>
             <form [formGroup]="importDriverFormGroup">
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -25,7 +25,7 @@
                         </span>
                         <span>{{ translationData.lblDownloadaTemplateMessage }}</span>
                     </div>
-                    <div *ngIf="!adminAccessType.adminReadOnlyAccess" style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                    <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                         <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                             <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
@@ -80,6 +80,11 @@
             </div>
         </mat-card>
         <mat-card class='mat-elevation-z' *ngIf="!showLoadingIndicator">
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
+                </div>
+            </div>
             <!-- <form [formGroup]= 'consentFormGroup'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -179,7 +184,7 @@
                     <div class='areaWidth' fxLayoutAlign="center center">
                         <mat-form-field appearance="outline" class='margin-right-xxlg'>
                             <mat-select [(ngModel)]='selectedConsentType' [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
-                                placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
+                                placeholder="{{ translationData.lblSelectConsentIDStatus }}">
                                 <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
                                     {{ rer.name }}
                                 </mat-option>
@@ -209,10 +214,10 @@
             
                 <ng-template #viewStatusColumnElements let-gridData='rowData'>
                     <div class='margin-left-10-per' *ngIf="gridData.status == 'I'">
-                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptIn }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                        <img class='cursor-pointer' (click)="!adminAccessType.adminReadOnlyAccess ? changeOptStatus(gridData) : ''" matTooltip="{{ translationData.lblOptIn }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                     </div>
                     <div class='margin-left-10-per' *ngIf="gridData.status == 'U'">
-                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptOut }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                        <img class='cursor-pointer' (click)="!adminAccessType.adminReadOnlyAccess ? changeOptStatus(gridData) : ''" matTooltip="{{ translationData.lblOptOut }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                     </div>
                 </ng-template>
             

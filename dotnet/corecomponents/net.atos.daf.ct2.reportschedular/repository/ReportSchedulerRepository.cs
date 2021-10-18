@@ -7,17 +7,19 @@ using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
-
+        private readonly IVisibilityManager _visibilityManager;
         private readonly Helper _helper;
-        public ReportSchedulerRepository(IDataAccess dataAccess)
+        public ReportSchedulerRepository(IDataAccess dataAccess, IVisibilityManager visibilityManager)
         {
             _dataAccess = dataAccess;
+            _visibilityManager = visibilityManager;
             _helper = new Helper();
         }
 

@@ -237,8 +237,8 @@ public class TripAggregations implements Serializable{
 							if(prevVDist != 0)
 								vDistDiff = (Long) (row.getField(6)) - prevVDist ;
 							
-							if(vDistDiff == 0)
-								vDistDiff = 1;
+							/*if(vDistDiff == 0)
+								vDistDiff = 1;*/
 								
 							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
 							Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> grossObj = new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(

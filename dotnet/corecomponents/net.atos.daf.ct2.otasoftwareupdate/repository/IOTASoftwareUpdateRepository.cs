@@ -10,6 +10,9 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
     {
         Task<IEnumerable<VehicleSoftwareStatus>> GetVehicleSoftwareStatus();
         Task<IEnumerable<VehicleScheduleDetails>> GetSchduleCampaignByVin(string vin);
-
+        Task<string> GetReleaseNotes(string campaignID, string code);
+        Task<int> InsertReleaseNotes(string campaignID, string code, string releaseNotes);
+        Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins);
+        Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign);
     }
 }

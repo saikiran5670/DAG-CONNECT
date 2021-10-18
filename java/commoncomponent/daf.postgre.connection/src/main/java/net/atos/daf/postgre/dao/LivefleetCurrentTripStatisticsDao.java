@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.apache.flink.shaded.curator4.org.apache.curator.shaded.com.google.common.base.Strings;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.CurrentTrip;
@@ -29,6 +32,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
 			+ "modified_at = ? WHERE trip_id = ? ";
 
+	
 	public void insert(TripStatisticsPojo row) throws TechnicalException, SQLException {
 		PreparedStatement trip_stats_insert_stmt = null;
 		try {
@@ -380,8 +384,12 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 					currentTripdata.setOdometer_val(rs_trip.getLong("odometer_val"));
 				}
 				// }
-				System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is "
+				
+				if(!Objects.isNull(currentTripdata))
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is "
 						+ currentTripdata.toString());
+				else 
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is NULL");
 
 				rs_trip.close();
 
@@ -457,5 +465,6 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
+
 
 }

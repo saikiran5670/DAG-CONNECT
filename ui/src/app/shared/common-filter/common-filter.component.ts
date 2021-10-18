@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { ReplaySubject } from 'rxjs';
 import { AccountGroup } from 'src/app/models/users.model';
 import { AccountService } from 'src/app/services/account.service';
 import { RoleService } from 'src/app/services/role.service';
@@ -36,6 +37,10 @@ export class CommonFilterComponent implements OnInit {
     IsGlobal: this.isGlobal
  };
 
+ public filteredGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
+ public filteredRoles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(
     private accountService: AccountService,
     private roleService: RoleService
@@ -52,12 +57,18 @@ export class CommonFilterComponent implements OnInit {
     this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grpData)=>{
       grpData.forEach(item => {
         this.userGroups.push(item.accountGroupName);
+        console.log("user groups", this.userGroups);
+        this.userGroups.sort(this.compare);
+        this.resetuserGroupsFilter();
       })
     });
-
+  
     this.roleService.getUserRoles(this.roleObj).subscribe((roleData) => {
      roleData.forEach(item => {
        this.roles.push(item.roleName);
+       console.log("roles", this.roles);
+       this.roles.sort(this.compare);
+       this.resetRolesFilter();
      })
     });
   
@@ -114,6 +125,22 @@ export class CommonFilterComponent implements OnInit {
     }) as (PeriodicElement, string) => boolean;
     
   }
+  compare(a, b) {
+    if (a  < b ) {
+      return -1;
+    }
+    if (a > b ) {
+      return 1;
+    }
+    return 0;
+  }
+  resetuserGroupsFilter(){
+    this.filteredGroups.next(this.userGroups.slice());
+  }
+  resetRolesFilter(){
+    this.filteredRoles.next(this.roles.slice());
+  }
+
 
   filter(){
     let filterTerms = {};
@@ -142,5 +169,40 @@ export class CommonFilterComponent implements OnInit {
     this.role = 'All';
     this.filter();
   }
+
+  filterUserGroups(groupSearch){
+    if(!this.userGroups){
+      return;
+    }
+    if(!groupSearch){
+      this.resetuserGroupsFilter();
+      return;
+     } else{
+      groupSearch = groupSearch.toLowerCase();
+     }
+     this.filteredGroups.next(
+       this.userGroups.filter(item=> item.toLowerCase().indexOf(groupSearch) > -1)
+     );
+
+  }
+ 
+  filterRoles(roleSearch){
+    if(!this.roles){
+      return;
+    }
+    if(!roleSearch){
+      this.resetRolesFilter();
+      return;
+     } else{
+      roleSearch = roleSearch.toLowerCase();
+     }
+     this.filteredRoles.next(
+       this.roles.filter(item=> item.toLowerCase().indexOf(roleSearch) > -1)
+     );
+
+  }
+
+  
+
 
 }

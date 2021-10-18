@@ -6,9 +6,9 @@
     </div>
     <div class="tabs">
       <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged(selectedIndex);">
-        <mat-tab label="{{ translationData.lblCurrent || 'Current' }}">
+        <mat-tab label="{{ translationData.lblCurrent }}">
         </mat-tab>
-        <mat-tab label="{{ translationData.lblHistory || 'History' }}">
+        <mat-tab label="{{ translationData.lblHistory }}">
         </mat-tab>
       </mat-tab-group>
     </div>
@@ -19,7 +19,7 @@
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span>
-                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters }}</span>
                   <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
                 </span>
               </mat-panel-title>
@@ -27,19 +27,19 @@
             <div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
                   <div style='margin-top: 5px;'>
-                    <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
-                    <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
-                    <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
-                    <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
-                    <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+                    <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday }}</button>
+                    <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday }}</button>
+                    <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek }}</button>
+                    <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth }}</button>
+                    <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months }}</button>
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblWarningsType || 'Warnings Type' }} </mat-label>
+                  <mat-label>{{ translationData.lblWarningsType }} </mat-label>
                   <mat-form-field appearance="outline">
-                    <mat-select formControlName="warningType" (selectionChange)="onChangeWarningType($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
+                    <mat-select formControlName="warningType" (selectionChange)="onChangeWarningType($event)" placeholder="{{ translationData.lblSelectVehicleGroup }}" >
                       <mat-option value="AllWarnings">All Warnings</mat-option>
                       <mat-option value="Active">Active</mat-option>
                       <mat-option value="Deactive">Deactive</mat-option>
@@ -51,7 +51,7 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
@@ -71,7 +71,7 @@
                       </div>
                     </div>
                     <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
@@ -95,9 +95,9 @@
               </div>
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-                  (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+                  (click)='onReset()'>{{translationData.lblReset }}</button>
                 <button class='no-margin' mat-raised-button color="primary"
-                  (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+                  (click)='onSearch()'>{{ translationData.lblSearch }}</button>
               </div>
             </div>
           </mat-expansion-panel>
@@ -110,7 +110,7 @@
         (closed)="isSummaryOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div>
@@ -118,13 +118,13 @@
               <div *ngIf='!isCurrent' fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span>{{ translationData.lblFrom }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblWarningType || 'Warning Type' }}: </span>
+                    <span>{{ translationData.lblWarningType }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ warningTypeDisplay }}</span>
                   </span>
                 </div>
@@ -132,7 +132,7 @@
               <div *ngIf='!isCurrent' fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblTo || 'To' }}: </span>
+                    <span>{{ translationData.lblTo }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
@@ -140,25 +140,25 @@
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblFrom || 'VIN' }}: </span>
+                    <span>{{ translationData.lblVIN }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.vin}}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                    <span>{{ translationData.lblVehicleName }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ healthData.vehicleName }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleRegNo || 'Vehicle Reg No' }}: </span>
+                    <span>{{ translationData.lblVehicleRegNo }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.registrationNo}}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblDrivingStatus || 'Driving Status' }}: </span>
+                    <span>{{ translationData.lblDrivingStatus }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.vehicleDrivingStatusType}}</span>
                   </span>
                 </div>
@@ -166,13 +166,13 @@
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblAlert || 'Alert' }}: </span>
+                    <span>{{ translationData.lblAlert }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(healthData.fleetOverviewAlert).length}}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblAddress || 'Address' }}: </span>
+                    <span>{{ translationData.lblAddress }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.latestGeolocationAddress}}</span>
                   </span>
                 </div>
@@ -188,7 +188,7 @@
         (closed)="isMapOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map View' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView }}</span>
               
               <span style="margin-left: 10px;"><mat-icon class='margin-right-10'>info</mat-icon>You can select warning from below list to view on map</span>
             </mat-panel-title>
@@ -204,7 +204,7 @@
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) &&
-                (translationData.lblWarningHistory || 'Warning History') || (translationData.lblCurrentWarning || 'Current Warning')
+                (translationData.lblWarningHistory) || (translationData.lblCurrentWarning )
                 }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -214,7 +214,7 @@
                 <mat-label>Sort By</mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [(ngModel)]="warningTypeSelection" (selectionChange)="onWarningTypeSelection($event)"
-                    placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}">
+                    placeholder="{{ translationData.lblSelectVehicleGroup }}">
                     <mat-option value="severity">Severity</mat-option>
                     <mat-option *ngIf='isCurrent' value="activated_time">Activated Time</mat-option>
                     <mat-option *ngIf='!isCurrent' value="deactivated_time">Activated Time / Deactivated Time</mat-option>
@@ -224,11 +224,9 @@
             </div>
             <div *ngIf='!obs'>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
-                fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record
-                Found!' }}</div>
+                fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
-                translationData.lblSelectionMessage
-                || 'Please select and search required fields from top to view the details' }}</div>
+                translationData.lblSelectionMessage }}</div>
             </div>
             <div *ngIf="obs" style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" 
                class="full-width margin-bottom-xlg" fxLayoutGap="10px">

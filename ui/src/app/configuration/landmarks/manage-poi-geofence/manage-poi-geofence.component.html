@@ -46,7 +46,7 @@
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPOI || 'POI' }} ({{ poiInitData.length }})</span>
           </div>
 
-          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <div *ngIf='adminAccessType.adminFullAccess' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
               <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
                 <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewLandmark || 'New Landmark' }}
@@ -100,12 +100,12 @@
               <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
             </mat-menu>
           </div>
-          <div>
+          <div [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}">
             <button style="margin-top: 6px;" mat-flat-button (click)="importPOIExcel()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
-          <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <div [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}" class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <button [disabled]='selectedpois.selected.length == 0' mat-flat-button color="warn"
               (click)="deleteMultiplePoi()">
               <mat-icon>deleteicon</mat-icon>{{ translationData.lblDelete || 'Delete' }}
@@ -120,7 +120,7 @@
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
                   [checked]='selectedpois.hasValue() && isAllSelectedForPOI()'
                   [indeterminate]='selectedpois.hasValue() && !isAllSelectedForPOI()'
-                  [aria-label]='checkboxLabelForPOI()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+                  [aria-label]='checkboxLabelForPOI()' matTooltip="{{ adminAccessType.adminFullAccess ? (translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities') : (translationData.lblSelecttoviewallonmap || 'Select to view all on map') }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
@@ -130,7 +130,7 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedpois.toggle(row) : null; checkboxClicked($event, row)'
-                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' matTooltip="{{ adminAccessType.adminFullAccess ? (translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity') : (translationData.lblSelecttoviewonmap || 'Select to view on map') }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -233,12 +233,12 @@
                 }}</button>
             </mat-menu>
           </div>
-          <div>
+          <div [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}">
             <button style="margin-top: 6px;" mat-flat-button (click)="importGeofence()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
-          <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <div  [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}"  class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <button [disabled]='selectedgeofences.selected.length == 0' mat-flat-button color="warn"
               (click)="bulkDeleteGeofence()">
               <mat-icon>deleteicon</mat-icon>{{ translationData.lblDelete || 'Delete' }}
@@ -254,7 +254,7 @@
                 <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
                   [checked]='selectedgeofences.hasValue() && isAllSelectedForGeo()'
                   [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
-                  [aria-label]='checkboxLabelForGeo()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+                  [aria-label]='checkboxLabelForGeo()' matTooltip="{{ adminAccessType.adminFullAccess ? (translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities') : (translationData.lblSelecttoviewallonmap || 'Select to view all on map') }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
@@ -264,7 +264,7 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedgeofences.toggle(row) : null; geofenceCheckboxClicked($event,row)' [checked]='selectedgeofences.isSelected(row)'
-                  [aria-label]='checkboxLabelForGeo(row)'  matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+                  [aria-label]='checkboxLabelForGeo(row)' matTooltip="{{ adminAccessType.adminFullAccess ? (translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity') : (translationData.lblSelecttoviewonmap || 'Select to view on map') }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -322,7 +322,7 @@
 <div *ngIf="importPOIClicked">
   <app-common-import [importFileComponent]="'poi'" (backToPage)='checkCreationForPoi($event)' (showImportCSV)="updateImportView($event)"
     [importTranslationData]="importTranslationData" [templateTitle]="templateTitle" [templateValue]="templateValue"
-    [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle' [breadcumMsg]="breadcumMsg">
+    [tableColumnList]="tableColumnList" [poiData]="poiInitData" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle' [breadcumMsg]="breadcumMsg">
   </app-common-import>
 </div>
 

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.otasoftwareupdate.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.otasoftwareupdate.repository
 {
@@ -44,9 +46,9 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vin);
-                var queryAlert = @"SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline as BaselineAssignment
+                var queryAlert = @" SELECT id, campaign_id as CampaignID, scheduled_datetime as ScheduleDateTime, baseline::text as BaselineAssignment
                                     FROM master.otascheduledcompaign
-                                    where vin=@vin";
+                                    where vin=@vin and status='S'";
                 return await _dataAccess.QueryAsync<VehicleScheduleDetails>(queryAlert, parameter);
 
             }
@@ -56,6 +58,111 @@ namespace net.atos.daf.ct2.otasoftwareupdate.repository
             }
         }
         #endregion
+
+        #region Get Get Release Notes from DB
+        public async Task<string> GetReleaseNotes(string campaignID, string code)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", campaignID);
+                parameter.Add("@code", code);
+                var queryAlert = @" SELECT release_notes as ReleaseNotes
+                                    FROM master.otacampaigncatching
+                                    WHERE campaign_id=@campaign_id and code=@code";
+                return await _dataAccess.QueryFirstOrDefaultAsync<string>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> InsertReleaseNotes(string campaignID, string code, string releaseNotes)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", campaignID);
+                parameter.Add("@code", code);
+                parameter.Add("@release_notes", releaseNotes);
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                var queryAlert = @" INSERT INTO master.otacampaigncatching(
+	                                 campaign_id, release_notes, code, created_at, modified_at)
+	                                VALUES ( @campaign_id, @release_notes, @code, @created_at, 0) RETURNING id";
+                return await _dataAccess.ExecuteAsync(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region Get OTA Vin from DataMart
+        public async Task<IEnumerable<string>> GetVinsFromOTAAlerts(IEnumerable<string> vins)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vins", vins.ToArray());
+                var queryAlert = @"SELECT distinct vin
+                                    FROM tripdetail.tripalertotaconfigparam
+                                    where vin = ANY(@vins)";
+                return await _dataMartdataAccess.QueryAsync<string>(queryAlert, parameter);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        public async Task<OtaScheduleCompaign> InsertOtaScheduleCompaign(OtaScheduleCompaign otaScheduleCompaign)
+        {
+            try
+            {
+                string queryStatement = @"INSERT INTO master.otascheduledcompaign(	                                                    
+	                                                     campaign_id
+	                                                    , vin
+	                                                    , scheduled_datetime	                                                   
+                                                        , created_at
+                                                        , created_by
+                                                        , baseline
+                                                        , timestamp_boash_api
+                                                        , status
+	                                                    )
+	                                                    VALUES ( @campaign_id
+			                                                    , @vin
+			                                                    , @scheduled_datetime
+			                                                    , @created_at
+			                                                    , @created_by
+			                                                    , @baseline
+			                                                    , @timestamp_boash_api
+			                                                    , @status) RETURNING id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@campaign_id", otaScheduleCompaign.CompaignId);
+                parameter.Add("@vin", otaScheduleCompaign.Vin);
+                parameter.Add("@scheduled_datetime", otaScheduleCompaign.ScheduleDateTime);
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@created_by", otaScheduleCompaign.CreatedBy);
+                parameter.Add("@baseline", Guid.Parse(otaScheduleCompaign.BaselineId));
+                parameter.Add("@timestamp_boash_api", otaScheduleCompaign.TimeStampBoasch);
+                parameter.Add("@status", otaScheduleCompaign.Status);
+                int scheduleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                otaScheduleCompaign.Id = scheduleId;
+                return otaScheduleCompaign;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
 
 
     }

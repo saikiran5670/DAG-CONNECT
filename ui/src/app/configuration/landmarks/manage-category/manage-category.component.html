@@ -15,7 +15,7 @@
                 'Categories' }} -
                 ({{ dataSource.filteredData.length }})</span>
             </div>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+            <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
               <div fxLayout="row" class='areaWidth'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                   <button mat-flat-button color="primary" (click)="onNewCategory()">
@@ -58,7 +58,8 @@
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" style='width: 100%; float: right;'>
               <div fxLayout="row" fxLayoutAlign="flex-end"  class='areaWidth'>
                 <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (accountOrganizationId != undefined && accountOrganizationId > 0)" [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()">
+                  <!-- <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (accountOrganizationId != undefined && accountOrganizationId > 0)" [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()"> -->
+                  <button *ngIf="adminAccessType.adminFullAccess" [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()">
                     <mat-icon>deleteicon</mat-icon> {{ translationData.lblDelete || 'Delete' }}
                   </button>
                 </div>
@@ -125,10 +126,12 @@
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                  <!-- <button *ngIf="((userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}"> -->
+                  <button *ngIf="(!adminAccessType.adminReadOnlyAccess) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                  <!-- <button *ngIf="((userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
+                    <button *ngIf="(adminAccessType.adminFullAccess) && (adminAccessType.globalCategoryAccess || (row.organizationId != undefined && row.organizationId > 0))" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>

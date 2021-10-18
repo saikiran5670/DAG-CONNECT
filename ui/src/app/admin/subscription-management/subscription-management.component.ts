@@ -282,8 +282,8 @@ export class SubscriptionManagementComponent implements OnInit {
 
   onVehicleClick(rowData: any){
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+    const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
     this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);

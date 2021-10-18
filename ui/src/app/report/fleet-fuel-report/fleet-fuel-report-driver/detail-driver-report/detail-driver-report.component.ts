@@ -31,6 +31,8 @@ import { MapService } from '../../report-mapservice';
 import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
+import { ReplaySubject } from 'rxjs';
+
 
 declare var H: any;
 
@@ -52,6 +54,8 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() endDateValue: any;
   @Input() startDateValue: any;
   @Input() _vinData: any;
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   graphData: any;
   idleDuration: any =[];
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
@@ -852,7 +856,7 @@ tripTraceArray: any = [];
       name: "",
       value: "",
       filter: "",
-      menuId: 10 //-- for fleet utilisation
+      menuId: 9 //-- for fleet fuel report
     }
 
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
@@ -1218,11 +1222,18 @@ createEndMarker(){
 
   public ngAfterViewInit() { }
   loadfleetFuelDetails(driverDetails: any){
+    let driverID = 0;
+    if(driverDetails.driverID.includes('~*')){
+      driverID = driverDetails.driverID.split('~')[0];
+    }
+    else{
+      driverID =driverDetails.driverID;
+    }
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime": this.dateDetails.endTime,
       "vin": driverDetails.vin,
-      "driverId": driverDetails.driverID
+      "driverId": driverID
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
     //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
@@ -1673,7 +1684,7 @@ createEndMarker(){
        vin : this.driverDetails.vin,
        plateNo :this.driverDetails.vehicleRegistrationNo,
        driverName : this.driverDetails.driverName,
-       driverID : this.driverDetails.driverID
+       driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID 
 
      }     
   }
@@ -2412,6 +2423,10 @@ getLast3MonthDate(){
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            this.vehicleGrpDD.sort(this.compare);
+            this.vehicleDD.sort(this.compare);
+            this.resetVehicleGroupFilter();
+            this.resetVehicleFilter();
           }
         });
       }
@@ -3152,6 +3167,58 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     }
     return true;
+  }
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGrpDD){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+  
+   resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
 
 }

@@ -524,7 +524,7 @@ export class ReportMapService {
    makeCluster(_selectedRoutes: any, _ui: any){
     let _s: any = [];
     if(_selectedRoutes.length > 0){
-      _s = _selectedRoutes.filter(item => item.startPositionLattitude != 255 && item.startPositionLongitude != 255 && item.endPositionLattitude != 255 && item.endPositionLongitude != 255);
+      _s = _selectedRoutes.filter(item => (item.startPositionLattitude >= -90 && item.startPositionLattitude <= 90) && (item.startPositionLongitude >= -180 && item.startPositionLongitude <= 180) && (item.endPositionLattitude >= -90 && item.endPositionLattitude <= 90) && (item.endPositionLongitude >= -180 && item.endPositionLongitude <= 180));
     }
     if(_s.length > 9){
       this.setInitialCluster(_s, _ui); 
@@ -1657,6 +1657,7 @@ export class ReportMapService {
       element.convetedCCFuelConsumption = this.getFuelConsumedUnits(element.ccFuelConsumption, unitFormat,true);
       element.convertedFuelConsumptionCCNonActive = this.getFuelConsumedUnits(element.fuelconsumptionCCnonactive, unitFormat,true);
       //element.convertedIdleDuration =element.idleDuration
+      element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'-';
       element.dpaScore = parseFloat(element.dpaScore);
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);
@@ -2069,7 +2070,7 @@ export class ReportMapService {
       }
     }
     // return distance.toFixed(2); 
-    return Math.round(distance);
+    return distance;
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){

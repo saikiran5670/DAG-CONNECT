@@ -18,6 +18,7 @@ import 'jspdf-autotable';
 import { OrganizationService } from '../../services/organization.service';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -26,6 +27,9 @@ import * as fs from 'file-saver';
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   selectionTab: any;
@@ -515,6 +519,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      console.log("vehicleDD 1", this.vehicleDD);
     }else{
 
       //this.vehicleListData = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -522,7 +527,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
-          this.vehicleDD.push(element);  
+          this.vehicleDD.push(element);
+          console.log("vehicleDD 2", this.vehicleDD);  
         });
       }
     
@@ -558,7 +564,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       if(search.length > 0){
         this.driverDD = [];
         search.forEach(element => {
-          this.driverDD.push(element);  
+          this.driverDD.push(element); 
+          console.log("driverDD 1", this.driverDD);
+
         });
       }
     }
@@ -774,6 +782,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.onSearchData = [];
     this.vehicleGroupListData = this.vehicleGroupListData;
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    console.log("vehicleGroupListData 1", this.vehicleGroupListData);
     //this.updateDataSource(this.tripData);
     this.resetdriverTimeFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -855,7 +864,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     //this.resetdriverTimeFormControlValue();
     //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
     let driverList = [];
-    this.onLoadData.driverList.forEach(element => {
+    this.onLoadData?.driverList?.forEach(element => {
       if(element.activityDateTime && element.activityDateTime.length > 0){
         let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
         if(search.length > 0){
@@ -909,6 +918,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
+              this.vehicleGroupListData.sort(this.compare);
+             // this.vehicleDD.sort(this.compare);
+             // this.driverDD.sort(this.compare);
+              this.resetVehicleGroupFilter();
+              //this.resetVehicleFilter();
+              //this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
@@ -923,17 +938,30 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
+      console.log("vehicleGroupListData 2", this.vehicleGroupListData);
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-        //this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.resetVehicleGroupFilter();
+        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+        this.resetVehicleFilter();
 
       }
           if(this.driverListData.length>1){
           this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+          this.resetDriverFilter();
           }
+          // if(this.vehicleListData.length>0){
+          //   this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+          // }
           let vehicleData = this.vehicleListData.slice();
           this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+          console.log("vehicleDD 3", this.vehicleDD);
+          this.vehicleDD.sort(this.compare);
+          this.resetVehicleFilter();
           this.driverDD = this.driverListData;
+          console.log("driverDD 2", this.driverDD);
+          this.driverDD.sort(this.compare);
+          this.resetDriverFilter();
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
           this.driverTimeForm.get('vehicle').setValue(0);
@@ -1267,24 +1295,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   setDefaultTodayDate(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-      //console.log("---if searchFilterpersistData startDateStamp exist")
-      if(this.searchFilterpersistData.timeRangeSelection !== ""){
-        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
-      }else{
-        this.selectionTab = 'today';
-      }
-      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-      let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
-    }else{
+    // if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+    //   //console.log("---if searchFilterpersistData startDateStamp exist")
+    //   if(this.searchFilterpersistData.timeRangeSelection !== ""){
+    //     this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+    //   }else{
+    //     this.selectionTab = 'today';
+    //   }
+    //   let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+    //   let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
+    //   this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    // }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
-    }
+    // }
   }
 
   setVehicleGroupAndVehiclePreSelection() {
@@ -1426,6 +1454,78 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.filterDateData();
   }
 
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGroupListData){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+
+  filterDriver(DriverSearch){
+    console.log("vehicle dropdown called");
+    if(!this.driverDD){
+      return;
+    }
+    if(!DriverSearch){
+      this.resetDriverFilter();
+      return;
+    }else{
+      DriverSearch = DriverSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+  
+   resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGroupListData.slice());
+  }
+
+  resetDriverFilter(){
+    this.filteredDriver.next(this.driverDD.slice());
+  }
 
 }

@@ -164,21 +164,21 @@
                 <span *ngIf="menu.subMenus.length == 0; else elseBlock">
                     <a class='selectedManu' *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
                         (click)='navigateToPage(menu.url)'>
-                        <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">
+                        <mat-icon matTooltip="{{menuCollapsed ?  menu.name : ''}}" class="box-svg-css ">{{menu.icon}}</mat-icon>
+                        <span class="menuLabel" *ngIf ="!menuCollapsed">
                             {{ translationData[menu.key] || menu.name | titlecase}}</span>
                     </a>
                     <a target="_blank" href="{{menu.link}}" class='selectedManu' *ngIf="menu.externalLink"
                         (click)='navigateToPage(menu.url)'>
-                        <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">
+                        <mat-icon matTooltip="{{menuCollapsed ?  menu.name : ''}}" class="box-svg-css ">{{menu.icon}}</mat-icon>
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" >
                             {{ translationData[menu.key] || menu.name | titlecase}}</span>
                     </a>
                 </span>
                 <ng-template #elseBlock>
                     <a class='selectedManu' (click)="menuSelected(menu.url)">
-                        <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">{{ translationData[menu.key] ||menu.name | titlecase}}</span>
+                        <mat-icon matTooltip="{{menuCollapsed ?  menu.name : ''}}" class="box-svg-css ">{{menu.icon}}</mat-icon>
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" >{{ translationData[menu.key] ||menu.name | titlecase}}</span>
                         <!-- <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
                             [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span> -->
                         <mat-icon class="navigationArrow">

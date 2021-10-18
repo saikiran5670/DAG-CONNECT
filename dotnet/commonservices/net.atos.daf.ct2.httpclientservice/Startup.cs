@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.httpclientfactory;
 using net.atos.daf.ct2.httpclientservice.handlers;
-using net.atos.daf.ct2.httpclientservice.Services;
+using net.atos.daf.ct2.httpclientservice;
 
 namespace net.atos.daf.ct2.httpclientservice
 {
@@ -63,6 +63,7 @@ namespace net.atos.daf.ct2.httpclientservice
             //});
 
             services.AddTransient<IOTA22HttpClientManager, OTA22HttpClientManager>();
+            services.AddTransient<IOTA14HttpClientManager, OTA14HttpClientManager>();
 
         }
 

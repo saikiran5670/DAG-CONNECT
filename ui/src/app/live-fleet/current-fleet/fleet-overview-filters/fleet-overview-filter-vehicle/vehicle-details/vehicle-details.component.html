@@ -1,13 +1,13 @@
 <mat-card class="block">
 <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails }}</span>
         </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
                 <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack  }}</span>
         </span>
     </div>
 </div>
@@ -19,39 +19,39 @@
         </div>
         <div class="vehicleList-details">
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+            <span class="vehicle-details-head">{{ translationData.lblVin}}: </span>
             <span class="vehicle-details-data">{{gridData.vin}}</span>
         </div>
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Name'}}: </span>
+            <span class="vehicle-details-head">{{ translationData.lblVehicleName }}: </span>
             <span class="vehicle-details-data">{{gridData.vehicleName}}</span>
         </div>
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Reg No'}}:</span>
+            <span class="vehicle-details-head">{{ translationData.lblVehicleRegNo}}:</span>
             <span class="vehicle-details-data">{{gridData.registrationNo}}</span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{gridData.driverName ? translationData.lbl || 'Driver Name' : translationData.lbl || 'Driver ID'}}:</span>
+            <span class="vehicle-details-head">{{gridData.driverName ? translationData.lblDriverName : translationData.lblDriverId }}:</span>
             <span class="vehicle-details-data"> {{ (gridData.driverName == '' ? gridData.driver1Id : gridData.driverName) || ((gridData.driverName == '' && gridData.driver1Id == '') ? 'Unknown' : gridData.driverName)}} </span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+            <span class="vehicle-details-head">{{ translationData.lblDrivingStatus }}:</span>
             <span class="vehicle-details-data">{{gridData.vehicleDrivingStatusType}}</span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus()' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
+            <span class="vehicle-details-head">{{ translationData.lblHealthStatus }}:</span>
+            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus()' matTooltip="{{ translationData.lblClickForHealthDetails }}">{{gridData.vehicleHealthStatusType}}</span>
         </div>
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>
+            <span class="vehicle-details-head">{{ translationData.lblAlert }}:</span>
             <span class="vehicle-details-data">{{alertLength}}</span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Last Message Received'}}:</span>
+            <span class="vehicle-details-head">{{ translationData.lblLastMessageReceived}}:</span>
             <span class="vehicle-details-data">{{gridData.latestProcessedMessageTimeStamp ?  timeConversion(gridData.latestProcessedMessageTimeStamp) : '--'}}</span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Address'}}:</span>
+            <span class="vehicle-details-head">{{ translationData.lblAddress }}:</span>
             <span class="vehicle-details-data">{{gridData.latestGeolocationAddress}}</span>
         </div> 
         </div>
@@ -61,23 +61,23 @@
  <div  *ngIf='gridData' fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
     <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-            <span>{{ translationData.lbl || 'Current Mileage' }} </span>
+            <span>{{ translationData.lblCurrentMileage }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
+            <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile )  }}</b></span>
         </div>
     </div>
     <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-            <span>{{ translationData.lbl || 'Next Service In' }} </span>
+            <span>{{ translationData.lblNextServiceIn }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
+            <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile)  }}</b></span>
         </div>
     </div>
     <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-            <span>{{ translationData.lbl || 'Health Status' }} </span>
+            <span>{{ translationData.lblHealthStatus }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="right">
             <span><b>{{gridData.vehicleHealthStatusType}}</b></span>
@@ -88,11 +88,11 @@
     <div  *ngIf='gridData' class='mat-elevation-z no-padding margin-bottom-xlg'>
         <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{alertLength}})</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts }} ({{alertLength}})</span>
             </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
-                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} </span><span>></span>
+                <span class='backBtnCss'>{{ translationData.lblLogBook }} </span><span>></span>
             </span>
         </div>
         </div>

@@ -172,7 +172,7 @@
         <ng-template #topRightElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
               <span (mouseover)="legendsDisabled=true" (mouseout)="legendsDisabled=false" class="connectedStatus"
-                style="font-size: 16px;margin-top: 4px;cursor:pointer;">Legends <mat-icon class="legendsIcon">error_outline</mat-icon></span>
+                style="font-size: 16px;margin-top: 4px;cursor:pointer;">{{ translationData.lblLegends || 'Legends'  }} <mat-icon class="legendsIcon">error_outline</mat-icon></span>
         
               <div *ngIf="legendsDisabled" class='areaWidth legendsDiv' fxLayoutGap="3px" style="padding-top: 10px;">
                 <ul>
@@ -211,7 +211,7 @@
           </div>
           <div class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
               <span style='padding-top: 2px;'>{{ translationData.lblConnected || 'Connected' }}</span>
-              <mat-slide-toggle color="primary" value="false" class='actionBtn' mat-flat-button style="padding: 0 8px;"
+              <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess' color="primary" value="false" class='actionBtn' mat-flat-button style="padding: 0 8px;"
                 (click)="onChangeConnectedAllStatus($event)"
                 matTooltip="{{ translationData.lblClicktoactivate || 'Select list checkbox for changing the status' }}"
                 [(ngModel)]="connectedAll">
@@ -244,9 +244,9 @@
     
         <ng-template #actionColumnElements let-gridData='rowData'>
           <ng-container *ngIf="gridData.hasOwned">
-            <button *ngIf="gridData.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(gridData)"
+            <button [disabled]='adminAccessType.adminReadOnlyAccess' *ngIf="gridData.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(gridData)"
               matTooltip="{{ gridData.opt_In == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
-              <mat-slide-toggle color="primary"
+              <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess' color="primary"
                 [checked]='(gridData.opt_In == "I" ? true : false) || ((gridData.status == "C" && gridData.opt_In == "H") ? true : false) || ((gridData.status == "N" && gridData.opt_In == "H") ? true : false) '>
               </mat-slide-toggle>&nbsp;
             </button>
@@ -255,8 +255,8 @@
 
         <ng-template #action2ColumnElements let-gridData='rowData'>
           <ng-container *ngIf="gridData.hasOwned">
-            <button class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(gridData)" matTooltip="{{ gridData.status == 'T' ? (translationData.lblClicktodeactivate || '') : translationData.lblClicktoactivate || 'Click to terminate' }}">
-              <mat-slide-toggle [disabled]='gridData.status == "T"' color="primary" [checked]='gridData.status == "T" ? true : false' >
+            <button [disabled]='adminAccessType.adminReadOnlyAccess' class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(gridData)" matTooltip="{{ gridData.status == 'T' ? (translationData.lblClicktodeactivate || '') : translationData.lblClicktoactivate || 'Click to terminate' }}">
+              <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess || gridData.status == "T"' color="primary" [checked]='gridData.status == "T" ? true : false' >
             </mat-slide-toggle>&nbsp;        
             </button>
           </ng-container>

@@ -1421,6 +1421,47 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("group/candelete")]
+        public async Task<IActionResult> CanDelete(long groupId)
+        {
+            AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
+            try
+            {
+                _logger.Info("Can remove Group method in accunt API called.");
+
+                if ((Convert.ToInt32(groupId) <= 0))
+                {
+                    return StatusCode(400, "The account group id is required.");
+                }
+
+                request.Id = Convert.ToInt32(groupId);
+                AccountBusinessService.AccountGroupCanRemoveResponce response = await _accountClient.CanRemoveGroupAsync(request);
+                if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                        "CanDelete method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
+                         _userDetails);
+                    return Ok(response.Result);
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                     "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     "CanDelete method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
+                      _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
         [HttpPut]
         [Route("accountgroup/delete")]
         public async Task<IActionResult> DeleteAccountGroup(int id)
@@ -1434,14 +1475,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
                 request.Id = id;
-                AccountBusinessService.AccountGroupResponce response = await _accountClient.RemoveGroupAsync(request);
+                AccountBusinessService.AccountGroupRemoveResponce response = await _accountClient.RemoveGroupAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                        "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                         _userDetails);
-                    return Ok(response.AccountGroup);
+                    return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
                 }
                 else
                 {

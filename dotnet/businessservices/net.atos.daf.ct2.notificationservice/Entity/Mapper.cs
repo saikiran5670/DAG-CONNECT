@@ -21,6 +21,13 @@ namespace net.atos.daf.ct2.notificationservice.Entity
             alertVehicle.AlertCategoryKey = alertVehicleEntity.AlertCategoryKey ?? string.Empty;
             alertVehicle.AlertTypeKey = alertVehicleEntity.AlertTypeKey ?? string.Empty;
             alertVehicle.UrgencyTypeKey = alertVehicleEntity.UrgencyTypeKey ?? string.Empty;
+            if (alertVehicleEntity.OtaAccountIds != null)
+            {
+                foreach (var item in alertVehicleEntity.OtaAccountIds)
+                {
+                    alertVehicle.OTAAccountIds.Add(item);
+                }
+            }
             return alertVehicle;
         }
     }

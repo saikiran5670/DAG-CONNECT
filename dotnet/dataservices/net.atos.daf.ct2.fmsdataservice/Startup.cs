@@ -22,7 +22,7 @@ using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.fmsdataservice.Common;
-using net.atos.daf.ct2.fmsdataservice.CustomAttributes;
+using net.atos.daf.ct2.fmsdataservice.customattributes;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
@@ -30,6 +30,7 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.fms;
 using net.atos.daf.ct2.fms.repository;
+using net.atos.daf.ct2.fmsdataservice.customAttributes;
 
 namespace net.atos.daf.ct2.fmsdataservice
 {
@@ -46,7 +47,13 @@ namespace net.atos.daf.ct2.fmsdataservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+
+            services.AddMemoryCache();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
+            services.AddHttpContextAccessor();
             services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>
             {
@@ -65,7 +72,9 @@ namespace net.atos.daf.ct2.fmsdataservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
-
+            services.AddDistributedMemoryCache();
+            services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
@@ -119,20 +128,27 @@ namespace net.atos.daf.ct2.fmsdataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
+                    AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_POSITION_ACCESS_POLICY)));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_STATUS_ACCESS_POLICY)));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
                     AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
-                options.AddPolicy(
-                    AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY,
-                    policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY)));
-                options.AddPolicy(
-                   AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY,
-                   policy => policy.RequireAuthenticatedUser()
-                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.FMS_VEHICLE_VEHICLES_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
+
 
             services.AddSwaggerGen(c =>
             {
@@ -142,27 +158,34 @@ namespace net.atos.daf.ct2.fmsdataservice
 
         }
 
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "net.atos.daf.ct2.fmsdataservice v1"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+            app.UseRateLimitation();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "net.atos.daf.ct2.fmsdataservice v1"));
+            }
         }
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
         {

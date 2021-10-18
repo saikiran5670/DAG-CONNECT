@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 { "/report/fuelbenchmark/timeperiod", "Report.FuelBenchmarking" },
                 { "/reportscheduler/getreportschedulerparameter", "Configuration.ReportScheduler" },
                 { "/report/fleetoverview/getlogbookdetails", "FleetOverview.LogBook" },
-                { "/otasoftwareupdate/getvehicletatuslist", "VehicleUpdates" }
+                { "/otasoftwareupdate/getvehiclestatuslist", "VehicleUpdates" }
             };
             var featureName = featureMapping.ContainsKey(path) ? featureMapping[path] : string.Empty;
 

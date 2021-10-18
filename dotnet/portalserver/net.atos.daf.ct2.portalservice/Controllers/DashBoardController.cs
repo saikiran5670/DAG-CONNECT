@@ -83,10 +83,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }
+                Metadata headers = new Metadata();
+                int organizationId = GetContextOrgId();
+                headers.Add("context_orgid", Convert.ToString(organizationId));
+
                 string filters = JsonConvert.SerializeObject(request);
                 Alert24HoursFilterRequest objAlertFilter = JsonConvert.DeserializeObject<Alert24HoursFilterRequest>(filters);
                 _logger.Info("GetAlert24hours method in dashboard API called.");
-                var data = await _dashboardServiceClient.GetLastAlert24HoursAsync(objAlertFilter);
+                var data = await _dashboardServiceClient.GetLastAlert24HoursAsync(objAlertFilter, headers);
                 if (data != null)
                 {
                     data.Message = DashboardConstant.GET_ALERTLAST24HOURS_SUCCESS_MSG;

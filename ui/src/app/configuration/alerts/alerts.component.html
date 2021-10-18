@@ -26,7 +26,7 @@
         </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails || 'All Created Alert Details' }}
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails }}
                   <!-- ({{ dataSource.filteredData.length }}) -->
               </span>
           </div>
@@ -34,7 +34,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
-                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search'   }}">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                   <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
@@ -47,15 +47,15 @@
                         <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
                     </mat-menu>
                     </div> -->
-                    <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                    <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                         <button mat-flat-button color="primary" (click)="onClickNewAlert()">
-                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAlert || 'New Alert' }}
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAlert }}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-       <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
+       <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound }}</div>
         <div *ngIf='initData.length > 0' id="alertsData">
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
              <ng-container matColumnDef="highUrgencyLevel">      
@@ -63,7 +63,7 @@
             
               <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
-                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew }}</span>
                
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.highUrgencyLevel == 'C'">
                   <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
@@ -78,27 +78,27 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName }}</mat-header-cell>
               <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.name}}">{{row.name}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory }}</mat-header-cell>
               <mat-cell *matCellDef="let row">         
                 {{ row.category }}            
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="type">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertType || 'Alert Type'}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.type }}  </span></mat-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertType }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.type }}">{{ row.type }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="thresholdValue">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold || 'Threshold' }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold }}</mat-header-cell>
                <mat-cell *matCellDef="let row">
                   <span>{{row.highThresholdValue}}</span>               
                 </mat-cell>  
               </ng-container>
               <ng-container matColumnDef="vehicleGroupName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
@@ -113,28 +113,28 @@
                 </mat-cell>
              </ng-container> 
             <ng-container matColumnDef="state">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="onChangeAlertStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate  || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate'}}">
-                <mat-slide-toggle color="primary" [checked]='row.state == "A" ? true : false' >
+              <button [disabled]='adminAccessType.adminReadOnlyAccess' class='actionBtn' mat-flat-button (click)="onChangeAlertStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate ) : translationData.lblClicktoactivate }}">
+                <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess"  color="primary" [checked]='row.state == "A" ? true : false' >
               </mat-slide-toggle>&nbsp;
-              <span>{{ row.state == "A" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Suspended'  }}</span>
+              <span style='font-weight: normal; color: #000;'>{{ row.state == "A" ? (translationData.lblActive) : translationData.lblInActive}}</span>
               </button>
             </mat-cell>            
             </ng-container>
             <ng-container matColumnDef="action">
-              <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction }} </mat-header-cell>
               <mat-cell *matCellDef="let row" class="action">
-                <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView || 'view'  }}">
+                <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit'   }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit }">
                   <mat-icon>create</mat-icon>
                 </button>
-                <button *ngIf="row.hasPrivilege" class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess"  class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate }}">
                   <mat-icon>content_copy</mat-icon>
               </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>
               </mat-cell>

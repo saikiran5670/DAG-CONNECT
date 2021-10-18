@@ -52,7 +52,8 @@ service AccountService
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
-  rpc RemoveGroup (IdRequest) returns (AccountGroupResponce);
+  rpc RemoveGroup (IdRequest) returns (AccountGroupRemoveResponce);
+  rpc CanRemoveGroup (IdRequest) returns (AccountGroupCanRemoveResponce);
   rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
   rpc GetAccountGroupDetail (AccountGroupDetailsRequest) returns (AccountGroupDetailsDataList);
   rpc AddAccountToGroups(AccountGroupRefRequest) returns (AccountGroupRefResponce);
@@ -64,8 +65,7 @@ service AccountService
   rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
   rpc GetRoles (AccountRoleDeleteRequest) returns (AccountRoles);
   rpc GenerateSSO (TokenSSORequest) returns (SSOToken);
-  
-  //
+
   rpc GetCountryDetail(RequestCountry) returns (ResponseCountry);
 }
 enum AccountType
@@ -299,6 +299,17 @@ message AccountGroupResponce{
   string message = 2; 
   AccountGroupRequest AccountGroup=3;   
 }
+message AccountGroupCanRemoveResponce{
+  Responcecode code=1;  
+  string message = 2; 
+  bool Result=3;   
+}
+message AccountGroupRemoveResponce{
+  Responcecode code=1;  
+  string message = 2; 
+  bool IsDeleted=3;   
+  bool CanDelete=4;   
+}
 message AccountGroupDataList
     {
       Responcecode Code=1;
@@ -528,6 +539,7 @@ Responcecode Code=2;
 string Message = 3; 
 }
 // end - vehicle-account access relatioship
+
 
 message RequestCountry
 {

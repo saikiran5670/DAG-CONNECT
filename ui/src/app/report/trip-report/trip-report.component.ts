@@ -27,6 +27,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import html2canvas from 'html2canvas';
 import { single } from 'rxjs/operators';
+import { ReplaySubject } from 'rxjs';
 
 declare var H: any;
 
@@ -184,6 +185,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
   map_key: any = '';
   platform: any = '';
   alertsChecked: any = false;
+
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
@@ -707,12 +711,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
       if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        console.log("vehicleDD 1", this.vehicleDD);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
+            console.log("vehicleDD 3", this.vehicleDD);
           });
         }
       }
@@ -1206,16 +1212,28 @@ export class TripReportComponent implements OnInit, OnDestroy {
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            console.log("vehicleGrpDD", this.vehicleGrpDD);
+            this.vehicleGrpDD.sort(this.compare);
+           // this.vehicleDD.sort(this.compare);
+            this.resetVehicleGroupFilter();
+           // this.resetVehicleFilter();
           }
         });
+        
+      
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
       // this.resetTripFormControlValue();
+      this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        console.log("vehicleDD 2", this.vehicleDD);
+        this.vehicleDD.sort(this.compareVin);
+        this.resetVehicleFilter();
+
     // if (this.vehicleDD.length > 0) {
     //   let _s1 = this.vehicleListData.map(item=>item.vehicleName).filter((value,index,self)=>self.indexOf(value)=== index);
     //   if(_s1.length > 0){
@@ -1235,7 +1253,30 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.onSearch();
     }
   }
+  compare(a, b) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+  
+  resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
+  }
 
+  
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
@@ -1426,5 +1467,45 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _ui = this.reportMapService.getUI();
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
+
+  filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGrpDD){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+
+  }
+
+  filterVehicle(VehicleSearch){
+    console.log("vehicle dropdown called");
+    if(!this.vehicleDD){
+      return;
+    }
+    if(!VehicleSearch){
+      this.resetVehicleFilter();
+      return;
+    }else{
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    this.filteredVehicle.next(
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+    );
+    console.log("filtered vehicles", this.filteredVehicle);
+  }
+  
+  resetVehicleFilter(){
+    this.filteredVehicle.next(this.vehicleDD.slice());
+  }
+
 
 }

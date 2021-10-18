@@ -4,6 +4,10 @@ import { Util } from '../../shared/util';
 import { ConfigService } from '@ngx-config/core';
 import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
 import { ReportMapService } from '../../report/report-map.service';
+import { TranslationService } from 'src/app/services/translation.service';
+import { OrganizationService } from 'src/app/services/organization.service';
+
+
 declare var H: any;
 
 @Injectable({
@@ -44,17 +48,91 @@ export class FleetMapService {
   prefTimeFormat: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
-  
+  accountPrefObj: any;
   alertMarker : any;
   vehicleIconMarker : any;
+  localStLanguage: any;
+  prefData : any;
+  preference : any;
+  orgId: any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
+  translationData: any = {};
 
-  constructor(private hereSerive : HereService, private _configService: ConfigService,private reportMapService : ReportMapService) {
+  constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive : HereService, private _configService: ConfigService,private reportMapService : ReportMapService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key 
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
+
+ 
+
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    let translationObj = {
+      id: 0,
+      code: _langCode,
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 17 //-- for alerts
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);      
+    }); 
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
+      if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      }else{ // org pref
+        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+          this.proceedStep(prefData, orgPref);
+        }, (error) => { // failed org API
+          let pref: any = {};
+          this.proceedStep(prefData, pref);
+        });
+      }
+      if(this.prefData) {
+        this.setInitialPref(this.prefData,this.preference);
+      }
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
+      
+    });
+
+  }
+
+  processTranslation(transData: any) {
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    //console.log("process translationData:: ", this.translationData)
+  }
+
+  setInitialPref(prefData,preference){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+  }
+
+  proceedStep(prefData: any, preference: any){
+    this.prefData = prefData;
+    this.preference = preference;
+    // this.setPrefFormatDate();
+
   }
 
   setPrefObject(_prefObj){
@@ -312,6 +390,27 @@ export class FleetMapService {
       break;
     }
     return {_healthStatus,healthColor};
+  }
+
+  getHealthStatus(element) {
+    let _healthStatus='';
+    switch (element.vehicleHealthStatusType) {
+      case 'T': // stop now;
+      case 'Stop Now':
+        _healthStatus = 'Stop Now';
+        break;
+      case 'V': // service now;
+      case 'Service Now':
+        _healthStatus = 'Service Now';
+        break;
+      case 'N': // no action;
+      case 'No Action':
+        _healthStatus = 'No Action';
+        break
+      default:
+        break;
+      }
+      return _healthStatus;
   }
 
   getDrivingStatus(element,_drivingStatus){
@@ -1094,7 +1193,8 @@ let _type ='';
         
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
-      let _healthStatus = '',_drivingStatus = '';
+      let _healthStatus = this.getHealthStatus(elem);
+      let _drivingStatus = this.getDrivingStatus(elem,'');
      
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
@@ -1170,41 +1270,108 @@ let _type ='';
       let alertsData =[];  
       if(element.fleetOverviewAlert.length > 0){
         if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
-            _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+            // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+            _alertFound = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
             if(_alertFound){
               this.alertFoundFlag = true;
                alertsData.push(_alertFound);
                 }
         }
+        else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
+          // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+          _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+          if (_alertFound) {
+            this.alertFoundFlag = true;
+            alertsData.push(_alertFound);
+          }
+        }
+
         else{
           //only for never moved type of driving status
             if(_drivingStatus == "Never Moved"){
               let latestAlert :any =[];
+              if(element.latestWarningClass ==0){
               latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
               this.endAddressPositionLat = _alertFound.latitude;
               this.endAddressPositionLong =_alertFound.longitude;
+              }
+              else{
+                // need to display never moved icon on map if alert/warning is present.
+                latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time);
+                let a = latestAlert[0].time;
+                let b = element.latestWarningTimestamp;
+                let newDate = Math.max(a, b);
+                if(newDate == a){//for alert
+                  _alertFound = latestAlert[0];
+                  alertsData.push(_alertFound);
+                  this.endAddressPositionLat = _alertFound.latitude;
+                  this.endAddressPositionLong =_alertFound.longitude;
+                }
+                else{ //for warning
+                  _alertFound = latestAlert[0];
+                  alertsData.push(_alertFound);
+                  this.endAddressPositionLat = element.latestWarningPositionLatitude;
+                  this.endAddressPositionLong = element.latestWarningPositionLongitude;
+                }
+
+              }
             }
         }
       }
-
-        if(_alertFound && alertsData.length > 1){ //check for criticality
-          alertsData.forEach(element => {
-            let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
-            if(_currentElem){
-              _alertConfig = this.getAlertConfig(element);  
-            }
-            let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
-            if(_currentElem == undefined && warnElem){
-              _alertConfig = this.getAlertConfig(element); 
-            }
-           if(_currentElem == undefined && warnElem == undefined ){ //advisory
-              _alertConfig = this.getAlertConfig(element); 
-            }
-          });
+      else{ //if alert is not present then need to display warning lat long for never moved vehicle.
+        if(_drivingStatus == "Never Moved"){
+        this.endAddressPositionLat = element.latestWarningPositionLatitude;
+        this.endAddressPositionLong = element.latestWarningPositionLongitude;
         }
-        else if(_alertFound && alertsData.length == 1){
+      }
+
+        if(_alertFound && alertsData[0].length > 1){ //check for criticality
+          let criticalCount = 0;
+          let warningCount = 0;
+          let advisoryCount = 0;
+          alertsData[0].forEach(element => {
+          //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
+          //   if(_currentElem){
+          //     _alertConfig = this.getAlertConfig(element);  
+          //   }
+          //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
+          //   if(_currentElem == undefined && warnElem){
+          //     _alertConfig = this.getAlertConfig(element); 
+          //   }
+          //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
+          //     _alertConfig = this.getAlertConfig(element); 
+          //   }
+          //------------------------------------------------------------------------------------------
+        //   let _currentElem = element.level === 'C' ? true : false;
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.level === 'W' ? true : false;
+        //   if(!_currentElem && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(!_currentElem && !warnElem){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+
+              criticalCount += element.level === 'C' ? 1 : 0;
+              warningCount += element.level === 'W' ? 1 : 0;
+              advisoryCount += element.level === 'A' ? 1 : 0;
+       
+          });
+          if(criticalCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
+          }
+          else if(warningCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+          }
+          else if(advisoryCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+          }
+        }
+        else if(_alertFound && alertsData[0].length == 1){
           _alertConfig = this.getAlertConfig(_alertFound);
         }  
       
@@ -1464,7 +1631,10 @@ let _type ='';
   }
 
   setInitialCluster(data: any, ui: any){
+  // let data = newData.filter(i=>i.vehicleDrivingStatusType !='N' || i.vehicleDrivingStatusType !='Never Moved');
     let dataPoints = data.map((item) => {
+      item.startPositionLattitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLatitude : item.startPositionLattitude; 
+      item.startPositionLongitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLongitude : item.startPositionLongitude; 
       return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
     });
     var noiseSvg =
@@ -1673,25 +1843,52 @@ let _type ='';
           let infoBubble: any
           clusterMarker.addEventListener("tap",  (event) => {
             this.removedDisabledGroup();
-            data.forEach((element, _index) => {
-              let liveFleetPoints: any = element.liveFleetPosition;
-              liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); 
-              this.selectionPolylineRoute(liveFleetPoints, _index);   
-            });
-            this.hereMap.addObject(this.disableGroup);
+            // data.forEach((element, _index) => {
+            //   let liveFleetPoints: any = element.liveFleetPosition;
+            //   liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); 
+            //   this.selectionPolylineRoute(liveFleetPoints, _index);   
+            // });
+            // this.hereMap.addObject(this.disableGroup);
+            let colName: any;
+            if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
+              colName = 'Vehicle Name';
+            }
+            else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'){
+              colName = 'Vin';
+            }
+            else{
+              colName = 'Vehicle Registration No';
+            }
             var point = event.target.getGeometry(),
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
               _data = t.getData(),
-              tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+  
+              // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`; 
               var chkBxId = 0;
               _data.forEachEntry(
               (p) => 
               { 
+                if(colName == 'Vehicle Name'){
                 tooltipContent += "<tr>";
-                tooltipContent += "<td><input type='checkbox' class='checkbox' id='"+ chkBxId +"'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
+                tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
                 tooltipContent += "</tr>";
                chkBxId++;
+                }
+                else if(colName == 'Vin'){
+                  tooltipContent += "<tr>";
+                  tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                  tooltipContent += "</tr>";
+                 chkBxId++;
+                  }
+                else{
+                    tooltipContent += "<tr>";
+                    tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                    tooltipContent += "</tr>";
+                   chkBxId++;
+                    
+                }
               }
             ); 
             tooltipContent += "</tbody></table>";
@@ -1781,9 +1978,11 @@ let _type ='';
     // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
     // this.hereMap.setZoom(10);
     if(_selectedRoutes.length > 1){
-      let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
+      let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.latestReceivedPositionLongitude === elem.latestReceivedPositionLongitude) === index);
       let _a: any = [];
       _arr.forEach(i=> {
+        i.startPositionLattitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLatitude : i.startPositionLattitude; 
+        i.startPositionLongitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLongitude : i.startPositionLongitude;   
         let b: any = _selectedRoutes.filter(j => i.startPositionLattitude == j.startPositionLattitude && i.startPositionLongitude == j.startPositionLongitude)
         _a.push(b);
       }); 
@@ -1862,11 +2061,22 @@ let _type ='';
 
   processedLiveFLeetData(fleetData: any){
     fleetData.forEach(element => {
+      if(element.tripId != "" && element.liveFleetPosition.length > 0){
       element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
       element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
       element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
       element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
       element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+      }
+      else if(element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0){
+        element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude; 
+        element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude; 
+   
+      }
+      else{
+        element.latestReceivedPositionLattitude = 48.8566;
+        element.latestReceivedPositionLongitude = 2.3522;
+      }
     })
     return fleetData;
   }

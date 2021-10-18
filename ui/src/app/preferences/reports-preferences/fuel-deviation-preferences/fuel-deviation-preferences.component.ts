@@ -164,19 +164,19 @@ export class FuelDeviationPreferencesComponent implements OnInit {
               this.chartsData[index] = _data;
             }else if(item.key.includes('rp_fd_details_')){
               if(item.key == 'rp_fd_details_distance' || item.key == 'rp_fd_details_odometer'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.translationData.lblmi);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_drivingtime' || item.key == 'rp_fd_details_idleduration'){
-                txt = this.translationData.lblhhmm || 'hh:mm';
+                txt = this.translationData.lblhhmm;
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_averageweight'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.translationData.lblpound);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_averagespeed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.translationData.lblmph);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_fuelconsumed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr) : (this.translationData.lblgallon);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_difference'){
                 txt = '%';

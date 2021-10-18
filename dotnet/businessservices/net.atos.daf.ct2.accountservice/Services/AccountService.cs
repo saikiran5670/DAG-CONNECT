@@ -1530,27 +1530,53 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override async Task<AccountGroupResponce> RemoveGroup(IdRequest request, ServerCallContext context)
+        public override async Task<AccountGroupRemoveResponce> RemoveGroup(IdRequest request, ServerCallContext context)
         {
             try
             {
-                bool result = await _groupManager.Delete(request.Id, Group.ObjectType.AccountGroup);
-                return await Task.FromResult(new AccountGroupResponce
+                var response = await _groupManager.Delete(request.Id, ObjectType.AccountGroup);
+                return await Task.FromResult(new AccountGroupRemoveResponce
                 {
-                    Message = "Account Group deleted.",
-                    Code = Responcecode.Success
+                    Message = string.Empty,
+                    Code = Responcecode.Success,
+                    IsDeleted = response.IsDeleted,
+                    CanDelete = response.CanDelete
                 });
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new AccountGroupResponce
+                return await Task.FromResult(new AccountGroupRemoveResponce
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = Responcecode.Failed
                 });
             }
         }
+        public override async Task<AccountGroupCanRemoveResponce> CanRemoveGroup(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _groupManager.CanDelete(request.Id, ObjectType.AccountGroup);
+                return await Task.FromResult(new AccountGroupCanRemoveResponce
+                {
+                    Message = "Account Group deleted.",
+                    Code = Responcecode.Success,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AccountGroupCanRemoveResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed,
+                    Result = false
+                });
+            }
+        }
+
         public override async Task<AccountGroupRefResponce> AddAccountToGroups(AccountGroupRefRequest request, ServerCallContext context)
         {
             try

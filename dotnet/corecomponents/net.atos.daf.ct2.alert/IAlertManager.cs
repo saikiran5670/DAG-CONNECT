@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.alert
         Task<int> SuspendAlert(int alertId, char state, char checkState);
         Task<bool> CheckIsNotificationExitForAlert(int alertId);
         Task<Alert> UpdateAlert(Alert alert);
-        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid);
+        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds);
         Task<DuplicateAlertType> DuplicateAlertType(int alertId);
         #region Alert Category
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();

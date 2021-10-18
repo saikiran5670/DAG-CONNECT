@@ -41,11 +41,10 @@ namespace net.atos.daf.ct2.visibility
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
 
-            //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId)
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId, int adminFeatureId)
         {
             Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
             //If context switched then find vehicle visibility for the organization
@@ -61,8 +60,7 @@ namespace net.atos.daf.ct2.visibility
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
 
-            //return await _visibilityRepository.GetVehicleVisibilityDetails(filteredVehicles.Select(x => x.Id).ToArray(), accountId);
-            return await MapVehicleDetailsForOTA(resultDict);
+            return await MapVehicleDetailsForOTA(resultDict, adminFeatureId, orgId, contextOrgId);
         }
 
         /// <summary>
@@ -158,7 +156,6 @@ namespace net.atos.daf.ct2.visibility
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
 
-            //return await _visibilityRepository.GetVehicleVisibilityDetailsTemp(vehicles.Select(x => x.Id).ToArray());
             return MapVehicleDetailsTemp(accountId, contextOrgId, resultDict);
         }
 
@@ -258,7 +255,7 @@ namespace net.atos.daf.ct2.visibility
             }
         }
 
-        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
         {
             return await _vehicleManager.GetVisibilityVehicles(vehicleGroupIds, orgId);
         }
@@ -346,9 +343,10 @@ namespace net.atos.daf.ct2.visibility
         }
 
 
-        private async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict)
+        private async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> MapVehicleDetailsForOTA(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict, int adminFeatureId, int orgId, int contextOrgId)
         {
             List<VehicleDetailsAccountVisibilityForOTA> vehicleDetails = new List<VehicleDetailsAccountVisibilityForOTA>();
+
             foreach (var vg_kv in resultDict)
             {
                 var vehicleGroup = vg_kv.Key;
@@ -358,6 +356,11 @@ namespace net.atos.daf.ct2.visibility
                 {
                     foreach (var vehicle in visibleVehicles)
                     {
+                        var details = resultDict.Where(x => x.Value.Any(y => y.VIN.Equals(vehicle.VIN))).Select(x => x.Key);
+
+                        //If context switch happens, make isAccessible true by default because Access Relationship does not come into picture.
+                        var isAccessible = (orgId == contextOrgId) ? details.Any(x => x.AccessRelationType?.Equals("F") ?? false) : true;
+
                         vehicleDetails.Add(new VehicleDetailsAccountVisibilityForOTA
                         {
                             VehicleId = vehicle.Id,
@@ -367,6 +370,8 @@ namespace net.atos.daf.ct2.visibility
                             VehicleGroupName = vehicleGroup.Name,
                             ModelYear = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().ModelYear ?? string.Empty,
                             Type = vehiclePropertiesList.Where(w => w.VehicleId == vehicle.Id).FirstOrDefault().Type ?? string.Empty,
+                            HasAdminRights = vehicle.HasOwned ? (isAccessible && adminFeatureId > 0)
+                                                              : (isAccessible && adminFeatureId > 0 && (vehicle.Btype_Features?.Any(x => x == adminFeatureId) ?? false))
                         });
                     }
                 }
@@ -379,7 +384,8 @@ namespace net.atos.daf.ct2.visibility
                 x.Vin,
                 x.RegistrationNo,
                 x.ModelYear,
-                x.Type
+                x.Type,
+                x.HasAdminRights
             }).Select(x => new VehicleDetailsAccountVisibilityForOTA
             {
                 VehicleId = x.Key.VehicleId,
@@ -388,6 +394,7 @@ namespace net.atos.daf.ct2.visibility
                 RegistrationNo = x.Key.RegistrationNo,
                 ModelYear = x.Key.ModelYear,
                 Type = x.Key.Type,
+                HasAdminRights = x.Key.HasAdminRights,
                 VehicleGroupNames = x.Select(x => x.VehicleGroupName)
                 .Aggregate((s1, s2) => s1 + "," + s2)
             });
@@ -424,6 +431,11 @@ namespace net.atos.daf.ct2.visibility
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetSubscribedVehicleByAlertFeature(List<int> featureid, int organizationid)
         {
             return await _visibilityRepository.GetSubscribedVehicleByAlertFeature(featureid, organizationid);
+        }
+
+        public async Task<List<int>> GetAccountsForOTA(string vin)
+        {
+            return await _visibilityRepository.GetAccountsForOTA(vin);
         }
     }
 }

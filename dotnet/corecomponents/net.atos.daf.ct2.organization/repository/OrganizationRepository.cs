@@ -1311,7 +1311,7 @@ namespace net.atos.daf.ct2.organization.repository
                                         inner join master.orgrelationshipmapping orm on orm.vehicle_id=veh.id
                                         Inner join master.orgrelationship ors on ors.id=orm.relationship_id
                                         where ors.state='A'
-                                        and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                        and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
                                                 else COALESCE(end_date,0) = 0 end
                                         and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and lower(ors.code) = 'owner'";
                     var ownerOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
@@ -1326,7 +1326,7 @@ namespace net.atos.daf.ct2.organization.repository
                                 Inner join master.orgrelationship ors
                                 on ors.id=orm.relationship_id
                                 where ors.state='A'
-                                and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
                                          else COALESCE(end_date,0) = 0 end
                                 and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and lower(ors.code) NOT IN ('owner', 'oem')";
                     var visibleOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);

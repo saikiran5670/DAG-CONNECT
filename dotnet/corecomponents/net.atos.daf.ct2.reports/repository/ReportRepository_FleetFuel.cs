@@ -89,6 +89,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          	(
                                                          		Select
                                                          			VIN
+                                                                  , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
+                                                                  , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                          		  , count(trip_id)                                                         as numberoftrips
                                                          		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                          		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
@@ -183,6 +185,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                     			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
                                                     			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
                                                     			  , round(fd.FootBrake,4) 								 					as FootBrake
+                                                                ,round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
+                                                                then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
+																      else 0  end),4) as IdlingConsumptionWithPto 
                                                          		FROM
                                                          			CTE_FleetDeatils fd
                                                          			join
@@ -254,7 +259,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	(
                                                   		Select
                                                   			VIN
-                                                  		  , driver1_id                                                             as DriverId
+                                                          , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
+                                                          , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
+                                                  		  , driver1_id                                                             as tripDriverId
                                                   		  , count(trip_id)                                                         as numberoftrips
                                                   		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
@@ -309,7 +316,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , '' as tripid				    
                                                   		  , fd.vin             									   				    as VIN
                                                   		  , vh.registration_no 									   				    as VehicleRegistrationNo
-                                                  		  , fd.DriverId				    
+                                                  		  , fd.tripDriverId				    
                                                   		  , round ( fd.etl_gps_distance,2)                         				    as Distance
                                                   		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
                                                   		  , round (fd.average_speed,7)                             					as AverageSpeed
@@ -349,6 +356,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                
                                                          , round(fd.IdlingPTO,4) 								 	   				as IdlingPTO 
                                                          , round(fd.FootBrake,4) 								 	   				as FootBrake
+                                                         , round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
+                                                           then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
+													       else 0  end),4) as IdlingConsumptionWithPto 
                                                   		FROM
                                                   			CTE_FleetDeatils fd
                                                   		    left join
@@ -358,16 +368,30 @@ namespace net.atos.daf.ct2.reports.repository
                                                   	)
                                                   SELECT
                                                   	COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
+                                                    ,cmb.tripDriverId || case when COALESCE(dr.driver_id,'~*') != '~*'
+                                                        then '' Else '~*' END   as driverid
                                                     , cmb.*
                                                   FROM
                                                   	cte_combine cmb
                                                   	left join
                                                   		master.driver dr
                                                   		on
-                                                  dr.driver_id = cmb.driverId";
+                                                  dr.driver_id = cmb.tripDriverId";
 
                 List<FleetFuelDetailsByDriver> lstFleetDetails = (List<FleetFuelDetailsByDriver>)await _dataMartdataAccess.QueryAsync<FleetFuelDetailsByDriver>(queryFleetUtilization, parameterOfFilters);
                 List<TripAlert> lstTripAlert = await GetTripAlert(fleetFuelFilters.StartDateTime, fleetFuelFilters.EndDateTime, fleetFuelFilters.VINs);
+                List<string> lstDriverIds = lstFleetDetails.Select(a => a.DriverID).ToList();
+                //checking driverId of tripdetail.trip_statistics are opt-out or not in master.driver table
+                //Mostly tripdetail.trip_statistics driverid are not availeble in master,driver table
+                List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
+                for (int i = 0; i < lstOfOptOutDriver.Count; i++)
+                {
+                    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
+                    if (data != null)
+                    {
+                        lstFleetDetails.Remove(data);
+                    }
+                }
                 if (lstTripAlert.Count() > 0)
                 {
                     foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)
@@ -379,6 +403,23 @@ namespace net.atos.daf.ct2.reports.repository
 
             }
             catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<List<string>> GetOptOutDriver(List<string> lstDriverIds)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("driverId", lstDriverIds);
+                string query = @"select driver_id_ext as DriverId  from master.driver 
+                where driver_id_ext = ANY(@driverId) and opt_in = 'U' and state='A'";
+                var data = await _dataAccess.QueryAsync<string>(query, parameterOfFilters);
+                return data.ToList();
+            }
+            catch (Exception)
             {
                 throw;
             }
@@ -459,7 +500,7 @@ namespace net.atos.daf.ct2.reports.repository
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin
-                        join master.driver dr on
+                        Left join master.driver dr on
 						dr.driver_id = CT.driver1_id
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
@@ -655,7 +696,7 @@ namespace net.atos.daf.ct2.reports.repository
 					VIN
                   , id as Id
                   ,trip_id                                                                 as tripid
-				  , driver1_id                                                             as DriverId
+				  , driver1_id                                                             as tripDriverId
 				  , 1                                                         as numberoftrips
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
@@ -701,7 +742,7 @@ namespace net.atos.daf.ct2.reports.repository
                    ,tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
-				  , fd.DriverId
+				  , fd.tripDriverId
 				  , round ( fd.etl_gps_distance,2)                       as Distance
 				  , round ((fd.veh_message_distance),2) as AverageDistancePerDay
 				  , round (fd.average_speed,7)                           as AverageSpeed
@@ -751,14 +792,16 @@ namespace net.atos.daf.ct2.reports.repository
 
 			)
 		SELECT
-			COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
-		  , cmb.*
-		FROM
-			cte_combine cmb
-			left join
-				master.driver dr
-				on
-		dr.driver_id = cmb.driverId";
+            COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
+			,cmb.tripDriverId || case when COALESCE(dr.driver_id,'~*') != '~*'
+                                                        then '' Else '~*' END   as driverid
+                                                    , cmb.*
+                                                  FROM
+                                                  	cte_combine cmb
+                                                  	left join
+                                                  		master.driver dr
+                                                  		on
+                                                  dr.driver_id = cmb.tripDriverId";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
                 if (lstFleetDetails?.Count > 0)

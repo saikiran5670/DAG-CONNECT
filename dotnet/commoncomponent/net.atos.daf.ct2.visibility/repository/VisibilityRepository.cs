@@ -639,5 +639,59 @@ namespace net.atos.daf.ct2.visibility.repository
                 throw;
             }
         }
+
+        public async Task<List<int>> GetAccountsForOTA(string vin)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                int vehicleId = await _dataAccess.QuerySingleAsync<int>("SELECT id FROM master.vehicle where vin=@vin", new { vin = vin });
+                parameter.Add("@vehicleId", vehicleId);
+
+                var queryStatement = @"SELECT distinct acc.id as AccountIds
+                                                FROM master.account acc
+                                                INNER JOIN master.accountorg ar on acc.id=ar.account_id and acc.state='A' and ar.state='A'
+                                                LEFT OUTER JOIN master.groupref gref ON acc.id=gref.ref_id
+                                                INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A' AND grp.organization_id = ar.organization_id
+                                                INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id
+                                                INNER JOIN 
+                                                (
+                                                -- Vehicle Owner Org groups S/G/D
+                                                SELECT grp.id
+                                                FROM master.vehicle v
+                                                LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                                                INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id OR (grp.group_type='D' and grp.function_enum IN ('A','O'))) and v.organization_id=grp.organization_id AND grp.object_type='V'
+                                                WHERE v.id = @vehicleId
+                                                UNION
+                                                -- Vehicle Owner shared vehicle via vehicle group type 'G' 
+                                                SELECT grp.id
+                                                FROM master.vehicle v
+                                                INNER JOIN master.groupref gref ON v.id = @vehicleId and v.id=gref.ref_id
+                                                INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type = 'G'
+                                                INNER JOIN master.orgrelationshipmapping as orm on orm.target_org_id=grp.organization_id and orm.owner_org_id=v.organization_id
+                                                INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                                                WHERE 
+	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                                else COALESCE(end_date,0) = 0 end
+                                                UNION
+                                                -- Vehicle Owner shared vehicle via vehicle group type 'D' 
+                                                SELECT grp.id
+                                                FROM master.vehicle v
+                                                INNER JOIN master.group grp ON grp.object_type='V' AND grp.group_type = 'D' AND grp.function_enum IN ('A','V') AND v.id = @vehicleId
+                                                INNER JOIN master.orgrelationshipmapping as orm on orm.target_org_id=grp.organization_id and orm.owner_org_id=v.organization_id
+                                                INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                                                WHERE 
+	                                                case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                                else COALESCE(end_date,0) = 0 end
+                                                ) temp on arship.vehicle_group_id = temp.id";
+                var result = (List<int>)await _dataAccess.QueryAsync<int>(queryStatement, parameter);
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -14,21 +14,49 @@ import { SignalRService } from '../services/sampleService/signalR.service';
 })
 export class SignalrAlertNotificationComponent implements OnInit {
   logbookData: any = [];
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  translationData: any = {};
   
-  constructor(private router: Router, public signalRService: SignalRService) { }
+  constructor(private router: Router, public signalRService: SignalRService, private translationService: TranslationService) {
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+  
+    let translationObj = {
+      id: 0,
+      code: _langCode,
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 17 //-- for alerts
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);      
+    });  
+   }
+
+   processTranslation(transData: any) {
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    //console.log("process translationData:: ", this.translationData)
+  }
 
   ngOnInit(){
+
 
   }
 
   gotoLogBook(item: any){
+    if(item.alertTypeKey =='enumtype_otasoftwarestatus' || item.alertTypeKey =='enumcategory_ota'){
+      this.router.navigate(['vehicleupdates']);
+    }
+    else{
     const navigationExtras: NavigationExtras = {
       state: {
         fromAlertsNotifications: true,
         data: [item]
       }
-    };
+    };    
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
   }
   
   gotoLogBookForMoreAlerts(){

@@ -13,17 +13,17 @@ namespace net.atos.daf.ct2.fms.entity
     {
         public string VIN { get; set; }
         public VehiclePositionForStatus VehiclePosition { get; set; }
-        public int CatalystFuelLevel { get; set; }
+        public decimal CatalystFuelLevel { get; set; }
         public string Driver1Id { get; set; }
-        public string Driver1WorkingState { get; set; }
+        public int Driver1WorkingState { get; set; }
         public long EngineTotalFuelUsed { get; set; }
         public long EventTimestamp { get; set; }
-        public int FuelLevel1 { get; set; }
+        public decimal FuelLevel1 { get; set; }
         public long GrossCombinationVehicleWeight { get; set; }
         public long HRTotalVehicleDistance { get; set; }
-        public double TachographSpeed { get; set; }
+        public decimal TachographSpeed { get; set; }
         public long TotalEngineHours { get; set; }
-        public double WheelBasedSpeed { get; set; }
+        public decimal WheelBasedSpeed { get; set; }
     }
     public class VehiclePositionForStatus
     {

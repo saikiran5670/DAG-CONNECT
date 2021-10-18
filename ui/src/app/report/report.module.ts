@@ -36,7 +36,8 @@ import { VehiclePerformanceReportComponent } from './vehicle-performance-report/
 import { SearchCriteriaComponent } from './vehicle-performance-report/search-criteria/search-criteria.component';
 import { PieChartComponent } from './vehicle-performance-report/pie-chart/pie-chart.component';
 import { HeatBubbleChartComponent } from './vehicle-performance-report/heat-bubble-chart/heat-bubble-chart.component';
-
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { HighchartsChartModule } from 'highcharts-angular';
 // import interactionPlugin from '@fullcalendar/interaction';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
@@ -66,6 +67,8 @@ export const MY_DATE_FORMAT = {
     FullCalendarModule,
     Ng2CompleterModule,
     NgApexchartsModule,
+    HighchartsChartModule,
+    NgxMatSelectSearchModule,
     AngularSlickgridModule.forRoot({
       // add any Global Grid Options/Config you might want
       // to avoid passing the same options over and over in each grids of your App

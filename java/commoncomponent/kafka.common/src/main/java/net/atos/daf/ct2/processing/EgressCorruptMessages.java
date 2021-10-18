@@ -5,9 +5,14 @@ import java.util.Properties;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
@@ -18,6 +23,7 @@ public class EgressCorruptMessages implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	 private static final Logger logger = LoggerFactory.getLogger(EgressCorruptMessages.class);
 	
 	public void egressCorruptMessages(DataStream<Tuple2<Integer, KafkaRecord<String>>> srcStream, Properties properties,
 			String sinkTopicName) {
@@ -41,12 +47,28 @@ public class EgressCorruptMessages implements Serializable {
 
 			@Override
 			public KafkaRecord<String> map(Tuple2<Integer, KafkaRecord<String>> arg0) throws Exception {
-				System.out.println("Received corrupt message from source system :: " + arg0.f1.getValue());
+				//System.out.println("Received corrupt message from source system :: " + arg0.f1.getValue());
 				return arg0.f1;
 			}
 		}).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(sinkTopicName,
 				new KafkaMessageSerializeSchema<String>(sinkTopicName), properties,
-				FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+				FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
 	}
 
+
+	public void egressCorruptMessages(SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> srcStream, Properties properties,
+			String sinkTopicName) {
+
+		srcStream.map(rec -> {
+			KafkaRecord<String> corruptRec = new KafkaRecord<String>();
+			corruptRec.setKey(rec.getKey());
+			corruptRec.setValue(String.valueOf(rec.getValue().f2));
+			logger.info(" Egress corrupt record :: {}", rec);
+			return corruptRec;
+		}).returns(new TypeHint<KafkaRecord<String>>() {
+		}.getTypeInfo())
+				.addSink(new FlinkKafkaProducer<KafkaRecord<String>>(sinkTopicName,
+						new KafkaMessageSerializeSchema<String>(sinkTopicName), properties,
+						FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
+	}
 }

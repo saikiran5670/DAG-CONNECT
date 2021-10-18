@@ -12,6 +12,7 @@ using log4net;
 using System.Reflection;
 using net.atos.daf.ct2.confluentkafka.entity;
 using net.atos.daf.ct2.notificationservice.Entity;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
@@ -23,7 +24,8 @@ namespace net.atos.daf.ct2.notificationservice.services
         //private readonly ITripAlertManager _tripAlertManager;
         private readonly Notificationengine.INotificationIdentifierManager _notificationIdentifierManager;
         private readonly Mapper _mapper;
-        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration, Notificationengine.INotificationIdentifierManager notificationIdentifierManager)
+        private readonly IVisibilityManager _visibilityManager;
+        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration, Notificationengine.INotificationIdentifierManager notificationIdentifierManager, IVisibilityManager visibilityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
@@ -32,6 +34,7 @@ namespace net.atos.daf.ct2.notificationservice.services
             //_tripAlertManager = tripAlertManager;
             _notificationIdentifierManager = notificationIdentifierManager;
             _mapper = new Mapper();
+            _visibilityManager = visibilityManager;
         }
 
         public override async Task GetAlertMessageStream(Google.Protobuf.WellKnownTypes.Empty _, IServerStreamWriter<AlertMessageData> responseStream, ServerCallContext context)
@@ -97,6 +100,10 @@ namespace net.atos.daf.ct2.notificationservice.services
                 alertMessageEntity.AlertType = request.AlertType;
                 alertMessageEntity.AlertUrgency = request.AlertUrgency;
                 Notificationengine.entity.AlertVehicleEntity alertVehicleEntity = await _notificationIdentifierManager.GetEligibleAccountForAlert(alertMessageEntity);
+                if (alertMessageEntity.AlertId == 0 && alertMessageEntity.AlertCategory == "O")
+                {
+                    alertVehicleEntity.OtaAccountIds = await _visibilityManager.GetAccountsForOTA(request.VIN);
+                }
                 return await Task.FromResult(_mapper.GetAlertVehicleEntity(alertVehicleEntity));
             }
             catch (Exception ex)

@@ -913,12 +913,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         });
                     }
                 }
-                int ownerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                int oemRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
+
                 foreach (var item in relationList.RelationshipList)
                 {
-
-                    if (item.Id != ownerRelationship && item.Id != oemRelationship)
+                    if (!(item.Code.ToLower().Equals("owner") || item.Code.ToLower().Equals("oem")))
                     {
                         details.RelationShipData.Add(new RelationshipData
                         {
@@ -926,7 +924,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             RelationName = item.Name
                         });
                     }
-
                 }
                 return Ok(details);
             }
