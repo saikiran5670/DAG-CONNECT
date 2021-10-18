@@ -825,24 +825,29 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
-              this.vehicleGroupListData.sort(this.compared);
+              //this.vehicleGroupListData.sort(this.compareGrpName);
               //this.vehicleDD.sort(this.compared);
              // this.driverDD.sort(this.compared);
-              this.resetVehicleGroupFilter();
+            //  this.resetVehicleGroupFilter();
               //this.resetVehicleFilter();
               //this.resetDriverFilter();
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
+              
             }
             
           });
         }
       }
-
+     
+      
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
+      console.log("vehicleGroupListData 1", this.vehicleGroupListData);
+      this.vehicleGroupListData.sort(this.compareGrpName);
+      this.resetVehicleGroupFilter();
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
         this.resetVehicleGroupFilter();
@@ -857,10 +862,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);      
-      this.vehicleDD.sort(this.compared);
+      this.vehicleDD.sort(this.compareVin);
       this.resetVehicleFilter();
       this.driverDD = this.driverListData;
-      this.driverDD.sort(this.compared);
+      this.driverDD.sort(this.compareName);
       this.resetDriverFilter();
 
       this.ecoScoreForm.get('vehicleGroup').setValue(0);
@@ -926,6 +931,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 //     this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
 //     if(this.vehicleListData.length >0)
 //     this.selectedVehicle = this.vehicleListData[0].vehicleName;   
+  }
+  compareGrpName(a, b) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
   }
 
   setGeneralDriverValue(){
@@ -1592,16 +1606,25 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.titleVisible = false;
   }
 
-  compared(a, b) {
-    if (a.name < b.name) {
+  compareName(a, b) {
+    if (a.firstName < b.firstName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.firstName > b.firstName) {
       return 1;
     }
     return 0;
   }
-  
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+ 
     filterVehicleGroups(vehicleSearch){
     console.log("filterVehicleGroups called");
     if(!this.vehicleGroupListData){

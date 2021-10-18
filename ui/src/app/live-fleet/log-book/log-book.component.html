@@ -151,7 +151,7 @@
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
                   <mat-option value="all">{{translationData.lblAll }}</mat-option>
                   <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
-                      {{ rer.value }}
+                      {{ rer.key }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -166,7 +166,7 @@
                   <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="alertCategory">
                     <mat-option value="all">{{translationData.lblAll }}</mat-option>
                     <mat-option *ngFor="let rer of alertCtgry" [value]="rer.enum">
-                        {{ rer.value }}
+                        {{ rer.key }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>

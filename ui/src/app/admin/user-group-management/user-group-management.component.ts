@@ -340,7 +340,7 @@ export class UserGroupManagementComponent implements OnInit {
 
   onUserClick(data: any) {
     const colsList = ['firstName', 'emailId', 'roles', 'accountGroupList'];
-    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailID , this.translationData.lblUserRole, 
+    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailId , this.translationData.lblUserRole, 
     this.translationData.lblUserGroup ];
     const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers }`;
     let obj: any = {
