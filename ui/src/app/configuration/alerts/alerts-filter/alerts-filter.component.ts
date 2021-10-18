@@ -69,7 +69,7 @@ export class AlertsFilterComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 //-- for landmark
+      menuId: 17 //-- for alerts
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
      this.processTranslation(data);     

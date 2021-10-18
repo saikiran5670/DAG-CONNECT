@@ -82,6 +82,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
       this.processTranslation(data);
+      this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -313,7 +314,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   changeGridOnVehicleList(val: any){
     this.cols = ['name','accessType','associatedAccount','action'];
-    this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    //this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
     let data: any = [];
     switch(val){
       case "group":{
@@ -334,7 +336,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   changeGridOnAccountList(val: any){
     this.cols = ['name','accessType','associatedVehicle','action'];
-    this.columnNames = ['Account Group/Account','Access Type','Vehicle Group/Vehicle','Action'];
+    //this.columnNames = ['Account Group/Account','Access Type','Vehicle Group/Vehicle','Action'];
+    this.columnNames = [this.translationData.lblAccountGroupAccount, this.translationData.lblAccessType, this.translationData.lblVehicleGroupVehicle, this.translationData.lblAction];
     let data: any = [];
     switch(val){
       case "group":{
