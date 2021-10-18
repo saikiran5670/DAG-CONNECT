@@ -9,7 +9,7 @@
         </div>
     </div>
     <!-- <mat-card *ngIf="!adminAccessType.adminReadOnlyAccess" class='mat-elevation-z margin-bottom-xlg'> -->
-    <mat-card class='mat-elevation-z margin-bottom-xlg'>
+    <mat-card *ngIf="adminAccessType.adminFullAccess" class='mat-elevation-z margin-bottom-xlg'>
         <form [formGroup]="uploadTermsConditionsFormGroup">
             <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -107,6 +107,6 @@
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
-        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
 </div>

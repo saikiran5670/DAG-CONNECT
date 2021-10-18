@@ -67,6 +67,7 @@ export class OrganisationDetailsComponent implements OnInit {
   brandLogoChangedEvent= '';
   droppedBrandLogo: any= '';
   hideImgCropper= true;
+  brandLogoError: string= '';
 
   public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -330,40 +331,42 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   createUpdatePreferences(){ 
-    if(!this.brandLogoFileValidated){
-      this.uploadLogo = this.organisationData["icon"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.organisationData["icon"]);
-    }
-    let preferenceUpdateObj: any = {
-      id: this.preferenceId,
-      refId: this.organizationIdNo,
-      languageId: this.orgDetailsPreferenceForm.controls.language.value ? parseInt(this.orgDetailsPreferenceForm.controls.language.value) : parseInt(this.languageDropdownData[0].value),
-      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeZone.value) : parseInt(this.timezoneDropdownData[0].value),
-      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? parseInt(this.orgDetailsPreferenceForm.controls.currency.value) : parseInt(this.currencyDropdownData[0].value),
-      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? parseInt(this.orgDetailsPreferenceForm.controls.unit.value) : parseInt(this.unitDropdownData[0].value),
-      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.dateFormat.value) : parseInt(this.dateFormatDropdownData[0].value),
-      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
-      vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
-      landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
-      iconId: this.uploadLogo != '' ? this.organisationData.iconid ? this.organisationData.iconid : 0 : 0,
-      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
-      createdBy: this.accountId,
-      pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
-    }
-    if(this.preferenceId === 0){ // create pref
-      this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
-        if (preferenceResult) {
-          this.loadOrganisationdata();
-          this.successStatus(true);
-        }
-      })
-    }
-    else{ // update pref
-      this.organizationService.updatePreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
-        if (preferenceResult) {
-          this.loadOrganisationdata();
-          this.successStatus(false);
-        }
-      })
+    if(this.brandLogoError == ''){
+      if(!this.brandLogoFileValidated){
+        this.uploadLogo = this.organisationData["icon"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.organisationData["icon"]);
+      }
+      let preferenceUpdateObj: any = {
+        id: this.preferenceId,
+        refId: this.organizationIdNo,
+        languageId: this.orgDetailsPreferenceForm.controls.language.value ? parseInt(this.orgDetailsPreferenceForm.controls.language.value) : parseInt(this.languageDropdownData[0].value),
+        timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeZone.value) : parseInt(this.timezoneDropdownData[0].value),
+        currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? parseInt(this.orgDetailsPreferenceForm.controls.currency.value) : parseInt(this.currencyDropdownData[0].value),
+        unitId: this.orgDetailsPreferenceForm.controls.unit.value ? parseInt(this.orgDetailsPreferenceForm.controls.unit.value) : parseInt(this.unitDropdownData[0].value),
+        dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.dateFormat.value) : parseInt(this.dateFormatDropdownData[0].value),
+        timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
+        vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
+        landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
+        iconId: this.uploadLogo != '' ? this.organisationData.iconid ? this.organisationData.iconid : 0 : 0,
+        iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
+        createdBy: this.accountId,
+        pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
+      }
+      if(this.preferenceId === 0){ // create pref
+        this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
+          if (preferenceResult) {
+            this.loadOrganisationdata();
+            this.successStatus(true);
+          }
+        })
+      }
+      else{ // update pref
+        this.organizationService.updatePreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
+          if (preferenceResult) {
+            this.loadOrganisationdata();
+            this.successStatus(false);
+          }
+        })
+      }
     }
   }
 
@@ -400,8 +403,13 @@ export class OrganisationDetailsComponent implements OnInit {
     this.imageMaxMsg = false;
     this.file = event.target.files[0];     
     if(this.file){
+      this.brandLogoError= CustomValidators.validateImageFile(event.target.files[0])
       if(this.file.size > this.maxSize){ //-- 32*32 px
         this.imageMaxMsg = true;
+        return false;
+      }
+      else if(this.brandLogoError != ''){
+        return false;
       }
       else{
         //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);

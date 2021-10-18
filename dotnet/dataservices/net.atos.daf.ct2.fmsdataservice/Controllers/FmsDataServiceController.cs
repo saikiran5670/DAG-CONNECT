@@ -79,27 +79,20 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
 
 
                 await GetUserDetails();
-                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
-                if (visibleVehicles != null & visibleVehicles.Count > 0)
+                var result = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVINs = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(a => a.VIN).ToList();
+                if (visibleVINs != null & visibleVINs.Count > 0)
                 {
                     string since = vehiclePositionRequest.Since;
                     string vin = vehiclePositionRequest.VIN;
                     var isValid = ValidateParameter(ref since, vin, out string feild);
-                    net.atos.daf.ct2.fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
+                    fms.entity.VehiclePositionResponse vehiclePositionResponse = null;
                     if (isValid)
                     {
-                        var dataVisibleVehicle = visibleVehicles.Select(a => a.Value).ToList();
                         if (string.IsNullOrEmpty(vehiclePositionRequest.VIN))
                         {
-                            List<string> objVisibilityVinList = new List<string>();//move to 207
-                            foreach (var item in dataVisibleVehicle)
-                            {
-                                foreach (var i in item)
-                                {
-                                    objVisibilityVinList.Add(i.VIN);
-                                }
-                            }
-                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(objVisibilityVinList, vehiclePositionRequest.Since);
+                            List<string> objVisibilityVinList = new List<string>();
+                            vehiclePositionResponse = await _fmsManager.GetVehiclePosition(visibleVINs, vehiclePositionRequest.Since);
                             if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                             {
                                 return Ok(vehiclePositionResponse);
@@ -111,35 +104,21 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                         }
                         else
                         {
-                            bool isPassedVinInVisibility = false;
-                            if (dataVisibleVehicle != null && dataVisibleVehicle.Count > 0)
+                            if (visibleVINs.Contains(vehiclePositionRequest.VIN))
                             {
-                                foreach (var item in dataVisibleVehicle)
+                                vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
+                                if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
                                 {
-                                    foreach (var i in item)
-                                    {
-                                        if (i.VIN.Contains(vehiclePositionRequest.VIN))
-                                        {
-                                            isPassedVinInVisibility = true;
-                                        }
-                                    }
-                                }
-                                if (isPassedVinInVisibility)
-                                {
-                                    vehiclePositionResponse = await _fmsManager.GetVehiclePosition(vehiclePositionRequest.VIN, vehiclePositionRequest.Since);
-                                    if (vehiclePositionResponse != null && vehiclePositionResponse.VehiclePosition.Count > 0)
-                                    {
-                                        return Ok(vehiclePositionResponse);
-                                    }
-                                    else
-                                    {
-                                        return StatusCode(304, "No data has been found");
-                                    }
+                                    return Ok(vehiclePositionResponse);
                                 }
                                 else
                                 {
-                                    return StatusCode(404, "Vin Not Found");
+                                    return StatusCode(304, "No data has been found");
                                 }
+                            }
+                            else
+                            {
+                                return StatusCode(404, "Vin Not Found");
                             }
                         }
                     }

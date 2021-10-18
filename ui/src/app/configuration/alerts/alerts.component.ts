@@ -50,13 +50,15 @@ export class AlertsComponent implements OnInit {
   vehicleList: any= [];
   alertCriticalityList: any= [];
   alertStatusList: any= [];
-
   alertTypeListBasedOnPrivilege: any= [];
+  vehicleGroupListBasedOnPrivilege: any= [];
+  vehicleListBasedOnPrivilege: any= [];
   stringifiedData: any;  
   parsedJson: any;  
   filterValues = {};  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
+  associatedVehicleData: any= [];
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -142,7 +144,7 @@ export class AlertsComponent implements OnInit {
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
-      //this.associatedVehicleData = data["associatedVehicleRequest"];
+      this.associatedVehicleData = data["associatedVehicleRequest"];
 
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
@@ -157,6 +159,26 @@ export class AlertsComponent implements OnInit {
           }
         });
       }
+
+      this.associatedVehicleData.forEach(element => {
+        if(element.vehicleGroupDetails != ""){
+          let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+          vehicleGroupDetails.forEach(item => {
+            let itemSplit = item.split("~");
+            // if(itemSplit[2] != 'S') {
+            let vehicleGroupObj= {
+              "vehicleGroupId" : itemSplit[0],
+              "vehicleGroupName" : itemSplit[1]
+            }
+            this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
+          //  } 
+          });
+        }
+
+        this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+      });
+      
+      this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
 
       this.loadAlertsData();   
     })
@@ -244,11 +266,18 @@ export class AlertsComponent implements OnInit {
       name: ""
     }    
     this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
-      this.initData =data; 
+      let initDataBasedOnPrivilege = data;
+      // this.initData =data; 
+      initDataBasedOnPrivilege.forEach(item => {
+        let hasPrivilege = (this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0 && (this.vehicleGroupListBasedOnPrivilege.filter(element => element.vehicleGroupId == item.vehicleGroupId).length > 0 || this.vehicleListBasedOnPrivilege.filter(element => element.vehicleId == item.vehicleGroupId).length > 0));    
+        if(hasPrivilege){
+          this.initData.push(item);
+        }
+      })
+
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {      
-        let hasPrivilege = this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0;    
-        item["hasPrivilege"]  = hasPrivilege;
+       
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;

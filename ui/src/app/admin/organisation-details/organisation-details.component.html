@@ -100,12 +100,12 @@
             <div style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div *ngIf="organisationData && (userType == 'Admin#Platform' || userType == 'Admin#Global')">
+            <div *ngIf="organisationData">
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                             <span style='display: flex; align-items: center; font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPreferencesSettings }}
-                                <mat-icon *ngIf='!editPrefereneceFlag' (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
+                                <mat-icon *ngIf='!editPrefereneceFlag && !adminAccessType.adminReadOnlyAccess' (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
                             </span>
                         </div>
                     </div>
@@ -327,14 +327,17 @@
                                 </div>
                                 <!-- <span *ngIf="editPrefereneceFlag">{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span> -->
                                 <span *ngIf="editPrefereneceFlag" style="color: grey;">
-                                    <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint }}
+                                    <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint  ||  'Max file size : 200 kb, Accepted format : png, jpg, gif' }}
                                   </span>
-                                <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                                <!-- <mat-error *ngIf="orgDetailsPreferenceForm.get('uploadBrandLogo').hasError('maxContentSize')">
                                     The total size must not exceed {{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat }} ({{ orgDetailsPreferenceForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                                     | byteFormat }}).
-                                </mat-error>
+                                </mat-error> -->
                                 <mat-error *ngIf="imageEmptyMsg">
                                     {{ translationData.lblEmptyFile }}
+                                </mat-error>
+                                <mat-error *ngIf="brandLogoError != ''">
+                                    {{ brandLogoError }}
                                 </mat-error>
                             </div>
                         </div>

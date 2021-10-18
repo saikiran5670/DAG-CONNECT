@@ -115,8 +115,8 @@
             <ng-container matColumnDef="state">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <button [disabled]='adminAccessType.adminReadOnlyAccess || !row.hasPrivilege' class='actionBtn' mat-flat-button (click)="onChangeAlertStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate ) : translationData.lblClicktoactivate }}">
-                <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess || !row.hasPrivilege"  color="primary" [checked]='row.state == "A" ? true : false' >
+              <button [disabled]='adminAccessType.adminReadOnlyAccess' class='actionBtn' mat-flat-button (click)="onChangeAlertStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate ) : translationData.lblClicktoactivate }}">
+                <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess"  color="primary" [checked]='row.state == "A" ? true : false' >
               </mat-slide-toggle>&nbsp;
               <span style='font-weight: normal; color: #000;'>{{ row.state == "A" ? (translationData.lblActive) : translationData.lblInActive}}</span>
               </button>
@@ -128,13 +128,13 @@
                 <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit }">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit }">
                   <mat-icon>create</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.hasPrivilege"  class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess"  class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate }}">
                   <mat-icon>content_copy</mat-icon>
               </button>
-                <button *ngIf="adminAccessType.adminFullAccess && row.hasPrivilege" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete }}">
+                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>
               </mat-cell>
