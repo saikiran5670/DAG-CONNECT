@@ -36,6 +36,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any = [];
   vehicleListData: any = [];
+  adminAccessType: any = {};
 
   constructor(private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -56,6 +57,7 @@ export class VehicleGroupManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
