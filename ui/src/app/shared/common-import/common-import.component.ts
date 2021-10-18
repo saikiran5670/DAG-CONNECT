@@ -48,6 +48,7 @@ export class CommonImportComponent implements OnInit {
   @Input() tableTitle : string;
   @Input() defaultGpx:any;
   @Input() breadcumMsg : any;
+  @Input() poiData : any;
   fileExtension = '.csv';
   parsedGPXData : any;
   accountOrganizationId: any = 0;
@@ -390,6 +391,27 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
+  getCategoryId(name:string,id:any)
+  {
+    switch(id){
+      case 'C' : for(let i=0; i< this.poiData.length; i++)
+                {
+                  if(this.poiData[i].categoryName == name)
+                  {
+                    return this.poiData[i].categoryId;
+                  }
+                }
+                break;
+      case 'S'  : for(let i=0; i< this.poiData.length; i++)
+                  {
+                    if(this.poiData[i].subCategoryName == name)
+                    {
+                      return this.poiData[i].subCategoryId;
+                    }
+                  }
+                  break;
+    }   
+  }
 
   // POI import functions
   preparePOIDataToImport(removableInput){
@@ -397,9 +419,10 @@ export class CommonImportComponent implements OnInit {
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {
-          
-            "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],          
+            "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
+            "categoryId": this.getCategoryId(this.filelist[i]["CategoryName"],'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),          
             "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
+            "subCategoryId":this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),//this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),
             "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
             "name": this.filelist[i]["POIName"] || this.filelist[i]["Name"],
             "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
@@ -410,19 +433,17 @@ export class CommonImportComponent implements OnInit {
             "longitude": this.filelist[i]["Longitude"],
             "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
             "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
-        
+            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]       
         }
       )
-    }
- 
+    } 
     this.validatePOIData(packagesToImport,removableInput);
   }
 
   validatePOIData(packagesToImport,removableInput){
     let validData: any = [];
     let invalidData: any = [];
-    let orgFlag = false, categoryFlag = true, subcategoryFlag = true,nameFlag= false,longitudeFlag=false,latitudeFlag=false;
+    let orgFlag = false, categoryFlag = false, subcategoryFlag = false,nameFlag= false,longitudeFlag=false,latitudeFlag=false;
     packagesToImport.forEach((item: any) => {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
@@ -486,8 +507,6 @@ export class CommonImportComponent implements OnInit {
             break;
         }
       }
-      
-         
     if(orgFlag && categoryFlag && subcategoryFlag && nameFlag && longitudeFlag && latitudeFlag){
       validData.push(item);
     }
@@ -495,15 +514,12 @@ export class CommonImportComponent implements OnInit {
       invalidData.push(item);
     }
     });
-   
-    
-    this.callPOIImportAPI(validData,invalidData,removableInput)
-  
+       
+    this.callPOIImportAPI(validData,invalidData,removableInput)  
     //console.log(validData , invalidData)
     //return { validDriverList: validData, invalidDriverList: invalidData };
   }
-
-  
+ 
   callPOIImportAPI(validData,invalidData,removableInput){
     this.rejectedList = invalidData;
     this.rejectedCount = invalidData.length;
