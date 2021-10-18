@@ -305,7 +305,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 10 //-- for fleet utilisation
+      menuId: 11 //-- for fleet benchmarking
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -1155,15 +1155,24 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
       return 1;
     }
     return 0;
   }
-  
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+ 
     filterVehicleGroups(vehicleSearch){
     console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
