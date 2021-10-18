@@ -15,7 +15,6 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ public class TripEtlStreamingJob {
 
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
 			env.getConfig().setGlobalJobParameters(envParams);
-			final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
+			//final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
 			
 			TripAggregationProcessor tripAggregationNew = new TripAggregationProcessor();
 			
@@ -212,6 +211,7 @@ public class TripEtlStreamingJob {
 			
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
 			tripStsData.setFuelType(stsMsg.getFuelType());
+			tripStsData.setRoName(stsMsg.getRoName());
 			
 			/*if (stsMsg.getEventDateTimeFirstIndex() != null) {
 				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
@@ -643,6 +643,7 @@ public class TripEtlStreamingJob {
 				tripData.setVEngineLoadMaxRangeInt(tripAggrData.getVEngineLoadMaxRangeInt());
 				tripData.setVEngineLoadDistrStep(tripAggrData.getVEngineLoadDistrStep());
 				tripData.setVEngineLoadDistrArrayTime(tripAggrData.getVEngineLoadDistrArrayTime());
+				tripData.setRoName(tripAggrData.getRoName());
 				
 				return tripData;
 			} catch (Exception e) {

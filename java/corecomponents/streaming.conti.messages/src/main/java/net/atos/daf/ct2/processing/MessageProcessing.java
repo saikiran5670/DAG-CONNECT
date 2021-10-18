@@ -3,7 +3,6 @@ package net.atos.daf.ct2.processing;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.state.ReadOnlyBroadcastState;

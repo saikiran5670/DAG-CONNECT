@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.atos.daf.ct2.bo.TripMileage;
 import net.atos.daf.ct2.util.MileageConstants;
-import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+import net.atos.daf.postgre.connection.PostgreConnection;
 
 public class MileageSink extends RichSinkFunction<TripMileage> implements Serializable{
 	
@@ -57,12 +57,19 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 			
 		try {
-			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME),
+			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)),
 					envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
-					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.info("In trip sink connection done" + connection);
+					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));*/
+			connection = PostgreConnection.getInstance().getConnection(
+					envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(MileageConstants.POSTGRE_SQL_DRIVER));
+			
+			logger.info("In Mileage sink connection done" + connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required

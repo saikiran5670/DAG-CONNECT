@@ -12,7 +12,11 @@ public class FuelDeviationConstants {
 	public static final String RESTART_ATTEMPS = "restart.attempts";
 	public static final String RESTART_INTERVAL = "restart.interval";
 	public static final String RESTART_FLAG = "restart.flag";
-	
+	public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+		
 	//Datamart Constants
 	public static final String DATAMART_POSTGRE_SERVER_NAME = "datamart.postgres.server.name";
 	public static final String DATAMART_POSTGRE_PORT = "datamart.postgres.port";
