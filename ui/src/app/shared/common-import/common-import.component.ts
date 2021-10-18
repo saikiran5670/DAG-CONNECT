@@ -910,6 +910,32 @@ export class CommonImportComponent implements OnInit {
   basicValidation(value: any,type:any){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    if(type== 'latitude')
+    {
+      if(value < -90 || value > 90){
+        obj.status = false;
+        obj.reason = 'invalid latitude';
+      }
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
+    if(type== 'longitude')
+    {
+      if(value < -180 || value > 180){
+        obj.status = false;
+        obj.reason = 'invalid longitude';    
+      }
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
     if(!value || value == ''){
       obj.status = false;
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);

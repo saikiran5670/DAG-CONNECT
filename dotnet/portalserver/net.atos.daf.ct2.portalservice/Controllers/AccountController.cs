@@ -1482,8 +1482,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                        "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                         _userDetails);
-                    //return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
-                    return Ok(response.IsDeleted);
+                    return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
                 }
                 else
                 {

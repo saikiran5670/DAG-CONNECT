@@ -123,5 +123,5 @@ public class TripStatusAggregation implements Serializable {
 	private Long vEngineLoadMaxRangeInt;
 	private Long vEngineLoadDistrStep;
 	private Object[] vEngineLoadDistrArrayTime;
-	
+	private String roName;
 }

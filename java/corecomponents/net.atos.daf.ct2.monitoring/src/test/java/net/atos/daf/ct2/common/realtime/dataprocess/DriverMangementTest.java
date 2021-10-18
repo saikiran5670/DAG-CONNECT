@@ -63,10 +63,10 @@ public class DriverMangementTest {
         final List<Monitor> monitorTestData = getMonitorTestData();
         final int chunkSize = 3;
         final AtomicInteger counter = new AtomicInteger();
-        final Collection<List<Monitor>> chucks = monitorTestData.stream()
+        /*final Collection<List<Monitor>> chucks = monitorTestData.stream()
                 .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / chunkSize))
                 .values();
-        logger.info("chunk of list size:: {}",chucks.size());
+        logger.info("chunk of list size:: {}",chucks.size());*/
         /*chucks.stream()
                 .forEach(lst -> {
             try {
@@ -76,6 +76,7 @@ public class DriverMangementTest {
             }
         });*/
         List<Monitor> predefineData = getPredefineData(3,2,2,3,3,2,2,2,7,3);
+
         driverCalculation.getStartEndTime(predefineData)
                 .forEach(System.out::println);
 
@@ -106,19 +107,27 @@ public class DriverMangementTest {
     }
 
     public static List<Monitor> getPredefineData(Integer... states){
-       return Arrays.stream(states).map(state -> {
-            Monitor driverData=new Monitor();
+        List<Monitor> monitorList = Arrays.stream(states).map(state -> {
+            Monitor driverData = new Monitor();
             try {
-                if(state==7)
-                Thread.sleep(3000);
+                if (state == 7)
+                    Thread.sleep(3000);
                 else Thread.sleep(1000);
                 long currentTimeMillis = System.currentTimeMillis();
-                driverData = getDriverData(currentTimeMillis,state);
+                driverData = getDriverData(currentTimeMillis, state);
             } catch (InterruptedException e) {
-                logger.error("Error while creating data {}",e);
+                logger.error("Error while creating data {}", e);
             }
             return driverData;
         }).collect(Collectors.toList());
+        monitorList.forEach(d-> {
+            try {
+                logger.info(mapper.writeValueAsString(d));
+            } catch (JsonProcessingException e) {
+                logger.error("error while logging data {}",e);
+            }
+        });
+        return monitorList;
     }
 
     public static List<Monitor> getMonitorTestData() throws InterruptedException {
