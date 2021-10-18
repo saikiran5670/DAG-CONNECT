@@ -1500,7 +1500,7 @@ let prepare = []
         let categoryList = filterData.filter(item => item.type == 'C');
         let alertTypeList= filterData.filter(item => item.type == 'T');
         this.wholeLogBookData.alFilterResponse.forEach(item=>{
-          let levelName =  this.translationData[item.name];
+          let levelName =  this.translationData[item.name] || item.name;
           levelListData.push({'name':levelName, 'value': item.value})
         }); 
 

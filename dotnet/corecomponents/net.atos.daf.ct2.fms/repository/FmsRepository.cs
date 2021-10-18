@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.fms.repository
                 objVehicleStatus.VIN = item.vin ?? string.Empty;
                 objVehicleStatus.Driver1Id = item.driver1id ?? string.Empty;
                 objVehicleStatus.CatalystFuelLevel = item.catalystfuellevel ?? 0;
-                objVehicleStatus.Driver1WorkingState = item.driver1workingstate ?? 0;
+                objVehicleStatus.Driver1WorkingState = item.driver1workingstate != null ? DriverWorkingState.driverWorkingState[item.driver1workingstate] : string.Empty;
                 objVehicleStatus.EngineTotalFuelUsed = item.enginetotalfuelused ?? 0;
                 objVehicleStatus.EventTimestamp = item.eventtimestamp ?? 0;
                 objVehicleStatus.FuelLevel1 = item.fuellevel1 ?? 0;
