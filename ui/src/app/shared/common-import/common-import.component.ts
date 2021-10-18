@@ -420,7 +420,7 @@ export class CommonImportComponent implements OnInit {
       packagesToImport.push(
         {
             "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
-            "categoryId": this.getCategoryId(this.filelist[i]["CategoryName"],'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),          
+            "categoryId": this.getCategoryId(this.filelist[i]["CategoryName"],'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),
             "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
             "subCategoryId":this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),//this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),
             "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
@@ -936,6 +936,32 @@ export class CommonImportComponent implements OnInit {
       return obj;
     }
 
+    if(type == 'categoryId'){
+      if(value == 0 || value == '' || !value)
+      {
+        obj.status = false;
+        obj.reason = 'Category name blank or invalid';    
+      } 
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+
+    if(type == 'subCategoryId'){
+      if(value == 0 || value == '' || !value)
+      {
+        obj.status = false;
+        obj.reason = ' Sub Category name blank or invalid';    
+      } 
+      else{
+        obj.status = true;
+        obj.reason = 'correct data';
+      }
+      return obj;
+    }
+  
     if(!value || value == ''){
       obj.status = false;
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
@@ -1053,8 +1079,8 @@ export class CommonImportComponent implements OnInit {
         populateRejectedList.push(
           {
             "organizationId":this.rejectedList[i]["organizationId"],
-            "categoryId": this.rejectedList[i]["categoryId"],
-            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "categoryName": this.rejectedList[i]["categoryName"],
+            "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
             "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
             "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,

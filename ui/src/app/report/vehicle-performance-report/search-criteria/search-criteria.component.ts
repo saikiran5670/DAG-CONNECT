@@ -318,7 +318,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     console.log("vehicleDD 1", this.vehicleDD);
-    this.vehicleDD.sort(this.compare);
+    this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
   }
 
@@ -569,15 +569,24 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
       return 1;
     }
     return 0;
   }
-  
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+   
     filterVehicleGroups(vehicleSearch){
     console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){

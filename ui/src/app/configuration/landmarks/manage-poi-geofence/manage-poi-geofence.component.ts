@@ -80,9 +80,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   // [
   //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
   //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
-  tableColumnList = ['organizationId', 'categoryId',  'subCategoryId', 
+  tableColumnList = ['organizationId', 'categoryName',  'subCategoryName', 
     'poiName', 'latitude', 'longitude', 'returnMessage'];
-  tableColumnName = ['OrganizationId', 'CategoryId',  'SubCategoryId',
+  tableColumnName = ['OrganizationId', 'CategoryName',  'SubCategoryName',
     'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
@@ -1055,14 +1055,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     
   // }
   exportAsExcelFile(){
-    const title = 'POIData';
+    //const title = 'POIData';
     const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country']
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('PoiData');
     //Add Row and formatting
-    let titleRow = worksheet.addRow([title]);
-    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-    worksheet.addRow([]);
+    //let titleRow = worksheet.addRow([title]);
+    //titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    //worksheet.addRow([]);
     let headerRow = worksheet.addRow(poiData); 
     headerRow.eachCell((cell, number) => {
       cell.fill = {
@@ -1278,8 +1278,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
-                              this.translationData.lblCategoryId || 'CategoryId',
-                              this.translationData.lblSubCategoryId || 'SubCategoryId',
+                              this.translationData.lblCategoryName || 'CategoryName',
+                              this.translationData.lblSubCategoryName || 'SubCategoryName',
                               this.translationData.lblPOIName || 'POIName',
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
