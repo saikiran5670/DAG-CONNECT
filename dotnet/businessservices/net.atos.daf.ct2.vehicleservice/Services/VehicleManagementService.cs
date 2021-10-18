@@ -406,21 +406,21 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override async Task<VehicleGroupDeleteResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        public override async Task<VehicleGroupDeleteResponce> CanDeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
         {
             try
             {
-                bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
+                bool result = await _groupManager.CanDelete(request.GroupId, Group.ObjectType.VehicleGroup);
                 if (result)
                 {
                     //Trigger Vehicle Group CDC
                     await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N", request.OrganizationId);
                 }
-                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "CanDeleteGroup", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Can Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
 
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
-                    Message = "Vehicle Group deleted.",
+                    Message = string.Empty,
                     Code = Responcecode.Success,
                     Result = result
                 });
@@ -429,6 +429,38 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed,
+                    Result = false
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupDeleteModifiedResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
+                if (response.IsDeleted)
+                {
+                    //Trigger Vehicle Group CDC
+                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N", request.OrganizationId);
+                }
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
+
+                return await Task.FromResult(new VehicleGroupDeleteModifiedResponce
+                {
+                    Message = string.Empty,
+                    Code = Responcecode.Success,
+                    IsDeleted = response.IsDeleted,
+                    CanDelete = response.CanDelete
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleGroupDeleteModifiedResponce
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = Responcecode.Failed

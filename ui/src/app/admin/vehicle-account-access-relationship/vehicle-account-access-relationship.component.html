@@ -68,7 +68,7 @@
               <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
             </mat-menu>
           </div>
-          <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+          <div  *ngIf="adminAccessType.adminFullAccess" >
           <button mat-flat-button color="primary" (click)="createNewAssociation()">
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation  }}
           </button>
