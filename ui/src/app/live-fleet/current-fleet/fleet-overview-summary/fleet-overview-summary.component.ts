@@ -81,7 +81,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.summaryData = data;
       this.refreshData();
       this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
-      this.barChartLabels = [this.translationData.lblMovedVehicle || 'g', this.translationData.lblTotalVehicle || 'h'];
+      this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
       this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
       this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
       this.showCharts = true;
