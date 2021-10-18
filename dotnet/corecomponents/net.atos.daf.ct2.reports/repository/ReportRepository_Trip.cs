@@ -253,6 +253,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                 urgency_level_type as UrgencyLevelType
 	                                FROM tripdetail.tripalert TA
 	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
+                                           and TA.trip_id = TS.trip_id
 	                                 where  TS.vin =ANY (@vin)
 	                                 AND (
 		                                    TS.end_time_stamp >= @StartDateTime and
