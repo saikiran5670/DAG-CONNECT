@@ -83,20 +83,20 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
                 <div style='width: 40%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblDownloadaTemplateMessage || 'Upload a single icon file (svg format) or a zip file of svg icons'}}</span>
+                    <span>{{ translationData.lblUploadIconMessage }}</span>
                 </div>
                 <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                     <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblUploadExcelFile || 'Upload svg icon or zip file of icons' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-label>{{ translationData.lblUploadIconExcelFile }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
                                         <ngx-mat-file-input #removableIconInput (change)="getZipContent($event.target.files)" [accept]="'.zip,.svg'" formControlName="uploadFile" placeholder="Upload svg files" ></ngx-mat-file-input>
                                         <button (click)='onIconBrowse()' mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
                                     </mat-form-field>
                                     <mat-error *ngIf="dtcTranslationFormGroup.get('uploadFile').hasError('required')" >
-                                        {{ translationData.lblPleaseselectafile || 'Please select a icon/zip file' }}
+                                        {{ translationData.lblPleaseselectaiconfile }}
                                     </mat-error>
                                     <!-- <mat-error *ngIf="dtcTranslationIconGroup.get('uploadFile').hasError('maxContentSize')">
                                         The total size must not exceed {{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').actualSize
