@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.rfms.response
             vehicle.Vin = record.vin;
             vehicle.CustomerVehicleName = record.customer_vehicle_name;
             vehicle.Brand = record.brand;
-            if (record.production_date != null)
+            if (record.production_date != null && record.production_date != 0)
             {
                 DateTime dtProdDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.production_date, "UTC", targetdateformat));
                 ProductionDate pd = new ProductionDate();
