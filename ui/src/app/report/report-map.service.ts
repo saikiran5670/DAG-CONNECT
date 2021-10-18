@@ -1657,7 +1657,7 @@ export class ReportMapService {
       element.convetedCCFuelConsumption = this.getFuelConsumedUnits(element.ccFuelConsumption, unitFormat,true);
       element.convertedFuelConsumptionCCNonActive = this.getFuelConsumedUnits(element.fuelconsumptionCCnonactive, unitFormat,true);
       //element.convertedIdleDuration =element.idleDuration
-      element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'';
+      element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'-';
       element.dpaScore = parseFloat(element.dpaScore);
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);

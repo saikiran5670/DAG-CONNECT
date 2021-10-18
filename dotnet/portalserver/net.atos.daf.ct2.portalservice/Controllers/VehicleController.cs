@@ -337,8 +337,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "DeleteGroup method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
-                    //return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
-                    return Ok(response.IsDeleted);
+                    return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
                 }
                 else
                 {
