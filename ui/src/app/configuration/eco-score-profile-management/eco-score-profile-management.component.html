@@ -26,11 +26,11 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateProfile || 'Create Profile') : (translationData.lblManageProfile || 'Manage Profile')  }}</span>
             </div>
-            <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+            <div *ngIf="adminAccessType.adminFullAccess" >
                 <button *ngIf="actionType != 'create'" mat-flat-button color="primary" (click)="createNewProfile()" [disabled]='profileList.length > 29'>
                   <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewProfile || 'New Profile' }}
-                  </button>
-                </div>
+                </button>
+            </div>
         </div>
 
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
