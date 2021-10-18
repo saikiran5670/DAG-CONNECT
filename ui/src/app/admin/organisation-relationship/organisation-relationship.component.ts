@@ -323,7 +323,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount ,
+      title: this.translationData.lblDeleteRelationship,
       message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
       cancelText: this.translationData.lblNo ,
       confirmText: this.translationData.lblYes 
