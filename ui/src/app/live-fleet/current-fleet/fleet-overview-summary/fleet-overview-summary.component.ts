@@ -15,14 +15,14 @@ import { FleetMapService } from '../fleet-map.service';
 export class FleetOverviewSummaryComponent implements OnInit {
   @Input() translationData: any = {};
   criticalAlert: number = 0;
-  mileageDone: string;
+  mileageDone: string = '';
   drivers: number = 0;
-  driveTime: any;
+  driveTime: any = '';
   noAction: number = 0;
   serviceNow: number = 0;
   stopNow: number = 0;
-  vehicleGroup: string;
-  barChartLabels: Label[] = [(this.translationData.lblMovedVehicle), (this.translationData.lblTotalVehicle)];
+  vehicleGroup: string = '';
+  barChartLabels: Label[] = [];
   barChartType: ChartType = 'bar';
   barChartLegend = true;
   barChartPlugins = [];
@@ -37,11 +37,10 @@ export class FleetOverviewSummaryComponent implements OnInit {
   utilizationRate: number = 0;
   //preferemces value
   prefUnitFormat: any = 'dunit_Metric';
-  unitValkm: string;
+  unitValkm: string = '';
   filterInvoked: boolean = false;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService) {
-    this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
     this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
@@ -61,8 +60,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    
+  }
 
+  showCharts:boolean = false;
   loadData(){
     let localStLanguage = JSON.parse(localStorage.getItem("language"));
     let objData = {
@@ -78,6 +80,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
       this.summaryData = data;
       this.refreshData();
+      this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
+      this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
+      this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
+      this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
+      this.showCharts = true;
     }, (error) => {
       this.resetSummary();
     });
@@ -150,7 +157,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     }
    ];
     // Doughnut - Fleet Mileage Rate
-   doughnutChartLabelsMileage: Label[] = [(this.translationData.lblFleetMileageRate ), ''];
+   doughnutChartLabelsMileage: Label[] = [];
    doughnutChartDataMileage: MultiDataSet = [ [0, 0] ];
    doughnutChartOptionsMileage: ChartOptions = {
     responsive: true,
@@ -168,7 +175,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   };
 
   // Doughnut - Fleet Utilization Rate
-  doughnutChartLabelsUtil: Label[] = [(this.translationData.lblFleetUtilizationRate), '', ''];
+  doughnutChartLabelsUtil: Label[] = [];
   doughnutChartDataUtil: MultiDataSet = [ [0, 0] ];
 
   doughnutChartOptionsUtil: ChartOptions = {
@@ -231,7 +238,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
-  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + totDriveTime[1] + (this.translationData.lblmm);
+  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
@@ -257,7 +264,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   this.doughnutChartDataMileage = [ [0 , 0] ];
   this.doughnutChartDataUtil = [ [0, 0] ];
   this.mileageDone = '00' + this.unitValkm;
-  this.driveTime = '00' + (this.translationData.lblhh ) + '00' + (this.translationData.lblmm);
+  this.driveTime = '00' + (this.translationData.lblhh ) + ' 00' + (this.translationData.lblmm);
   this.drivers=0;
  }
  getDistance(distance: any, unitFormat: any){
