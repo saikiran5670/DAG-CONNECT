@@ -78,7 +78,7 @@
        </div>  
             <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportDTCTranslation || 'Upload Icon' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadSvgIcon }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
@@ -112,7 +112,7 @@
                                 <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                     <button style='color: #fff;' [disabled]="!dtcTranslationFormGroup.valid || svgEmptyMsg" [ngStyle]="{'margin-top': dtcTranslationFormGroup.get('uploadFile').hasError('required') || svgEmptyMsg || serverIconError ? serverIconError ? '-9px' : '9px' : '29px' }" mat-flat-button color="primary"
                                         (click)="uploadIconTranslation(removableIconInput)">
-                                        <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImport || 'Import Icon(s)' }}
+                                        <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImportIcons }}
                                     </button>
                                 </div>
                                </div>
