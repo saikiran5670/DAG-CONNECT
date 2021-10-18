@@ -10,6 +10,7 @@ import { UserDetailTableComponent } from '../../admin/user-management/new-user-s
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 
 @Component({
   selector: 'app-vehicle-group-management',
@@ -37,6 +38,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   selectedRowData: any = [];
   vehicleListData: any = [];
   adminAccessType: any = {};
+  notDeleteDialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
   constructor(private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -218,7 +220,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   deleteVehicleGroup(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodeleteVehicleGroup || "Are you sure you want to delete '$' Vehicle Group?",
+      message: this.translationData.lblvehiclegrpdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -231,9 +233,43 @@ export class VehicleGroupManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.vehicleService.deleteVehicleGroup(item.groupId).subscribe((d: any) => {
-          this.showSuccessMessage(this.getDeleteMsg(name));
-          this.loadVehicleGroupData();
+        this.vehicleService.deleteVehicleGroup(item.groupId).subscribe((deleteResp: any) => {
+          if(deleteResp){
+            // ---------------------------------------
+            // CanDelete	IsDeleted	  Message
+            // ---------------------------------------
+            // TRUE	      FALSE	      Exception/Failure
+            // FALSE	    FALSE	      Dependancy Message with OK button
+            // FALSE	    TRUE	      NA
+            // TRUE	      TRUE	      SUCCESS
+            //----------------------------------------
+            if(deleteResp.isDeleted && deleteResp.canDelete){ // successfully deleted
+              this.showSuccessMessage(this.getDeleteMsg(name));
+              this.loadVehicleGroupData();
+            }else if(!deleteResp.isDeleted && !deleteResp.canDelete){ // dependancy popup msg
+              const options = {
+                title: this.translationData.lblAlert || 'Alert',
+                message: this.translationData.lblThisvehiclegrouphasactiveassociationsandhencecannotbedeleted || "This vehicle-group has active associations and hence cannot be deleted.",
+                name: name,
+                confirmText: this.translationData.lblOk || 'Ok' 
+              };
+              const dialogConfig = new MatDialogConfig();
+              dialogConfig.disableClose = true;
+              dialogConfig.autoFocus = true;
+              dialogConfig.data = options;
+              this.notDeleteDialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+              this.notDeleteDialogRef.afterClosed().subscribe((res: any) => {
+              });
+            }else if(!deleteResp.isDeleted && deleteResp.canDelete){ // exception/error
+              console.log('error while deleting...')
+            }else if(deleteResp.isDeleted && !deleteResp.canDelete){ // NA
+              console.log('error while deleting...')
+            }else{
+              console.log('error while deleting...')
+            }
+          }
+        }, (error) => {
+          console.log('error')
         });
       }
     });
