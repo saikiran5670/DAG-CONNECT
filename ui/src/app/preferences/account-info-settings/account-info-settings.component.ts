@@ -361,26 +361,28 @@ export class AccountInfoSettingsComponent implements OnInit {
     if(this.accountSettingsForm.controls.loginEmail.value != this.accountInfo[0].emailId){
       //TODO : Check if email id already exists in DB(API call).
     }
+    if(this.imageError == ''){
 
-    let objData: any = {
-        id: this.accountId,
-        emailId: this.accountSettingsForm.controls.loginEmail.value,
-        salutation: this.accountSettingsForm.controls.salutation.value,
-        firstName: this.accountSettingsForm.controls.firstName.value,
-        lastName: this.accountSettingsForm.controls.lastName.value,
-        organizationId: this.organizationId,
-        driverId: this.accountSettingsForm.controls.driverId.value,
-        type: this.accountInfo.type ? this.accountInfo.type : 'P'
+      let objData: any = {
+          id: this.accountId,
+          emailId: this.accountSettingsForm.controls.loginEmail.value,
+          salutation: this.accountSettingsForm.controls.salutation.value,
+          firstName: this.accountSettingsForm.controls.firstName.value,
+          lastName: this.accountSettingsForm.controls.lastName.value,
+          organizationId: this.organizationId,
+          driverId: this.accountSettingsForm.controls.driverId.value,
+          type: this.accountInfo.type ? this.accountInfo.type : 'P'
+      }
+      this.accountService.updateAccount(objData).subscribe((data)=>{
+        this.accountInfo = [data];
+        this.editAccountSettingsFlag = false;
+        this.isSelectPictureConfirm = true;
+        this.setDefaultAccountInfo();
+        this.updateLocalStorageAccountInfo("accountsettings", data);
+        let editText = 'AccountSettings';
+        this.successMsgBlink(this.getEditMsg(editText));
+      });
     }
-    this.accountService.updateAccount(objData).subscribe((data)=>{
-      this.accountInfo = [data];
-      this.editAccountSettingsFlag = false;
-      this.isSelectPictureConfirm = true;
-      this.setDefaultAccountInfo();
-      this.updateLocalStorageAccountInfo("accountsettings", data);
-      let editText = 'AccountSettings';
-      this.successMsgBlink(this.getEditMsg(editText));
-    });
   }
 
   onEditAccountSettingsCancel(){

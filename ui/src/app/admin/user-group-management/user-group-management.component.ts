@@ -12,6 +12,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 
 @Component({
   selector: 'app-user-group-management',
@@ -51,6 +52,7 @@ export class UserGroupManagementComponent implements OnInit {
   userDetailsType: any = '';
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  notDeleteDialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -274,9 +276,35 @@ export class UserGroupManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.accountService.deleteAccountGroup(item.groupId).subscribe((d) => {
-          this.showSuccessMessage(this.getDeleteMsg(name));
-          this.loadUserGroupData();
+        this.accountService.deleteAccountGroup(item.groupId).subscribe((deleteResp: any) => {
+          if(deleteResp){
+            if(deleteResp.isDeleted && deleteResp.canDelete){ // successfully deleted
+              this.showSuccessMessage(this.getDeleteMsg(name));
+              this.loadUserGroupData();
+            }else if(!deleteResp.isDeleted && !deleteResp.canDelete){ // dependancy popup msg
+              const options = {
+                title: this.translationData.lblAlert || 'Alert',
+                message: this.translationData.lblThisaccountgrouphasactiveassociationsandhencecannotbedeleted || "This account-group has active associations and hence cannot be deleted.",
+                name: name,
+                confirmText: this.translationData.lblOk || 'Ok' 
+              };
+              const dialogConfig = new MatDialogConfig();
+              dialogConfig.disableClose = true;
+              dialogConfig.autoFocus = true;
+              dialogConfig.data = options;
+              this.notDeleteDialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+              this.notDeleteDialogRef.afterClosed().subscribe((res: any) => {
+              });
+            }else if(!deleteResp.isDeleted && deleteResp.canDelete){ // exception/error
+              console.log('error while deleting...')
+            }else if(deleteResp.isDeleted && !deleteResp.canDelete){ // NA
+              console.log('error while deleting...')
+            }else{
+              console.log('error while deleting...')
+            }
+          }
+        }, (error)=>{
+
         });
       }
     });
