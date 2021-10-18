@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.time.Time;
@@ -37,6 +38,7 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
@@ -258,57 +260,176 @@ public class ContiMessageProcessing implements Serializable {
                 }))
                 .broadcast(mapStateDescriptor);
 
-        KeyedStream<KafkaRecord<String>, String> contiKeyedStream = consumeSrcStream.consumeSourceInputStream(
+                
+        SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
                 streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
-        		.keyBy(new KeySelector<KafkaRecord<String>, String>() {
+        		.rebalance()
+        .map(new MapFunction<KafkaRecord<String>, KafkaRecord<Tuple3<String, String, Object>>>(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public KafkaRecord<Tuple3<String, String, Object>> map(KafkaRecord<String> value) throws Exception {
+				String transId = DAFCT2Constant.UNKNOWN;
+				String vid = DAFCT2Constant.UNKNOWN;
 				
-				private static final long serialVersionUID = 1L;
+				KafkaRecord<Tuple3<String, String, Object>> kafkaRec = new KafkaRecord<Tuple3<String, String, Object>>();
+				
+				try{
+					JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+					((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
+					
+					JsonNode jsonTransId = jsonNodeRec.get("TransID");
+					if (Objects.nonNull(jsonTransId))
+						transId = jsonTransId.asText();
 
-				@Override
-				public String getKey(KafkaRecord<String> value)
-					throws Exception {
-					JsonNode jsonNodeRec = null;
-					try{
-						jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-						((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
-						value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
-						value.setKey(jsonNodeRec.get("VID").asText());
-						return jsonNodeRec.get("VID").asText();
-					}catch(Exception e){
-						if(Objects.nonNull(jsonNodeRec)){
-							value.setKey(DAFCT2Constant.UNKNOWN);
-							logger.info("Issue Mandatory VID attribute is Null ::{}",value);
-							/*logger.info(" before explict setting TS for unknown VID :{}",value.getValue());
-							jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-							((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
-							value.setValue(JsonMapper.configuring().writeValueAsString(jsonNodeRec));
-							logger.info(" after explict setting TS for unknown VID :{}",value.getValue());*/
-							return DAFCT2Constant.UNKNOWN;
-						}else{
-							value.setKey(DAFCT2Constant.CORRUPT);
-							return DAFCT2Constant.CORRUPT;
+					JsonNode jsonVid = jsonNodeRec.get("VID");
+					if (Objects.nonNull(jsonVid))
+						vid = jsonVid.asText();
+
+					kafkaRec.setKey(transId);
+					
+					if (DAFCT2Constant.TRANSID_INDEX.equals(transId)){
+						kafkaRec.setValue(Tuple3.of(vid, transId,
+								 JsonMapper.configuring().readValue((String) value.getValue(), Index.class)));
+					}else if (DAFCT2Constant.TRANSID_STATUS.equals(transId))
+						kafkaRec.setValue(Tuple3.of(vid, transId,
+								 JsonMapper.configuring().readValue((String) value.getValue(), 
+								Status.class)));
+					else if (DAFCT2Constant.TRANSID_MONITOR.equals(transId))
+						kafkaRec.setValue(Tuple3.of(vid,transId, 
+								 JsonMapper.configuring().readValue((String) value.getValue(),
+								Monitor.class)));
+					else
+						kafkaRec.setValue(Tuple3.of(vid, transId,	 value.getValue()));
+					
+					logger.info("KafkaRecord entry :{}",jsonNodeRec);
+					
+			}catch(Exception e){
+				kafkaRec.setKey(DAFCT2Constant.CORRUPT);
+				kafkaRec.setValue(Tuple3.of(vid, transId, value.getValue()));
+			}
+			return kafkaRec;
+        }
+        });
+        
+        SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiCorruptRecords = contiInputStream
+        		.filter(rec ->  DAFCT2Constant.CORRUPT.equals(rec.getKey()) || DAFCT2Constant.UNKNOWN.equals(rec.getKey()))
+        		.name("Filter corrupt Records");
+        
+        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedIndexStream = contiInputStream
+        		.filter(rec -> DAFCT2Constant.TRANSID_INDEX.equals(rec.getKey()))
+        		.name("Filter Index Records")
+        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
+						String vid = DAFCT2Constant.UNKNOWN;
+						try {
+							/*JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							JsonNode jsonVidVal = jsonNodeRec.get("VID");*/
+							 vid = value.getValue().f0;
+							
+							//value.setKey(vid);
+						} catch (Exception e) {
+							//value.setKey(vid);
+							logger.error("Issue mandatory field VID is null for index record :{}",value);
 						}
-					}
-				}
-			});
+						return vid;
 
-        SingleOutputStreamOperator<KafkaRecord<String>> contiCorruptRecords = contiKeyedStream.filter(rec ->  "CORRUPT".equals(rec.getKey())).name("Filter corrupt Records");
-        SingleOutputStreamOperator<KafkaRecord<String>> contiValidInputStream = contiKeyedStream.filter(rec -> !"CORRUPT".equals(rec.getKey())).name("Filter Valid Records");
+					}
+        			
+        		});
+        
+        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedMonitorStream = contiInputStream
+        		.filter(rec -> DAFCT2Constant.TRANSID_MONITOR.equals(rec.getKey()))
+        		.name("Filter Monitor Records")
+        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
+						String vid = DAFCT2Constant.UNKNOWN;
+						try {
+							vid = value.getValue().f0;
+							
+						} catch (Exception e) {
+							//value.setKey(vid);
+							logger.error("Issue mandatory field VID is null for monitor record :{}",value);
+						}
+						return vid;
+
+					}
+        			
+        		});
+        
+        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedStatusStream = contiInputStream
+        		.filter(rec -> DAFCT2Constant.TRANSID_STATUS.equals(rec.getKey()))
+        		.name("Filter Status Records")
+        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
+						String vid = DAFCT2Constant.UNKNOWN;
+						try {
+							
+								vid = value.getValue().f0;
+							
+							//value.setKey(vid);
+						} catch (Exception e) {
+							//value.setKey(vid);
+							logger.error("Issue mandatory field VID is null for status record :{}",value);
+						}
+						return vid;
+
+					}
+        			
+        		});
         
         if("true".equals(properties.getProperty(DAFCT2Constant.STORE_HISTORICAL_DATA))){
-        	new MessageProcessing<String, VehicleStatusSchema, String>()
-        	.contiMessageForHistorical(
-        		contiValidInputStream,
-                properties,
-                broadcastStream);
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
+        	.contiKeyedMessageForHistorical(
+        			contiKeyedIndexStream,
+        			properties,
+        			broadcastStream);
+        	
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
+        	.contiKeyedMessageForHistorical(
+        			contiKeyedMonitorStream,
+        			properties,
+        			broadcastStream);
+        	
+        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
+        	.contiKeyedMessageForHistorical(
+        			contiKeyedStatusStream,
+        			properties,
+        			broadcastStream);
+        	
         }
         
         new EgressCorruptMessages().egressCorruptMessages(contiCorruptRecords, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
         
-        new MessageProcessing<String, VehicleStatusSchema, Index>()
-                .consumeContiMessage(
-                        contiValidInputStream,
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Index>()
+                .consumeKeyedContiMessage(
+                		contiKeyedIndexStream,
                         properties.getProperty(INDEX_TRANSID),
                         "Index",
                         properties.getProperty(SINK_INDEX_TOPIC_NAME),
@@ -316,9 +437,9 @@ public class ContiMessageProcessing implements Serializable {
                         Index.class,
                         broadcastStream);
 
-        new MessageProcessing<String, VehicleStatusSchema, Status>()
-                .consumeContiMessage(
-                        contiValidInputStream,
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Status>()
+                .consumeKeyedContiMessage(
+                		contiKeyedStatusStream,
                         properties.getProperty(STATUS_TRANSID),
                         "Status",
                         properties.getProperty(SINK_STATUS_TOPIC_NAME),
@@ -326,9 +447,9 @@ public class ContiMessageProcessing implements Serializable {
                         Status.class,
                         broadcastStream);
 
-        new MessageProcessing<String, VehicleStatusSchema, Monitor>()
-                .consumeContiMessage(
-                        contiValidInputStream,
+        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Monitor>()
+                .consumeKeyedContiMessage(
+                		contiKeyedMonitorStream,
                         properties.getProperty(MONITOR_TRANSID),
                         "Monitor",
                         properties.getProperty(SINK_MONITOR_TOPIC_NAME),

@@ -44,6 +44,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   vehicleList: any = [];
   organizationList: any = [];
   startDateList: any = [];
+  adminAccessType: any = {};
   viewRelationshipName: any; 
   allTypes: any = [
     {
@@ -74,6 +75,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,

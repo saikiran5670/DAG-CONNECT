@@ -104,20 +104,27 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                     populateDriverSaveList(monitorSaveList, monitorEnd, convertDateToMillis(monitorStartIndex.getEvtDateTime()), 3);
                 }
                 if (driver1WorkingState == 2) {
-                    long twoMinEndTime = convertDateToMillis(monitorStartIndex.getEvtDateTime());
-                    long startTime = monitorTmpList.size() == 1 ? twoMinuteRulePojo.getEnd_time() : twoMinEndTime;
+                    long twoMinEndTime = convertDateToMillis(monitorEnd.getEvtDateTime());
+                    long startTime = monitorTmpList.size() == 1 ? twoMinuteRulePojo.getEnd_time()
+                            : twoMinuteRulePojo.getCode().equals("2") ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime());
                     //add into save list
-                    long restDuration= twoMinEndTime - startTime;
+                    long restDuration = getRestDuration(twoMinEndTime, startTime);
                     if(restDuration > restBuffer)
                       populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
-                    else{
-                        //TODO
+                }
+                else {
+                    if (twoMinuteRulePojo.getCode().equals("2") && driver1WorkingState != 2) {
+                        long startTime = twoMinuteRulePojo.getEnd_time();
+                        long twoMinEndTime = convertDateToMillis(monitorStartIndex.getEvtDateTime());
+                        long restDuration = getRestDuration(twoMinEndTime, startTime);
+                        if(restDuration < restBuffer)
+                            populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
+                    }else{
+                        long startTime = monitorTmpList.size() == 1 ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime());
+                        //add into save list
+                        populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
                     }
 
-                } else {
-                    long startTime = monitorTmpList.size() == 1 ? twoMinuteRulePojo.getEnd_time() : convertDateToMillis(monitorStartIndex.getEvtDateTime());
-                    //add into save list
-                    populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
                 }
                 //update drive state
                 updateDriverState(twoMinuteRulePojo, monitorTmpList.get(monitorTmpList.size() - 1));
@@ -125,6 +132,10 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
         }
         //filter record with duration less than 0
         return monitorSaveList.stream().filter(monitor -> ((net.atos.daf.ct2.common.models.Monitor) monitor).getDuration() > 0).collect(Collectors.toList());
+    }
+
+    private long getRestDuration(long twoMinEndTime, long startTime) {
+        return twoMinEndTime - startTime;
     }
 
     private void populateDriverSaveList(List<Monitor> monitorSaveList, net.atos.daf.ct2.common.models.Monitor monitorEnd, long startTime, int driverWorkingState) throws Exception {

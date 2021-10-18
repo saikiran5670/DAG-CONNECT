@@ -63,6 +63,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   organizationId: any;
   driverId: any;
   imageError= '';
+  brandLogoError= '';
   profilePicture: any= '';
   croppedImageTemp= '';
   readonly maxSize= 1024*200; //200 KB
@@ -275,14 +276,17 @@ export class AccountInfoSettingsComponent implements OnInit {
  
   
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.value < b.value) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.value > b.value) {
       return 1;
     }
     return 0;
   }
+
+  
+  
 
   goForword(prefInfo: any){
     this.filterDefaultGeneralSetting(prefInfo);
@@ -400,49 +404,51 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-    if(!this.brandLogoFileValidated){
-      this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
-    }
-    this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
-    let objData: any = {
-      id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
-      refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : this.languageDropdownData[0].id,
-      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
-      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
-      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
-      pageRefreshTime: this.userSettingsForm.controls.pageRefreshTime.value ? parseInt(this.userSettingsForm.controls.pageRefreshTime.value) : 1,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
-      iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
-      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
-      createdBy: this.accountId
-      //driverId: ""
-    }
-    if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
-      this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
-       this.savePrefSetting(data);
-      });
-    }
-    else{
-      for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
-        if(!value){
-          this.createPrefFlag = true;
-          break;
-        }
+    if(this.brandLogoError == ''){
+      if(!this.brandLogoFileValidated){
+        this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
       }
-      if(this.createPrefFlag){ //--- pref created
-        this.accountService.createPreference(objData).subscribe((prefData: any) => {
-          this.accountInfo[0]["preferenceId"] = prefData.id;
-          let localAccountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-          localAccountInfo.accountDetail.preferenceId = prefData.id;
-          localStorage.setItem("accountInfo", JSON.stringify(localAccountInfo));
-          this.savePrefSetting(prefData);
-        }, (error) => { });
-      }else{ //--- pref not created
-        this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
+      this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
+      let objData: any = {
+        id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
+        refId: this.accountId,
+        languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : this.languageDropdownData[0].id,
+        timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
+        unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
+        currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
+        dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
+        pageRefreshTime: this.userSettingsForm.controls.pageRefreshTime.value ? parseInt(this.userSettingsForm.controls.pageRefreshTime.value) : 1,
+        timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
+        vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
+        landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
+        iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
+        iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
+        createdBy: this.accountId
+        //driverId: ""
+      }
+      if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
+        this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
+        this.savePrefSetting(data);
+        });
+      }
+      else{
+        for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
+          if(!value){
+            this.createPrefFlag = true;
+            break;
+          }
+        }
+        if(this.createPrefFlag){ //--- pref created
+          this.accountService.createPreference(objData).subscribe((prefData: any) => {
+            this.accountInfo[0]["preferenceId"] = prefData.id;
+            let localAccountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+            localAccountInfo.accountDetail.preferenceId = prefData.id;
+            localStorage.setItem("accountInfo", JSON.stringify(localAccountInfo));
+            this.savePrefSetting(prefData);
+          }, (error) => { });
+        }else{ //--- pref not created
+          this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
+        }
       }
     }
   }
@@ -667,8 +673,13 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.imageMaxMsg = false;
     this.file = event.target.files[0];     
     if(this.file){
+      this.brandLogoError= CustomValidators.validateImageFile(event.target.files[0])
       if(this.file.size > this.maxSize){ //-- 32*32 px
         this.imageMaxMsg = true;
+        return false;
+      }
+      else if(this.brandLogoError != ''){
+        return false;
       }
       else{
         //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);

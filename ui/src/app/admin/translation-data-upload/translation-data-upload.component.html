@@ -8,7 +8,7 @@
             <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
             </div>
         </div>
-        <mat-card *ngIf="!adminAccessType.adminReadOnlyAccess" class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card *ngIf="adminAccessType.adminFullAccess" class='mat-elevation-z margin-bottom-xlg'>
             <form [formGroup]="uploadTranslationDataFormGroup">
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
