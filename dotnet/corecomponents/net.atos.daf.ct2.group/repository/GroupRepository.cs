@@ -113,14 +113,20 @@ namespace net.atos.daf.ct2.group
                     query = @"select exists(select 1 from master.accessrelationship where account_group_id = @id)";
                 else
                 {
-                    // Check for existing Access relationship and Alert
-                    // TODO - Scheduler, Org relationship check
+                    // Check for existing Access relationship, Alert and Org relationship
+                    // TODO - Scheduler check
                     query = @"select exists
-                                (
-	                                select 1 from master.accessrelationship where vehicle_group_id = @id
-	                                UNION
-	                                select 1 from master.alert where vehicle_group_id = @id and state in ('A', 'I')
-                                )";
+                              (
+	                              select 1 from master.accessrelationship where vehicle_group_id = @id
+	                              UNION
+	                              select 1 from master.alert where vehicle_group_id = @id and state in ('A', 'I')
+                                  UNION
+	                              select 1
+	                              from master.orgrelationshipmapping orm
+                                  inner join master.orgrelationship ors on orm.relationship_id=ors.id and orm.vehicle_group_id = @id and ors.state='A' 
+	                              where case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                    else COALESCE(end_date,0) = 0 end
+                              )";
                 }
 
                 return !await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
@@ -136,8 +142,8 @@ namespace net.atos.daf.ct2.group
             var response = new VehicleGroupDelete();
             try
             {
-                //response.CanDelete = await CanDelete(groupId, objectType);
-                //if (response.CanDelete)
+                response.CanDelete = await CanDelete(groupId, objectType);
+                if (response.CanDelete)
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@id", groupId);
@@ -145,12 +151,6 @@ namespace net.atos.daf.ct2.group
                     //TODO: Need to prepare this as single for delete all ref. of group
                     using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                     {
-                        // delete access relation ship
-                        if (objectType == ObjectType.AccountGroup)
-                            query = @"delete from master.accessrelationship where account_group_id = @id";
-                        else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
-                        await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
                         // delete group ref
                         query = @"delete from master.groupref where group_id = @id";
                         await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
