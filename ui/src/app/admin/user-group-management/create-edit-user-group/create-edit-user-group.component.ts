@@ -19,7 +19,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
   columnCodes = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
-  columnLabels = ['All', 'Name', 'Email ID', 'Role', 'Account Group'];
+  columnLabels = ['All', 'Name', 'EmailId', 'Role', 'AccountGroup'];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;

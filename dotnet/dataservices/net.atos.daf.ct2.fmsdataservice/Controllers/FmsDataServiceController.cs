@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.fmsdataservice.controllers
                             }
                             else
                             {
-                                return StatusCode(400, string.Empty);
+                                return StatusCode(304, string.Empty);
                             }
                         }
                         else

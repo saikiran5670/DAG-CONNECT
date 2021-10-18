@@ -29,8 +29,8 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LogManager.getLogger(DriverCalculation.class);
     ParameterTool envParam = null;
-    //    private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
-    private Map<String, TwoMinuteRulePojo> driverPreviousRecord = new HashMap<>();
+        private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
+//    private Map<String, TwoMinuteRulePojo> driverPreviousRecord = new HashMap<>();
     private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
 
     @Override
@@ -53,9 +53,9 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
     @Override
     public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-        /*MapStateDescriptor<String, TwoMinuteRulePojo> descriptor = new MapStateDescriptor<String, TwoMinuteRulePojo>("DriverState",
+        MapStateDescriptor<String, TwoMinuteRulePojo> descriptor = new MapStateDescriptor<String, TwoMinuteRulePojo>("DriverState",
                 TypeInformation.of(String.class), TypeInformation.of(TwoMinuteRulePojo.class));
-        driverPreviousRecord = getRuntimeContext().getMapState(descriptor);*/
+        driverPreviousRecord = getRuntimeContext().getMapState(descriptor);
     }
 
 

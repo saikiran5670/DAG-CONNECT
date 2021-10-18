@@ -263,7 +263,8 @@ public class ContiMessageProcessing implements Serializable {
                 
         SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
                 streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
-        		.rebalance()
+        		//.rebalance()
+        		//.keyBy(inputRec -> Objects.nonNull(inputRec.getKey()) ? inputRec.getKey() : "UNKNOWN")
         .map(new MapFunction<KafkaRecord<String>, KafkaRecord<Tuple3<String, String, Object>>>(){
 
 			/**
@@ -280,7 +281,7 @@ public class ContiMessageProcessing implements Serializable {
 				
 				try{
 					JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-					((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
+					//((ObjectNode) jsonNodeRec).put("kafkaProcessingTS", value.getTimeStamp());
 					
 					JsonNode jsonTransId = jsonNodeRec.get("TransID");
 					if (Objects.nonNull(jsonTransId))
@@ -293,20 +294,28 @@ public class ContiMessageProcessing implements Serializable {
 					kafkaRec.setKey(transId);
 					
 					if (DAFCT2Constant.TRANSID_INDEX.equals(transId)){
-						kafkaRec.setValue(Tuple3.of(vid, transId,
-								 JsonMapper.configuring().readValue((String) value.getValue(), Index.class)));
-					}else if (DAFCT2Constant.TRANSID_STATUS.equals(transId))
-						kafkaRec.setValue(Tuple3.of(vid, transId,
-								 JsonMapper.configuring().readValue((String) value.getValue(), 
-								Status.class)));
-					else if (DAFCT2Constant.TRANSID_MONITOR.equals(transId))
-						kafkaRec.setValue(Tuple3.of(vid,transId, 
-								 JsonMapper.configuring().readValue((String) value.getValue(),
-								Monitor.class)));
-					else
-						kafkaRec.setValue(Tuple3.of(vid, transId,	 value.getValue()));
-					
-					logger.info("KafkaRecord entry :{}",jsonNodeRec);
+						
+						Index indxObj = JsonMapper.configuring().readValue((String) value.getValue(), Index.class);
+						indxObj.setKafkaProcessingTS(String.valueOf(value.getTimeStamp()));
+						
+						kafkaRec.setValue(Tuple3.of(vid, transId, indxObj));
+					}else if (DAFCT2Constant.TRANSID_STATUS.equals(transId)){
+						
+						Status stsObj = JsonMapper.configuring().readValue((String) value.getValue(), Status.class);
+						stsObj.setKafkaProcessingTS(String.valueOf(value.getTimeStamp()));
+						
+						kafkaRec.setValue(Tuple3.of(vid, transId, stsObj));
+					}else if (DAFCT2Constant.TRANSID_MONITOR.equals(transId)){
+						
+						Monitor monitorObj = JsonMapper.configuring().readValue((String) value.getValue(), Monitor.class);
+						monitorObj.setKafkaProcessingTS(String.valueOf(value.getTimeStamp()));
+						
+						kafkaRec.setValue(Tuple3.of(vid,transId, monitorObj));
+					}else{
+						logger.info("Issue received different transId type :{}",value.getValue() );
+						kafkaRec.setValue(Tuple3.of(vid, transId, value.getValue()));
+					}
+					logger.info("KafkaRecord entry :{}",kafkaRec.getValue());
 					
 			}catch(Exception e){
 				kafkaRec.setKey(DAFCT2Constant.CORRUPT);
