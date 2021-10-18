@@ -1079,8 +1079,8 @@ export class CommonImportComponent implements OnInit {
         populateRejectedList.push(
           {
             "organizationId":this.rejectedList[i]["organizationId"],
-            "categoryId": this.rejectedList[i]["categoryId"],
-            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "categoryName": this.rejectedList[i]["categoryName"],
+            "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
             "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
             "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
