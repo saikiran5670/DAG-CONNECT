@@ -157,26 +157,16 @@ export class OrganisationDetailsComponent implements OnInit {
     return 0;
   }
 
-compareHere(a, b) {
-    if (a.value < b.value) {
-      return -1;
-    }
-    if (a.value > b.value) {
-      return 1;
-    }
-    return 0;
-  }
-  
   getTranslatedPref(){
     let languageCode = this.localStLanguage.code;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       console.log("languageDropdownData 1", this.languageDropdownData);
-      this.languageDropdownData.sort(this.compareHere);
+      this.languageDropdownData.sort(this.compare);
       this.resetOrgLangFilter();
       this.timezoneDropdownData = dropDownData.timezone;
-      this.timezoneDropdownData.sort(this.compareHere);
+      this.timezoneDropdownData.sort(this.compare);
       this.resetTimezoneFilter();
       this.currencyDropdownData = dropDownData.currency;
       this.unitDropdownData = dropDownData.unit;

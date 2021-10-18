@@ -126,16 +126,6 @@ export class NewUserStepComponent implements OnInit {
   resetLandingPageFilter(){
     this.filteredLandingPageDisplay.next(this.defaultSetting.landingPageDisplayDropdownData.slice());
   }
-  compareHere(a,b){
-    if (a.value < b.value) {
-      return -1;
-    }
-    if (a.value > b.value) {
-      return 1;
-    }
-    return 0;
-  }
-
   ngOnInit() {
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -247,11 +237,11 @@ export class NewUserStepComponent implements OnInit {
     else{ //-- set org default setting
       this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
       console.log("languagedropdowndata 1", this.defaultSetting.languageDropdownData);
-      this.defaultSetting.languageDropdownData.sort(this.compareHere);
+      this.defaultSetting.languageDropdownData.sort(this.compare);
       this.resetLanguageFilter();
       this.firstFormGroup.get('timeZone').setValue((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id);
       console.log("timezonedropdowndata 1", this.defaultSetting.timezoneDropdownData);
-      this.defaultSetting.timezoneDropdownData.sort(this.compareHere);
+      this.defaultSetting.timezoneDropdownData.sort(this.compare);
       this.resetTimezoneFilter();
       
       this.firstFormGroup.get('unit').setValue((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id);
@@ -261,7 +251,7 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
       console.log("landingPageDisplayDropdownData 1", this.defaultSetting.landingPageDisplayDropdownData);
-      this.defaultSetting.landingPageDisplayDropdownData.sort(this.compareHere);
+      this.defaultSetting.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
       
       this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);

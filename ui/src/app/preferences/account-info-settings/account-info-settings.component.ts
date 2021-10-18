@@ -276,17 +276,14 @@ export class AccountInfoSettingsComponent implements OnInit {
  
   
   compare(a, b) {
-    if (a.value < b.value) {
+    if (a.name < b.name) {
       return -1;
     }
-    if (a.value > b.value) {
+    if (a.name > b.name) {
       return 1;
     }
     return 0;
   }
-
-  
-  
 
   goForword(prefInfo: any){
     this.filterDefaultGeneralSetting(prefInfo);

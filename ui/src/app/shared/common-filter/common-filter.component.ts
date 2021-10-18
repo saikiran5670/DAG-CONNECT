@@ -126,10 +126,10 @@ export class CommonFilterComponent implements OnInit {
     
   }
   compare(a, b) {
-    if (a  < b ) {
+    if (a.name < b.name) {
       return -1;
     }
-    if (a > b ) {
+    if (a.name > b.name) {
       return 1;
     }
     return 0;
