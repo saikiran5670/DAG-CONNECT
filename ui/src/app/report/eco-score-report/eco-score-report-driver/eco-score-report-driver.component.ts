@@ -7,6 +7,10 @@ import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, 
 import * as Chart from 'chart.js';
 import * as ApexCharts from 'apexcharts';
 import { Util } from 'src/app/shared/util';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 export type ChartOptionsApex = {
   series: ApexAxisChartSeries;
@@ -121,6 +125,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
  constructor() {}
 
   ngOnInit(): void {
+    this.loadBarCharOptions();
+    this.loadBarChartPerformanceOptions();
     this.translationUpdate();
     this.getSeriesData();
     this.fromDisplayDate = this.ecoScoreDriverInfo.startDate;
@@ -1046,7 +1052,13 @@ public barChartPlugins = [{beforeInit: function(chart, options) {
     this.height = this.height + 50;
   };
 }}];
-public barChartOptions = {
+
+public barChartOptions:any;
+
+loadBarCharOptions(){
+const averagegrossWeightTxt= this.translationData.lblAverageGrossWeight;
+const percentageTxt= this.translationData.lblPercentage;
+this.barChartOptions = {
   scaleShowVerticalLines: false,
   responsive: true,
   scales: {
@@ -1054,14 +1066,14 @@ public barChartOptions = {
       position: 'bottom',
       scaleLabel: {
        display: true,
-       labelString: this.translationData.lblAverageGrossWeight 
+       labelString: averagegrossWeightTxt 
       }
     }],
     yAxes: [{
       position: 'left',
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblPercentage 
+        labelString: percentageTxt 
       },
       ticks: {
         stepValue: 10,
@@ -1104,6 +1116,7 @@ public barChartOptions = {
         });
     }}
   };
+}
 
 loadBarChart(){
   this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
@@ -1117,7 +1130,12 @@ loadBarChart(){
 
 public barChartLabelsPerformance: any =[];
 public barChartDataPerformance: any =[];
-public barChartOptionsPerformance = {
+public barChartOptionsPerformance: any;
+
+loadBarChartPerformanceOptions(){
+const averageDrivingSpeedTxt= this.translationData.lblAverageDrivingSpeed;
+const percentageTxt= this.translationData.lblPercentage;
+this.barChartOptionsPerformance = {
   scaleShowVerticalLines: false,
   responsive: true,
   scales: {
@@ -1125,14 +1143,14 @@ public barChartOptionsPerformance = {
       position: 'bottom',
       scaleLabel: {
        display: true,
-       labelString: this.translationData.lblAverageDrivingSpeed 
+       labelString: averageDrivingSpeedTxt 
       }
     }],
     yAxes: [{
       position: 'left',
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblPercentage 
+        labelString: percentageTxt 
       },
       ticks: {
         stepValue: 10,
@@ -1172,6 +1190,8 @@ public barChartOptionsPerformance = {
         });
     }}
   };
+
+}
 
   loadBarChartPerfomance(){
     this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
@@ -1253,5 +1273,166 @@ public barChartOptionsPerformance = {
       this.showPerformanceBar=false;
       this.showPerformancePie=true;
     }
+  }
+
+  exportAsExcelFile(){
+    // this.getAllSummaryData();
+    const title = 'Fleet Fuel Vehicle Report';
+    const ranking = 'Ranking Section'
+    const summary = 'Summary Section';
+    const detail = 'Detail Section';
+    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
+    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
+    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
+
+    const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
+    const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
+    'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg1+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
+    'CO2 Emission('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
+    'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
+    'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 
+    'Idling PTO (hh:mm:ss) Score','Idling PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
+    'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitValkg+')'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
+    // const summaryData= this.summaryNewObj;
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+
+
+    worksheet.addRow([]);
+    let subTitleRankingRow = worksheet.addRow([ranking]);
+    let RankingRow = worksheet.addRow(rankingHeader);
+    worksheet.addRow([]);
+    RankingRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    // this.initData.forEach(item => {
+    //   worksheet.addRow([item.ranking,item.vehicleName,item.vin,item.vehicleRegistrationNo,item.convertedFuelConsumption
+    //   ]);
+    // });
+
+
+    
+    worksheet.addRow([]);
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);
+    // summaryData.forEach(element => {
+    //   worksheet.addRow(element);
+    // });
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    worksheet.addRow([]);
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })    
+    // this.initData.forEach(item => {
+    //   worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
+    //   item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
+    //   item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration.toFixed(2),
+    //   item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
+    //   item.cruiseControlDistance75, item.averageTrafficClassificationValue, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
+    //   item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
+    //   item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
+    // ]);
+    // });
+
+    worksheet.mergeCells('A1:D2');
+    subTitleRankingRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {
+      worksheet.columns[i].width = 20;
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {
+      worksheet.columns[j].width = 20;
+    }
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Fleet_Fuel_Vehicle.xlsx');
+    })    
+  }
+
+   exportAsPDFFile(){
+    var doc = new jsPDF('p', 'mm', 'a4');
+
+    let DATA = document.getElementById('charts');
+    html2canvas( (DATA),
+    {scale:2})
+    .then(canvas => { 
+      (doc as any).autoTable({
+        styles: {
+            cellPadding: 0.5,
+            fontSize: 12 
+        },    
+        didDrawPage: function(data) {     
+            // Header
+            doc.setFontSize(14);
+            var fileTitle = "Fleet Fuel Report by Vehicle";
+            var img = "/assets/logo.png";
+            doc.addImage(img, 'JPEG',10,10,0,0);
+  
+            var img = "/assets/logo_daf.png"; 
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+        },
+        margin: {
+          bottom: 30, 
+          top:40 
+         }  
+      });
+      
+
+      doc.addPage();
+      let fileWidth = 170;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+
+      const FILEURI = canvas.toDataURL('image/png')
+      // let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+      doc.addPage('a0','p');
+
+    (doc as any).autoTable({
+      // head: pdfColumns,
+      // body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    });
+    
+      doc.save('fleetFuelByVehicle.pdf');
+    });
   }
 }
