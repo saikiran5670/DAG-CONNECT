@@ -222,7 +222,7 @@
                 (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
                 (click)='onResetAccountSettings()'>{{ translationData.lblReset || 'Reset' }}</button>  
-              <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
+              <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid || imageError != ''"
                 (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
             </div>
           </form>
