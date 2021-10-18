@@ -393,7 +393,7 @@ export class VehicleUpdatesComponent implements OnInit {
     //   }
     // }
     if (filter == "vehicleName") {
-      if (event.value == 'all') {
+      if (event == 'all') {
         event_val = '';
       } else {
         event_val = event.vehicleName.trim();
