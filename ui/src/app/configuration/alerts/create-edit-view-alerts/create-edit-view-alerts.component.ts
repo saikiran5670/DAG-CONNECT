@@ -683,7 +683,7 @@ proceedStep(prefData: any, preference: any){
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
      console.log("vehicleGroupList 2", this.vehicleGroupList); 
-     this.vehicleGroupList.sort(this.compareVehicleGroupList);
+     this.vehicleGroupList.sort(this.compareHere);
      this.resetVehicleGroupFilter();
 
      this.vehicleGroupList.forEach(element => {
@@ -1563,6 +1563,16 @@ PoiCheckboxClicked(event: any, row: any) {
     if(!(a instanceof Number)) a = a.toUpperCase();
     if(!(b instanceof Number)) b = b.toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareHere(a,b){
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
   }
 
   updateGroupDatasource(tableData: any){
