@@ -22,9 +22,13 @@ namespace net.atos.daf.ct2.group
         {
             return await _groupRepository.Update(group);
         }
-        public async Task<bool> Delete(long groupid, ObjectType objectType)
+        public async Task<bool> CanDelete(long groupId, ObjectType objectType)
         {
-            return await _groupRepository.Delete(groupid, objectType);
+            return await _groupRepository.CanDelete(groupId, objectType);
+        }
+        public async Task<VehicleGroupDelete> Delete(long groupId, ObjectType objectType)
+        {
+            return await _groupRepository.Delete(groupId, objectType);
         }
         public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
         {

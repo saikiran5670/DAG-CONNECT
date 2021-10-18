@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.group.test
         [TestMethod]
         public void DeleteGroup()
         {
-            var result = _groupRepository.Delete(3, ObjectType.AccountGroup).Result;
+            var result = _groupRepository.Delete(3).Result;
             Assert.IsTrue(result);
         }
 
