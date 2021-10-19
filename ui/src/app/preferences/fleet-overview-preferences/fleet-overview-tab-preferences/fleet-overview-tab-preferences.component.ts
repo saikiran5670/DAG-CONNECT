@@ -43,11 +43,15 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     }else{
       console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
    }
 
    translationUpdate(){
     this.translationData = {
+      lblGeneralVehicleInformation: 'General Vehicle Information',
+      lblCancel: 'Cancel',
+      lblReset: 'Reset',
+      lblConfirm: 'Confirm',
       rp_fo_fleetoverview: 'Fleet Overview',
       rp_fo_fleetoverview_settimer: 'Set Timer',
       rp_fo_fleetoverview_settimer_pagerefresh: 'Page Refresh Time',
