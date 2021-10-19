@@ -737,7 +737,7 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Get Alert List
-        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds)
+        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds, List<int> vehicleIds)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
@@ -747,6 +747,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
                 parameterAlert.Add("@featureEnums", resultFeaturEnum);
+                parameterAlert.Add("@vehicleIds", vehicleIds);
                 //parameterAlert.Add("@name", alert.Name);
                 //parameterAlert.Add("@category", alert.Category);
                 //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
@@ -926,7 +927,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //}
                 //else if (accountid == 0 && organizationid > 0)
                 //{
-                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums)";
+                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums) and (veh.id = ANY(@vehicleIds) or vehs.id = ANY(@vehicleIds))";
                 parameterAlert.Add("@organization_id", organizationid);
                 //}               
 

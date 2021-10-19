@@ -1067,22 +1067,32 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       });
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
       console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compare);
+      this.vehicleDD.sort(this.compareVehName);
       this.resetVehicleNamesFilter();
    
     }   
   }
 
-  compare(a, b) {
-    if (a.name < b.name) {
+  compareVehName(a, b) {
+    if (a.vehicleName < b.vehicleName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleName > b.vehicleName) {
       return 1;
     }
     return 0;
   }
 
+  compareGrpName(a, b) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  
   resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD);
   }
@@ -1575,7 +1585,7 @@ let prepare = []
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
     console.log("vhicleGrpDD5", this.vehicleGrpDD);
-    this.vehicleGrpDD.sort(this.compare);
+    this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
  
     
