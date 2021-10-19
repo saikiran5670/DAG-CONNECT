@@ -17,7 +17,7 @@
                     <app-reports-preferences *ngIf="selectedIndex == 2" [translationData]='translationData'></app-reports-preferences>
                 </mat-tab>
                 <mat-tab label="{{ translationData.lblFleetOverview }}">
-                    <app-fleet-overview-preferences *ngIf="selectedIndex == 3"></app-fleet-overview-preferences>    
+                    <app-fleet-overview-preferences *ngIf="selectedIndex == 3" [translationData]='translationData'></app-fleet-overview-preferences>    
                 </mat-tab>
             </mat-tab-group>
         </div>

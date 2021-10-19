@@ -53,7 +53,7 @@ export class DashboardPreferencesComponent implements OnInit {
     let languageCode = JSON.parse(localStorage.getItem('language')).code;
     this.translationService.getPreferences(languageCode).subscribe((res) => { this.generalPreferences = res; this.getUnits() }
     )
-    this.translationUpdate();
+    // this.translationUpdate();
   }
 
   translationUpdate(){
