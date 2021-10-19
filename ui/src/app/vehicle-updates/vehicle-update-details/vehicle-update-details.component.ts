@@ -56,7 +56,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     baseLineId: "",
     scheduleDateTime: "",
     vin: '',
-    campaignId: ''
+    campaignId: '',
+    scheduledDate:'',
+    scheduledTime:''
 
   }
   today= new Date();
@@ -76,6 +78,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   selectedStartTime: string;
   startDateValue: any;
   todayDate: any;
+  titleVisible : boolean = false;
+  displayMessage : any = '';
+  formattedDate: any;
  
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
@@ -244,8 +249,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
     console.log(this.selectedVehicleUpdateDetails, 'this.selectedVehicleUpdateDetails');
     this.showLoadingIndicator = true;
-    if (this.selectedVehicleUpdateDetailsData) {
-      this.selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
+    if (selectedVehicleUpdateDetailsData) {
+      selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
         var todaysDate = moment();
         if (element.endDate) {
           element.endDate = moment(parseInt(element.endDate)).format(this.dateFormats.display.dateInput);
@@ -258,13 +263,14 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
         }
         if (element.scheduleDateTime) {
           element.scheduleDateTime = new Date( element.scheduleDateTime);
+          console.log(this.prefTimeFormat, this.prefDateFormat, 'this.prefTimeFormat, this.prefDateFormat');
           element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefTimeFormat, this.prefDateFormat);
         } else {
           element.scheduleDateTime = '-';
         }
 
       });
-      this.initData = this.selectedVehicleUpdateDetailsData.campaigns;
+      this.initData = selectedVehicleUpdateDetailsData.campaigns;
       this.selectedVin = this.selectedVehicleUpdateDetails.vin;
       this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;
       this.updateDataSource(this.initData);
@@ -330,7 +336,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     });
   }
 
-  openScheduler(rowData: any) { //--- single opt-in/out mode
+  openScheduler(rowData: any) { 
   this.schedulerData.campaignName = rowData.campaignSubject;
   this.schedulerData.baseLineId = rowData.baselineAssignmentId;
   this.schedulerData.campaignId = rowData.campaignID;
@@ -386,11 +392,12 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
 
 onCancel(){
   this.trigger.closePopover();
+  // this.trigger.destroyPopover();
 }
 showConfirmDailog(schedulerData: any) {
   let scheduledDateTime = this.scheduledDate +  this.scheduledTime;
-  const formattedDate = moment(this.scheduledDate).format(this.dateFormats.display.dateInput).toString();
-  const isoDate = moment(formattedDate +' '+ this.scheduledTime).toISOString();
+  this.formattedDate = moment(this.scheduledDate).format(this.dateFormats.display.dateInput).toString();
+  const isoDate = moment(this.formattedDate +' '+ this.scheduledTime).toISOString();
   this.schedulerData.scheduleDateTime = isoDate;
   const dialogScheduler = new MatDialogConfig();
   dialogScheduler.disableClose = true;
@@ -400,7 +407,9 @@ showConfirmDailog(schedulerData: any) {
       campaignName: schedulerData.campaignName,
       vehicalName: this.selectedVehicalName,
       baseLineId: schedulerData.baseLineId,
-      scheduleDateTime: isoDate
+      scheduleDateTime: isoDate,
+      scheduledDate:this.formattedDate,
+      scheduledTime:this.scheduledTime
     }
 
     this.dialogRefConfirm = this.dialog.open(ScheduleConfirmComponent, dialogScheduler);
@@ -409,26 +418,35 @@ showConfirmDailog(schedulerData: any) {
       if(res){ 
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
           this.hideloader();
-          let emitObj;
-          if(sheduleData){
-          emitObj = {
-            stepFlag: false,
-            msg: "sheduleData success"
-          }
-          this.backToPage.emit(emitObj);
-         } else{
-          emitObj = {
-            stepFlag: false,
-            msg: ""
-          }
-          this.backToPage.emit(emitObj);
-         }
+          let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
+          this.successMsgBlink(successMsg);
+          this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
+            if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+              this.loadVehicleDetailsData(data)
+            }
+
+          })
+          
+
         }, (error) => {
           this.hideloader();
-          alert('API Failed');
+          // let successMsg =`${this.schedulerData.campaignId} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
+          // this.successMsgBlink(successMsg);
           console.log("error:: ", error);
         });
       }
     });
   }
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
+  }
+  onClose() {
+    this.titleVisible = false;
+  }
+
+
 }
