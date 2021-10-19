@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Entity
     public class UserDetails
     {
         public string OrganizationID { get; set; }
-        public string OraganizationName { get; set; }
+        public string OrganizationName { get; set; }
         public string AccountID { get; set; }
         public string AccountName { get; set; }
         public string RoleID { get; set; }
