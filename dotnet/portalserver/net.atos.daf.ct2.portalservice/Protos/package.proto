@@ -102,9 +102,9 @@ message GetPackageResponce {
     enum PackageType
     {
         NA = 0;
-        Vehicle =1;// 'V'=0;
+        ORGVIN =1;// 'V'=0;
         Organization = 2;//'O'=1;
-        ReadWrite = 3;//'W'=2;
+        VIN = 3;//'W'=2;
     }
     enum Responsecode {
       Success = 0;
