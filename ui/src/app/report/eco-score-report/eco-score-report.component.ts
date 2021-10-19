@@ -34,9 +34,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   driverPerformanceColumnData: any = [];
   driverPerformanceGraphColumnData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   selectionTab: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -253,6 +250,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
