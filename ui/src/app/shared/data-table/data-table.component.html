@@ -18,7 +18,7 @@
 
     <div class='areaWidth' *ngIf="showExport" fxLayoutAlign="center center">
         <button *ngIf='tableData.length > 0' mat-button [matMenuTriggerFor]="menu">
-            <mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon>
+            <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>

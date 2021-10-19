@@ -280,7 +280,28 @@ namespace net.atos.daf.ct2.alertservice.Services
                 //objalert.OrganizationId = request.OrganizationId;
                 //objalert.CreatedBy = request.AccountId;
                 List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
-                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds);
+                //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
+                // var vehicleDetailsAccountVisibilty
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                List<int> vehicleIds = new List<int>();
+                if (featureIds != null && featureIds.Count() > 0)
+                {
+                    foreach (int featureId in featureIds)
+                    {
+                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                        //append visibile vins
+                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                        //remove duplicate vins by key as vin
+                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    }
+                    foreach (var item in vehicleDetailsAccountVisibilty)
+                    {
+                        vehicleIds.Add(item.VehicleId);
+                    }
+                }
+                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds, vehicleIds);
 
                 AlertListResponse response = new AlertListResponse();
                 foreach (var item in alertList)
