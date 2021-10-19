@@ -39,12 +39,12 @@
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"
                                 (click)="isFullScreen ? exitFullScreen() : fullScreen()"
-                                matTooltip="{{isFullScreen ? 'Exit Full Screen' : 'Full Screen'}}">{{ isFullScreen ?
+                                matTooltip="{{ isFullScreen ? (translationData.lblExitFullScreen || 'Exit Full Screen') : (translationData.lblFullScreen || 'Full Screen') }}">{{ isFullScreen ?
                                 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
                         </a>
                         <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
                         <a class="navIcon" (click) ="notificationClicked()">
-                            <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications"
+                            <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="{{ translationData.lblNotifications || 'Notifications' }}"
                                 [matMenuTriggerFor]="menu">
                                 notifications_none</mat-icon>
                             <span class="badge">{{ signalRService.notificationCount }}</span>
@@ -64,7 +64,7 @@
                                 </ngx-mat-select-search>
                             </mat-option>
                             <mat-option *ngFor="let lang of filteredLanguages | async" [value]="lang.id"
-                                matTooltip="{{lang.name}}">
+                                matTooltip="{{ lang.name }}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>
@@ -74,7 +74,7 @@
                             <div class="logoutButton" fxLayout="column">
                                 <button mat-icon-button (click)="logOut()"
                                     class="menuToggler display-flex align-items-center padding-item">
-                                    <mat-icon matTooltip="Logout" class='logoutIcon'
+                                    <mat-icon matTooltip="{{ translationData.lblLogout || 'Logout' }}" class='logoutIcon'
                                         style="color: #e90606;font-weight: 600;font-size: 22px;">power_settings_new
                                     </mat-icon>
                                 </button>
@@ -126,7 +126,7 @@
                                 *ngIf="organizationDropdown.length > 0">
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
-                                    <mat-label>Select Organisation</mat-label>
+                                    <mat-label>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="onOrgChange($event.value)"
                                             formControlName="organization">
@@ -141,7 +141,7 @@
                                 style='padding: 10px !important; background:#c3f1f7;'>
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
-                                    <mat-label>Select Role</mat-label>
+                                    <mat-label>{{ translationData.lblSelectRole || 'Select Role' }}</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select [disabled]='selectedRoles.length == 0'
                                             (selectionChange)="onRoleChange($event.value)" formControlName="role">
@@ -204,7 +204,7 @@
     <div class="user-preferences">
         <div *ngIf="isLogedIn" class="preferences-sidenav-content"
             [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " (click)='userPreferencesSetting($event)'>
-            <mat-icon matTooltip="Click to view user preferences"  style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
+            <mat-icon matTooltip="{{ translationData.lblClicktoviewuserpreferences || 'Click to view user preferences' }} " style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
         <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag">
@@ -213,8 +213,8 @@
     <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer'
         [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
         <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">
-            <mat-icon matTooltip="{{menuCollapsed ? 'Expand' : 'Collapse'}}">{{menuCollapsed ? 'keyboard_arrow_right' :
-                'keyboard_arrow_left'}}</mat-icon>
+            <mat-icon matTooltip="{{menuCollapsed ? (translationData.lblExpand || 'Expand') : (translationData.lblCollapse || 'Collapse') }}">{{ menuCollapsed ? 'keyboard_arrow_right' :
+                'keyboard_arrow_left' }}</mat-icon>
         </button>
     </div>
     <mat-sidenav-container fxFlexFill [ngClass]="{'rightContainer': isLogedIn, 'menuCollapsed' : menuCollapsed }">
