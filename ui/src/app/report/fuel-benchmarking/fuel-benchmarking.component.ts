@@ -52,7 +52,6 @@ export class FuelBenchmarkingComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   tripData: any = [];
   vehicleDD: any = [];
   singleVehicle: any = [];
@@ -246,7 +245,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   lineChartPlugins = [];
   lineChartType = 'line';
   fromTripPageBack: boolean = false;
-
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();

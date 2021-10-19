@@ -22,8 +22,6 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Output() showSearchResult = new EventEmitter();
   @Output() hideSearchResult = new EventEmitter();
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   localStLanguage;
   accountPrefObj;
@@ -53,6 +51,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   vehicleListData: any = [];
   
 
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService, private translationService: TranslationService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -605,19 +605,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   }
 
-  filterVehicle(VehicleSearch){
+  filterVehicle(search){
     console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
-    if(!VehicleSearch){
+    if(!search){
       this.resetVehicleFilter();
       return;
     }else{
-      VehicleSearch = VehicleSearch.toLowerCase();
+      search = search.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(search) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }

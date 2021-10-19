@@ -233,7 +233,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		} else
 			stmt_insert_driver_activity.setInt(9, DafConstants.DTM_NULL_VAL_int);
 
-		stmt_insert_driver_activity.setLong(10, Types.NULL); // 10-Duration
+		stmt_insert_driver_activity.setLong(10, row.getDuration()); // 10-Duration
 
 		if(row.getCreatedAtM2m()!=null) {
 			stmt_insert_driver_activity.setLong(11, row.getCreatedAtM2m()); // 11-created_at_m2m

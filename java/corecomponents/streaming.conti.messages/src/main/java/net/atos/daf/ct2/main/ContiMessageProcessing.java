@@ -54,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
@@ -417,19 +416,25 @@ public class ContiMessageProcessing implements Serializable {
         	.contiKeyedMessageForHistorical(
         			contiKeyedIndexStream,
         			properties,
-        			broadcastStream);
+        			broadcastStream,
+        			"Index",
+        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_INDEX_PARALLELISM)));
         	
         	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
         			contiKeyedMonitorStream,
         			properties,
-        			broadcastStream);
+        			broadcastStream,
+        			"Monitor",
+        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_MONITOR_PARALLELISM)));
         	
         	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
         			contiKeyedStatusStream,
         			properties,
-        			broadcastStream);
+        			broadcastStream,
+        			"Status",
+        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_STATUS_PARALLELISM)));
         	
         }
         
