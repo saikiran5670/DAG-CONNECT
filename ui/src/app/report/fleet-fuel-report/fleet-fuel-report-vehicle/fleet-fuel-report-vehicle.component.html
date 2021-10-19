@@ -874,7 +874,7 @@
           <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
           </mat-row>
         </mat-table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
 
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
