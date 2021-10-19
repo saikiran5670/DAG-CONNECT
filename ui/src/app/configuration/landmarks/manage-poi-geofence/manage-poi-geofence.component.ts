@@ -82,7 +82,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
   tableColumnList = ['organizationId', 'categoryName',  'subCategoryName', 
     'poiName', 'latitude', 'longitude', 'returnMessage'];
-  tableColumnName = ['OrganizationId', 'CategoryName',  'SubCategoryName',
+  tableColumnName = ['OrganizationId', 'Category Name',  'SubCategory Name',
     'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
@@ -1278,8 +1278,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
-                              this.translationData.lblCategoryName || 'CategoryName',
-                              this.translationData.lblSubCategoryName || 'SubCategoryName',
+                              this.translationData.lblCategoryName || 'Category Name',
+                              this.translationData.lblSubCategoryName || 'SubCategory Name',
                               this.translationData.lblPOIName || 'POIName',
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
