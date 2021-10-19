@@ -178,7 +178,7 @@
                 <ng-template #elseBlock>
                     <a class='selectedManu' (click)="menuSelected(menu.url)">
                         <mat-icon matTooltip="{{menuCollapsed ?  menu.name : ''}}" class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel" *ngIf ="!menuCollapsed" >{{ translationData[menu.key] ||menu.name | titlecase}}</span>
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" >{{ translationData[menu.key] || menu.name | titlecase}}</span>
                         <!-- <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
                             [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span> -->
                         <mat-icon class="navigationArrow">
