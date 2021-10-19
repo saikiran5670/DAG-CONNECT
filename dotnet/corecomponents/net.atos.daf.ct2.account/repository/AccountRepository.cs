@@ -1753,17 +1753,14 @@ namespace net.atos.daf.ct2.account
                 {
                     query = @"WITH cte_account
                                 AS (
-	                                SELECT act.preference_id AS preferenceid
-		                                ,act.id AS accountid
+	                                SELECT DISTINCT act.preference_id AS preferenceid
+		                                ,act.email AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
-                            ,actrole.role_id AS roleid
-                            --,org.id AS orgdefault_id
-                            --,org.org_id AS organizationid
-                            --,org.name AS organizationname
-                            FROM master.account act
-                            INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
-                            --LEFT JOIN master.organization org ON actrole.organization_id = org.id
-                            WHERE act.STATE = 'A' AND act.id=@accountID and actrole.role_id=@roleID)
+                                        ,r.code AS roleid
+                                    FROM master.account act
+                                    INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
+                                    INNER JOIN master.role r ON r.id = actrole.role_id
+                                    WHERE act.STATE = 'A' AND act.id=@accountID and actrole.role_id=@roleID)
                             ,cte_actpreference
                                 AS (
 	                                SELECT _timezone.name AS timezonename
@@ -1790,8 +1787,6 @@ namespace net.atos.daf.ct2.account
                             ,cte_act.roleid
                             ,(select org_id from master.organization where id=@OrganizationID) as organizationid
                             ,(select name as organizationname from master.organization where id=@OrganizationID) as organizationname
-                            --,cte_act.organizationid
-                            --,cte_act.organizationname
                             ,cte_actp.timezonename as timezone
                             ,cte_actp.DATEFORMAT
                             ,cte_actp.unitdisplay
