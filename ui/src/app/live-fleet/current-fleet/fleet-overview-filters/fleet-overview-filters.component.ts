@@ -156,7 +156,7 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
           this.driverList.push(item) });
           this.driverList = this.removeDuplicates(this.driverList, "driverId");
           this.finalDriverList = this.driverList;
-          this.finalDriverList.sort(this.compare);
+          this.finalDriverList.sort(this.compareName);
           this.resetDriverSearchFilter();
           
           this.loadDriverData();
@@ -182,10 +182,19 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareName(a, b) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
       return 1;
     }
     return 0;
@@ -788,7 +797,7 @@ setIconsOnMap(element) {
         }
       }
       else if(alertsData[0].length == 1){
-        _alertConfig = this.getAlertConfig(_alertFound);
+        _alertConfig = this.getAlertConfig(_alertFound[0]);
       }  
     }
     if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
