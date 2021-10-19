@@ -53,8 +53,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   driverSelected : boolean =false;
@@ -603,6 +601,9 @@ export class FleetFuelReportDriverComponent implements OnInit {
   displayData : any = [];
   showDetailedReport : boolean = false;
   
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
               private organizationService: OrganizationService,
@@ -638,7 +639,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 10 //-- for fleet utilisation
+      menuId: 9 //-- for fleet fuel report
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -682,6 +683,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
+    this.FuelData.forEach(element => {
+      if(element.driverID.includes('~*')){
+        element["unknownDriver"] = true;
+      }
+      else{
+        element["unknownDriver"] = false;
+      }
+    });
+    
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     })
@@ -1753,7 +1763,7 @@ setDefaultTodayDate(){
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     console.log("vehicleDD 1", this.vehicleDD);
-    this.vehicleDD.sort(this.compare);
+    this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
     
     if(this.vehicleListData.length > 0){
@@ -2485,10 +2495,19 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
       return 1;
     }
     return 0;

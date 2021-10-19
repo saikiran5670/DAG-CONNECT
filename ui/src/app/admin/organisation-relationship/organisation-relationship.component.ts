@@ -44,6 +44,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   vehicleList: any = [];
   organizationList: any = [];
   startDateList: any = [];
+  adminAccessType: any = {};
   viewRelationshipName: any; 
   allTypes: any = [
     {
@@ -74,6 +75,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -222,8 +224,8 @@ export class OrganisationRelationshipComponent implements OnInit {
       }
 
   defaultTranslation () {
-    this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate || "Click to deactivate";
-    this.translationData.lblClickToActivate = this.translationData.lblClickToActivate || "Click to activate";
+    this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate;
+    this.translationData.lblClickToActivate = this.translationData.lblClickToActivate;
     
   }
 
@@ -321,7 +323,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount ,
+      title: this.translationData.lblDeleteRelationship,
       message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
       cancelText: this.translationData.lblNo ,
       confirmText: this.translationData.lblYes 
@@ -363,12 +365,12 @@ export class OrganisationRelationshipComponent implements OnInit {
     if(rowData.endDate == 0)
     {
     const options = {
-      title: this.translationData.lblChangeChainingStatus || "Change Chaining Status",
-      message: this.translationData.lblYouwanttoDeactivate || "You want to deactivate the relationship '$'?",
-      // cancelText: this.translationData.lblNo || "No",
-      // confirmText: this.translationData.lblYes || "Yes",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      title: this.translationData.lblChangeChainingStatus,
+      message: this.translationData.lblYouwanttoDeactivate,
+      // cancelText: this.translationData.lblNo,
+      // confirmText: this.translationData.lblYes,
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
       status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };

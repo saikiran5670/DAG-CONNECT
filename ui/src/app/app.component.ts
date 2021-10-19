@@ -90,48 +90,48 @@ export class AppComponent {
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
   // notificationDetails: any= [];
-  private pagetTitles = {
-    dashboard: 'Dashboard',
-    fleetoverview: 'Fleet Overview',
-    logbook: 'Log Book',
-    vehicleupdates: 'Vehicle Updates',
-    tripreport: 'Trip Report',
-    triptracing: 'Trip Tracing',
-    advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
-    fleetfuelreport: 'Fleet Fuel Report',
-    fleetutilisation: 'Fleet Utilisation',
-    fuelbenchmarking: 'Fuel Benchmarking',
-    fueldeviationreport: 'Fuel Deviation Report',
-    vehicleperformancereport: 'Vehicle Performance Report',
-    drivetimemanagement: 'Drive Time Management',
-    ecoscorereport: 'Eco Score Report',
-    ecoscoreprofilemanagement: 'EcoScore Profile Management',
-    alerts: 'Alerts',
-    landmarks: 'Landmarks',
-    reportscheduler: 'Report Scheduler',
-    drivermanagement: 'Driver Management',
-    vehiclemanagement: 'Vehicle Management',
-    organisationdetails: 'Organisation Details',
-    accountgroupmanagement: 'Account Group Management',
-    accountmanagement: 'Account Management',
-    accountrolemanagement: 'Account Role Management',
-    vehiclegroupmanagement: 'Vehicle Group Management',
-    termsandcondition: 'Terms & Conditions',
-    featuremanagement: 'Feature Management',
-    organisationrelationshipmanagement: 'Organisation Relationship Management',
-    relationshipmanagement: 'Relationship Management',
-    translationmanagement: 'Translation Management',
-    configurationmanagemnt: 'Configuration Managemnt',
-    packagemanagement: 'Package Management',
-    accessrelationshipmanagement: 'Access Relationship Management',
-    subscriptionmanagement: 'Subscription Management',
-    tachograph: 'Tachograph',
-    mobileportal: 'Mobile Portal',
-    shop: 'Shop',
-    information: 'Information',
-    legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms And Condition History',
-    dtctranslation: 'DTC Translation'
+  private pageTitles = {
+    dashboard: 'lblDashboard',
+    fleetoverview: 'lblfleetoverview',
+    logbook: 'lblLogBook',
+    vehicleupdates: 'lblVehicleUpdates',
+    tripreport: 'lblTripReport',
+    triptracing: 'lblTripTracing',
+    advancedfleetfuelreport: 'lblAdvancedFleetFuelReport',
+    fleetfuelreport: 'lblFleetFuelReport',
+    fleetutilisation: 'lblFleetUtilisation',
+    fuelbenchmarking: 'lblFuelBenchmarking',
+    fueldeviationreport: 'lblFuelDeviationReport',
+    vehicleperformancereport: 'lblVehiclePerformanceReport',
+    drivetimemanagement: 'lblDriveTimeManagement',
+    ecoscorereport: 'lblECOScoreReport',
+    ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
+    alerts: 'lblAlerts',
+    landmarks: 'lblLandmarks',
+    reportscheduler: 'lblReportScheduler',
+    drivermanagement: 'lblDriverManagement',
+    vehiclemanagement: 'lblVehicleManagement',
+    organisationdetails: 'lblOrgnisationDetails',
+    accountgroupmanagement: 'lblAccountGroupManagement',
+    accountmanagement: 'lblAccountManagement',
+    accountrolemanagement: 'lblAccountRoleManagement',
+    vehiclegroupmanagement: 'lblVehicleGroupManagement',
+    termsandcondition: 'lblTermsAndConditions',
+    featuremanagement: 'lblFeatureManagement',
+    organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+    relationshipmanagement: 'lblRelationshipManagement',
+    translationmanagement: 'lblTranslationManagement',
+    configurationmanagemnt: 'lblConfigurationManagemnt',
+    packagemanagement: 'lblPackageManagement',
+    accessrelationshipmanagement: 'lblAccessRelationshipManagement',
+    subscriptionmanagement: 'lblSubscriptionManagement',
+    tachograph: 'lblTachograph',
+    mobileportal: 'lblMobilePortal',
+    shop: 'lblShop',
+    information: 'lblInformation',
+    legalnotices: 'lblLegalNotices',
+    termsAndconditionhistory: 'lblTermsAndConditionHistory',
+    dtctranslation: 'lblDTCTranslation'
   }
 
 
@@ -141,7 +141,7 @@ export class AppComponent {
       icon: "speed",
       externalLink: false,
       pageTitles: {
-        dashboard: 'Dashboard'
+        dashboard: 'lblDashboard'
       }
     },
     fleetoverview: {
@@ -149,8 +149,8 @@ export class AppComponent {
       icon: "map",
       externalLink: false,
       pageTitles: {
-        fleetoverview: 'Fleet Overview',
-        logbook: 'Log Book'
+        fleetoverview: 'lblfleetoverview',
+        logbook: 'lblLogBook'
       }
     },
     vehicleupdates: {
@@ -158,7 +158,7 @@ export class AppComponent {
       icon: "update",
       externalLink: false,
       pageTitles: {
-        vehicleupdates: 'Vehicle Updates'
+        vehicleupdates: 'lblVehicleUpdates'
       }
     },
     report: {
@@ -166,16 +166,16 @@ export class AppComponent {
       externalLink: false,
       icon: "bar_chart",
       pageTitles: {
-        tripreport: 'Trip Report',
-        triptracing: 'Trip Tracing',
-        advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
-        fleetfuelreport: 'Fleet Fuel Report',
-        fleetutilisation: 'Fleet Utilisation',
-        fuelbenchmarking: 'Fuel Benchmarking',
-        fueldeviationreport: 'Fuel Deviation Report',
-        vehicleperformancereport: 'Vehicle Performance Report',
-        drivetimemanagement: 'Drive Time Management',
-        ecoscorereport: 'Eco Score Report'
+        tripreport: 'lblTripReport',
+        triptracing: 'lblTripTracing',
+        advancedfleetfuelreport: 'lblAdvancedFleetFuelReport',
+        fleetfuelreport: 'lblFleetFuelReport',
+        fleetutilisation: 'lblFleetUtilisation',
+        fuelbenchmarking: 'lblFuelBenchmarking',
+        fueldeviationreport: 'lblFuelDeviationReport',
+        vehicleperformancereport: 'lblVehiclePerformanceReport',
+        drivetimemanagement: 'lblDriveTimeManagement',
+        ecoscorereport: 'lblECOScoreReport'
       }
     },
     configuration: {
@@ -183,14 +183,14 @@ export class AppComponent {
       icon: "settings",
       externalLink: false,
       pageTitles: {
-        alerts: 'Alerts',
-        landmarks: 'Landmarks',
-        reportscheduler: 'Report Scheduler',
-        ecoscoreprofilemanagement: 'Eco Score Profile Management',
-        drivermanagement: 'Driver Management',
-        vehiclemanagement: 'Vehicle Management',
-        termsandcondition: 'Terms & Conditions',
-        dtctranslation: "DTC Translation"
+        alerts: 'lblAlerts',
+        landmarks: 'lblLandmarks',
+        reportscheduler: 'lblReportScheduler',
+        ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
+        drivermanagement: 'lblDriverManagement',
+        vehiclemanagement: 'lblVehicleManagement',
+        termsandcondition: 'lblTermsAndConditions',
+        dtctranslation: "lblDTCTranslation"
       }
     },
     admin: {
@@ -198,19 +198,19 @@ export class AppComponent {
       icon: "person",
       externalLink: false,
       pageTitles: {
-        organisationdetails: 'Organisation Details',
-        accountgroupmanagement: 'Account Group Management',
-        accountmanagement: 'Account Management',
-        accountrolemanagement: 'Account Role Management',
-        vehiclegroupmanagement: 'Vehicle Group Management',
-        featuremanagement: 'Feature Management',
-        organisationrelationshipmanagement: 'Organisation Relationship Management',
-        relationshipmanagement: 'Relationship Management',
-        translationmanagement: 'Translation Management',
-        configurationmanagemnt: 'Configuration Management',
-        packagemanagement: 'Package Management',
-        accessrelationshipmanagement: 'Access Relationship Management',
-        subscriptionmanagement: 'Subscription Management',
+        organisationdetails: 'lblOrgnisationDetails',
+        accountgroupmanagement: 'lblAccountGroupManagement',
+        accountmanagement: 'lblAccountManagement',
+        accountrolemanagement: 'lblAccountRoleManagement',
+        vehiclegroupmanagement: 'lblVehicleGroupManagement',
+        featuremanagement: 'lblFeatureManagement',
+        organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+        relationshipmanagement: 'lblRelationshipManagement',
+        translationmanagement: 'lblTranslationManagement',
+        configurationmanagemnt: 'lblConfigurationManagemnt',
+        packagemanagement: 'lblPackageManagement',
+        accessrelationshipmanagement: 'lblAccessRelationshipManagement',
+        subscriptionmanagement: 'lblSubscriptionManagement',
       }
     },
     tachograph: {
@@ -218,7 +218,7 @@ export class AppComponent {
       icon: "graphic_eq",
       externalLink: true,
       pageTitles: {
-        tachograph: 'Tachograph'
+        tachograph: 'lblTachograph'
       },
       link: "https://www.my-fis.com/fleetservices/default.aspx"
     },
@@ -227,7 +227,7 @@ export class AppComponent {
       icon: "mobile_screen_share",
       externalLink: false,
       pageTitles: {
-        mobileportal: 'Mobile Portal'
+        mobileportal: 'lblMobilePortal'
       }
     },
     shop: {
@@ -235,7 +235,7 @@ export class AppComponent {
       icon: "shop",
       externalLink: false,
       pageTitles: {
-        shop: 'Shop'
+        shop: 'lblShop'
       }
     },
     information: {
@@ -243,7 +243,7 @@ export class AppComponent {
       icon: "info",
       externalLink: true,
       pageTitles: {
-        information: 'Information'
+        information: 'lblInformation'
       },
       link: "https://connectinfo.daf.com/en/?accesskey=2126e1f9-078d-4902-ab5f-46ea70f0e461"
     },
@@ -252,7 +252,7 @@ export class AppComponent {
       icon: "gavel",
       externalLink: true,
       pageTitles: {
-        legalnotices: 'Legal Notices'
+        legalnotices: 'lblLegalNotices'
       },
       link: "https://www.daf.com/en/legal/legal-notice"
     },
@@ -261,7 +261,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms And Condition History'
+        termsAndconditionhistory: 'lblTermsAndConditionHistory'
       }
     }
   }
@@ -783,51 +783,51 @@ export class AppComponent {
   // }
 
   defaultTranslation() {
-    this.translationData = {
-      lblDashboard: "Dashboard",
-      lblLiveFleet: "Live Fleet",
-      lblLogBook: "Log Book",
-      lblVehicleUpdates: "Vehicle Updates",
-      lblReports: "Reports",
-      lblTripReport: 'Trip Report',
-      lblTripTracing: 'Trip Tracing',
-      lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
-      lblFleetFuelReport: 'Fleet Fuel Report',
-      lblFleetUtilisation: 'Fleet Utilisation',
-      lblFuelBenchmarking: 'Fuel Benchmarking',
-      lblFuelDeviationReport: 'Fuel Deviation Report',
-      lblvehiclePerformanceReport: 'Vehicle Performance Report',
-      lblDriveTimeManagement: 'Drive Time Management',
-      lblEcoscoreReport: 'Eco Score Report',
-      lblConfiguration: "Configuration",
-      lblAlerts: 'Alerts',
-      lblLandmarks: 'Landmarks',
-      lblReportScheduler: 'Report Scheduler',
-      lblDriverManagement: 'Driver Management',
-      lblVehicleManagement: 'Vehicle Management',
-      lblAdmin: "Admin",
-      lblOrganisationDetails: 'Organisation Details',
-      lblAccountGroupManagement: 'Account Group Management',
-      lblAccountManagement: 'Account Management',
-      lblAccountRoleManagement: 'Account Role Management',
-      lblVehicleGroupManagement: 'Vehicle Group Management',
-      lblTermsAndCondition: 'Terms & Conditions',
-      lblFeatureManagement: 'Feature Management',
-      lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
-      lblRelationshipManagement: 'Relationship Management',
-      lblTranslationManagement: 'Translation Management',
-      lblConfigurationManagemnt: 'Configuration Managemnt',
-      lblPackageManagement: 'Package Management',
-      lblAccessRelationshipManagement: 'Access Relationship Management',
-      lblSubscriptionManagement: 'Subscription Management',
-      lblTachograph: 'Tachograph',
-      lblMobilePortal: 'Mobile Portal',
-      lblShop: 'Shop',
-      lblInformation: 'Information',
-      lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms And Condition History',
-      lblDTCTranslation: "DTC Translation"
-    }
+    // this.translationData = {
+    //   lblDashboard: "Dashboard",
+    //   lblLiveFleet: "Live Fleet",
+    //   lblLogBook: "Log Book",
+    //   lblVehicleUpdates: "Vehicle Updates",
+    //   lblReports: "Reports",
+    //   lblTripReport: 'Trip Report',
+    //   lblTripTracing: 'Trip Tracing',
+    //   lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
+    //   lblFleetFuelReport: 'Fleet Fuel Report',
+    //   lblFleetUtilisation: 'Fleet Utilisation',
+    //   lblFuelBenchmarking: 'Fuel Benchmarking',
+    //   lblFuelDeviationReport: 'Fuel Deviation Report',
+    //   lblvehiclePerformanceReport: 'Vehicle Performance Report',
+    //   lblDriveTimeManagement: 'Drive Time Management',
+    //   lblEcoscoreReport: 'Eco Score Report',
+    //   lblConfiguration: "Configuration",
+    //   lblAlerts: 'Alerts',
+    //   lblLandmarks: 'Landmarks',
+    //   lblReportScheduler: 'Report Scheduler',
+    //   lblDriverManagement: 'Driver Management',
+    //   lblVehicleManagement: 'Vehicle Management',
+    //   lblAdmin: "Admin",
+    //   lblOrganisationDetails: 'Organisation Details',
+    //   lblAccountGroupManagement: 'Account Group Management',
+    //   lblAccountManagement: 'Account Management',
+    //   lblAccountRoleManagement: 'Account Role Management',
+    //   lblVehicleGroupManagement: 'Vehicle Group Management',
+    //   lblTermsAndCondition: 'Terms & Conditions',
+    //   lblFeatureManagement: 'Feature Management',
+    //   lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
+    //   lblRelationshipManagement: 'Relationship Management',
+    //   lblTranslationManagement: 'Translation Management',
+    //   lblConfigurationManagemnt: 'Configuration Managemnt',
+    //   lblPackageManagement: 'Package Management',
+    //   lblAccessRelationshipManagement: 'Access Relationship Management',
+    //   lblSubscriptionManagement: 'Subscription Management',
+    //   lblTachograph: 'Tachograph',
+    //   lblMobilePortal: 'Mobile Portal',
+    //   lblShop: 'Shop',
+    //   lblInformation: 'Information',
+    //   lblLegalNotices: 'Legal Notices',
+    //   lblTermsAndConditionHistory: 'Terms And Condition History',
+    //   lblDTCTranslation: "DTC Translation"
+    // }
   }
 
   getTranslationLabels() {
@@ -1035,10 +1035,10 @@ export class AppComponent {
     if (this.subpage) {
       var _subPage = this.subpage.indexOf('?') !== -1 ? this.subpage.split('?')[0] : this.subpage;
       if (this.menuStatus[this.pageName]) {
-        this.currentTitle = this.menuStatus[this.pageName]['pageTitles'][_subPage] ? this.menuStatus[this.pageName]['pageTitles'][_subPage] : this.menuStatus[this.pageName]['pageTitles'][this.pageName];
+        this.currentTitle = this.menuStatus[this.pageName]['pageTitles'][_subPage] ? (this.translationData[this.menuStatus[this.pageName]['pageTitles'][_subPage]] || this.menuStatus[this.pageName]['pageTitles'][_subPage]) : (this.translationData[this.menuStatus[this.pageName]['pageTitles'][this.pageName]] || this.menuStatus[this.pageName]['pageTitles'][this.pageName]);
       }
     } else {
-      this.currentTitle = this.menuStatus[this.pageName] ? this.menuStatus[this.pageName]['pageTitles'][this.pageName] : this.pagetTitles[this.pageName];
+      this.currentTitle = this.menuStatus[this.pageName] ? (this.translationData[this.menuStatus[this.pageName]['pageTitles'][this.pageName]] || this.menuStatus[this.pageName]['pageTitles'][this.pageName]) : (this.translationData[this.pageTitles[this.pageName]] || this.pageTitles[this.pageName]);
     }
   }
 
@@ -1055,7 +1055,7 @@ export class AppComponent {
   }
 
   navigateToPage(pageName) {
-    //this.currentTitle = this.pagetTitles[pageName];
+    //this.currentTitle = this.pageTitles[pageName];
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }

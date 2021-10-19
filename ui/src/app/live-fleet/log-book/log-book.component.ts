@@ -274,7 +274,7 @@ ngOnDestroy(){
       name: "",
       value: "",
       filter: "",
-      menuId: 17 //-- for alert
+      menuId: 4 //-- for log-book
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -349,19 +349,19 @@ ngOnDestroy(){
   makeHerePOIList(){
     this.herePOIList = [{
       key: 'Hotel',
-      translatedName: this.translationData.lblHotel || 'Hotel'
+      translatedName: this.translationData.lblHotel 
     },
     {
       key: 'Parking',
-      translatedName: this.translationData.lblParking || 'Parking'
+      translatedName: this.translationData.lblParking
     },
     {
       key: 'Petrol Station',
-      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+      translatedName: this.translationData.lblPetrolStation 
     },
     {
       key: 'Railway Station',
-      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+      translatedName: this.translationData.lblRailwayStation 
     }];
   }
 
@@ -1067,22 +1067,32 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       });
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
       console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compare);
+      this.vehicleDD.sort(this.compareVehName);
       this.resetVehicleNamesFilter();
    
     }   
   }
 
-  compare(a, b) {
-    if (a.name < b.name) {
+  compareVehName(a, b) {
+    if (a.vehicleName < b.vehicleName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleName > b.vehicleName) {
       return 1;
     }
     return 0;
   }
 
+  compareGrpName(a, b) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  
   resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD);
   }
@@ -1454,22 +1464,23 @@ let prepare = []
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      }else{
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
+    // let _x = timeObj.split(":")[0];
+    // let _y = timeObj.split(":")[1];
+    // if(this.prefTimeFormat == 12){
+    //   if(_y.split(' ')[1] == 'AM' && _x == 12) {
+    //     date.setHours(0);
+    //   }else{
+    //     date.setHours(_x);
+    //   }
+    //   date.setMinutes(_y.split(' ')[0]);
+    // }else{
+    //   date.setHours(_x);
+    //   date.setMinutes(_y);
+    // }
 
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+    // date.setSeconds(type == 'start' ? '00' : '59');
+    // return date;
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   setGlobalSearchData(globalSearchFilterData:any) {
@@ -1499,7 +1510,7 @@ let prepare = []
         let categoryList = filterData.filter(item => item.type == 'C');
         let alertTypeList= filterData.filter(item => item.type == 'T');
         this.wholeLogBookData.alFilterResponse.forEach(item=>{
-          let levelName =  this.translationData[item.name];
+          let levelName =  this.translationData[item.name] || item.name;
           levelListData.push({'name':levelName, 'value': item.value})
         }); 
 
@@ -1574,7 +1585,7 @@ let prepare = []
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
     console.log("vhicleGrpDD5", this.vehicleGrpDD);
-    this.vehicleGrpDD.sort(this.compare);
+    this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
  
     

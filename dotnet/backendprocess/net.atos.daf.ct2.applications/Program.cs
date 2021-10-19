@@ -100,7 +100,10 @@ namespace net.atos.daf.ct2.applications
 
                             services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
                             services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
-
+                            services.AddTransient<IVisibilityManager, VisibilityManager>();
+                            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+                            services.AddTransient<IVehicleManager, VehicleManager>();
+                            services.AddTransient<IVehicleRepository, VehicleRepository>();
                             services.AddSingleton<IReportEmailSchedulerManager, ReportEmailSchedulerManager>();
                             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
                             services.AddTransient<IEmailRepository, EmailRepository>();

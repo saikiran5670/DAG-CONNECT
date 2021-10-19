@@ -8,7 +8,7 @@
     <span class='custom-font' (click)="toBack()">
       <span>
         <&nbsp; </span>
-          <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+          <span class='backBtnCss'>{{ translationData.lblBack }}</span>
       </span>
   </div>
 </div>
@@ -19,34 +19,34 @@
 <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="isExpandedOpenAlert">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span *ngIf="actionType == 'create'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNewAlert || 'New Alert' }}</span>
-        <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewAlertDetails || 'View Alert Details' }}</span>
-        <span *ngIf="actionType == 'edit'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEditAlertDetails || 'Edit Alert Details' }}</span>
-        <span *ngIf="actionType == 'duplicate'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDuplicateAlert || 'Duplicate Alert' }}</span>
+        <span *ngIf="actionType == 'create'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNewAlert }}</span>
+        <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewAlertDetails }}</span>
+        <span *ngIf="actionType == 'edit'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEditAlertDetails }}</span>
+        <span *ngIf="actionType == 'duplicate'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDuplicateAlert }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px"></div>
         <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="end">
-            <span class="mandatorySpan">*{{ translationData.lblAllDetailsAreMandatory || 'All details are mandatory' }}</span>
+            <span class="mandatorySpan">*{{ translationData.lblAllDetailsAreMandatory }}</span>
         </div>
     </div> 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblAlertName || 'Alert Name' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblAlertName }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <input placeholder="{{ translationData.lblEnterAlertName || 'Enter Alert Name' }}"  matInput formControlName="alertName" maxlength="50">
+                  <input placeholder="{{ translationData.lblEnterAlertName }}"  matInput formControlName="alertName" maxlength="50">
               </mat-form-field>
               <mat-error *ngIf="alertForm.get('alertName').hasError('required') && alertForm.get('alertName').touched">
-                {{translationData.lblPleaseEnterNewAlertName || 'Please enter new Alert name' }}
+                {{translationData.lblPleaseEnterNewAlertName }}
               </mat-error>
               <mat-error *ngIf="!alertForm.get('alertName').hasError('required')  && alertForm.get('alertName').hasError('whitespace')">
-                {{ translationData.lblAlertNamecannotcontainonlywhitespace || 'Alert Name cannot contain only whitespace' }}
+                {{ translationData.lblAlertNamecannotcontainonlywhitespace }}
               </mat-error>
-              <mat-error *ngIf="isDuplicateAlert">{{translationData.lblDuplicateAlertName || 'Duplicate Alert Name' }}</mat-error>
+              <mat-error *ngIf="isDuplicateAlert">{{translationData.lblDuplicateAlertName }}</mat-error>
               <mat-error *ngIf="alertForm.get('alertName').hasError('specialCharsNotAllowed')">
-                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                  {{ translationData.lblSpecialcharactersnotallowed }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -54,17 +54,17 @@
             </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblAlertCategory }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" (selectionChange)="onChangeAlertCategory($event.value)" formControlName="alertCategory">
+                  <mat-select placeholder="{{ translationData.lblSelectCategory }}" (selectionChange)="onChangeAlertCategory($event.value)" formControlName="alertCategory">
                       <mat-option *ngFor="let category of alertCategoryList" [value]="category.enum">
                           {{category.value}}
                       </mat-option>
                   </mat-select>
               </mat-form-field>
               <mat-error *ngIf="alertForm.get('alertCategory').hasError('required') && alertForm.get('alertCategory').touched">
-                {{translationData.lblPleaseSelectAlertCategory || 'Please select Alert Category' }}
+                {{translationData.lblPleaseSelectAlertCategory }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -72,17 +72,17 @@
             </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblAlertType || 'Alert Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblAlertType }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event.value)">
+                  <mat-select placeholder="{{ translationData.lblSelectAlertType }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event.value)">
                       <mat-option *ngFor="let type of alertTypeByCategoryList" [value]="type.enum">
                           {{type.value}}
                       </mat-option>
                   </mat-select>
               </mat-form-field>
               <mat-error *ngIf="alertForm.get('alertType').hasError('required') && alertForm.get('alertType').touched">
-                {{translationData.lblPleaseSelectAlertType || 'Please select Alert Type' }}
+                {{translationData.lblPleaseSelectAlertType }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -93,15 +93,15 @@
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px" style="margin-top: 20px;">
         <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblApplyOn || 'Apply On' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblApplyOn }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div  *ngIf="actionType != 'view'">
               <div class="margin-bottom-sm">
                   <mat-radio-group (change)='onApplyOnChange($event)' formControlName="applyOn">
                       <mat-radio-button style='margin-right: 20px;' value="G">
-                          {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
+                          {{ translationData.lblVehicleGroup }}
                       </mat-radio-button>
                       <mat-radio-button style='margin-right: 20px;' value="S">
-                          {{ translationData.lblVehicle || 'Vehicle' }}
+                          {{ translationData.lblVehicle }}
                       </mat-radio-button>
                   </mat-radio-group>
               </div>
@@ -112,12 +112,12 @@
             </div>
         </div>
         <div *ngIf= "selectedApplyOn =='G'" class="areaWidth min-width-30-per max-width-30-per vehicleGroup" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblFilterVehiclesByGroup }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
+                  <mat-select placeholder="{{ translationData.lblSelectVehicleGroup }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                     <mat-option>
-                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+                      <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch }}" #vehicleSearch>
                         <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
@@ -130,7 +130,7 @@
                   </mat-select>
               </mat-form-field>
               <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
-                {{translationData.lblPleaseSelectVehicleGroup || 'Please select Vehicle Group' }}
+                {{translationData.lblPleaseSelectVehicleGroup }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -138,12 +138,12 @@
             </div>
         </div>
         <div *ngIf="selectedApplyOn == 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblVehicle }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
+                  <mat-select placeholder="{{ translationData.lblSelectVehicle }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
                     <mat-option>
-                      <ngx-mat-select-search (keyup)="filterVehicles(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
+                      <ngx-mat-select-search (keyup)="filterVehicles(search.value)" placeholderLabel="{{ translationData.lblSearch }}" #search>
                         <mat-icon (click)="resetVehiclesFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>  
@@ -155,10 +155,10 @@
                   </mat-select>
               </mat-form-field>
               <mat-error *ngIf="alertForm.get('vehicle').hasError('required') && alertForm.get('vehicle').touched">
-                {{translationData.lblPleaseSelectVehicle || 'Please select Vehicle' }}
+                {{translationData.lblPleaseSelectVehicle }}
               </mat-error>
               <mat-error *ngIf="isUnsubscribedVehicle">
-                {{translationData.lblAlertCannotBeCreatedForNonsubscribedVehicles || 'Alert cannot be created for non-subscribed vehicles' }}
+                {{translationData.lblAlertCannotBeCreatedForNonsubscribedVehicles }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -170,19 +170,19 @@
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px" style="margin-bottom: 20px !important;">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblStatusMode || 'Status Mode' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+            <mat-label>{{ translationData.lblStatusMode }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'"> 
                 <mat-radio-group formControlName="statusMode">
                     <mat-radio-button style='margin-right: 20px;' value="A">
-                        {{ translationData.lblActive || 'Active' }}
+                        {{ translationData.lblActive }}
                     </mat-radio-button>
                     <mat-radio-button style='margin-right: 20px;' value="I">
-                        {{ translationData.lblSuspended || 'Suspended' }}
+                        {{ translationData.lblSuspended }}
                     </mat-radio-button>
                 </mat-radio-group>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedRowData.state == 'A' ? (translationData.lblActive || 'Active') : (translationData.lblSuspended || 'Suspended') }}</span>
+              <span style='font-weight: 500!important;'>{{ selectedRowData.state == 'A' ? (translationData.lblActive ) : (translationData.lblSuspended ) }}</span>
             </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -194,7 +194,7 @@
       <mat-expansion-panel *ngIf="actionType != 'view'" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
-            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewVehiclesConcerned || 'View Vehicles Concerned ' }}</span> </span>
+            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewVehiclesConcerned }}</span> </span>
           </mat-panel-title>
           </mat-expansion-panel-header>
 
@@ -249,7 +249,7 @@
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <a *ngIf="actionType !=  'view'"class="linkBtn" (click)="onClickAdvancedFilter()"  style="margin-top: 20px;"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
-            <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter || 'Advanced Filter' }}</span>
+            <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter }}</span>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -288,29 +288,29 @@
   <mat-expansion-panel [(expanded)]="isExpandedOpen" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails || 'Filters Details' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
         <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'C' || alert_type_selected === 'S')) ||
                     (alert_category_selected === 'R' && (alert_type_selected === 'O' || alert_type_selected === 'E'))" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                <mat-label>{{ translationData.lblLevel }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                  <input type="hidden" value='' formControlName="alertLevelValue"> 
                 <div *ngIf="actionType != 'view'" class="margin-bottom-sm">                 
                     <mat-radio-group [disabled]="alert_category_selected === 'R'" formControlName="alertLevel">
                         <mat-radio-button style='margin-right: 20px;' value="C">
-                            {{ translationData.lblCritical || 'Critical' }}
+                            {{ translationData.lblCritical }}
                         </mat-radio-button>
                         <mat-radio-button style='margin-right: 20px;' value="W">
-                            {{ translationData.lblWarning || 'Warning' }}
+                            {{ translationData.lblWarning }}
                         </mat-radio-button>
                         <mat-radio-button style='margin-right: 20px;' value="A">
-                            {{ translationData.lblAdvisory || 'Advisory' }}
+                            {{ translationData.lblAdvisory }}
                         </mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical || 'Critical') : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning || 'Warning') : (translationData.lblAdvisory || 'Advisory')) }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical ) : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning ) : (translationData.lblAdvisory )) }}</span>
                 </div>
                 <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate urgency level for this alert</p>
                 <p *ngIf="alert_category_selected == 'R' && actionType != 'view'" style="color: darkgray;">It's default selection for all '{{alertTypeName}}' alerts</p>
@@ -324,10 +324,10 @@
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <input type="hidden" formControlName="levelType">
-                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
+                    <mat-label>{{ translationData.lblLevel }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
                   </div>
                   <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblThreshold || 'Threshold' }} </mat-label>  
+                    <mat-label>{{ translationData.lblThreshold }} </mat-label>  
                   </div> 
                   <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left"></div>
                   <div *ngIf="unitTypes.length != 0 && actionType != 'view'" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
@@ -350,7 +350,7 @@
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keyup)="onKey($event)" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="5"
+                      <input type="number" min="0" (keyup)="onKey($event)" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold }}"  matInput formControlName="criticalLevelThreshold"
                       (change)="onChange($event)" step="any">                    
                     </mat-form-field>
                   </div>
@@ -375,7 +375,7 @@
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="5"
+                      <input type="number" min="0" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold }}"  matInput formControlName="warningLevelThreshold"
                       (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
@@ -400,7 +400,7 @@
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event);" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="5"
+                      <input type="number" min="0" (keypress)="keyPressNumbers($event);" placeholder="{{ translationData.lblEnterThreshold }}"  matInput formControlName="advisoryLevelThreshold"
                       (change)="onChange($event)" step="any">
                     </mat-form-field>
                   </div>
@@ -422,9 +422,9 @@
           
 <div class="areawidth" *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
 (alert_category_selected === 'L' && alert_type_selected === 'C')">
-  <span>{{ translationData.lblWidth|| 'Width' }} ({{ ( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles') }}):
+  <span>{{ translationData.lblWidth }} ({{ ( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile) : (translationData.lblmile) }}):
     <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
-    <span *ngIf="poiWidth == 0" style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
+    <span *ngIf="poiWidth == 0" style="color:red;">{{translationData.lblWidthcannotbe0mtrs }}</span>
 </span>
 <div class="areawidth" fxLayout="row" fxLayoutAlign="left">
   <div class="col-sm-4  areawidth">
@@ -446,13 +446,13 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                        <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                        <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI ) : (translationData.lblSelectPOI ) }}</span>  <span class='mandatoryColor'>*</span></span>
                 </mat-panel-title>  
               </mat-expansion-panel-header>     
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
               <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilterForPOI($event.target.value)" formControlName="searchForLevelPOI" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <input matInput (keyup)="applyFilterForPOI($event.target.value)" formControlName="searchForLevelPOI" placeholder="{{ translationData.lblSearch }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
@@ -466,7 +466,7 @@
                       [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
                       [aria-label]='checkboxLabelForPOI()'>
                     </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; PoiCheckboxClicked($event,row)'
@@ -514,13 +514,13 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence ) : (translationData.lblSelectGeofence ) }}</span>  <span class='mandatoryColor'>*</span></span>
              </mat-panel-title>
              </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
               <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilterForGeofence($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <input matInput (keyup)="applyFilterForGeofence($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
@@ -534,7 +534,7 @@
                       [indeterminate]='selectedGeofence.hasValue() && !isAllSelectedForGeofence()'
                       [aria-label]='checkboxLabelForGeofence()'>
                     </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedGeofence.toggle(row) : null; geofenceCheckboxClicked($event,row)'
@@ -576,13 +576,13 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGroup || 'Selected Group') : (translationData.lblSelectGroup || 'Select Group ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGroup ) : (translationData.lblSelectGroup ) }}</span>  <span class='mandatoryColor'>*</span></span>
                 </mat-panel-title>
                 </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
               <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilterForGroup($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <input matInput (keyup)="applyFilterForGroup($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
@@ -596,7 +596,7 @@
                       [indeterminate]='selectedGroup.hasValue() && !isAllSelectedForGroup()'
                       [aria-label]='checkboxLabelForGroup()'>
                     </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedGroup.toggle(row) : null; onGroupSelect($event, row)'
@@ -605,18 +605,18 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName }}</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <span>{{row.name}}</span> </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="poiCount">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPOI || 'POI'}}
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPOI }}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" matTooltip={{row.poiCount}}><span [ngClass]="row.poiCount !=0 ? 'row-hover' : '' "
                         (click)="row.poiCount !=0 ? onPOIClick(row) : ''">{{row.poiCount}}</span></mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="geofenceCount">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGeofence || 'Geofence'}}
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGeofence }}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" matTooltip={{row.geofenceCount}}><span [ngClass]="row.geofenceCount !=0 ? 'row-hover' : '' "
                     (click)="row.geofenceCount !=0 ? onGeofenceClick(row) : ''">{{row.geofenceCount}}</span></mat-cell>
@@ -638,7 +638,7 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor ) : (translationData.lblSelectCorridor ) }}</span>  <span class='mandatoryColor'>*
                     <span *ngIf="actionType != 'view' && selectedCorridor.selected.length == 0"> Please select atleast one corridor</span>
                   </span></span>
                 </mat-panel-title>
@@ -646,7 +646,7 @@
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
               <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilterForCorridor($event.target.value)" formControlName="searchCorridor" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <input matInput (keyup)="applyFilterForCorridor($event.target.value)" formControlName="searchCorridor" placeholder="{{ translationData.lblSearch }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
@@ -660,7 +660,7 @@
                       [indeterminate]='selectedCorridor.hasValue() && !isAllSelectedForCorridor()'
                       [aria-label]='checkboxLabelForCorridor()'>
                     </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedCorridor.toggle(row) : null; corridorCheckboxClicked($event, row)'
@@ -669,23 +669,23 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="corridoreName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblname || 'Name' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblname }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.corridoreName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="startPoint">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'Start Point' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.startPoint }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="endPoint">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'End Point' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.endPoint }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="distance">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance(km)' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.distance }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="width">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth || 'Width(mtr)' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.width }}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsCorridor"></mat-header-row>
@@ -742,10 +742,9 @@
       <mat-expansion-panel-header class="full-width"  #panelH (click)="panelH._toggle()">
         <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
-              <button *ngIf="actionType == 'create' || actionType == 'duplicate' || (actionType == 'edit' && !panelOpenState) " style="position: absolute; right: 20px;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (!panelOpenState ? translationData.lblAddNotification || 'Add
-                Notification' : translationData.lblSkipNotification || 'Skip Notification')  }}</button>   
-                <button *ngIf="actionType == 'edit' &&  panelOpenState" style="position: absolute; right: 20px;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblSkipNotification || 'Skip Notification'  }}</button>
+                translationData.lblNotificationDetailsOptional }}</span>
+              <button *ngIf="actionType == 'create' || actionType == 'duplicate' || (actionType == 'edit' && !panelOpenState) " style="position: absolute; right: 20px;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (!panelOpenState ? translationData.lblAddNotification : translationData.lblSkipNotification)  }}</button>   
+                <button *ngIf="actionType == 'edit' &&  panelOpenState" style="position: absolute; right: 20px;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblSkipNotification }}</button>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <!-- <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblDeleteNotification || 'Delete Notification'  }}</button>    -->
@@ -804,13 +803,13 @@
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <div fxLayout="column" fxLayoutAlign="end">
         <div fxLayout="row" class='areaWidth'>
-          <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+          <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button>
           <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-            (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            (click)='onReset()'>{{translationData.lblReset }}</button>
           <button class='no-margin' 
            mat-raised-button color="primary"
-            (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
-            (translationData.lblConfirm || 'Confirm') }}</button>
+            (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate) :
+            (translationData.lblConfirm) }}</button>
         </div>
       </div>
     </div>

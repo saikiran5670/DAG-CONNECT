@@ -29,7 +29,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
                                                        .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess);
+            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess, null);
             _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository);
             _helper = new Helper();
         }

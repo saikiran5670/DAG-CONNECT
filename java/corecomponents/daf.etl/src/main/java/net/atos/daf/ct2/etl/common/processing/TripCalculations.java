@@ -70,6 +70,7 @@ public class TripCalculations implements Serializable{
 								tripStsAggr.setVIdleDuration(value.getVIdleDuration());
 								tripStsAggr.setVTripIdlePTODuration(value.getVTripIdlePTODuration());
 								tripStsAggr.setVTripIdleWithoutPTODuration(value.getVTripIdleWithoutPTODuration());
+								tripStsAggr.setRoName(value.getRoName());
 								
 								if(0 != value.getTripCalGpsVehTimeDiff() ){
 									tripStsAggr.setTripCalAvgSpeed(Double.valueOf(value.getTripCalGpsVehDistDiff()) / value.getTripCalGpsVehTimeDiff() );

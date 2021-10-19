@@ -34,10 +34,11 @@ public class DAFCT2Constant {
     public static final String CONTI_CORRUPT_MESSAGE_TOPIC_NAME = "conti.corrupt.message.topic.name";
     public static final Integer MEASUREMENT_DATA = 1;
     public static final String STORE_HISTORICAL_DATA = "conti.store.historical.data";
+    public static final String HBASE_INDEX_PARALLELISM = "conti.hbase.index.parallelism";
+    public static final String HBASE_STATUS_PARALLELISM = "conti.hbase.ststus.parallelism";
+    public static final String HBASE_MONITOR_PARALLELISM = "conti.hbase.monitor.parallelism";
     public static final String HBASE_PARALLELISM = "conti.hbase.parallelism";
     
-    
-
     public static final String INDEX_TRANSID = "index.transid";
     public static final String STATUS_TRANSID = "status.transid";
     public static final String MONITOR_TRANSID = "monitor.transid";
@@ -117,4 +118,8 @@ public class DAFCT2Constant {
   	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
   	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
   	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+  	
+  	public static final String TRANSID_INDEX = "03000";
+  	public static final String TRANSID_MONITOR = "03030";
+  	public static final String TRANSID_STATUS = "03010";
 }

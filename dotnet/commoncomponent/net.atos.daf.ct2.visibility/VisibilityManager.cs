@@ -255,7 +255,7 @@ namespace net.atos.daf.ct2.visibility
             }
         }
 
-        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
         {
             return await _vehicleManager.GetVisibilityVehicles(vehicleGroupIds, orgId);
         }

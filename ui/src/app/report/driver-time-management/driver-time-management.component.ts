@@ -27,9 +27,6 @@ import { ReplaySubject } from 'rxjs';
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   selectionTab: any;
@@ -242,7 +239,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
-  
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
 
@@ -864,7 +864,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     //this.resetdriverTimeFormControlValue();
     //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
     let driverList = [];
-    this.onLoadData.driverList.forEach(element => {
+    this.onLoadData?.driverList?.forEach(element => {
       if(element.activityDateTime && element.activityDateTime.length > 0){
         let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
         if(search.length > 0){
@@ -1295,24 +1295,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   setDefaultTodayDate(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-      //console.log("---if searchFilterpersistData startDateStamp exist")
-      if(this.searchFilterpersistData.timeRangeSelection !== ""){
-        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
-      }else{
-        this.selectionTab = 'today';
-      }
-      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-      let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
-    }else{
+    // if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+    //   //console.log("---if searchFilterpersistData startDateStamp exist")
+    //   if(this.searchFilterpersistData.timeRangeSelection !== ""){
+    //     this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+    //   }else{
+    //     this.selectionTab = 'today';
+    //   }
+    //   let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+    //   let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
+    //   this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    // }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
-    }
+    // }
   }
 
   setVehicleGroupAndVehiclePreSelection() {

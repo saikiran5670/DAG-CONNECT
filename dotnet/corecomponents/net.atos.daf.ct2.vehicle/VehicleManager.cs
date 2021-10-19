@@ -637,15 +637,27 @@ namespace net.atos.daf.ct2.vehicle
             }
 
         }
-        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
+        public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
         {
             try
             {
-                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict = new Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>();
+                List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaGroupIds(vehicleGroupIds);
+
+                if (vehicleGroups.Any(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")))
+                {
+                    var dynamicAllGrp = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")).First();
+                    var oemGrps = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("M"));
+                    var nonDynamicGrps = vehicleGroups.Where(x => !x.GroupType.Equals("D"));
+                    var finalVehicleGroups = nonDynamicGrps.Concat(new List<VehicleGroupDetails>() { dynamicAllGrp });
+
+                    vehicleGroups = finalVehicleGroups.Concat(oemGrps);
+                }
 
                 foreach (var vehicleGroup in vehicleGroups)
                 {
+                    vehicles = new List<VisibilityVehicle>();
                     switch (vehicleGroup.GroupType)
                     {
                         case "S":
@@ -685,8 +697,10 @@ namespace net.atos.daf.ct2.vehicle
                         default:
                             break;
                     }
+
+                    resultDict.Add(vehicleGroup, vehicles);
                 }
-                return vehicles.Distinct(new ObjectComparer()).ToList();
+                return resultDict; //vehicles.Distinct(new ObjectComparer()).ToList();
             }
             catch (Exception)
             {

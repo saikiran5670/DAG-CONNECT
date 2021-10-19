@@ -420,7 +420,7 @@
       
             <div *ngIf='displayData.length == 0'>
       
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found' }}
       
               </div>
       
@@ -530,7 +530,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endDate">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_enddate')">{{ translationData.lblendDate || ' End Date ' }}             
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_enddate')">{{ translationData.lblEndDate || ' End Date ' }}             
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_enddate')">              
                             <!-- <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>               -->
@@ -565,14 +565,14 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="startPosition">      
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startposition')">{{ translationData.lblstartDate || 'Start Position' }}         
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startposition')">{{ translationData.lblStartPosition || 'Start Position' }}         
                           </mat-header-cell>         
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_startposition')">         
                             <span>{{row.startPosition}}</span>          
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="endPosition">
-                              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_endposition')">{{ translationData.lblendDate || ' End Position ' }}             
+                              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_endposition')">{{ translationData.lblEndPosition || ' End Position ' }}             
                               </mat-header-cell>              
                               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_endposition')">              
                                 <span>{{row.endPosition}}</span>              

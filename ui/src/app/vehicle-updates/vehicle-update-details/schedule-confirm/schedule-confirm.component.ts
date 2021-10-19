@@ -26,6 +26,8 @@ export class ScheduleConfirmComponent implements OnInit {
     vehicalName: any,
     baseLineId: any,
     scheduleDateTime: any,
+    scheduledDate: any,
+    scheduledTime:any
   }, private mdDialogRef: MatDialogRef<ScheduleConfirmComponent>,private translationService: TranslationService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.getSchedulerConfirmationData(data);

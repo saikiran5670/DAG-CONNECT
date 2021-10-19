@@ -31,12 +31,17 @@ export class LogbookTabPreferencesComponent implements OnInit {
     }else{
       console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.loadLogbookPreferences();
   }
 
   translationUpdate(){
     this.translationData = {
+      lblTablecolumnviewsettings: 'Table column view settings',
+      lblDetails: 'Details',
+      lblCancel: 'Cancel',
+      lblReset: 'Reset',
+      lblConfirm: 'Confirm',
       rp_lb_logbook: 'Logbook',
       rp_lb_logbook_details: 'Details',
       rp_lb_logbook_details_alertlevel: 'Alert Level',
@@ -51,7 +56,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
       rp_lb_logbook_details_occurance: 'Occurance',
       rp_lb_logbook_details_tripend: 'Trip End',
       rp_lb_logbook_details_threshold: 'Threshold'
-    }
+    };
   }
 
   loadLogbookPreferences(){

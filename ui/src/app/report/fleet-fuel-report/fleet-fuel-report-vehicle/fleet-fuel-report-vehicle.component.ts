@@ -59,8 +59,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
@@ -592,6 +590,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   showDetailedReport : boolean = false;
   state :any;
   
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
               private organizationService: OrganizationService,
@@ -626,7 +627,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 10 //-- for fleet utilisation
+      menuId: 9 //-- for fleet fuel report
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -1682,7 +1683,7 @@ getLast3MonthDate(){
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     console.log("vehicleDD 1", this.vehicleDD);
-    this.vehicleDD.sort(this.compare);
+    this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
     if(this.vehicleListData.length > 0){
@@ -1694,6 +1695,33 @@ getLast3MonthDate(){
     if(this.fromTripPageBack){
       this.onSearch();
     }
+}
+resetVehicleFilter(){
+  this.filteredVehicle.next(this.vehicleDD.slice());
+}
+
+resetVehicleGroupFilter(){
+  this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
+}
+
+compare(a, b) {
+  if (a.vehicleGroupName < b.vehicleGroupName) {
+    return -1;
+  }
+  if (a.vehicleGroupName > b.vehicleGroupName) {
+    return 1;
+  }
+  return 0;
+}
+
+compareVin(a, b) {
+  if (a.vin < b.vin) {
+    return -1;
+  }
+  if (a.vin > b.vin) {
+    return 1;
+  }
+  return 0;
 }
 
 setVehicleGroupAndVehiclePreSelection() {
@@ -2572,22 +2600,6 @@ setVehicleGroupAndVehiclePreSelection() {
     console.log("filtered vehicles", this.filteredVehicle);
   }
   
-  resetVehicleFilter(){
-    this.filteredVehicle.next(this.vehicleDD.slice());
-  }
-
-  resetVehicleGroupFilter(){
-    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
-  }
-
-  compare(a, b) {
-    if (a.name < b.name) {
-      return -1;
-    }
-    if (a.name > b.name) {
-      return 1;
-    }
-    return 0;
-  }
+  
 
 }

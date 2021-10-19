@@ -16,17 +16,17 @@
             </div>
             <div fxLayout="row" class='areaWidth'>
               <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
+                <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)' }}</button>
-                  <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
+                  <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF  }}</button>
+                  <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV  }}</button>
                 </mat-menu>
               </div>
-              <div fxLayout="row" class='areaWidth'>
+              <div *ngIf="adminAccessType.adminFullAccess" fxLayout="row" class='areaWidth'>
                 <button mat-flat-button color="primary" (click)="newRelationship()">
                     <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewRelationship }}
                 </button>
-            </div>
+              </div>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
@@ -38,7 +38,7 @@
             </div>
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >   
-                      <mat-select placeholder="{{ translationData.lblRelationship || 'Relationship' }}"  [formControl]="relationFilter">
+                      <mat-select placeholder="{{ translationData.lblRelationship }}"  [formControl]="relationFilter">
                         <mat-option value="allRelations">All</mat-option>
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
@@ -59,7 +59,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation'}}"  [formControl]="orgFilter">
+                  <mat-select placeholder="{{ translationData.lblOrganisation }}"  [formControl]="orgFilter">
                     <mat-option value="allOrg">All</mat-option>
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
@@ -69,7 +69,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblAllType || 'All Type'}}"  [formControl]="typeFilter">
+                  <mat-select placeholder="{{ translationData.lblAllType}}"  [formControl]="typeFilter">
                     <mat-option value="all">All</mat-option>
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
@@ -77,7 +77,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+              <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button mat-flat-button color="warn" [disabled]="selectedOrgRelations?.selected?.length == 0" (click)="deleteOrgRelationship()">
                     <i class="fa fa-chain-broken mr-1" aria-hidden="true"></i> {{ translationData.lblEndRelationship }}
                 </button>
@@ -146,11 +146,11 @@
                         <mat-cell *matCellDef="let row">{{setDate(row.endDate)}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="allowChain">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ 	translationData.lblChaining || 'Chaining' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ 	translationData.lblChaining }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <button class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblClickToDeactivate ) : translationData.lblClickToActivate }}">
+                        <button [disabled]="row.endDate != 0 || adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblClickToDeactivate ) : translationData.lblClickToActivate }}">
                           <mat-slide-toggle color="primary"  
-                          [disabled]="row.endDate != 0" 
+                          [disabled]="row.endDate != 0 || adminAccessType.adminReadOnlyAccess" 
                           [checked]='row.allowChain == true && row.endDate == 0 ? true : false'
                            >
                         </mat-slide-toggle>&nbsp;
@@ -159,9 +159,9 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endRelationship">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction }}</mat-header-cell>
                           <mat-cell *matCellDef="let row">
-                            <mat-icon *ngIf = "row.endDate == 0" (click)="deleteRow(row)"><i class="fa fa-chain-broken" aria-hidden="true" title="{{translationData.lblEndOrgRelationship}}" style="cursor:pointer"></i></mat-icon>                     
+                            <mat-icon *ngIf="row.endDate == 0 && adminAccessType.adminFullAccess" (click)="deleteRow(row)"><i class="fa fa-chain-broken" aria-hidden="true" title="{{translationData.lblEndOrgRelationship}}" style="cursor:pointer"></i></mat-icon>                     
                        </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="orgrelationshipDisplayedColumns"></mat-header-row>

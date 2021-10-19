@@ -6,8 +6,8 @@
             [checked]='selectionForTripColumns.hasValue() && isAllSelectedForColumns()'
             [indeterminate]='selectionForTripColumns.hasValue() && !isAllSelectedForColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblTripReportDetails || 'Trip Report Details' }} ({{
-                translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+                translationData.lblTripReportDetails }} ({{
+                translationData.lblTablecolumnviewsettings }})</span>
         </mat-checkbox>
     </div>
 </div>
@@ -154,16 +154,15 @@
 
 <!-- error msg -->
 <div *ngIf='tripPrefData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
-    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
-        Registration Number' }}</span>
+    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg }}</span>
 </div>
 
 <!-- buttons -->
 <div *ngIf='tripPrefData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-        translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-        translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset  }}</button>
     <button [disabled]='reqField || (selectionForTripColumns.selected.length == 0 && tripPrefData.length > 0)' class='no-margin' mat-raised-button
-        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>

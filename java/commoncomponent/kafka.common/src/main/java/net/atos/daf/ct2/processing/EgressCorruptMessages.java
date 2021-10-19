@@ -7,6 +7,7 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
@@ -55,12 +56,15 @@ public class EgressCorruptMessages implements Serializable {
 	}
 
 
-	public void egressCorruptMessages(SingleOutputStreamOperator<KafkaRecord<String>> srcStream, Properties properties,
+	public void egressCorruptMessages(SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> srcStream, Properties properties,
 			String sinkTopicName) {
 
 		srcStream.map(rec -> {
+			KafkaRecord<String> corruptRec = new KafkaRecord<String>();
+			corruptRec.setKey(rec.getKey());
+			corruptRec.setValue(String.valueOf(rec.getValue().f2));
 			logger.info(" Egress corrupt record :: {}", rec);
-			return rec;
+			return corruptRec;
 		}).returns(new TypeHint<KafkaRecord<String>>() {
 		}.getTypeInfo())
 				.addSink(new FlinkKafkaProducer<KafkaRecord<String>>(sinkTopicName,

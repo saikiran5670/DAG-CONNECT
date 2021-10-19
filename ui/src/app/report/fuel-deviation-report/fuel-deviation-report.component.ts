@@ -61,8 +61,6 @@ export class FuelDeviationReportComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   vehicleGrpDD: any = [];
   showMap: any = false;
   dataSource: any = new MatTableDataSource([]);
@@ -437,7 +435,10 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDecBarChartLegend = true;
   fuelDecBarChartPlugins = [];
   fuelDecBarChartData: any[] = [];
-
+  
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
@@ -714,7 +715,7 @@ export class FuelDeviationReportComponent implements OnInit {
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
         console.log("vehicleDD 1", this.vehicleDD);
-        this.vehicleDD.sort(this.compare);
+        this.vehicleDD.sort(this.compareVin);
         this.resetVehicleFilter();
 
     if(this.vehicleDD.length > 0){
@@ -1810,14 +1811,25 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
       return 1;
     }
     return 0;
   }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+ 
+
   resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }

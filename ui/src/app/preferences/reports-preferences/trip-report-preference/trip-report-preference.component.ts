@@ -42,7 +42,7 @@ export class TripReportPreferenceComponent implements OnInit {
     } else {
       console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
   }
 
@@ -101,20 +101,20 @@ export class TripReportPreferenceComponent implements OnInit {
               _data = item;
               let txt: any;
               if(item.key == 'rp_tr_report_tripreportdetails_odometer' || item.key == 'rp_tr_report_tripreportdetails_distance'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.translationData.lblmi);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_idleduration' || item.key == 'rp_tr_report_tripreportdetails_drivingtime'){
-                txt = this.translationData.lblhhmm || 'hh:mm';
+                txt = this.translationData.lblhhmm;
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averageweight'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.translationData.lblpound);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_fuelconsumed'){
                 //txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgal || 'gal');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr) : (this.translationData.lblgal);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averagespeed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.translationData.lblmph);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else{
                 _data.translatedName = this.getTranslatedValues(item);

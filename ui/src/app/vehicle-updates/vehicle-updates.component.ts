@@ -7,7 +7,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
 import { FormControl } from '@angular/forms'
 import { OtaSoftwareUpdateService } from 'src/app/services/ota-softwareupdate.service';
-
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 @Component({
   selector: 'app-vehicle-updates',
   templateUrl: './vehicle-updates.component.html',
@@ -43,13 +44,19 @@ export class VehicleUpdatesComponent implements OnInit {
     search: ''
   };
   ngVehicleName = '';
+  ngSoftStatus = '';
   actionType: any;
   selectedVehicleUpdateDetails: any = [];
   selectedVehicleUpdateDetailsData: any;
   viewVehicleUpdateDetailsFlag: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;  
+  @ViewChild('select') select: MatSelect;
   public filteredSoftwareStatus: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicleGroup: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicleName: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  allSelected:any = false;
+
   constructor(private translationService: TranslationService, private otaSoftwareUpdateService: OtaSoftwareUpdateService, private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -151,12 +158,13 @@ export class VehicleUpdatesComponent implements OnInit {
       });
       this.vehicleGroup = this.removeDuplicates(vehGrp, "vehicleGroup");
       this.vehicleName = this.removeDuplicates(this.vehicleNameArr, "vehicleName");
-
+     
       this.initData = this.vehicleStatusList;
       this.updateDataSource(this.initData);
       this.searchAllDataFilter();
       this.resetSoftStatusFilter();
-
+      this.resetVehicleGroupFilter();
+      this.resetVehicleNameFilter();
     }, (error) => {
       this.showLoadingIndicator = false;
     })
@@ -174,9 +182,9 @@ export class VehicleUpdatesComponent implements OnInit {
     return newArray;
   }
 
-  onVehicleGroupChange(filter, event) {
+  onVehicleGroupChange(filter, event) {    
     this.vehicleName = [];
-    this.ngVehicleName = 'all';
+    this.ngVehicleName = 'all';    
     this.vehicleUpdatesForm.get('softStatus').setValue("all");
     let event_val;
 
@@ -193,6 +201,7 @@ export class VehicleUpdatesComponent implements OnInit {
         }
       });
       this.vehicleName = this.removeDuplicates(this.vehicleName, "vehicleName");
+      this.resetVehicleNameFilter();
       event_val = event.vehicleGroup.trim();
     }
     this.filterListValues['vehicleName'] = '';
@@ -232,7 +241,7 @@ export class VehicleUpdatesComponent implements OnInit {
       this.successMsgBlink(item.successMsg);
     }
   }
-
+  
   filterVehicleSoft(softStatus) {
     if (!this.vehicleSoftwareStatus) {
       return;
@@ -241,15 +250,107 @@ export class VehicleUpdatesComponent implements OnInit {
       this.resetSoftStatusFilter();
       return;
     } else {
-      softStatus = softStatus.toLowerCase();
+      softStatus = softStatus.toLowerCase();     
     }
     this.filteredSoftwareStatus.next(
       this.vehicleSoftwareStatus.filter(item => item.value.toLowerCase().indexOf(softStatus) > -1)
     );
   }
 
+  filterVehicleGroup(vehGroup) {
+    if (!this.vehicleGroup) {
+      return;
+    }
+    if (!vehGroup) {
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehGroup = vehGroup.toLowerCase();
+     
+    }
+    this.filteredVehicleGroup.next(
+      this.vehicleGroup.filter(item => item.vehicleGroup.toLowerCase().indexOf(vehGroup) > -1)
+    );
+  }
+  filterVehicleName(vehName) {
+    if (!this.vehicleName) {
+      return;
+    }
+    if (!vehName) {
+      this.resetVehicleNameFilter();
+      return;
+    } else {
+      vehName = vehName.toLowerCase();
+     
+    }
+    this.filteredVehicleName.next(
+      this.vehicleName.filter(item => item.vehicleName.toLowerCase().indexOf(vehName) > -1)
+    );
+  }
+
+  toggleAllSelection() {
+    if (this.allSelected) {
+      this.select.options.forEach((item: MatOption) => item.select());
+    } else {
+      this.select.options.forEach((item: MatOption) => item.deselect());
+    }
+  }
+   optionClick(filter, event) {
+    let newStatus = true;
+    let event_val;
+    this.select.options.forEach((item: MatOption) => {
+      if (!item.selected) {
+        newStatus = false;
+      }
+    });
+    this.allSelected = newStatus;
+    let softStatusArr:any =[];
+    if (filter == "softwareStatus") {
+     // this.select.options.forEach((item: MatOption) => item.select());
+     softStatusArr = this.vehicleUpdatesForm.get('softStatus');
+      if (event.value == 'all') {
+        event_val = '';
+      } else {
+        event_val = event.currentTarget.innerText.trim();
+      }
+    }
+    else {
+      event_val = '';
+    }
+    this.filterListValues[filter]='';
+    softStatusArr.value.forEach(element => {  
+      if(element!= undefined){
+      if(this.allSelected)   {
+        this.filterListValues[filter] = ''; 
+      }
+      this.filterListValues[filter] += element.toLowerCase()+","; 
+    }
+    });
+    this.dataSource.filter = JSON.stringify(this.filterListValues);
+    // this.filterListValues[filter] = event_val.toLowerCase();
+    // this.dataSource.filter = JSON.stringify(this.filterListValues);
+
+  }
+  // toggleAllSelectionHealth() {
+  //   if (this.allSelected.selected) {
+  //     this.vehicleUpdatesForm.controls.status.patchValue([
+       
+  //      // ...this.filteredSoftwareStatus.map(item => item.value),
+  //      // 0
+  //     ]);
+  //   } else {
+  //     this.vehicleUpdatesForm.controls.status.patchValue([]);
+  //   }
+  //   this.loadVehicleStatusData();
+  // }
   resetSoftStatusFilter() {
     this.filteredSoftwareStatus.next(this.vehicleSoftwareStatus.slice());
+  }
+  resetVehicleGroupFilter() {
+    this.filteredVehicleGroup.next(this.vehicleGroup.slice());
+  }
+  resetVehicleNameFilter() {
+    this.filteredVehicleName.next(this.vehicleName.slice());
   }
 
   onClose() {
@@ -284,7 +385,21 @@ export class VehicleUpdatesComponent implements OnInit {
 
   onVehicleChange(filter, event) {
     let event_val;
-    if (filter == "vehicleName" || filter == "softwareStatus") {
+    // if (filter == "vehicleName" || filter == "softwareStatus") {
+    //   if (event.value == 'all') {
+    //     event_val = '';
+    //   } else {
+    //     event_val = event.value.trim();
+    //   }
+    // }
+    if (filter == "vehicleName") {
+      if (event == 'all') {
+        event_val = '';
+      } else {
+        event_val = event.vehicleName.trim();
+      }
+    }
+    else if (filter == "softwareStatus") {
       if (event.value == 'all') {
         event_val = '';
       } else {
@@ -333,6 +448,25 @@ export class VehicleUpdatesComponent implements OnInit {
               return false;
             }
           }
+          // if (searchTerms.softwareStatus) {
+          //   let softStatus = '';
+          //   softStatus = data.softwareStatus;
+          //   let softStatusArr:any =searchTerms.softwareStatus.split(',');
+          //   if(softStatusArr.length>0){
+          //   softStatusArr.forEach(element => {
+          //     if(element!=""){
+          //     if (softStatus.toLowerCase().includes(element.trim())) {
+          //       found = true;
+          //     }
+          //     else {
+          //       return false;
+          //     }  
+          //   }  
+          //   }); 
+          // }     
+          // else {
+          //   return false;
+          // }     
           if (searchTerms.softwareStatus) {
             let softStatus = '';
             softStatus = data.softwareStatus;

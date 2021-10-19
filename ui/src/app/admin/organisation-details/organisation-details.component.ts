@@ -56,13 +56,18 @@ export class OrganisationDetailsComponent implements OnInit {
   driverOptIn: string;
   vehicleOptIn: string;
   showLoadingIndicator: boolean = false;
-  readonly maxSize = 5242880; //5 MB
+  readonly maxSize = 1024*200; //200 kb
   imageEmptyMsg: boolean = false;
   clearInput: any;
   imageMaxMsg: boolean = false;
   file: any;
   uploadLogo: any = "";
   isDefaultBrandLogo: any = false;
+  brandLogoFileValidated= false;
+  brandLogoChangedEvent= '';
+  droppedBrandLogo: any= '';
+  hideImgCropper= true;
+  brandLogoError: string= '';
 
   public filteredOrgList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -152,16 +157,26 @@ export class OrganisationDetailsComponent implements OnInit {
     return 0;
   }
 
+compareHere(a, b) {
+    if (a.value < b.value) {
+      return -1;
+    }
+    if (a.value > b.value) {
+      return 1;
+    }
+    return 0;
+  }
+  
   getTranslatedPref(){
     let languageCode = this.localStLanguage.code;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       console.log("languageDropdownData 1", this.languageDropdownData);
-      this.languageDropdownData.sort(this.compare);
+      this.languageDropdownData.sort(this.compareHere);
       this.resetOrgLangFilter();
       this.timezoneDropdownData = dropDownData.timezone;
-      this.timezoneDropdownData.sort(this.compare);
+      this.timezoneDropdownData.sort(this.compareHere);
       this.resetTimezoneFilter();
       this.currencyDropdownData = dropDownData.currency;
       this.unitDropdownData = dropDownData.unit;
@@ -225,13 +240,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateVehicleDefault(){
     switch (this.organisationData.vehicleOptIn) {
       case 'U':
-                this.vehicleOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.vehicleOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.vehicleOptIn = this.translationData.lblOptIn || 'Opt In'
+                this.vehicleOptIn = this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.vehicleOptIn = this.translationData.lblInherit || 'Inherit'
+                this.vehicleOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -241,13 +256,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateDriverDefault(){
     switch (this.organisationData.driverOptIn) {
       case 'U':
-                this.driverOptIn = this.translationData.lblOptOut || 'Opt Out'
+                this.driverOptIn = this.translationData.lblOptOut 
                 break;
       case 'I':
-                this.driverOptIn= this.translationData.lblOptIn || 'Opt In'
+                this.driverOptIn= this.translationData.lblOptIn 
                 break;
       case 'H':
-                this.driverOptIn = this.translationData.lblInherit || 'Inherit'
+                this.driverOptIn = this.translationData.lblInherit
                 break;
       default:
                 break;
@@ -325,47 +340,52 @@ export class OrganisationDetailsComponent implements OnInit {
     }
   }
 
-  createUpdatePreferences(){  
-    let preferenceUpdateObj: any = {
-      id: this.preferenceId,
-      refId: this.organizationIdNo,
-      languageId: this.orgDetailsPreferenceForm.controls.language.value ? parseInt(this.orgDetailsPreferenceForm.controls.language.value) : parseInt(this.languageDropdownData[0].value),
-      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeZone.value) : parseInt(this.timezoneDropdownData[0].value),
-      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? parseInt(this.orgDetailsPreferenceForm.controls.currency.value) : parseInt(this.currencyDropdownData[0].value),
-      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? parseInt(this.orgDetailsPreferenceForm.controls.unit.value) : parseInt(this.unitDropdownData[0].value),
-      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.dateFormat.value) : parseInt(this.dateFormatDropdownData[0].value),
-      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
-      vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
-      landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
-      iconId: this.uploadLogo != '' ? this.organisationData.iconid ? this.organisationData.iconid : 0 : 0,
-      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
-      createdBy: this.accountId,
-      pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
-    }
-    if(this.preferenceId === 0){ // create pref
-      this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
-        if (preferenceResult) {
-          this.loadOrganisationdata();
-          this.successStatus(true);
-        }
-      })
-    }
-    else{ // update pref
-      this.organizationService.updatePreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
-        if (preferenceResult) {
-          this.loadOrganisationdata();
-          this.successStatus(false);
-        }
-      })
+  createUpdatePreferences(){ 
+    if(this.brandLogoError == ''){
+      if(!this.brandLogoFileValidated){
+        this.uploadLogo = this.organisationData["icon"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.organisationData["icon"]);
+      }
+      let preferenceUpdateObj: any = {
+        id: this.preferenceId,
+        refId: this.organizationIdNo,
+        languageId: this.orgDetailsPreferenceForm.controls.language.value ? parseInt(this.orgDetailsPreferenceForm.controls.language.value) : parseInt(this.languageDropdownData[0].value),
+        timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeZone.value) : parseInt(this.timezoneDropdownData[0].value),
+        currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? parseInt(this.orgDetailsPreferenceForm.controls.currency.value) : parseInt(this.currencyDropdownData[0].value),
+        unitId: this.orgDetailsPreferenceForm.controls.unit.value ? parseInt(this.orgDetailsPreferenceForm.controls.unit.value) : parseInt(this.unitDropdownData[0].value),
+        dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.dateFormat.value) : parseInt(this.dateFormatDropdownData[0].value),
+        timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? parseInt(this.orgDetailsPreferenceForm.controls.timeFormat.value) : parseInt(this.timeFormatDropdownData[0].value),
+        vehicleDisplayId: (this.vehicleDisplayDropdownData.length > 0) ? parseInt(this.vehicleDisplayDropdownData[0].id) : 6,
+        landingPageDisplayId: (this.accountNavMenu.length > 0) ? parseInt(this.accountNavMenu[0].id) : 1,
+        iconId: this.uploadLogo != '' ? this.organisationData.iconid ? this.organisationData.iconid : 0 : 0,
+        iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
+        createdBy: this.accountId,
+        pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
+      }
+      if(this.preferenceId === 0){ // create pref
+        this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
+          if (preferenceResult) {
+            this.loadOrganisationdata();
+            this.successStatus(true);
+          }
+        })
+      }
+      else{ // update pref
+        this.organizationService.updatePreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
+          if (preferenceResult) {
+            this.loadOrganisationdata();
+            this.successStatus(false);
+          }
+        })
+      }
     }
   }
 
   successStatus(createStatus: any){
     let successMsg: any = '';
     if(createStatus){ // create
-      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully || "Organisation Details Created Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsCreatedSuccessfully;
     }else{ // update
-      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully || "Organisation Details Updated Successfully!";
+      successMsg = this.translationData.lblOrganisationDetailsUpdatedSuccessfully;
     }
     this.successMsgBlink(successMsg); 
   }
@@ -385,14 +405,21 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   addfile(event: any, clearInput: any){ 
+    this.brandLogoChangedEvent = event; 
+    this.brandLogoFileValidated= false;
     this.isDefaultBrandLogo = false;
     this.clearInput = clearInput;
     this.imageEmptyMsg = false;  
     this.imageMaxMsg = false;
     this.file = event.target.files[0];     
     if(this.file){
+      this.brandLogoError= CustomValidators.validateImageFile(event.target.files[0])
       if(this.file.size > this.maxSize){ //-- 32*32 px
         this.imageMaxMsg = true;
+        return false;
+      }
+      else if(this.brandLogoError != ''){
+        return false;
       }
       else{
         //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);
@@ -455,8 +482,18 @@ export class OrganisationDetailsComponent implements OnInit {
        this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
      );
      console.log("this.filteredTimezones", this.filteredTimezones);
-}
+  }
 
+  brandLogoLoaded() {
+    this.brandLogoFileValidated = true;
+    // show cropper
+  }
 
+  brandLogoCropperReady() {
+      // cropper ready
+  }
+  loadImageFailed() {
+    // show message
+  }
 
 }

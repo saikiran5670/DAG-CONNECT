@@ -56,8 +56,8 @@ export class VehicleDetailsComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -70,7 +70,7 @@ export class VehicleDetailsComponent implements OnInit {
           });
         }
       });
-    });
+    // });
  
   }
 

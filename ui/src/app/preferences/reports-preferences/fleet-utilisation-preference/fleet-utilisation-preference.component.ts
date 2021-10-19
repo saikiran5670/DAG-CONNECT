@@ -108,7 +108,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }else{
       console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
   }
 
   getUnitFormat(accPref: any){
@@ -222,14 +222,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
             let txt: any;
             if(item.key.includes('rp_fu_report_summary_')){
               if(item.key == 'rp_fu_report_summary_totaldistance'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.translationData.lblmi);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fu_report_summary_averagedistanceperday'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.translationData.lblmilesperday || 'miles/day');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday) : (this.translationData.lblmilesperday );
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }
               else if(item.key == 'rp_fu_report_summary_idleduration'){
-                txt = this.translationData.lblhhmm || 'hh:mm';
+                txt = this.translationData.lblhhmm ;
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else{
                 _data.translatedName = this.getTranslatedValues(item, 15);
@@ -274,19 +274,19 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
              }
            }else if(item.key.includes('rp_fu_report_details_')){
             if(item.key == 'rp_fu_report_details_averagedistanceperday'){
-              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.translationData.lblmilesperday || 'miles/day');
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday ) : (this.translationData.lblmilesperday );
               _data.translatedName = this.getTranslatedValues(item, 15, txt);
             }else if(item.key == 'rp_fu_report_details_distance' || item.key == 'rp_fu_report_details_odometer'){
-              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.translationData.lblmi);
               _data.translatedName = this.getTranslatedValues(item, 15, txt);
             }else if(item.key == 'rp_fu_report_details_idleduration' || item.key == 'rp_fu_report_details_stoptime' || item.key == 'rp_fu_report_details_drivingtime' || item.key == 'rp_fu_report_details_triptime'){
-              txt = this.translationData.lblhhmm || 'hh:mm';
+              txt = this.translationData.lblhhmm;
               _data.translatedName = this.getTranslatedValues(item, 15, txt);
             }else if(item.key == 'rp_fu_report_details_averageweightpertrip'){
-              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.translationData.lblton);
               _data.translatedName = this.getTranslatedValues(item, 15, txt);
             }else if(item.key == 'rp_fu_report_details_averagespeed'){
-              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.translationData.lblmph);
               _data.translatedName = this.getTranslatedValues(item, 15, txt);
             }else{
               _data.translatedName = this.getTranslatedValues(item, 15);

@@ -527,7 +527,7 @@ proceedStep(prefData: any, preference: any){
         }
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : this.translationData.lblMiles || 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : this.translationData.lblMiles;
          // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           if(this.prefUnitFormat == 'dunit_Metric'){
             this.unitTypeEnum= "K";  }
@@ -559,7 +559,7 @@ proceedStep(prefData: any, preference: any){
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -607,7 +607,7 @@ proceedStep(prefData: any, preference: any){
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour || 'Km/h' : this.translationData.lblMilesPerHour || 'Miles/h';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour : this.translationData.lblMilesPerHour;
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
           if(this.prefUnitFormat == 'dunit_Metric'){
@@ -683,7 +683,7 @@ proceedStep(prefData: any, preference: any){
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
      console.log("vehicleGroupList 2", this.vehicleGroupList); 
-     this.vehicleGroupList.sort(this.compare);
+     this.vehicleGroupList.sort(this.compareHere);
      this.resetVehicleGroupFilter();
 
      this.vehicleGroupList.forEach(element => {
@@ -711,7 +711,7 @@ proceedStep(prefData: any, preference: any){
         if(vehicle.length > 0){
           this.vehicleByVehGroupList.push(vehicle[0]);
           console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
-          this.vehicleByVehGroupList.sort(this.compare);
+          this.vehicleByVehGroupList.sort(this.compareVehicleList);
           this.resetVehiclesFilter();
         }
       });
@@ -1547,10 +1547,32 @@ PoiCheckboxClicked(event: any, row: any) {
     }, 2000);
   }
 
+  compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
+    a = parseInt(a.vehicleGroupId);
+    b = parseInt(b.vehicleGroupId);
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareVehicleList(a: any | String, b: any | String, isAsc: boolean) {
+    a = a.vehicleId;
+    b = b.vehicleId;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
     if(!(a instanceof Number)) a = a.toUpperCase();
     if(!(b instanceof Number)) b = b.toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareHere(a,b){
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
   }
 
   updateGroupDatasource(tableData: any){
@@ -1588,8 +1610,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-    const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
-    const tableTitle = this.translationData.lblPOI || 'POI';
+    const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+    const tableTitle = this.translationData.lblPOI;
     let objData = { 
       organizationid : this.accountOrganizationId,
       groupid : row.id
@@ -1614,8 +1636,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onGeofenceClick(row: any){
     const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
-    const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    const colsName = ['Name', this.translationData.lblCategory, this.translationData.lblSubCategory];
+    const tableTitle = this.translationData.lblGeofence;
     let objData = { 
       organizationid : this.accountOrganizationId,
       groupid : row.id
@@ -1728,7 +1750,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1740,7 +1762,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1752,7 +1774,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -2510,10 +2532,10 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onDeleteNotification(){
     const options = {
-      title: this.translationData.lblDeleteAlertNotification || "Delete Notification",
-      message: this.translationData.lblAreousureyouwanttodeleteNotification || "Are you sure you want to delete notification for '$' alert?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteAlertNotification,
+      message: this.translationData.lblAreousureyouwanttodeleteNotification,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     let name = this.selectedRowData.name;
     this.dialogService.DeleteModelOpen(options, name);
@@ -2549,13 +2571,15 @@ PoiCheckboxClicked(event: any, row: any) {
 }
 
 keyPressNumbers(event) {    
-  var limit = parseInt(event.currentTarget.maxLength);
+  // var limit = parseInt(event.currentTarget.maxLength);
   // var max = parseInt(event.currentTarget.max);
   var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
   var value = Number.parseFloat(event.target.value + '' + event.key);
-  if(event.key=='-' || value < min || (value).toString().length == limit) event.preventDefault();
-return true;   
+  var parts = event.target.value.split('.');
+  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
+  if(event.key=='-' || value < min) event.preventDefault();
+    return true;   
 }
 
 onKey(event: any) { // without type info

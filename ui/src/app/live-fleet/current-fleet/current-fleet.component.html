@@ -1,7 +1,7 @@
     <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
     <div id="summary" class="full-width">
         <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <app-fleet-overview-summary></app-fleet-overview-summary>
+        <app-fleet-overview-summary [translationData]='translationData'></app-fleet-overview-summary>
         <app-live-fleet-map *ngIf='filterData' [translationData]='translationData' [detailsData]='detailsData' [filterData]='filterData'></app-live-fleet-map>
         </mat-card>
     </div>
@@ -23,7 +23,7 @@
             <span class='custom-font' (click)="toBack()">
                 <span>
                     <&nbsp;</span>
-                        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                        <span class='backBtnCss'>{{ translationData.lblBack }}</span>
             </span>
         </div>
     </div> 

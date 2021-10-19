@@ -72,8 +72,6 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   tripData: any = [];
   vehicleDD: any = [];
@@ -462,6 +460,9 @@ calendarOptions: CalendarOptions = {
   // },
   events: [ ],
 };
+
+public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe) {
     this.defaultTranslation();
@@ -921,7 +922,7 @@ calendarOptions: CalendarOptions = {
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     console.log("vehicleDD 1", this.vehicleDD);
-    this.vehicleDD.sort(this.compare);
+    this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
     if(this.vehicleListData.length > 0){
@@ -1909,13 +1910,23 @@ getAllSummaryData(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
       return 1;
     }
     return 0;
   }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+  
 
 }

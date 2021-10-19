@@ -1,5 +1,9 @@
 package net.atos.daf.ct2.main;
 
+import java.time.Duration;
+
+import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -40,7 +44,29 @@ public class MileageStreamingJob {
 			mileageStreamingJob.auditMileageJobDetails(envParams, "Mileage streaming job started");
 
 			SingleOutputStreamOperator<VehicleMileage> statusDataStream = FlinkKafkaMileageMsgConsumer
-					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
+					.consumeStatusMsgs(envParams, env)
+					.assignTimestampsAndWatermarks(WatermarkStrategy
+							.<KafkaRecord<Status>>forBoundedOutOfOrderness(Duration.ofSeconds(Long.parseLong(envParams.get(MileageConstants.MILEAGE_WATERMARK_TIME_WINDOW_SECONDS))))
+							.withTimestampAssigner(new SerializableTimestampAssigner<KafkaRecord<Status>>() {
+
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public long extractTimestamp(KafkaRecord<Status> element, long recordTimestamp) {
+									long eventTm = TimeFormatter.getInstance().getCurrentUTCTime();
+									try {
+										eventTm = TimeFormatter.getInstance().convertUTCToEpochMilli(
+												element.getValue().getEvtDateTime(),
+												 MileageConstants.DATE_FORMAT);
+									} catch (Exception e) {
+										logger.error("Issue mandatory field is null, msg :{}", element.getValue());
+									}
+
+									return eventTm;
+								}
+							}))
+					//.keyBy( stsRec -> stsRec.getValue().getVin() )
+					.map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
 						/**
 						 * 
 						 */
@@ -55,8 +81,25 @@ public class MileageStreamingJob {
 			MileageProcessing mileageProcessing = new MileageProcessing();
 			SingleOutputStreamOperator<TripMileage> tripMileageData = mileageProcessing.mileageDataProcessing(
 					statusDataStream,
-					Long.parseLong(envParams.get(MileageConstants.MILEAGE_WATERMARK_TIME_WINDOW_SECONDS)),
 					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));
+			
+			
+			/*SingleOutputStreamOperator<VehicleMileage> statusDataStream = FlinkKafkaMileageMsgConsumer
+					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
+					
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public VehicleMileage map(KafkaRecord<Status> kafkaRec) {
+							return fetchMileageData(kafkaRec.getValue());
+						}
+					});
+
+			MileageProcessing mileageProcessing = new MileageProcessing();
+			SingleOutputStreamOperator<TripMileage> tripMileageData = mileageProcessing.mileageDataProcessing(
+					statusDataStream,
+					Long.parseLong(envParams.get(MileageConstants.MILEAGE_WATERMARK_TIME_WINDOW_SECONDS)),
+					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));*/
 
 			tripMileageData.addSink(new MileageSink());
 			env.execute("Mileage Streaming Job");

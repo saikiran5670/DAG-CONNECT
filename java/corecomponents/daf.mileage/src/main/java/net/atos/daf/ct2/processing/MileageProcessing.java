@@ -52,4 +52,11 @@ public class MileageProcessing implements Serializable {
 				.process(new MileageDataCalculation());
 	}
 
+	public SingleOutputStreamOperator<TripMileage> mileageDataProcessing(
+			SingleOutputStreamOperator<VehicleMileage> statusDataStream, long mileageTime) {
+		return statusDataStream
+				.keyBy(value -> value.getVin()).window(TumblingProcessingTimeWindows.of(Time.seconds(mileageTime)))
+				.process(new MileageDataCalculation());
+	}
+
 }

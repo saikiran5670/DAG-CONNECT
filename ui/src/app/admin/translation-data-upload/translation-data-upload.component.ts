@@ -26,7 +26,7 @@ export class TranslationDataUploadComponent implements OnInit {
   initData: any = [];
   columnCodes: string[] = ['fileName','createdAt','fileSize','description','action'];
   displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
-  columnLabels: String[] = ['File Name', 'Uploaded Date', 'File Size', 'Description', 'Action'];
+  columnLabels: String[] = ['FileName', 'UploadedDate', 'FileSize', 'Description', 'Action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTranslationDataFormGroup: FormGroup;
@@ -42,8 +42,8 @@ export class TranslationDataUploadComponent implements OnInit {
   isTranslationDataUploaded: boolean = false;
   dialogRef: MatDialogRef<LanguageSelectionComponent>;
   excelEmptyMsg: boolean = false;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any = {};
+  userType: any = '';
   addedCount: number= 0;
   updatedCount: number= 0;
 
@@ -59,6 +59,8 @@ export class TranslationDataUploadComponent implements OnInit {
 
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    this.userType = localStorage.getItem("userType");
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.uploadTranslationDataFormGroup = this._formBuilder.group({
       uploadFile: [

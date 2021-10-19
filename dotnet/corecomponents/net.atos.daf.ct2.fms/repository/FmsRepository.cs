@@ -259,7 +259,7 @@ namespace net.atos.daf.ct2.fms.repository
                 var result = ConvertDynamicToStatusModel(data);
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -275,19 +275,23 @@ namespace net.atos.daf.ct2.fms.repository
                 VehicleStatus objVehicleStatus = new VehicleStatus();
                 objVehicleStatus.VIN = item.vin ?? string.Empty;
                 objVehicleStatus.Driver1Id = item.driver1id ?? string.Empty;
-                objVehicleStatus.CatalystFuelLevel = item.CatalystFuelLevel ?? 0;
-                objVehicleStatus.Driver1WorkingState = item.Driver1WorkingState ?? string.Empty;
-                objVehicleStatus.EngineTotalFuelUsed = item.EngineTotalFuelUsed ?? 0;
-                objVehicleStatus.EventTimestamp = item.EventTimestamp ?? 0;
-                objVehicleStatus.FuelLevel1 = item.FuelLevel1 ?? 0;
-                objVehicleStatus.GrossCombinationVehicleWeight = item.GrossCombinationVehicleWeight ?? 0;
+                objVehicleStatus.CatalystFuelLevel = item.catalystfuellevel ?? 0;
+                objVehicleStatus.Driver1WorkingState = item.driver1workingstate != null ? DriverWorkingState.driverWorkingState[item.driver1workingstate] : string.Empty;
+                objVehicleStatus.EngineTotalFuelUsed = item.enginetotalfuelused ?? 0;
+                objVehicleStatus.EventTimestamp = item.eventtimestamp ?? 0;
+                objVehicleStatus.FuelLevel1 = item.fuellevel1 ?? 0;
+                objVehicleStatus.TachographSpeed = item.tachographspeed ?? 0; ;
+                objVehicleStatus.TotalEngineHours = item.totalenginehours ?? 0;
+                objVehicleStatus.HRTotalVehicleDistance = item.hrtotalvehicledistance ?? 0;
+                objVehicleStatus.GrossCombinationVehicleWeight = item.grosscombinationvehicleweight ?? 0;
+                objVehicleStatus.WheelBasedSpeed = item.wheelbasedspeed ?? 0;
                 objVehicleStatus.VehiclePosition = new VehiclePositionForStatus();
-                objVehicleStatus.VehiclePosition.Altitude = item.altitude;
-                objVehicleStatus.VehiclePosition.Heading = item.heading;
-                objVehicleStatus.VehiclePosition.Latitude = item.latitude;
-                objVehicleStatus.VehiclePosition.Longitude = item.longitude;
-                objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp;
-                objVehicleStatus.VehiclePosition.Speed = item.speed;
+                objVehicleStatus.VehiclePosition.Altitude = item.altitude ?? 0;
+                objVehicleStatus.VehiclePosition.Heading = item.heading ?? 0;
+                objVehicleStatus.VehiclePosition.Latitude = item.latitude ?? 0;
+                objVehicleStatus.VehiclePosition.Longitude = item.longitude ?? 0;
+                objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
+                objVehicleStatus.VehiclePosition.Speed = item.speed ?? 0;
                 objVehicleStatusResponse.VehicleStatus.Add(objVehicleStatus);
             }
             return objVehicleStatusResponse;

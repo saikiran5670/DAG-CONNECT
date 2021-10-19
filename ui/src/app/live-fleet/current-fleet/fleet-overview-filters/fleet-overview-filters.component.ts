@@ -744,6 +744,9 @@ setIconsOnMap(element) {
 
     if(_alertFound){
       if(alertsData[0].length > 1){ //check for criticality
+        let criticalCount = 0;
+        let warningCount = 0;
+        let advisoryCount = 0;
         alertsData[0].forEach(element => {
         //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
         //   if(_currentElem){
@@ -756,18 +759,33 @@ setIconsOnMap(element) {
         //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
         //     _alertConfig = this.getAlertConfig(element); 
         //   }
-        let _currentElem = element.level === 'C' ? true : false;
-          if(_currentElem){
-            _alertConfig = this.getAlertConfig(element);  
-          }
-          let warnElem = element.level === 'W' ? true : false;
-          if(!_currentElem && warnElem){
-            _alertConfig = this.getAlertConfig(element); 
-          }
-         if(!_currentElem && !warnElem){ //advisory
-            _alertConfig = this.getAlertConfig(element); 
-          }
+        //--------------------------------------------------------------------------------------------------
+        // let _currentElem = element.level === 'C' ? true : false;
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.level === 'W' ? true : false;
+        //   if(!_currentElem && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(!_currentElem && !warnElem){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+
+          criticalCount += element.level === 'C' ? 1 : 0;
+          warningCount += element.level === 'W' ? 1 : 0;
+          advisoryCount += element.level === 'A' ? 1 : 0;
+         
         });
+        if(criticalCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
+        }
+        else if(warningCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+        }
+        else if(advisoryCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+        }
       }
       else if(alertsData[0].length == 1){
         _alertConfig = this.getAlertConfig(_alertFound);

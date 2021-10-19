@@ -1,10 +1,19 @@
+<div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+style='padding:10px; color:#fff; background: #5dc24e;'>
+<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+{{ displayMessage }}
+</div>
+<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+<mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+</div>
+</div>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
-      <span>&nbsp;</span>
+      <span><&nbsp;</span>
      <span class='backBtnCss'>  {{ translationData.lblVehicleUpdateBack || 'Back' }}     </span>
     </span>
   </div>
@@ -23,7 +32,7 @@
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }} </span>
+              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }}: </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleName}}</span>
             </span>
           </div>
@@ -35,13 +44,13 @@
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}</span>
+              <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}: </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleGroupNames}}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>{{ translationData.lblvehicletype || 'Type:' }}</span>
+              <span>{{ translationData.lblvehicletype || 'Type:' }} </span>
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.type}}</span>
             </span>
           </div>
@@ -133,11 +142,13 @@
               <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="View Release Note">
                 <mat-icon>message</mat-icon>
               </button>
+              <mde-popover-target #appElement="mdePopoverTarget">
               <button *ngIf="row.scheduleDateTime == '-' " [disabled] = "campaignOverFlag == true || selectedVehicleUpdateDetails.isAdminRight == false" class='actionBtn' class="target" mat-flat-button
-                [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click"
+                [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click" [mdePopoverTargetAt]="appElement"
                 #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" matTooltip="{{campaignOverFlag ? 'Not allowed, campaign date has passed' : 'Click to Schedule'}}">
                 <mat-icon>date_range</mat-icon>
               </button>
+            </mde-popover-target>
               <button style="margin-left: 14px;" *ngIf="row.scheduleDateTime !== '-' " class='actionBtn' mat-flat-button
                 matTooltip="Scheduled">
                 <mat-icon>check</mat-icon>

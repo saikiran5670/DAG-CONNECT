@@ -26,7 +26,7 @@ import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
+	Logger logger = LoggerFactory.getLogger(LiveFleetTripTracingPostgreSink.class);
 
 	String livefleetposition = null;
 	Connection connection = null;
@@ -61,6 +61,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
 					for (Index indexData : synchronizedCopy) {
+						
+						logger.info("inside LiveFleet Sink class :{}");
 						String tripID = "NOT AVAILABLE";
 
 						if (indexData.getDocument().getTripID() != null) {
@@ -77,9 +79,9 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 						if (indexData.getVEvtID() != 4) {
 							
 							LiveFleetPojo previousRecordInfo = positionDAO.read(vin, tripID);
-							
+							logger.info("inside LiveFleet Sink class after read :{}");
 							if (previousRecordInfo != null) {
-								
+								logger.info("inside LiveFleet previousRecordInfo is not null :{}");
 								Double previousMessageTimeStamp = previousRecordInfo.getMessageTimestamp();
 								Double currentMessageTimeStamp = (double) TimeFormatter.getInstance()
 										.convertUTCToEpochMilli(indexData.getEvtDateTime().toString(),
@@ -92,6 +94,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 										+ previousRecordInfo.getDrivingTime() - idleDuration);
 							}
 							System.out.println("drivingTime-->" + drivingTime);
+							logger.info("inside LiveFleet drivingTime-->:{}"+ drivingTime);
 						}
 
 						LiveFleetPojo currentPosition = tripCalculation(row, drivingTime);
@@ -102,6 +105,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Error in Live fleet position invoke method" + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -110,7 +114,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-		log.info("########## In LiveFleet Position ##############");
+		logger.info("########## In LiveFleet Position ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		livefleetposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION);
@@ -139,7 +143,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 
 		} catch (Exception e) {
 
-			log.error("Error in Live fleet position" + e.getMessage());
+			logger.error("Error in Live fleet position" + e.getMessage());
 
 		}
 
@@ -204,7 +208,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		if (Fuel_consumption != null) {
 
 			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
-			System.out.println("co2emission-->" + co2emission);
+			//System.out.println("co2emission-->" + co2emission);
 			currentPosition.setCo2Emission(co2emission); // co2emission
 			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
 		} else {
@@ -287,7 +291,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		if (row.getDocument().getVWheelBasedSpeed() != null)
 			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());
 
-		if(row.getDriverID() !=null && ! row.getDriverID().isEmpty()) {
+		if(row.getDriverID() !=null || ! row.getDriverID().isEmpty()) {
 			currentPosition.setDriver1Id(row.getDriverID());
 		} else {
 			currentPosition.setDriver1Id("Unknown");
@@ -302,7 +306,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
 		currentPosition.setFuel_level1(row.getDocument().getVFuelLevel1());
 		currentPosition.setCatalyst_fuel_level(row.getDocument().getVDEFTankLevel());
-		if(row.getDocument().getDriver2ID()!= null && ! row.getDocument().getDriver2ID().isEmpty()) {
+		if(row.getDocument().getDriver2ID()!= null || ! row.getDocument().getDriver2ID().isEmpty()) {
 					currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
 				} else {
 					currentPosition.setDriver2_id("Unknown");
@@ -315,7 +319,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		//currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());)
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
 
-		System.out.println("Inside Trip Calculation in end");
+		//System.out.println("Inside Trip Calculation in end");
+		logger.info("inside Inside Trip Calculation in end :{}");
 
 		return currentPosition;
 
@@ -327,7 +332,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		connection.close();
 		masterConnection.close();
 
-		log.info("In Close");
+		logger.info("In Close");
 
 	}
 

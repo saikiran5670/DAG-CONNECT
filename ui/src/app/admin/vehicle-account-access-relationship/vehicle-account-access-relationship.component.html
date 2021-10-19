@@ -62,13 +62,13 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
           <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-            <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
+            <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)'}}</button>
-              <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
+              <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF }}</button>
+              <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
             </mat-menu>
           </div>
-          <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+          <div  *ngIf="adminAccessType.adminFullAccess" >
           <button mat-flat-button color="primary" (click)="createNewAssociation()">
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation  }}
           </button>

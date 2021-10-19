@@ -588,7 +588,10 @@ namespace net.atos.daf.ct2.reportservice.entity
                     obj = new EcoScoreReportSingleDriverAttribute();
                     obj.HeaderType = item.HeaderType;
                     obj.VIN = item.VIN ?? string.Empty;
-                    obj.Value = String.Format("{0:0.00}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    if (attributeName == "NumberOfTrips" || attributeName == "NumberOfVehicles")
+                        obj.Value = String.Format("{0:0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    else
+                        obj.Value = String.Format("{0:0.00}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }

@@ -653,11 +653,14 @@ export class FleetMapService {
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
       this.drawIcons(_selectedRoutes,_ui);
-      this.hereMap.addObject(this.group);
-      this.hereMap.getViewModel().setLookAtData({
-        zoom:4, // 16665 - zoom added with bounds 
-        bounds: this.group.getBoundingBox()
-      });
+      let objArr = this.group.getObjects();
+      if (objArr.length > 0) {
+        this.hereMap.addObject(this.group);
+        this.hereMap.getViewModel().setLookAtData({
+          zoom: 4, // 16665 - zoom added with bounds 
+          bounds: this.group.getBoundingBox()
+        });
+      }
       this.makeCluster(_selectedRoutes, _ui);
       
       //this.makeCluster(_selectedRoutes, _ui);
@@ -1198,7 +1201,7 @@ let _type ='';
      
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = elem.vid ? elem.vid : elem.vin;
+      let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
       let _mileage = this.reportMapService.getDistance(elem.odometerVal,this.prefUnitFormat); //19040
       let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService,this.prefUnitFormat);
       let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ?  'km' : 'miles';
@@ -1328,6 +1331,9 @@ let _type ='';
       }
 
         if(_alertFound && alertsData[0].length > 1){ //check for criticality
+          let criticalCount = 0;
+          let warningCount = 0;
+          let advisoryCount = 0;
           alertsData[0].forEach(element => {
           //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
           //   if(_currentElem){
@@ -1340,18 +1346,33 @@ let _type ='';
           //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
           //     _alertConfig = this.getAlertConfig(element); 
           //   }
-          let _currentElem = element.level === 'C' ? true : false;
-          if(_currentElem){
-            _alertConfig = this.getAlertConfig(element);  
-          }
-          let warnElem = element.level === 'W' ? true : false;
-          if(!_currentElem && warnElem){
-            _alertConfig = this.getAlertConfig(element); 
-          }
-         if(!_currentElem && !warnElem){ //advisory
-            _alertConfig = this.getAlertConfig(element); 
-          }
+          //------------------------------------------------------------------------------------------
+        //   let _currentElem = element.level === 'C' ? true : false;
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.level === 'W' ? true : false;
+        //   if(!_currentElem && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(!_currentElem && !warnElem){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+
+              criticalCount += element.level === 'C' ? 1 : 0;
+              warningCount += element.level === 'W' ? 1 : 0;
+              advisoryCount += element.level === 'A' ? 1 : 0;
+       
           });
+          if(criticalCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
+          }
+          else if(warningCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+          }
+          else if(advisoryCount > 0){
+            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+          }
         }
         else if(_alertFound && alertsData[0].length == 1){
           _alertConfig = this.getAlertConfig(_alertFound);
