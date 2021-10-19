@@ -101,7 +101,7 @@
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}"  #VehicleSearch>
+                        <ngx-mat-select-search (keyup)="filterVehicle(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}"  #search>
                           <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                       </mat-option>
