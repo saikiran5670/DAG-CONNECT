@@ -918,10 +918,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
-              this.vehicleGroupListData.sort(this.compare);
+              //this.vehicleGroupListData.sort(this.compare);
              // this.vehicleDD.sort(this.compare);
              // this.driverDD.sort(this.compare);
-              this.resetVehicleGroupFilter();
+             // this.resetVehicleGroupFilter();
               //this.resetVehicleFilter();
               //this.resetDriverFilter();
               _item.forEach(element => {
@@ -939,6 +939,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
       console.log("vehicleGroupListData 2", this.vehicleGroupListData);
+      this.vehicleGroupListData.sort(this.compare);
+      this.resetVehicleGroupFilter();
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         this.resetVehicleGroupFilter();
@@ -956,11 +958,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           let vehicleData = this.vehicleListData.slice();
           this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
           console.log("vehicleDD 3", this.vehicleDD);
-          this.vehicleDD.sort(this.compare);
+          this.vehicleDD.sort(this.compareVin);
           this.resetVehicleFilter();
           this.driverDD = this.driverListData;
           console.log("driverDD 2", this.driverDD);
-          this.driverDD.sort(this.compare);
+          this.driverDD.sort(this.compareName);
           this.resetDriverFilter();
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
@@ -1455,10 +1457,28 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareName(a, b) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
       return 1;
     }
     return 0;
@@ -1482,19 +1502,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   }
 
-  filterVehicle(VehicleSearch){
+  filterVehicle(search){
     console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
-    if(!VehicleSearch){
+    if(!search){
       this.resetVehicleFilter();
       return;
     }else{
-      VehicleSearch = VehicleSearch.toLowerCase();
+      search = search.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
