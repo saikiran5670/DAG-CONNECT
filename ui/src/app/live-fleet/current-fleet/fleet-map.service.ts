@@ -1518,10 +1518,22 @@ let _type ='';
     return healthColor;
   }
    makeCluster(_selectedRoutes: any, _ui: any){
-    if(_selectedRoutes.length > 9){
-      this.setInitialCluster(_selectedRoutes, _ui); 
+    let newRoutes = _selectedRoutes.slice();
+    let removeValFromIndex : any =[];
+    newRoutes.forEach((element,index,object) => { //removing never moved type of records having no alert/warnings
+       if((element.vehicleDrivingStatusType == 'N'|| element.vehicleDrivingStatusType =='Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0){
+        //  newRoutes.splice(index, 1);
+        removeValFromIndex.push(index);
+       }
+     });
+     for (var i = removeValFromIndex.length -1; i >= 0; i--){
+      newRoutes.splice(removeValFromIndex[i],1);
+     }
+     
+    if(newRoutes.length > 9){
+      this.setInitialCluster(newRoutes, _ui); 
     }else{
-      this.afterPlusClick(_selectedRoutes, _ui);
+      this.afterPlusClick(newRoutes, _ui);
     }
    }
 

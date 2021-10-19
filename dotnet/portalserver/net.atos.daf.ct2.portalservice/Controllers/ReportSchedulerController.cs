@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("report_feature_id", Convert.ToString(featureId));
 
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid }, headers);
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);

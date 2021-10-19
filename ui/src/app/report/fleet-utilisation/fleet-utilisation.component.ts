@@ -1898,7 +1898,7 @@ getAllSummaryData(){
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
