@@ -56,7 +56,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     } else {
       console.error("No report id found!");
     }
-    this.translationUpdate();
+    // this.translationUpdate();
   }
 
   translationUpdate() {

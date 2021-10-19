@@ -65,7 +65,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     }else{
       console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
   }
 

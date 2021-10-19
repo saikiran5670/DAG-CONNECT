@@ -27,9 +27,6 @@ import { ReplaySubject } from 'rxjs';
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   selectionTab: any;
@@ -242,7 +239,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
-  
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
 

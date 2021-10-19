@@ -1201,7 +1201,7 @@ let _type ='';
      
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = elem.vid ? elem.vid : elem.vin;
+      let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
       let _mileage = this.reportMapService.getDistance(elem.odometerVal,this.prefUnitFormat); //19040
       let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService,this.prefUnitFormat);
       let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ?  'km' : 'miles';
