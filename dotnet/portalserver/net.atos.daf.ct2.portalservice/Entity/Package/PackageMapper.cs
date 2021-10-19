@@ -59,10 +59,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             switch (type)
             {
                 case "V":
-                    packageType = packageservice.PackageType.Vehicle;
+                    packageType = packageservice.PackageType.Orgvin;
                     break;
                 case "O":
                     packageType = packageservice.PackageType.Organization;
+                    break;
+                case "N":
+                    packageType = packageservice.PackageType.Vin;
                     break;
             }
             return packageType;
