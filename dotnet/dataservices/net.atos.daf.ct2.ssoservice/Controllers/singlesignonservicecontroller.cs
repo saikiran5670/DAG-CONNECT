@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                             details.AccountName = result.Details.AccountName;
                             details.RoleID = result.Details.RoleID;
                             details.OrganizationID = result.Details.OrganizationID;
-                            details.OraganizationName = result.Details.OrganizationName;
+                            details.OrganizationName = result.Details.OrganizationName;
                             details.DateFormat = result.Details.DateFormat;
                             details.TimeZone = result.Details.TimeZone;
                             details.UnitDisplay = result.Details.UnitDisplay;
