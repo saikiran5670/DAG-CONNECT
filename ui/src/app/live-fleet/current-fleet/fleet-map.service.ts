@@ -653,11 +653,14 @@ export class FleetMapService {
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
       this.drawIcons(_selectedRoutes,_ui);
-      this.hereMap.addObject(this.group);
-      this.hereMap.getViewModel().setLookAtData({
-        zoom:4, // 16665 - zoom added with bounds 
-        bounds: this.group.getBoundingBox()
-      });
+      let objArr = this.group.getObjects();
+      if (objArr.length > 0) {
+        this.hereMap.addObject(this.group);
+        this.hereMap.getViewModel().setLookAtData({
+          zoom: 4, // 16665 - zoom added with bounds 
+          bounds: this.group.getBoundingBox()
+        });
+      }
       this.makeCluster(_selectedRoutes, _ui);
       
       //this.makeCluster(_selectedRoutes, _ui);
@@ -1198,7 +1201,7 @@ let _type ='';
      
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = elem.vid ? elem.vid : elem.vin;
+      let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
       let _mileage = this.reportMapService.getDistance(elem.odometerVal,this.prefUnitFormat); //19040
       let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService,this.prefUnitFormat);
       let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ?  'km' : 'miles';

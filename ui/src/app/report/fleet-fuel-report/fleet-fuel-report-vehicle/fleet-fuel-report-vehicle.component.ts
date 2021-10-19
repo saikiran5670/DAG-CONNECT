@@ -59,8 +59,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
-  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
@@ -592,6 +590,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   showDetailedReport : boolean = false;
   state :any;
   
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
               private organizationService: OrganizationService,
@@ -1695,6 +1696,33 @@ getLast3MonthDate(){
       this.onSearch();
     }
 }
+resetVehicleFilter(){
+  this.filteredVehicle.next(this.vehicleDD.slice());
+}
+
+resetVehicleGroupFilter(){
+  this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
+}
+
+compare(a, b) {
+  if (a.vehicleGroupName < b.vehicleGroupName) {
+    return -1;
+  }
+  if (a.vehicleGroupName > b.vehicleGroupName) {
+    return 1;
+  }
+  return 0;
+}
+
+compareVin(a, b) {
+  if (a.vin < b.vin) {
+    return -1;
+  }
+  if (a.vin > b.vin) {
+    return 1;
+  }
+  return 0;
+}
 
 setVehicleGroupAndVehiclePreSelection() {
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
@@ -2572,33 +2600,6 @@ setVehicleGroupAndVehiclePreSelection() {
     console.log("filtered vehicles", this.filteredVehicle);
   }
   
-  resetVehicleFilter(){
-    this.filteredVehicle.next(this.vehicleDD.slice());
-  }
-
-  resetVehicleGroupFilter(){
-    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
-  }
-
-  compare(a, b) {
-    if (a.vehicleGroupName < b.vehicleGroupName) {
-      return -1;
-    }
-    if (a.vehicleGroupName > b.vehicleGroupName) {
-      return 1;
-    }
-    return 0;
-  }
-
-  compareVin(a, b) {
-    if (a.vin< b.vin) {
-      return -1;
-    }
-    if (a.vin > b.vin) {
-      return 1;
-    }
-    return 0;
-  }
   
 
 }
