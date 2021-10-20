@@ -57,18 +57,19 @@ export class FuelBenchmarkingTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource = [{
-      "period": "Number of Active Vehicles",
+      "period": this.translationData.lblNoOfActiveVehicles || "Number of Active Vehicles",
     }, {
-      "period": "Total Fuel Consumed",
+      "period": this.translationData.lblTotalFuelConsumed || "Total Fuel Consumed",
     }, {
-      "period": "Total Mileage",
+      "period": this.translationData.lblTotalMileage || "Total Mileage",
     }, {
-      "period": "Average Fuel Consumption",
+      "period": this.translationData.lblAverageFuelConsumption || "Average Fuel Consumption",
     }, {
-      "period": "Ranking",
+      "period": this.translationData.lblRanking || "Ranking",
     }, {
-      "period": "Fuel Consumption",
+      "period": this.translationData.lblFuelConsumption || "Fuel Consumption",
     }];
+    this.doughnutChartLabels= [ this.translationData.lblHigh || 'High', this.translationData.lblMedium || 'Medium', this.translationData.lblLow || 'Low'];
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     // this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     //this.getUserPreferenceReport();

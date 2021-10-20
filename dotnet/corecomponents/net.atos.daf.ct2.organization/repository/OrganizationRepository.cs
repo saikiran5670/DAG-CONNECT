@@ -673,7 +673,7 @@ namespace net.atos.daf.ct2.organization.repository
                 var organizationId = await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
 
                 // Subscribe base package for the created organization
-                await _subscriptionManager.Create(organizationId, Convert.ToInt32(keyHandOver.OrgCreationPackage));
+                //await _subscriptionManager.Create(organizationId, Convert.ToInt32(keyHandOver.OrgCreationPackage));
 
                 return organizationId;
             }
