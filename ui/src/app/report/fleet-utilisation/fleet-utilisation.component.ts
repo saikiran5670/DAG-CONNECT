@@ -465,7 +465,7 @@ public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe) {
-    this.defaultTranslation();
+    // this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       fromTripReport: boolean
@@ -805,7 +805,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   setPDFTranslations(){
-    this.translationData = {
+    let transObj = {
       rp_fu_report_summary_averagedistanceperday: 'Average distance per day',
       rp_fu_report_summary_idleduration: 'Idle Duration',
       rp_fu_report_summary_totaldistance: 'Total Distance',
@@ -838,6 +838,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       rp_fu_report_details_idleduration: 'Idle Duration',
       rp_fu_report_details_distance: 'Distance'
     }
+
+    this.translationData = {...this.translationData, ...transObj};
   }
 
   loadWholeTripData(){
