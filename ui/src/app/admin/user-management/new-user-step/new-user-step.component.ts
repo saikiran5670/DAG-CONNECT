@@ -47,17 +47,7 @@ export class NewUserStepComponent implements OnInit {
   userGrpDisplayedColumns: string[] = ['select',  'accountGroupName', 'accountCount'];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
-  solutationList: any = [
-    {
-      name: this.translationData.lblMr
-    },
-    {
-      name: this.translationData.lblMrs
-    },
-    {
-      name: this.translationData.lblMs
-    }
-  ];
+  solutationList: any = [];
   userTypeList: any = [];
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
@@ -110,6 +100,17 @@ export class NewUserStepComponent implements OnInit {
         return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
       });
      }
+     this.solutationList = [
+      {
+        name: this.translationData.lblMr
+      },
+      {
+        name: this.translationData.lblMrs
+      },
+      {
+        name: this.translationData.lblMs
+      }
+    ];
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
