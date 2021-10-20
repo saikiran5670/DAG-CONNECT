@@ -21,8 +21,8 @@
             <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPdfAsSnapshot || 'PDF (as snapshot)'}}</button>
-            <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCsvFullData || 'CSV (as full data)' }}</button>
+            <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)'}}</button>
+            <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
         </mat-menu>
     </div>
 
