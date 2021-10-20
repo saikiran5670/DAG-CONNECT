@@ -11,7 +11,7 @@ CREATE TABLE if not exists master.otascheduledcompaign
 TABLESPACE pg_default;
 
 ALTER TABLE  master.otascheduledcompaign 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -41,7 +41,7 @@ CREATE TABLE if not exists master.otacampaigncatching
 TABLESPACE pg_default;
 
 ALTER TABLE  master.otacampaigncatching 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -64,6 +64,3 @@ alter table master.otascheduledcompaign add column if not exists timestamp_boash
 alter table master.otascheduledcompaign add column if not exists Status char(1);
 
 
---**************on dev1 only
-alter table master.account alter column salutation drop not null;
-alter table master.accountpreference alter column currency_id drop not null;
