@@ -139,7 +139,7 @@ export class FleetMapService {
     this.prefUnitFormat = _prefObj.prefUnitFormat;
   }
 
-  initMap(mapElement: any){
+  initMap(mapElement: any, translationData: any){
     this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
       this.defaultLayers.raster.normal.map, {
@@ -158,18 +158,18 @@ export class FleetMapService {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label: translationData.lblNormal || "Normal", layer:this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label: translationData.lblSatellite || "Satellite", layer:this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label: translationData.lblTerrain || "Terrain", layer:this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });

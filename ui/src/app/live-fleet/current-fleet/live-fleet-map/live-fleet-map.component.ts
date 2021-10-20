@@ -157,7 +157,7 @@ export class LiveFleetMapComponent implements OnInit {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.mapFilterForm.get('routeType').setValue('C');
     setTimeout(() => {
-      this.fleetMapService.initMap(this.mapElement);
+      this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
       this.tripTraceArray = this.detailsData;
     this.makeHerePOIList();
