@@ -513,14 +513,15 @@ namespace net.atos.daf.ct2.reports
             {
                 // Mapping expected value (as Modrate, Good, Very Good) from range
                 double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
-                if (((float)item.IdlingConsumption / 1000) > idlConsumptionHighValue)
+                double idlConsumption = ((float)item.IdlingConsumption / (float)(item.Distance != 0 ? item.Distance : 1));
+                if (idlConsumption > idlConsumptionHighValue)
                 {
                     string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
                 else
                 {
-                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= ((float)item.IdlingConsumption / 1000) && idl.MinValue >= ((float)item.IdlingConsumption / 1000)).Select(item => item.Value).FirstOrDefault();
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue > idlConsumption && idl.MinValue < idlConsumption).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
 

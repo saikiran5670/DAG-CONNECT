@@ -605,19 +605,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   }
 
-  filterVehicle(VehicleSearch){
+  filterVehicle(search){
     console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
-    if(!VehicleSearch){
+    if(!search){
       this.resetVehicleFilter();
       return;
     }else{
-      VehicleSearch = VehicleSearch.toLowerCase();
+      search = search.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(search) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }

@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.notificationdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occurred while processing Notification data.", ex);
+                _logger.LogError($"Error occurred while processing Notification data. VIN:{campaign.CampaignEvent.VIN}, Baseline: {campaign.CampaignEvent.Baseline}", ex);
                 return StatusCode(500, string.Empty);
             }
         }
