@@ -183,8 +183,8 @@ compareHere(a, b) {
       this.dateFormatDropdownData = dropDownData.dateformat;
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
-      this.vehicleStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt In'},{id:'H',value:'Inherit'}]
-      this.driverStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt In'},{id:'H',value:'Inherit'}]
+      this.vehicleStatusDropdownData = [{id:'U',value:this.translationData.lblOptOut},{id:'I',value:this.translationData.lblOptIn},{id:'H',value:this.translationData.lblInherit}]
+      this.driverStatusDropdownData = [{id:'U',value:this.translationData.lblOptOut},{id:'I',value:this.translationData.lblOptIn },{id:'H',value:this.translationData.lblInherit}]
       this.loadOrganisationdata();
     });
   }
