@@ -224,7 +224,7 @@ barChartOptions: any = {
       },          
     scaleLabel: {
       display: true,
-      labelString: 'Dates'   
+      labelString: this.translationData.lblDates || 'Dates'
     }      
   }]
   }
