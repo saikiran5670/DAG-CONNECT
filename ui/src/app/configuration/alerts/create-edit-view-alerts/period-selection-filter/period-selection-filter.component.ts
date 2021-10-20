@@ -39,7 +39,7 @@ checkboxChecked: boolean = false;
     }
 
     this.accountId= parseInt(localStorage.getItem("accountId"));
-    this.days= ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    this.days= [this.translationData.lblSunday, this.translationData.lblMonday, this.translationData.lblTuesday, this.translationData.lblWednesday, this.translationData.lblThursday, this.translationData.lblFriday, this.translationData.lblSaturday];
     
     this.periodSelectionForm = this._formBuilder.group({
       // recipientLabel: ['', [ Validators.required ]],
