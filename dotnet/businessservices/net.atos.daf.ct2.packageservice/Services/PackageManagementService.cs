@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.packageservice
                 {
                     return await Task.FromResult(new PackageResponse
                     {
-                        Message = "Package Not Created " + package.Id,
+                        Message = "Package Created " + package.Id,
                         PackageId = package.Id
                     });
                 }
