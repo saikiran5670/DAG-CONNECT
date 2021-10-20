@@ -82,18 +82,18 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
     
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);    
-    });
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 3 
+    // }
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);    
+    // });
    
     this.selection1 = ['all'];
     this.selection2 = ['all'];
@@ -141,9 +141,9 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
   }
   
 
-  processTranslation(transData: any) {
-    this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-  }
+  // processTranslation(transData: any) {
+  //   this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  // }
 
 
   getDriverData(){
@@ -307,12 +307,14 @@ getFilterData(){
         this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
         console.log("groupList4", this.groupList);
         this.filterData["alertCategory"].forEach(item=>{
-        let catName =  this.translationAlertData[item.name];
+        // let catName =  this.translationAlertData[item.name];
+        let catName =  this.translationData[item.name];
         if(catName != undefined){
         this.categoryList.push({'name':catName, 'value': item.value})}});     
        
         this.filterData["alertLevel"].forEach(item=>{
-        let levelName =  this.translationAlertData[item.name];
+        // let levelName =  this.translationAlertData[item.name];
+        let levelName =  this.translationData[item.name];
         this.levelList.push({'name':levelName, 'value': item.value})}); 
       
         this.filterData["healthStatus"].forEach(item=>{
@@ -373,12 +375,14 @@ getFilterData(){
     //     });
 
       this.filterData["alertCategory"].forEach(item=>{
-      let catName =  this.translationAlertData[item.name];
+      // let catName =  this.translationAlertData[item.name];
+      let catName =  this.translationData[item.name];
       if(catName != undefined){
       this.categoryList.push({'name':catName, 'value': item.value})}});     
      
       this.filterData["alertLevel"].forEach(item=>{
-      let levelName =  this.translationAlertData[item.name];
+      // let levelName =  this.translationAlertData[item.name];
+      let levelName =  this.translationData[item.name];
       this.levelList.push({'name':levelName, 'value': item.value})}); 
  
         this.filterData["healthStatus"].forEach(item=>{
