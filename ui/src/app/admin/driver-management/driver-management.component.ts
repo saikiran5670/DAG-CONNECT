@@ -246,6 +246,30 @@ export class DriverManagementComponent implements OnInit {
     //--- Parse driver data ---//
     this.filelist.map((item: any) => {
       let _txt: any = {};
+      let _keys = [];
+      for (const [key, value] of Object.entries(item)) {
+        _keys.push(key);
+      }
+      let cc = _keys.filter(i=>i==this.translationData.lblDriverIDCountryCode);
+      if(cc.length==0) {
+        _txt.countryCode = "";
+      }
+      let dn = _keys.filter(i=>i==this.translationData.lblDriverIDNumber);
+      if(dn.length==0) {
+        _txt.driverNumber = "";
+      }
+      let em = _keys.filter(i=>i==this.translationData.lblEmail);
+      if(em.length==0) {
+        _txt.email = "";
+      }
+      let fn = _keys.filter(i=>i==this.translationData.lblFirstName);
+      if(fn.length==0) {
+        _txt.firstName = "";
+      }
+      let ln = _keys.filter(i=>i==this.translationData.lblLastName);
+      if(ln.length==0) {
+        _txt.lastName = "";
+      }
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){

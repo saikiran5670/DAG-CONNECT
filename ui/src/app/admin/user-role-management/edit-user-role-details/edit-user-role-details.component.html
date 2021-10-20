@@ -33,7 +33,7 @@
 
                 <div *ngIf="(adminAccessType.adminFullAccess)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleType}}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? translationData.lblGlobal : translationData.lblRegular  }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleDescriptionOptional }}</mat-label>

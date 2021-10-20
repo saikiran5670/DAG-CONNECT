@@ -31,8 +31,8 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
     ParameterTool envParam = null;
         private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
 //    private Map<String, TwoMinuteRulePojo> driverPreviousRecord = new HashMap<>();
-    private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
-
+   // private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
+    private static final long restBuffer = 120000;
     @Override
     public void process(String driverId, Context ctx, Iterable<Monitor> values, Collector<Monitor> out) {
         Monitor monitor = new Monitor();

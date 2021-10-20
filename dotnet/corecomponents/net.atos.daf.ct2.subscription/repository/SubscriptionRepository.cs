@@ -178,7 +178,7 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 }
                 //if package type is vehicle then only check vehicle table
-                else if (packageDetails.Id > 0 && packageDetails.Type.ToLower() == "v")
+                else if (packageDetails.Id > 0 && new string[] { "v", "n" }.Contains(packageDetails.Type.ToLower()))
                 {
                     // Keep Owned VINs in objSubscription.VINs list
                     objSubscription.VINs = objSubscription.VINs.Except(visibleVINs).ToList();
@@ -342,7 +342,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
 
                     //if package type is vehicle then only check vehicle table
-                    else if (subscriptionDetails.First().Type.ToLower() == "v")
+                    else if (new string[] { "v", "n" }.Contains(subscriptionDetails.First().Type.ToLower()))
                     {
                         if (objUnSubscription.VINs == null || objUnSubscription.VINs.Count == 0)
                         {

@@ -49,13 +49,13 @@ export class NewUserStepComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   solutationList: any = [
     {
-      name: 'Mr'
+      name: this.translationData.lblMr
     },
     {
-      name: 'Mrs'
+      name: this.translationData.lblMrs
     },
     {
-      name: 'Ms'
+      name: this.translationData.lblMs
     }
   ];
   userTypeList: any = [];

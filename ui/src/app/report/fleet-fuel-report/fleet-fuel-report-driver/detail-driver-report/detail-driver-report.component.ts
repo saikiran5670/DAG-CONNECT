@@ -2153,16 +2153,20 @@ createEndMarker(){
    // if (prefData && preference) {
       let _search = prefData?.timeformat?.filter(i => i.id == preference.timeFormatId);
       if (_search && _search.length > 0) {
-        this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+        this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+        //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
         this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
         this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
       } else {
         if (prefData.timeformat && prefData.timeformat.length > 0) {
-          this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+          //this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+          this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
         }
         if (prefData.timezone && prefData.timezone.length > 0) {
-          this.prefTimeZone = prefData.timezone[0].value;
+          //this.prefTimeZone = prefData.timezone[0].value;
+          this.prefTimeZone = prefData.timezone[0].name;
         }
         if (prefData.dateformat && prefData.dateformat.length > 0) {
           this.prefDateFormat = prefData.dateformat[0].name;
