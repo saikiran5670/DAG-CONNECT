@@ -686,7 +686,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
     if(this.prefUnitFormat == 'dunit_Imperial')
     {
-    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? -1 : ((b.fuelConsumption > a.fuelConsumption) ? 1 : 0))
+    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption < b.fuelConsumption) ? -1 : ((b.fuelConsumption < a.fuelConsumption) ? 1 : 0))
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);  
   }
