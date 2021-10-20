@@ -31,7 +31,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectionForFeatures = new SelectionModel(true, []);
-  roleTypes = [this.translationData.lblGlobal, this.translationData.lblRegular];
+  roleTypes = [];
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
@@ -73,6 +73,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
         }
       });
       this.featuresData = data;
+
+      this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblRegular];
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;
