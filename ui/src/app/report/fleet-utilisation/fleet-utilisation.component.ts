@@ -195,7 +195,7 @@ barChartOptions: any = {
       },
       scaleLabel: {
         display: true,
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)' 
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)` 
         }} ,{
         id: "y-axis-2",
         position: 'left',
@@ -207,7 +207,7 @@ barChartOptions: any = {
         },
         scaleLabel: {
           display: true,       
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)'
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`
         }
       }
     ],
@@ -263,7 +263,7 @@ distanceLineChartOptions = {
       },
       scaleLabel: {
         display: true, 
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)'    
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`    
        }
     },{
       id: "y-axis-2",
@@ -276,7 +276,7 @@ distanceLineChartOptions = {
       },
       scaleLabel: {
         display: true,    
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)',
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`
       }
     }],    
     xAxes: [{
@@ -292,7 +292,7 @@ distanceLineChartOptions = {
       },        
     scaleLabel: {
       display: true,
-      labelString: 'Dates'   
+      labelString: this.translationData.lblDates || 'Dates'   
     }      
   }]
   }
@@ -374,7 +374,7 @@ lineChartOptions = {
       },
       scaleLabel: {
         display: true,
-        labelString: 'value(number of vehicles)'    
+        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`    
       }
     }],
     
@@ -391,7 +391,7 @@ lineChartOptions = {
       },           
     scaleLabel: {
       display: true,
-      labelString: 'Dates'   
+      labelString: this.translationData.lblDates || 'Dates'
     }      
   }]
   }
@@ -424,7 +424,7 @@ VehicleBarChartOptions: any = {
       },
       scaleLabel: {
         display: true,
-        labelString:  'value(number of vehicles)' 
+        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
       }}],
       
     xAxes: [{    
@@ -440,7 +440,7 @@ VehicleBarChartOptions: any = {
       },                
     scaleLabel: {
       display: true,
-      labelString: 'Dates'   
+      labelString: this.translationData.lblDates || 'Dates'  
     }      
   }]
   }
@@ -684,7 +684,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   avgDistanceStatus: boolean = false;
 
   setDefaultAttributeBaseOnPref(){
-    let prefUnit = (this.prefUnitFormat == 'dunit_Metric') ? 'km' :'miles'
+    let prefUnit = (this.prefUnitFormat == 'dunit_Metric') ? this.translationData.lblkm || 'km' : this.translationData.lblmiles || 'miles';
     if(this.detailColumnData.length > 0){ // details section
       let filterPref = this.detailColumnData.filter(i => i.state == 'I');
       if(filterPref.length > 0){
@@ -749,8 +749,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.mileageBasedChart.thresholdType = element.thresholdType;
           this.mileagebasedThreshold = parseInt(element.thresholdValue);
           this.mileageDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
-          this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `Percentage of vehicles with distance done under ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
+          this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
+          this.mileagePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
         }else if(element.key == "rp_fu_report_chart_timebased"){
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;
@@ -758,8 +758,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.timeBasedChart.thresholdType = element.thresholdType;
           this.timebasedThreshold = parseInt(element.thresholdValue);
           this.timeDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabelsForTime = [`Percentage of vehicles with driving time above ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`, `Percentage of vehicles with driving time under ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`];
-          this.timePieChartLabels = [`Percentage of vehicles with driving time above ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`, `Percentage of vehicles with driving time under ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`];
+          this.doughnutChartLabelsForTime = [`${this.translationData.lblPercentageofvehicleswithdrivingtimeabove || 'Percentage of vehicles with driving time above'} ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`, `${this.translationData.lblPercentageofvehicleswithdrivingtimeunder || 'Percentage of vehicles with driving time under'} ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`];
+          this.timePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdrivingtimeabove || 'Percentage of vehicles with driving time above'} ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`, `${this.translationData.lblPercentageofvehicleswithdrivingtimeunder || 'Percentage of vehicles with driving time under'} ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`];
         }
       });
     }
@@ -1141,7 +1141,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.barChartLabels= this.chartsLabelsdefined;   
     this.barChartData = [
       { 
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)',
+        label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (km/day)` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (miles/day)`,
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
@@ -1149,7 +1149,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         data: this.averageDistanceBarData,	    
         },
         {
-          label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(miles)',
+          label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`,
           type: 'bar',
           backgroundColor: '#4679CC',
           hoverBackgroundColor: '#4679CC',
@@ -1157,8 +1157,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           data: this.barVarticleData
         },
     ];
-    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
-    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
+    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`;
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
     this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     
@@ -1166,30 +1166,30 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       { 
         data: this.averageDistanceBarData,
         yAxesID: "y-axis-1",
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)'
+        label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(km/day)` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(miles/day)`
       },
       { 
         data: this.barVarticleData,        
         yAxesID: "y-axis-2",
-        label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(miles)',
+        label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`,
              
           
       },
     ];
-    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
-    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(miles)';
+    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`;
+    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
     this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
   
     this.lineChartData = [
-      { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
+      { data: this.lineChartVehicleCount, label: this.translationData.lblnumberofvehicles || 'Number of Vehicles' },
     ];
     this.lineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.lineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
  
     this.VehicleBarChartData = [
       { 
-        label: 'Number of Vehicles',
+        label: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
@@ -1663,9 +1663,9 @@ getAllSummaryData(){
 
   exportAsExcelFile(){    
   this.getAllSummaryData();
-  const title = 'Trip Fleet Utilisation Report';
-  const summary = 'Summary Section';
-  const detail = 'Detail Section';
+  const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
+  const summary = this.translationData.lblSummarySection || 'Summary Section';
+  const detail = this.translationData.lblDetailSection || 'Detail Section';
   let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
   let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
   
