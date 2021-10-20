@@ -1016,8 +1016,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     const title = 'Eco Score Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
-    const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
+    // const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
+    const header =  this.getPDFExcelHeader();
+    // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
+    const summaryHeader = this.getExcelSummaryHeader();
     let summaryObj=[
       ['Eco Score Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup, 
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
@@ -1106,7 +1108,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
   });
 
-    let pdfColumns = [['Ranking', 'Driver Name', 'Driver Id', 'Eco-Score']]
+    // let pdfColumns = [['Ranking', 'Driver Name', 'Driver Id', 'Eco-Score']]
+    let pdfColumns = this.getPDFExcelHeader();
+    pdfColumns = [pdfColumns];
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
@@ -1124,6 +1128,18 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     })
     // below line for Download PDF document  
     doc.save('EcoScoreReport.pdf');
+  }
+
+  getPDFExcelHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblRanking || 'Ranking'}`, `${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblEcoScore || 'Eco-Score' }`];
+    return col;
+  }
+
+  getExcelSummaryHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriverId|| 'Driver ID' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverOption || 'Driver Option' }`];
+    return col;
   }
 
   pageSizeUpdated(_evt){
