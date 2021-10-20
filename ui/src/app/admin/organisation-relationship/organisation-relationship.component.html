@@ -39,7 +39,7 @@
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >   
                       <mat-select placeholder="{{ translationData.lblRelationship }}"  [formControl]="relationFilter">
-                        <mat-option value="allRelations">All</mat-option>
+                        <mat-option value="allRelations">{{ translationData.lblAll }}</mat-option>
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
                     </mat-option>
@@ -50,7 +50,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblVehicleGroup}}"  [formControl]="vehicleGrpFilter">
                     <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
-                      <mat-option value="allVehicle">All</mat-option>
+                      <mat-option value="allVehicle">{{ translationData.lblAll }}</mat-option>
                       <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
                       {{options.groupName}}
                     </mat-option>
@@ -60,7 +60,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblOrganisation }}"  [formControl]="orgFilter">
-                    <mat-option value="allOrg">All</mat-option>
+                    <mat-option value="allOrg">{{ translationData.lblAll }}</mat-option>
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
                     </mat-option>
@@ -70,7 +70,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblAllType}}"  [formControl]="typeFilter">
-                    <mat-option value="all">All</mat-option>
+                    <mat-option value="all">{{ translationData.lblAll }}</mat-option>
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
                     </mat-option>

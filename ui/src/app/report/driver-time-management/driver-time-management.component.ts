@@ -302,13 +302,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      // this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      // this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      // this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      // this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -918,10 +922,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S')
             if(_item.length > 0){
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
-              this.vehicleGroupListData.sort(this.compare);
+              //this.vehicleGroupListData.sort(this.compare);
              // this.vehicleDD.sort(this.compare);
              // this.driverDD.sort(this.compare);
-              this.resetVehicleGroupFilter();
+             // this.resetVehicleGroupFilter();
               //this.resetVehicleFilter();
               //this.resetDriverFilter();
               _item.forEach(element => {
@@ -939,6 +943,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
       console.log("vehicleGroupListData 2", this.vehicleGroupListData);
+      this.vehicleGroupListData.sort(this.compare);
+      this.resetVehicleGroupFilter();
       if(this.vehicleGroupListData.length >0){
         this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         this.resetVehicleGroupFilter();
@@ -956,11 +962,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           let vehicleData = this.vehicleListData.slice();
           this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
           console.log("vehicleDD 3", this.vehicleDD);
-          this.vehicleDD.sort(this.compare);
+          this.vehicleDD.sort(this.compareVin);
           this.resetVehicleFilter();
           this.driverDD = this.driverListData;
           console.log("driverDD 2", this.driverDD);
-          this.driverDD.sort(this.compare);
+          this.driverDD.sort(this.compareName);
           this.resetDriverFilter();
 
           this.driverTimeForm.get('vehicleGroup').setValue(0);
@@ -1030,8 +1036,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   const title = 'Driver Time Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
+  // const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
+  // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
+  const header = this.getPDFExcelHeader();
+  const summaryHeader = this.getExcelSummaryHeader();
+
   this.summaryObj=[
     ['Driver Time Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
       this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
@@ -1098,6 +1107,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   //this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Time_Report', sheet: 'sheet_name'});
 }
 
+getPDFExcelHeader(){
+  let col: any = [];
+  col = [`${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblStartTime || 'Start Time'}`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblDriveTimehhmm || 'Drive Time(hh:mm)' }`, `${this.translationData.lblWorkTimehhmm || 'Work Time(hh:mm)' }`, `${this.translationData.lblServiceTimehhmm || 'Service Time(hh:mm)' }`, `${this.translationData.lblRestTimehhmm || 'Rest Time(hh:mm)' }`, `${this.translationData.lblAvailableTimehhmm || 'Available Time(hh:mm)' }`];
+  return col;
+}
+
+getExcelSummaryHeader(){
+  let col: any = [];
+  col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriversCount|| 'Drivers Count' }`, `${this.translationData.lblTotalDriveTimehhmm || 'Total Drive Time(hh:mm)' }`, `${this.translationData.lblTotalWorkTimehhmm || 'Total Work Time(hh:mm)' }`, `${this.translationData.lblTotalAvailableTimehhmm || 'Total Available Time(hh:mm)' }`, `${this.translationData.lblTotalRestTimehhmm || 'Total Rest Time(hh:mm)' }`];
+  return col;
+}
   exportAsPDFFile(){
    
     var doc = new jsPDF('p', 'mm', 'a3');
@@ -1126,7 +1146,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
    // let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
-    let pdfColumns = [['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
+    // let pdfColumns = [['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
+    let pdfColumns = this.getPDFExcelHeader();
+    pdfColumns = [pdfColumns];
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
@@ -1318,7 +1340,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue || { value : 0 });
     }
   }
 
@@ -1455,10 +1477,28 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareName(a, b) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
       return 1;
     }
     return 0;
@@ -1482,19 +1522,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   }
 
-  filterVehicle(VehicleSearch){
+  filterVehicle(search){
     console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
-    if(!VehicleSearch){
+    if(!search){
       this.resetVehicleFilter();
       return;
     }else{
-      VehicleSearch = VehicleSearch.toLowerCase();
+      search = search.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }

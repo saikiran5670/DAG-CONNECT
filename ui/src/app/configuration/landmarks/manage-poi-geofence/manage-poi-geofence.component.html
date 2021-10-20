@@ -70,7 +70,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]='poiInitData.length == 0' (selectionChange)="applyFilterOnPOICategory($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-              <mat-option value="0">--All--</mat-option>
+              <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
               <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -80,7 +80,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]='poiInitData.length == 0' (selectionChange)="applyFilterOnPOISubCategory($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
                 <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -202,7 +202,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="categorySelectionForGeo" [disabled]='geoInitData.length == 0' (selectionChange)="onGeofenceCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-              <mat-option value="0">--All--</mat-option>
+              <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
               <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -212,7 +212,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="subCategorySelectionForGeo" [disabled]='geoInitData.length == 0' (selectionChange)="onGeofenceSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
                 <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>

@@ -232,8 +232,8 @@
                ) }})</span>
             </mat-header-cell>
             <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
-              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
-                value={{row.convertedFuelConsumed100Km}}></mat-progress-bar>
+              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - row.convertedFuelConsumption"
+                value={{row.convertedFuelConsumption}}></mat-progress-bar>
               <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumption | number : '.2-2'}} </div>
             </mat-cell>
           </ng-container>
@@ -874,7 +874,7 @@
           <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
           </mat-row>
         </mat-table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
 
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

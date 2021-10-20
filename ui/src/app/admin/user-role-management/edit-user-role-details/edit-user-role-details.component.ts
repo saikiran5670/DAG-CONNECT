@@ -31,7 +31,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectionForFeatures = new SelectionModel(true, []);
-  roleTypes = ['Global', 'Regular'];
+  roleTypes = [this.translationData.lblGlobal, this.translationData.lblRegular];
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];

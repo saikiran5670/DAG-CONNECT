@@ -78,13 +78,13 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
             }
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode StatusCode, string Massage, string Value)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string massage, string value)
         {
-            return base.StatusCode((int)StatusCode, new ErrorResponse()
+            return base.StatusCode((int)statusCode, new ErrorResponse()
             {
-                ResponseCode = ((int)StatusCode).ToString(),
-                Message = Massage,
-                Value = Value
+                ResponseCode = ((int)statusCode).ToString(),
+                Message = massage,
+                Value = value
             });
         }
     }

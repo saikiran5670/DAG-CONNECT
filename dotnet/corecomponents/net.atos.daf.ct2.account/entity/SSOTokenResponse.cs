@@ -24,4 +24,12 @@ namespace net.atos.daf.ct2.account.entity
         public string Message { get; set; }
         public string Value { get; set; }
     }
+
+    public class SSOResponseForNamelist
+    {
+        public int AccountID { get; set; }
+        public int OrganizationID { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
+    }
 }

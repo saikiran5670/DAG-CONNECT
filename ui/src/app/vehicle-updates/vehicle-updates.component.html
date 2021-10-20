@@ -1,13 +1,5 @@
 <div class='bgtrans'>
-    <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
-        style='padding:10px; color:#fff; background: #5dc24e;'>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
-        {{ displayMessage }}
-        </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-        <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
-        </div>
-    </div>
+   
     <div *ngIf='errorMsgVisible' fxLayout="row" fxLayoutAlign="center center"
         style='padding:10px; color:#fff; background: red;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
@@ -123,7 +115,7 @@
           <div *ngIf='initData.length > 0' id="vehicleListData">
             <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
               <ng-container matColumnDef="vehicleName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleName || 'Vehicle Name'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleName}}" > 
                     {{row.vehicleName}}
                 </mat-cell>
@@ -135,7 +127,7 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="vehicleGroupNames">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleGroup || 'Vehicle Group'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupNames }}" class="text-truncate">
                  {{row.vehicleGroupNames}}
                 </mat-cell>

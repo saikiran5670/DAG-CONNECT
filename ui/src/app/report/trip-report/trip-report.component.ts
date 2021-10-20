@@ -297,7 +297,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   searchPlaces() {
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
 
   makeHerePOIList() {
@@ -322,13 +322,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
   proceedStep(prefData: any, preference: any) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -760,7 +764,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       if (!this.showMapPanel) { //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {
-          this.reportMapService.initMap(this.mapElement);
+          this.reportMapService.initMap(this.mapElement, this.translationData);
         }, 0);
       } else {
         this.reportMapService.clearRoutesFromMap();
@@ -947,7 +951,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let _ui = this.reportMapService.getUI();
     if (this.isAllSelectedForTrip()) {
       this.selectedTrip.clear();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
       this.showMap = false;
     }
     else {
@@ -956,7 +960,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         this.tripTraceArray.push(row);
       });
       this.showMap = true;
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     }
   }
 
@@ -985,13 +989,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if (event.checked) { //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     }
     else { //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     }
   }
 
@@ -1279,7 +1283,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue || { value : 0 });
     }
     // if(this.vehicleDD.length>0){
     //   let vehicleID = this.vehicleDD[0].vehicleId;
@@ -1294,7 +1298,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   onDisplayChange(event: any) {
     this.displayRouteView = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
 
   changeUserPOISelection(event: any, poiData: any, index: any) {
@@ -1334,7 +1338,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
     });
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
 
   onMapModeChange(event: any) {
@@ -1344,7 +1348,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   onMapRepresentationChange(event: any) {
     this.trackType = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
 
   backToFleetUtilReport() {
@@ -1384,7 +1388,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
             from: 'search'
           }
           let _ui = this.reportMapService.getUI();
-          this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+          this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
         }
       });
     }
@@ -1454,7 +1458,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
     });
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     //}
   }
 
@@ -1465,7 +1469,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   changeAlertSelection(_event: any){
     this.alertsChecked = _event.checked;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
   }
 
   filterVehicleGroups(vehicleSearch){

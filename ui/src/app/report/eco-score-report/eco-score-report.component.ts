@@ -320,13 +320,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -774,7 +778,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); // _yesterday.getTime();
     //let driverList  = this.onLoadData.driverList.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime)).map(data=>data.driverID);
     let driverList = [];
-    this.onLoadData.driverList.forEach(element => {
+    this.onLoadData?.driverList?.forEach(element => {
       if(element.activityDateTime && element.activityDateTime.length > 0){
         let search =  element.activityDateTime.filter(item => (item >= currentStartTime) && (item <= currentEndTime)).map(data=>data.driverID);
         if(search.length > 0){
@@ -1012,8 +1016,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     const title = 'Eco Score Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
-    const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
+    // const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
+    const header =  this.getPDFExcelHeader();
+    // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
+    const summaryHeader = this.getExcelSummaryHeader();
     let summaryObj=[
       ['Eco Score Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup, 
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
@@ -1102,7 +1108,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
   });
 
-    let pdfColumns = [['Ranking', 'Driver Name', 'Driver Id', 'Eco-Score']]
+    // let pdfColumns = [['Ranking', 'Driver Name', 'Driver Id', 'Eco-Score']]
+    let pdfColumns = this.getPDFExcelHeader();
+    pdfColumns = [pdfColumns];
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
@@ -1120,6 +1128,18 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     })
     // below line for Download PDF document  
     doc.save('EcoScoreReport.pdf');
+  }
+
+  getPDFExcelHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblRanking || 'Ranking'}`, `${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblEcoScore || 'Eco-Score' }`];
+    return col;
+  }
+
+  getExcelSummaryHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriverId|| 'Driver ID' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverOption || 'Driver Option' }`];
+    return col;
   }
 
   pageSizeUpdated(_evt){
@@ -1277,7 +1297,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue || { value : 0 });
     }
   }
 
@@ -1643,19 +1663,19 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   }
 
-  filterVehicle(VehicleSearch){
+  filterVehicle(search){
     console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
-    if(!VehicleSearch){
+    if(!search){
       this.resetVehicleFilter();
       return;
     }else{
-      VehicleSearch = VehicleSearch.toLowerCase();
+      search = search.toLowerCase();
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
