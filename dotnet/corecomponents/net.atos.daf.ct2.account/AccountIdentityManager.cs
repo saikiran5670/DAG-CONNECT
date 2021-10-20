@@ -739,8 +739,7 @@ namespace net.atos.daf.ct2.account
         {
             SSOResponse ssoResponse = new SSOResponse();
             IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenList = await _accountTokenManager.GetTokenDetails(tokenGuid);
-            // TODO: delete after testing
-            //IdentitySessionComponent.entity.AccountToken _savedToeken = _tokenlist.FirstOrDefault();
+
             IdentitySessionComponent.entity.AccountToken savedToken = tokenList.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
             if (savedToken?.AccountId > 0)
             {
@@ -768,6 +767,36 @@ namespace net.atos.daf.ct2.account
             }
             return ssoResponse;
         }
+
+        public async Task<SSOResponseForNamelist> ValidateSSOTokenForNamelist(string tokenGuid)
+        {
+            SSOResponseForNamelist ssoResponse = new SSOResponseForNamelist();
+            IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenList = await _accountTokenManager.GetTokenDetails(tokenGuid);
+
+            IdentitySessionComponent.entity.AccountToken savedToken = tokenList.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
+            if (savedToken?.AccountId > 0)
+            {
+                if (UtcDateCompare(savedToken.CreatedAt, savedToken.ExpireIn))
+                {
+                    ssoResponse.StatusCode = HttpStatusCode.OK;
+                    ssoResponse.Message = "OK";
+                    ssoResponse.AccountID = savedToken.AccountId;
+                    ssoResponse.OrganizationID = savedToken.OrganizationId;
+                }
+                else
+                {
+                    ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                    ssoResponse.Message = "TOKEN_EXPIRED";
+                }
+            }
+            else
+            {
+                ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                ssoResponse.Message = "INVALID_TOKEN";
+            }
+            return ssoResponse;
+        }
+
         private async Task<identitysession.entity.AccountToken> GetAccountTokenDetails(int accountID)
         {
 
