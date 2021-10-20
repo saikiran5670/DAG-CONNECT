@@ -1386,7 +1386,57 @@ this.barChartOptionsPerformance = {
    exportAsPDFFile(){
     var doc = new jsPDF('p', 'mm', 'a4');
 
-    let DATA = document.getElementById('charts');
+    let overallPerformanceChart = document.getElementById('charts-overallPerformancePanel');
+    let generalBar = document.getElementById('generalBar');
+    let generalPie = document.getElementById('generalPie');
+    let performanceBar = document.getElementById('performanceBar');
+    let performancePie = document.getElementById('performancePie');
+    
+    let src;
+    let ohref;
+    let oheight;
+    let oWidth=175;
+    let generalBarHeight;
+    let generalPieHeight;
+    let performanceBarHeight;
+    let performancePieHeight;
+    let generalBarHref;
+    let generalPieHref;
+    let performanceBarHref;
+    let performancePieHref;
+
+    html2canvas(overallPerformanceChart).then(canvas => {
+      oheight= canvas.height * oWidth/canvas.width;
+      //oWidth= canvas.width;
+      src = canvas.toDataURL();
+      ohref = canvas.toDataURL('image/png');
+    });
+    html2canvas(generalBar).then(canvas => {
+      generalBarHeight= canvas.height * oWidth/canvas.width;
+      //oWidth= canvas.width;
+      src = canvas.toDataURL();
+      generalBarHref = canvas.toDataURL('image/png');
+    });
+    html2canvas(generalPie).then(canvas => {
+      generalPieHeight= canvas.height * oWidth/canvas.width;
+      //oWidth= canvas.width;
+      src = canvas.toDataURL();
+      generalPieHref = canvas.toDataURL('image/png');
+    });
+    html2canvas(performanceBar).then(canvas => {
+      performanceBarHeight= canvas.height * oWidth/canvas.width;
+      //oWidth= canvas.width;
+      src = canvas.toDataURL();
+      performanceBarHref = canvas.toDataURL('image/png');
+    });
+    html2canvas(performancePie).then(canvas => {
+      performancePieHeight= canvas.height * oWidth/canvas.width;
+      //oWidth= canvas.width;
+      src = canvas.toDataURL();
+      performancePieHref = canvas.toDataURL('image/png');
+    });
+    
+    let DATA = document.getElementById('chart-line');
     html2canvas( (DATA),
     {scale:2})
     .then(canvas => { 
@@ -1412,16 +1462,24 @@ this.barChartOptionsPerformance = {
          }  
       });
       
-
+      doc.addImage(ohref, 'PNG', 10, 40, oWidth, oheight) ;
       doc.addPage();
-      let fileWidth = 170;
+      let fileWidth = 175;
       let fileHeight = canvas.height * fileWidth / canvas.width;
 
       const FILEURI = canvas.toDataURL('image/png')
       // let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-      doc.addPage('a0','p');
+      doc.addPage();
+
+      if(generalBarHref) doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
+      if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
+      doc.addPage();
+
+      if(performanceBarHref) doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
+      if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
+      doc.addPage();
 
     (doc as any).autoTable({
       // head: pdfColumns,

@@ -797,7 +797,7 @@ setIconsOnMap(element) {
         }
       }
       else if(alertsData[0].length == 1){
-        _alertConfig = this.getAlertConfig(_alertFound);
+        _alertConfig = this.getAlertConfig(_alertFound[0]);
       }  
     }
     if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
