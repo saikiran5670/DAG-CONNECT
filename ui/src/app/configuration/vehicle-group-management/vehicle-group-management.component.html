@@ -5,7 +5,7 @@
             {{ vehicleGrpCreatedMsg }}
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-            <mat-icon (click)='onClose()' style='cursor: pointer;'>{{ translationData.lblClose }}</mat-icon>
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>Close</mat-icon>
         </div>
     </div>
     <mat-card class='mat-elevation-z' *ngIf='!createViewEditStatus'>
@@ -20,7 +20,7 @@
                 <input matInput (keyup)="applyFilter($event.target.value)"
                   placeholder="{{ translationData.lblSearch || 'Search' }}">
                 <span matPrefix>
-                  <mat-icon>{{ translationData.lblSearch }}</mat-icon>
+                  <mat-icon>search</mat-icon>
                 </span>
               </mat-form-field>
             </div>

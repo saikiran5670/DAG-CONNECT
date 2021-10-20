@@ -115,7 +115,7 @@
           <div *ngIf='initData.length > 0' id="vehicleListData">
             <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
               <ng-container matColumnDef="vehicleName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleName || 'Vehicle Name'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleName}}" > 
                     {{row.vehicleName}}
                 </mat-cell>
@@ -127,7 +127,7 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="vehicleGroupNames">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblvehicleGroup || 'Vehicle Group'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupNames }}" class="text-truncate">
                  {{row.vehicleGroupNames}}
                 </mat-cell>

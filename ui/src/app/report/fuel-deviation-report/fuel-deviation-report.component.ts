@@ -1227,6 +1227,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
     this.fuelDeviationChartLabels=[ startDate, endDate ];
+    this.fuelIncLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.translationData.lblValuesFuelIncreaseEvents || 'Values(Fuel Increase Events)';
     this.fuelIncLineChartLabels = this.fuelDeviationChartLabels;
     this.fuelDecLineChartLabels = this.fuelDeviationChartLabels;
     this.fuelIncBarChartLabels = this.fuelDeviationChartLabels;

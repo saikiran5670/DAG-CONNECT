@@ -423,12 +423,26 @@ export class DriverTimeDetailComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
+  getPDFExcelHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblDriveTimehhmm || 'Drive Time(hh:mm)' }`, `${this.translationData.lblWorkTimehhmm || 'Work Time(hh:mm)' }`, `${this.translationData.lblServiceTimehhmm || 'Service Time(hh:mm)' }`, `${this.translationData.lblRestTimehhmm || 'Rest Time(hh:mm)' }`, `${this.translationData.lblAvailableTimehhmm || 'Available Time(hh:mm)' }`];
+    return col;
+  }
+  
+  getExcelSummaryHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverId || 'Driver Id' }`, `${this.translationData.lblTotalDriveTimehhmm || 'Total Drive Time(hh:mm)' }`, `${this.translationData.lblTotalWorkTimehhmm || 'Total Work Time(hh:mm)' }`, `${this.translationData.lblTotalAvailableTimehhmm || 'Total Available Time(hh:mm)' }`, `${this.translationData.lblTotalRestTimehhmm || 'Total Rest Time(hh:mm)' }`, `${this.translationData.lblTotalServiceTimehhmm || 'Total Service Time(hh:mm)' }`];
+    return col;
+  }
+
   exportAsExcelFile(){    
   const title = 'Driver Details Time Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Date', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)', 'Total Service Time(hh:mm)'];
+  // const header = ['Date', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
+  // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)', 'Total Service Time(hh:mm)'];
+  const header = this.getPDFExcelHeader();
+  const summaryHeader = this.getExcelSummaryHeader();
   this.summaryObj=[
     ['Driver Details Time Report', new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
     this.driverDetails.selectedDriverName, this.driverDetails.selectedDriverId, this.driverDetails.driveTime, this.driverDetails.workTime, 
@@ -506,8 +520,10 @@ export class DriverTimeDetailComponent implements OnInit {
 
    // let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
-    let pdfColumns = [['Date', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
-  let prepare = []
+    // let pdfColumns = [['Date', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
+    let pdfColumns = this.getPDFExcelHeader();
+    pdfColumns = [pdfColumns];
+    let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
       tempObj.push(e.activityDate);
