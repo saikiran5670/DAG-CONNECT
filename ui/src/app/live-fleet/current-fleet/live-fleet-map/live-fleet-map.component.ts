@@ -125,15 +125,15 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 10 //-- for fleet utilisation
-    }
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 10 //-- for fleet utilisation
+    // }
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;

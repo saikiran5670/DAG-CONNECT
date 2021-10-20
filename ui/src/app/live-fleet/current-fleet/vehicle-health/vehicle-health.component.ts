@@ -44,6 +44,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @Input() healthData: any;
   @Input() tripId: any;
   @Input() historyHealthData: any = [];
+  @Input() translationData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
@@ -86,7 +87,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  translationData: any = {};
+  // translationData: any = {};
   isSummaryOpen: boolean = true;
   isWarningOpen: boolean = true;
   isMapOpen: boolean = false;
@@ -116,9 +117,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     });
   }
   defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
+    // this.translationData = {
+    //   lblSearchReportParameters: 'Search Report Parameters'
+    // }    
   }
 
   ngOnInit(): void {
@@ -135,17 +136,17 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       startTime: ['', []],
       endTime: ['', []]
     });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 10 //-- for fleet utilisation
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 10 //-- for fleet utilisation
+    // }
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -158,7 +159,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           });
         }
       });
-    });
+    // });
     this.selectionTab = 'last3month';
     this.selectionTimeRange('last3month');
   }

@@ -35,23 +35,23 @@ export class VehicleDetailsComponent implements OnInit {
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,  private reportMapService: ReportMapService,  private organizationService: OrganizationService) { }
   
   
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-  }
+  // processTranslation(transData: any) {
+  //   this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  // }
   ngOnInit(): void {
    // this.reportService.getFilterDetails().subscribe((data: any) => {
     //   this.filterData = data;
     //   this.levelList = [];
     // });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 10 //-- for fleet utilisation
-    }
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 10 //-- for fleet utilisation
+    // }
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
