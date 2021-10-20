@@ -26,17 +26,7 @@ export class EditViewUserComponent implements OnInit {
   accountInfoForm: FormGroup;
   editGeneralSettingsFlag: boolean = false;
   editAccountInfoFlag: boolean = false;
-  solutationList: any = [
-    {
-      name: 'Mr'
-    },
-    {
-      name: 'Mrs'
-    },
-    {
-      name: 'Ms'
-    }
-  ];
+  solutationList: any = [];
   userTypeList: any = [];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
@@ -161,6 +151,17 @@ export class EditViewUserComponent implements OnInit {
       };    
       this.router.navigate([], navigationExtras);     
     }
+    this.solutationList = [
+      {
+        name: this.translationData.lblMr
+      },
+      {
+        name: this.translationData.lblMrs
+      },
+      {
+        name: this.translationData.lblMs
+      }
+    ];
   }
 
   setDefaultOrgVal(flag: any){
