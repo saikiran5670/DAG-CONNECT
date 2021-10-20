@@ -145,7 +145,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Minutes'    
+          labelString: this.translationData.lblMinutes || 'Minutes'    
         }
       }],
       xAxes: [{       
@@ -185,7 +185,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'No of Trips'    
+          labelString: this.translationData.lblNoOfTrips || 'No of Trips'    
         }
       }],
       xAxes: [{       
@@ -223,7 +223,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')
         }
       }],
       xAxes: [{       
@@ -261,7 +261,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')    
         }
       }],
       xAxes: [{       
@@ -299,7 +299,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'    
+          labelString: this.translationData.lblton || 'Ton'    
         }
       }],
        xAxes: [{       
@@ -337,7 +337,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }
       }],
        xAxes: [{       
@@ -381,7 +381,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Number of Trips'    
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'    
         }}
       ],
       xAxes: [{
@@ -414,7 +414,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes'       
+          labelString: this.translationData.lblMinutes || 'Minutes'     
         }}
       ],
       xAxes: [{
@@ -447,7 +447,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles') 
         }}
       ],
       xAxes: [{
@@ -480,7 +480,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'    
+          labelString: this.translationData.lblton || 'Ton'   
         }}
       ],
       xAxes: [{
@@ -513,7 +513,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,           
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }}
       ],
       xAxes: [{
@@ -546,7 +546,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon' 
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')
         }}
       ],    
       xAxes: [{
@@ -601,9 +601,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private datePipe: DatePipe) {}
                defaultTranslation(){
-                this.translationData = {
-                  lblSearchReportParameters: 'Search Report Parameters'
-                }
+                this.translationData = { }
                }
 
   ngOnInit(): void {
@@ -1020,7 +1018,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')  
         }
       }]; 
       this.barChartOptions3.scales.xAxes= [{  
@@ -1038,7 +1036,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       }];     
       this.barChartData1= [
       { data: this.fuelConsumedChart,
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon', 
+        label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : ( this.translationData.lblGallon || 'Gallon'), 
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1063,7 +1061,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.Co2ChartType == 'Bar'){
-    let data2 = this.prefUnitFormat == 'dunit_Metric' ?  'Ton' : 'Ton';      
+    let data2 = this.translationData.lblton || 'Ton';      
     this.lineChartOptions4.scales.yAxes= [{
     id: "y-axis-1",
     position: 'left',
@@ -1091,7 +1089,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }];     
     this.barChartData3= [
       { data: this.co2Chart,
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ton' : 'Ton' ,
+        label: this.translationData.lblton || 'Ton',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1105,7 +1103,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       },
       scaleLabel: {
         display: true,
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'   
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')
       }
     }]; 
     this.barChartOptions2.scales.xAxes= [{  
@@ -1123,7 +1121,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }]; 
     this.barChartData4= [
       { data: this.distanceChart,
-        label:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'  ,
+        label:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles'),
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1137,7 +1135,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       },
       scaleLabel: {
         display: true,
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon', 
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon'), 
       }
     }]; 
     this.barChartOptions5.scales.xAxes= [{  
@@ -1155,7 +1153,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }]; 
     this.barChartData5= [
       { data: this.fuelConsumptionChart,
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon',
+        label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon'),
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1175,7 +1173,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }];     
     this.barChartData6= [
       { data: this.idleDuration,
-        label: this.prefUnitFormat == 'dunit_Metric' ? 'Minutes' : 'Minutes' ,
+        label: this.translationData.lblMinutes || 'Minutes',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1192,7 +1190,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')   
         }
       }];
       this.lineChartOptions3.scales.xAxes= [{  
@@ -1208,7 +1206,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }    
       }]; 
       
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' :  'Gallon') },];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') :  (this.translationData.lblGallon || 'Gallon') }];
   }
     if(this.TripsChartType == 'Line')
     {
@@ -1225,11 +1223,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }   
       }]; 
    
-    this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
+    this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-     let data2 = this.prefUnitFormat == 'dunit_Metric' ?  'Ton' : 'Ton';      
+     let data2 = this.translationData.lblton || 'Ton';      
         this.lineChartOptions4.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -1254,7 +1252,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }    
       }]; 
-    this.lineChartData3= [{ data: this.co2Chart, label: 'Ton'},];
+    this.lineChartData3= [{ data: this.co2Chart, label: this.translationData.lblton || 'Ton' }];
   }
     if(this.DistanceChartType == 'Line')
     {    
@@ -1267,7 +1265,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles'    
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')    
         }
       }];
       this.lineChartOptions2.scales.xAxes= [{  
@@ -1283,7 +1281,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }    
       }]; 
 
-    this.lineChartData4= [{ data: this.distanceChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Kms': 'Miles') }, ];
+    this.lineChartData4= [{ data: this.distanceChart, label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles') }];
   }
     if(this.ConsumptionChartType == 'Line')
     {
@@ -1296,7 +1294,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')   
         }
       }];
       this.lineChartOptions5.scales.xAxes= [{  
@@ -1311,7 +1309,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }    
       }]; 
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: (this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon') }, ];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon') }];
   }
     if(this.DurationChartType == 'Line')
     {
@@ -1327,7 +1325,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }     
       }];
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }];
   }
   
    this.lineChartColors= [

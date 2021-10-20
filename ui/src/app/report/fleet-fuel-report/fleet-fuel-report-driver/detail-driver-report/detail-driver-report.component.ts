@@ -332,7 +332,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Minutes'    
+          labelString: this.translationData.lblMinutes || 'Minutes'    
         }
       }],
       xAxes: [{       
@@ -372,7 +372,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'No of Trips'     
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'     
         }
       }],
       xAxes: [{       
@@ -410,7 +410,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')   
         }
       }],
       xAxes: [{       
@@ -448,7 +448,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')  
         }
       }],
       xAxes: [{       
@@ -486,7 +486,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'    
+          labelString: this.translationData.lblton || 'Ton'  
         }
       }],
       xAxes: [{       
@@ -524,7 +524,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'  
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }
       }],
       xAxes: [{       
@@ -567,7 +567,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'No of Trips'  
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips' 
         }}
       ],
       xAxes: [{ 
@@ -603,7 +603,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  'Minutes'      
+          labelString:  this.translationData.lblMinutes || 'Minutes'      
         }}
       ],
       xAxes: [{ 
@@ -639,7 +639,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')    
         }}
       ],
       xAxes: [{ 
@@ -675,7 +675,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'     
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')
         }}
       ],
       xAxes: [{ 
@@ -711,7 +711,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'      
+          labelString: this.translationData.lblton || 'Ton'    
         }}
       ],
       xAxes: [{ 
@@ -747,7 +747,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs/100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }}
       ],
       xAxes: [{ 
@@ -825,9 +825,7 @@ tripTraceArray: any = [];
                }
 
                defaultTranslation(){
-                this.translationData = {
-                  lblSearchReportParameters: 'Search Report Parameters'
-                }    
+                this.translationData = { }    
               }
                
   ngOnInit(): void {
@@ -1801,7 +1799,7 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: 'Number of Trips'    
+        labelString: this.translationData.lblNoOfTrips || 'Number Of Trips'       
       }
     }]; 
     this.barChartOptions.scales.xAxes= [{ 
@@ -1822,7 +1820,7 @@ createEndMarker(){
    }];  
     this.barChartData2= [
       { data: this.barData,
-        label: 'Number of Trips',
+        label: this.translationData.lblNoOfTrips || 'Number Of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1908,7 +1906,7 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: 'Minutes'      
+        labelString: this.translationData.lblMinutes || 'Minutes'      
       }
     }];
     this.barChartOptions1.scales.xAxes= [{      
@@ -1927,7 +1925,7 @@ createEndMarker(){
          },             
       }      
   }]; 
-  this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
+  this.barChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
   }
@@ -2116,7 +2114,7 @@ createEndMarker(){
            },             
         }     
     }]; 
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }, ];
   }
       this.lineChartColors= [
       {
