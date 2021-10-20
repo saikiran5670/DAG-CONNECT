@@ -227,8 +227,9 @@ namespace net.atos.daf.ct2.package.repository
                         parameter.Add("@state", (char)_packageCoreMapper.ToPackageState(filter.State), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.state=@state";
                     }
-
-                    query = query + " and pkg.type in ('O','V','P') ORDER BY id ASC; ";
+                    //we have only this 4 types(O,V,P,N) in table, this in is very expensive
+                    //query = query + " and pkg.type in ('O','V','P','N') ORDER BY id ASC; ";
+                    query = query + " ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)

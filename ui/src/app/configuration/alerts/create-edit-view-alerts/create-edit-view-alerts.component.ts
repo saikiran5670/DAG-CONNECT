@@ -498,15 +498,15 @@ proceedStep(prefData: any, preference: any){
         this.unitTypes= [
           {
             enum : 'H', 
-            value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
+            value : this.translationData.lblHours ? this.translationData.lblHours : ''
           },
           {
             enum : 'T',
-            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
+            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : ''
           },
           {
             enum : 'S',
-            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : 'Seconds'
+            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : ''
           }
         ];
       }
@@ -520,14 +520,14 @@ proceedStep(prefData: any, preference: any){
         //   break;
         // }
         case "LH": { //Excessive under utilization in hours
-          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           break;
         }
         case "LD": { //Excessive distance done
-          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : this.translationData.lblMiles;
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
          // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           if(this.prefUnitFormat == 'dunit_Metric'){
             this.unitTypeEnum= "K";  }
@@ -544,8 +544,8 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LU": { //Excessive Driving duration
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -557,9 +557,9 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LG": { //Excessive Global Mileage
-          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -575,26 +575,26 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FP": { //Fuel Increase During stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%";
           this.unitTypeEnum= "P";
           break;
         }
         case "FL": { //Fuel loss during stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FT": { //Fuel loss during trip
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FI": { //Excessive Average Idling
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "";
           this.unitTypeEnum= "S";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -606,7 +606,7 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FA": { //Excessive Average speed
-          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
+          this.labelForThreshold= this.translationData.lblSpeed ? this.translationData.lblSpeed : "";
           this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour : this.translationData.lblMilesPerHour;
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
@@ -618,7 +618,7 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FF": { //Fuel Consumed
-          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "";
           // this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
           // this.unitTypeEnum= "L";
            this.unitForThreshold= "%";

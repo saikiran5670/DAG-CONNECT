@@ -104,6 +104,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while processing Vehicle Mileage data.");
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Vehicle Mileage Service", nameof(GetVehicleMileage), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get mileage method vehicle mileage service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
         }

@@ -1156,20 +1156,26 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     });
   }
 
+  getPDFExcelHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblGeneratedDate || 'Generated Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblStartTime || 'Start Time' }`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblVehicle || 'Vehicle' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
+    return col;
+  }
+
   exportAsExcelFile(){  
-    const title = 'Logbook';
-    const summary = 'Logbook Details Section';
-    const detail = 'Alert Detail Section';
-    
-    const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle', 'VIN', 'Occurrence', 'Threshold Value'];
-    const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
-    let summaryObj=[
-      ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    const title = this.translationData.lblLogbook || 'Logbook';
+    const summary = this.translationData.lblLogbookDetailsSection || 'Logbook Details Section';
+    const detail = this.translationData.lblAlertDetailSection || 'Alert Detail Section';
+    //const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle', 'VIN', 'Occurrence', 'Threshold Value'];
+    const header = this.getPDFExcelHeader();
+    const summaryHeader = [ this.translationData.lblLogbookName || 'Logbook Name', this.translationData.lblLogbookCreated || 'Logbook Created', this.translationData.lblLogbookStartTime || 'Logbook Start Time', this.translationData.lblLogbookEndTime || 'Logbook End Time', this.translationData.lblVehicleGroup || 'Vehicle Group', this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblAlertLevel || 'Alert Level', this.translationData.lblAlertType || 'Alert Type', this.translationData.lblAlertCategory || 'Alert Category'];
+    let summaryObj = [
+      [this.translationData.lblLogbookData || 'Logbook Data', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
       this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.alertLevel,
       this.tableInfoObj.alertType,this.tableInfoObj.alertCategory
       ] 
     ];
-    const summaryData= summaryObj;
+    const summaryData = summaryObj;
    
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1252,7 +1258,8 @@ exportAsPDFFile(){
     }
 });
 
-let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+//let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+let pdfColumns = this.getPDFExcelHeader();
 let prepare = []
   this.initData.forEach(e=>{   
     var tempObj =[];
@@ -1271,7 +1278,7 @@ let prepare = []
     prepare.push(tempObj);
   });
   (doc as any).autoTable({
-    head: pdfColumns,
+    head: [pdfColumns],
     body: prepare,
     theme: 'striped',
     didDrawCell: data => {
@@ -1828,18 +1835,18 @@ let prepare = []
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: this.translationData.lblLayerIncidents ||  "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -1873,22 +1880,22 @@ let prepare = []
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Vehicle Name:</td> <td><b>${elem.vehicleName}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>VIN:</td> <td><b>${elem.vin}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblVIN}:</td> <td><b>${elem.vin}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Registration Number:</td> <td><b>${elem.vehicleRegNo}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblRegistrationNumber}:</td> <td><b>${elem.vehicleRegNo}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Date:</td> <td><b>${elem.alertGeneratedTime} km</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${elem.alertGeneratedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Position:</td> <td><b>${elem.alertGeolocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${elem.alertGeolocationAddress || '-' }</b></td>
             </tr>
             <tr class='warningClass'>
-              <td style='width: 100px;'>Alert Level:</td> <td><b>${elem.alertLevel}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblAlertLevel}:</td> <td><b>${elem.alertLevel}</b></td>
             </tr>
           </table>`
         });
