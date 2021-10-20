@@ -92,7 +92,7 @@ public class MonitorDataProcess {
 			DriverProcessing driverProcess= new DriverProcessing();
 			
 			
-			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class).filter(monitor -> monitor.getMessageType().equals(valueSeven)).returns(Monitor.class);
+			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class).filter(monitor -> monitor.getMessageType().equals(valueSeven) && monitor.getDocument().getDriverID()!=null).returns(Monitor.class);
 			
 			SingleOutputStreamOperator<Monitor> driverManagementProcessing = driverProcess.driverManagementProcessing(monitorStream, Long.parseLong(envParams.get(DafConstants.DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS)));
 			
