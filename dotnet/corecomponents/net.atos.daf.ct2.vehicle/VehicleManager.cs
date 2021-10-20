@@ -449,7 +449,7 @@ namespace net.atos.daf.ct2.vehicle
         #endregion
 
         #region Vehicle Namelist Data
-        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId)
+        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId, VehicleNamelistSSOContext context)
         {
             try
             {
@@ -465,33 +465,31 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<DtoVehicleNamelist> vehicleNameList = await _vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
+                IEnumerable<VehicleRelations> vehicleNameList = await _vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
 
                 if (vehicleNameList.Count() > 0)
                 {
-                    //Fetch visibility vehicles for the account
-                    var result = await GetVisibilityVehicles(accountId, orgId);
-                    var vehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+                    //Fetch visibility vehicles for the account, org or only org based on context value
+                    Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+                    if (context == VehicleNamelistSSOContext.Org)
+                    {
+                        resultDict = await GetVisibilityVehiclesByOrganization(orgId);
+                    }
+                    else
+                    {
+                        resultDict = await GetVisibilityVehicles(accountId, orgId);
+                    }
 
-                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.Vin)).AsEnumerable();
+                    var vehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+
+                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
                 }
 
                 VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
-                vehicleNamelistResponse.Vehicles = new List<response.Vehicles>();
-
-                if (vehicleNameList != null)
-                {
-                    foreach (var item in vehicleNameList)
-                    {
-                        response.Vehicles vehiclesObj = new response.Vehicles();
-
-                        vehiclesObj.VIN = item.Vin;
-                        vehiclesObj.Name = item.Name;
-                        vehiclesObj.RegNo = item.Regno;
-
-                        vehicleNamelistResponse.Vehicles.Add(vehiclesObj);
-                    }
-                }
+                vehicleNamelistResponse.VehicleRelations =
+                        context == VehicleNamelistSSOContext.None
+                                    ? vehicleNameList.ToList()
+                                    : (await _vehicleRepository.GetVehicleRelations(vehicleNameList, orgId)).ToList();
 
                 return vehicleNamelistResponse;
             }
@@ -637,6 +635,7 @@ namespace net.atos.daf.ct2.vehicle
             }
 
         }
+
         public async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId)
         {
             try
