@@ -6,9 +6,9 @@
     </div>
     <div class="tabs">
       <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged(selectedIndex);">
-        <mat-tab label="{{ translationData.lblCurrent }}">
+        <mat-tab label="{{ translationData.lblCurrent || 'Current'}}">
         </mat-tab>
-        <mat-tab label="{{ translationData.lblHistory }}">
+        <mat-tab label="{{ translationData.lblHistory || 'History' }}">
         </mat-tab>
       </mat-tab-group>
     </div>
