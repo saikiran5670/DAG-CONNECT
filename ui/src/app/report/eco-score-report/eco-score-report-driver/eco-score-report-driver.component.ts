@@ -1471,15 +1471,15 @@ this.barChartOptionsPerformance = {
       // let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-      doc.addPage('a0','p');
+      doc.addPage();
 
-      doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
-      //doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
-      doc.addPage('a0','p');
+      if(generalBarHref) doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
+      if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
+      doc.addPage();
 
-      doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
-      //doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
-      doc.addPage('a0','p');
+      if(performanceBarHref) doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
+      if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
+      doc.addPage();
 
     (doc as any).autoTable({
       // head: pdfColumns,

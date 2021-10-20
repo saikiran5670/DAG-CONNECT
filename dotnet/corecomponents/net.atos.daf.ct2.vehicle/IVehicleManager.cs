@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.vehicle
         #endregion
 
         #region Vehicle Namelist Data
-        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgid);
+        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId, VehicleNamelistSSOContext context);
         #endregion
 
         #region Vehicle Visibility
