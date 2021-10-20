@@ -409,7 +409,7 @@
                       <mat-cell *matCellDef="let row"> {{ row.roleName }} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="featureIds">
-                      <mat-header-cell *matHeaderCellDef>{{ translationData.Services }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef>{{ translationData.lblServices }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">  
                         <span *ngIf='row.featureIds.length > 0'>
                           <span *ngFor='let item of [].constructor(row.featureIds.length > 4 ? 4 : row.featureIds.length); let i = index'>

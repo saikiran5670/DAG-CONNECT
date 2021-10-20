@@ -125,15 +125,15 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 10 //-- for fleet utilisation
-    }
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 10 //-- for fleet utilisation
+    // }
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -157,7 +157,7 @@ export class LiveFleetMapComponent implements OnInit {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.mapFilterForm.get('routeType').setValue('C');
     setTimeout(() => {
-      this.fleetMapService.initMap(this.mapElement);
+      this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
       this.tripTraceArray = this.detailsData;
     this.makeHerePOIList();
@@ -188,13 +188,17 @@ export class LiveFleetMapComponent implements OnInit {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }

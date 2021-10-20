@@ -50,10 +50,13 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.userType = localStorage.getItem("userType");
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
-    if(this.adminAccessType.globalCategoryAccess){ // global category access
-      this.types = ['Global', 'Regular'];
-    }else{
-      this.types = ['Regular'];
+    if (this.adminAccessType.globalCategoryAccess) { // global category access
+      this.types = [];
+      this.types.push(this.translationData.lblGlobal || 'Global');
+      this.types.push(this.translationData.lblRegular || 'Regular');
+    } else {
+      this.types = [];
+      this.types.push(this.translationData.lblRegular || 'Regular');
     }
     this.categoryForm = this._formBuilder.group({
       categoryName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
