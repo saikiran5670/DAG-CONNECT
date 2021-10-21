@@ -64,7 +64,8 @@
                         CampaignSubject = item.CampaignSubject,
                         CampaignCategory = item.CampaignCategory,
                         CampaignType = item.CampaignType,
-                        UpdateStatus = item.UpdateStatus
+                        UpdateStatus = item.UpdateStatus,
+                        EndDate = item.EndDate
                     };
                     campaign.Systems.AddRange(item.Systems);
                     returnObj.VehicleUpdateDetails.Campaigns.Add(campaign);
