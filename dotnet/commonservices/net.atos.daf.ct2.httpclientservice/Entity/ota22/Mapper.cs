@@ -59,13 +59,13 @@
                 {
                     var campaign = new Campaign
                     {
-                        BaselineAssignment = item.BaselineAssignment,
-                        CampaignID = item.CampaignID,
-                        CampaignSubject = item.CampaignSubject,
-                        CampaignCategory = item.CampaignCategory,
-                        CampaignType = item.CampaignType,
-                        UpdateStatus = item.UpdateStatus,
-                        EndDate = item.EndDate
+                        BaselineAssignment = item.BaselineAssignment ?? string.Empty,
+                        CampaignID = item.CampaignID ?? string.Empty,
+                        CampaignSubject = item.CampaignSubject ?? string.Empty,
+                        CampaignCategory = item.CampaignCategory ?? string.Empty,
+                        CampaignType = item.CampaignType ?? string.Empty,
+                        UpdateStatus = item.UpdateStatus ?? string.Empty,
+                        EndDate = item.EndDate ?? string.Empty
                     };
                     campaign.Systems.AddRange(item.Systems);
                     returnObj.VehicleUpdateDetails.Campaigns.Add(campaign);
