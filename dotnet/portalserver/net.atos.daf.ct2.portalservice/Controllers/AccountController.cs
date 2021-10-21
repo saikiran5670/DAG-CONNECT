@@ -1796,7 +1796,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Single Sign On
         [HttpPost]
         [Route("sso")]
-        public async Task<IActionResult> GenerateSSOToken()
+        public async Task<IActionResult> GenerateSSOToken([FromBody] SSORequest request)
         {
             try
             {
@@ -1804,9 +1804,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ssoRequest.AccountID = _userDetails.AccountId;
                 ssoRequest.RoleID = _userDetails.RoleId;
                 ssoRequest.OrganizationID = _userDetails.ContextOrgId > 0 ? _userDetails.ContextOrgId : _userDetails.OrgId;
+                ssoRequest.FeatureName = request.FeatureName;
                 if (ssoRequest.AccountID <= 0 || ssoRequest.RoleID <= 0 || ssoRequest.OrganizationID <= 0)
                 {
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(HeaderObj));
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING PARAMETER", "Account Information");
                 }
                 var response = await _accountClient.GenerateSSOAsync(ssoRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
@@ -1819,7 +1820,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                 {
-                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_USER!", Convert.ToString(ssoRequest.AccountID));
+                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID USER", Convert.ToString(ssoRequest.AccountID));
                 }
                 else
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "BAD REQUEST", Convert.ToString(ssoRequest.AccountID));
