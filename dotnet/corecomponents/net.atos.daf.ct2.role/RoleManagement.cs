@@ -33,8 +33,8 @@ namespace net.atos.daf.ct2.role
                 {
                     roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
                     featuresetid = await _featureManager.AddFeatureSet(roleMaster.FeatureSet);
-                    int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
-                    roleMaster.Level = minlevel;
+                    //int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                    //roleMaster.Level = minlevel;
                     roleMaster.Feature_set_id = featuresetid;
                 }
                 roleId = await _roleRepository.CreateRole(roleMaster);
@@ -107,8 +107,8 @@ namespace net.atos.daf.ct2.role
                 {
                     roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
                     featuresetid = await _featureManager.AddFeatureSet(roleMaster.FeatureSet);
-                    int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
-                    roleMaster.Level = minlevel;
+                    //int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                    //roleMaster.Level = minlevel;
                     roleMaster.Feature_set_id = featuresetid;
                 }
                 roleId = await _roleRepository.UpdateRole(roleMaster);
@@ -126,6 +126,10 @@ namespace net.atos.daf.ct2.role
         public int CheckRoleNameExist(string roleName, int Organization_Id, int roleid)
         {
             return _roleRepository.CheckRoleNameExist(roleName, Organization_Id, roleid);
+        }
+        public async Task<IEnumerable<string>> GetCode(RoleCodeFilter roleFilter)
+        {
+            return await _roleRepository.GetCode(roleFilter);
         }
     }
 }

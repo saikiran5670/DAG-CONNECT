@@ -48,7 +48,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   scheduledTime: any;
   scheduledDate: any;
   prefTimeFormat: any = 12; //-- coming from pref setting
-  prefDateFormat: any = ''; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   schedulerData: any ={
     campaignName: "",
@@ -257,7 +257,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
         var todaysDate = moment();
         if (element.endDate) {
-          element.endDate = moment(parseInt(element.endDate)).format(this.dateFormats.display.dateInput);
+          element.endDate = Util.convertUtcToDateFormat(element.endDate,this.dateFormats.display.dateInput, this.prefTimeZone);
          if(moment(element.endDate).isBefore(todaysDate['_d'])){
             this.campaignOverFlag = true;
          }
