@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota22
         public string UpdateStatus { get; set; }
         [JsonProperty("endDate")]
         public string EndDate { get; set; }
+
     }
 
     public class VehicleUpdateDetails

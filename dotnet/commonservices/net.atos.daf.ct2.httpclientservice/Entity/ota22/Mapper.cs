@@ -2,6 +2,7 @@
 {
     public class Mapper
     {
+
         public VehiclesStatusOverviewResponse MapVehiclesStatusOverview(net.atos.daf.ct2.httpclientfactory.entity.ota22.VehiclesStatusOverviewResponse vehiclesStatusOverviewResponses)
         {
             var returnObj = new VehiclesStatusOverviewResponse();
