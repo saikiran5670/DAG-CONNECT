@@ -530,6 +530,7 @@ message TokenSSORequest {
     int32 AccountID=2;
     int32 RoleID=3;
     int32 OrganizationID=4;
+    string FeatureName=5;
 }
 
 message SSOToken{
