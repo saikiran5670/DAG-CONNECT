@@ -98,6 +98,6 @@
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
-        <app-edit-user-role-details [translationData]='translationData' [viewFlag]='viewFlag' [duplicateFlag]='duplicateFlag' [createStatus]='createStatus' [title]='titleText' [roleData]='initData' [gridData]='rowsData' (backToPage)='editData($event)'></app-edit-user-role-details>
+        <app-edit-user-role-details [userLevel]='userLevel' [userType]='userType' [adminAccessType]='adminAccessType' [translationData]='translationData' [viewFlag]='viewFlag' [duplicateFlag]='duplicateFlag' [createStatus]='createStatus' [title]='titleText' [roleData]='initData' [gridData]='rowsData' (backToPage)='editData($event)'></app-edit-user-role-details>
     </div>
 </div>
