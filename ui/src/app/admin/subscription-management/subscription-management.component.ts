@@ -62,11 +62,15 @@ export class SubscriptionManagementComponent implements OnInit {
   accountDetails : any =[];
   TypeList: any = [
     {
-      name: 'Organization',
-      value: 'O'
+      name: 'VIN',
+      value: 'N'
     },
     {
-      name: 'VIN',
+      name: 'Organization',
+      value: 'O'
+    }, 
+    {
+      name: 'Org+VIN',
       value: 'V'
     }
   ];

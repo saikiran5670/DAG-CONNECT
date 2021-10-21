@@ -257,7 +257,7 @@ namespace net.atos.daf.ct2.role.repository
 
             var queryStatement = @"select distinct code 
                                             from master.role 
-                                            where state=@state and level=@level ";
+                                            where state=@state and level>=@level ";
 
             var parameter = new DynamicParameters();
             parameter.Add("@level", roleFilter.RoleLevel);
