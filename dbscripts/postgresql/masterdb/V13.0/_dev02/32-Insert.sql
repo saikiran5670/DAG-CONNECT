@@ -6657,3 +6657,5 @@ insert into translation.translation (code,type,name,value,created_at,modified_at
 select 'xr-XR',type,name,name,(select extract(epoch from now()) * 1000),modified_at 
 from translation.translation where code<>'xr-XR'
 and name not in (select name from translation.translation where code='xr-XR');
+
+update master.package set packagecode='CT2-0001' where id=(select id from master.package where name='Base');
