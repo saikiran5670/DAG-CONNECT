@@ -93,8 +93,8 @@
                     <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{
                       (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' l') : (prefUnitFormat ==
-                      'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') : (translationData.lblgallonmile
-                      || ' gal') }}
+                      'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
+                      || ' mpg') }}
                       </span>
                   </div>
                   <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
@@ -105,9 +105,9 @@
                   <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
                     <span
-                      style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{
+                      style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{fuelConsumptionSummary}}{{
                       (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
-                      'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                      'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                       || 'mpg') }}</span>
                   </div>
                   <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">

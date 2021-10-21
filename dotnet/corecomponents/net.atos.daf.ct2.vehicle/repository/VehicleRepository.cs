@@ -589,6 +589,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,status=@status
                                         ,reference_date=@reference_date
                                         ,is_ota=@is_ota
+                                        ,tcu_id=@tcu_id
+                                        ,is_tcu_register=@is_tcu_register
                                          WHERE id = @id
                                          RETURNING id;";
 
@@ -602,6 +604,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                 parameter.Add("@is_ota", vehicle.Is_Ota);
+                parameter.Add("@tcu_id", vehicle.Tcu_Id);
+                parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
+
+
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
@@ -877,7 +883,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             // Vehicle Id list Filter
-            if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
+            //////if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
             {
                 List<int> vehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
                 queryStatement = queryStatement + " and v.id  = ANY(@VehicleIds)";
