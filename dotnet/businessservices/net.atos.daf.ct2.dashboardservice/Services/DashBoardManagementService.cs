@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accId")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
 
                 List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
 
