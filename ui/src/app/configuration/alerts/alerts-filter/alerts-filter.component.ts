@@ -296,6 +296,9 @@ export class AlertsFilterComponent implements OnInit {
    else if(unitType == 'A' || unitType == 'B'){
      threshold =this.reportMapService.getConvertedSpeed(originalThreshold,unitType);
     }
+    else if(unitType == 'P'){
+      threshold=originalThreshold;
+    }
     return threshold;
   }
  
