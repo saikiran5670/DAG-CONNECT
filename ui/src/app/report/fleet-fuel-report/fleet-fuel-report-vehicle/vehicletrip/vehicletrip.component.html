@@ -279,7 +279,7 @@
             (opened)="isDetailsOpen == true" (closed)="isDetailsOpen == false">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllTripDetails ||
+                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails ||
                     'All Trip Details' }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -575,6 +575,66 @@
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_dpascore')">      
                   <span>{{row.dpaScore}}</span>     
                 </mat-cell>      
+              </ng-container>
+              <ng-container matColumnDef="idlingPTOScore">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore  }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
+                  <span>{{ row.convertedIdlingPTOScore }}</span>
+                </mat-cell>
+              </ng-container>
+              
+              <ng-container matColumnDef="idlingPTO">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO  }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <span>{{row.idlingPTO}}</span>
+                </mat-cell>
+              </ng-container>
+    
+              <ng-container matColumnDef="idlingWithoutPTO">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <span>{{ row.convertedIdlingWithoutPTO }}</span>
+                </mat-cell>
+              </ng-container>
+    
+              <ng-container matColumnDef="idlingWithoutPTOpercent">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO  }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <span>{{row.idlingWithoutPTOpercent}}</span>
+                </mat-cell>
+              </ng-container>
+    
+              <ng-container matColumnDef="footBrake">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_footbrake')">{{ translationData.lblFootBrake }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_footbrake')">
+                  <span>{{row.footBrake}}</span>
+                </mat-cell>
+              </ng-container>
+    
+              <ng-container matColumnDef="cO2Emmision">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm  }}
+                  <span style="font-weight: normal;"></span> 
+                </mat-header-cell>
+    
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emmision')">
+                  <span>{{row.cO2Emmision}}</span>
+                </mat-cell>
+              </ng-container>
+    
+           
+              <ng-container matColumnDef="idlingConsumptionWithPTO">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue }}
+                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km ) :
+                  (translationData.lblmpg )  }})</span> 
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">
+                  <span> {{row.convertedIdlingConsumptionWithPto}}</span>
+                </mat-cell>
               </ng-container>
       
                   <mat-header-row *matHeaderRowDef="displayedColumns" class="mat-header-data"></mat-header-row>
