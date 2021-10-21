@@ -443,17 +443,17 @@ export class DriverManagementComponent implements OnInit {
     //else{
       if(!value || value == '' || value.length == 0 || value.trim().length == 0){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblRequireEmailField || 'Required Email field'}`;
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblRequireEmailField || 'Required Email field'}`;
         return obj;  
       }
       if(value.length > 100){ //-- as per db table
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars}`;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars}`;  
         return obj;
       }
       if(!regx.test(value)){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblEmailIDformatisinvalid}`;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDformatisinvalid}`;  
         return obj;
       }
       return obj;
@@ -467,22 +467,22 @@ export class DriverManagementComponent implements OnInit {
     let SpecialCharRegex = /[^-!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDCountryCodeismandatoryinput}`;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeismandatoryinput}`;
       return obj;  
     }
     if(value.trim().length > 3){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength}`;  
       return obj;
     }
     if(!numberRegex.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+ this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+ this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
       return obj;
     }
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
       return obj;
     }
     // if(!regx.test(value)){
@@ -498,17 +498,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
       return obj;  
     }
     if(value.trim().length != 16){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;  
       return obj;
     }
     return obj; 
@@ -519,17 +519,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDismandatoryinput}`;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDismandatoryinput}`;
       return obj;  
     }
     if(value.length != 19){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDshouldbeexactly19charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly19charsinlength}`;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - ${this.translationData.lblDriverIDformatisinvalid}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDformatisinvalid}`;  
       return obj;
     }
     return obj;
