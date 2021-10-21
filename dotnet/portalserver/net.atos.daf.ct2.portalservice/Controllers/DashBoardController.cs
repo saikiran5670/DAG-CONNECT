@@ -72,28 +72,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpPost]
+        //[HttpPost]
+        [HttpGet]
         [Route("alert24hours")]
-        public async Task<IActionResult> GetAlert24Hours([FromBody] Entity.Dashboard.Alert24HoursFilter request)
+        public async Task<IActionResult> GetAlert24Hours()
         {
             try
             {
-
-                if (request == null && request.VINs.Count <= 0)
-                {
-                    return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
-                }
+                var featureIds = GetMappedFeatureIdByStartWithName(DashboardConstant.ALERT_FEATURE_STARTWITH);
                 Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
                 int organizationId = GetContextOrgId();
                 headers.Add("context_orgid", Convert.ToString(organizationId));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
 
-                string filters = JsonConvert.SerializeObject(request);
-                Alert24HoursFilterRequest objAlertFilter = JsonConvert.DeserializeObject<Alert24HoursFilterRequest>(filters);
+                Alert24HoursFilterRequest objAlertFilter = new Alert24HoursFilterRequest();
                 _logger.Info("GetAlert24hours method in dashboard API called.");
                 var data = await _dashboardServiceClient.GetLastAlert24HoursAsync(objAlertFilter, headers);
                 if (data != null)
                 {
-                    data.Message = DashboardConstant.GET_ALERTLAST24HOURS_SUCCESS_MSG;
+                    data.Message = data.Code == Responsecode.Success ? DashboardConstant.GET_ALERTLAST24HOURS_SUCCESS_MSG : data.Message;
                     return Ok(data);
                 }
                 else
