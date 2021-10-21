@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.account.entity
         public int AccountID { get; set; }
         public int RoleID { get; set; }
         public int OrganizaitonID { get; set; }
+        public string FeatureName { get; set; }
     }
 }
