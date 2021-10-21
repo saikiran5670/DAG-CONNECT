@@ -16,13 +16,16 @@ namespace net.atos.daf.ct2.alert.test
         private readonly IDataAccess _dataAccess;
         private readonly AlertRepository _alertRepository;
         private readonly IAlertManager _ialertManager;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         public AlertManagerTest()
         {
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                       .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
+            var connectionDataMartString = _config.GetConnectionString("DevDataMartAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _alertRepository = new AlertRepository(_dataAccess);
+            _dataMartdataAccess = new PgSQLDataMartDataAccess(connectionDataMartString);
+            _alertRepository = new AlertRepository(_dataAccess, _dataMartdataAccess);
             _ialertManager = new AlertManager(_alertRepository);
         }
 
@@ -255,7 +258,11 @@ namespace net.atos.daf.ct2.alert.test
                 Notifications = new List<Notification>(),
                 AlertLandmarkRefs = new List<AlertLandmarkRef>(),
             };
-            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId).Result;
+            List<int> featureIds = new List<int>();
+            featureIds.Add(403);
+            featureIds.Add(405);
+            featureIds.Add(413);
+            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId, featureIds).Result;
             Assert.IsNotNull(result);
         }
 

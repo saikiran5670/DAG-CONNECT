@@ -21,12 +21,14 @@
       "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
       "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
       "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler",
-      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard"
+      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard",
+      "signalRServiceURL": "#{AUTHENTICATIONSERVICEURL}#/notificationhub",
+      "vehicleUpdateRESTServiceUrl": "#{AUTHENTICATIONSERVICEURL}#/otasoftwareupdate"
 
     },
     "hereMap":{
       "app_id":"LRJH9LmTMNbwteXRz03L",
       "app_code":"o9LPYEnoFvNtmkYUhCb1Tg",
-      "api_key":"BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "api_key":"BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw" 
     }
 }

@@ -33,7 +33,7 @@ const createGpx = require('gps-to-gpx').default;
 export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
   displayedColumnsGeo = ['All', 'name', 'categoryName', 'subCategoryName', 'Actions'];
@@ -76,13 +76,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
-    ['GeoFence','51.07','57.07','CategoryName','SubCategoryName','Banglore','612304','Banglore','India']];
+    ['GeoFence', 51.07 , 57.07 ,'CategoryName','SubCategoryName','Banglore','612304','Banglore','India']];
   // [
   //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
   //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
-  tableColumnList = ['organizationId', 'categoryId',  'subCategoryId', 
+  tableColumnList = ['organizationId', 'categoryName',  'subCategoryName', 
     'poiName', 'latitude', 'longitude', 'returnMessage'];
-  tableColumnName = ['OrganizationId', 'CategoryId',  'SubCategoryId',
+  tableColumnName = ['OrganizationId', 'Category Name',  'SubCategory Name',
     'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
@@ -121,7 +121,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     ) {
       this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key
       });
       this.configureAutoSuggest();
   }
@@ -192,7 +192,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -469,6 +468,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geoListData: any) => {
       this.geoInitData = geoListData;
       this.geoInitData = this.geoInitData.filter(item => item.type == "C" || item.type == "O");
+      this.geoInitData.sort((userobj1, userobj2)=> parseInt(userobj2.id) - parseInt(userobj1.id));
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
@@ -513,30 +513,63 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   loadLandmarkCategoryData() {
     this.showLoadingIndicator = true;
-    let objData = {
-      type: 'C',
-      Orgid: this.accountOrganizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      this.categoryList = parentCategoryData.categories;
-      this.getSubCategoryData();
+    // let objData = {
+    //   type: 'C',
+    //   Orgid: this.accountOrganizationId
+    // }
+    // this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
+    //   this.categoryList = parentCategoryData.categories;
+    //   this.getSubCategoryData();
+    // }, (error) => {
+    //   this.categoryList = [];
+    //   this.getSubCategoryData();
+    // });
+    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      this.hideloader();
+      this.fillDropdown(categoryData.categories); // fill dropdown
     }, (error) => {
-      this.categoryList = [];
-      this.getSubCategoryData();
+      this.hideloader();
     });
   }
 
-  getSubCategoryData() {
-    let objData = {
-      type: 'S',
-      Orgid: this.accountOrganizationId
+  fillDropdown(categoryData: any){
+    this.categoryList = [];
+    this.subCategoryList = [];
+    if(categoryData.length > 0){
+      let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
+      let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
+      if(catDD && catDD.length > 0){ // category dropdown
+        catDD.forEach(element => {
+          this.categoryList.push({
+            id: element.parentCategoryId,
+            name: element.parentCategoryName,
+            organizationId: element.organizationId
+          });
+        });
+      } 
+      if(subCatDD && subCatDD.length > 0){ // sub-category dropdown
+        subCatDD.forEach(elem => {
+          this.subCategoryList.push({
+            id: elem.subCategoryId,
+            name: elem.subCategoryName,
+            organizationId: elem.organizationId
+          });
+        });
+      }
     }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
-      this.subCategoryList = subCategoryData.categories;
-    }, (error) => {
-      this.subCategoryList = [];
-    });
   }
+
+  // getSubCategoryData() {
+  //   let objData = {
+  //     type: 'S',
+  //     Orgid: this.accountOrganizationId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
+  //     this.subCategoryList = subCategoryData.categories;
+  //   }, (error) => {
+  //     this.subCategoryList = [];
+  //   });
+  // }
 
   onGeofenceCategoryChange(_event: any) {
     this.categorySelectionForGeo = parseInt(_event.value);
@@ -1022,14 +1055,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     
   // }
   exportAsExcelFile(){
-    const title = 'POIData';
+    //const title = 'POIData';
     const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country']
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('PoiData');
     //Add Row and formatting
-    let titleRow = worksheet.addRow([title]);
-    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-    worksheet.addRow([]);
+    //let titleRow = worksheet.addRow([title]);
+    //titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    //worksheet.addRow([]);
     let headerRow = worksheet.addRow(poiData); 
     headerRow.eachCell((cell, number) => {
       cell.fill = {
@@ -1245,8 +1278,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
-                              this.translationData.lblCategoryId || 'CategoryId',
-                              this.translationData.lblSubCategoryId || 'SubCategoryId',
+                              this.translationData.lblCategoryName || 'Category Name',
+                              this.translationData.lblSubCategoryName || 'SubCategory Name',
                               this.translationData.lblPOIName || 'POIName',
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',

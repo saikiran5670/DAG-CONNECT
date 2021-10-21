@@ -9,6 +9,7 @@
     <None Remove="Protos\dashboard.proto" />
     <None Remove="Protos\geofence.proto" />
     <None Remove="Protos\group.proto" />
+    <None Remove="Protos\otasoftwareupdate.proto" />
     <None Remove="Protos\package.proto" />
     <None Remove="Protos\report.proto" />
     <None Remove="Protos\reportscheduler.proto" />
@@ -33,6 +34,7 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Protobuf Include="Protos\otasoftwareupdate.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\report.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\geofence.proto" GrpcServices="Client" />
@@ -62,5 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entity\Role\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="cacert.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

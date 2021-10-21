@@ -17,7 +17,7 @@ import {
 export class EcoScoreDriverCompareComponent implements OnInit {
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
-  @Input() translationData: any=[];
+  @Input() translationData: any = {};
   @Input() compareEcoScore: any;
   @Input() prefUnitFormat: any;
   @Output() backToMainPage = new EventEmitter<any>();
@@ -173,17 +173,17 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'category', name: (this.translationData.lblCategory), field: 'key',
         type: FieldType.string, minWidth: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
-        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
+        id: 'target', name: (this.translationData.lblTarget ), field: 'targetValue',
         type: FieldType.string, formatter: this.getTarget, minWidth: 90, maxWidth: 275, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
+        id: 'categoryG', name: (this.translationData.lblCategory ), field: 'key',
         type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       }
     ];
@@ -372,6 +372,10 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         else if(key.indexOf('75') !== -1)
           value += ' >45 mph ';
         value += '(%)';
+      } else if(key.indexOf('rp_averagegrossweight') !== -1){
+        value += ' (ton) ';
+      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+        value += ' (mile) ';
       }
     }  else if(this.prefUnitFormat === 'dunit_Metric'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
@@ -386,6 +390,10 @@ export class EcoScoreDriverCompareComponent implements OnInit {
           else if(key.indexOf('75') !== -1)
            value += ' >75 km/h ';
           value += '(%)';
+        } else if(key.indexOf('rp_averagegrossweight') !== -1){
+          value += ' (tonne) ';
+        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+          value += ' (km) ';
         }
     }
     const gridOptions = grid.getOptions() as GridOption;

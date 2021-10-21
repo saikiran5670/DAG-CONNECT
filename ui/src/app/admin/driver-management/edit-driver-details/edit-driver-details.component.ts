@@ -13,7 +13,7 @@ import { ConsentOptComponent } from '../consent-opt/consent-opt.component';
 export class EditDriverDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<boolean>();
   @Input() driverData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() organizationData: any;
   dialogRef: MatDialogRef<ConsentOptComponent>;
@@ -31,17 +31,17 @@ export class EditDriverDetailsComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.driverFormGroup = this._formBuilder.group({
       driverId: new FormControl({value: null, disabled: true}),
-      emailId: ['', [Validators.email]], // Validators.required
+      emailId: ['', [Validators.required, Validators.email]],
       consentStatus: ['', []],
-      firstName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]], //Validators.required, CustomValidators.noWhitespaceValidator 
-      lastName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]], //Validators.required, CustomValidators.noWhitespaceValidator
+      firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]], // CustomValidators.noWhitespaceValidatorWithoutRequired
+      lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]], // CustomValidators.noWhitespaceValidatorWithoutRequired
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForNameWithoutRequired('firstName'), // specialCharValidationForName
-        CustomValidators.numberValidationForNameWithoutRequired('firstName'), // numberValidationForName
-        CustomValidators.specialCharValidationForNameWithoutRequired('lastName'), // specialCharValidationForName 
-        CustomValidators.numberValidationForNameWithoutRequired('lastName') // numberValidationForName
+        CustomValidators.specialCharValidationForName('firstName'), // specialCharValidationForNameWithoutRequired
+        CustomValidators.numberValidationForName('firstName'), //  numberValidationForNameWithoutRequired
+        CustomValidators.specialCharValidationForName('lastName'), // specialCharValidationForNameWithoutRequired 
+        CustomValidators.numberValidationForName('lastName') // numberValidationForNameWithoutRequired
       ]
     });
     this.breadcumMsg = this.getBreadcum();

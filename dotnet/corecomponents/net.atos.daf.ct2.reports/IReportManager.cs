@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
-        Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin);
+        Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin, int organizationId);
         Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto);
         Task<int> GetEcoScoreProfilesCount(int orgId);
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
@@ -30,11 +30,13 @@ namespace net.atos.daf.ct2.reports
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
         Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request);
-        Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId);
-        Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
-        Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
-        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId);
+        Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId, int[] featureIds);
+        Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId, int[] featureIds);
+        Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId, int[] featureId);
+        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId);
         Task<IEnumerable<int>> GetReportFeatureId(int reportId);
+        Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds);
+        Task<SubReportDto> CheckIfSubReportExist(int reportId);
         Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request);
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
         Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request);
@@ -48,6 +50,8 @@ namespace net.atos.daf.ct2.reports
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter);
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved_NoWarnings(FleetOverviewFilter fleetOverviewFilter);
         Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request);
         Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId);

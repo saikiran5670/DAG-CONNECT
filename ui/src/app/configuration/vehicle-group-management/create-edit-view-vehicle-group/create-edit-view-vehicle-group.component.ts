@@ -21,7 +21,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() vehicleListData: any;
@@ -39,10 +39,15 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   ngOnInit() { 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleGroupForm = this._formBuilder.group({
-      vehicleGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      vehicleGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       vehicleGroupType: ['', [Validators.required]],
       methodType: [],
       vehicleGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('vehicleGroupName')
+      ]
     });
     this.vehGroupTypeList = [
       {

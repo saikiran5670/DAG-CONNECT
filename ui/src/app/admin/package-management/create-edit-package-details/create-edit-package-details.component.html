@@ -1,12 +1,12 @@
-<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
                 <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack }}</span>
         </span>
     </div>
 </div>
@@ -15,30 +15,29 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package Details') : (translationData.lblViewPacakge|| 'View Package Details') }}
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage) : actionType == 'edit' ? (translationData.lblEditPackage) : (translationData.lblViewPacakge) }}
                     <mat-icon *ngIf="actionType == 'view' && selectedElementData.status == 'Active'" (click)="editPackage()" style="cursor: pointer;" [disabled]="selectedElementData.status == 'Inactive'">edit</mat-icon></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                    <mat-label><span>{{ translationData.lblPackageCode }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="20" placeholder="{{ translationData.lblEnterPackagecode || 'Enter Package Code' }}" matInput
+                            <input maxlength="20" placeholder="{{ translationData.lblEnterPackagecode  }}" matInput
                                 formControlName="code">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('required')">
-                            {{ translationData.lblPleasenterpackagecode || 'Please enter Package Code'}}
+                            {{ translationData.lblPleasenterpackagecode}}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('whitespace')">
-                            {{ translationData.lblPackagecodecannotcontainonlywhitespace || 'Package Code
-                            cannot contain only whitespace' }}
+                            {{ translationData.lblPackagecodecannotcontainonlywhitespace }}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('specialCharsNotAllowed')">
-                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                            {{ translationData.lblSpecialcharactersnotallowed }}
                         </mat-error>
                         <mat-error *ngIf="duplicateMsg">
-                            {{ translationData.lblPackagecodealreadyexists || 'Package code already exists' }}
+                            {{ translationData.lblPackagecodealreadyexists  }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -47,22 +46,21 @@
                 </div>
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex;'>
-                        <span>{{ translationData.lblPackageName || 'Package Name' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        <span>{{ translationData.lblPackageName }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
+                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackageName  }}" matInput
                                 formControlName="name">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('required')">
-                            {{ translationData.lblPleasenterpackagename || 'Please enter Package Name'}}
+                            {{ translationData.lblPleasenterpackagename }}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('whitespace')">
-                            {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Package Name
-                            cannot contain only whitespace' }}
+                            {{ translationData.lblPackagenamecannotcontainonlywhitespace }}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('specialCharsNotAllowed')">
-                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                            {{ translationData.lblSpecialcharactersnotallowed }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -71,19 +69,19 @@
                     </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblDescription || 'Description' }}</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '100 characters max' }}</span>
+                        <span>{{ translationData.lblDescription }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="100" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDescription }}" matInput
                                 formControlName="description">
                         </mat-form-field>
                         <mat-error *ngIf=" packageFormGroup.get('description').hasError('whitespace')">
-                            {{ translationData.lblDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
+                            {{ translationData.lblDescriptioncannotcontainonlywhitespace }}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('description').hasError('specialCharsNotAllowed')">
-                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                            {{ translationData.lblSpecialcharactersnotallowed }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -94,18 +92,18 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
-                        <span>{{ translationData.lblType || 'Select Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        <span>{{ translationData.lblType }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>                    
                     <div *ngIf="actionType != 'view'">            
                         <mat-form-field appearance="outline" class="full-width">
-                          <mat-select placeholder="{{ translationData.lblType || 'Type' }}" formControlName="type">
+                          <mat-select placeholder="{{ translationData.lblType  }}" formControlName="type">
                             <mat-option *ngFor="let rer of TypeList" [value]="rer.value">
                               {{ rer.name }}
                             </mat-option>
                           </mat-select>
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('type').hasError('required')">
-                            {{ translationData.lblPleaseselectpackagetype || 'Please Select Package Type'}}
+                            {{ translationData.lblPleaseselectpackagetype }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -114,13 +112,13 @@
                 </div> 
                 <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
-                        {{ translationData.lblStatus|| 'Select Status' }}
+                        {{ translationData.lblStatus }}
                     </mat-label>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)' >
-                            <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive || 'Active' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="Inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="Inactive" >{{ translationData.lblInactive }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
@@ -134,18 +132,18 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ translationData.lblHintMessage || 'You can select  multiple features from below list to map with this Package. Feature selection is mandatory'}}<span class='mandatoryColor'>*</span></span>
+                        <span>{{ translationData.lblHintMessage }}<span class='mandatoryColor'>*</span></span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
-                            translationData.lblCancel || 'Cancel' }}</button>
+                            translationData.lblCancel }}</button>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
-                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                            (click)='onReset()'>{{ translationData.lblReset  }}</button>
                         <button class='no-margin' [disabled]="!packageFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
-                            (translationData.lblConfirm || 'Confirm') }}</button>
+                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate ) :
+                            (translationData.lblConfirm ) }}</button>
                     </div>
                 </div>
             </div> 
@@ -154,7 +152,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures || 'Selected Features'):(translationData.lblSelectFeatures || 'Select Features')}}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures ):(translationData.lblSelectFeatures )}}</span>
                 </div>
             </div>
 
@@ -169,8 +167,7 @@
                         [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
                     </mat-slide-toggle>
                     <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{
-                        translationData.lblInclude ||
-                        'Include'}}</span>
+                        translationData.lblInclude }}</span>
                 </ng-template>
                 <ng-template #selectColumnDataElements let-gridData='rowData'>
                     <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'

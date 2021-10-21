@@ -11,6 +11,7 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -19,13 +20,15 @@ import html2canvas from 'html2canvas';
 })
 
 export class VehicleAccountAccessRelationshipComponent implements OnInit {
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
+  accountPrefObj: any;
   vehicleGrpVehicleAssociationDetails: any = [];
   accountGrpAccountAssociationDetails: any = [];
   vehicleGrpVehicleDetails: any = [];
   accountGrpAccountDetails: any = [];
   accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
-  translationData: any;
+  translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   selectedVehicleViewType: any = '';
@@ -45,24 +48,27 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   actionType: any = '';
   selectedElementData: any = [];
   dialogRef: MatDialogRef<UserDetailTableComponent>;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any = {};
+  userType: any = '';
   associationTypeId: any = 1;
 
-  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
-    this.defaultTranslation();
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
+    // this.defaultTranslation();
   }
 
-  defaultTranslation() {
-    this.translationData = {
-      lblSearch: "Search",
-      lblAllAccessRelationshipDetails: "All Access Relationship Details",
-      lblNewAssociation: "New Association"
-    }
-  }
+  // defaultTranslation() {
+  //   this.translationData = {
+  //     lblSearch: "Search",
+  //     lblAllAccessRelationshipDetails: "All Access Relationship Details",
+  //     lblNewAssociation: "New Association"
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    this.userType = localStorage.getItem("userType");
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
@@ -73,10 +79,37 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       filter: "",
       menuId: 30 //-- for access relationship mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.showLoadingIndicator = true;
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
       this.processTranslation(data);
-      this.loadAccessRelationshipData();
+      this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      }, (error)=>{
+        this.hideloader();
+      });
+    }, (error)=>{
+      this.hideloader();
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    if(preference.vehicleDisplayId){
+      let _search = prefData.vehicledisplay.filter(i => i.id == preference.vehicleDisplayId);
+      if(_search.length > 0) { // present
+        this.vehicleDisplayPreference = _search[0].name;
+      }
+    }
+    this.loadAccessRelationshipData();  
   }
 
   loadAccessRelationshipData(){
@@ -99,8 +132,6 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
         this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
       }
     }, (error)=>{
-      this.hideloader();
-      console.log("error:: ", error);
       this.hideloader();
     });
   }
@@ -224,10 +255,10 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   deleteAccessRelationship(element: any){
     //console.log("delete item:: ", element);
     const options = {
-      title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDelete,
+      message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete 
     };
     this.dialogService.DeleteModelOpen(options, element.name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -283,7 +314,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   changeGridOnVehicleList(val: any){
     this.cols = ['name','accessType','associatedAccount','action'];
-    this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    //this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
     let data: any = [];
     switch(val){
       case "group":{
@@ -304,7 +336,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   changeGridOnAccountList(val: any){
     this.cols = ['name','accessType','associatedVehicle','action'];
-    this.columnNames = ['Account Group/Account','Access Type','Vehicle Group/Vehicle','Action'];
+    //this.columnNames = ['Account Group/Account','Access Type','Vehicle Group/Vehicle','Action'];
+    this.columnNames = [this.translationData.lblAccountGroupAccount, this.translationData.lblAccessType, this.translationData.lblVehicleGroupVehicle, this.translationData.lblAction];
     let data: any = [];
     switch(val){
       case "group":{
@@ -375,8 +408,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
+    const colsName = [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers }`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -419,8 +452,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   showVehiclePopup(row: any){
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles }`;
     this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
       let data: any = [];
       data = vehData;

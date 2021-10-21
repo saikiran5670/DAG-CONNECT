@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contistreaming-api-deployment
+  labels:
+    app.kubernetes.io/name: contistreaming-api-java
+    app.kubernetes.io/type: application-java
+spec:
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        app.kubernetes.io/name: contistreaming-api-java
+        app.kubernetes.io/type: application-java
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        fsGroup: 10001
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - contistreaming-api-java
+              - key: app.kubernetes.io/type
+                operator: In
+                values:
+                - application-java
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: contistreaming-java-container
+        image: acraksfvfajvkuxanm4.azurecr.io/contistreaming-image:latest
+        imagePullPolicy: "Always"
+        envFrom:
+        - configMapRef:
+            name: configuration-configmap
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        ports:
+          - containerPort: 8080
+      - name: filebeatservice-container
+        image: acraksfvfajvkuxanm4.azurecr.io//filebeat
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: filebeatdata 
+          mountPath: /usr/share/filebeat/data
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        env:
+        - name: serviceName
+          value: "contistreaming-api-java"
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: filebeatdata
+        emptyDir: {}
+      - name: certs
+        secret:
+          secretName: filebeat
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: contistreaming-api-java
+        app.kubernetes.io/type: application-java
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contistreamingservice
+  labels:
+    svc.kubernetes.io/name: contistreaming-api-java
+    svc.kubernetes.io/type: application-java
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: contistreaming-api-java
+    app.kubernetes.io/type: application-java
+
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1 
+metadata: 
+  name: contistreaming-java-hpa
+  labels:
+    hpa.kubernetes.io/name: contistreaming-api-java
+    hpa.kubernetes.io/type: application-java 
+spec: 
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: contistreaming-api-deployment 
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 70

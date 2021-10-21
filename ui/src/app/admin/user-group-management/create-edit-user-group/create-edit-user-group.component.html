@@ -5,7 +5,7 @@
   <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="onCancel()">
       <span><&nbsp;</span>
-      <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+      <span class='backBtnCss'>{{ translationData.lblBack}}</span></span>
   </div>
 </div>
 <form [formGroup]="userGroupForm">
@@ -13,31 +13,30 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewUserGroup || 'Add New Account Group') : actionType == 'edit' ? (translationData.lblEditUserGroup || 'Edit Account Group') : (translationData.lblViewUserGroup || 'View Account Group') }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewUserGroup ) : actionType == 'edit' ? (translationData.lblEditUserGroup ) : (translationData.lblViewUserGroup ) }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblUserGroupName || 'Account Group Name' }} <span class='mandatoryColor'>*</span>
+          <mat-label>{{ translationData.lblUserGroupName }} <span class='mandatoryColor'>*</span>
           </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input placeholder="{{ translationData.lblEnterNewUserGroupName || 'Enter New Account Group Name' }}" matInput
+                <input placeholder="{{ translationData.lblEnterNewUserGroupName  }}" matInput
                   formControlName="userGroupName" required maxlength="50">
               </mat-form-field>
               <!-- <mat-error *ngIf="userGroupForm.get('userGroupName').hasError('required')">
                 {{translationData.lblErrorUserGroupName || 'Please enter any Account Group name' }}
               </mat-error> -->
               <mat-error *ngIf="userGroupForm.get('userGroupName').hasError('required')">
-                {{translationData.lblErrorUserGroupName || 'Please enter new Account Group name' }}
+                {{translationData.lblErrorUserGroupName  }}
               </mat-error>
               <mat-error *ngIf="!userGroupForm.get('userGroupName').hasError('required')  && userGroupForm.get('userGroupName').hasError('whitespace')">
-                {{ translationData.lblUserGroupNamecannotcontainonlywhitespace || 'Account Group Name cannot contain only whitespace' }}
+                {{ translationData.lblUserGroupNamecannotcontainonlywhitespace  }}
                </mat-error>
-              <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName || 'Duplicate Account Group
-                Name' }}</mat-error>
+              <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName }}</mat-error>
                 <mat-error *ngIf="userGroupForm.get('userGroupName').hasError('specialCharsNotAllowed')">
-                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                  {{ translationData.lblSpecialcharactersnotallowed }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -45,17 +44,17 @@
             </div>
           </div>
         <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label>{{ translationData.lblGroupType }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select (selectionChange)="groupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="groupType" required>
+                <mat-select (selectionChange)="groupTypeChange($event)" placeholder="{{ translationData.lblGroupType  }}" formControlName="groupType" required>
                 <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
                   {{ rer.name }}
                 </mat-option>
               </mat-select>
               </mat-form-field>
               <mat-error *ngIf="userGroupForm.get('groupType').hasError('required')">
-                {{ translationData.lblPleasechoosegrouptype || 'Please choose group type' }}
+                {{ translationData.lblPleasechoosegrouptype }}
               </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
@@ -65,20 +64,20 @@
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label style='display: flex; place-content: space-between;'>
             <span>{{translationData.lblUserGroupDescriptionOptional
-              || 'Account Group Description (Optional)' }}</span>
-            <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
+              }}</span>
+            <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100"
-                placeholder="{{translationData.lblEnterAboutGroupPlaceholder || 'Enter About Group' }}" matInput
+                placeholder="{{translationData.lblEnterAboutGroupPlaceholder }}" matInput
                 formControlName="userGroupDescription">
             </mat-form-field>
             <mat-error *ngIf="userGroupForm.get('userGroupDescription').hasError('whitespace')">
-              {{ translationData.lblUserGroupDescriptioncannotcontainonlywhitespace || 'Account Group Description cannot contain only whitespace' }}
+              {{ translationData.lblUserGroupDescriptioncannotcontainonlywhitespace }}
             </mat-error>
             <mat-error *ngIf="userGroupForm.get('userGroupDescription').hasError('specialCharsNotAllowed')">
-              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              {{ translationData.lblSpecialcharactersnotallowed }}
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
@@ -92,18 +91,17 @@
         <div fxLayout="column" fxLayoutAlign="left">
           <div *ngIf='showUserList' fxLayout="row" fxLayoutAlign='center center'>
             <mat-icon class='margin-right-10'>info</mat-icon>
-            <span>{{translationData.lblUserGroupManagementInfo || 'You can select Account from below list to map with this
-              Account Group' }}</span>
+            <span>{{translationData.lblUserGroupManagementInfo }}</span>
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+              (click)='onReset()'>{{translationData.lblReset  }}</button>
             <button class='no-margin' [disabled]="!userGroupForm.valid" mat-raised-button color="primary"
-              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
-              (translationData.lblConfirm || 'Confirm') }}</button>
+              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate ) :
+              (translationData.lblConfirm ) }}</button>
           </div>
         </div>
       </div>
@@ -114,7 +112,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser || 'Selected Account') : (translationData.lblSelectUser || 'Select Account') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
+            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser ) : (translationData.lblSelectUser ) }}</span>&nbsp;<span>{{ translationData.lblOptional  }}</span></span>
         </div>
       </div>
       
@@ -128,7 +126,7 @@
                   [indeterminate]='selectedAccounts.hasValue() && !isAllSelectedForAccount()'
                   [aria-label]='checkboxLabelForAccount()'>
         </mat-checkbox>
-        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
       </ng-template>
       <ng-template #selectColumnDataElements let-gridData='rowData'>
         <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedAccounts.toggle(gridData) : null'

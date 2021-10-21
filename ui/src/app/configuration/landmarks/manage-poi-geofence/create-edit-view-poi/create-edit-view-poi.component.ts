@@ -7,6 +7,8 @@ import { ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { POIService } from 'src/app/services/poi.service';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
+import { ConfigService } from '@ngx-config/core';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 
 declare var H: any;
 
@@ -18,7 +20,7 @@ declare var H: any;
 export class CreateEditViewPoiComponent implements OnInit {
   @Output() createViewEditPoiEmit = new EventEmitter<object>();
   @Input() createStatus: boolean;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedElementData: any;
   @Input() viewFlag: boolean;
   @Input() categoryList: any;
@@ -48,7 +50,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   types = ['Regular', 'Global'];
   userCreatedMsg: any = '';
   hereMapService: any;
-  organizationId: any;
+  organizationId: any = 0;
   latitude: any;
   longitude: any;
   localStLanguage: any;
@@ -64,6 +66,12 @@ export class CreateEditViewPoiComponent implements OnInit {
   activeSearchList: any = false;
   duplicatePOIName: any = false;
   duplicatePOINameMsg: any = '';
+  searchStr: string = "";
+  suggestionData: any;
+  map_key: any = '';
+  dataService: any;
+  searchMarker: any = {};
+  accessType: any = {};
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -71,16 +79,64 @@ export class CreateEditViewPoiComponent implements OnInit {
 
   // @ViewChild('map') mapElement: ElementRef;
 
-  constructor(private here: HereService, private landmarkCategoryService: LandmarkCategoryService, private _formBuilder: FormBuilder, private POIService: POIService) {
+  constructor(private hereService: HereService, private landmarkCategoryService: LandmarkCategoryService, private _formBuilder: FormBuilder, private POIService: POIService,private _configService: ConfigService,private completerService: CompleterService) {
     this.query = "starbucks";
-    this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+    // this.platform = new H.service.Platform({
+    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    // });
+    this.map_key = _configService.getSettings("hereMap").api_key;
+      this.platform = new H.service.Platform({
+        "apikey": this.map_key 
+      });
+      this.configureAutoSuggest();
+  }
+
+  private configureAutoSuggest() {
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?' + 'apiKey=' + this.map_key + '&limit=5' + '&q=' + searchParam;
+    // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+      URL, 'title', 'title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus() {
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem) {
+    if (selectedAddress) {
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey=' + this.map_key + '&id=' + id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if (data && data.position && data.position.lat && data.position.lng) {
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.showSearchMarker(this.searchMarker);
+        }
+      });
+    }
+  }
+
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      this.map.addObject(selectedMarker);
+    }
   }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.accessType = JSON.parse(localStorage.getItem("accessType"));
     this.poiFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1), Validators.max(100)]],
       category: ['', [Validators.required]],
@@ -99,6 +155,16 @@ export class CreateEditViewPoiComponent implements OnInit {
         ]
       });
     this.breadcumMsg = this.getBreadcum(this.actionType);
+    if(this.accessType && !this.accessType.globalPOIAccess){
+      this.types = ['Regular'];
+    }else{
+      this.types = ['Regular', 'Global'];
+    }
+
+    if(this.actionType == 'create'){
+      this.poiFormGroup.get('type').setValue(this.types[0]); // default selection as per demand
+    }
+
     if (this.actionType == 'view' || this.actionType == 'edit') {
       this.setDefaultValue();
     }
@@ -150,7 +216,7 @@ export class CreateEditViewPoiComponent implements OnInit {
       });
       // Add info bubble to the UI:
       ui.addBubble(bubble);
-      this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
+      this.setUpClickListener(this.map, behavior, this.selectedMarker, this.hereService, this.poiFlag, this.data, this, bubble, ui);
     }
   }
 
@@ -402,7 +468,7 @@ this.map.setZoom(14);
   setDefaultValue() {
     this.poiFormGroup.get("name").setValue(this.selectedElementData.name);
     this.poiFormGroup.get("address").setValue(this.selectedElementData.address);
-    this.poiFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.poiFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? (this.types.length > 1) ? this.types[1] : this.types[0] : this.types[0]);
     this.poiFormGroup.get("city").setValue(this.selectedElementData.city);
     this.poiFormGroup.get("zip").setValue(this.selectedElementData.zipcode);
     this.poiFormGroup.get("lattitude").setValue(this.selectedElementData.latitude);
@@ -431,13 +497,16 @@ this.map.setZoom(14);
     {
       zip = "";
     }
+    
+    let orgId: any = this.organizationId;
     if(this.poiFormGroup.controls.type.value && this.poiFormGroup.controls.type.value == 'Global'){
-      this.organizationId = 0;
+      orgId = 0;
     }
+
     let objData = {
       id: 0,
       //icon: this.poiFormGroup.controls.type.value,
-      organizationId: this.organizationId,
+      organizationId: parseInt(orgId), // this.organizationId
       categoryId: this.poiFormGroup.controls.category.value,
       subCategoryId: subcatId,
       //  categoryId: 5,
@@ -477,7 +546,7 @@ this.map.setZoom(14);
       let objData = {
         id: this.selectedElementData.id,
         icon: this.selectedElementData.icon,
-        organizationId: this.selectedElementData.organizationId,
+        organizationId: parseInt(orgId), // this.selectedElementData.organizationId
         categoryId: this.poiFormGroup.controls.category.value,
         subCategoryId: this.poiFormGroup.controls.subcategory.value,
         name: this.poiFormGroup.controls.name.value,
@@ -510,12 +579,12 @@ this.map.setZoom(14);
   }
 
   onTypeChange(typeValue: any) {
-    console.log("---type selected", typeValue)
-    if(typeValue == "Global"){
-      this.organizationId = "";
-    }else if(typeValue == "Regular"){
-      this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
-    }
+    // console.log("---type selected", typeValue)
+    // if(typeValue == "Global"){
+    //   this.organizationId = "";
+    // }else if(typeValue == "Regular"){
+    //   this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    // }
   }
 
   onReset(){

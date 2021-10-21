@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { DataInterchangeService} from '../../services/data-interchange.service';
 import { OrganizationService } from '../../services/organization.service';
 import { Router } from '@angular/router';
-
+import { FleetMapService } from './fleet-map.service';
 
 declare var H: any;
 
@@ -23,6 +23,7 @@ export class CurrentFleetComponent implements OnInit {
   accountOrganizationId: any;
   translationData: any = {};
   clickOpenClose:string;
+  currentFleetReportId: number;
   detailsData =[];
   messages: any[] = [];
   subscription: Subscription;
@@ -148,7 +149,7 @@ export class CurrentFleetComponent implements OnInit {
     private reportService: ReportService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
-    private organizationService: OrganizationService, private router: Router) { 
+    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -176,7 +177,7 @@ export class CurrentFleetComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 2 
+      menuId: 3 
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -203,17 +204,22 @@ export class CurrentFleetComponent implements OnInit {
     let reportListData: any = [];
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
-      this.callPreferences(reportListData);
+      let repoId: any = reportListData.filter(i => i.name == 'Fleet Overview');
+      if(repoId.length > 0){
+        this.currentFleetReportId = repoId[0].id; 
+        this.callPreferences();
+      }else{
+        console.error("No report id found!")
+      }
     }, (error)=>{
       console.log('Report not found...', error);
-      reportListData = [{name: 'Fleet Overview', id: 17}]; // hard coded
-      this.callPreferences(reportListData);
+      reportListData = [{name: 'Fleet Overview', id: this.currentFleetReportId}];
+      // this.callPreferences();
     });
   }
 
-  callPreferences(prefData: any){
-    let repoId: any = prefData.filter(i => i.name == 'Fleet Overview');
-    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 17).subscribe((data : any) => {
+  callPreferences(){
+    this.reportService.getReportUserPreference(this.currentFleetReportId).subscribe((data : any) => {
       let _preferencesData = data['userPreferences'];
       this.getTranslatedColumnName(_preferencesData);
       this.getFleetOverviewDetails();
@@ -228,14 +234,15 @@ export class CurrentFleetComponent implements OnInit {
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
-        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-          element.subReportUserPreferences.forEach(item => {
-            let _data: any = item;
-            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
-              this.timerPrefData.push(_data);
-            }else if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
+        //if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          //element.subReportUserPreferences.forEach(item => {
+            let _data: any = element;
+            // if(element.key.includes('rp_fo_fleetoverview_settimer_')){
+            //   this.timerPrefData.push(_data);
+            // }else 
+            if(element.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
               let index: any;
-             switch(item.key){
+             switch(element.key){
                case 'rp_fo_fleetoverview_generalvehicleinformation_currentmileage':{
                  index = 0;
                  break;
@@ -251,8 +258,8 @@ export class CurrentFleetComponent implements OnInit {
              }
               this.vehInfoPrefData[index] = _data;
             }
-          });
-        }
+          //});
+        //}
       });
     }
   }
@@ -266,17 +273,18 @@ export class CurrentFleetComponent implements OnInit {
       "healthStatus": ["all"],
       "otherFilter": ["all"],
       "driverId": ["all"],
-      "days": 90,
+      "days": 0,
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
-       this.detailsData = data;
-       let _dataObj ={
-        vehicleDetailsFlag : false,
-        data:data
+      let processedData = this.fleetMapService.processedLiveFLeetData(data);
+      this.detailsData = processedData;
+      let _dataObj = {
+        vehicleDetailsFlag: false,
+        data: data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      if(this._state && this._state.data){
+      if (this._state && this._state.data) {
         this.userPreferencesSetting();
         this.toBack();
       }
@@ -295,12 +303,12 @@ export class CurrentFleetComponent implements OnInit {
     if(this.userPreferencesFlag){
     summary.style.width = '67%';
     sidenav.style.width = '32%';
-    this.clickOpenClose='Click to Hide';
+    this.clickOpenClose=this.translationData.lblClickToHide ? this.translationData.lblClickToHide :'Click To Hide';
     }
     else{
       summary.style.width = '100%';
       sidenav.style.width = '0%';
-      this.clickOpenClose='Click To Open';
+      this.clickOpenClose=this.translationData.lblClickToOpen ? this.translationData.lblClickToOpen :'Click To Open';
     }
   
   } 

@@ -16,6 +16,12 @@ public class DafConstants {
 
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
+	
+	public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+	
 
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
 	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";
@@ -81,12 +87,17 @@ public class DafConstants {
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
 	
+	public static final String Monitor="M";
+	public static final String MONITOR_TOPIC_NAME = "egress.conti.monitordata.object";
 	//queries
 		public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 		public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
 		public static final String QUERY_LIVEFLEET_POSITION = "livefleet.position.query";
 	
 	public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+    //KAFKA CONFIG
+    public static final String AUTO_OFFSET_RESET_CONFIG = "auto.offset.reset";
+    public static final String BROADCAST_NAME = "broadcast.name";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
@@ -97,6 +108,10 @@ public class DafConstants {
 		
 		
 		public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
+		
+		public static final String AUTO_OFFSET_RESET ="auto.offset.reset";
+	public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
+	public static final String DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS= "driver.management.time.window.seconds";
 		
 		
 	

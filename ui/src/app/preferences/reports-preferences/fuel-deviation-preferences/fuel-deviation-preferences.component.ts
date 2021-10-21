@@ -12,7 +12,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 export class FuelDeviationPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setFuelDeviationReportFlag = new EventEmitter<any>();
   reportId: any;
@@ -60,13 +60,13 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     });
     
     if(repoId.length > 0){
-      this.reportId = repoId[0].id; 
+      this.reportId = repoId[0].id;
+      this.loadFuelDeviationReportPreferences(); 
     }else{
-      this.reportId = 7; //- hard coded for Fuel Deviation Report
+      console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
-    this.loadFuelDeviationReportPreferences();
   }
 
   getUnitFormat(accPref: any){
@@ -164,19 +164,19 @@ export class FuelDeviationPreferencesComponent implements OnInit {
               this.chartsData[index] = _data;
             }else if(item.key.includes('rp_fd_details_')){
               if(item.key == 'rp_fd_details_distance' || item.key == 'rp_fd_details_odometer'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.translationData.lblmi);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_drivingtime' || item.key == 'rp_fd_details_idleduration'){
-                txt = this.translationData.lblhhmm || 'hh:mm';
+                txt = this.translationData.lblhhmm;
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_averageweight'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.translationData.lblpound);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_averagespeed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.translationData.lblmph);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_fuelconsumed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr) : (this.translationData.lblgallon);
                 _data.translatedName = this.getTranslatedValues(item, 15, txt);
               }else if(item.key == 'rp_fd_details_difference'){
                 txt = '%';
@@ -263,52 +263,52 @@ export class FuelDeviationPreferencesComponent implements OnInit {
       this.summaryData.forEach(element => {
         let sSearch = this.selectionForSummary.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (sSearch.length > 0) {
-          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         } else {
-          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         }
       });
 
       this.chartsData.forEach((element, index) => {
         let cSearch = this.selectionForCharts.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (index == 0) { // increaseEventChart
-          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.increaseEventChart.value, thresholdType: "", thresholdValue: 0 });
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.increaseEventChart.value, thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         } else if (index == 1) { // decreaseEventChart
-          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.decreaseEventChart.value, thresholdType: "", thresholdValue: 0 });
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.decreaseEventChart.value, thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         } else { // deviationEventChart
-          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.deviationEventChart.value, thresholdType: "", thresholdValue: 0 });
+          _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.deviationEventChart.value, thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         }
       });
 
       this.detailsData.forEach(element => {
         let dSearch = this.selectionForDetails.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (dSearch.length > 0) {
-          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         } else {
-          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
         }
       });
 
       if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
-        parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId  });
         this.initData.subReportUserPreferences.forEach(elem => {
           if (elem.key.includes('rp_fd_reportsummary')) {
             if (this.selectionForSummary.selected.length == this.summaryData.length) { // parent selected
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             } else {
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             }
           } else if (elem.key.includes('rp_fd_reportchart')) {
             if (this.selectionForCharts.selected.length == this.chartsData.length) { // parent selected
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             } else {
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             }
           } else if (elem.key.includes('rp_fd_report_details')) {
             if (this.selectionForDetails.selected.length == this.detailsData.length) { // parent selected
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             } else {
-              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId  });
             }
           }
         });

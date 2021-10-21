@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -650,7 +651,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //userPreferences = await GetReportUserPreferencesOld(request, context);
 
                 // New implementation considering Functional feature mapping with attribute
-                userPreferences = await GetReportUserPreferences_New(request);
+                userPreferences = await GetReportUserPreferences(request);
 
                 try
                 {
@@ -683,14 +684,16 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferencesOld(GetReportUserPreferenceRequest request, ServerCallContext context)
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferencesOld(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
-            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
-            var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
+                                                                                                request.OrganizationId, request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
+            var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId, request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             if (userPreferencesExists)
             {
-                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
 
                 //Filter out preferences based on Account role and org package subscription
                 userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
@@ -701,44 +704,93 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
-        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(GetReportUserPreferenceRequest request)
+
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences(GetReportUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+            var featureIds = request.UserFeatures.Select(uf => uf.FeatureId).ToArray();
 
-            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
-            IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
+                                                                                               request.OrganizationId, featureIds);
+
+            // Get all attributes from reportattribute table
+            var userPreferencesAll = await _reportManager.GetReportDataAttributes(featureIds, request.ReportId);
+
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
-                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
-                userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
+                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId, featureIds);
+
+                if (userPreferences.Count() > userPreferencesAll.Count())
+                {
+                    // Features are removed
+                    // If features are removed, it would not be shown
+                    userPreferences = userPreferences.Intersect(userPreferencesAll, new ReportPreferenceComparer());
+                }
+                else
+                {
+                    // Features are added
+                    // If more features are added, it would be shown checked by default
+                    userPreferences = userPreferences.Union(userPreferencesAll, new ReportPreferenceComparer());
+                }
             }
             else
             {
-                IEnumerable<int> reportFeatures = await _reportManager.GetReportFeatureId(request.ReportId);
-
-                bool isReportFeatureExists = request.UserFeatures.Any(usr => usr.FeatureId.Equals(reportFeatures.FirstOrDefault()));
-                if (isReportFeatureExists)
-                {
-                    // Get all attributes from reportattribute table
-                    var reportDataAttribute = await _reportManager.GetReportDataAttributes(request.ReportId);
-
-
-
-                    if (roleBasedUserPreferences.Count() > 0)
-                    {
-                        // In case user has subcriptions for report data Attributes package show subscribed attributes only
-                        userPreferences = roleBasedUserPreferences;
-                    }
-                    else
-                    {
-                        // In case user do not have subcription then show all attributes
-                        userPreferences = reportDataAttribute;
-                    }
-                }
+                userPreferences = userPreferencesAll;
             }
+
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
+
+        public override async Task<CheckIfSubReportExistResponse> CheckIfSubReportExist(CheckIfSubReportExistRequest request, ServerCallContext context)
+        {
+            try
+            {
+                CheckIfSubReportExistResponse response = new CheckIfSubReportExistResponse();
+                var subReportResponse = await _reportManager.CheckIfSubReportExist(request.ReportId);
+                response.Code = Responsecode.Success;
+                response.Message = entity.ReportConstants.CHECK_SUB_REPORT_EXIST_SUCCESS_MSG;
+                response.FeatureId = subReportResponse.FeatureId;
+                response.HasSubReports = subReportResponse.HasSubReports;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new CheckIfSubReportExistResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CheckIfSubReportExist)} failed due to - " + ex.Message
+                };
+            }
+        }
+
         #endregion
+    }
+    internal class ReportPreferenceComparer : IEqualityComparer<reports.entity.ReportUserPreference>
+    {
+        public bool Equals(reports.entity.ReportUserPreference x, reports.entity.ReportUserPreference y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (x is null || y is null)
+            {
+                return false;
+            }
+            return x.DataAttributeId == y.DataAttributeId && x.ReportId == y.ReportId;
+        }
+
+        public int GetHashCode([DisallowNull] reports.entity.ReportUserPreference obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+            int dataAttributeIdHashCode = obj.DataAttributeId.GetHashCode();
+            int reportIdHashCode = obj.ReportId.GetHashCode();
+            return dataAttributeIdHashCode ^ reportIdHashCode;
+        }
     }
 }

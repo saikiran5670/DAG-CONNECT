@@ -99,9 +99,9 @@ namespace net.atos.daf.ct2.reports
         /// <returns></returns>
         public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter) => await _reportRepository.GetDriversActivity(driverActivityFilter);
 
-        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
+        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin, int organizationId)
         {
-            return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin);
+            return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin, organizationId);
         }
         public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin)
         {
@@ -277,30 +277,41 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.CreateReportUserPreference(request);
         }
 
-        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId)
+        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId, int[] featureIds)
         {
-            return await _reportRepository.CheckIfReportUserPreferencesExist(reportId, accountId, organizationId);
+            return await _reportRepository.CheckIfReportUserPreferencesExist(reportId, accountId, organizationId, featureIds);
         }
 
-        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId, int[] featureIds)
         {
-            return await _reportRepository.GetReportUserPreferences(reportId, accountId, organizationId);
+            return await _reportRepository.GetReportUserPreferences(reportId, accountId, organizationId, featureIds);
         }
 
         public async Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId,
-                                                                                       int organizationId, int contextOrgId)
+                                                                                       int organizationId, int contextOrgId, int[] featureId)
         {
-            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
+            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId, featureId);
         }
-        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int reportId)
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(int[] featureIds, int reportId)
         {
-            return await _reportRepository.GetReportDataAttributes(reportId);
+            return await _reportRepository.GetReportDataAttributes(featureIds, reportId);
         }
 
         public async Task<IEnumerable<int>> GetReportFeatureId(int reportId)
         {
             return await _reportRepository.GetReportFeatureId(reportId);
         }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetReportDataAttributes(List<int> reportIds)
+        {
+            return await _reportRepository.GetReportDataAttributes(reportIds);
+        }
+
+        public async Task<SubReportDto> CheckIfSubReportExist(int reportId)
+        {
+            return await _reportRepository.CheckIfSubReportExist(reportId);
+        }
+
         #endregion
 
         #region Eco Score Report Compare Drivers
@@ -411,6 +422,16 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved_NoWarnings(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
         public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
@@ -465,13 +486,15 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters, bool isLiveFleetRequired = true)
         {
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters, isLiveFleetRequired);
-            return lstFleetFuelTripDetails;
+            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelTripDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
 
         public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters)
         {
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByDriver(fleetFuelFilters);
-            return lstFleetFuelTripDetails;
+            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelTripDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
         /// <summary>
         /// To apply formula and mapped values according to language code
@@ -490,14 +513,15 @@ namespace net.atos.daf.ct2.reports
             {
                 // Mapping expected value (as Modrate, Good, Very Good) from range
                 double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
-                if (item.IdlingConsumption > idlConsumptionHighValue)
+                double idlConsumption = ((float)item.IdlingConsumption / (float)(item.Distance != 0 ? item.Distance : 1));
+                if (idlConsumption > idlConsumptionHighValue)
                 {
                     string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
                 else
                 {
-                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= item.IdlingConsumption && idl.MinValue >= item.IdlingConsumption).Select(item => item.Value).FirstOrDefault();
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue > idlConsumption && idl.MinValue < idlConsumption).Select(item => item.Value).FirstOrDefault();
                     item.IdlingConsumptionValue = idlConsumptionValue;
                 }
 
@@ -510,7 +534,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });
@@ -549,7 +573,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue > item.AverageTrafficClassification && idl.MinValue <= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
                     item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
                 }
             });
@@ -742,8 +766,8 @@ namespace net.atos.daf.ct2.reports
             if (fuelConsumptionCalculation != null)
             {
                 var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
-                fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
-                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+                fuelBenchmarkDetails.NumberOfActiveVehicles = vehicleRanking.Count();
+                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
                 fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
                 fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
                 fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;

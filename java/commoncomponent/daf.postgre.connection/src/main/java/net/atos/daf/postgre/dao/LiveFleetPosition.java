@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.LiveFleetPojo;
@@ -16,15 +19,19 @@ public class LiveFleetPosition implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	Logger logger = LoggerFactory.getLogger(LiveFleetPosition.class);
 
 	private Connection connection;
 
 	private static final String READ_LIVEFLEET_POSITION = "SELECT * from livefleet.livefleet_position_statistics WHERE vin = ? and trip_id=? ORDER BY created_at_m2m DESC limit 1";
-	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm , veh_message_type,  vehicle_msg_trigger_type_id, created_datetime,received_datetime,gps_speed,gps_datetime,wheelbased_speed,tachgraph_speed,driver1_id, vehicle_msg_trigger_additional_info, driver_auth_equipment_type_id, card_replacement_index, oem_driver_id_type, oem_driver_id, pto_id, telltale_id, oem_telltale , telltale_state_id, driving_time) VALUES (?,	?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?  )";
-		public boolean insert(LiveFleetPojo currentPosition)
+	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm , veh_message_type,  vehicle_msg_trigger_type_id, created_datetime,received_datetime,gps_speed,gps_datetime,wheelbased_speed,tachgraph_speed,driver1_id, vehicle_msg_trigger_additional_info, driver_auth_equipment_type_id, card_replacement_index, oem_driver_id_type, oem_driver_id, pto_id, telltale_id, oem_telltale , telltale_state_id, driving_time, "
+			+ "total_vehicle_distance, total_engine_hours, total_engine_fuel_used, gross_combination_vehicle_weight, engine_speed, fuel_level1, catalyst_fuel_level, driver2_id, driver1_working_state, driver2_working_state, driver2_auth_equipment_type_id, driver2_card_replacement_index, oem_driver2_id_type, oem_driver2_id, ambient_air_temperature, engine_coolant_temperature, service_brake_air_pressure_circuit1, service_brake_air_pressure_circuit2 "
+			+ ") VALUES (?,	?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,? , ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?  )";
+		
+	public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
-		System.out.println("Inside insert of Trip");
+		//System.out.println("Inside insert of Trip");
 		boolean result = false;
 	
 		try {
@@ -38,9 +45,10 @@ public class LiveFleetPosition implements Serializable {
 				stmt_insert_livefleet_position.executeBatch();
 			}
 		} catch (SQLException e) {
-						e.printStackTrace();
+			logger.error("Error in Live fleet position insert method" + e.getMessage());
+			e.printStackTrace();
 		}
-		System.out.println("Inside insert of Trip End");
+		logger.info("data inserted in Live fleet position " );
 		return result;
 	}
 
@@ -65,13 +73,14 @@ public class LiveFleetPosition implements Serializable {
 					previousRecordInfo= new LiveFleetPojo();
 					previousRecordInfo.setDrivingTime(rs_position.getInt("driving_time"));
 					previousRecordInfo.setMessageTimestamp(rs_position.getDouble("message_time_stamp"));
-					System.out.println("driving Time inside read--" + rs_position.getInt("driving_time"));
+					//System.out.println("driving Time inside read--" + rs_position.getInt("driving_time"));
 				}
 				
 				rs_position.close();
 			}
 
 		} catch (SQLException e) {
+			logger.error("Error in Live fleet position read method" + e.getMessage());
 			e.printStackTrace();
 		} finally {
 
@@ -81,6 +90,7 @@ public class LiveFleetPosition implements Serializable {
 					rs_position.close();
 				} catch (SQLException ignore) {
 					/** ignore any errors here */
+					logger.error("Error in Livefleet finally close");
 				}
 			}
 		}
@@ -254,9 +264,100 @@ public class LiveFleetPosition implements Serializable {
 			stmt_insert_livefleet_position.setInt(33, currentPosition.getDrivingTime());
 		else
 			stmt_insert_livefleet_position.setInt(33, 0);
+
+		if (currentPosition.getTotal_vehicle_distance() != null)
+			stmt_insert_livefleet_position.setLong(34, currentPosition.getTotal_vehicle_distance());
+		else
+			stmt_insert_livefleet_position.setLong(34, 0);
+		
+		if (currentPosition.getTotal_engine_hours() != null)
+			stmt_insert_livefleet_position.setLong(35, currentPosition.getTotal_engine_hours());
+		else
+			stmt_insert_livefleet_position.setLong(35, 0);
+		
+		if (currentPosition.getTotal_engine_fuel_used() != null)
+			stmt_insert_livefleet_position.setLong(36, currentPosition.getTotal_engine_fuel_used());
+		else
+			stmt_insert_livefleet_position.setLong(36, 0);
+		
+		if (currentPosition.getGross_combination_vehicle_weight() != null)
+			stmt_insert_livefleet_position.setLong(37, currentPosition.getGross_combination_vehicle_weight());
+		else
+			stmt_insert_livefleet_position.setLong(37, 0);
+		
+		if (currentPosition.getEngine_speed() != null)
+			stmt_insert_livefleet_position.setLong(38, currentPosition.getEngine_speed());
+		else
+			stmt_insert_livefleet_position.setLong(38, 0);
+		
+		if (currentPosition.getFuel_level1() != null)
+			stmt_insert_livefleet_position.setDouble(39, currentPosition.getFuel_level1());
+		else
+			stmt_insert_livefleet_position.setDouble(39, 0);
+		
+		if (currentPosition.getCatalyst_fuel_level() != null)
+			stmt_insert_livefleet_position.setInt(40, currentPosition.getCatalyst_fuel_level());
+		else
+			stmt_insert_livefleet_position.setInt(40, 0);
+		
+		if (currentPosition.getDriver2_id() != null)
+			stmt_insert_livefleet_position.setString(41, currentPosition.getDriver2_id());
+		else
+			stmt_insert_livefleet_position.setString(41, "");
+		
+		if (currentPosition.getDriver1_working_state() != null)
+			stmt_insert_livefleet_position.setInt(42, currentPosition.getDriver1_working_state());
+		else
+			stmt_insert_livefleet_position.setInt(42, 0);
+		
+		if (currentPosition.getDriver2_working_state() != null)
+			stmt_insert_livefleet_position.setInt(43, currentPosition.getDriver2_working_state());
+		else
+			stmt_insert_livefleet_position.setInt(43, 0);
+		
+		if (currentPosition.getDriver2_auth_equipment_type_id() != null)
+			stmt_insert_livefleet_position.setInt(44, currentPosition.getDriver2_auth_equipment_type_id());
+		else
+			stmt_insert_livefleet_position.setInt(44, 0);
+		
+		if (currentPosition.getDriver2_card_replacement_index() != null)
+			stmt_insert_livefleet_position.setString(45, currentPosition.getDriver2_card_replacement_index());
+		else
+			stmt_insert_livefleet_position.setString(45, "");
+		
+		if (currentPosition.getOem_driver2_id_type() != null)
+			stmt_insert_livefleet_position.setString(46, currentPosition.getOem_driver2_id_type());
+		else
+			stmt_insert_livefleet_position.setString(46, "");
+		
+		if (currentPosition.getOem_driver2_id() != null)
+			stmt_insert_livefleet_position.setString(47, currentPosition.getOem_driver2_id());
+		else
+			stmt_insert_livefleet_position.setString(47, "");
+		
+		if (currentPosition.getAmbient_air_temperature() != null)
+			stmt_insert_livefleet_position.setLong(48, currentPosition.getAmbient_air_temperature());
+		else
+			stmt_insert_livefleet_position.setLong(48, 0);
+		
+		if (currentPosition.getEngine_coolant_temperature() != null)
+			stmt_insert_livefleet_position.setInt(49, currentPosition.getEngine_coolant_temperature());
+		else
+			stmt_insert_livefleet_position.setInt(49, 0);
+		
+		if (currentPosition.getService_brake_air_pressure_circuit1() != null)
+			stmt_insert_livefleet_position.setLong(50, currentPosition.getService_brake_air_pressure_circuit1());
+		else
+			stmt_insert_livefleet_position.setLong(50, 0);
+		
+		if (currentPosition.getService_brake_air_pressure_circuit2() != null)
+			stmt_insert_livefleet_position.setLong(51, currentPosition.getService_brake_air_pressure_circuit2());
+		else
+			stmt_insert_livefleet_position.setLong(51, 0);
 		
 	
-		System.out.println("Inside fillstatement End");
+		//System.out.println("Inside fillstatement End");
+		logger.info("Inside fillstatement End :{}");
 		return stmt_insert_livefleet_position;
 	}
 

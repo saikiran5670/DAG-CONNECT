@@ -25,13 +25,13 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @Input() createStatus: boolean;
   @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() roleData: any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectionForFeatures = new SelectionModel(true, []);
-  roleTypes = ['Global', 'Regular'];
+  roleTypes = [];
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
@@ -73,6 +73,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
         }
       });
       this.featuresData = data;
+
+      this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblRegular];
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;

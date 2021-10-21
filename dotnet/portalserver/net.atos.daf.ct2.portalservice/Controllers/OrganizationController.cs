@@ -37,7 +37,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly string _fk_Constraint = "violates foreign key constraint";
-        private readonly AccountPrivilegeChecker _privilegeChecker;
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
@@ -46,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
                                       IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor,
-                                      SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                                      SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._organizationClient = organizationClient;
@@ -211,7 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Id = filterRequest.Id,
                     Featuresetid = filterRequest.FeaturesetId,
                     OrganizationId = filterRequest.OrganizationId,
-                    Level = filterRequest.Level,
+                    Level = _userDetails.RoleLevel,
                     Code = filterRequest.Code ?? string.Empty
                 };
 
@@ -233,7 +232,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var level = await GetUserPrivilegeLevel();
+                var level = _userDetails.RoleLevel;
                 var levelCode = new RelationshipLevelCode();
                 var relationshipLevels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
@@ -474,17 +473,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
-
-                _logger.Info("Organization get details function called ");
+                IdRequest idRequest = new IdRequest();
 
                 if (organizationId < 1)
                 {
-                    return StatusCode(400, "Please provide organization ID:");
+                    return StatusCode(400, "Please provide organization ID.");
                 }
-                //Assign context orgId
-                idRequest.Id = GetContextOrgId();
-                OrganizationBusinessService.OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
+
+                //Context org id is not required here
+                //idRequest.Id = GetContextOrgId();
+
+                idRequest.Id = organizationId;
+                OrgDetailResponse orgResponse = await _organizationClient.GetOrganizationDetailsAsync(idRequest);
 
                 return Ok(orgResponse);
             }
@@ -742,7 +742,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 OrgRelationshipCreateRequest objRelationship = new OrgRelationshipCreateRequest();
                 objRelationship.RelationShipId = request.RelationShipId;
                 objRelationship.VehicleGroupID.Add(request.VehicleGroupId);
-                objRelationship.OwnerOrId = request.OwnerOrgId;
+                objRelationship.OwnerOrgId = request.OwnerOrgId;
                 objRelationship.CreatedOrgId = request.CreatedOrgId;
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.Allow_chain;
@@ -752,16 +752,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
+                  "CreateOrgRelationShip method in Organization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(createResponse);
                 }
                 if (createResponse.Code == OrganizationBusinessService.Responcecode.Conflict)
                 {
                     return StatusCode(409, createResponse);
                 }
+                else if (createResponse.Code == OrganizationBusinessService.Responcecode.Forbidden)
+                {
+                    return StatusCode(403, createResponse);
+                }
                 else
                 {
-                    return StatusCode(500, "Error in creating relationships");
+                    return StatusCode(500, "Error in creating organization relationship.");
                 }
 
             }
@@ -866,67 +870,53 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("orgrelationship/Getorgrelationdetails")]
-        public async Task<IActionResult> GetOrganizationDetails(int OrganizationId)
+        public async Task<IActionResult> GetOrganizationDetails(int organizationId)
         {
             try
             {
-                //if (OrganizationId == 0)
-                //{
-                //    return StatusCode(400, "Select atleast 1 organization");
-                //}
-
-                //get vehicle group
-                //VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
-                //orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
-                //orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
-                //VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
-                VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
-                OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
-                VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
-
+                organizationId = GetContextOrgId();
+                VehicleBusinessService.OrganizationIdRequest organizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
+                organizationIdRequest.OrganizationId = Convert.ToInt32(organizationId);
+                VehicleBusinessService.OrgVehicleGroupListResponse vehicleResponse = await _vehicleClient.GetVehicleGroupsForOrgRelationshipMappingAsync(organizationIdRequest);
 
                 //get Organizations List
                 var idRequest = new IdRequest();
                 idRequest.Id = 0;
-                var OrganizationList = await _organizationClient.GetAllAsync(idRequest);
-
+                var organizationList = await _organizationClient.GetAllAsync(idRequest);
 
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
-                var RelationList = await _organizationClient.GetRelationshipAsync(request);
-
-                //var result = _relationshipMapper.MaprelationData(RelationList.RelationshipList, response, OrganizationList.OrganizationList);
+                request.Level = _userDetails.RoleLevel;
+                var relationList = await _organizationClient.GetRelationshipAsync(request);
 
                 RelationShipMappingDetails details = new RelationShipMappingDetails();
                 details.VehicleGroup = new List<VehileGroupData>();
                 details.OrganizationData = new List<OrganizationData>();
                 details.RelationShipData = new List<RelationshipData>();
-                foreach (var item in Vehicleresponse.OrgVehicleGroupList.Where(I => I.IsGroup == true))
+                foreach (var item in vehicleResponse.OrgVehicleGroupList)
                 {
-
                     details.VehicleGroup.Add(new VehileGroupData
                     {
                         VehiclegroupID = Convert.ToInt32(item.VehicleGroupId == null ? 0 : item.VehicleGroupId),
                         GroupName = item.VehicleGroupName
                     });
                 }
-                foreach (var item in OrganizationList.OrganizationList)
+                foreach (var item in organizationList.OrganizationList)
                 {
-
-                    details.OrganizationData.Add(new OrganizationData
+                    if (item.Id != organizationId)
                     {
-                        OrganizationId = Convert.ToInt32(item.Id),
-                        OrganizationName = item.Name
-                    });
+                        details.OrganizationData.Add(new OrganizationData
+                        {
+                            OrganizationId = Convert.ToInt32(item.Id),
+                            OrganizationName = item.Name
+                        });
+                    }
                 }
-                int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                int OEMRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
-                foreach (var item in RelationList.RelationshipList)
-                {
 
-                    if (item.Id != OwnerRelationship && item.Id != OEMRelationship)
+                foreach (var item in relationList.RelationshipList)
+                {
+                    if (!(item.Code.ToLower().Equals("owner") || item.Code.ToLower().Equals("oem")))
                     {
                         details.RelationShipData.Add(new RelationshipData
                         {
@@ -934,10 +924,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             RelationName = item.Name
                         });
                     }
-
                 }
                 return Ok(details);
-
             }
             catch (Exception ex)
             {
@@ -950,6 +938,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpGet]
         [Route("orgrelationship/get")]
         public async Task<IActionResult> GetRelationshipMapping([FromQuery] OrganizationMappingFilter filterRequest)

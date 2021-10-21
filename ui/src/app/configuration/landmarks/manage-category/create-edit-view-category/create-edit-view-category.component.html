@@ -54,7 +54,7 @@
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select formControlName="type" (selectionChange)="onCategoryTypeChange($event)">
                         <mat-option *ngFor="let type of types" [value]="type">
-                            {{type}}
+                            {{ type }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -126,7 +126,7 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field [disabled]="isDisabledType" appearance="outline" class='full-width'>
               <mat-select [disabled]="actionType == 'edit'" formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
-              <mat-option *ngFor="let rer of parentCategoryList" [value]="rer.id">
+              <mat-option *ngFor="let rer of finalParentCatList" [value]="rer.id">
                 {{ rer.name }}
               </mat-option>
               </mat-select>
@@ -168,12 +168,12 @@
       <div fxLayout="row" fxLayoutAlign="flex-end center">
         <div fxLayout="column" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel}}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+              (click)='onReset()'>{{translationData.lblReset}}</button>
             <button class='no-margin' [disabled]="!categoryForm.valid || imageMaxMsg" mat-raised-button color="primary"
-              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
-              (translationData.lblConfirm || 'Confirm') }}</button>
+              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate) :
+              (translationData.lblConfirm ) }}</button>
           </div>
         </div>
       </div>

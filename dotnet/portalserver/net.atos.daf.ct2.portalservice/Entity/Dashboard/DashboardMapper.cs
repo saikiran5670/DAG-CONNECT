@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
                 objRequest.Attributes.Add(new dashboardservice.DashboardUserPreferenceAttribute()
                 {
                     DataAttributeId = attribute.DataAttributeId,
+                    ReportId = attribute.ReportId,
                     State = (int)attribute.State.ToCharArray().First(),
                     Type = (int)attribute.PreferenceType.ToCharArray().First(),
                     ChartType = !string.IsNullOrEmpty(attribute.ChartType) ? (int)attribute.ChartType.ToCharArray().First() : 0,

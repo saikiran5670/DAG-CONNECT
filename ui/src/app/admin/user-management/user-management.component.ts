@@ -35,7 +35,7 @@ export class UserManagementComponent implements OnInit {
   selectedUserGrpData: any;
   error: any;
   initData: any = [];
-  translationData: any;
+  translationData: any = {};
   userDataForEdit: any;
   selectedPreference: any;
   isCreateFlag: boolean; 
@@ -53,7 +53,11 @@ export class UserManagementComponent implements OnInit {
   orgPreference: any = {};
   actionBtn:any; 
   userDetailsType: any = '';
-  UserSessionVal: any=[];
+  UserSessionVal: any = [];
+  accountRoleId: any;
+  filterRoleList: any = [];
+  filterRoleList2: any = [];
+  editViewRoleList: any = [];
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -65,98 +69,99 @@ export class UserManagementComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.defaultTranslation();
+    // this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
       this.userDetailsType = params['UserDetails']; 
    });
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblFilter: "Filter",
-      lblReset: "Reset",
-      lblName: "Name",
-      lblGroup: "Group",
-      lblRole: "Role",
-      lblUsers: "Users",
-      lblEmailID: "Email ID",
-      lblUserGroup: "User Group",
-      lblAction: "Action",
-      lblCancel: "Cancel",
-      lblCreate: "Create",
-      lblCreateContinue: "Create & Continue",
-      lblUpdate: 'Update',
-      lblStep: "Step",
-      lblPrevious: "Previous",
-      lblSalutation: "Salutation",
-      lblLastName: "Last Name",
-      lblBirthDate: "Birth Date",
-      lblOrganisation: "Organisation",
-      lblLanguage: "Language",
-      lblTimeZone: "Time Zone",
-      lblCurrency: "Currency",
-      lblSelectUserRole: "Select User Role",
-      lblSelectUserGroup: "Select User Group",
-      lblSummary: "Summary",
-      lblSelectVehicleGroupVehicle: "Select Vehicle Group/Vehicle",
-      lblUserRole: "User Role",
-      lblSearch: "Search",
-      lblServices: "Services",
-      lblNext: "Next",
-      lblGroupName: "Group Name",
-      lblVehicles: "Vehicles",
-      lblAll: "All",
-      lblVehicle: "Vehicle",
-      lblBoth: "Both",
-      lblVIN: "VIN",
-      lblRegistrationNumber: "Registration Number",
-      lblVehicleName: "Vehicle Name",
-      lblSelectedUserRoles: "Selected User Roles",
-      lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
-      lblNew: "New",
-      lblDeleteAccount: "Delete Account",
-      //lblCancel: "Cancel",
-      lblDelete: "Delete",
-      lblBack: "Back",
-      lblConfirm: "Confirm",
-      lblAlldetailsaremandatory: "All details are mandatory",
-      lblUserManagement: "User Management",
-      lblAllUserDetails: "All User Details",
-      lblNewUser: "New User",
-      lblAddNewUser: "Add New User",
-      lblUpdateUser: "Update User",
-      lblAccountInformation: "Account Information",
-      lblUserGeneralSetting: "User General Setting",
-      lblLoginEmail: "Login Email",
-      lblUnit: "Unit",
-      lblDateFormat: "Date Format",
-      lblVehicleDisplayDefault: "Vehicle Display (Default)",
-      lblUserAccountCreatedSuccessfully: "User Account '$' Created Successfully",
-      lblUserAccountUpdatedSuccessfully: "User Account '$' Updated Successfully",
-      lblViewListDetails: "View List Details",
-      lblSelectedUserGroups: "Selected User Groups",
-      lblAreyousureyouwanttodeleteuseraccount: "Are you sure you want to delete '$' user account?",
-      lblCreateUserAPIFailedMessage: "Error encountered in creating new User account '$'",
-      lblPleasechoosesalutation: "Please choose salutation",
-      lblSpecialcharactersnotallowed: "Special characters not allowed",
-      lblPleaseenterFirstName: "Please enter First Name",
-      lblPleaseenterLastName: "Please enter Last Name",
-      lblPleaseentervalidemailID: "Please enter valid email ID",
-      lblPleaseenteremailID: "Please enter email ID",
-      lblUsersbirthdatecannotbemorethan120yearsinthepast: "User’s birthdate cannot be more than 120 years in the past",
-      lblUsercannotbelessthan18yearsatthetimeofregistration: "User cannot be less than 18 years at the time of registration",
-      lblUsersbirthdatecannotbeinthefuture: "User’s birthdate cannot be in the future ",
-      lblErrorupdatingAccountInformationforUser: "Error updating Account Information for User '$'",
-      lblErrorupdatingUserRolesassociations: "Error updating User Roles associations '$'",
-      lblErrorupdatingUserGroupsassociations: "Error updating User Groups associations '$'",
-      lblErrorupdatingVehiclesVehiclegroupsassociations: "Error updating Vehicles/Vehicle groups associations '$'",
-      lblUseraccountwassuccessfullydeleted: "User account '$' was successfully deleted",
-      lblErrordeletingUseraccount: "Error deleting User account '$'"
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblFilter: "Filter",
+  //     lblReset: "Reset",
+  //     lblName: "Name",
+  //     lblGroup: "Group",
+  //     lblRole: "Role",
+  //     lblUsers: "Users",
+  //     lblEmailID: "Email ID",
+  //     lblUserGroup: "User Group",
+  //     lblAction: "Action",
+  //     lblCancel: "Cancel",
+  //     lblCreate: "Create",
+  //     lblCreateContinue: "Create & Continue",
+  //     lblUpdate: 'Update',
+  //     lblStep: "Step",
+  //     lblPrevious: "Previous",
+  //     lblSalutation: "Salutation",
+  //     lblLastName: "Last Name",
+  //     lblBirthDate: "Birth Date",
+  //     lblOrganisation: "Organisation",
+  //     lblLanguage: "Language",
+  //     lblTimeZone: "Time Zone",
+  //     lblCurrency: "Currency",
+  //     lblSelectUserRole: "Select User Role",
+  //     lblSelectUserGroup: "Select User Group",
+  //     lblSummary: "Summary",
+  //     lblSelectVehicleGroupVehicle: "Select Vehicle Group/Vehicle",
+  //     lblUserRole: "User Role",
+  //     lblSearch: "Search",
+  //     lblServices: "Services",
+  //     lblNext: "Next",
+  //     lblGroupName: "Group Name",
+  //     lblVehicles: "Vehicles",
+  //     lblAll: "All",
+  //     lblVehicle: "Vehicle",
+  //     lblBoth: "Both",
+  //     lblVIN: "VIN",
+  //     lblRegistrationNumber: "Registration Number",
+  //     lblVehicleName: "Vehicle Name",
+  //     lblSelectedUserRoles: "Selected User Roles",
+  //     lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
+  //     lblNew: "New",
+  //     lblDeleteAccount: "Delete Account",
+  //     //lblCancel: "Cancel",
+  //     lblDelete: "Delete",
+  //     lblBack: "Back",
+  //     lblConfirm: "Confirm",
+  //     lblAlldetailsaremandatory: "All details are mandatory",
+  //     lblUserManagement: "User Management",
+  //     lblAllUserDetails: "All User Details",
+  //     lblNewUser: "New User",
+  //     lblAddNewUser: "Add New User",
+  //     lblUpdateUser: "Update User",
+  //     lblAccountInformation: "Account Information",
+  //     lblUserGeneralSetting: "User General Setting",
+  //     lblLoginEmail: "Login Email",
+  //     lblUnit: "Unit",
+  //     lblDateFormat: "Date Format",
+  //     lblVehicleDisplayDefault: "Vehicle Display (Default)",
+  //     lblUserAccountCreatedSuccessfully: "User Account '$' Created Successfully",
+  //     lblUserAccountUpdatedSuccessfully: "User Account '$' Updated Successfully",
+  //     lblViewListDetails: "View List Details",
+  //     lblSelectedUserGroups: "Selected User Groups",
+  //     lblAreyousureyouwanttodeleteuseraccount: "Are you sure you want to delete '$' user account?",
+  //     lblCreateUserAPIFailedMessage: "Error encountered in creating new User account '$'",
+  //     lblPleasechoosesalutation: "Please choose salutation",
+  //     lblSpecialcharactersnotallowed: "Special characters not allowed",
+  //     lblPleaseenterFirstName: "Please enter First Name",
+  //     lblPleaseenterLastName: "Please enter Last Name",
+  //     lblPleaseentervalidemailID: "Please enter valid email ID",
+  //     lblPleaseenteremailID: "Please enter email ID",
+  //     lblUsersbirthdatecannotbemorethan120yearsinthepast: "User’s birthdate cannot be more than 120 years in the past",
+  //     lblUsercannotbelessthan18yearsatthetimeofregistration: "User cannot be less than 18 years at the time of registration",
+  //     lblUsersbirthdatecannotbeinthefuture: "User’s birthdate cannot be in the future ",
+  //     lblErrorupdatingAccountInformationforUser: "Error updating Account Information for User '$'",
+  //     lblErrorupdatingUserRolesassociations: "Error updating User Roles associations '$'",
+  //     lblErrorupdatingUserGroupsassociations: "Error updating User Groups associations '$'",
+  //     lblErrorupdatingVehiclesVehiclegroupsassociations: "Error updating Vehicles/Vehicle groups associations '$'",
+  //     lblUseraccountwassuccessfullydeleted: "User account '$' was successfully deleted",
+  //     lblErrordeletingUseraccount: "Error deleting User account '$'"
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountRoleId = parseInt(localStorage.getItem('accountRoleId'));
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     else 
@@ -172,10 +177,10 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 25 //-- for account mgnt
     }
+    this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      
-      this.processTranslation(data); 
-      this.loadUsersData();
+      this.processTranslation(data);
+      this.hideloader(); 
       this.getUserSettingsDropdownValues(); 
       if(this.userDetailsType != undefined){       
         console.log(localStorage.getItem('selectedRowItems'));
@@ -185,14 +190,15 @@ export class UserManagementComponent implements OnInit {
       else{
         this.router.navigate([]);   //16422 - page reloads and api was called multiple times 
       }
-    
     });
   }
 
   getUserSettingsDropdownValues(){
+    this.showLoadingIndicator = true;
     let languageCode = this.localStLanguage.code;
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     this.translationService.getPreferences(languageCode).subscribe(data => {
+      this.hideloader();
       this.defaultSetting = {
         languageDropdownData: data.language,
         timezoneDropdownData: data.timezone,
@@ -203,6 +209,7 @@ export class UserManagementComponent implements OnInit {
         vehicleDisplayDropdownData: data.vehicledisplay,
         landingPageDisplayDropdownData: accountNavMenu
       }
+      this.loadRoles();
     });
   }
 
@@ -221,20 +228,41 @@ export class UserManagementComponent implements OnInit {
 
   deleteUser(item: any) {
     const options = {
-      title: this.translationData.lblDeleteAccount || "Delete Account",
-      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' account?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteAccount,
+      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete 
     };
     this.OpenDialog(options, 'delete', item);
   }
 
-  newUser() {
-    this.isCreateFlag = true;
+  loadRoles(){
+    this.showLoadingIndicator = true;
     let roleObj = { 
       Organizationid : this.accountOrganizationId,
       IsGlobal: true
    };
+    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+      this.hideloader();
+      this.roleData = allRoleData;
+      let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
+      if(accountRoleLevel.length > 0){
+        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
+        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel[0].level);
+      }
+      this.loadUsersData();
+    }, (error) => {
+      this.hideloader();
+      this.loadUsersData();
+    });
+  }
+
+  newUser() {
+    this.isCreateFlag = true;
+  //   let roleObj = { 
+  //     Organizationid : this.accountOrganizationId,
+  //     IsGlobal: true
+  //  };
    let accountGrpObj = {
       accountGroupId: 0,
       organizationId: this.accountOrganizationId,
@@ -243,39 +271,40 @@ export class UserManagementComponent implements OnInit {
       roleId: 0,
       name: ""
    }
-   this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
-    this.roleData = allRoleData;
+   //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+    //this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
-      this.userGrpData = allAccountGroupData;
+      this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
         this.orgPreference = data;
         this.orgPreference.landingPageDisplay = this.defaultSetting.landingPageDisplayDropdownData[0].id; //-- set landing page value for org
         this.stepFlag = true;
       });
     }, (error)=> {});
-   }, (error)=> {});
+   //}, (error)=> {});
   }
 
   editViewUser(element: any, type: any) {
-    let roleObj = { 
-      Organizationid : this.accountOrganizationId,
-      IsGlobal: true
-   };
-   let accountGrpObj = {
-      accountGroupId: 0,
-      organizationId: this.accountOrganizationId,
-      accountId: 0,
-      vehicleGroupId: 0,
-      roleId: 0,
-      name: ""
-   }      
-  this.UserSessionVal=element; 
+  //  let roleObj = { 
+  //     Organizationid : this.accountOrganizationId,
+  //     IsGlobal: true
+  //  };
+  let accountGrpObj = {
+    accountGroupId: 0,
+    organizationId: this.accountOrganizationId,
+    accountId: 0,
+    vehicleGroupId: 0,
+    roleId: 0,
+    name: ""
+  }      
+  this.UserSessionVal = element; 
+  this.editViewRoleList = element.editDeletAccess ? this.filterRoleList.slice() : this.roleData.slice();
   localStorage.removeItem('selectedRowItems');
   localStorage.setItem('selectedRowItems', JSON.stringify(this.UserSessionVal));  
-  this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
-    this.roleData = allRoleData;
+  //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
+    //this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
-      this.userGrpData = allAccountGroupData;
+      this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
       this.selectedRoleData = element.roles;
       this.userDataForEdit = element;
       let reflectArray: any = [];
@@ -308,7 +337,7 @@ export class UserManagementComponent implements OnInit {
           });
         }
     }, (error)=> {});   
-   }, (error)=> {});
+   //}, (error)=> {});
   }
 
   goForword(type: any){
@@ -344,6 +373,9 @@ export class UserManagementComponent implements OnInit {
           });
          }
       });
+    }, (error) => {
+      console.log('error');
+      this.hideloader();
     });
   }
 
@@ -381,9 +413,19 @@ export class UserManagementComponent implements OnInit {
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
+      let roleFound: boolean = false;
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';
+        roleTxt += resp.name + ', ';  
+        let _s: any = this.filterRoleList2.filter(item => item.roleId == resp.id);
+        if(_s.length > 0){ // not found
+          roleFound = true;
+        }
       });
+      if((element.roles.length > 0 && roleFound) || (element.type && element.type == 'S' && !this.adminAccessType.systemAccountAccess)){
+        element.editDeletAccess = false;
+      }else{
+        element.editDeletAccess = true;
+      }
       element.accountGroups.forEach(resp => {
         accGrpTxt += resp.name + ', ';
       });
@@ -516,8 +558,8 @@ export class UserManagementComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','role'],
-      colsName: [this.translationData.lblFirstName || 'First Name',this.translationData.lblEmailID || 'Email ID',this.translationData.lblRole || 'Role'],
-      tableTitle: this.translationData.lblUserDetails || 'User Details'
+      colsName: [this.translationData.lblFirstName,this.translationData.lblEmailID,this.translationData.lblRole],
+      tableTitle: this.translationData.lblUserDetails
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }

@@ -95,7 +95,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 44
+      menuId: 44 // Eco-score profilemgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -130,13 +130,17 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -277,6 +281,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       "profileId": this.selectedProfile,
       "name": this.ecoScoreProfileForm.controls.profileName.value,
       "description": this.ecoScoreProfileForm.controls.profileDescription.value,
+      "isDAFStandard": this.isSelected,
       "profileKPIs": this.changedKPIData
       }
       this.reportService.updateEcoScoreProfile(manageParams).subscribe(()=>{
@@ -375,7 +380,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   onChange(event){
-    this.isDAFStandard = event.checked;
+    if(this.actionType === 'create'){
+      this.isDAFStandard = event.checked;
+    } else {
+      console.log(event.checked);
+      this.isSelected = event.checked;
+    }
   }
 
   onChangeOption(event){

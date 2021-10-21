@@ -27,7 +27,12 @@
                 <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                    <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                      <mat-option>
+                          <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+                            <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                          </ngx-mat-select-search>
+                        </mat-option>
+                    <mat-option *ngFor="let rer of filteredVehicleGroups | async " [value]="rer.vehicleGroupId">
                         {{ rer.vehicleGroupName }}
                     </mat-option>
                   </mat-select>
@@ -87,11 +92,17 @@
                 <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                    <!-- <mat-option value="0">--All--</mat-option> -->
-                    <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
-                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
-                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
+                    <!-- <mat-option value="0">All</mat-option> -->
+                    <mat-option>
+                        <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #VehicleSearch>
+                          <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                        </ngx-mat-select-search>
+                      </mat-option>
+                      <mat-option *ngFor="let rer of filteredVehicle | async" [value]="rer.vehicleId">
+                          <span *ngIf="rer.vehicleId==0"> {{rer.vehicleName}} </span>
+                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId !==0"> {{rer.vehicleName}} </span>
+                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' && rer.vehicleId !==0"> {{rer.vin}} </span>
+                      <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber' && rer.vehicleId !==0"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -419,7 +430,7 @@
             <mat-cell *matCellDef="let row">{{ row.numberOfTrips != '' ? row.numberOfTrips : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="tripTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'TripTime' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'Trip Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedTripTime != '' ? row.convertedTripTime : '-' }}</mat-cell>
           </ng-container>
@@ -434,9 +445,14 @@
             <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="stopTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm:ss' }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="averageDistancePerDay">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceWeightperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageSpeed">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblmph || 'mph')  }})</span>
@@ -447,11 +463,6 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeightperTrip || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{ translationData.lblton || 'ton' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="averageDistancePerDay">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceWeightperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }})</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="odometer">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }}

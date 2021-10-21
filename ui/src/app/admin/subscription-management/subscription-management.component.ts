@@ -41,12 +41,14 @@ export class SubscriptionManagementComponent implements OnInit {
   initData: any = [];
   vehicleData: any = [];
   accountOrganizationId: any = 0;
+  contextOrgId: any =0;
+  organizationId: any = 0;
   localStLanguage: any;
   dataSource: any; 
   orgID: any;
   roleID: any;
   changedOrgId: any;
-  translationData: any;
+  translationData: any = {};
   createEditViewSubscriptionFlag: boolean = false;
   actionType: any;
   actionBtn:any;  
@@ -68,16 +70,7 @@ export class SubscriptionManagementComponent implements OnInit {
       value: 'V'
     }
   ];
-  StatusList: any = [
-    {
-      name: 'Active',
-      value: '1'
-    },
-    {
-      name: 'Inactive',
-      value: '2'
-    }
-  ];
+  StatusList: any = [];
   showLoadingIndicator: any = true;
   filterData: any = [];
 
@@ -89,7 +82,7 @@ export class SubscriptionManagementComponent implements OnInit {
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
     this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL; 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
   
   generateHeader(){
@@ -116,14 +109,14 @@ export class SubscriptionManagementComponent implements OnInit {
       return this.httpClient.post(`${this.domainUrl}`, null, httpOptions);
     }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblSubscriptionManagement: "Subscription Management",
-      lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
-      lblNoRecordFound: "No Record Found",
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblSearch: "Search",
+  //     lblSubscriptionManagement: "Subscription Management",
+  //     lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
+  //     lblNoRecordFound: "No Record Found",
+  //   }
+  // }
 
   exportAsCSV(){
       this.matTableExporter.exportTable('csv', {fileName:'Subscription_Data', sheet: 'sheet_name'});
@@ -170,6 +163,8 @@ export class SubscriptionManagementComponent implements OnInit {
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     // this.organisationData = this.accountDetails["organization"];    
+    this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
   
     let translationObj = {
@@ -185,11 +180,22 @@ export class SubscriptionManagementComponent implements OnInit {
         this.processTranslation(data);
         this.loadSubscriptionData();
     });
+
+    this.StatusList= [
+      {
+        name: this.translationData.lblActive,
+        value: '1'
+      },
+      {
+        name: this.translationData.lblInactive,
+        value: '2'
+      }
+    ]
   }
 
   loadSubscriptionData(){
-    this.showLoadingIndicator = true;
-    this.subscriptionService.getSubscriptions(this.accountOrganizationId).subscribe((data : any) => {
+    this.showLoadingIndicator = true;  
+    this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
       this.hideloader();
@@ -278,8 +284,8 @@ export class SubscriptionManagementComponent implements OnInit {
 
   onVehicleClick(rowData: any){
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+    const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
     this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);

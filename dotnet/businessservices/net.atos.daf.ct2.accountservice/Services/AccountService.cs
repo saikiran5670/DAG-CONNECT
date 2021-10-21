@@ -48,18 +48,27 @@ namespace net.atos.daf.ct2.accountservice
 
         #region Identity
 
-        public override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
+        public async override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
         {
             AccountIdentityResponse response = new AccountIdentityResponse();
             try
             {
-                IdentityEntity.Identity account = new IdentityEntity.Identity();
+                Identity account = new Identity();
                 account.UserName = request.UserName.Trim();
                 account.Password = request.Password;
-                AccountComponent.entity.AccountIdentity accIdentity = _accountIdentityManager.Login(account).Result;
-                if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
+                AccountIdentity accIdentity = await _accountIdentityManager.Login(account);
+                if (accIdentity != null && accIdentity.StatusCode == 6)
                 {
-                    _logger.Info("account is Authenticated");
+                    return await Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responcecode.Forbidden,
+                        Message = "System accounts are restricted on the portal.",
+                        TokenIdentifier = string.Empty,
+                    });
+                }
+                else if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
+                {
                     response.TokenIdentifier = accIdentity.TokenIdentifier;
                     if (accIdentity.AccountInfo != null)
                     {
@@ -88,11 +97,11 @@ namespace net.atos.daf.ct2.accountservice
                             response.AccountRole.Add(accRole);
                         }
                     }
-                    return Task.FromResult(response);
+                    return await Task.FromResult(response);
                 }
-                if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
+                else if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
                 {
-                    return Task.FromResult(new AccountIdentityResponse
+                    return await Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = (Responcecode)accIdentity.StatusCode,
@@ -102,8 +111,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else
                 {
-
-                    return Task.FromResult(new AccountIdentityResponse
+                    return await Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
@@ -115,7 +123,7 @@ namespace net.atos.daf.ct2.accountservice
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return Task.FromResult(new AccountIdentityResponse
+                return await Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responcecode.Failed,
                     Message = " Authentication is failed due to - " + ex.ToString(),
@@ -123,12 +131,12 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override Task<LogoutResponse> Logout(LogoutRequest request, ServerCallContext context)
+        public async override Task<LogoutResponse> Logout(LogoutRequest request, ServerCallContext context)
         {
             LogoutResponse response = new LogoutResponse();
             try
             {
-                bool result = _accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
+                bool result = await _accountIdentityManager.LogoutByTokenId(request.TokenId);
                 if (result)
                 {
                     _logger.Info("account is logged out");
@@ -145,7 +153,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.Error(null, ex);
                 response.Success = false;
             }
-            return Task.FromResult(response);
+            return await Task.FromResult(response);
         }
 
         #endregion
@@ -171,12 +179,13 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "There is an error creating account.";
                     response.Code = Responcecode.Failed;
                 }
-                else if (account.IsErrorInEmail)
-                {
-                    response.Message = "There is an error while sending account confirmation email to the account user.";
-                    response.Code = Responcecode.Failed;
-                    response.Account = _mapper.ToAccount(account);
-                }
+                //Removed because account creation should not depend on email functionality failure
+                //else if (account.IsErrorInEmail)
+                //{
+                //    response.Message = "There is an error while sending account confirmation email to the account user.";
+                //    response.Code = Responcecode.Failed;
+                //    response.Account = _mapper.ToAccount(account);
+                //}
                 else
                 {
                     response.Code = Responcecode.Success;
@@ -406,19 +415,30 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                AccountComponent.entity.Account account = new AccountComponent.entity.Account();
+                var accountType = context.RequestHeaders.Get("account_type").Value;
+
+                Account account = new Account();
                 AccountOrganizationResponse response = new AccountOrganizationResponse();
                 account.Id = request.AccountId;
+                account.AccountType = (AccountComponent.ENUM.AccountType)Convert.ToChar(accountType);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = null;
                 account.EndDate = null;
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 var result = await _accountmanager.AddAccountToOrg(account);
-                // response
-                response.Code = Responcecode.Success;
-                response.Message = "Account Added to organization.";
-                response.AccountOrgId = account.Id;
+
+                if (result == null)
+                {
+                    response.Code = Responcecode.Forbidden;
+                    response.Message = "Multiple organizations cannot be linked to a System Account.";
+                }
+                else
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Account Added to organization.";
+                    response.AccountOrgId = account.Id;
+                }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -1260,16 +1280,11 @@ namespace net.atos.daf.ct2.accountservice
                     List<vehicleEntity.AccountVehicleEntity> vehicleList = new List<vehicleEntity.AccountVehicleEntity>();
                     List<AccountVehicleEntity> accountList = new List<AccountVehicleEntity>();
                     filter.OrganizationId = request.OrganizationId;
-                    if (request.IsAccount)
-                    {
-                        accountList = await _accountmanager.GetAccount(filter, true);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, false);
-                    }
-                    else
-                    {
-                        accountList = await _accountmanager.GetAccount(filter, false);
-                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
-                    }
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+
+                    accountList = await _accountmanager.GetAccount(filter, true);
+                    vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(loggedInOrgId, true, request.AccountId, request.OrganizationId);
+
                     List<AccountVehicleEntity> objVehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.Id, Name = a.Name, Is_group = a.Is_group, Count = a.Count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(objVehiclelist));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
@@ -1515,27 +1530,53 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override async Task<AccountGroupResponce> RemoveGroup(IdRequest request, ServerCallContext context)
+        public override async Task<AccountGroupRemoveResponce> RemoveGroup(IdRequest request, ServerCallContext context)
         {
             try
             {
-                bool result = await _groupManager.Delete(request.Id, Group.ObjectType.AccountGroup);
-                return await Task.FromResult(new AccountGroupResponce
+                var response = await _groupManager.Delete(request.Id, ObjectType.AccountGroup);
+                return await Task.FromResult(new AccountGroupRemoveResponce
                 {
-                    Message = "Account Group deleted.",
-                    Code = Responcecode.Success
+                    Message = string.Empty,
+                    Code = Responcecode.Success,
+                    IsDeleted = response.IsDeleted,
+                    CanDelete = response.CanDelete
                 });
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new AccountGroupResponce
+                return await Task.FromResult(new AccountGroupRemoveResponce
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = Responcecode.Failed
                 });
             }
         }
+        public override async Task<AccountGroupCanRemoveResponce> CanRemoveGroup(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _groupManager.CanDelete(request.Id, ObjectType.AccountGroup);
+                return await Task.FromResult(new AccountGroupCanRemoveResponce
+                {
+                    Message = "Account Group deleted.",
+                    Code = Responcecode.Success,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AccountGroupCanRemoveResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed,
+                    Result = false
+                });
+            }
+        }
+
         public override async Task<AccountGroupRefResponce> AddAccountToGroups(AccountGroupRefRequest request, ServerCallContext context)
         {
             try
@@ -1750,7 +1791,6 @@ namespace net.atos.daf.ct2.accountservice
 
         public async override Task<AccountRoleResponse> RemoveRoles(AccountRoleDeleteRequest request, ServerCallContext context)
         {
-
             try
             {
                 AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
@@ -1915,7 +1955,7 @@ namespace net.atos.daf.ct2.accountservice
                 ssoRequest.RoleID = request.RoleID;
                 ssoRequest.OrganizaitonID = request.OrganizationID;
                 ssoRequest.Email = request.Email;
-
+                ssoRequest.FeatureName = request.FeatureName;
                 SSOToken responseDetails = new SSOToken();
                 var response = await _accountIdentityManager.GenerateSSOToken(ssoRequest);
                 if (response?.StatusCode == System.Net.HttpStatusCode.OK)
@@ -1949,6 +1989,48 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
+        #endregion
+
+        #region Country
+        public override async Task<ResponseCountry> GetCountryDetail(RequestCountry request, ServerCallContext context)
+        {
+            try
+            {
+
+                ResponseCountry response = new ResponseCountry();
+
+                account.entity.CountryFilter countryRequest = new account.entity.CountryFilter
+                {
+                    Code = request.Code,
+                    RegionType = request.RegionType,
+                    DialCode = request.DialCode
+
+                };
+
+                var result = await _accountmanager.GetCountryDetails(countryRequest);
+
+                var resCountry = JsonConvert.SerializeObject(result);
+                response.Country.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<Country>>(resCountry,
+                     new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+
+                response.Code = Responcecode.Success;
+                response.Message = "Country details fetched successfully.";
+
+                return await Task.FromResult(response);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ResponseCountry
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Country details Failed due to - " + ex.Message
+                });
+            }
+        }
         #endregion
     }
 }

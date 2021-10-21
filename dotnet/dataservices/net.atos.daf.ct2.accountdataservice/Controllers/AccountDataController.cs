@@ -22,7 +22,7 @@ using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity.Common;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
+using IdentityComponent = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.accountdataservice.Controllers
 {
@@ -39,10 +39,12 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         private readonly IVehicleManager _vehicleManager;
         private readonly IDriverManager _driverManager;
         private readonly IConfiguration _configuration;
+        private readonly IdentityComponent.IAccountAuthenticator _autheticator;
 
-        private readonly Dictionary<string, string> _vehicleDisplayOptions;
-
-        public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IAccountIdentityManager accountIdentityManager, IConfiguration configuration)
+        public AccountDataController(IAuditTraillib auditTrail, IDriverManager driverManager, IAccountManager accountManager,
+                                     IOrganizationManager organizationManager, IVehicleManager vehicleManager,
+                                     IAccountIdentityManager accountIdentityManager, IConfiguration configuration,
+                                     IdentityComponent.IAccountAuthenticator autheticator)
         {
             _accountManager = accountManager;
             _accountIdentityManager = accountIdentityManager;
@@ -52,8 +54,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _configuration = configuration;
-
-            _vehicleDisplayOptions = PrepareUnitDisplayOptions();
+            _autheticator = autheticator;
         }
 
         #region Driver Lookup
@@ -168,7 +169,23 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     var resultObj = (result as ObjectResult).Value as dynamic;
                     var response = await _accountManager.ValidateDriver(resultObj.Email, resultObj.OrgId);
 
-                    return Ok(response);
+                    if (resultObj.OrgId > 0)
+                    {
+                        return Ok(new
+                        {
+                            AccountID = response.AccountID,
+                            AccountName = response.AccountName,
+                            RoleID = response.RoleID,
+                            DateFormat = response.DateFormat,
+                            TimeFormat = response.TimeFormat,
+                            TimeZone = response.TimeZone,
+                            UnitDisplay = response.UnitDisplay,
+                            VehicleDisplay = response.VehicleDisplay,
+                            Language = response.Language
+                        });
+                    }
+                    else
+                        return Ok(response);
                 }
                 else
                 {
@@ -366,7 +383,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "PASSWORD_NON_COMPLIANT", parameter: nameof(request.Authorization));
             }
 
-            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+            var accountIdentity = await _accountIdentityManager.ValidateUser(new Identity { UserName = email, Password = password });
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
 
@@ -409,17 +426,22 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             var email = identity.Split(":")[0].Trim();
             var password = identity.Split(":")[1].Trim();
 
-            var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+            int? orgId = null;
+            if (!string.IsNullOrEmpty(request.OrganisationId))
+            {
+                var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganisationId);
+                orgId = org?.Id ?? 0;
+            }
 
-            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, org?.Id ?? 0, email);
+            var isExists = await _driverManager.CheckIfDriverExists(request.DriverId, orgId, email);
             if (!isExists)
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
-            var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+            var accountIdentity = await _accountIdentityManager.ValidateUser(new Identity { UserName = email, Password = password });
             if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: string.Empty);
 
-            return new OkObjectResult(new { Email = email, OrgId = org?.Id ?? 0 });
+            return new OkObjectResult(new { Email = email, OrgId = orgId ?? 0 });
         }
 
         private async Task<IActionResult> ValidateParameters(ChangePasswordRequest request)
@@ -469,7 +491,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
 
             if (email.ToLower().Equals(newIdentity.Split(":")[0].Trim().ToLower()))
             {
-                var accountIdentity = await _accountIdentityManager.Login(new Identity { UserName = email, Password = password });
+                var accountIdentity = await _accountIdentityManager.ValidateUser(new Identity { UserName = email, Password = password });
                 if (accountIdentity == null || (accountIdentity != null && string.IsNullOrEmpty(accountIdentity.TokenIdentifier)))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
             }
@@ -528,17 +550,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 TimeFormat = request.TimeFormat,
                 TimeZone = request.TimeZone,
                 UnitDisplay = request.UnitDisplay,
-                VehicleDisplay = _vehicleDisplayOptions.ContainsKey(request.VehicleDisplay.ToLower()) ? _vehicleDisplayOptions[request.VehicleDisplay.ToLower()] : _vehicleDisplayOptions["vin"]
-            };
-        }
-
-        private Dictionary<string, string> PrepareUnitDisplayOptions()
-        {
-            return new Dictionary<string, string>()
-            {
-                { "vin", "Vehicle Identification Number" },
-                { "name", "Vehicle Name" },
-                { "regno", "Vehicle Registration Number" }
+                VehicleDisplay = request.VehicleDisplay.ToLower()
             };
         }
 

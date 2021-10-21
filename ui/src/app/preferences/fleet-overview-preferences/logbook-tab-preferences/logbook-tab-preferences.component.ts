@@ -12,7 +12,7 @@ import { ReportService } from 'src/app/services/report.service';
 export class LogbookTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setLogbookFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];
@@ -27,15 +27,21 @@ export class LogbookTabPreferencesComponent implements OnInit {
     let repoId: any = this.reportListData.filter(i => i.name == 'Logbook');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
+      this.loadLogbookPreferences();
     }else{
-      this.reportId = 13; //- hard coded for Logbook
+      console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.loadLogbookPreferences();
   }
 
   translationUpdate(){
     this.translationData = {
+      lblTablecolumnviewsettings: 'Table column view settings',
+      lblDetails: 'Details',
+      lblCancel: 'Cancel',
+      lblReset: 'Reset',
+      lblConfirm: 'Confirm',
       rp_lb_logbook: 'Logbook',
       rp_lb_logbook_details: 'Details',
       rp_lb_logbook_details_alertlevel: 'Alert Level',
@@ -50,7 +56,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
       rp_lb_logbook_details_occurance: 'Occurance',
       rp_lb_logbook_details_tripend: 'Trip End',
       rp_lb_logbook_details_threshold: 'Threshold'
-    }
+    };
   }
 
   loadLogbookPreferences(){
@@ -161,17 +167,17 @@ export class LogbookTabPreferencesComponent implements OnInit {
       this.logbookPrefData.forEach(element => {
         let search = this.selectionForLoogbookColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (search.length > 0) {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         } else {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         }
       });
 
-      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId }); // main parent
       if (this.selectionForLoogbookColumns.selected.length == this.logbookPrefData.length) { // parent selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
       } else { // parent un-selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
       }
 
       let objData: any = {

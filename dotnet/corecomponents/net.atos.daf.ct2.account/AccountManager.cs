@@ -16,6 +16,7 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.utilities;
+using Newtonsoft.Json;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
@@ -63,7 +64,7 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await _repository.Create(account);
 
-                account.IsErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
+                await SetPasswordViaEmail(account, EmailEventType.CreateAccount);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -84,7 +85,7 @@ namespace net.atos.daf.ct2.account
                         account = await _repository.Create(account);
                         await _identity.UpdateUser(identityEntity);
 
-                        account.IsErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
+                        await SetPasswordViaEmail(account, EmailEventType.CreateAccount);
                     }
                     else
                     {
@@ -183,12 +184,19 @@ namespace net.atos.daf.ct2.account
         {
             return await _repository.Get(filter);
         }
+
         public async Task<int> GetCount(int organization_id)
         {
             return await _repository.GetCount(organization_id);
         }
+
         public async Task<Account> AddAccountToOrg(Account account)
         {
+            if (account.AccountType == AccountType.SystemAccount)
+            {
+                if (await _repository.CheckIfSystemAccAlreadyHasOrgLinked(account.Id))
+                    return null;
+            }
             return await _repository.AddAccountToOrg(account);
         }
 
@@ -624,7 +632,21 @@ namespace net.atos.daf.ct2.account
                 var languageCode = await GetLanguageCodePreference(account.EmailId, account.Organization_Id);
                 var emailTemplate = await _translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
 
-                return await EmailHelper.SendEmail(messageRequest, emailTemplate);
+                var response = await EmailHelper.SendEmail(messageRequest, emailTemplate);
+
+                // Log unsuccessful email attempts
+                if (response != null && !response.IsSuccessStatusCode)
+                {
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager",
+                        AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, $"Sending email failed to { account.EmailId }", 0, 0, JsonConvert.SerializeObject(await response.Body.ReadAsStringAsync()));
+                }
+                else
+                {
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager",
+                           AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "No content found for the email template", 0, 0, account.EmailId);
+                }
+
+                return response?.IsSuccessStatusCode ?? false;
             }
             catch (Exception ex)
             {
@@ -796,6 +818,11 @@ namespace net.atos.daf.ct2.account
         public async Task<ValidateDriverResponse> ValidateDriver(string accountEmail, int organisationId)
         {
             return await _repository.ValidateDriver(accountEmail, organisationId);
+        }
+
+        public async Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter)
+        {
+            return await _repository.GetCountryDetails(countryFilter);
         }
     }
 }

@@ -1,8 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -18,15 +15,19 @@ using net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.dashboardservice;
 using net.atos.daf.ct2.driverservice;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.mapservice;
+using net.atos.daf.ct2.notificationservice;
 using net.atos.daf.ct2.organizationservice;
+using net.atos.daf.ct2.otasoftwareupdateservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.portalservice.hubs;
 using net.atos.daf.ct2.pushnotificationservice;
 using net.atos.daf.ct2.reportschedulerservice;
@@ -35,9 +36,6 @@ using net.atos.daf.ct2.roleservice;
 using net.atos.daf.ct2.subscriptionservice;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.vehicleservice;
-using net.atos.daf.ct2.dashboardservice;
-using net.atos.daf.ct2.notificationservice;
-using net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -70,8 +68,10 @@ namespace net.atos.daf.ct2.portalservice
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
             var mapservice = Configuration["ServiceConfiguration:mapservice"];
             var dashboarservice = Configuration["ServiceConfiguration:dashboardservice"];
+            var otasoftwareupdateservice = Configuration["ServiceConfiguration:otasoftwareupdateservice"];
             var reportschedulerservice = Configuration["ServiceConfiguration:reportschedulerservice"];
             string notificationservice = Configuration["ServiceConfiguration:notificationservice"];
+
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.portalservice
             //});
             services.AddMemoryCache();
             services.AddControllers();
-            services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddSingleton<AuditHelper>();
             services.AddSingleton<SessionHelper>();
             services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
@@ -254,6 +254,9 @@ namespace net.atos.daf.ct2.portalservice
 
             services.AddGrpcClient<PushNotificationService.PushNotificationServiceClient>(o => o.Address = new Uri(notificationservice));
             services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(notificationservice));
+            // Enable support for unencrypted HTTP2  
+            //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            services.AddGrpcClient<OTASoftwareUpdateService.OTASoftwareUpdateServiceClient>(o => o.Address = new Uri(otasoftwareupdateservice));
 
             services.AddSwaggerGen(c =>
             {
@@ -330,7 +333,13 @@ namespace net.atos.daf.ct2.portalservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/NotificationHub");
+                endpoints.MapHub<NotificationHub>("/NotificationHub", option =>
+                {
+                    // For trobleshoot purpose.
+                    option.Transports = HttpTransportType.WebSockets |
+                                        HttpTransportType.LongPolling |
+                                        HttpTransportType.ServerSentEvents;
+                });
             });
             app.UseSwagger(c =>
             {

@@ -32,7 +32,7 @@ export class UserRoleManagementComponent implements OnInit {
   actionBtn:any;  
   createStatus: boolean;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;
@@ -49,54 +49,54 @@ export class UserRoleManagementComponent implements OnInit {
     private dialogService: ConfirmDialogService, 
     private _snackBar: MatSnackBar,
     private dialog: MatDialog) {
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblFilter: "Filter",
-      lblCreate: "Create",
-      lblNew: "New",
-      lblCancel: "Cancel",
-      lblSearch: "Search",
-      lblReset: "Reset",
-      lblConfirm: "Confirm",
-      //lblCancel: "Cancel",
-      lblDelete: "Delete",
-      lblBack: "Back",
-      lblAction: "Action",
-      lblUserRoleManagement: "User Role Management",
-      lblAllUserRoleDetails:  "All User Role Details",
-      lblNewUserRole: "New User Role",
-      lblRoleName: "Role Name",
-      lblRoleDescription: "Role Description",
-      lblCreateNewUserRole: "Create New User Role",
-      lblNewUserRoleName: "New User Role Name",
-      lblUserRoleType: "Role Type",
-      lblUserRoleDescriptionOptional: "User Role Description (Optional)",
-      lblEnterUserRoleName: "Enter User Role Name", 
-      lblEnterAboutUserRole: "Enter About User Role",
-      lblHintMessage: "You can select services from below list to provide access for this role",
-      lblSelectRoleAccess: "Select Role Access",
-      lblSelectedRoleAccess: "Selected Role Access",
-      lblFeatureName: "Feature Name",
-      lblAccess: "Access",
-      lbl120CharMax: "120 characters max",
-      lblUserRoleCreatedSuccessfully: "User Role '$' Created Successfully",
-      lblDeleteAccount: "Delete Account",
-      lblAreyousureyouwanttodeleterole: "Are you sure you want to delete '$' role?",
-      lblEditUserRoleDetails: "Edit User Role Details", 
-      lblUserRoleName: "User Role Name",
-      lblPleaseentertheUserRolename: "Please enter the User Role name",
-      lblUserRoleNameShouldbeMax60Characters: "User Role name should be max. 60 characters",
-      lblUserRolealreadyexistsPleasechooseadifferentname: "User Role already exists. Please choose a different name.",
-      lblCreateUserRoleAPIFailedMessage: "Error encountered in creating new User Role '$'",
-      lblUserRoledetailssuccessfullyupdated: "User Role '$' details successfully updated",
-      lblUpdateUserRoleAPIFailedMessage: "Error encountered in updating User Role '$'",
-      lblUserRoleDelete: "User Role '$' was successfully deleted",
-      lblDeleteUserRoleAPIFailedMessage: "Error deleting User Role '$'"
-    }
-  }
+  // defaultTranslation(){
+  //   this.translationData = {
+  //     lblFilter: "Filter",
+  //     lblCreate: "Create",
+  //     lblNew: "New",
+  //     lblCancel: "Cancel",
+  //     lblSearch: "Search",
+  //     lblReset: "Reset",
+  //     lblConfirm: "Confirm",
+  //     //lblCancel: "Cancel",
+  //     lblDelete: "Delete",
+  //     lblBack: "Back",
+  //     lblAction: "Action",
+  //     lblUserRoleManagement: "User Role Management",
+  //     lblAllUserRoleDetails:  "All User Role Details",
+  //     lblNewUserRole: "New User Role",
+  //     lblRoleName: "Role Name",
+  //     lblRoleDescription: "Role Description",
+  //     lblCreateNewUserRole: "Create New User Role",
+  //     lblNewUserRoleName: "New User Role Name",
+  //     lblUserRoleType: "Role Type",
+  //     lblUserRoleDescriptionOptional: "User Role Description (Optional)",
+  //     lblEnterUserRoleName: "Enter User Role Name", 
+  //     lblEnterAboutUserRole: "Enter About User Role",
+  //     lblHintMessage: "You can select services from below list to provide access for this role",
+  //     lblSelectRoleAccess: "Select Role Access",
+  //     lblSelectedRoleAccess: "Selected Role Access",
+  //     lblFeatureName: "Feature Name",
+  //     lblAccess: "Access",
+  //     lbl120CharMax: "120 characters max",
+  //     lblUserRoleCreatedSuccessfully: "User Role '$' Created Successfully",
+  //     lblDeleteAccount: "Delete Account",
+  //     lblAreyousureyouwanttodeleterole: "Are you sure you want to delete '$' role?",
+  //     lblEditUserRoleDetails: "Edit User Role Details", 
+  //     lblUserRoleName: "User Role Name",
+  //     lblPleaseentertheUserRolename: "Please enter the User Role name",
+  //     lblUserRoleNameShouldbeMax60Characters: "User Role name should be max. 60 characters",
+  //     lblUserRolealreadyexistsPleasechooseadifferentname: "User Role already exists. Please choose a different name.",
+  //     lblCreateUserRoleAPIFailedMessage: "Error encountered in creating new User Role '$'",
+  //     lblUserRoledetailssuccessfullyupdated: "User Role '$' details successfully updated",
+  //     lblUpdateUserRoleAPIFailedMessage: "Error encountered in updating User Role '$'",
+  //     lblUserRoleDelete: "User Role '$' was successfully deleted",
+  //     lblDeleteUserRoleAPIFailedMessage: "Error deleting User Role '$'"
+  //   }
+  // }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -178,7 +178,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   newUserRole() {
-    this.titleText = this.translationData.lblCreateNewUserRole || "Create New Account Role";
+    this.titleText = this.translationData.lblCreateNewUserRole ;
     this.rowsData = [];
     this.rowsData = this.initData; 
     this.editFlag = true;
@@ -190,7 +190,7 @@ export class UserRoleManagementComponent implements OnInit {
     if(action == 'duplicate'){
       this.duplicateFlag = true;
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Account Role" : this.translationData.lblEditUserRoleDetails || "Edit Account Role Details";
+    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole : this.translationData.lblEditUserRoleDetails;
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
@@ -198,7 +198,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   viewUserRole(row: any){
-    this.titleText = this.translationData.lblViewUserRole || "View Account Role";
+    this.titleText = this.translationData.lblViewUserRole;
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -207,10 +207,10 @@ export class UserRoleManagementComponent implements OnInit {
 
   deleteUserRole(row: any) {
     const options = {
-      title: this.translationData.lblDeleteRole || 'Delete Role',
-      message: this.translationData.lblAreyousureyouwanttodeleterole || "Are you sure you want to delete '$' role?",
-      cancelText: this.translationData.lblCancel || 'Cancel',
-      confirmText: this.translationData.lblDelete || 'Delete'
+      title: this.translationData.lblDeleteRole ,
+      message: this.translationData.lblAreyousureyouwanttodeleterole ,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     let name = row.roleName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -231,10 +231,10 @@ export class UserRoleManagementComponent implements OnInit {
             errorList = errorList.slice(0,-2);
           }
           const options = {
-            title: this.translationData.lblAlert || "Alert",
-            message: this.translationData.lblRoleCantBeDeletedmsg || `This role is in use by the following ${err.error.role.length} users, hence cannot be deleted.`,
+            title: this.translationData.lblAlert || 'Alert',
+            message: this.translationData.lblRoleCantBeDeletedmsg || 'Role cannot be deleted.',
             list: errorList,
-            confirmText: this.translationData.lblOk || "OK"
+            confirmText: this.translationData.lblOk || 'OK' 
           };
       
           const dialogConfig = new MatDialogConfig();

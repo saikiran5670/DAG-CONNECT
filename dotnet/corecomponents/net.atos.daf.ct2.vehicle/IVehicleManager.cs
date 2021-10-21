@@ -24,28 +24,30 @@ namespace net.atos.daf.ct2.vehicle
         Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int organizationId);
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int organizationId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int organizationId);
-        Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
-        Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId);
+        Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter, int loggedInOrgId, int accountId);
+        Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId, int accountId, int contextOrgId, int adminRightsFeatureId = 0);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
-        Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
+        Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle, int accountId, int contextOrgId);
 
         Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects);
 
         Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
+
+        Task<IEnumerable<VehicleGroupForOrgRelMapping>> GetVehicleGroupsForOrgRelationshipMapping(long organizationId);
 
         #region Vehicle Mileage Data
         Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype, int accountId, int orgid);
         #endregion
 
         #region Vehicle Namelist Data
-        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgid);
+        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId, VehicleNamelistSSOContext context);
         #endregion
 
         #region Vehicle Visibility
 
-        Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId);
-        Task<List<VisibilityVehicle>> GetVisibilityVehiclesByOrganization(int orgId);
-
+        Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(int accountId, int orgId);
+        Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehiclesByOrganization(int orgId);
+        Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibilityVehicles(IEnumerable<int> vehicleGroupIds, int orgId);
         #endregion
 
         #region Get Vehicle Group Count for Report scheduler
@@ -58,6 +60,9 @@ namespace net.atos.daf.ct2.vehicle
         Task<ProvisioningVehicleDataServiceResponse> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
         Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
 
+        #endregion
+        #region Get Vehicles property Model Year and Type
+        Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds);
         #endregion
     }
 }

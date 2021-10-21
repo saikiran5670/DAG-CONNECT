@@ -448,9 +448,10 @@ namespace net.atos.daf.ct2.organization.repository
 
                     await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
-                    // Assign base package at ORG lavel if not exist                   
-                    var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // Assign base package at ORG lavel if not exist
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
                 else
                 {
@@ -489,8 +490,9 @@ namespace net.atos.daf.ct2.organization.repository
                     await CreateDefaultGroupsAndAccessRelationship(organizationId);
 
                     // Assign base package at ORG lavel
-                    var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
-                    customer.SubscriptionId = subscriptionResponse.Response.OrderId;
+                    // commenting this code as platform package will be default now
+                    //var subscriptionResponse = await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    //customer.SubscriptionId = subscriptionResponse.Response.OrderId;
                 }
             }
             catch (Exception ex)
@@ -668,7 +670,12 @@ namespace net.atos.daf.ct2.organization.repository
                 string queryOrgInsert = "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
                               "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
-                return await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
+                var organizationId = await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
+
+                // Subscribe base package for the created organization
+                //await _subscriptionManager.Create(organizationId, Convert.ToInt32(keyHandOver.OrgCreationPackage));
+
+                return organizationId;
             }
             catch (Exception ex)
             {
@@ -1304,9 +1311,9 @@ namespace net.atos.daf.ct2.organization.repository
                                         inner join master.orgrelationshipmapping orm on orm.vehicle_id=veh.id
                                         Inner join master.orgrelationship ors on ors.id=orm.relationship_id
                                         where ors.state='A'
-                                        and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                        and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
                                                 else COALESCE(end_date,0) = 0 end
-                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and ors.code = 'Owner'";
+                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and lower(ors.code) = 'owner'";
                     var ownerOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     parameters = new DynamicParameters();
@@ -1319,9 +1326,9 @@ namespace net.atos.daf.ct2.organization.repository
                                 Inner join master.orgrelationship ors
                                 on ors.id=orm.relationship_id
                                 where ors.state='A'
-                                and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
                                          else COALESCE(end_date,0) = 0 end
-                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and ors.code <> 'Owner'";
+                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and lower(ors.code) NOT IN ('owner', 'oem')";
                     var visibleOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     // Merge all Org Ids
@@ -1342,5 +1349,27 @@ namespace net.atos.daf.ct2.organization.repository
         }
 
         #endregion
+
+        public async Task<IEnumerable<OrgRelationshipConflict>> GetVisibleVehiclesGroupCheck(int[] vehicleGroupIds, int orgId)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@org_id", orgId);
+                parameters.Add("@vehicle_group_ids", vehicleGroupIds);
+                var query = @"select grp.name, string_agg(v.vin::text, ', ') as vins
+	                        from master.group grp
+	                        inner join master.groupref gref on grp.id=gref.group_id and grp.id = any(@vehicle_group_ids) and 
+                                                               grp.organization_id = @org_id and grp.object_type='V' and grp.group_type='G'
+	                        inner join master.vehicle v on gref.ref_id = v.id
+	                        where v.organization_id <> @org_id
+	                        group by grp.name";
+                return await _dataAccess.QueryAsync<OrgRelationshipConflict>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

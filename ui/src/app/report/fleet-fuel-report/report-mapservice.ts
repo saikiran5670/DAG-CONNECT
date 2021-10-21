@@ -1,4 +1,5 @@
 import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ConfigService } from '@ngx-config/core';
 import { HereService } from 'src/app/services/here.service';
 import { ReportService } from 'src/app/services/report.service';
 
@@ -9,7 +10,7 @@ declare var H: any;
 })
 export class MapService {
 
-    map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+    map_key: any = "";
     ui: any;
     group = new H.map.Group();
     platform: any;
@@ -26,10 +27,11 @@ export class MapService {
     endAddressPositionLat: number = 0;
     endAddressPositionLong: number = 0;
 
-    constructor(private hereService: HereService, private ReportService: ReportService) {
-        this.platform = new H.service.Platform({
-          "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-        });
+    constructor(private hereService: HereService, private ReportService: ReportService,  private _configService: ConfigService) {
+      this.map_key = _configService.getSettings("hereMap").api_key;
+      this.platform = new H.service.Platform({
+          "apikey": this.map_key
+      });
       }
 
       getHhMmTime(totalSeconds: any){
@@ -46,91 +48,94 @@ export class MapService {
         return this.ui;
       }
 
-      viewselectedroutes(_selectedRoutes:any, _ui: any, _displayRouteView?: any, trackType?: any, row?: any){
+      viewselectedroutes(_selectedRoutes: any, _ui: any, _displayRouteView?: any, trackType?: any, row?: any){
         this.clearRoutesFromMap();
         if(_selectedRoutes && _selectedRoutes.length > 0){
           _selectedRoutes.forEach(elem => {
-            this.startAddressPositionLat = elem.startpositionlattitude;
-            this.startAddressPositionLong = elem.startpositionlongitude;
-            this.endAddressPositionLat= elem.endpositionlattitude;
-            this.endAddressPositionLong= elem.endpositionlongitude;
-            let houseMarker = this.createHomeMarker();
-            let markerSize = { w: 26, h: 32 };
-            const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-            this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong },{ icon: icon });
-            let endMarker = this.createEndMarker();
-            const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-            this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-            this.group.addObjects([this.startMarker, this.endMarker]);
-            
-            var startBubble;
-            this.startMarker.addEventListener('pointerenter', function (evt) {
-              // event target is the marker itself, group is a parent event target
-              // for all objects that it contains
-              startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-                // read custom data
-                content:`<table style='width: 350px;'>
-                  <tr>
-                    <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
-                  </tr>
-                  <tr>
-                    <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
-                  </tr>
-                </table>`
-              });
-              // show info bubble
-              _ui.addBubble(startBubble);
-            }, false);
-            this.startMarker.addEventListener('pointerleave', function(evt) {
-              startBubble.close();
-            }, false);
-
-            var endBubble;
-            this.endMarker.addEventListener('pointerenter', function (evt) {
-              // event target is the marker itself, group is a parent event target
-              // for all objects that it contains
-              endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-                // read custom data
-                content:`<table style='width: 350px;'>
-                  <tr>
-                    <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
-                  </tr>
-                  <tr>
-                    <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
-                  </tr>
-                </table>`
-              });
-              // show info bubble
-              _ui.addBubble(endBubble);
-            }, false);
-            this.endMarker.addEventListener('pointerleave', function(evt) {
-              endBubble.close();
-            }, false);
-
-            if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
-              let liveFleetPoints: any = elem.liveFleetPosition;
-              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
-              if(_displayRouteView == 'C'){ // classic route
-                let blueColorCode: any = '#436ddc';
-                this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
-              }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
-                let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
-                filterDataPoints.forEach((element) => {
-                  this.drawPolyline(element, trackType);
+            if(elem.liveFleetPosition.length > 1){             
+              this.startAddressPositionLat = elem.startpositionlattitude;
+              this.startAddressPositionLong = elem.startpositionlongitude;
+              this.endAddressPositionLat= elem.endpositionlattitude;
+              this.endAddressPositionLong= elem.endpositionlongitude;
+              let houseMarker = this.createHomeMarker();
+              let markerSize = { w: 26, h: 32 };
+              const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+              this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong },{ icon: icon });
+              let endMarker = this.createEndMarker();
+              const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+              this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+              this.group.addObjects([this.startMarker, this.endMarker]);
+              
+              var startBubble;
+              this.startMarker.addEventListener('pointerenter', function (evt) {
+                // event target is the marker itself, group is a parent event target
+                // for all objects that it contains
+                startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+                  // read custom data
+                  content:`<table style='width: 350px;'>
+                    <tr>
+                      <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
+                    </tr>
+                    <tr>
+                      <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
+                    </tr>
+                  </table>`
                 });
-              }
-            }
-            this.hereMap.addObject(this.group);
+                // show info bubble
+                _ui.addBubble(startBubble);
+              }, false);
+              this.startMarker.addEventListener('pointerleave', function(evt) {
+                startBubble.close();
+              }, false);
 
-            if(row && elem.id == row.id){
-              let grp = new H.map.Group();
-              grp.addObjects([this.startMarker, this.endMarker]);
-              this.hereMap.addObject(grp);
-              this.hereMap.getViewModel().setLookAtData({
-                bounds: grp.getBoundingBox()
-              });
+              var endBubble;
+              this.endMarker.addEventListener('pointerenter', function (evt) {
+                // event target is the marker itself, group is a parent event target
+                // for all objects that it contains
+                endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+                  // read custom data
+                  content:`<table style='width: 350px;'>
+                    <tr>
+                      <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
+                    </tr>
+                    <tr>
+                      <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
+                    </tr>
+                  </table>`
+                });
+                // show info bubble
+                _ui.addBubble(endBubble);
+              }, false);
+              this.endMarker.addEventListener('pointerleave', function(evt) {
+                endBubble.close();
+              }, false);
+
+              if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+                let liveFleetPoints: any = elem.liveFleetPosition;
+                liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+                if(_displayRouteView == 'C'){ // classic route
+                  let blueColorCode: any = '#436ddc';
+                  this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+                }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+                  let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+                  filterDataPoints.forEach((element) => {
+                    this.drawPolyline(element, trackType);
+                  });
+                }
+              }
+              this.hereMap.addObject(this.group);
+
+              //if(row && elem.id == row.id){
+                //let grp = new H.map.Group();
+                this.group.addObjects([this.startMarker, this.endMarker]);
+                this.hereMap.addObject(this.group);
+                this.hereMap.getViewModel().setLookAtData({
+                  bounds: this.group.getBoundingBox()
+                });
+              //}
+              
             }
-          })
+          });
         }
       }
       

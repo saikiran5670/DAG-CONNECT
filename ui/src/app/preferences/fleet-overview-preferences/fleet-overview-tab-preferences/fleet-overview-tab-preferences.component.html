@@ -48,7 +48,7 @@
                 [checked]='selectionForVehInfoColumns.hasValue() && isAllSelectedForVehInfoColumns()'
                 [indeterminate]='selectionForVehInfoColumns.hasValue() && !isAllSelectedForVehInfoColumns()'
                 [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                    translationData.lblGeneralVehicleInformation || 'General Vehicle Information' }}</span>
+                    translationData.lblGeneralVehicleInformation }}</span>
             </mat-checkbox>
         </div>
     </div>
@@ -82,13 +82,12 @@
     <!-- Button -->
     <div *ngIf='(timerPrefData.length > 0 || vehInfoPrefData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
         <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-            translationData.lblCancel || 'Cancel' }}</button>
+            translationData.lblCancel }}</button>
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-            translationData.lblReset || 'Reset' }}</button>
+            translationData.lblReset }}</button>
         <button
-            [disabled]='!fleetOverviewForm.valid || (selectionForSetTimerColumns.selected.length == 0 && timerPrefData.length > 0) || (selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
-            class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
-            'Confirm') }}</button>
+            [disabled]='(selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
+            class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
     </div>
 
 </form>

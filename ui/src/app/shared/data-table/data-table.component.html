@@ -1,9 +1,9 @@
 <!-- fxLayoutAlign="space-between" class='margin-bottom-sm' -->
-<div fxLayout="row" fxLayoutGap="10px">
+<div fxLayout="row" fxLayoutGap="10px" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayoutAlign="center center">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)"
-                placeholder="{{ translationData.lblSearch || 'Search' }}">
+                placeholder="{{ translationData.lblSearch  }}">
             <span matPrefix>
                 <mat-icon>search</mat-icon>
             </span>
@@ -18,11 +18,11 @@
 
     <div class='areaWidth' *ngIf="showExport" fxLayoutAlign="center center">
         <button *ngIf='tableData.length > 0' mat-button [matMenuTriggerFor]="menu">
-            <mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon>
+            <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-            <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+            <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)'}}</button>
+            <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
         </mat-menu>
     </div>
 
@@ -31,7 +31,7 @@
     </ng-container>
 </div>
 
-<div *ngIf='tableData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+<div *ngIf='tableData.length == 0'>{{ translationData.lblNoRecordFound  }}</div>
 
 <div id="packageData" *ngIf='tableData.length > 0'>
     <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
@@ -40,18 +40,16 @@
 
             <ng-container
                 *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
-                    columnLabels[i] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
-                    <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                    <span class="text-truncate" [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
+                    <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew }}</span>
+                    <span class="text-truncate" matTooltip="{{row[column]}}" [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
                 </mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'viewstatus'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
-                    columnLabels[i] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='viewStatusColumnElements; context: {rowData: row}'></ng-container>
@@ -59,8 +57,7 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'action'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
-                    columnLabels[i] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='actionColumnElements; context: {rowData: row}'></ng-container>
@@ -68,8 +65,7 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'action2'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] ||
-                    columnLabels[i] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='action2ColumnElements; context: {rowData: row}'></ng-container>
@@ -77,9 +73,9 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] || columnLabels[i] }}
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.isExclusive ? translationData.lblExclusive : translationData.lblInclusive }}</mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'select'">

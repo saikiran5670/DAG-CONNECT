@@ -12,71 +12,71 @@
   <mat-card class='mat-elevation-z' *ngIf='!createVehicleAccountAccessRelation'> 
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails || 'All Access Relationship Details' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails  }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <mat-form-field appearance="outline">
-              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
         <div *ngIf="!isViewListDisabled" class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span class='radioLabel'>{{ translationData.lblViewlistby || 'View list by' }}:</span>
+          <span class='radioLabel'>{{ translationData.lblViewlistby  }}:</span>
           <mat-radio-group (change)='onVehicleListChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="group"
-              [checked]="selectedVehicleViewType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}
+              [checked]="selectedVehicleViewType ===  'group' ? true : false">{{ translationData.lblGroup  }}
             </mat-radio-button>
             <mat-radio-button style='margin-right: 20px;' value="vehicle"
-              [checked]="selectedVehicleViewType ===  'vehicle' ? true : false">{{ translationData.lblVehicle || 'Vehicle' }}
+              [checked]="selectedVehicleViewType ===  'vehicle' ? true : false">{{ translationData.lblVehicle  }}
             </mat-radio-button>
             <mat-radio-button value="both" [checked]="selectedVehicleViewType ===  'both' ? true : false">{{
-              translationData.lblBoth || 'Both' }}</mat-radio-button>
+              translationData.lblBoth  }}</mat-radio-button>
           </mat-radio-group>
         </div>
         <div *ngIf="isViewListDisabled" class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span class='radioLabel'>{{ translationData.lblViewlistby || 'View list by' }}:</span>
+          <span class='radioLabel'>{{ translationData.lblViewlistby  }}:</span>
           <mat-radio-group (change)='onAccountListChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="group"
-              [checked]="selectedAccountViewType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}
+              [checked]="selectedAccountViewType ===  'group' ? true : false">{{ translationData.lblGroup  }}
             </mat-radio-button>
             <mat-radio-button style='margin-right: 20px;' value="account"
-              [checked]="selectedAccountViewType ===  'account' ? true : false">{{ translationData.lblAccount || 'Account' }}
+              [checked]="selectedAccountViewType ===  'account' ? true : false">{{ translationData.lblAccount  }}
             </mat-radio-button>
             <mat-radio-button value="both" [checked]="selectedAccountViewType ===  'both' ? true : false">{{
-              translationData.lblBoth || 'Both' }}</mat-radio-button>
+              translationData.lblBoth }}</mat-radio-button>
           </mat-radio-group>
         </div>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span>{{ translationData.lblViewassociationby || 'View association by' }}:</span>
+          <span>{{ translationData.lblViewassociationby  }}:</span>
           <mat-radio-group (change)='onColumnChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="vehicle"
-              [checked]="selectedColumnType ===  'vehicle' ? true : false">{{ translationData.lblVehicle || 'Vehicle' }}
+              [checked]="selectedColumnType ===  'vehicle' ? true : false">{{ translationData.lblVehicle  }}
             </mat-radio-button>
             <mat-radio-button value="account"
-              [checked]="selectedColumnType ===  'account' ? true : false">{{ translationData.lblAccount || 'Account' }}
+              [checked]="selectedColumnType ===  'account' ? true : false">{{ translationData.lblAccount  }}
             </mat-radio-button>
           </mat-radio-group>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
           <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-            <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+            <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-              <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+              <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF }}</button>
+              <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
             </mat-menu>
           </div>
-          <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+          <div  *ngIf="adminAccessType.adminFullAccess" >
           <button mat-flat-button color="primary" (click)="createNewAssociation()">
-            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation || 'New Association' }}
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation  }}
           </button>
         </div>
         </div>
         </div>
     </div>
-    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound  }}</div>
     <div *ngIf='initData.length > 0' id="vehicleAccessData">
       <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[3]">
         <ng-container *ngFor="let disCol of cols; let colIndex = index" matColumnDef="{{ disCol }}">
@@ -91,7 +91,7 @@
           </div>
           <div *ngIf="disCol == 'accessType'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{ (element[disCol] == 'F') ? (translationData.lblFullAccess || 'Full Access') : (translationData.lblViewOnly || 'View Only') }} </mat-cell>
+            <mat-cell *matCellDef="let element">{{ (element[disCol] == 'F') ? (translationData.lblFullAccess ) : (translationData.lblViewOnly ) }} </mat-cell>
           </div>
           <div *ngIf="disCol == 'associatedAccount'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
@@ -104,13 +104,13 @@
           <div *ngIf="disCol == 'action'">
             <mat-header-cell *matHeaderCellDef class="action">{{ columnNames[colIndex] }}</mat-header-cell>
             <mat-cell *matCellDef="let row" class="action">
-              <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+              <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'view')" matTooltip="{{ translationData.lblView }}">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+              <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit  }}">
                 <mat-icon>create</mat-icon>
               </button>
-              <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+              <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete  }}">
                 <mat-icon class="deleteIcon">delete_outline</mat-icon>
               </button>
             </mat-cell>
@@ -123,5 +123,5 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createVehicleAccountAccessRelation' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccountVehicle($event)'></app-create-edit-view-vehicle-account-access-relationship>
+  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createVehicleAccountAccessRelation' [vehicleDisplayPreference]='vehicleDisplayPreference' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccountVehicle($event)'></app-create-edit-view-vehicle-account-access-relationship>
 </div>

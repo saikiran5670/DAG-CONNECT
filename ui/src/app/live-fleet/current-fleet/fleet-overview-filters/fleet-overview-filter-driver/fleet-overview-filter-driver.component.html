@@ -3,11 +3,11 @@
     (closed)="!isVehicleListOpen">
       <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleList || 'Vehicle List' }}({{driverListData.length}})</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleList }}({{driverListData.length}})</span>
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
-        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event.checked)" >{{ translationData.lblToday || 'Today'}}
+        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event.checked)" >{{ translationData.lblToday }}
         </mat-checkbox>
      </div>
       <div *ngIf="!noRecordFlag">
@@ -18,30 +18,30 @@
             </div>
             <div class="vehicleList-details">
             <div>
-                <span class="vehicle-details-head">{{ translationData.lblVin || 'VIN'}}: </span>
+                <span class="vehicle-details-head">{{ translationData.lblVin }}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
             <div>               
                 <span class="vehicle-details-head" >           
-                    {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+                    {{ item.driverName == '' ?  translationData.lblDriverId || 'Driver Id' : translationData.lblDriverName || 'Driver Name'
                 </span>
                 <span class="vehicle-details-data">
                       {{ (item.driverName == '' ? item.driver1Id : item.driverName) || ((item.driverName == '' && item.driver1Id == '') ? 'Unknown' : item.driverName)}} 
                </span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lblDrivingStatus || 'Driving Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblDrivingStatus}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lblHealthStatus || 'Health Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblHealthStatus}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
             </div>
             </div>
         </div>
      </div>  
      <div *ngIf="noRecordFlag">
-        <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
+        <p>{{translationData.lblNoRecordFound}}</p>
     </div>  
   </mat-expansion-panel>
 </div>

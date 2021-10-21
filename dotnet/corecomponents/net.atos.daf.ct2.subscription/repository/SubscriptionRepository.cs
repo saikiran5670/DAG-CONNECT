@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //forgeting package type and id
-        async Task<int> GetOrganizationIdByCode(string organizationCode)
+        public async Task<int> GetOrganizationIdByCode(string organizationCode)
         {
 
             var parameterToGetPackageId = new DynamicParameters();
@@ -104,7 +104,7 @@ namespace net.atos.daf.ct2.subscription.repository
             var data = await _dataAccess.ExecuteScalarAsync<long>(@"SELECT max(subscription_id) from master.subscription");
             return ++data;
         }
-        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription)
+        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription, IEnumerable<string> visibleVINs)
         {
             _log.Info("Subscribe Subscription method called in repository");
             try
@@ -178,91 +178,114 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 }
                 //if package type is vehicle then only check vehicle table
-                else if (packageDetails.Id > 0 && packageDetails.Type.ToLower() == "v")
+                else if (packageDetails.Id > 0 && new string[] { "v", "n" }.Contains(packageDetails.Type.ToLower()))
                 {
-                    if (objSubscription.VINs == null || objSubscription.VINs.Count == 0)
+                    // Keep Owned VINs in objSubscription.VINs list
+                    objSubscription.VINs = objSubscription.VINs.Except(visibleVINs).ToList();
+
+                    if (objSubscription.VINs.Count == 0 && visibleVINs.Count() == 0)
                     {
                         return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("MISSING_PARAMETER", nameof(objSubscription.VINs)));
                     }
+
+                    Dictionary<string, int> vehicleIds = new Dictionary<string, int>();
                     if (objSubscription.VINs.Count > 0)
                     {
                         //Get all vehicle Ids corrosponding to VINs and match count with VINs 
                         //for checking VINs outside the provided organization
-                        var vehicleIds = await CheckVINsExistInOrg(objSubscription.VINs, orgid);
+                        vehicleIds = await CheckVINsExistInOrg(objSubscription.VINs, orgid);
                         if (objSubscription.VINs.Count != vehicleIds.Count)
                         {
                             var values = objSubscription.VINs.ToArray().Except(vehicleIds.Keys.ToArray()).ToArray();
                             return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", values));
                         }
-
-                        ArrayList objvinList = new ArrayList(); int count = 0;
-                        foreach (var vin in objSubscription.VINs)
-                        {
-                            int vinActivated = 0;
-                            var response = await SubscriptionExits(orgid, packageDetails.Id, vehicleIds[vin]);
-                            if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "A")
-                            {
-                                return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INVALID_REQUEST", objSubscription.PackageId));
-                            }
-                            else if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "I")
-                            {
-                                // Subscription exists and InActive
-                                var parameterStatus = new DynamicParameters();
-                                parameterStatus.Add("@state", "A");
-                                parameterStatus.Add("@subscription_id", response.Subscription_Id);
-                                parameterStatus.Add("@subscription_start_date", objSubscription.StartDateTime);
-                                parameterStatus.Add("@subscription_end_date", null);
-                                parameterStatus.Add("@vehicle_id", vehicleIds[vin]);
-                                string queryUpdate = @"update master.subscription set state = @state, subscription_start_date = @subscription_start_date,
-                                           subscription_end_date = @subscription_end_date where subscription_id = @subscription_id and vehicle_id=@vehicle_id";
-
-                                vinActivated = await _dataAccess.ExecuteAsync(queryUpdate, parameterStatus);
-                                if (vinActivated > 0)
-                                {
-                                    count = ++count;
-                                }
-                            }
-                            //This will get us the list of vins exits on Vehicle Table or Not
-                            if (vinActivated == 0)
-                            {
-                                objvinList.Add(vehicleIds[vin]);
-                            }
-                            if (response != null && response.Subscription_Id > 0)
-                                objSubscriptionResponse.Response.OrderId = response.Subscription_Id.ToString();
-                        }
-
-                        long subscriptionId = 0;
-                        if (string.IsNullOrEmpty(objSubscriptionResponse.Response.OrderId) == true)
-                        {
-                            subscriptionId = await GetTopOrderId();
-                        }
-                        else
-                        {
-                            subscriptionId = Convert.ToInt64(objSubscriptionResponse.Response.OrderId);
-                        }
-                        var parameter = new DynamicParameters();
-                        parameter.Add("@organization_id", orgid);
-                        parameter.Add("@subscription_id", subscriptionId);
-                        parameter.Add("@type", packageDetails.Type);
-                        parameter.Add("@package_code", objSubscription.PackageId);
-                        parameter.Add("@package_id", packageDetails.Id);
-                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
-                        parameter.Add("@subscription_end_date", null);
-                        parameter.Add("@state", "A");
-                        parameter.Add("@is_zuora_package", true);
-                        //This Condition to insert only if all the VIN exits in Vehicle Table
-                        foreach (var item in objvinList)
-                        {
-                            parameter.Add("@vehicle_id", item);
-                            string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, state,is_zuora_package) " +
-                                         "values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @state, @is_zuora_package) RETURNING id";
-
-                            int subid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-                            count = ++count;
-                        }
-                        objSubscriptionResponse.Response.NumberOfVehicles = count;
-                        objSubscriptionResponse.Response.OrderId = subscriptionId.ToString();
                     }
+
+                    if (visibleVINs.Count() > 0)
+                    {
+                        //Get all vehicle Ids corrosponding to VINs and match count with VINs 
+                        //for checking VINs outside the provided organization
+                        var visible_vehicleIds = await CheckVINsExistInOrg(visibleVINs.ToList(), orgid, isVisible: true);
+                        if (visibleVINs.Count() != visible_vehicleIds.Count)
+                        {
+                            var values = visibleVINs.ToArray().Except(visible_vehicleIds.Keys.ToArray()).ToArray();
+                            return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", values));
+                        }
+
+                        foreach (var kv in visible_vehicleIds)
+                        {
+                            if (!vehicleIds.ContainsKey(kv.Key))
+                                vehicleIds.Add(kv.Key, kv.Value);
+                        }
+                    }
+
+                    ArrayList objvinList = new ArrayList(); int count = 0;
+                    foreach (var vin in objSubscription.VINs.Concat(visibleVINs))
+                    {
+                        int vinActivated = 0;
+                        var response = await SubscriptionExits(orgid, packageDetails.Id, vehicleIds[vin]);
+                        if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "A")
+                        {
+                            return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INVALID_REQUEST", objSubscription.PackageId));
+                        }
+                        else if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "I")
+                        {
+                            // Subscription exists and InActive
+                            var parameterStatus = new DynamicParameters();
+                            parameterStatus.Add("@state", "A");
+                            parameterStatus.Add("@subscription_id", response.Subscription_Id);
+                            parameterStatus.Add("@subscription_start_date", objSubscription.StartDateTime);
+                            parameterStatus.Add("@subscription_end_date", null);
+                            parameterStatus.Add("@vehicle_id", vehicleIds[vin]);
+                            string queryUpdate = @"update master.subscription set state = @state, subscription_start_date = @subscription_start_date,
+                                        subscription_end_date = @subscription_end_date where subscription_id = @subscription_id and vehicle_id=@vehicle_id";
+
+                            vinActivated = await _dataAccess.ExecuteAsync(queryUpdate, parameterStatus);
+                            if (vinActivated > 0)
+                            {
+                                count = ++count;
+                            }
+                        }
+                        //This will get us the list of vins exits on Vehicle Table or Not
+                        if (vinActivated == 0)
+                        {
+                            objvinList.Add(vehicleIds[vin]);
+                        }
+                        if (response != null && response.Subscription_Id > 0)
+                            objSubscriptionResponse.Response.OrderId = response.Subscription_Id.ToString();
+                    }
+
+                    long subscriptionId = 0;
+                    if (string.IsNullOrEmpty(objSubscriptionResponse.Response.OrderId) == true)
+                    {
+                        subscriptionId = await GetTopOrderId();
+                    }
+                    else
+                    {
+                        subscriptionId = Convert.ToInt64(objSubscriptionResponse.Response.OrderId);
+                    }
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@organization_id", orgid);
+                    parameter.Add("@subscription_id", subscriptionId);
+                    parameter.Add("@type", packageDetails.Type);
+                    parameter.Add("@package_code", objSubscription.PackageId);
+                    parameter.Add("@package_id", packageDetails.Id);
+                    parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                    parameter.Add("@subscription_end_date", null);
+                    parameter.Add("@state", "A");
+                    parameter.Add("@is_zuora_package", true);
+                    //This Condition to insert only if all the VIN exits in Vehicle Table
+                    foreach (var item in objvinList)
+                    {
+                        parameter.Add("@vehicle_id", item);
+                        string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, state,is_zuora_package) " +
+                                        "values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @state, @is_zuora_package) RETURNING id";
+
+                        int subid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                        count = ++count;
+                    }
+                    objSubscriptionResponse.Response.NumberOfVehicles = count;
+                    objSubscriptionResponse.Response.OrderId = subscriptionId.ToString();
                 }
                 return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.OK, objSubscriptionResponse);
             }
@@ -319,7 +342,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
 
                     //if package type is vehicle then only check vehicle table
-                    else if (subscriptionDetails.First().Type.ToLower() == "v")
+                    else if (new string[] { "v", "n" }.Contains(subscriptionDetails.First().Type.ToLower()))
                     {
                         if (objUnSubscription.VINs == null || objUnSubscription.VINs.Count == 0)
                         {
@@ -502,19 +525,27 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        private async Task<Dictionary<string, int>> CheckVINsExistInOrg(List<string> vins, int orgId)
+        private async Task<Dictionary<string, int>> CheckVINsExistInOrg(List<string> vins, int orgId, bool isVisible = false)
         {
             int vehicleId;
             DynamicParameters parameters;
             Dictionary<string, int> vehicleIds = new Dictionary<string, int>();
+
+            var query = @"SELECT id FROM master.vehicle where vin=@vin";
+
             foreach (var item in vins)
             {
                 vehicleId = 0;
                 parameters = new DynamicParameters();
                 parameters.Add("@vin", item);
-                parameters.Add("@orgId", orgId);
-                vehicleId = await _dataAccess.ExecuteScalarAsync<int>
-                    (@"SELECT id FROM master.vehicle where vin=@vin and organization_id=@orgId", parameters);
+
+                if (!isVisible)
+                {
+                    parameters.Add("@orgId", orgId);
+                    query += " and organization_id=@orgId";
+                }
+
+                vehicleId = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 if (vehicleId > 0)
                 {
                     if (!vehicleIds.ContainsKey(item))

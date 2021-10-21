@@ -148,12 +148,12 @@ export class DashboardComponent implements OnInit {
 
     let translationObj = {
       id: 0,
-      code:_langCode,
+      code: _langCode,
       type: "Menu",
       name: "",
       value: "",
       filter: "",
-      menuId: 18 //-- for landmark
+      menuId: 1 //-- for dashboard
     }
    
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -235,7 +235,7 @@ export class DashboardComponent implements OnInit {
   }
 
   processVins(tripData){
-    let _vinList = tripData['vehicleDetailsWithAccountVisibiltyList'].map(x=>x.vin);
+    let _vinList = tripData['vinTripList'].map(x=>x.vin);
     if(_vinList.length > 0){
       this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
     }

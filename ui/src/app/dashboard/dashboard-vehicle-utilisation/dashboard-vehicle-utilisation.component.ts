@@ -19,7 +19,7 @@ import { DataInterchangeService } from '../../services/data-interchange.service'
   styleUrls: ['./dashboard-vehicle-utilisation.component.less']
 })
 export class DashboardVehicleUtilisationComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
@@ -383,13 +383,17 @@ subscriberOn : boolean = false;
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -597,7 +601,7 @@ setAlertChartData(){
 }
 
 checkForPreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 3 && this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
@@ -611,7 +615,7 @@ checkForPreference(fieldKey) {
 }
 
 checkForVehiclePreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
@@ -627,7 +631,7 @@ checkForVehiclePreference(fieldKey) {
 getPreferenceThreshold(fieldKey){
   let thresholdType = 'U';
   let thresholdValue = 10080;
-  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       thresholdType = filterData[0].thresholdType;

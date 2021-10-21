@@ -1,75 +1,133 @@
 package net.atos.daf.ct2.processing;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Properties;
+
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
+import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
-import net.atos.daf.ct2.utils.JsonMapper;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
-import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
-import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Properties;
+import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.ct2.pojo.standard.Status;
 
-public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<KafkaRecord<U>, KafkaRecord<R>, KafkaRecord<U>> {
+public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<VehicleStatusSchema>, KafkaRecord<Tuple3<String, String, Object>>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(BroadcastMessageProcessor.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger(BroadcastMessageProcessor.class);
 
     private Properties properties;
-    private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor;
-
+    private final MapStateDescriptor<Message<String>, KafkaRecord<VehicleStatusSchema>> broadcastStateDescriptor;
+    
     public BroadcastMessageProcessor(Properties properties){
         this.properties = properties;
-        broadcastStateDescriptor = new BroadcastState<U,R>()
+        broadcastStateDescriptor = new BroadcastState<String,VehicleStatusSchema>()
                 .stateInitialization(this.properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
     }
 
+	@Override
+	public void processElement(KafkaRecord<Tuple3<String, String, Object>> inputRec,
+							   KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>,
+									   KafkaRecord<VehicleStatusSchema>,
+									   KafkaRecord<Tuple3<String, String, Object>>>.ReadOnlyContext ctx,
+							   Collector<KafkaRecord<Tuple3<String, String, Object>>> out) throws Exception {
+		//logger.info("Single record from processBroadcastElement :: {}",inputRec);
 
-    @Override
-    public void processElement(KafkaRecord<U> value, ReadOnlyContext ctx, Collector<KafkaRecord<U>> out) throws Exception {
-        logger.info("Single record from topic :: {}",value);
+		Message<String> msgVid = new Message<>((String) ctx.getCurrentKey());
+		ReadOnlyBroadcastState<Message<String>, KafkaRecord<VehicleStatusSchema>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);
 
-        String valueRecord =
-                JsonMapper.configuring()
-                        .readTree((String) value.getValue())
-                        .get("VID")
-                        .asText();
-        logger.info("Record VID:  :: {}",valueRecord);
+		if(broadcastStateMap.contains(msgVid)){
+			KafkaRecord<VehicleStatusSchema> kafkaRecord = broadcastStateMap.get(msgVid);
+			VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)kafkaRecord.getValue();
+			if(vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_OFF) || vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_ON)){
+				//JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
+				Tuple3 value = (Tuple3)inputRec.getValue();
+				inputRec.setKey(vinStatusRecord.getVin());
+				
+				if(value.f2 instanceof Index){
+					Index indx = ((Index)value.f2);
+					indx.setVin(vinStatusRecord.getVin());
+					indx.setFuelType(vinStatusRecord.getFuelType());
+					Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), indx);
+					inputRec.setValue(of);
+				}
+				if(value.f2 instanceof Monitor){
+					Monitor monitor = ((Monitor)value.f2);
+					monitor.setVin(vinStatusRecord.getVin());
+					monitor.setFuelType(vinStatusRecord.getFuelType());
+					Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), monitor);
+					inputRec.setValue(of);
+				}
+				if(value.f2 instanceof Status){
+					Status status = ((Status)value.f2);
+					status.setVin(vinStatusRecord.getVin());
+					status.setFuelType(vinStatusRecord.getFuelType());
+					Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), status);
+					inputRec.setValue(of);
+				}
 
-        Message<U> keyMessage = new Message<>((U) valueRecord);
-        ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);
+				logger.info("VID and VIN mapping found for message. VID:{} value: {}",ctx.getCurrentKey(), inputRec);
+				out.collect(inputRec);
 
-        if(broadcastStateMap.contains(keyMessage)){
-            KafkaRecord<R> kafkaRecord = broadcastStateMap.get(keyMessage);
-            VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)kafkaRecord.getValue();
-            logger.info("Broadcast info found for vin: {}, message: {}",keyMessage.get(), value);
-            if(vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_OFF) || vinStatusRecord.getStatus().equals(DAFCT2Constant.CONNECTED_OTA_ON)){
+			}else{
+				logger.info("Vehicle is not connected, ignoring vehicle data :: {}",inputRec);
+			}
 
-                JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
-                ((ObjectNode) jsonNode).put("VIN", vinStatusRecord.getVin());
-                ((ObjectNode) jsonNode).put("STATUS", vinStatusRecord.getStatus());
+		}else {
+			Tuple3<String, String, Object> value = (Tuple3<String, String, Object>)inputRec.getValue();
+			inputRec.setKey(ctx.getCurrentKey());
+			 
+			if(value.f2 instanceof Index){
+				Index indx = ((Index)value.f2);
+				if("UNKNOWN".equals(ctx.getCurrentKey()))
+					indx.setVid(ctx.getCurrentKey());
 
-                KafkaRecord<U> updatedkafkaRecord = new KafkaRecord<U>();
-                updatedkafkaRecord.setKey(valueRecord);
-                updatedkafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
-                out.collect(updatedkafkaRecord);
-            }else{
-            	 logger.info(" Vehicle is not connected, ignoring vehicle data :: {}",value);
-            }
-            
-        }else {
-            logger.info("VID and VIN mapping not found for message :: {}",value);
-            out.collect(value);
-        }
-    }
+				indx.setVin(ctx.getCurrentKey());
+				Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), indx);
+				inputRec.setValue(of);
+			}
+			if(value.f2 instanceof Monitor){
+				Monitor monitor = ((Monitor)value.f2);
+				if("UNKNOWN".equals(ctx.getCurrentKey()))
+					monitor.setVid(ctx.getCurrentKey());
 
-    @Override
-    public void processBroadcastElement(KafkaRecord<R> value, Context ctx, Collector<KafkaRecord<U>> out) throws Exception {
-        logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , value);
-        ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
-    }
+				monitor.setVin(ctx.getCurrentKey());
+				Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), monitor);
+				inputRec.setValue(of);
+			}
+			if(value.f2 instanceof Status){
+				Status status = ((Status)value.f2);
+
+				if("UNKNOWN".equals(ctx.getCurrentKey()))
+					status.setVid(ctx.getCurrentKey());
+
+				status.setVin(ctx.getCurrentKey());
+				Tuple3<String, String, Object> of = Tuple3.of(String.valueOf(value.f0), String.valueOf(value.f1), status);
+				inputRec.setValue(of);
+			}
+
+			logger.info("VID and VIN mapping not found for message. VID and VIN:{} value: {}",ctx.getCurrentKey(), inputRec);
+			out.collect(inputRec);
+		}
+	}
+
+	@Override
+	public void processBroadcastElement(KafkaRecord<VehicleStatusSchema> vehicleStatusSchemaKafkaRecord,
+										KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>,
+			KafkaRecord<VehicleStatusSchema>, KafkaRecord<Tuple3<String, String, Object>>>.Context context,
+										Collector<KafkaRecord<Tuple3<String, String, Object>>> collector) throws Exception {
+		logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , vehicleStatusSchemaKafkaRecord);
+		context.getBroadcastState(broadcastStateDescriptor).put(new Message<String>( vehicleStatusSchemaKafkaRecord.getKey()), vehicleStatusSchemaKafkaRecord);
+	}
 }

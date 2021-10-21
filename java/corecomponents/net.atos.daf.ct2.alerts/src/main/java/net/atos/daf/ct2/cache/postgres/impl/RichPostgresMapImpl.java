@@ -67,6 +67,14 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload<Object
                     .dayTypeArray(String.valueOf(row.getObject(9)))
                     .startTime(row.getObject(10) == null ? 0L : Long.valueOf(String.valueOf(row.getObject(10))))
                     .endTime(row.getObject(11) == null ? 0L :   Long.valueOf(String.valueOf(row.getObject(11))))
+                    .nodeSeq(row.getObject(12) == null ? 0 : Integer.valueOf(String.valueOf(row.getObject(12))))
+                    .latitude(row.getObject(13) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(13))))
+                    .longitude(row.getObject(14) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(14))))
+                    .landmarkId(row.getObject(15) == null? -1 : Integer.valueOf(String.valueOf(row.getObject(15))))
+                    .landMarkType(String.valueOf(row.getObject(16)))
+                    .circleLatitude(row.getObject(17) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(17))))
+                    .circleLongitude(row.getObject(18) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(18))))
+                    .circleRadius(row.getObject(19) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(19))))
                     .timestamp(System.currentTimeMillis())
                     .build();
         }

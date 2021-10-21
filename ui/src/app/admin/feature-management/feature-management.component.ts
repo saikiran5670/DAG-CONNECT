@@ -35,7 +35,7 @@ export class FeatureManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   dataSource: any;
-  translationData: any;
+  translationData: any = {};
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
   actionBtn:any;  
@@ -46,27 +46,10 @@ export class FeatureManagementComponent implements OnInit {
     private featureService: FeatureService,
     private dialogService: ConfirmDialogService,
     private dialog: MatDialog) { 
-    this.defaultTranslation();
+    // this.defaultTranslation();
   }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearch: "Search",
-      lblFeatureManagement: "Feature Management",
-      lblFeatureRelationshipDetails: "Feature Relationship Details",
-      lblNewFeature: "New Feature",
-      lblNoRecordFound: "No Record Found",
-      lblView: "View",
-      lblEdit: "Edit",
-      lblDelete: "Delete",
-      lblExclude: "Exclude",
-      lblInclude: "Include",
-      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name",
-      lblToolTipTextDataAttrSetName : "New Feature will auto create same as Data Attribute set name",
-      lblToolTipTextDataAttrDescription: "New Feature description will auto create same as Data Attribute description"
-    }
-  }
-
+  
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -199,12 +182,12 @@ export class FeatureManagementComponent implements OnInit {
 
   changeFeatureStatus(rowData: any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      // cancelText: this.translationData.lblNo || "No",
-      // confirmText: this.translationData.lblYes || "Yes",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      title: this.translationData.lblAlert ,
+      message: this.translationData.lblYouwanttoDetails,
+      // cancelText: this.translationData.lblNo,
+      // confirmText: this.translationData.lblYes,
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
@@ -261,10 +244,10 @@ export class FeatureManagementComponent implements OnInit {
 
   deleteFeature(rowData: any){
     const options = {
-      title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDelete,
+      message: this.translationData.lblAreyousureyouwanttodeletefeature,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -279,8 +262,8 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   getDeletMsg(featureName: any){
-    if(this.translationData.lblFeatureRelationshipwassuccessfullydeleted)
-      return this.translationData.lblFeatureRelationshipwassuccessfullydeleted.replace('$', featureName);
+    if(this.translationData.lblFeaturewassuccessfullydeleted)
+      return this.translationData.lblFeaturewassuccessfullydeleted.replace('$', featureName);
     else
       return ("Feature '$' was successfully deleted").replace('$', featureName);
   }

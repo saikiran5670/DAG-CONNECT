@@ -1,27 +1,26 @@
 <mat-expansion-panel class="full-width margin-bottom-20m mb-10" fxLayoutGap="10px" [expanded]="true">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetKPI
-          || 'Fleet KPI' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetKPI }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <!-- time selection -->
     <button class="weekButton"
     (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
-      color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
+      color="primary">{{translationData.lblLast7days }}</button>
     <button class="monthButton" 
     (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
-      color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
+      color="primary">{{translationData.lblLast30days }}</button>
     <button class="moreButton"
     (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
-      color="primary">{{translationData.lblLast90days || 'Last 90 days' }}</button>
+      color="primary">{{translationData.lblLast90days }}</button>
 
        <!-- Charts  -->
-    <div style='margin-bottom: 10px;'>
+    <div  *ngIf="!dataError" style='margin-bottom: 10px;'>
       <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
         <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2" [ngClass]="{'warningClass':(co2Threshold==0)}">
           <div class="textDiv">
-            <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
+            <div>{{ translationData.lblCO2Emission }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
             out of {{cutOffC02Value}} T </div>
             <!-- <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'></div>
@@ -47,7 +46,7 @@
         <!-- Idling Time -->
         <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}">
           <div class="textDiv">
-            <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
+            <div>{{ translationData.lblIdlingTime }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
             out of {{cutOffIdlingTime}}</div>
             
@@ -71,7 +70,7 @@
          <!-- Driving Time -->
          <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(drivingThreshold==0)}">
           <div class="textDiv">
-            <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
+            <div>{{ translationData.lblDrivingTime }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
             out of {{cutOffDrivingTime}}</div>
             
@@ -204,5 +203,8 @@
          
           </div>
     </div>
+    <mat-error *ngIf="dataError">
+      {{ translationData.lblNoDataFoundForFleetKPI }}
+  </mat-error>
 </mat-expansion-panel>
  

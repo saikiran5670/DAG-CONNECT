@@ -27,14 +27,17 @@ namespace net.atos.daf.ct2.package.entity
                 case "O":
                     pkgType = PackageType.Organization;
                     break;
-                case "V":
+                case "N":
                     pkgType = PackageType.VIN;
                     break;
-                case "R":
+                case "V":
                     pkgType = PackageType.ORGVIN;
                     break;
+                case "P":
+                    pkgType = PackageType.Platform;
+                    break;
             }
-            return pkgType; ;
+            return pkgType;
         }
 
 
@@ -71,11 +74,14 @@ namespace net.atos.daf.ct2.package.entity
                 case "Organization":
                     type = 'O';
                     break;
-                case "Vehicle":
+                case "VIN":
+                    type = 'N';
+                    break;
+                case "Org+VIN":
                     type = 'V';
                     break;
-                case "ORGVIN":
-                    type = 'R';
+                case "Platform":
+                    type = 'P';
                     break;
             }
             return type;
@@ -91,10 +97,13 @@ namespace net.atos.daf.ct2.package.entity
                     ptype = "Organization";
                     break;
                 case "V":
+                    ptype = "Org+VIN";
+                    break;
+                case "N":
                     ptype = "VIN";
                     break;
-                case "R":
-                    ptype = "ORG VIN";
+                case "P":
+                    ptype = "Platform";
                     break;
             }
             return ptype;

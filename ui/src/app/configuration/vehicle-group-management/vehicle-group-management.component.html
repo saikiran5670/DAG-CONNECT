@@ -5,7 +5,7 @@
             {{ vehicleGrpCreatedMsg }}
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-            <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>Close</mat-icon>
         </div>
     </div>
     <mat-card class='mat-elevation-z' *ngIf='!createViewEditStatus'>
@@ -27,13 +27,13 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
               <div fxLayout="row" class='areaWidth'>
                   <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                  <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                  <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
                   <mat-menu #menu="matMenu">
-                      <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-                      <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                      <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF }}</button>
+                      <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
                   </mat-menu>
                   </div>
-                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                    <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                         <button mat-flat-button color="primary" (click)="onNewVehicleGroup()">
                         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewVehicleGroup || 'New Vehicle Group' }}
                         </button>
@@ -66,13 +66,13 @@
                 <ng-container matColumnDef="action">
                   <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" class="action">
-                    <button class='actionBtn' (click)="editViewVehicleGroup(row, 'view')" mat-flat-button matTooltip="View">
+                    <button class='actionBtn' (click)="editViewVehicleGroup(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView }}">
                       <mat-icon>visibility</mat-icon>
                     </button>
-                    <button class='actionBtn' mat-flat-button (click)="editViewVehicleGroup(row, 'edit')" matTooltip="Edit">
+                    <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewVehicleGroup(row, 'edit')" matTooltip="{{ translationData.lblEdit }}">
                       <mat-icon>create</mat-icon>
                     </button>
-                    <button class='actionBtn' mat-flat-button (click)="deleteVehicleGroup(row)" matTooltip="Delete">
+                    <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteVehicleGroup(row)" matTooltip="{{ translationData.lblDelete }}">
                       <mat-icon class="deleteIcon">delete_outline</mat-icon>
                     </button>
                   </mat-cell>

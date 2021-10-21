@@ -39,31 +39,33 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                            (
                                                                SELECT
                                                                    vin
-                                                                 , is_ongoing_trip           as isongoingtrip
-                                                                 , SUM(co2_emission)         as co2emission
-                                                                 , SUM(etl_gps_distance)     as distance
-                                                                 , SUM(etl_gps_driving_time) as drivingtime
-                                                                 , SUM(fuel_consumption)     as fuelconsumption
+                                                                 , is_ongoing_trip            as isongoingtrip
+                                                                 , Round(SUM(co2_emission),2) as co2emission
+															     --,SUM(co2_emission)         as co2emission
+                                                                 , SUM(etl_gps_distance)      as distance
+                                                                 , SUM(etl_gps_driving_time)  as drivingtime
+                                                                 , SUM(fuel_consumption)      as fuelconsumption 
                                                                  , SUM(etl_gps_fuel_consumed) as fuelconsumed
-                                                                 , SUM(idling_consumption)   as idlingfuelconsumption
-                                                                 , SUM(idle_duration)        as idlingtime
+                                                                 , SUM(idling_consumption)    as idlingfuelconsumption
+                                                                 , SUM(idle_duration)         as idlingtime
                                                                FROM
                                                                    tripdetail.trip_statistics
                                                                WHERE
-                                                                   is_ongoing_trip = false AND (end_time_stamp BETWEEN @FromDate and @ToDate) AND  
-                                                        		vin=ANY(@Vins)
+                                                                   is_ongoing_trip = false 
+                                                  AND (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate)
+                                                  AND vin=ANY(@Vins)
                                                         	GROUP BY   vin, is_ongoing_trip 
                                                            )
                                                         SELECT
                                                             isongoingtrip
-                                                          , count(vin)			       as vehiclecount
-                                                          , Round(sum(co2emission),2)           as co2emission
-                                                          , Round(sum(distance),2)              as distance
-                                                          , Round(sum(drivingtime),2)           as drivingtime
-                                                          , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
-                                                          , Round(sum(fuelconsumption),2)       as fuelconsumption
-                                                          , Round(sum(fuelconsumed),2)          as fuelconsumed
-                                                          , Round(sum(idlingtime),2)            as idlingtime
+                                                          , count(vin)			                        as vehiclecount
+                                                          , sum(co2emission)                            as co2emission
+                                                          , Round(SUM(distance),2)                      as distance
+                                                          , SUM(drivingtime)                            as drivingtime
+                                                          , Round(SUM(idlingfuelconsumption),2)         as idlingfuelconsumption
+                                                          , Round((SUM(fuelconsumed)/SUM(distance)),7)  as fuelconsumption
+                                                          , Round(SUM(fuelconsumed),7)                  as fuelconsumed
+                                                          , Round(SUM(idlingtime),2)                    as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
 
@@ -71,9 +73,9 @@ namespace net.atos.daf.ct2.dashboard.repository
 
                 return lstFleetKpiDetails.FirstOrDefault();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<Alert24Hours>> GetLastAlert24Hours(Alert24HoursFilter alert24HoursFilter)
@@ -82,29 +84,67 @@ namespace net.atos.daf.ct2.dashboard.repository
             {
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
+                parameterOfFilters.Add("@Alertids", alert24HoursFilter.AlertIds);
+                //          string queryAlert24Hours = @"select                                       
+                //            COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
+                //               COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
+                //            (select COUNT(CASE WHEN ta.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance	                
+                //          		from 
+                //          		tripdetail.tripalert ta 
+                //          		where ta.vin = Any(@vins) and
+                //          		to_timestamp(ta.alert_generated_time/1000)::date >= (now()::date - 1)) 
+                //as RepairAndMaintenance,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
+                //            COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
+                //          from tripdetail.trip_statistics trs
+                //          inner JOIN tripdetail.tripalert tra ON trs.trip_id = tra.trip_id
+                //          where trs.vin = Any(@vins) and
+                //          to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
+
                 string queryAlert24Hours = @"select                                       
 	                 COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
                      COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
-	                 COUNT(CASE WHEN tra.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance,
+	                 COUNT(CASE WHEN tra.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance, 
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
-                from tripdetail.trip_statistics trs
-                inner JOIN tripdetail.tripalert tra ON trs.trip_id = tra.trip_id
-                where trs.vin = Any(@vins) and
-                to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
+                from tripdetail.tripalert tra
+                where tra.alert_id = Any(@Alertids) 
+                and tra.vin = Any(@vins) 
+                and tra.category_type <> 'O'
+                and tra.type <> 'W'
+                and to_timestamp(tra.alert_generated_time/1000)::timestamp >= (NOW() - INTERVAL '24 HOURS')";
 
                 List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert24Hours, parameterOfFilters);
                 return lstAlert;
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
 
-                throw ex;
+                throw;
             }
 
         }
+        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@orgId", organizationId);
+                string queryAlert = @"select id, Name, organization_id as org_id 
+                                        from master.alert 
+                                        where organization_id = @orgId ";
+                var result = await _dataAccess.QueryAsync<AlertOrgMap>(queryAlert, parameter);
+                return result.AsList<AlertOrgMap>();
+            }
+            catch (System.Exception)
+            {
 
+                throw;
+            }
+
+        }
         #region TodayLive Functionality
         public async Task<List<TodayLiveVehicleData>> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {
@@ -123,7 +163,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                         (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by lps.vehicle_msg_trigger_type_id asc))) as last_odometer_val,
                         lcts.driving_time,
                         ta.urgency_level_type,
-					    lps.vehicle_msg_trigger_type_id
+					    lps.vehicle_msg_trigger_type_id,
+                        trip_distance
                         FROM livefleet.livefleet_current_trip_statistics lcts
 					    LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
@@ -131,6 +172,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 			                        AND lcts.vin = Any(@Vins)
 							        AND lps.vehicle_msg_trigger_type_id in  (4,5)        
 							        AND lps.Veh_Message_Type = 'I' 
+                                    AND ta.urgency_level_type = 'C'
                         ), cte_filterTripEndedToday as
                         (
                         SELECT --lcts.trip_id,
@@ -138,24 +180,26 @@ namespace net.atos.daf.ct2.dashboard.repository
 					    (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val, 
                         lps.driving_time,
                         ta.urgency_level_type,
-						lps.vehicle_msg_trigger_type_id	
+						lps.vehicle_msg_trigger_type_id,
+                        trip_distance
                         FROM livefleet.livefleet_position_statistics lps
                         LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
                         WHERE lps.message_time_stamp > @yesterdaydatetime --(yesterday 00hr)
-   							  AND lps.message_time_stamp > @tomorrowdatetime --(Tomorrow 00hr) 
+   							AND lps.message_time_stamp > @tomorrowdatetime --(Tomorrow 00hr) 
 							AND lcts.vin = Any(@Vins)
-							AND lps.Veh_Message_Type = 'I' 
 							AND lps.vehicle_msg_trigger_type_id in (4,5)
+                            AND lps.Veh_Message_Type = 'I' 
+                            AND ta.urgency_level_type = 'C'
                         --GROUP BY TodayVin--,position.trip_id                                           	
                         ), cte_union as (
            select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
-				   ,vehicle_msg_trigger_type_id from cte_filterToday 
+				   ,vehicle_msg_trigger_type_id,trip_distance from cte_filterToday 
                    WHERE vehicle_msg_trigger_type_id = 5			
 				--GROUP BY vin			
 			UNION 
 		   select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount
-					,vehicle_msg_trigger_type_id from cte_filterTripEndedToday
+					,vehicle_msg_trigger_type_id,trip_distance from cte_filterTripEndedToday
 			        WHERE vehicle_msg_trigger_type_id = 5
 				--GROUP BY vin		
 						)
@@ -165,7 +209,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 						,todaydistance
 						,todaydrivingtime,todayalertcount--trip_id,*/
 						vin as TodayVin,
-                        SUM(todaydistance) as TodayDistance,
+                        SUM(trip_distance) as TodayDistance,
                         SUM(todaydrivingtime) as TodayDrivingTime,
                         COUNT(todayalertcount) as TodayAlertCount 
                         FROM cte_union 
@@ -174,9 +218,9 @@ namespace net.atos.daf.ct2.dashboard.repository
 
                 return dataToday.ToList();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -235,9 +279,9 @@ namespace net.atos.daf.ct2.dashboard.repository
                 var dataYesterday = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleData>(queryYesterday, parameter);
                 return dataYesterday.ToList();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -270,7 +314,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer,
                         SUM(etl_gps_fuel_consumed)    as fuelconsumed,
-                        SUM(fuel_consumption)          as fuelconsumption
+                        (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))          as fuelconsumption
                         FROM tripdetail.trip_statistics
                         where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)

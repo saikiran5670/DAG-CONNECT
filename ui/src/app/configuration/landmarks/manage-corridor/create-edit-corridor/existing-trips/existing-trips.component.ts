@@ -21,6 +21,7 @@ declare var H: any;
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MapFunctionsService } from '../../map-functions.service';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-existing-trips',
@@ -29,7 +30,7 @@ import { MapFunctionsService } from '../../map-functions.service';
 })
 export class ExistingTripsComponent implements OnInit {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() exclusionList: any;
   @Input() actionType: any;
   @Input() selectedElementData: any;
@@ -172,6 +173,8 @@ export class ExistingTripsComponent implements OnInit {
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
 
+  public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private here: HereService,
     private _formBuilder: FormBuilder, private translationService: TranslationService,
@@ -204,9 +207,10 @@ export class ExistingTripsComponent implements OnInit {
     this.vehicleGroupList.forEach(item => {      
         this.vinList.push(item.vin)      
     });    
-    if(this.vinList.length > 0){
-      this.vinList.unshift(this.translationData.lblAll || 'All' );     
-    };
+    // if(this.vinList.length > 0){
+    //   this.vinList.unshift(this.translationData.lblAll || 'All' );     
+    // };
+    this.filteredVehicleList.next(this.vinList);
     
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -222,7 +226,7 @@ export class ExistingTripsComponent implements OnInit {
       viaroute1: [''],
       viaroute2: [''],
       vehicleGroup: ['', [Validators.required]],
-      vehicle: ['', [Validators.required]],
+      vehicle: [this.vinList.length > 0 ? this.vinList[0].id : '', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -251,8 +255,8 @@ export class ExistingTripsComponent implements OnInit {
     });
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicleGroup').setValue('All');
-    this.existingTripForm.get('vehicle').setValue('All');
+    this.existingTripForm.get('vehicleGroup');
+    this.existingTripForm.get('vehicle');
     //For Edit Screen
     // if(this.actionType === 'edit'){
     //   this.existingTripForm.controls.label.disable();
@@ -275,17 +279,22 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   setDefaultStartEndTime() {
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    // this.selectedStartTime = "00:00";
+    // this.selectedEndTime = "23:59";
+    this.setPrefFormatTime();
   }
 
   setPrefFormatTime() {
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
     } else {
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
+      this.startTimeDisplay = '12:00:00 AM';
+      this.endTimeDisplay = '11:59:59 PM';
+      this.selectedStartTime = "12:00 AM";
+      this.selectedEndTime = "11:59 PM";   
     }
   }
 
@@ -405,16 +414,38 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.startDateValue = this.setStartEndDateTime(event.value, this.selectedStartTime, 'start');
+    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.endDateValue = this.setStartEndDateTime(event.value, this.selectedEndTime, 'end');
+    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    date.setHours(timeObj.split(":")[0]);
-    date.setMinutes(timeObj.split(":")[1]);
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if (this.prefTimeFormat == 12) {
+      if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
+      }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
+      date.setMinutes(_y.split(' ')[0]);
+    } else {
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+
     date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }
@@ -460,8 +491,8 @@ export class ExistingTripsComponent implements OnInit {
     this.endTimeDisplay= '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicle').setValue('All');
-    this.existingTripForm.get('vehicleGroup').setValue('All');
+    this.existingTripForm.get('vehicle');
+    this.existingTripForm.get('vehicleGroup');
     // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
@@ -963,6 +994,21 @@ export class ExistingTripsComponent implements OnInit {
     this.setCorridorData();
   }
 
+  filterVehicles(search) {
+    if (!search) {
+      this.resetVehicleSearch();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredVehicleList.next(
+      this.vinList.filter(item => item.toLowerCase().indexOf(search) > -1)
+    );
+   }
+
+   resetVehicleSearch() {
+    this.filteredVehicleList.next(this.vinList.slice());
+  }
 
   resetValues() {
     if (this.actionType === 'create') {
@@ -1161,6 +1207,8 @@ export class ExistingTripsComponent implements OnInit {
 
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
+    if(vinSelectedValue.value=='All')
+      this.vinListSelectedValue = this.vinList;
     // console.log("------vins selection--", this.vinListSelectedValue)
   }
 

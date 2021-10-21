@@ -2,7 +2,7 @@
   <mat-expansion-panel style="width:100%;" class="full-width"> 
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Summary</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'> {{ translationData.lblSummary }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
@@ -10,19 +10,19 @@
     </div>     -->
     <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
       <div></div>
-      <button class="border border-light">{{ translationData.lblCriticalAlert || 'Critical Alert' }}<br> <b> {{ criticalAlert }} </b> </button>
-      <button class="border border-light">{{ translationData.lblMileageDone || 'Mileage Done' }}<br> <b> {{ mileageDone }} </b> </button>
-      <button class="border border-light">{{ translationData.lblDrivers || 'Drivers' }}<br> <b> {{ drivers }} </b> </button>
-      <button class="border border-light">{{ translationData.lblDrivingTime || 'Driving Time' }}<br> <b> {{ driveTime }} </b> </button>
-      <button class="border border-light">{{ translationData.lblNoAction || 'No Action' }}<br> <b> {{ noAction }} </b> </button>
-      <button class="border border-light">{{ translationData.lblServiceNow || 'Service Now' }}<br> <b> {{ serviceNow }} </b> </button>
-      <button class="border border-light">{{ translationData.lblStopNow || 'Stop Now' }}<br> <b> {{ stopNow }} </b> </button>
+      <button class="border border-light">{{ translationData.lblCriticalAlert  }}<br> <b> {{ criticalAlert }} </b> </button>
+      <button class="border border-light">{{ translationData.lblMileageDone }}<br> <b> {{ mileageDone }} </b> </button>
+      <button class="border border-light">{{ translationData.lblDrivers }}<br> <b> {{ drivers }} </b> </button>
+      <button class="border border-light">{{ translationData.lblDrivingTime }}<br> <b> {{ driveTime }} </b> </button>
+      <button class="border border-light">{{ translationData.lblNoAction }}<br> <b> {{ noAction }} </b> </button>
+      <button class="border border-light">{{ translationData.lblServiceNow }}<br> <b> {{ serviceNow }} </b> </button>
+      <button class="border border-light">{{ translationData.lblStopNow }}<br> <b> {{ stopNow }} </b> </button>
   </div>
 <br>
   <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
-    <div>{{ translationData.lblVehicleIn || 'Vehicle in' }} {{ vehicleGroup }}</div>
+    <div>{{ translationData.lblVehicleIn }} {{ vehicleGroup }}</div>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px" *ngIf="showCharts">
     <div style="display: block">
       <canvas baseChart
         [datasets]="barChartData"
@@ -43,7 +43,7 @@
         [options]="doughnutChartOptionsMileage"
         [colors]="doughnutColors">
       </canvas>
-      <div class="text-center"><span><b>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</b></span></div>
+      <div class="text-center"><span><b>{{ translationData.lblFleetMileageRate }}</b></span></div>
     </div>
     <!-- <div><span>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</span></div> -->
     <div style="display: block" class="relative">
@@ -55,7 +55,7 @@
         [colors]="doughnutColors">
       </canvas>
       <div class="text-center">
-        <span><b>{{ translationData.lblFleetUtilizationRate || 'Fleet Utilization Rate' }}</b></span>
+        <span><b>{{ translationData.lblFleetUtilizationRate }}</b></span>
       </div>
     </div>
   </div>

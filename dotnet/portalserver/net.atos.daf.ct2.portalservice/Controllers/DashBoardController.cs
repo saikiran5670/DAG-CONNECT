@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -53,7 +55,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FleetKpiFilterRequest objDashboardFilter = JsonConvert.DeserializeObject<FleetKpiFilterRequest>(filters);
                 _logger.Info("GetFleetKpi method in dashboard API called.");
                 var data = await _dashboardServiceClient.GetFleetKPIDetailsAsync(objDashboardFilter);
-                if (data != null)
+                if (data?.FleetKpis != null)
                 {
                     data.Message = DashboardConstant.GET_DASBHOARD_SUCCESS_MSG;
                     return Ok(data);
@@ -81,10 +83,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
                 }
+                Metadata headers = new Metadata();
+                int organizationId = GetContextOrgId();
+                headers.Add("context_orgid", Convert.ToString(organizationId));
+
                 string filters = JsonConvert.SerializeObject(request);
                 Alert24HoursFilterRequest objAlertFilter = JsonConvert.DeserializeObject<Alert24HoursFilterRequest>(filters);
                 _logger.Info("GetAlert24hours method in dashboard API called.");
-                var data = await _dashboardServiceClient.GetLastAlert24HoursAsync(objAlertFilter);
+                var data = await _dashboardServiceClient.GetLastAlert24HoursAsync(objAlertFilter, headers);
                 if (data != null)
                 {
                     data.Message = DashboardConstant.GET_ALERTLAST24HOURS_SUCCESS_MSG;
@@ -175,11 +181,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(DashboardConstant.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(DashboardConstant.ORGANIZATION_REQUIRED_MSG);
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+
                 var response = await _dashboardServiceClient.GetVisibleVinsAsync(
-                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId });
+                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId }, headers);
 
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
@@ -222,10 +236,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 userPrefRequest.OrganizationId = GetUserSelectedOrgId();
                 userPrefRequest.ContextOrgId = GetContextOrgId();
 
-                string strFeature = JsonConvert.SerializeObject(GetUserSubscribeFeatures());
-                SessionFeatures[] objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                var subReportResponse = await _dashboardServiceClient.CheckIfSubReportExistAsync(new CheckIfSubReportExistRequest { ReportId = reportId });
 
-                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                // Send sub report features from session to find attributes of related reports
+                SessionFeatures[] objUserFeatures;
+                if (subReportResponse != null)
+                {
+                    var sessionFeatures = GetUserSubscribeFeatures();
+                    if (subReportResponse.HasSubReports == "Y" && subReportResponse.FeatureId > 0)
+                    {
+                        var featureName = sessionFeatures?.Where(x => x.FeatureId == subReportResponse.FeatureId)?.Select(x => x.Name)?.FirstOrDefault();
+
+                        if (!string.IsNullOrEmpty(featureName))
+                        {
+                            var logbookFeatureToExclude = sessionFeatures.Where(x => x.Name.Equals("FleetOverview.LogBook"));
+                            var requiredFeatures = sessionFeatures.Where(x => x.Name.StartsWith(featureName)).Except(logbookFeatureToExclude);
+
+                            if (requiredFeatures.Count() > 0)
+                            {
+                                string strFeature = JsonConvert.SerializeObject(requiredFeatures);
+                                objUserFeatures = JsonConvert.DeserializeObject<SessionFeatures[]>(strFeature);
+                                if (objUserFeatures != null) { userPrefRequest.UserFeatures.AddRange(objUserFeatures); }
+                            }
+                        }
+                    }
+                    else if (subReportResponse.HasSubReports == "N" && subReportResponse.FeatureId > 0)
+                    {
+                        if (!sessionFeatures.Any(x => x.FeatureId == subReportResponse.FeatureId))
+                            return StatusCode(404, "No data found.");
+                    }
+                }
 
                 var response = await _dashboardServiceClient.GetDashboardUserPreferenceAsync(userPrefRequest);
                 if (response.Code == Responsecode.Success)

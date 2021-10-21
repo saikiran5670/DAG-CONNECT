@@ -7,14 +7,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
+
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.DriverActivityPojo;
 import net.atos.daf.postgre.bo.TwoMinuteRulePojo;
 import net.atos.daf.postgre.util.DafConstants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LiveFleetDriverActivityDao implements Serializable {
 
@@ -22,19 +25,21 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Logger log = LoggerFactory.getLogger(LiveFleetDriverActivityDao.class);
+	 private static final Logger log = LogManager.getLogger(LiveFleetDriverActivityDao.class);
 	private Connection connection;
 	/** SQL statement for insert. */
 	private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1, logical_code    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?, ?)";
 	private static final String LIVEFLEET_DRIVER_READ = "SELECT * FROM livefleet.livefleet_trip_driver_activity WHERE trip_start_time_stamp !=0 AND trip_id = ? AND trip_id IS NOT NULL";
 	private static final String DRIVER_ACTIVITY_READ = "select code, start_time, duration from livefleet.livefleet_trip_driver_activity  where driver_id = ? AND driver_id IS NOT NULL order by id DESC limit 1";
-	private static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000, logical_code = ? WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? and driver_id IS NOT NULL ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
-
+	private static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000, logical_code = ? WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ?  ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
+	//private static final String DRIVER_ACTIVITY_UPDATE ="UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000, logical_code = ? WHERE id = ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
+	
+	
+	
 	public boolean insert(Index row, Long trip_Start_time) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_driver_activity;
 
 		boolean result = false;
-
 		try {
 
 			if (null != row && null != (connection = getConnection())) {
@@ -44,6 +49,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				
 				stmt_insert_driver_activity.addBatch();
 				stmt_insert_driver_activity.executeBatch();
+				
 			}
 		} catch (SQLException e) {
 			log.error("inside catch LiveFleetDriverActivityDao Insert" + e.getMessage());
@@ -58,15 +64,16 @@ public class LiveFleetDriverActivityDao implements Serializable {
 
 		boolean result = false;
 		try {
-
+			log.info("inside insert for Driver management ");
 			if (null != DriverDetails && null != (connection = getConnection())) {
 
 				stmt_insert_driver_activity = connection.prepareStatement(LIVEFLEET_DRIVER_INSERT,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				stmt_insert_driver_activity = fillStatement(stmt_insert_driver_activity, DriverDetails);
-				
+				log.info("Insert Driver query--" + stmt_insert_driver_activity);
 				stmt_insert_driver_activity.addBatch();
 				stmt_insert_driver_activity.executeBatch();
+				log.info("data inserted for driver-->" + DriverDetails.getDriverID());
 			}
 		} catch (SQLException e) {
 			log.error("inside catch LiveFleetDriverActivityDao Driver Insert" + e.getMessage());
@@ -96,6 +103,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				
 				stmt_update_driver_activity.setString(4, DriverID);
 				stmt_update_driver_activity.setString(5, DriverID);
+				log.info("Update Driver query--" + stmt_update_driver_activity);
 				
 				int i = stmt_update_driver_activity.executeUpdate() ;
 				//rs_driver.close();
@@ -225,7 +233,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		} else
 			stmt_insert_driver_activity.setInt(9, DafConstants.DTM_NULL_VAL_int);
 
-		stmt_insert_driver_activity.setLong(10, Types.NULL); // 10-Duration
+		stmt_insert_driver_activity.setLong(10, row.getDuration()); // 10-Duration
 
 		if(row.getCreatedAtM2m()!=null) {
 			stmt_insert_driver_activity.setLong(11, row.getCreatedAtM2m()); // 11-created_at_m2m

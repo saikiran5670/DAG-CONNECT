@@ -12,13 +12,18 @@ public class FuelDeviationConstants {
 	public static final String RESTART_ATTEMPS = "restart.attempts";
 	public static final String RESTART_INTERVAL = "restart.interval";
 	public static final String RESTART_FLAG = "restart.flag";
-	
+	public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+	public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+	public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+	public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+		
 	//Datamart Constants
 	public static final String DATAMART_POSTGRE_SERVER_NAME = "datamart.postgres.server.name";
 	public static final String DATAMART_POSTGRE_PORT = "datamart.postgres.port";
 	public static final String DATAMART_POSTGRE_USER = "datamart.postgres.userId";
 	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart.postgres.database.name";
 	public static final String DATAMART_POSTGRE_PASSWORD = "datamart.postgres.password";
+	public static final String POSTGRE_SQL_DRIVER = "postgresql.driver";
 
 	//Date Format
 	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -80,5 +85,6 @@ public class FuelDeviationConstants {
 	public static final String UNKNOWN = "UNKNOWN";
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
+	public static final Double ZERO_DOUBLE_VAL = 0.0;
 		
 }

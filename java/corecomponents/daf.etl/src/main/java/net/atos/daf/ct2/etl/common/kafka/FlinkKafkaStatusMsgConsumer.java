@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.etl.common.kafka;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -35,7 +36,7 @@ public class FlinkKafkaStatusMsgConsumer implements Serializable{
 		properties.setProperty(ETLConstants.SASL_JAAS_CONFIG, envParams.get(ETLConstants.SASL_JAAS_CONFIG));
 
 		return env.addSource(new FlinkKafkaConsumer<KafkaRecord<Status>>(envParams.get(ETLConstants.STATUS_TOPIC),
-				new KafkaMessageDeSerializeSchema<Status>(), properties));
+				new KafkaMessageDeSerializeSchema<Status>(), properties)).filter(rec -> Objects.nonNull(rec));
 
 	}
 

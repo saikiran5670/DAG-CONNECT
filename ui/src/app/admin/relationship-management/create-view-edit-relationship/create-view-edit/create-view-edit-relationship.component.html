@@ -1,11 +1,11 @@
-<div *ngIf="viewFlag || viewRelationshipFromOrg" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span><&nbsp;</span>
-            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+            <span class='backBtnCss'>{{ translationData.lblBack  }}</span></span>
     </div>
 </div>
 <form [formGroup]="relationshipFormGroup">
@@ -22,11 +22,11 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-label>
+                    <mat-label>{{ translationData.lblRelationshipName  }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].name }}</mat-label>
                 </div>
                 <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblRelationshipDescription || 'Relationship Description' }}
+                    <mat-label>{{ translationData.lblRelationshipDescription  }}
                     </mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--'
                         }}</mat-label>
@@ -37,11 +37,11 @@
                 <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevel || 'Level' }}</mat-label>
+                    <mat-label>{{ translationData.lblLevel  }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].levelVal }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblCode || 'Code'
+                    <mat-label>{{ translationData.lblCode 
                         }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
                 </div>
@@ -58,28 +58,26 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ createStatus ? (translationData.lblNewRelationshipName || 'New Relationship Name') :
-                        (translationData.lblRelationshipName || 'Relationship Name') }}<span
+                    <mat-label>{{ createStatus ? (translationData.lblNewRelationshipName ) :
+                        (translationData.lblRelationshipName ) }}<span
                             class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterRelationshipName || 'Enter Relationship Name' }}"
+                        <input placeholder="{{ translationData.lblEnterRelationshipName }}"
                             (keyup)="isRelationshipExist=false; doneFlag=false" matInput
                             formControlName="relationshipName" required maxlength="50">
                         <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
                    <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('required')">
-                        {{ translationData.lblPleaseentertheRelationshipname || 'Please enter the relationship name'}}
+                        {{ translationData.lblPleaseentertheRelationshipname }}
                     </mat-error>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('maxlength')">
-                        {{ translationData.lblRelationshipNameShouldbeMax60Characters || 'Relationshipname should be
-                        max. 60 characters'}}
+                        {{ translationData.lblRelationshipNameShouldbeMax60Characters }}
                     </mat-error>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('specialCharsNotAllowed')">
-                        {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        {{ translationData.lblSpecialcharactersnotallowed  }}
                       </mat-error>
                     <mat-error #RelationshipValueCheck *ngIf="isRelationshipExist">
-                        {{ translationData.lblRelationshipalreadyexistsPleasechooseadifferentname || 'Relationship
-                        already exists. Please choose a different name.'}}
+                        {{ translationData.lblRelationshipalreadyexistsPleasechooseadifferentname }}
                     </mat-error>
                     <mat-error
                         *ngIf="!relationshipFormGroup.get('relationshipName').hasError('required')  && relationshipFormGroup.get('relationshipName').hasError('whitespace')">
@@ -88,12 +86,12 @@
                 </div>
                 <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblRelationshipDescription || 'Relationship Description'}}</span>
-                        <span>{{ translationData.lbl100CharMax || '100 characters max'}}</span>
+                        <span>{{ translationData.lblRelationshipDescription }}</span>
+                        <span>{{ translationData.lbl100CharMax }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="100"
-                            placeholder="{{ translationData.lblEnterAboutRelationship || 'Enter About Relationship' }}"
+                            placeholder="{{ translationData.lblEnterAboutRelationship  }}"
                             matInput formControlName="relationshipDescription">
                     </mat-form-field>
                     <mat-error *ngIf="  relationshipFormGroup.get('relationshipDescription').hasError('whitespace')">
@@ -108,11 +106,10 @@
                 class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblLevel || 'Level'
-                        }}<span class='mandatoryColor'>*</span>
+                        {{ translationData.lblLevel }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="levels" placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
+                        <mat-select formControlName="levels" placeholder="{{ translationData.lblSelectLevel  }}" formControlName="level">
                             <!-- <mat-option *ngFor="let level of levels" [value]="level">
                                 {{level}}
                             </mat-option> -->
@@ -124,11 +121,11 @@
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblCode || 'Code' }}<span
+                        {{ translationData.lblCode }}<span
                             class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="codes" placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
+                        <mat-select formControlName="codes" placeholder="{{ translationData.lblSelectCode }}" formControlName="code">
                             <!-- <mat-option *ngFor="let code of codes" [value]="code">
                                 {{code}}
                             </mat-option> -->
@@ -146,21 +143,19 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ translationData.lblHintMessage || 'You can select multiple "features" from below list
-                            to map with this Relationship'}}<span class='mandatoryColor'>*</span></span>
+                        <span>{{ translationData.lblHintMessage }}<span class='mandatoryColor'>*</span></span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
-                            (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
+                            (click)='onCancel()'>{{ translationData.lblCancel }}</button>
                         <button class='resetCancelBtnColor no-margin margin-right-10' mat-raised-button color="primary"
-                            *ngIf="!createStatus" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                            *ngIf="!createStatus" (click)='onReset()'>{{ translationData.lblReset }}</button>
                         <button class='no-margin'
                             [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0 || createButtonClicked"
                             mat-raised-button color="primary" (click)='onCreate()'>
-                            {{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm ||
-                            'Confirm') }}</button>
+                            {{ createStatus ? (translationData.lblCreate ) : (translationData.lblConfirm) }}</button>
                     </div>
                 </div>
             </div>
@@ -170,15 +165,14 @@
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? (
-                    translationData.lblSelectFeatures || 'Select Features') : (translationData.lblSelectedFeatures ||
-                    'Selected Features') }}</span>
+                    translationData.lblSelectFeatures ) : (translationData.lblSelectedFeatures ) }}</span>
             </div>
         </div>
         <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
                     <input matInput (keyup)="applyFilter($event.target.value)"
-                        placeholder="{{ translationData.lblSearch || 'Search' }}">
+                        placeholder="{{ translationData.lblSearch  }}">
                     <span matPrefix>
                         <mat-icon>search</mat-icon>
                     </span>
@@ -195,7 +189,7 @@
                                 [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
                                 [aria-label]='checkboxLabelForFeatures()' [disabled]="viewFlag">
                             </mat-checkbox>
-                            <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                            <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <mat-checkbox (click)='$event.stopPropagation()'
@@ -206,8 +200,7 @@
                         </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature
-                            Name' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             {{ row.name }}
                         </mat-cell>

@@ -10,5 +10,6 @@
         public string TripId { get; set; }
         public double Fuelconsumtion { get; set; }
         public double Co2emission { get; set; }
+        public double MessageTimeStamp { get; set; }
     }
 }

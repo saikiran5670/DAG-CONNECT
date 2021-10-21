@@ -6,12 +6,20 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.flink.table.api.EnvironmentSettings;
+import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.api.TableResult;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +31,12 @@ import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.Trip;
 import net.atos.daf.postgre.bo.TripStatisticsPojo;
+import net.atos.daf.postgre.bo.WarningStatisticsPojo;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.LiveFleetDriverActivityDao;
 import net.atos.daf.postgre.dao.LiveFleetPosition;
 import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
+import net.atos.daf.postgre.dao.WarningStatisticsDao;
 
 //@SuppressWarnings({})
 public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
@@ -39,8 +49,6 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 	private static final long serialVersionUID = 1L;
 
 	Connection connection = null;
-	// Connection connection2 = null;
-
 	String livefleettrip = null;
 	String readtrip = null;
 	String readposition = null;
@@ -48,9 +56,16 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 	private List<Index> queue = new ArrayList<Index>();
 	private List<Index> synchronizedCopy = new ArrayList<Index>();
 
-	LivefleetCurrentTripStatisticsDao currentTripDAO;
-	LiveFleetPosition positionDAO;
-	TripStatisticsPojo currentTripPojo;
+	LivefleetCurrentTripStatisticsDao currentTripDAO = null;
+	LiveFleetPosition positionDAO = null;
+	TripStatisticsPojo currentTripPojo = null;
+	WarningStatisticsPojo warnStatsPojo = null;
+	
+	Statement createWarnStatusStmt = null;
+	PreparedStatement updateWarnStatusStmt = null;
+	PreparedStatement readWarnStatusStmt = null;
+	ResultSet rs_warn_vehicle_health_status = null;
+	
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -58,17 +73,10 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		// this function is used to set up a connection to postgres table
 
 		log.info("########## In LiveFleet current trip statistics ##############");
-
+		
 		currentTripDAO = new LivefleetCurrentTripStatisticsDao();
-		// positionDAO = new LiveFleetPosition();
 
-		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-
-		// livefleettrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_STATISTICS);
-
-		// readtrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_READ);
-		// readposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION_READ);
-
+		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();	
 		try {
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
@@ -78,24 +86,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 			currentTripDAO.setConnection(connection);
-			// positionDAO.setConnection(connection);
-
-			/*
-			 * connection2 = PostgreDataSourceConnection.getInstance().
-			 * getDataSourceConnection(
-			 * envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
-			 * Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT )),
-			 * envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
-			 * envParams.get(DafConstants.DATAMART_POSTGRE_USER),
-			 * envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
-			 * positionDAO.setConnection(connection2);
-			 */
-		} catch (Exception e) {
-			log.error("Error in LiveFleet Current TRip Statstics" + e.getMessage());
+		} 
+		catch (Exception e) {
+			log.error("Error in LiveFleet Current Trip Statstics: Problem in open - connection setup: " + e.getMessage());
 			e.printStackTrace();
 
 		}
-
+		
 	}
 
 	public void invoke(KafkaRecord<Index> index) {
@@ -104,8 +101,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		// Live Fleet CURRENT TRIP Activity
 		Index row = index.getValue();
 		System.out.println("Invoke Started trip statistic Sink :: " + row);
-
-		currentTripPojo = new TripStatisticsPojo();
+		
 
 		try {
 			queue.add(row);
@@ -115,25 +111,24 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 					queue.clear();
 
 					for (Index indexValue : synchronizedCopy) {
+						
+						currentTripPojo = new TripStatisticsPojo();
 
 						System.out.println("INDEX-VALUE FOR CURRENT TRIP : " + indexValue);
 
-						if (indexValue.getVin() != null)
+						if (indexValue.getVin() != null) 
 							currentTripPojo.setVin(indexValue.getVin()); // not null
-						else
+						else 
 							currentTripPojo.setVin(indexValue.getVid());
 
 						try {
 
 							currentTripPojo.setEnd_time_stamp(TimeFormatter.getInstance().convertUTCToEpochMilli(
 									indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-
-							// if(indexValue.exists("driverID")) //index message can be without driverID,
-							// trip without driver
-							currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
-							/*
-							 * else currentTripPojo.setDriver1ID(null);
-							 */
+							if(indexValue.getDriverID()!=null && !indexValue.getDriverID().isEmpty() && indexValue.getDriverID()!=" ")
+								currentTripPojo.setDriver1ID(indexValue.getDriverID()); // not null
+							else 
+								currentTripPojo.setDriver1ID("Unknown"); //Unknown, if null
 
 							if (indexValue.getVUsedFuel() != null)
 								currentTripPojo.setFuel_consumption(Long.valueOf(indexValue.getVUsedFuel().longValue()));
@@ -143,33 +138,6 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 							if (indexValue.getDocument() != null) {
 								currentTripPojo.setTripId(indexValue.getDocument().getTripID()); // not null
-
-								
-								/*
-								 * Long[] tachomileageArray = indexValue.getDocument().getTotalTachoMileage();
-								 * int tachomileagelength = 0; if (tachomileageArray != null) tachomileagelength
-								 * = tachomileageArray.length; // long[] longtachoMlArray =
-								 * Arrays.stream(tachomileageArray).mapToLong(i -> // i).toArray(); try { if
-								 * (tachomileagelength > 0) {
-								 * 
-								 * if (tachomileageArray[tachomileagelength - 1] != null &&
-								 * !"null".equals(tachomileageArray[tachomileagelength - 1])) {
-								 * 
-								 * System.out.println( "odometer value--" + tachomileageArray[tachomileagelength
-								 * - 1]); currentTripPojo .setOdometer_val(tachomileageArray[tachomileagelength
-								 * - 1].longValue()); } else { System.out.println("odometer value inside else--"
-								 * + tachomileageArray); currentTripPojo.setOdometer_val(0L); } } else {
-								 * 
-								 * System.out.println("odometer value when odometer less then 0--" +
-								 * tachomileageArray); currentTripPojo.setOdometer_val(0L); } } catch(Exception
-								 * e) {
-								 * 
-								 * currentTripPojo.setOdometer_val(0L);
-								 * System.out.println("exception in setting odometer");
-								 */
-								 
-							
-
 							}
 
 							currentTripPojo.setDistance_until_next_service(null); // to be populated from monitoring
@@ -178,22 +146,37 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							currentTripPojo.setLast_received_position_longitude(indexValue.getGpsLongitude());
 							currentTripPojo.setLast_received_position_heading(indexValue.getGpsHeading());
 							currentTripPojo.setLast_geolocation_address_id(null);
-							// currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance().getCurrentUTCTime());
 							currentTripPojo.setLast_processed_message_timestamp(
 									TimeFormatter.getInstance().convertUTCToEpochMilli(
 											indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							currentTripPojo.setStart_geolocation_address_id(null);
+							
+							// calculate the vehicle_driving_status_type
+							long vWheelSpeed = 0;
+							if (indexValue.getDocument() != null
+									&& indexValue.getDocument().getVWheelBasedSpeed() != null)
+								vWheelSpeed = indexValue.getDocument().getVWheelBasedSpeed().longValue();
 
-							// warning and vehicle health status fields - to be populated from monitoring
-							// messages
-							currentTripPojo.setVehicle_health_status_type(null);
-							currentTripPojo.setLatest_warning_class(null);
-							currentTripPojo.setLatest_warning_number(null);
-							currentTripPojo.setLatest_warning_type(null);
-							currentTripPojo.setLatest_warning_timestamp(null);
-							currentTripPojo.setLatest_warning_position_latitude(null);
-							currentTripPojo.setLatest_warning_position_longitude(null);
-							currentTripPojo.setLatest_warning_geolocation_address_id(null);
+							if (vWheelSpeed > 0)
+								currentTripPojo.setVehicle_driving_status_type('D'); // DRIVING if wheelspeed >
+																						// 0
+							else if (vWheelSpeed == 0) {
+								if (indexValue.getDocument() != null) {
+									 if	(indexValue.getDocument().getVEngineSpeed() != null
+										&& indexValue.getDocument().getVEngineSpeed().longValue() > 0)
+									currentTripPojo.setVehicle_driving_status_type('I'); // IDLING if wheelspeed
+																							// = 0 but
+																							// enginespeed > 0
+								else
+									currentTripPojo.setVehicle_driving_status_type('S'); // STOPPED if
+																							// wheelspped = 0
+								}
+								else 
+									currentTripPojo.setVehicle_driving_status_type('S');
+							}
+							
+							System.out.println(
+									" aftr vWheelSpeed and vehicle_driving_status_type calculation, CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 
 							
 							currentTripPojo.setModified_at(TimeFormatter.getInstance().getCurrentUTCTime());
@@ -214,9 +197,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						System.out.println("varVEvtid" + varVEvtid);
 
 						try {
-							if (varVEvtid != 4) { // trip exists, so update trip start fields (coming from index
-													// message)
-
+							if (varVEvtid != 4) { // trip exists, so update trip start fields (coming from index message)
+								
 								CurrentTrip current_trip_start_var = null;
 
 								if (indexValue.getDocument() != null) {
@@ -225,12 +207,11 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 												.read(indexValue.getDocument().getTripID());
 								}
 								
-								
-
 								System.out.println("read obj current_trip_start_var :: " + current_trip_start_var);
 								if (current_trip_start_var != null) {
 
-									currentTripPojo.setStart_time_stamp(current_trip_start_var.getStart_time_stamp());
+									currentTripPojo.setStart_time_stamp(
+											Long.valueOf(current_trip_start_var.getEnd_time_stamp()));
 									currentTripPojo.setStart_position_lattitude(
 											current_trip_start_var.getStart_position_lattitude());
 									currentTripPojo.setStart_position_longitude(
@@ -243,53 +224,36 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									// calculate the driving_time
 									long driving_time = current_trip_start_var.getDriving_time();
 
-									// if (indexValue.getDocument().getDriver1WorkingState().intValue() == 2 || //
-									// driver working, loading/unloading
-									// indexValue.getDocument().getDriver1WorkingState().intValue() == 3) { //
-									// driver behind the wheel
 									Long idleDuration=0L;
 									if(indexValue.getVIdleDuration()!=null) {
 										idleDuration=(indexValue.getVIdleDuration()) * 1000;  //later we will keep in constant
-										
 									}
 									
-									driving_time += (currentTripPojo.getEnd_time_stamp()
-											- currentTripPojo.getStart_time_stamp())- idleDuration;
-
-									// }
+									
+									  driving_time += (currentTripPojo.getEnd_time_stamp() -
+									  currentTripPojo.getStart_time_stamp())- idleDuration;
+									 
+									
+									/*
+									 * driving_time = driving_time +
+									 * (TimeFormatter.getInstance().convertUTCToEpochMilli(
+									 * indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT) -
+									 * currentTripPojo.getStart_time_stamp()) - idleDuration;
+									 */
+									
+									System.out.println("driving_time-->" + driving_time);
+									
 									currentTripPojo.setDriving_time(driving_time);
 									
 									//calculate the trip distance
 									long totalTripDistance = current_trip_start_var.getTrip_distance();
 									long prevOdometerVal = current_trip_start_var.getOdometer_val();
 									if (indexValue.getVDist() != null) {
-										totalTripDistance += ( indexValue.getVDist().longValue() - prevOdometerVal );
+										totalTripDistance = totalTripDistance + ( indexValue.getVDist().longValue() - prevOdometerVal );
 									}
 									currentTripPojo.setTrip_distance(Long.valueOf(totalTripDistance));
-
-									// calculate the vehicle_driving_status_type, trip already started
-									long vWheelSpeed = 0;
-									if (indexValue.getDocument() != null
-											&& indexValue.getDocument().getVWheelBasedSpeed() != null)
-										vWheelSpeed = indexValue.getDocument().getVWheelBasedSpeed().longValue();
-
-									System.out.println(
-											" aftr driving_time, trip_distance & vspeed CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
-
-									// if(indexValue.getDocument().getVWheelBasedSpeed()>0)
-									if (vWheelSpeed > 0)
-										currentTripPojo.setVehicle_driving_status_type('D'); // DRIVING if wheelspeed >
-																								// 0
-									else if (vWheelSpeed == 0) {
-										if (indexValue.getDocument().getVEngineSpeed() != null
-												&& indexValue.getDocument().getVEngineSpeed().longValue() > 0)
-											currentTripPojo.setVehicle_driving_status_type('I'); // IDLING if wheelspeed
-																									// = 0 but
-																									// enginespeed > 0
-										else
-											currentTripPojo.setVehicle_driving_status_type('S'); // STOPPED if
-																									// wheelspped = 0
-									}
+									log.info("distance covered-->" + totalTripDistance);
+									System.out.println("distance covered-->" + totalTripDistance);
 									
 
 									System.out.println("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
@@ -305,17 +269,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 							else { // trip starts, so insert
 								
-								/*
-								 * //check if this tripId to be inserted is completely new and not entered ever
-								 * before CurrentTrip if_trip_exists_var = null;
-								 * 
-								 * if (indexValue.getDocument() != null) { if
-								 * (indexValue.getDocument().getTripID() != null) if_trip_exists_var =
-								 * currentTripDAO .read(indexValue.getDocument().getTripID()); }
-								 * 
-								 * if (if_trip_exists_var==null) { //if trip is not present before, then insert
-								 * the new trip with trip start
-								 */
+									warnStatsPojo = new WarningStatisticsPojo();
 								
 									if (indexValue.getEvtDateTime() != null)
 										currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance()
@@ -327,24 +281,111 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setDriving_time(0L);
 									currentTripPojo.setTrip_distance(0L);
 									currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
-									
 
-									// calculate the vehicle_driving_status_type
-									currentTripPojo.setVehicle_driving_status_type('N'); // NEVER_MOVED, only when trip
-																							// starts
+									//NOTE: warning and vehicle health status fields - to be populated from monitoring
+									// messages; ONLY - vehicle health status field - mapped 'N' at the time of trip start
+									// warning fields are mapped NULL at the time of trip start 
+									try { 
+										if (this.connection!=null) {
+											
+											createWarnStatusStmt = connection.createStatement();
+											updateWarnStatusStmt = connection.prepareStatement(DafConstants.INSERT_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START,
+													Statement.RETURN_GENERATED_KEYS);
+											readWarnStatusStmt = connection.prepareStatement(DafConstants.READ_LATEST_ACTIVE_WARNING_STATUS_AT_TRIP_START,
+													ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+										}
+										
+										
+										updateWarnStatusStmt.setString(1, indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid());
+										
+										System.out.println("INSERT INTO TABLE STATEMENT PARAMETER METADATA : " + updateWarnStatusStmt.getParameterMetaData());
+										
+										readWarnStatusStmt.setString(1, indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid());
+										
+										System.out.println("READ TABLE STATEMENT PARAMETER METADATA : " + readWarnStatusStmt.getParameterMetaData());
+										
+									}
+									catch (SQLException e) {
+										log.error("Error in LiveFleet Current Trip Statstics: Failed to create latest warning status DDL / prepared statements " + e.getMessage());
+										e.printStackTrace();
+
+									}
+									
+									log.info("LiveFleetCurrentTripPostgreSink- Trying to create, update and read temporary table ...");
+									
+									try {
+										
+										System.out.println("CREATE TABLE STATEMENT QUERY EXECUTED : " + DafConstants.CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
+										
+										createWarnStatusStmt.execute(DafConstants.CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
+										
+										System.out.println("INSERT INTO TABLE STATEMENT QUERY EXECUTED : " + updateWarnStatusStmt);
+										
+										int warning_status_affected_row = updateWarnStatusStmt.executeUpdate();
+										
+										if (warning_status_affected_row == 1) {
+											try(ResultSet warning_vehicle_health_status = updateWarnStatusStmt.getGeneratedKeys()) {
+												while(warning_vehicle_health_status.next()) {
+													System.out.println(warning_vehicle_health_status.getString("vehicle_health_status_type"));
+													System.out.println(warning_vehicle_health_status.getInt("warning_class"));
+													System.out.println(warning_vehicle_health_status.getInt("warning_number"));
+													System.out.println(warning_vehicle_health_status.getString("warning_type"));
+													System.out.println(warning_vehicle_health_status.getLong("warning_time_stamp"));
+													System.out.println(warning_vehicle_health_status.getDouble("latitude")); 
+													System.out.println(warning_vehicle_health_status.getDouble("longitude"));
+													System.out.println(warning_vehicle_health_status.getInt("message_type"));
+													System.out.println(warning_vehicle_health_status.getString("trip_id"));
+													System.out.println(warning_vehicle_health_status.getString("vin"));
+												}
+											} catch (SQLException e) {
+													log.error("Error iterating over warning_vehicle_health_status : Failed to iterate over and print the inserted row ");
+													log.error(e.getMessage());
+											}
+										}
+										
+										System.out.println("READ TABLE STATEMENT QUERY EXECUTED : " + readWarnStatusStmt);
+										
+										rs_warn_vehicle_health_status = readWarnStatusStmt.executeQuery();
+										
+										while (rs_warn_vehicle_health_status.next()) {
+											warnStatsPojo.setVehicleHealthStatusType(rs_warn_vehicle_health_status.getString("vehicle_health_status_type"));
+											warnStatsPojo.setWarningClass(rs_warn_vehicle_health_status.getInt("warning_class"));
+											warnStatsPojo.setWarningNumber(rs_warn_vehicle_health_status.getInt("warning_number"));
+											warnStatsPojo.setWarningType(rs_warn_vehicle_health_status.getString("warning_type"));
+											warnStatsPojo.setWarningTimeStamp(rs_warn_vehicle_health_status.getLong("warning_time_stamp"));
+											warnStatsPojo.setLatitude(rs_warn_vehicle_health_status.getDouble("latitude")); 
+											warnStatsPojo.setLongitude(rs_warn_vehicle_health_status.getDouble("longitude"));
+											warnStatsPojo.setMessageType(rs_warn_vehicle_health_status.getInt("message_type"));
+											warnStatsPojo.setTripId(rs_warn_vehicle_health_status.getString("trip_id"));
+											warnStatsPojo.setVin(rs_warn_vehicle_health_status.getString("vin"));
+										}
+										 
+										 System.out.println("LATEST WARNING STATUS RECEIVED from LIVEFLEET_WARNING_STATUS FOR vin/vid = "
+										 + indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid() + " is " + warnStatsPojo.toString());
+										 
+										 rs_warn_vehicle_health_status.close();
+										
+									}
+									catch (SQLException e) {
+										log.error("Error in LiveFleet Current Trip Statstics: Failed to create, update and read latest warning status table " + e.getMessage());
+										e.printStackTrace();
+
+									} 
+									
+									currentTripPojo.setVehicle_health_status_type((warnStatsPojo.getVehicleHealthStatusType().length() > 0) ? 
+											warnStatsPojo.getVehicleHealthStatusType().charAt(0) : 'N');
+									currentTripPojo.setLatest_warning_class((warnStatsPojo.getWarningClass()!=null) ? warnStatsPojo.getWarningClass().longValue() : null);
+									currentTripPojo.setLatest_warning_number((warnStatsPojo.getWarningNumber()!=null) ? warnStatsPojo.getWarningNumber().longValue() : null);
+									currentTripPojo.setLatest_warning_type((warnStatsPojo.getWarningType().length() > 0) ? warnStatsPojo.getWarningType().charAt(0) : null);
+									currentTripPojo.setLatest_warning_timestamp((warnStatsPojo.getWarningTimeStamp()!=null) ? warnStatsPojo.getWarningTimeStamp() : null);
+									currentTripPojo.setLatest_warning_position_latitude((warnStatsPojo.getLatitude()!=null) ? warnStatsPojo.getLatitude() : null);
+									currentTripPojo.setLatest_warning_position_longitude((warnStatsPojo.getLongitude()!=null) ? warnStatsPojo.getLongitude() : null);
+									currentTripPojo.setLatest_warning_geolocation_address_id(null);
 
 									System.out.println("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
 
 									currentTripDAO.insert(currentTripPojo);
 									
-/*								} else {
-									
-									log.info("PLEASE NOTE: DUPLICATE TRIP ID ATTEMPTED TO BE INSERTED. EITHER CHANGE THE TRIPID OR RETRY WITH VEVTID OTHER THAN 4." + 
-									"TripID = " + indexValue.getDocument().getTripID() + " || VEVTID = " + varVEvtid );
-									
-								}*/
-									
-
 							}
 						} catch (Exception e) {
 							System.out.println("exception in insert or update" + e.getMessage());
@@ -361,14 +402,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		}
 
 	}
+	
+	
 
 	@Override
 	public void close() throws Exception {
-
 		connection.close();
-
 		log.error("Error");
-
 		log.info("In Close");
 
 	}

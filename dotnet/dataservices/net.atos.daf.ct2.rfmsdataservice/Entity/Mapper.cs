@@ -72,14 +72,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     Heading = vehicle.GnssPosition.Heading,
                     Latitude = vehicle.GnssPosition.Latitude,
                     Longitude = vehicle.GnssPosition.Longitude,
-                    PositionDateTime = vehicle.GnssPosition.PositionDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    PositionDateTime = vehicle.GnssPosition.PositionDateTime,// "yyyy-MM-ddThh:mm:ss.fffZ"),
                     Speed = vehicle.GnssPosition.Speed
                 };
 
                 VehiclePositions vehiclePosition = new VehiclePositions()
                 {
-                    CreatedDateTime = vehicle.CreatedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
-                    ReceivedDateTime = vehicle.ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ"),
+                    CreatedDateTime = vehicle.CreatedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
+                    ReceivedDateTime = vehicle.ReceivedDateTime,//"yyyy-MM-ddThh:mm:ss.fffZ"),
                     TachographSpeed = vehicle.TachographSpeed,
                     WheelBasedSpeed = vehicle.WheelBasedSpeed,
                     TriggerType = triggerObject,
@@ -138,7 +138,9 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                     prdDate.Day = item.ProductionDate.Day;
                     prdDate.Month = item.ProductionDate.Month;
                     prdDate.Year = item.ProductionDate.Year;
-                    vehicleObj.ProductionDate = prdDate;
+                    if (prdDate.Day != 0 && prdDate.Month != 0 && prdDate.Year != 0)
+                        vehicleObj.ProductionDate = prdDate;
+                    else vehicleObj.ProductionDate = null;
                 }
                 //Below commented fields as due to no db mapping provided by database team and is currently seeks clarification from DAF
                 vehicleObj.Type = item.Type;
@@ -149,6 +151,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
                 vehicleObj.ChassisType = item.ChassisType;
                 vehicleObj.NoOfAxles = item.NoOfAxles;
                 vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume;
+
                 //vehicleObj.TachographType = item.TachographType;
                 vehicleObj.GearboxType = item.GearboxType;
                 //vehicleObj.BodyType = item.BodyType;

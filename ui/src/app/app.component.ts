@@ -21,6 +21,9 @@ import { NavigationExtras } from '@angular/router';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
+import { HttpClient } from '@angular/common/http';
+import { SignalRService } from './services/sampleService/signalR.service';
+import { AlertService } from './services/alert.service';
 
 @Component({
   selector: 'app-root',
@@ -29,22 +32,25 @@ import { element } from 'protractor';
 })
 
 export class AppComponent {
+  AlertNotifcaionList: any[] = [];
   appUrlLink: any = '';
   public deviceInfo = null;
+  menu : any;
   // public isMobilevar = false;
   // public isTabletvar = false;
   // public isDesktopvar = false;
+  notificationList: any;
   loggedInUser: string = 'admin';
-  translationData: any;
+  translationData: any = {};
   dirValue = 'ltr'; //rtl
   public subpage: string = '';
   public currentTitle: string = '';
+  showAlertNotifications: boolean = false;
   public menuCollapsed: boolean = false;
   public pageName: string = '';
   public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
   menuPages: any;
-  // newData: any = {};
   languages = [];
   languageSelection: any  = [];
   openUserRoleDialog = false;
@@ -58,6 +64,9 @@ export class AppComponent {
   adminReadOnlyAccess: boolean = false;
   adminContributorAccess: boolean = false;
   adminFullAccess: boolean = false;
+  globalPOIAccess: boolean = false;
+  systemAccountAccess: boolean = false;
+  globalCategoryAccess: boolean = false;
   accessType: object;
   userType: any = "";
   public landingPageForm: FormGroup;
@@ -80,115 +89,49 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
-  notificationData: any = [
-    {
-      icons:'unarchive',
-      name: 'Entering Geofence',
-      // data: 1628072950000,
-      data: 1628764140000,//local: Thursday, August 12, 2021 3:59:00 PM GMT+05:30
-      vehName: 'Veh data',
-      vin: 'test 01',
-      regNo: 'XLRTEM4100G041999858',
-      alertLevel: 'A',
-      alertType: 'U',
-      alertCat: 'L',
-    },
-    {
-      icons:'unarchive',
-      name: 'Fuel Driver Performance',
-      data: 1628072950000,
-      vehName: 'Veh 2 data',
-      vin: 'test 02',
-      regNo: 'XLRTEM4100G041999',
-      alertLevel: 'C',
-      alertType: 'S',
-      alertCat: 'F'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move',
-      data: 1627986550000,
-      vehName: 'Veh 3 data',
-      vin: 'test 03',
-      regNo: 'XLRTEM4100G041999',
-      alertLevel: 'W',
-      alertType: 'U',
-      alertCat: 'R'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 4',
-      data: 1627986550000,
-      vehName: 'Veh 4 data',
-      vin: 'test 04',
-      regNo: 'XLRTEM4100G041999'
-    },
-    {
-      icons:'unarchive',
-      name: 'Time & Move 5',
-      data: 1627986550000,
-      vehName: 'Veh 5  data',
-      vin: 'test 05',
-      regNo: 'XLRTEM4100G041999'
-    },
-    // {
-    //   icons:'unarchive',
-    //   name: 'Time & Move 6',
-    //   data: 1627986550000,
-    //   vehName: 'Veh 6 data',
-    //   vin: 'test 06',
-    //   regNo: 'XLRTEM4100G041999'
-    // },
-    // {
-    //   icons:'unarchive',
-    //   name: 'Time & Move 7',
-    //   data: 1627986550000,
-    //   vehName: 'Veh 7 data',
-    //   vin: 'test 07',
-    //   regNo: 'XLRTEM4100G041999'
-    // }
-  ];
-  private pagetTitles = {
-    dashboard: 'Dashboard',
-    fleetoverview: 'Fleet Overview',
-    logbook: 'Log Book',
-    tripreport: 'Trip Report',
-    triptracing: 'Trip Tracing',
-    advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
-    fleetfuelreport: 'Fleet Fuel Report',
-    fleetutilisation: 'Fleet Utilisation',
-    fuelbenchmarking: 'Fuel Benchmarking',
-    fueldeviationreport: 'Fuel Deviation Report',
-    vehicleperformancereport: 'Vehicle Performance Report',
-    drivetimemanagement: 'Drive Time Management',
-    ecoscorereport: 'Eco Score Report',
-    ecoscoreprofilemanagement: 'EcoScore Profile Management',
-    alerts: 'Alerts',
-    landmarks: 'Landmarks',
-    reportscheduler: 'Report Scheduler',
-    drivermanagement: 'Driver Management',
-    vehiclemanagement: 'Vehicle Management',
-    organisationdetails: 'Organisation Details',
-    accountgroupmanagement: 'Account Group Management',
-    accountmanagement: 'Account Management',
-    accountrolemanagement: 'Account Role Management',
-    vehiclegroupmanagement: 'Vehicle Group Management',
-    termsandcondition: 'Terms & Conditions',
-    featuremanagement: 'Feature Management',
-    organisationrelationshipmanagement: 'Organisation Relationship Management',
-    relationshipmanagement: 'Relationship Management',
-    translationmanagement: 'Translation Management',
-    configurationmanagemnt: 'Configuration Managemnt',
-    packagemanagement: 'Package Management',
-    accessrelationshipmanagement: 'Access Relationship Management',
-    subscriptionmanagement: 'Subscription Management',
-    tachograph: 'Tachograph',
-    mobileportal: 'Mobile Portal',
-    shop: 'Shop',
-    information: 'Information',
-    legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms And Condition History',
-    dtctranslation: 'DTC Translation'
+  // notificationDetails: any= [];
+  private pageTitles = {
+    dashboard: 'lblDashboard',
+    fleetoverview: 'lblfleetoverview',
+    logbook: 'lblLogBook',
+    vehicleupdates: 'lblVehicleUpdates',
+    tripreport: 'lblTripReport',
+    triptracing: 'lblTripTracing',
+    advancedfleetfuelreport: 'lblAdvancedFleetFuelReport',
+    fleetfuelreport: 'lblFleetFuelReport',
+    fleetutilisation: 'lblFleetUtilisation',
+    fuelbenchmarking: 'lblFuelBenchmarking',
+    fueldeviationreport: 'lblFuelDeviationReport',
+    vehicleperformancereport: 'lblVehiclePerformanceReport',
+    drivetimemanagement: 'lblDriveTimeManagement',
+    ecoscorereport: 'lblECOScoreReport',
+    ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
+    alerts: 'lblAlerts',
+    landmarks: 'lblLandmarks',
+    reportscheduler: 'lblReportScheduler',
+    drivermanagement: 'lblDriverManagement',
+    vehiclemanagement: 'lblVehicleManagement',
+    organisationdetails: 'lblOrgnisationDetails',
+    accountgroupmanagement: 'lblAccountGroupManagement',
+    accountmanagement: 'lblAccountManagement',
+    accountrolemanagement: 'lblAccountRoleManagement',
+    vehiclegroupmanagement: 'lblVehicleGroupManagement',
+    termsandcondition: 'lblTermsAndConditions',
+    featuremanagement: 'lblFeatureManagement',
+    organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+    relationshipmanagement: 'lblRelationshipManagement',
+    translationmanagement: 'lblTranslationManagement',
+    configurationmanagemnt: 'lblConfigurationManagemnt',
+    packagemanagement: 'lblPackageManagement',
+    accessrelationshipmanagement: 'lblAccessRelationshipManagement',
+    subscriptionmanagement: 'lblSubscriptionManagement',
+    tachograph: 'lblTachograph',
+    mobileportal: 'lblMobilePortal',
+    shop: 'lblShop',
+    information: 'lblInformation',
+    legalnotices: 'lblLegalNotices',
+    termsAndconditionhistory: 'lblTermsAndConditionHistory',
+    dtctranslation: 'lblDTCTranslation'
   }
 
 
@@ -198,7 +141,7 @@ export class AppComponent {
       icon: "speed",
       externalLink: false,
       pageTitles: {
-        dashboard: 'Dashboard'
+        dashboard: 'lblDashboard'
       }
     },
     fleetoverview: {
@@ -206,8 +149,16 @@ export class AppComponent {
       icon: "map",
       externalLink: false,
       pageTitles: {
-        fleetoverview: 'Fleet Overview',
-        logbook: 'Log Book'
+        fleetoverview: 'lblfleetoverview',
+        logbook: 'lblLogBook'
+      }
+    },
+    vehicleupdates: {
+      open: false,
+      icon: "update",
+      externalLink: false,
+      pageTitles: {
+        vehicleupdates: 'lblVehicleUpdates'
       }
     },
     report: {
@@ -215,16 +166,16 @@ export class AppComponent {
       externalLink: false,
       icon: "bar_chart",
       pageTitles: {
-        tripreport: 'Trip Report',
-        triptracing: 'Trip Tracing',
-        advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
-        fleetfuelreport: 'Fleet Fuel Report',
-        fleetutilisation: 'Fleet Utilisation',
-        fuelbenchmarking: 'Fuel Benchmarking',
-        fueldeviationreport: 'Fuel Deviation Report',
-        vehicleperformancereport: 'Vehicle Performance Report',
-        drivetimemanagement: 'Drive Time Management',
-        ecoscorereport: 'Eco Score Report'
+        tripreport: 'lblTripReport',
+        triptracing: 'lblTripTracing',
+        advancedfleetfuelreport: 'lblAdvancedFleetFuelReport',
+        fleetfuelreport: 'lblFleetFuelReport',
+        fleetutilisation: 'lblFleetUtilisation',
+        fuelbenchmarking: 'lblFuelBenchmarking',
+        fueldeviationreport: 'lblFuelDeviationReport',
+        vehicleperformancereport: 'lblVehiclePerformanceReport',
+        drivetimemanagement: 'lblDriveTimeManagement',
+        ecoscorereport: 'lblECOScoreReport'
       }
     },
     configuration: {
@@ -232,14 +183,14 @@ export class AppComponent {
       icon: "settings",
       externalLink: false,
       pageTitles: {
-        alerts: 'Alerts',
-        landmarks: 'Landmarks',
-        reportscheduler: 'Report Scheduler',
-        ecoscoreprofilemanagement: 'Eco Score Profile Management',
-        drivermanagement: 'Driver Management',
-        vehiclemanagement: 'Vehicle Management',
-        termsandcondition: 'Terms & Conditions',
-        dtctranslation: "DTC Translation"
+        alerts: 'lblAlerts',
+        landmarks: 'lblLandmarks',
+        reportscheduler: 'lblReportScheduler',
+        ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
+        drivermanagement: 'lblDriverManagement',
+        vehiclemanagement: 'lblVehicleManagement',
+        termsandcondition: 'lblTermsAndConditions',
+        dtctranslation: "lblDTCTranslation"
       }
     },
     admin: {
@@ -247,35 +198,36 @@ export class AppComponent {
       icon: "person",
       externalLink: false,
       pageTitles: {
-        organisationdetails: 'Organisation Details',
-        accountgroupmanagement: 'Account Group Management',
-        accountmanagement: 'Account Management',
-        accountrolemanagement: 'Account Role Management',
-        vehiclegroupmanagement: 'Vehicle Group Management',
-        featuremanagement: 'Feature Management',
-        organisationrelationshipmanagement: 'Organisation Relationship Management',
-        relationshipmanagement: 'Relationship Management',
-        translationmanagement: 'Translation Management',
-        configurationmanagemnt: 'Configuration Management',
-        packagemanagement: 'Package Management',
-        accessrelationshipmanagement: 'Access Relationship Management',
-        subscriptionmanagement: 'Subscription Management',
+        organisationdetails: 'lblOrgnisationDetails',
+        accountgroupmanagement: 'lblAccountGroupManagement',
+        accountmanagement: 'lblAccountManagement',
+        accountrolemanagement: 'lblAccountRoleManagement',
+        vehiclegroupmanagement: 'lblVehicleGroupManagement',
+        featuremanagement: 'lblFeatureManagement',
+        organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+        relationshipmanagement: 'lblRelationshipManagement',
+        translationmanagement: 'lblTranslationManagement',
+        configurationmanagemnt: 'lblConfigurationManagemnt',
+        packagemanagement: 'lblPackageManagement',
+        accessrelationshipmanagement: 'lblAccessRelationshipManagement',
+        subscriptionmanagement: 'lblSubscriptionManagement',
       }
     },
     tachograph: {
       open: false,
       icon: "graphic_eq",
-      externalLink: false,
+      externalLink: true,
       pageTitles: {
-        tachograph: 'Tachograph'
-      }
+        tachograph: 'lblTachograph'
+      },
+      link: "https://www.my-fis.com/fleetservices/default.aspx"
     },
     mobileportal: {
       open: false,
       icon: "mobile_screen_share",
       externalLink: false,
       pageTitles: {
-        mobileportal: 'Mobile Portal'
+        mobileportal: 'lblMobilePortal'
       }
     },
     shop: {
@@ -283,7 +235,7 @@ export class AppComponent {
       icon: "shop",
       externalLink: false,
       pageTitles: {
-        shop: 'Shop'
+        shop: 'lblShop'
       }
     },
     information: {
@@ -291,7 +243,7 @@ export class AppComponent {
       icon: "info",
       externalLink: true,
       pageTitles: {
-        information: 'Information'
+        information: 'lblInformation'
       },
       link: "https://connectinfo.daf.com/en/?accesskey=2126e1f9-078d-4902-ab5f-46ea70f0e461"
     },
@@ -300,7 +252,7 @@ export class AppComponent {
       icon: "gavel",
       externalLink: true,
       pageTitles: {
-        legalnotices: 'Legal Notices'
+        legalnotices: 'lblLegalNotices'
       },
       link: "https://www.daf.com/en/legal/legal-notice"
     },
@@ -309,7 +261,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms And Condition History'
+        termsAndconditionhistory: 'lblTermsAndConditionHistory'
       }
     }
   }
@@ -337,7 +289,6 @@ export class AppComponent {
   subscription: Subscription;
   showTimer: boolean = false;
 
-
     /** list of banks */
    // protected banks: Bank[] = BANKS;
 
@@ -349,12 +300,14 @@ export class AppComponent {
   
      /** list of banks filtered by search keyword */
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
     /** Subject that emits when the component has been destroyed. */
     protected _onDestroy = new Subject<void>();
 
 
-  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,) {
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -363,12 +316,17 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
+      this.router.navigate(['/switchorgrole']);
       localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
       //Global Search FIlter Persist Data
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      if (this.isLogedIn) {
+        this.getOfflineNotifications();
+        this.connectWithSignalR();
+      }
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -440,6 +398,7 @@ export class AppComponent {
           }
           this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
+          // this.connectWithSignalR();
         }
         this.setPageTitle();
         this.showSpinner();
@@ -615,18 +574,18 @@ export class AppComponent {
       }
       if (elem.subMenus.length > 0) { //-- If subMenus
         elem.subMenus.forEach(subMenuItem => {
-          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}` });
+          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
         });
       } else {
         if (!elem.externalLink) { //-- external link not added
-          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}` });
+          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
         }
       }
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-
+    
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
@@ -642,12 +601,40 @@ export class AppComponent {
     let accessNameList = [];
     
     if(from && from == 'orgRoleChange'){
-      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
       let _link = '/menunotfound';
+      let landingPageFound : boolean = false;
+      let accountInfo = JSON.parse(localStorage.getItem('accountInfo'));
       if (this.menuPages.menus.length > 0) {
-        _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
-      } 
-      this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+        if(accountInfo.accountPreference && accountInfo.accountPreference.landingPageDisplayId) {
+          let landingpagedata = landingPageMenus.filter((item: any) => item.id == accountInfo.accountPreference.landingPageDisplayId);
+          if(landingpagedata.length > 0) {
+            let mainPage = this.menuPages.menus.filter((i: any) => i.menuId == landingpagedata[0].id);
+            if(mainPage.length > 0) {
+              landingPageFound = true;
+            }
+            this.menuPages.menus.forEach(element => {
+              if(element.subMenus.length > 0) {
+                let subPage = element.subMenus.filter((j: any) => j.menuId == landingpagedata[0].id);
+                if(subPage.length > 0) {
+                  landingPageFound = true;
+                }
+              }
+            });
+            if(landingPageFound) {
+              _link = `/${landingpagedata[0].url}`;
+            }
+          }
+        }
+        if(!landingPageFound) {
+          _link = this.menuPages.menus[0].subMenus.length > 0 ? `/${this.menuPages.menus[0].url}/${this.menuPages.menus[0].subMenus[0].url}` : `/${this.menuPages.menus[0].url}`;
+        }
+      } else {
+        _link = '/menunotfound';
+      }
+      
+      // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+      // console.log(_link);
+      this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
       this.orgContextType = false;
@@ -658,6 +645,12 @@ export class AppComponent {
       this.menuPages.features.forEach((obj: any) => {
         accessNameList.push(obj.name)
       });
+      this.adminFullAccess = false;
+      this.adminContributorAccess = false;
+      this.adminReadOnlyAccess = false;
+      this.globalPOIAccess = false;
+      this.systemAccountAccess = false;
+      this.globalCategoryAccess = false;
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -665,14 +658,34 @@ export class AppComponent {
       } else {
         this.adminReadOnlyAccess = true;
       }
+
+      if(accessNameList.includes('Configuration.Landmarks.GlobalPoi')){
+        this.globalPOIAccess = true;
+      }
+      if(accessNameList.includes('Admin.AccountManagement.SystemAccount')){
+        this.systemAccountAccess = true;
+      }
+      if(accessNameList.includes('Configuration.Landmarks.GlobalCategory')){
+        this.globalCategoryAccess = true;
+      }
   
       this.accessType = {
         adminFullAccess: this.adminFullAccess,
         adminContributorAccess: this.adminContributorAccess,
-        adminReadOnlyAccess: this.adminReadOnlyAccess
+        adminReadOnlyAccess: this.adminReadOnlyAccess,
+        globalPOIAccess: this.globalPOIAccess,
+        systemAccountAccess: this.systemAccountAccess,
+        globalCategoryAccess: this.globalCategoryAccess
       }
       localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User
+      // For checking Type of the User auth hierarchy
+      
+      // Platform Admin            
+      // Global Admin              
+      // DAF User    
+      // Admin          
+      // Office Staff
+      // Viewer
       if (accessNameList.includes("Admin#Platform")) {
         this.userType = "Admin#Platform";
       } else if (accessNameList.includes("Admin#Global")) {
@@ -706,7 +719,7 @@ export class AppComponent {
           if (_menu.length > 0) {
             _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
           } 
-          this.router.navigateByUrl('/switchOrgRole', { skipLocationChange: true }).then(() =>
+          this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
           this.router.navigate([_routerLink]));
         }
         localStorage.removeItem('appRouterUrl'); 
@@ -728,7 +741,7 @@ export class AppComponent {
         this.userOrg = userOrg[0].name;
       }
       this.organizationDropdown = this.accountInfo.organization;
-      this.roleDropdown = this.accountInfo.role;
+      this.roleDropdown = this.accountInfo.role;     
       this.setDropdownValues();
       if (this.accountInfo.accountDetail.blobId != 0) {
         this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
@@ -742,7 +755,7 @@ export class AppComponent {
 
   setDropdownValues() {
     this.landingPageForm.get("organization").setValue(parseInt(localStorage.getItem("accountOrganizationId")));
-    this.selectedRoles = this.roleDropdown;
+    this.selectedRoles = this.roleDropdown.filter(item=> item.organization_Id == localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
 
@@ -770,50 +783,51 @@ export class AppComponent {
   // }
 
   defaultTranslation() {
-    this.translationData = {
-      lblDashboard: "Dashboard",
-      lblLiveFleet: "Live Fleet",
-      lblLogBook: "Log Book",
-      lblReports: "Reports",
-      lblTripReport: 'Trip Report',
-      lblTripTracing: 'Trip Tracing',
-      lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
-      lblFleetFuelReport: 'Fleet Fuel Report',
-      lblFleetUtilisation: 'Fleet Utilisation',
-      lblFuelBenchmarking: 'Fuel Benchmarking',
-      lblFuelDeviationReport: 'Fuel Deviation Report',
-      lblvehiclePerformanceReport: 'Vehicle Performance Report',
-      lblDriveTimeManagement: 'Drive Time Management',
-      lblEcoscoreReport: 'Eco Score Report',
-      lblConfiguration: "Configuration",
-      lblAlerts: 'Alerts',
-      lblLandmarks: 'Landmarks',
-      lblReportScheduler: 'Report Scheduler',
-      lblDriverManagement: 'Driver Management',
-      lblVehicleManagement: 'Vehicle Management',
-      lblAdmin: "Admin",
-      lblOrganisationDetails: 'Organisation Details',
-      lblAccountGroupManagement: 'Account Group Management',
-      lblAccountManagement: 'Account Management',
-      lblAccountRoleManagement: 'Account Role Management',
-      lblVehicleGroupManagement: 'Vehicle Group Management',
-      lblTermsAndCondition: 'Terms & Conditions',
-      lblFeatureManagement: 'Feature Management',
-      lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
-      lblRelationshipManagement: 'Relationship Management',
-      lblTranslationManagement: 'Translation Management',
-      lblConfigurationManagemnt: 'Configuration Managemnt',
-      lblPackageManagement: 'Package Management',
-      lblAccessRelationshipManagement: 'Access Relationship Management',
-      lblSubscriptionManagement: 'Subscription Management',
-      lblTachograph: 'Tachograph',
-      lblMobilePortal: 'Mobile Portal',
-      lblShop: 'Shop',
-      lblInformation: 'Information',
-      lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms And Condition History',
-      lblDTCTranslation: "DTC Translation"
-    }
+    // this.translationData = {
+    //   lblDashboard: "Dashboard",
+    //   lblLiveFleet: "Live Fleet",
+    //   lblLogBook: "Log Book",
+    //   lblVehicleUpdates: "Vehicle Updates",
+    //   lblReports: "Reports",
+    //   lblTripReport: 'Trip Report',
+    //   lblTripTracing: 'Trip Tracing',
+    //   lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
+    //   lblFleetFuelReport: 'Fleet Fuel Report',
+    //   lblFleetUtilisation: 'Fleet Utilisation',
+    //   lblFuelBenchmarking: 'Fuel Benchmarking',
+    //   lblFuelDeviationReport: 'Fuel Deviation Report',
+    //   lblvehiclePerformanceReport: 'Vehicle Performance Report',
+    //   lblDriveTimeManagement: 'Drive Time Management',
+    //   lblEcoscoreReport: 'Eco Score Report',
+    //   lblConfiguration: "Configuration",
+    //   lblAlerts: 'Alerts',
+    //   lblLandmarks: 'Landmarks',
+    //   lblReportScheduler: 'Report Scheduler',
+    //   lblDriverManagement: 'Driver Management',
+    //   lblVehicleManagement: 'Vehicle Management',
+    //   lblAdmin: "Admin",
+    //   lblOrganisationDetails: 'Organisation Details',
+    //   lblAccountGroupManagement: 'Account Group Management',
+    //   lblAccountManagement: 'Account Management',
+    //   lblAccountRoleManagement: 'Account Role Management',
+    //   lblVehicleGroupManagement: 'Vehicle Group Management',
+    //   lblTermsAndCondition: 'Terms & Conditions',
+    //   lblFeatureManagement: 'Feature Management',
+    //   lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
+    //   lblRelationshipManagement: 'Relationship Management',
+    //   lblTranslationManagement: 'Translation Management',
+    //   lblConfigurationManagemnt: 'Configuration Managemnt',
+    //   lblPackageManagement: 'Package Management',
+    //   lblAccessRelationshipManagement: 'Access Relationship Management',
+    //   lblSubscriptionManagement: 'Subscription Management',
+    //   lblTachograph: 'Tachograph',
+    //   lblMobilePortal: 'Mobile Portal',
+    //   lblShop: 'Shop',
+    //   lblInformation: 'Information',
+    //   lblLegalNotices: 'Legal Notices',
+    //   lblTermsAndConditionHistory: 'Terms And Condition History',
+    //   lblDTCTranslation: "DTC Translation"
+    // }
   }
 
   getTranslationLabels() {
@@ -868,6 +882,7 @@ export class AppComponent {
           console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
+            this.filteredOrganizationList.next(this.organizationList);
             this.organizationList.sort(this.compare);
             let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
             let _orgId: any;
@@ -899,6 +914,10 @@ export class AppComponent {
 
   resetLanguageFilter() {
     this.filteredLanguages.next(this.languages.slice());
+  }
+
+  resetContextSettingFilter() {
+    this.filteredOrganizationList.next(this.organizationList.slice());
   }
 
   compare(a, b) {
@@ -955,7 +974,7 @@ export class AppComponent {
         if(this.prefData) {
           this.setInitialPref(this.prefData,this.preference);
         }
-        this.getDateAndTime();
+        // this.getDateAndTime();
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
           let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
@@ -983,20 +1002,10 @@ export class AppComponent {
     //     console.log("called")
     //     this.filterLanguages();
     //   });
+
     
   }
 
-  getDateAndTime(){
-    this.notificationData.forEach(element => {
-    this.startDateValue = element.data;
-    let dateTimeObj = Util.convertUtcToDateAndTimeFormat(this.startDateValue, this.prefTimeZone,this.alertDateFormat); 
-    element.date = dateTimeObj[0];
-    element.time = dateTimeObj[1];
-    this.setPrefFormatTime(element.date,element.time);
-    element.time =this.selectedStartTime;
-  });
-  console.log(this.notificationData);
-  }
 
   proceedStep(prefData: any, preference: any){
     this.prefData = prefData;
@@ -1009,13 +1018,17 @@ export class AppComponent {
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -1026,10 +1039,10 @@ export class AppComponent {
     if (this.subpage) {
       var _subPage = this.subpage.indexOf('?') !== -1 ? this.subpage.split('?')[0] : this.subpage;
       if (this.menuStatus[this.pageName]) {
-        this.currentTitle = this.menuStatus[this.pageName]['pageTitles'][_subPage] ? this.menuStatus[this.pageName]['pageTitles'][_subPage] : this.menuStatus[this.pageName]['pageTitles'][this.pageName];
+        this.currentTitle = this.menuStatus[this.pageName]['pageTitles'][_subPage] ? (this.translationData[this.menuStatus[this.pageName]['pageTitles'][_subPage]] || this.menuStatus[this.pageName]['pageTitles'][_subPage]) : (this.translationData[this.menuStatus[this.pageName]['pageTitles'][this.pageName]] || this.menuStatus[this.pageName]['pageTitles'][this.pageName]);
       }
     } else {
-      this.currentTitle = this.menuStatus[this.pageName] ? this.menuStatus[this.pageName]['pageTitles'][this.pageName] : this.pagetTitles[this.pageName];
+      this.currentTitle = this.menuStatus[this.pageName] ? (this.translationData[this.menuStatus[this.pageName]['pageTitles'][this.pageName]] || this.menuStatus[this.pageName]['pageTitles'][this.pageName]) : (this.translationData[this.pageTitles[this.pageName]] || this.pageTitles[this.pageName]);
     }
   }
 
@@ -1046,7 +1059,7 @@ export class AppComponent {
   }
 
   navigateToPage(pageName) {
-    //this.currentTitle = this.pagetTitles[pageName];
+    //this.currentTitle = this.pageTitles[pageName];
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
@@ -1268,6 +1281,22 @@ export class AppComponent {
     }
   }
 
+  filterContextSettings(search) {
+    if (!this.languages) {
+      return;
+    }
+    if (!search) {
+      this.resetContextSettingFilter();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredOrganizationList.next(
+      this.organizationList.filter(item => item.name.toLowerCase().indexOf(search) > -1)
+    );
+    console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
+   }
+
   filterLanguages(search) {
     if (!this.languages) {
       return;
@@ -1283,25 +1312,6 @@ export class AppComponent {
     );
     console.log("this.filteredLanguages",this.filteredLanguages) 
    }
-
-   gotoLogBook(item: any){
-  const navigationExtras: NavigationExtras = {
-    state: {
-      fromAlertsNotifications: true,
-      data: [item]
-    }
-  };
-  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-}
-
-gotoLogBookForMoreAlerts(){
-  const navigationExtras: NavigationExtras = {
-    state: {
-      fromMoreAlerts: true
-    }
-  };
-  this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-}
 
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){
@@ -1333,42 +1343,61 @@ gotoLogBookForMoreAlerts(){
     }
   }
 
-  _get12Time(_sTime: any){
-    let _x = _sTime.split(':');
-    let _yy: any = '';
-    if(_x[0] >= 12){ // 12 or > 12
-      if(_x[0] == 12){ // exact 12
-        _yy = `${_x[0]}:${_x[1]} PM`;
-      }else{ // > 12
-        let _xx = (_x[0] - 12);
-        _yy = `${_xx}:${_x[1]} PM`;
+  getOfflineNotifications(){
+    this.alertService.getOfflineNotifications().subscribe(data => {
+      if(data){
+        this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
+        // data["notificationResponse"].forEach(element => {
+        //   element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
+        // });
+        this.signalRService.notificationData= data["notificationResponse"];
+        this.signalRService.getDateAndTime();
       }
-    }else{ // < 12
-      _yy = `${_x[0]}:${_x[1]} AM`;
-    }
-    return _yy;
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+  
+    },
+    error => {
+      // setTimeout(() => {
+      //   this.getOfflineNotifications();
+      // }, 180000);
+    })
   }
 
-  get24Time(_time: any){
-    let _x = _time.split(':');
-    let _y = _x[1].split(' ');
-    let res: any = '';
-    if(_y[1] == 'PM'){ // PM
-      let _z: any = parseInt(_x[0]) + 12;
-      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]} PM`;
-    }else{ // AM
-      res = `${_x[0]}:${_y[0]} AM`;
-    }
-    return res;
-  }
+connectWithSignalR(){
+  this.signalRService.startConnection();
+}
 
-  setPrefFormatTime(date, time){
-        if(this.prefTimeFormat == 12){ // 12
-          this.selectedStartTime = this._get12Time(time);
-        }else{ // 24
-          time = this._get12Time(time);
-          this.selectedStartTime = this.get24Time(time); 
-        }
-  }
+notificationsClosed(){
+  this.signalRService.notificationData=[];
+  this.signalRService.notificationCount= 0;
+}
 
+notificationClicked(){
+  this.showAlertNotifications = true;
+  if(this.signalRService.notificationCount > 0){
+    let notificationData= [];
+    this.signalRService.notificationData.forEach(element => {
+      let notificationObj= {
+        "tripId": element.tripId,
+        "vin": element.vin,
+        "alertCategory": element.alertCategory,
+        "alertType": element.alertType,
+        "alertGeneratedTime": element.alertGeneratedTime,
+        "organizationId": element.organizationId,
+        "tripAlertId": element.tripAlertId,
+        "alertId": element.alertId,
+        "accountId": element.accountId,
+        "alertViewTimestamp": 0
+      }
+      if(notificationObj.tripAlertId != 0){
+      notificationData.push(notificationObj);
+      }
+    });
+    
+    this.alertService.addViewedNotifications(notificationData).subscribe(data => {
+    })
+  }
+}
 }

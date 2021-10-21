@@ -12,34 +12,34 @@
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails || 'All Account Role Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                   <mat-form-field appearance="outline">
-                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                       <span matPrefix><mat-icon>search</mat-icon></span>
                   </mat-form-field>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
                         <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                        <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                        <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon></button>
                         <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-                            <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                            <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF }}</button>
+                            <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
                         </mat-menu>
                         </div>
-                        <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                             <button mat-flat-button color="primary" (click)="newUserRole()">
-                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New Account Role'}}
+                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole }}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound }}</div>
             <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg'>
                 <div fxLayout="column" class='full-width' id="accountRoleData">
                     <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[2]">
@@ -50,25 +50,25 @@
                             </mat-cell>
                         </ng-container> -->
                         <ng-container matColumnDef="roleName">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName || 'Role Name'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew }}</span>
                                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.roleName}}</span> &nbsp;
                                 <mat-icon *ngIf="row.organizationId == 0" inline="true"> public </mat-icon>
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="description">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleDescription || 'Role Description'}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleDescription }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.description}}</span> </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction }}</mat-header-cell>
                             <mat-cell *matCellDef="let row" class="action">
-                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewUserRole(row)">
+                                <button class='actionBtn' mat-flat-button matTooltip="{{ translationData.lblView }}" (click)="viewUserRole(row)">
                                     <mat-icon>visibility</mat-icon>
                                 </button>
-                                <button class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'duplicate')" matTooltip="Duplicate">
+                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate }}">
                                     <mat-icon>content_copy</mat-icon>
                                 </button>
                                 <!-- <button *ngIf="(row.organizationId == 0 && loggedInUser == 'admin') || (row.organizationId != 0)" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
@@ -77,10 +77,12 @@
                                 <button *ngIf="(row.organizationId == 0 && loggedInUser == 'admin') || (row.organizationId != 0)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button> -->
-                                <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (!adminAccessType.adminReadOnlyAccess)" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
+                                <!-- <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (!adminAccessType.adminReadOnlyAccess)" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="{{ translationData.lblEdit }}"> -->
+                                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="{{ translationData.lblEdit }}">
                                     <mat-icon>create</mat-icon>
                                 </button>
-                                <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (adminAccessType.adminFullAccess)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
+                                <!-- <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (adminAccessType.adminFullAccess)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="{{ translationData.lblDelete }}"> -->
+                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteUserRole(row)" matTooltip="{{ translationData.lblDelete }}">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>

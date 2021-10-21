@@ -5,33 +5,38 @@
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters  }}</span>
               </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
            <div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-label>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
                 <div style='margin-top: 5px;'>
-                  <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
-                  <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
-                  <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
-                  <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
-                  <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+                  <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday  }}</button>
+                  <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday  }}</button>
+                  <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek  }}</button>
+                  <!-- <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth }}</button> -->
+                  <!-- <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months }}</button> -->
                 </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-label>{{ translationData.lblVehicleGroup}} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                    <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup  }}"  formControlName="vehicleGroup">
+                      <mat-option>
+                          <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+                            <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                          </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let rer of filteredVehicleGroups | async" [value]="rer.vehicleGroupId">
                         {{ rer.vehicleGroupName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field> 
                 <mat-error *ngIf="driverTimeForm.get('vehicleGroup').hasError('required') && driverDD.length > 0">
-                  {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
+                  {{translationData.lblPleaseSelectvehicleGroup  }}
                 </mat-error>
               </div>
             </div>
@@ -39,7 +44,7 @@
               <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                       <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-form-field appearance="outline">
@@ -59,7 +64,7 @@
                     </div>
                   </div>
                   <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblTo}} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                       <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-form-field appearance="outline">
@@ -81,41 +86,52 @@
                 </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-label>{{ translationData.lblVehicle  }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
-                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
+                      <mat-option>
+                          <ngx-mat-select-search (keyup)="filterVehicle(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
+                            <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                          </ngx-mat-select-search>
+                        </mat-option>
+                    <mat-option *ngFor="let rer of filteredVehicle | async" [value]="rer.vehicleId">
+                    <span *ngIf="rer.vehicleId == 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId != 0"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' && rer.vehicleId != 0"> {{rer.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber' && rer.vehicleId != 0"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required') && (driverDD.length > 0)">
-                  {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
+                  {{translationData.lblPleaseSelectVehicle }}
                 </mat-error>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="flex-end" class="full-width margin-bottom-xlg">
             <div class="areaWidth min-width-30-per" fxLayout="column">
-                <mat-label>{{ translationData.lblDriver || 'Driver' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-label>{{ translationData.lblDriver  }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
-                    <mat-option *ngFor="let rer of driverDD" [value]="rer.driverID">
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver  }}" formControlName="driver">
+                      <mat-option>
+                          <ngx-mat-select-search (keyup)="filterDriver(DriverSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #DriverSearch>
+                            <mat-icon (click)="resetDriverFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                          </ngx-mat-select-search>
+                        </mat-option>
+                    <mat-option *ngFor="let rer of filteredDriver | async" [value]="rer.driverID">
                         {{ rer.firstName ? rer.firstName : rer.driverID  }} {{ rer.lastName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-error *ngIf="driverTimeForm.get('driver').hasError('required') && (driverDD.length > 0)">
-                  {{translationData.lblPleaseSelectDriver || 'Please Select Driver' }}
+                  {{translationData.lblPleaseSelectDriver  }}
                 </mat-error>
             </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
               <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+                (click)='onReset()'>{{translationData.lblReset  }}</button>
               <button [disabled]="!driverTimeForm.valid" class='no-margin' mat-raised-button color="primary"
-                (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+                (click)='onSearch()'>{{ translationData.lblSearch  }}</button>
             </div>
           </div> 
         </mat-expansion-panel>
@@ -125,12 +141,12 @@
         <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width" >
             <mat-panel-title >
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverTimeReportDetails || 'Driver Time Report Details' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverTimeReportDetails }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngIf='initData.length == 0'>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage  }}</div>
           </div>
         </mat-expansion-panel>
       </mat-card>
@@ -138,7 +154,7 @@
         <mat-expansion-panel  [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title >
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral  }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -146,13 +162,13 @@
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span>{{ translationData.lblFrom  }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }}: </span>
+                    <span>{{ translationData.lblVehicleGroup }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
                   </span>
                 </div>
@@ -161,13 +177,13 @@
 
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblTo|| 'To' }}: </span>
+                    <span>{{ translationData.lblTo}}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
+                    <span>{{ translationData.lblVehicle }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
                   </span>
                 </div>
@@ -177,31 +193,31 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <div>{{ translationData.lblDriversCount || 'Drivers Count' }}: </div>
+                    <div>{{ translationData.lblDriversCount  }}: </div>
                     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{totalDriverCount}}</div>
                   </span>
                 </div>
                 <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <div>{{ translationData.lblTotalDriveTime || 'Total Drive Time' }}: </div>
+                    <div>{{ translationData.lblTotalDriveTime }}: </div>
                     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driveTime }} (hh:mm)</div>
                   </span>
                 </div>
                   <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                     <span>
-                      <div>{{ translationData.lblTotalWorkTime || 'Total Work Time' }}: </div>
+                      <div>{{ translationData.lblTotalWorkTime}}: </div>
                       <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.workTime }} (hh:mm)</div>
                     </span>
                   </div>
                   <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                     <span>
-                      <div>{{ translationData.lblTotalAvailableTime || 'Total Available Time' }}: </div>
+                      <div>{{ translationData.lblTotalAvailableTime }}: </div>
                       <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.availableTime }} (hh:mm)</div>
                     </span>
                   </div>
                   <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                     <span>
-                      <div>{{ translationData.lblTotalRestTime || 'Total Rest Time' }}: </div>
+                      <div>{{ translationData.lblTotalRestTime  }}: </div>
                       <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.restTime }} (hh:mm)</div>
                     </span>
                   </div>
@@ -216,7 +232,7 @@
         <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title >
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -224,17 +240,17 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button mat-button [matMenuTriggerFor]="menu">
-                  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
+                  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
-                  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+                  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel  }}</button>
+                  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF }}</button>
                 </mat-menu>
               </div>
             </div>
@@ -242,47 +258,47 @@
                 matSort #exporter="matTableExporter">
                 <!-- <ng-container *ngIf='showField.driverName' matColumnDef="driverName"> condition removed for pref update-->
                 <ng-container matColumnDef="driverName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName  }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (click)="onDriverSelected(row)" class="driverClick">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="driverId">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId  }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.driverId != '' ? row.driverId : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="startTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;"></span>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime  }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="endTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;"></span>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime  }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="driveTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime  }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="workTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} (hh:mm)
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime  }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container *ngIf='showField.serviceTime' matColumnDef="serviceTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} (hh:mm)
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime  }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="restTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} (hh:mm)
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime  }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="availableTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
                 </ng-container>
@@ -291,7 +307,7 @@
                 <mat-row *matRowDef="let row; columns: displayedColumns;">
                 </mat-row>
               </mat-table>
-              <div class='mt-1'><mat-label>* {{ translationData.lblTableInstruction || 'values are processed with partial data'}}</mat-label></div>
+              <div class='mt-1'><mat-label>* {{ translationData.lblTableInstruction }}</mat-label></div>
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div>
           </mat-expansion-panel>

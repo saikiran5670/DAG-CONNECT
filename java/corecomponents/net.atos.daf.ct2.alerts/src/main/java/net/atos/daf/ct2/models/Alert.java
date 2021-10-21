@@ -70,6 +70,8 @@ public class Alert implements Serializable {
     private String modifiedAt;
     @JsonProperty("urgencyLevelType")
     private String urgencyLevelType;
+
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 

@@ -48,7 +48,7 @@ export class FleetkpiComponent implements OnInit {
    //CO2 Emission Chart
    currentC02Value : any =  0;
    cutOffC02Value : any =  0;
-
+   dataError : boolean = false;
    doughnutChartLabels: Label[] = [('Target'), '', ''];
    doughnutChartData: MultiDataSet = [ [0, 100] ];
    doughnutChartType: ChartType = 'doughnut';
@@ -516,13 +516,17 @@ export class FleetkpiComponent implements OnInit {
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -590,14 +594,18 @@ export class FleetkpiComponent implements OnInit {
       //   "XLR0998HGFFT75550"
       // ]
     }
-    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
+    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
       //console.log(kpiData);
+      this.dataError = false;
       this.kpiData = kpiData;
       this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
       this.updateCharts();
       this.dataInterchangeService.getFleetData(kpiData);
 
-
+    },(error)=>{
+      if(error.status === 404){
+        this.dataError = true;
+      }
     })
   }
 
@@ -2194,7 +2202,7 @@ export class FleetkpiComponent implements OnInit {
   // ***************************** Preference functions *****************************//
 
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
@@ -2210,7 +2218,7 @@ export class FleetkpiComponent implements OnInit {
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;

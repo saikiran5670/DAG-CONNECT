@@ -48,6 +48,14 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.UserFeatures = session.GetObject<SessionFeature[]>(SessionConstants.FeaturesKey);
                     }
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.AccountRoleLevelKey)))
+                    {
+                        headerObj.RoleLevel = session.GetInt32(SessionConstants.AccountRoleLevelKey).Value;
+                    }
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.AccountTypeKey)))
+                    {
+                        headerObj.AccountType = session.GetString(SessionConstants.AccountTypeKey);
+                    }
 
                     _logger.Info(headerObj.ToString() + $"\nSession Id - { session.Id }");
                 }

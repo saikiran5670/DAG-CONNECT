@@ -44,9 +44,9 @@ namespace net.atos.daf.ct2.alert
         {
             return await _alertRepository.UpdateAlert(alert);
         }
-        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid)
+        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds, List<int> vehicleIds)
         {
-            return await _alertRepository.GetAlertList(accountid, organizationid);
+            return await _alertRepository.GetAlertList(accountid, organizationid, featureIds, vehicleIds);
         }
 
         #region Alert Category
@@ -95,11 +95,22 @@ namespace net.atos.daf.ct2.alert
                 throw;
             }
         }
-        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories)
+        public async Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories, int accountId)
         {
             try
             {
-                return await _alertRepository.InsertViewNotification(notificationViewHistories);
+                return await _alertRepository.InsertViewNotification(notificationViewHistories, accountId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter)
+        {
+            try
+            {
+                return await _alertRepository.GetOfflinePushNotification(offlinePushNotificationFilter);
             }
             catch (Exception)
             {

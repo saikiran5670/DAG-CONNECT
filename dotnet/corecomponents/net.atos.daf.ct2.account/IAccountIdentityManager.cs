@@ -16,5 +16,7 @@ namespace net.atos.daf.ct2.account
         Task<bool> LogoutByTokenId(string tokenid);
         Task<SSOToken> GenerateSSOToken(TokenSSORequest email);
         Task<SSOResponse> ValidateSSOToken(string tokenGuid);
+        Task<SSOResponseForNamelist> ValidateSSOTokenForNamelist(string tokenGuid);
+        Task<AccountIdentity> ValidateUser(Identity user);
     }
 }

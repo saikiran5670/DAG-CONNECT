@@ -19,12 +19,12 @@ export class CreateEditUserGroupComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
   columnCodes = ['select', 'firstName', 'emailId', 'roleList', 'accountGroupList'];
-  columnLabels = ['All', 'Name', 'Email ID', 'Role', 'Account Group'];
+  columnLabels = ['All', 'Name', 'EmailId', 'Role', 'AccountGroup'];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() userGroupData:any;
@@ -57,11 +57,11 @@ export class CreateEditUserGroupComponent implements OnInit {
 
     this.groupTypeList = [
       {
-        name: this.translationData.lblGroup || 'Group',
+        name: this.translationData.lblGroup ,
         value: 'G'
       },
       {
-        name: this.translationData.lblDynamic || 'Dynamic',
+        name: this.translationData.lblDynamic ,
         value: 'D'
       }
     ];
@@ -275,7 +275,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       }
       const updateAccGrpNameInput = updateAccGrpObj.name.trim().toLowerCase();
       let existingUserGroupName = this.userGroupData.filter(response => (response.accountGroupName).toLowerCase() == updateAccGrpNameInput);
-      if (existingUserGroupName.length > 0) {
+      if (existingUserGroupName.length > 0 && this.userGroupForm.controls.userGroupName.value !== this.selectedRowData.name ) {
         this.isUserGroupExist = true;       
         this.duplicateEmailMsg = true;
       }

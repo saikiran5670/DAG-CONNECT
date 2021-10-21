@@ -63,21 +63,21 @@ namespace net.atos.daf.ct2.reportscheduler.report
             ReportSchedulerData = reportSchedulerData;
             ReportName = reportSchedulerData.ReportName;
             ReportKey = reportSchedulerData.ReportKey = reportSchedulerData.ReportKey?.Trim();
-            Report = InitializeReport(ReportKey);
+            Report = InitializeReport(ReportKey, reportSchedulerData.FeatureId);
             IsAllParameterSet = true;
         }
 
-        private IReport InitializeReport(string reportKey) =>
+        private IReport InitializeReport(string reportKey, int featureId) =>
         reportKey switch
         {
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html, _mapManager, featureId),
             ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisationReport, EmailContentType.Html),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisationReport, EmailContentType.Html, featureId),
             ReportNameConstants.REPORT_FLEET_FUEL => new FleetFuel(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuelReportAllVehicles, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuelReportAllVehicles, EmailContentType.Html, _mapManager, featureId),
             ReportNameConstants.REPORT_FUEL_DEVIATION => new FuelDeviation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FuelDeviationReport, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FuelDeviationReport, EmailContentType.Html, _mapManager, featureId),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
@@ -164,7 +164,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
             }
             var vinData = string.Join(',', vehicleList.Select(s => s.VIN).ToArray());
-            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId);
+            var vehicleAssociationList = await _visibilityManager
+                .GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId, ReportSchedulerData.OrganizationId, Report.FeatureId);
             if (vehicleAssociationList == null || vehicleAssociationList.Count() == 0)
             {
                 throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);

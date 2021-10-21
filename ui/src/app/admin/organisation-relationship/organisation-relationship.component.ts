@@ -32,7 +32,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   rowsData: any;
   createStatus: boolean = false;
   titleText: string;
-  translationData: any;
+  translationData: any = {};
   grpTitleVisible : boolean = false;
   showLoadingIndicator: any;
   displayMessage: any;
@@ -44,6 +44,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   vehicleList: any = [];
   organizationList: any = [];
   startDateList: any = [];
+  adminAccessType: any = {};
   viewRelationshipName: any; 
   allTypes: any = [
     {
@@ -67,7 +68,6 @@ export class OrganisationRelationshipComponent implements OnInit {
   };
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
- this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
       this.viewRelationshipName = params["name"]; 
    });
@@ -75,6 +75,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -223,20 +224,15 @@ export class OrganisationRelationshipComponent implements OnInit {
       }
 
   defaultTranslation () {
-    this.translationData = {
-      lblOrganisationRelationshipDetails : "Organisation Relationship Details",
-      lblSearch: "Search",
-      lblNewRelationship: "New Relationship",
-      lblNoRecordFound: "No Record Found",
-      lblOrganisationName: "Organisation Name",
-      lblVehicleGroup: "Vehicle Group Name",
-      lblSelectVehicleGroup: "Select Vehicle Group",
-      lblSelectOrganisation: "Select Organisation"
-
-    }
+    this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate;
+    this.translationData.lblClickToActivate = this.translationData.lblClickToActivate;
+    
   }
+
   processTranslation(transData: any){   
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.defaultTranslation();
+
     //console.log("process translationData:: ", this.translationData)
   }
 
@@ -327,10 +323,10 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDeleteRelationship,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     let name = rowData.relationshipName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -340,6 +336,7 @@ export class OrganisationRelationshipComponent implements OnInit {
         this.organizationService
         .deleteOrgRelationship(selectedOptions) 
         .subscribe((d) => {
+          this.selectedOrgRelations.clear();
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
         });
@@ -368,12 +365,12 @@ export class OrganisationRelationshipComponent implements OnInit {
     if(rowData.endDate == 0)
     {
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      // cancelText: this.translationData.lblNo || "No",
-      // confirmText: this.translationData.lblYes || "Yes",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      title: this.translationData.lblChangeChainingStatus,
+      message: this.translationData.lblYouwanttoDeactivate,
+      // cancelText: this.translationData.lblNo,
+      // confirmText: this.translationData.lblYes,
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
       status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };
@@ -406,10 +403,10 @@ export class OrganisationRelationshipComponent implements OnInit {
     //   id: this.selectedOrgRelations.selected.map(item=>item.id)
     // }
     const options = {
-      title: this.translationData.lblDelete || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      title: this.translationData.lblDelete ,
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes 
     };
     //let name = this.selectedOrgRelations.selected[0].relationshipName;
     let name = this.selectedOrgRelations.selected.forEach(item => {
@@ -424,6 +421,7 @@ export class OrganisationRelationshipComponent implements OnInit {
        {
         this.organizationService.deleteOrgRelationship(relId) //need to change
         .subscribe((d) => {
+          this.selectedOrgRelations.clear();
           this.successMsgBlink(this.getDeletMsg(relList));
           this.loadInitData();
         });

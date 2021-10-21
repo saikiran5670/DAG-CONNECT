@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.alert
         Task<int> SuspendAlert(int alertId, char state, char checkState);
         Task<bool> CheckIsNotificationExitForAlert(int alertId);
         Task<Alert> UpdateAlert(Alert alert);
-        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid);
+        Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid, List<int> featureIds, List<int> vehicleIds);
         Task<DuplicateAlertType> DuplicateAlertType(int alertId);
         #region Alert Category
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();
@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.alert
         Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
         Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId);
         Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype);
-        Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories);
+        Task<int> InsertViewNotification(List<NotificationViewHistory> notificationViewHistories, int accountId);
+        Task<OfflinePushNotification> GetOfflinePushNotification(OfflinePushNotificationFilter offlinePushNotificationFilter);
     }
 }

@@ -1,24 +1,17 @@
 package net.atos.daf.ct2.app;
 
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
-//import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
+
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_INDEX_MSG_TOPIC;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.time.Duration;
+import java.util.*;
 
+import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -27,12 +20,12 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.util.Collector;
+import org.apache.flink.table.planner.expressions.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +36,12 @@ import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
+import net.atos.daf.ct2.service.realtime.ExcessiveAverageSpeedService;
 import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
+import net.atos.daf.ct2.service.realtime.FuelDuringTripProcessor;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
-import net.atos.daf.ct2.util.Utils;
-
+@Deprecated
 public class IndexBasedAlertProcessing implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(IndexBasedAlertProcessing.class);
     private static final long serialVersionUID = 1L;
@@ -60,7 +54,7 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Creating param tool from given property
          */
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
-
+        env.getConfig().setGlobalJobParameters(propertiesParamTool);
         logger.info("PropertiesParamTool :: {}", parameterTool.getProperties());
 
         /**
@@ -101,6 +95,24 @@ public class IndexBasedAlertProcessing implements Serializable {
         }};
 
         /**
+         * RealTime functions defined
+         */
+        Map<Object, Object> fuelDuringTripFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+            		fuelDuringTripFun
+            ));
+        }};
+        /**
+         * RealTime functions defined
+         * for geofence
+         */
+        Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
+            put("functions", Arrays.asList(
+                    enteringZoneFun,
+                    exitZoneFun
+            ));
+        }};
+        /**
          *  Booting cache
          */
         KafkaCdcStreamV2 kafkaCdcStreamV2 = new KafkaCdcImplV2(env,propertiesParamTool);
@@ -109,10 +121,17 @@ public class IndexBasedAlertProcessing implements Serializable {
         AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
-        SingleOutputStreamOperator<Index> indexStringStream=KafkaConnectionService.connectIndexObjectTopic(
+        SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
                         propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
                         propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .returns(Index.class)
+                .filter(index -> index.getVid() != null)
+                .returns(Index.class)
+                .map(idx -> {
+                    idx.setJobName(UUID.randomUUID().toString());
+                    logger.info("Index message received for alert processing :: {}  {}",idx, String.format(INCOMING_MESSAGE_UUID, idx.getJobName()));
+                    return idx;})
                 .returns(Index.class);
 
         /*SingleOutputStreamOperator<Index> indexStringStream = env.addSource(new IndexGenerator())
@@ -131,11 +150,18 @@ public class IndexBasedAlertProcessing implements Serializable {
                         new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.milliseconds(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
-                                return convertDateToMillis(index.getEvtDateTime());
+                                  try{
+                                      return convertDateToMillis(index.getEvtDateTime());
+                                  }catch (Exception ex){
+                                     logger.error("Error while converting event time stamp {}",index,String.format(INCOMING_MESSAGE_UUID, index.getJobName()));
+                                  }
+                                return System.currentTimeMillis();
                             }
                         }
                 )
-                .keyBy(index -> index.getDocument() != null ? index.getDocument().getTripID() : "null")
+                .filter(index -> index.getDocument().getTripID() !=null)
+                .returns(Index.class)
+                .keyBy(index -> index.getDocument().getTripID() != null ? index.getDocument().getTripID() : "")
                 .window(TumblingEventTimeWindows.of(Time.milliseconds(WindowTime)));
 
         /**
@@ -163,25 +189,10 @@ public class IndexBasedAlertProcessing implements Serializable {
          * Excessive Average Speed Fun keyed stream
          */
         KeyedStream<Index, String> indexExcessiveAvgSpeedKeyedStream = windowedIndexStream
-                .process(new ProcessWindowFunction<Index, Index, String, TimeWindow>() {
-                    @Override
-                    public void process(String arg0, ProcessWindowFunction<Index, Index, String, TimeWindow>.Context arg1,
-                                        Iterable<Index> indexMsg, Collector<Index> arg3) throws Exception {
-                        List<Index> indexList = StreamSupport.stream(indexMsg.spliterator(), false)
-                                .collect(Collectors.toList());
-                        if (!indexList.isEmpty()) {
-                            Index startIndex = indexList.get(0);
-                            Index endIndex = indexList.get(indexList.size() - 1);
-                            Long average = Utils.calculateAverage(startIndex, endIndex);
-                            startIndex.setVDist(average);
-                            Long idleDuration = Utils.calculateIdleDuration(indexMsg);
-                            startIndex.setVIdleDuration(idleDuration);
-							
-                            arg3.collect(startIndex);
-                        }
-                    }
-                })
-                .keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+                .process(new ExcessiveAverageSpeedService())
+                .filter(index -> index.getDocument().getTripID() !=null)
+                .returns(Index.class)
+                .keyBy(index -> index.getDocument().getTripID() != null ? index.getDocument().getTripID() : "");
 
 
         /**
@@ -200,7 +211,12 @@ public class IndexBasedAlertProcessing implements Serializable {
                         new BoundedOutOfOrdernessTimestampExtractor<Index>(Time.seconds(0)) {
                             @Override
                             public long extractTimestamp(Index index) {
-                                return convertDateToMillis(index.getEvtDateTime());
+                                try{
+                                    return convertDateToMillis(index.getEvtDateTime());
+                                }catch (Exception ex){
+                                    logger.error("Error while converting event time stamp {}",index,String.format(INCOMING_MESSAGE_UUID, index.getJobName()));
+                                }
+                                return System.currentTimeMillis();
                             }
                         }
                 )
@@ -232,8 +248,49 @@ public class IndexBasedAlertProcessing implements Serializable {
          */
         IndexMessageAlertService.processIndexKeyStream(indexStringKeyedStream,
                 env,propertiesParamTool,fuelDuringStopFunConfigMap);
+        
+        /**
+         * Excessive Fuel during trip 
+         */
+        KeyedStream<Index, String> fuelDuringTripStream = indexStringStream
+        		 .assignTimestampsAndWatermarks(
+        					WatermarkStrategy.<Index>forBoundedOutOfOrderness(Duration.ofSeconds(Long.parseLong(
+        							propertiesParamTool.get(AlertConfigProp.ALERT_WATERMARK_TIME_WINDOW_SECONDS))))
+        							.withTimestampAssigner(new SerializableTimestampAssigner<Index>() {
+
+        								private static final long serialVersionUID = 1L;
+
+        								@Override
+        								public long extractTimestamp(Index element, long recordTimestamp) {
+                                            try{
+                                                return convertDateToMillis(element.getEvtDateTime());
+                                            }catch (Exception ex){
+                                                logger.error("Error while converting event time stamp {}",element,String.format(INCOMING_MESSAGE_UUID, element.getJobName()));
+                                            }
+                                            return System.currentTimeMillis();
+        								}
+        							}))
+				.filter(index -> Objects.nonNull(index.getDocument().getTripID())).returns(Index.class)
+				.keyBy(index -> index.getDocument().getTripID())
+				.window(TumblingEventTimeWindows.of(Time
+						.seconds(Long.parseLong(propertiesParamTool.get(AlertConfigProp.ALERT_TIME_WINDOW_SECONDS)))))
+				.process(new FuelDuringTripProcessor())
+				.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        /*
+         * Process fuelDuringTripStream for fuel deviation during trip
+        */
+        IndexMessageAlertService.processIndexKeyStream(fuelDuringTripStream,
+                env,propertiesParamTool,fuelDuringTripFunConfigMap);
 
 
+        /**
+         * Entering and exiting zone
+         */
+        KeyedStream<Index, String> geofenceEnteringZoneStream = indexStringStream.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
+
+        IndexMessageAlertService.processIndexKeyStream(geofenceEnteringZoneStream,
+                env,propertiesParamTool,geofenceFunConfigMap);
 
         env.execute(IndexBasedAlertProcessing.class.getSimpleName());
 

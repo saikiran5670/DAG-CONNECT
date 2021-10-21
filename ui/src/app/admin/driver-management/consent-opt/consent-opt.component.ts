@@ -85,10 +85,10 @@ export class ConsentOptComponent implements OnInit {
         } 
 
         if(this.data.translationData.lblSinceyourorganisationconsentis){
-          this.inheritMsgExtra = this.data.translationData.lblSinceyourorganisationconsentis.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut || 'Opt-Out') : (this.data.translationData.lblOptIn || 'Opt-In'));
+          this.inheritMsgExtra = this.data.translationData.lblSinceyourorganisationconsentis.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut ) : (this.data.translationData.lblOptIn ));
         }
         else{
-          this.inheritMsgExtra = ("Since your organisation’s consent is '$'.").replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut || 'Opt-Out') : (this.data.translationData.lblOptIn || 'Opt-In'));
+          this.inheritMsgExtra = ("Since your organisation’s consent is '$'.").replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut ) : (this.data.translationData.lblOptIn ));
         }
         
         if(this.orgInheritMode == 'U'){ //-- opt-out mode
@@ -123,7 +123,8 @@ export class ConsentOptComponent implements OnInit {
         optoutoptinstatus: this.data.consentType
       };
       this.driverService.updateOptInOptOutDriver(objData).subscribe((drv: any) => {
-        this.getDriverList();
+        //this.getDriverList();
+        this.onClose({ tableData: this.data.driverData, consentMsg: this.getConsentUpdatedMsg() });
       });
     }
     else{ //-- update single
@@ -139,7 +140,7 @@ export class ConsentOptComponent implements OnInit {
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
         // this.getDriverList();
-        this.onClose({ tableData: [], consentMsg: this.getConsentUpdatedMsg() });
+        this.onClose({ tableData: [drv], consentMsg: this.getConsentUpdatedMsg() });
       });
     }
   }
@@ -158,10 +159,10 @@ export class ConsentOptComponent implements OnInit {
         case 'I' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedin || 'Opted-in')).replace('#', '' + this.totalDrivers);
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedin )).replace('#', '' + this.totalDrivers);
             }
             else{
-              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.data.translationData.lblOptedin || 'Opted-in'));
+              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.data.translationData.lblOptedin ));
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewasOptedinsuccessfully){
@@ -176,10 +177,10 @@ export class ConsentOptComponent implements OnInit {
         case 'U' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedout || 'Opted-out')).replace('#', '' + this.totalDrivers);;
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedout )).replace('#', '' + this.totalDrivers);;
             }
             else{
-              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.data.translationData.lblOptedout || 'Opted-out'))
+              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.data.translationData.lblOptedout ))
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewasOptedoutsuccessfully){
@@ -194,10 +195,10 @@ export class ConsentOptComponent implements OnInit {
         case 'H' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout || 'Opted-out') : (this.data.translationData.lblOptedin || 'Opted-in')).replace('#', '' + this.totalDrivers);;
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout ) : (this.data.translationData.lblOptedin )).replace('#', '' + this.totalDrivers);;
             }
             else{
-              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout || 'Opted-out') : (this.data.translationData.lblOptedin || 'Opted-in'));
+              returnMsg = (`${this.totalDrivers} drivers were successfully '$'`).replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout ) : (this.data.translationData.lblOptedin ));
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewassuccessfully){
@@ -207,9 +208,9 @@ export class ConsentOptComponent implements OnInit {
               returnMsg = ("The driver '$' was successfully '#'").replace('$', driverName);
             }
             if(this.orgInheritMode == 'I'){ //-- opt-in
-              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedin || 'Opted-in'));
+              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedin ));
             }else{ //-- opt-out
-              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedout || 'Opted-out'));
+              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedout ));
             }
           }
           break;
@@ -250,7 +251,7 @@ export class ConsentOptComponent implements OnInit {
       optIn: this.data.consentType,
       modifiedBy: this.accountId //0
     }
-    console.log(objData);    
+    //console.log(objData);    
     this.closePopup = false;
     this.mdDialogRef.close(event);
   }  

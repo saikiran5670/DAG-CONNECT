@@ -42,6 +42,8 @@ namespace net.atos.daf.ct2.reports.repository
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
+                             and tripalert.category_type <> 'O'
+                             and tripalert.type <> 'W'
                            and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
@@ -50,8 +52,6 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
-            List<LogbookDetails> logbookDetailsFilters = new List<LogbookDetails>();
-
             try
             {
                 var parameter = new DynamicParameters();
@@ -68,8 +68,10 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.alert_id as AlertId,                             
                                 ta.latitude as Latitude,
                                 ta.longitude as Longitude,
+                                RANK () OVER (PARTITION BY ta.vin,ta.alert_id
+								ORDER BY ta.alert_generated_time ASC) Occurrence,
                                 ta.urgency_level_type as AlertLevel,
-                                ta.alert_generated_time as AlertGeneratedTime,
+                                extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
                                 ts.start_time_stamp as TripStartTime,
                                 ts.end_time_stamp as TripEndTime,
@@ -78,14 +80,15 @@ namespace net.atos.daf.ct2.reports.repository
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
                                 left join livefleet.livefleet_current_trip_statistics ts
-                                on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
+                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id 
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time/1000)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time/1000)::date) <= (to_timestamp(@end_time_stamp )::date))";
-
+                                and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp)::timestamp)
+                                and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))
+                                and ta.category_type <> 'O'
+                				and ta.type <> 'W' ";
 
 
                 if (logbookFilter.VIN.Count > 0)
@@ -112,7 +115,20 @@ namespace net.atos.daf.ct2.reports.repository
                 var logBookDetailsResult = await _dataMartdataAccess.QueryAsync<LogbookDetails>(queryLogBookPull, parameter);
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)
                 {
-                    return logBookDetailsResult.AsList<LogbookDetails>();
+                    parameter.Add("@AlertIds", logBookDetailsResult.Select(x => x.AlertId).ToArray());
+                    string queryAlert = @"select id, Name, organization_id as org_id from master.alert where id = ANY(@AlertIds)";
+                    var alertNames = await _dataAccess.QueryAsync<AlertNameList>(queryAlert, parameter);
+
+                    var alertids = alertNames.Where(x => x.Org_Id == logbookFilter.Org_Id).Distinct();
+                    var logbookDetails = from logbookresult in logBookDetailsResult
+                                         join alert in alertids
+                                        on logbookresult.AlertId equals alert.Id
+                                         select logbookresult;
+                    foreach (var item in logbookDetails)
+                    {
+                        item.AlertName = alertNames.Where(x => x.Id == item.AlertId).Select(x => x.Name).FirstOrDefault();
+                    }
+                    return logbookDetails.AsList<LogbookDetails>();
                 }
                 else
                 {

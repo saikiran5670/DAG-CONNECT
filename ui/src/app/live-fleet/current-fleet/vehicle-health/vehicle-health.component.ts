@@ -27,6 +27,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { ReportService } from 'src/app/services/report.service';
 import { Observable } from 'rxjs';
 import { AdminComponent } from 'src/app/admin/admin.component';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -43,6 +44,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @Input() healthData: any;
   @Input() tripId: any;
   @Input() historyHealthData: any = [];
+  @Input() translationData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
@@ -85,7 +87,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  translationData: any = [];
+  // translationData: any = {};
   isSummaryOpen: boolean = true;
   isWarningOpen: boolean = true;
   isMapOpen: boolean = false;
@@ -102,20 +104,22 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
+  map_key: any = '';
 
 
-  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
+  constructor(private _configService: ConfigService, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
     
       
       this.defaultTranslation();
+      this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
-        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+        "apikey": this.map_key
     });
   }
   defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }    
+    // this.translationData = {
+    //   lblSearchReportParameters: 'Search Report Parameters'
+    // }    
   }
 
   ngOnInit(): void {
@@ -132,17 +136,17 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       startTime: ['', []],
       endTime: ['', []]
     });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 10 //-- for fleet utilisation
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 10 //-- for fleet utilisation
+    // }
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -155,7 +159,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           });
         }
       });
-    });
+    // });
     this.selectionTab = 'last3month';
     this.selectionTimeRange('last3month');
   }
@@ -169,7 +173,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   initMap(){
     let defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
@@ -177,6 +181,26 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl( {
+        baseLayers : [ { 
+          label: this.translationData.lblNormal || "Normal", layer:defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite || "Satellite", layer:defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain || "Terrain", layer:defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: defaultLayers.vector.normal.trafficincidents
+        }
+    ]
+      });
+      this.ui.addControl("customized", ms);
   }
 
   tabVisibilityHandler(tabVisibility: boolean){
@@ -299,13 +323,17 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }

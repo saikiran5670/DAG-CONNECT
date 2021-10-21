@@ -25,6 +25,7 @@ import { Util } from 'src/app/shared/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
 import { ReportMapService } from '../../../../report/report-map.service';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -34,7 +35,7 @@ declare var H: any;
   styleUrls: ['./alert-advanced-filter.component.less']
 })
 export class AlertAdvancedFilterComponent implements OnInit {
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() alert_category_selected : any;
   @Input() alert_type_selected : any;
   @Input() selectedRowData : any;
@@ -115,6 +116,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   distanceUnit: any;
   poiUnit: any;
   unitTypeVal: any;
+  map_key: any = '';
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -129,16 +131,24 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
               private el: ElementRef,
-              private reportMapService: ReportMapService) {
+              private reportMapService: ReportMapService,  private _configService: ConfigService) {
+   this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey":this.map_key
     });
    }
 
   ngOnInit(): void {
     console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+
     this.accountId= parseInt(localStorage.getItem("accountId"));
     let today = new Date();
     this.alertAdvancedFilterForm = this._formBuilder.group({
@@ -170,8 +180,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
   setDefaultAdvanceAlert(){
     let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
+    if(positionVal.length > 0){
     this.selectedPoiSite = positionVal[0].positionType;
+    // this.isPoiSelected= true;
     this.alertAdvancedFilterForm.get('poiSite').setValue(this.selectedPoiSite);
+    }
     if (this.selectedPoiSite == 'X')
     {
       this.existingFlag =true;
@@ -194,10 +207,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOn == 'C'){
-      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
-      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
+      // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+      // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].startDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].endDate,'DD/MM/YYYY HH:MM').split(" ");
+      // this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
+      // this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
+      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0],'DD/MM/YYYY'));
+      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0], 'DD/MM/YYYY'));
 
       this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
       this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
@@ -279,15 +296,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
   setUnitsAsPrefData(){
     if(this.prefUnitFormat == 'dunit_Metric'){
       this.distanceEnum = 'M';
-      this.distanceUnit = this.translationData.lblMeter || 'm';
+      this.distanceUnit = this.translationData.lblMeter;
       this.POIEnum = 'K';
-      this.poiUnit = this.translationData.lblKilometer || 'Km';
+      this.poiUnit = this.translationData.lblKilometer;
   }
     else{
       this.distanceEnum = 'F';
-      this.distanceUnit = this.translationData.lblFeet || 'ft';
+      this.distanceUnit = this.translationData.lblFeet;
       this.POIEnum = 'L';
-      this.poiUnit = this.translationData.lblMiles || 'Miles';
+      this.poiUnit = this.translationData.lblMiles;
     }
   }
 
@@ -891,8 +908,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
         onPOIClick(row: any){
           const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-          const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
-          const tableTitle = this.translationData.lblPOI || 'POI';
+          const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+          const tableTitle = this.translationData.lblPOI;
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
@@ -930,8 +947,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
         onGeofenceClick(row: any){
           const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
-          const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-          const tableTitle = this.translationData.lblGeofence || 'Geofence';
+          const colsName = ['Name', this.translationData.lblCategory, this.translationData.lblSubCategory];
+          const tableTitle = this.translationData.lblGeofence;
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
@@ -1106,6 +1123,8 @@ if(this.selectedApplyOn == 'C'){
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
+    element["startDate"] =urgencylevelStartDate;
+    element["endDate"] =urgencylevelEndDate;
   });
 }
 else{
@@ -1291,11 +1310,12 @@ else{
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
-        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
-        obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+        obj["id"] = periodRefArr ? periodRefArr.id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
-        obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+        obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
+        obj["unitType"] = periodRefArr.unitType;
        }
       this.advancedAlertPayload.push(obj);
     }  
@@ -1368,11 +1388,11 @@ else{
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
-            let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
-            obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+            let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+            obj["id"] = periodRefArr ? periodRefArr.id : 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
-            obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+            obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
             obj["unitType"] = periodRefArr.unitType;
           }
           this.advancedAlertPayload.push(obj);
@@ -2008,12 +2028,13 @@ if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSele
   "alertTimingDetails": this.alertTimingDetail
 }
 if(this.actionType == 'edit'){
-  let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].id;
-  obj["id"] = periodRefArr;
+  let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0];
+  obj["id"] = periodRefArr ? periodRefArr.id : 0;
   obj["alertId"] = this.selectedRowData.id;
   obj["state"] = 'A';
-  obj["alertTimingDetails"]["refId"] = periodRefArr;
-  }    
+  obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
+  obj["unitType"] = periodRefArr.unitType;
+ }   
   this.advancedAlertPayload.push(obj);  
 }
 }
@@ -2238,7 +2259,7 @@ private scrollToFuelInvalidControl() {
   setStartEndDateTime(date: any, timeObj: any, type: any){
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    
+    date = date._d;
     date.setHours(_x);
     date.setMinutes(_y);
     date.setSeconds(type == 'start' ? '00' : '59');

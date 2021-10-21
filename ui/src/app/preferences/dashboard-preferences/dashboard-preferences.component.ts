@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 
 export class DashboardPreferencesComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() reportListData: any;
 
   //dashboard preferences
@@ -53,7 +53,7 @@ export class DashboardPreferencesComponent implements OnInit {
     let languageCode = JSON.parse(localStorage.getItem('language')).code;
     this.translationService.getPreferences(languageCode).subscribe((res) => { this.generalPreferences = res; this.getUnits() }
     )
-    this.translationUpdate();
+    // this.translationUpdate();
   }
 
   translationUpdate(){
@@ -153,11 +153,12 @@ export class DashboardPreferencesComponent implements OnInit {
 
       if (repoId.length > 0) {
         this.reportId = repoId[0].id;
+        this.loadDashboardPreferences();
       } else {
-        this.reportId = 18;
+        console.error("No report id found!")
       }//- hard coded for Dashboard
 
-      this.loadDashboardPreferences();
+      
     }, (error) => {
       console.log('Report not found...', error);
       this.hideloader();
@@ -401,33 +402,33 @@ export class DashboardPreferencesComponent implements OnInit {
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs, reportId: element.reportId  });
       }
       else if(element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')){
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000});
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000, reportId: element.reportId });
       }
       else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
         
         let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609.344 : thresholdValue * 1000;
        
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmilimeters });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmilimeters, reportId: element.reportId  });
 
       }
       else if(element.key.includes('fleetkpi_fuelconsumption'))
       {
         let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? this.reportMapService.convertFuelConsumptionMpgToMlm(thresholdValue): this.reportMapService.convertFuelConsumptionLtr100kmToMlm(thresholdValue);
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseFloat(totalmililitres) });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseFloat(totalmililitres), reportId: element.reportId  });
       }
       else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
         let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 3785.41 : thresholdValue * 1000;
 
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres, reportId: element.reportId  });
       }    
       else {
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue), reportId: element.reportId  });
       }
 
     });
@@ -454,12 +455,53 @@ export class DashboardPreferencesComponent implements OnInit {
     let _vehicleUtilizationArr: any = [];
     let _todayLiveVehicleArr: any = [];
     let _alertLast24HoursArr: any = [];
+    let _parentArr: any = [];
 
     _fleetKPIArr = this.getSaveObject('fleetKPIColumnData', 'selectionForFleetKPIColumns');
     _todayLiveVehicleArr = this.getSaveObject('todayLiveVehicleColumnData', 'selectionForTodayLiveVehicleColumns');
     _vehicleUtilizationArr = this.getSaveObject('vehicleUtilizationColumnData', 'selectionForVehicleUtilizationColumns');
 
     _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
+    
+    _parentArr.push({ dataAttributeId:  this.getDashboardPreferenceResponse.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: this.getDashboardPreferenceResponse.reportId  })
+ 
+     this.getDashboardPreferenceResponse.subReportUserPreferences.forEach(element => {     
+      if(element.name.includes("Dashboard.FleetKPI")){
+        if(this.selectionForFleetKPIColumns.selected.length == this.fleetKPIColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }       
+      }else if(element.name.includes("Dashboard.TodayLiveVehicle")){
+        if(this.selectionForTodayLiveVehicleColumns.selected.length == this.todayLiveVehicleColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+       }else if(element.name.includes("Dashboard.VehicleUtilization")){
+        if(this.selectionForVehicleUtilizationColumns.selected.length == this.vehicleUtilizationColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+      
+      }else if(element.name.includes("Dashboard.AlertLast24Hours")){
+        if(this.selectionForAlertLast24HoursColumns.selected.length == this.alertLast24HoursColumnData.length)
+        {
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "A", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }
+        else{
+          _parentArr.push({ dataAttributeId:  element.dataAttributeId, state: "I", preferenceType: "D",  chartType:'', thresholdType:'', thresholdValue:0,  reportId: element.reportId  })
+        }  
+      }
+
+    });
 
     //console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
     // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
@@ -467,7 +509,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
     let objData: any = {
       reportId: this.reportId,
-      attributes: [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr] //-- merge data
+      attributes: [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr, ..._parentArr] //-- merge data
     }
     if(!this.responseFlag)
     {
@@ -491,15 +533,13 @@ export class DashboardPreferencesComponent implements OnInit {
 
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-    this.prefUnit = unitObj[0].value;
-    //console.log("Preference ID", this.prefUnit);
-    if (unitObj[0].value == 'Imperial') {
-
-      this.prefUnitFormat = 'dunit_Imperial';
-
-    } else {
-      this.prefUnitFormat = 'dunit_Metric';
-
+    if (unitObj && unitObj.length != 0) {
+      this.prefUnit = unitObj[0].value;
+      if (this.prefUnit == 'Imperial') {
+        this.prefUnitFormat = 'dunit_Imperial';
+      } else {
+        this.prefUnitFormat = 'dunit_Metric';
+      }
     }
   }
 

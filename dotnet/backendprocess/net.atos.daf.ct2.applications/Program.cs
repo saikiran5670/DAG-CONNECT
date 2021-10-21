@@ -20,6 +20,8 @@ using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.unitconversion;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 using Identity = net.atos.daf.ct2.identity;
@@ -42,7 +44,7 @@ namespace net.atos.daf.ct2.applications
                     services.AddSingleton(dataAccess);
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();
                     services.AddSingleton<ITranslationRepository, TranslationRepository>();
-                    services.AddSingleton<ITranslationManager, TranslationManager>();                    
+                    services.AddSingleton<ITranslationManager, TranslationManager>();
                     services.AddSingleton<IAuditLogRepository, AuditLogRepository>();
                     if (args != null)
                     {
@@ -77,6 +79,8 @@ namespace net.atos.daf.ct2.applications
                             services.AddTransient<IReportRepository, ReportRepository>();
                             services.AddTransient<IVisibilityManager, VisibilityManager>();
                             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+                            services.AddTransient<IVehicleManager, VehicleManager>();
+                            services.AddTransient<IVehicleRepository, VehicleRepository>();
                             services.AddTransient<ITemplateManager, TemplateManager>();
                             services.AddTransient<IUnitConversionManager, UnitConversionManager>();
                             services.AddTransient<IUnitManager, UnitManager>();
@@ -96,7 +100,10 @@ namespace net.atos.daf.ct2.applications
 
                             services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
                             services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
-
+                            services.AddTransient<IVisibilityManager, VisibilityManager>();
+                            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+                            services.AddTransient<IVehicleManager, VehicleManager>();
+                            services.AddTransient<IVehicleRepository, VehicleRepository>();
                             services.AddSingleton<IReportEmailSchedulerManager, ReportEmailSchedulerManager>();
                             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
                             services.AddTransient<IEmailRepository, EmailRepository>();

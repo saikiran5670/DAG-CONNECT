@@ -28,6 +28,7 @@ rpc GetFleetFuelDetailsForDriverGraphs(FleetFuelFilterRequest) returns (FleetFue
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
+rpc CheckIfSubReportExist (CheckIfSubReportExistRequest) returns (CheckIfSubReportExistResponse);
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsByDriverResponse);
@@ -199,7 +200,6 @@ message GetReportUserPreferenceRequest {
 }
 message SessionFeatures {
     int32 FeatureId=1;
-    string Name=2;
 }
 message GetReportUserPreferenceResponse {
     ReportUserPreference UserPreference = 1;
@@ -210,13 +210,15 @@ message GetReportUserPreferenceResponse {
 
 message ReportUserPreference{
     int32 DataAttributeId=1;
-    string Name=2;
-    string Key=3;
-    string State=4;
-    string ChartType=5;
-    string ThresholdType=6;
-    double ThresholdValue=7;
-    repeated ReportUserPreference SubReportUserPreferences=8;
+    int32 ReportId=2;
+    string Name=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    double ThresholdValue=8;
+    repeated ReportUserPreference SubReportUserPreferences=9;
+    
 }
 
 message ReportUserPreferenceCreateRequest{
@@ -242,16 +244,28 @@ message Atribute{
 
 message UserPreferenceAttribute {
     int32 DataAttributeId = 1;
-    int32 State = 2;
-    int32 Type = 3;
-    int32 ChartType = 4;
-    int32 ThresholdType = 5;
-    double ThresholdValue = 6;
+    int32 ReportId = 2;
+    int32 State = 3;
+    int32 Type = 4;
+    int32 ChartType = 5;
+    int32 ThresholdType = 6;
+    double ThresholdValue = 7;
 }
 
 message UserPreferenceCreateResponse{
     Responsecode Code = 1;
     string Message = 2;
+}
+
+message CheckIfSubReportExistRequest {
+    int32 ReportId = 1;
+}
+
+message CheckIfSubReportExistResponse {
+    Responsecode Code = 1;
+    string Message = 2;
+    int32 FeatureId = 3;
+    string HasSubReports = 4;
 }
 
 message VehicleFilterRequest{
@@ -301,6 +315,7 @@ message TripDetails {
     double EndPositionLongitude=22;
     string RegistrationNo =23;
     string VehicleName=24;
+    repeated TripAlert TripAlert=25;
 }
 message LiveFleetPosition {
     double GpsAltitude=1;
@@ -310,6 +325,19 @@ message LiveFleetPosition {
     double Fuelconsumtion=6;
     double Co2emission=7;
     int32 Id=5;
+    int64 MessageTimeStamp=8;
+}
+message TripAlert {
+     google.protobuf.StringValue TripId=1;
+     google.protobuf.StringValue VIN=2; 
+     google.protobuf.StringValue CategoryType=3;
+     google.protobuf.StringValue AlertType=4; 
+     google.protobuf.StringValue AlertName=6;
+    double AlertLatitude=7;
+    double AlertLongitude=8;
+    int64 AlertTime=9;
+    int64 ProcessedMessageTimeStamp=10;
+     google.protobuf.StringValue UrgencyLevelType=11;
 }
 // End Trip Report Table
 
@@ -333,7 +361,7 @@ string RegistrationNo = 12;
 message VehicleFromTripDetails {
 string Vin = 1;
 int64 StartTimeStamp=2;
-int64 EndTimeStamp=3;
+repeated int64 EndTimeStamp=3;
 }
 
 message VehicleListAndDetailsResponse{
@@ -411,7 +439,7 @@ google.protobuf.StringValue Vin = 1;
 google.protobuf.StringValue DriverID=2;
 google.protobuf.StringValue FirstName=3;
 google.protobuf.StringValue LastName=4;
-int64 ActivityDateTime=5;
+repeated int64 ActivityDateTime=5;
 }
 
 message IdRequestForDriverActivity {
@@ -578,7 +606,7 @@ message FleetUtilizationDetails {
     double AverageSpeed = 11;
     double AverageWeightPerTrip = 12;
     int64 Odometer = 13;
-
+    int32 VehicleActiveDays =14;
 }
 
 message FleetUtilizationcalender {
@@ -644,6 +672,7 @@ message AssociatedVehicleRequest {
          string VehicleName =  4;
          string Vin =  5;
          string RegistrationNo =  6;
+         string VehicleGroupDetails =  7;
 }
 
 message FilterResponse {
@@ -833,10 +862,10 @@ message FleetFuelDetails {
     double DPAScore = 24;
     google.protobuf.StringValue DPAAnticipationScore = 25;
     google.protobuf.StringValue DPABrakingScore = 26;
-    google.protobuf.StringValue IdlingPTOScore = 27;
-    google.protobuf.StringValue IdlingPTO = 28;
-    google.protobuf.StringValue IdlingWithoutPTO = 29;
-    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+    int64 IdlingPTOScore = 27;
+    double IdlingPTO = 28;
+    int64 IdlingWithoutPTO = 29;
+    double IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
     google.protobuf.StringValue AverageTrafficClassificationValue = 33;
@@ -856,7 +885,9 @@ message FleetFuelDetails {
     double CCFuelConsumedNotActive = 48;
     string StartPosition = 49;
     string EndPosition = 50;
-    double IdleDurationPercentage = 51;
+    double IdleDurationPercentage = 51;   
+    repeated TripAlert TripAlert=52;
+    double IdlingConsumptionWithPto=55;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -885,10 +916,10 @@ message FleetFuelDetailsByDriver {
     double DPAScore = 24;
     google.protobuf.StringValue DPAAnticipationScore = 25;
     google.protobuf.StringValue DPABrakingScore = 26;
-    google.protobuf.StringValue IdlingPTOScore = 27;
-    google.protobuf.StringValue IdlingPTO = 28;
-    google.protobuf.StringValue IdlingWithoutPTO = 29;
-    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+     int64 IdlingPTOScore = 27;
+    double IdlingPTO = 28;
+    int64 IdlingWithoutPTO = 29;
+    double IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
     google.protobuf.StringValue AverageTrafficClassificationValue = 33;
@@ -903,6 +934,8 @@ message FleetFuelDetailsByDriver {
     int64 CCFuelDistanceNotActive = 42;
     double CCFuelConsumedNotActive = 43;
     double IdleDurationPercentage = 44;
+     repeated TripAlert TripAlert=45;
+      double IdlingConsumptionWithPto=46;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
@@ -1121,7 +1154,7 @@ message LogbookDetails{
          double Latitude =14;
          double Longitude =15;
          string AlertGeolocationAddress =16;
-         int32 ThresholdValue =17;
+         double ThresholdValue =17;
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;

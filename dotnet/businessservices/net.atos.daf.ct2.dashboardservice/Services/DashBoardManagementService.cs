@@ -68,10 +68,15 @@ namespace net.atos.daf.ct2.dashboardservice
         {
             try
             {
+                int contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgid").Value);
+                List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(contextOrgId);
+
                 Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
                 {
-                    VINs = request.VINs.ToList<string>()
+                    VINs = request.VINs.ToList<string>(),
+                    AlertIds = alerts.Select(x => x.Id).Distinct().ToList()
                 };
+
                 List<dashboard.entity.Alert24Hours> reportDetails = await _dashBoardManager.GetLastAlert24Hours(alert24HoursFilter);
                 Alert24HoursResponse alert24HoursResponse = new Alert24HoursResponse
                 {
@@ -186,10 +191,13 @@ namespace net.atos.daf.ct2.dashboardservice
             var response = new VehicleListAndDetailsResponse();
             try
             {
-                var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
 
-                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                var vehicleDetailsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+
+                if (vehicleDetailsWithAccountVisibility.Count() == 0)
                 {
                     response.Message = string.Format(DashboardConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
@@ -197,7 +205,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 }
 
                 var vinList = await _reportManager
-                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                        .GetVinsFromTripStatistics(vehicleDetailsWithAccountVisibility
                                                                        .Select(s => s.Vin).Distinct());
                 if (vinList.Count() == 0)
                 {
@@ -206,7 +214,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     response.VinTripList.Add(new List<VehicleFromTripDetails>());
                     return response;
                 }
-                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                var res = JsonConvert.SerializeObject(vehicleDetailsWithAccountVisibility);
                 response.VehicleDetailsWithAccountVisibiltyList.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
                     );
@@ -269,7 +277,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
                 // New implementation considering Functional feature mapping with attribute
-                userPreferences = await GetReportUserPreferences_New(request);
+                userPreferences = await GetReportUserPreferences(request);
 
                 try
                 {
@@ -300,42 +308,50 @@ namespace net.atos.daf.ct2.dashboardservice
             }
         }
 
-        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences_New(DashboardUserPreferenceRequest request)
+        private async Task<IEnumerable<reports.entity.ReportUserPreference>> GetReportUserPreferences(DashboardUserPreferenceRequest request)
         {
             IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
 
-            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
-            IEnumerable<reports.entity.ReportUserPreference> roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+            var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId,
+                                                                                                request.OrganizationId,
+                                                                                                request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             if (userPreferencesExists)
             {
                 // Return saved report user preferences
-                var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
-                userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
+                userPreferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId,
+                                                                                                     request.UserFeatures.Select(uf => uf.FeatureId).ToArray());
             }
             else
             {
-                IEnumerable<int> reportFeatures = await _reportManager.GetReportFeatureId(request.ReportId);
-
-                bool isReportFeatureExists = request.UserFeatures.Any(usr => usr.FeatureId.Equals(reportFeatures.FirstOrDefault()));
-                if (isReportFeatureExists)
-                {
-                    // Get all attributes from reportattribute table
-                    var reportDataAttribute = await _reportManager.GetReportDataAttributes(request.ReportId);
-
-                    if (roleBasedUserPreferences.Count() > 0)
-                    {
-                        // In case user has subcriptions for report data Attributes package show subscribed attributes only
-                        userPreferences = roleBasedUserPreferences;
-                    }
-                    else
-                    {
-                        // In case user do not have subcription then show all attributes
-                        userPreferences = reportDataAttribute;
-                    }
-                }
+                userPreferences = await _reportManager.GetReportDataAttributes(request.UserFeatures.Select(uf => uf.FeatureId).ToArray(), request.ReportId);
             }
             return userPreferences ?? new List<reports.entity.ReportUserPreference>();
         }
+
+        public override async Task<CheckIfSubReportExistResponse> CheckIfSubReportExist(CheckIfSubReportExistRequest request, ServerCallContext context)
+        {
+            try
+            {
+                CheckIfSubReportExistResponse response = new CheckIfSubReportExistResponse();
+                var subReportResponse = await _reportManager.CheckIfSubReportExist(request.ReportId);
+                response.Code = Responsecode.Success;
+                response.Message = DashboardConstants.CHECK_SUB_REPORT_EXIST_SUCCESS_MSG;
+                response.FeatureId = subReportResponse.FeatureId;
+                response.HasSubReports = subReportResponse.HasSubReports;
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new CheckIfSubReportExistResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CheckIfSubReportExist)} failed due to - " + ex.Message
+                };
+            }
+        }
+
         #endregion
     }
 }

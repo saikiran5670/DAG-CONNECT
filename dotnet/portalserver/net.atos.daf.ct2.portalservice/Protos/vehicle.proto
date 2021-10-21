@@ -16,10 +16,12 @@ service VehicleService {
   rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
   rpc CreateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
   rpc UpdateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
-  rpc DeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupDeleteResponce);
+  rpc CanDeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupDeleteResponce);
+  rpc DeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupDeleteModifiedResponce);
   rpc GetGroupDetails (GroupFilterRequest) returns (VehicleGroupRefResponce);
   rpc GetVehiclesByVehicleGroup (VehicleGroupIdRequest) returns (VehicleGroupRefResponce);
   rpc GetOrganizationVehicleGroupdetails (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
+  rpc GetVehicleGroupsForOrgRelationshipMapping (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
   rpc GetVehicleGroup (OrgvehicleIdRequest) returns (VehicleGroupDetailsResponse);
   rpc GetVehiclesByAccountGroup (OrgAccountIdRequest) returns (VehicleGroupRefResponce);
   rpc SetOTAStatus (VehicleOtaRequest) returns (VehicleGroupDeleteResponce);
@@ -289,6 +291,7 @@ message OrgVehicleGroupListResponse{
 message OrgvehicleIdRequest {
   int32 OrganizationId = 1;
   int32 VehicleId = 2;
+  int32 AccountId = 3;
 }
 
 message VehicleGroupDetails {
@@ -314,6 +317,13 @@ message VehicleGroupDeleteResponce{
   Responcecode code=1;
   string message = 2;
   bool result=3; 
+}
+
+message VehicleGroupDeleteModifiedResponce{
+  Responcecode code=1;
+  string message = 2;
+  bool isDeleted=3;
+  bool canDelete=4;
 }
 
 message VehicleOtaRequest{

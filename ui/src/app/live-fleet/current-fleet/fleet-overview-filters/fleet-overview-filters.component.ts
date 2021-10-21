@@ -12,6 +12,8 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
 import { FleetOverviewFilterVehicleComponent } from './fleet-overview-filter-vehicle/fleet-overview-filter-vehicle.component';
+import { FleetMapService} from '../fleet-map.service';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-fleet-overview-filters',
@@ -19,11 +21,12 @@ import { FleetOverviewFilterVehicleComponent } from './fleet-overview-filter-veh
   styleUrls: ['./fleet-overview-filters.component.less']
 })
 export class FleetOverviewFiltersComponent implements OnInit {
-@Input() translationData: any;
+@Input() translationData: any = {};
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;
 tabVisibilityStatus: boolean = true;
+drivingStatus : boolean = false;
 selectedIndex: number = 0;
 filterData: any;
 filterValue: any;
@@ -37,10 +40,12 @@ isVehicleDetails: boolean = false;
 isVehicleListOpen: boolean = true;
 noRecordFlag: boolean = false;
 groupList : any= [];
+finalgroupList : any = [];
 driverList: any = [];
 categoryList : any= [];
 vehicleListData: any = [];
 driverListData: any = [];
+finalDriverList: any = [];
 levelList : any= [];
 healthList : any= [];
 otherList : any= [];
@@ -59,7 +64,12 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
 messages: any[] = [];
 subscription: Subscription;
 status = new FormControl();
- constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
+
+public filteredSelectGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
+public filteredDrivers: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
+constructor(private fleetMapService: FleetMapService, private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
     private dataInterchangeService: DataInterchangeService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
@@ -72,18 +82,18 @@ status = new FormControl();
     
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);    
-    });
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 3 
+    // }
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);    
+    // });
    
     this.selection1 = ['all'];
     this.selection2 = ['all'];
@@ -131,19 +141,24 @@ status = new FormControl();
   }
   
 
-  processTranslation(transData: any) {
-    this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-  }
+  // processTranslation(transData: any) {
+  //   this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  // }
 
 
   getDriverData(){
     this.reportService.getFilterDetails().subscribe((data: any) => {
       this.filterData = data;
+      console.log("filterData=>", this.filterData);
       this.driverList = [];
       if(this.selectedIndex == 1){
         this.filterData["driverList"].forEach(item=>{
           this.driverList.push(item) });
           this.driverList = this.removeDuplicates(this.driverList, "driverId");
+          this.finalDriverList = this.driverList;
+          this.finalDriverList.sort(this.compareName);
+          this.resetDriverSearchFilter();
+          
           this.loadDriverData();
       }   
       else{
@@ -158,7 +173,7 @@ status = new FormControl();
             driverData.forEach(item=>
               this.driverList.push(item));
             }
-            this.driverList = this.removeDuplicates(this.driverList, "driverId");
+            this.driverList = this.removeDuplicates(this.driverList, "driverId");            
           })
           this.loadDriverData();
       }
@@ -166,7 +181,33 @@ status = new FormControl();
     })
   }
 
+  compare(a, b) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareName(a, b) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  }
+  resetSelectGroupFilter(){
+    this.filteredSelectGroups.next(this.finalgroupList.slice());
+  }
+  resetDriverSearchFilter(){
+    this.filteredDrivers.next(this.finalDriverList.slice());
+  }
+  
   loadDriverData(){  
+    this.noRecordFlag = true;
     let newAlertCat=[];
     let selectedDriverId:any;
     let selectedDriverDays:any;   
@@ -189,11 +230,13 @@ status = new FormControl();
       "otherFilter": ['all'],
       "driverId": [selectedDriverId],
       "days": selectedDriverDays,
-      "languagecode":"cs-CZ"
+      "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
     }   
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      let val:any;
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
+    let val:any;
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
       }
@@ -226,13 +269,14 @@ status = new FormControl();
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
           
     }, (error) => {
       let val = [{vehicleGroup : driverSelected[0].driverId, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -240,10 +284,11 @@ status = new FormControl();
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
 getFilterData(){
+  this.showLoadingIndicator = true;
   this.reportService.getFilterDetails().subscribe((data: any) => {
     this.filterData = data;
     this.groupList = [];
@@ -251,17 +296,25 @@ getFilterData(){
     this.levelList = [];
     this.healthList = [];
     this.otherList = [];
+    this.vehicleListData =[];
+    this.showLoadingIndicator = false;
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
-        this.groupList.push(item) });
+        this.groupList.push(item);
+        console.log("groupList1", this.groupList);
+        
+      });
         this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
-    
+        console.log("groupList4", this.groupList);
         this.filterData["alertCategory"].forEach(item=>{
-        let catName =  this.translationAlertData[item.name];
-        this.categoryList.push({'name':catName, 'value': item.value})});     
+        // let catName =  this.translationAlertData[item.name];
+        let catName =  this.translationData[item.name];
+        if(catName != undefined){
+        this.categoryList.push({'name':catName, 'value': item.value})}});     
        
         this.filterData["alertLevel"].forEach(item=>{
-        let levelName =  this.translationAlertData[item.name];
+        // let levelName =  this.translationAlertData[item.name];
+        let levelName =  this.translationData[item.name];
         this.levelList.push({'name':levelName, 'value': item.value})}); 
       
         this.filterData["healthStatus"].forEach(item=>{
@@ -302,18 +355,35 @@ getFilterData(){
           let vehicleData =this.filterData["vehicleGroups"].filter(item => item.vin == element.vin);
           vehicleData.forEach(item=>
             this.groupList.push(item));
+             console.log("groupList2", this.groupList);
           }
           this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
+          this.finalgroupList = this.groupList;
+          console.log("this.finalgroupList", this.finalgroupList);
+          console.log("groupList3", this.groupList);
+          this.finalgroupList.sort(this.compare);
+          this.resetSelectGroupFilter();
     })
-    let currentDate = new Date().getTime();
-        let categoryData =this.filterData["fleetOverviewAlerts"].forEach(element => {
-          let createdDate = parseInt(element.alertTime); 
-          let nextDate = createdDate + 86400000;
-          if(currentDate > createdDate && currentDate < nextDate){
-            this.categoryList.push(element);
-            this.healthList.push(element);
-          }
-        });
+    // let currentDate = new Date().getTime();
+    //     let categoryData =this.filterData["fleetOverviewAlerts"].forEach(element => {
+    //       let createdDate = parseInt(element.alertTime); 
+    //       let nextDate = createdDate + 86400000;
+    //       if(currentDate > createdDate && currentDate < nextDate){
+    //         this.categoryList.push(element);
+    //         this.healthList.push(element);
+    //       }
+    //     });
+
+      this.filterData["alertCategory"].forEach(item=>{
+      // let catName =  this.translationAlertData[item.name];
+      let catName =  this.translationData[item.name];
+      if(catName != undefined){
+      this.categoryList.push({'name':catName, 'value': item.value})}});     
+     
+      this.filterData["alertLevel"].forEach(item=>{
+      // let levelName =  this.translationAlertData[item.name];
+      let levelName =  this.translationData[item.name];
+      this.levelList.push({'name':levelName, 'value': item.value})}); 
  
         this.filterData["healthStatus"].forEach(item=>{
         let statusName = this.translationData[item.name];
@@ -325,6 +395,7 @@ getFilterData(){
         this.otherList.push({'name':statusName, 'value': item.value})
         }});
         this.setDefaultDropValue();
+        this.vehicleListData = this.detailsData;
     }
   })
 } 
@@ -353,7 +424,8 @@ removeDuplicates(originalArray, prop) {
       const driver = value.driverName.toLowerCase().toString().includes(searchStr);
       const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
       const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
-      return vin || driver || drivingStatus ||healthStatus;
+      const driverId = value.driver1Id.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus || driverId;
     }​​​​​​​​);
   
   
@@ -372,7 +444,8 @@ removeDuplicates(originalArray, prop) {
       const driver = value.driverName.toLowerCase().toString().includes(searchStr);
       const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
       const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
-      return vin || driver || drivingStatus ||healthStatus;
+      const driverId = value.driver1Id.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus || driverId;
     }​​​​​​​​);
 
     this.vehicleListData = filteredData;
@@ -427,6 +500,8 @@ removeDuplicates(originalArray, prop) {
   }
   
   loadVehicleData(){  
+    this.noRecordFlag = true;
+    this.showLoadingIndicator=true;
     this.initData =this.detailsData;
     let newAlertCat=[];
     let status=this.filterVehicleForm.controls.status.value;
@@ -452,70 +527,75 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel": this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 90,
-        "languagecode":"cs-CZ"
+        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
     }}
     if(this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertLevel":this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 0,
-        "languagecode":"cs-CZ"
+        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
+    console.log("groupList5", this.groupList);
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+
+    let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
-         if(item.vehicleHealthStatusType==e.value)
-         {         
-          item.vehicleHealthStatusType = this.translationData[e.name];
-         }
+          if (item.vehicleHealthStatusType == e.value) {
+            item.vehicleHealthStatusType = this.translationData[e.name];
+          }
         });
         this.filterData["otherFilter"].forEach(element => {
-          if(item.vehicleDrivingStatusType==element.value)
-          {         
-           item.vehicleDrivingStatusType = this.translationData[element.name];
+          if (item.vehicleDrivingStatusType == element.value) {
+            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
-         });         
-         if(this.categoryList.length>0){
-         item.fleetOverviewAlert.forEach(e => {
-         let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
-         if(alertCategory.length>0){
-         newAlertCat.push(alertCategory[0]);
-         }          
-        });  
-       }
-      });    
-     this.categoryList = this.removeDuplicates(newAlertCat, "value");
-     console.log(newAlertCat);    
-      this.vehicleListData = data;     
+        });
+        if (this.categoryList.length > 0) {
+          item.fleetOverviewAlert.forEach(e => {
+            let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
+            if (alertCategory.length > 0) {
+              newAlertCat.push(...alertCategory);
+            }
+          });
+        }
+      });
+      this.categoryList = this.removeDuplicates(newAlertCat, "value");
+
+      this.vehicleListData = data;   
+      this.detailsData = data;  
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      this.noRecordFlag = false;
+      this.showLoadingIndicator = false;
           
     }, (error) => {
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        this.noRecordFlag = true;
+        //this.noRecordFlag = true;
+        this.showLoadingIndicator=false;
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -523,7 +603,7 @@ removeDuplicates(originalArray, prop) {
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
-    this.noRecordFlag = false;
+    //this.noRecordFlag = false;
  } 
 
   checkToHideFilter(item:any){
@@ -531,6 +611,9 @@ removeDuplicates(originalArray, prop) {
   }
 
  checkCreationForVehicle(item: any){
+  this.vehicleListData =[];
+  this.fleetMapService.clearRoutesFromMap();
+
   this.todayFlagClicked = item.todayFlagClicked;
   this.isVehicleDetails  = item.vehicleDetailsFlag;
   if(this.selectedIndex == 1){
@@ -563,39 +646,6 @@ drawIcons(_selectedRoutes){
     }
     let markerSize = { w: 40, h: 49 };
     let _healthStatus = '',_drivingStatus = '';
-    switch (elem.vehicleHealthStatusType) {
-      case 'T': // stop now;
-        _healthStatus = 'Stop Now';
-        break;
-      case 'V': // service now;
-        _healthStatus = 'Service Now';
-        break;
-      case 'N': // no action;
-        _healthStatus = 'No Action';
-        break
-      default:
-        break;
-    }
-    switch (elem.vehicleDrivingStatusType) {
-      case 'N': 
-        _drivingStatus = 'Never Moved';
-        break;
-      case 'D':
-        _drivingStatus = 'Driving';
-        break;
-      case 'I': // no action;
-        _drivingStatus = 'Idle';
-        break;
-      case 'U': // no action;
-        _drivingStatus = 'Unknown';
-        break;
-      case 'S': // no action;
-        _drivingStatus = 'Stopped';
-        break
-      
-      default:
-        break;
-    }
 
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
@@ -607,69 +657,161 @@ drawIcons(_selectedRoutes){
  }
 
 setIconsOnMap(element) {
-  let _drivingStatus = false;
+
+  let _healthStatus = '', _drivingStatus = '';
+  if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
+    this.drivingStatus = false;
+  }
+  // switch (element.vehicleHealthStatusType) {
+  //   case 'T': // stop now;
+  //     _healthStatus = 'Stop Now';
+  //     break;
+  //   case 'V': // service now;
+  //     _healthStatus = 'Service Now';
+  //     break;
+  //   case 'N': // no action;
+  //     _healthStatus = 'No Action';
+  //     break
+  //   default:
+  //     break;
+  // }
+  // switch (element.vehicleDrivingStatusType) {
+  //   case 'N': 
+  //     _drivingStatus = 'Never Moved';
+  //     break;
+  //   case 'D':
+  //     _drivingStatus = 'Driving';
+  //     break;
+  //   case 'I': // no action;
+  //     _drivingStatus = 'Idle';
+  //     break;
+  //   case 'U': // no action;
+  //     _drivingStatus = 'Unknown';
+  //     break;
+  //   case 'S': // no action;
+  //     _drivingStatus = 'Stopped';
+  //     break
+    
+  //   default:
+  //     break;
+  // }
   let healthColor = '#606060';
   let _alertConfig = undefined;
+  _drivingStatus = this.fleetMapService.getDrivingStatus(element,_drivingStatus);
+  let obj =this.fleetMapService.getVehicleHealthStatusType(element,_healthStatus,healthColor,this.drivingStatus);
+  _healthStatus = obj._healthStatus;
+  healthColor = obj.healthColor;
   // if (element.vehicleDrivingStatusType === 'D') {
   //   _drivingStatus = true
   // }
-  switch (element.vehicleHealthStatusType) {
-    case 'T': // stop now;
-      healthColor = '#D50017'; //red
-      break;
-    case 'V': // service now;
-      healthColor = '#FC5F01'; //orange
-      break;
-    case 'N': // no action;
-      healthColor = '#606060'; //grey
-      if (_drivingStatus) {
-        healthColor = '#00AE10'; //green
-      }
-      break
-    default:
-      break;
-  }
+  //   switch (element.vehicleHealthStatusType) {
+  //     case 'T': // stop now;
+  //       healthColor = '#D50017'; //red
+  //       break;
+  //     case 'V': // service now;
+  //       healthColor = '#FC5F01'; //orange
+  //       break;
+  //     case 'N': // no action;
+  //       // healthColor = '#606060'; //grey
+  //       healthColor = '#00AE10'; //green for no action
+  //     if (_drivingStatus) {
+  //       healthColor = '#00AE10'; //green
+  //     }
+  //     break
+  //   default:
+  //     break;
+  // }
   let _vehicleIcon : any; 
   if(_drivingStatus){
 
   }
-  else{
-    let _alertFound = undefined ;    
-    // if(element.fleetOverviewAlert.length > 0){
-    //   _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
-
-    // } 
-    if(element.fleetOverviewAlert.length > 0){      
-      let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
-      let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
-      let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
-     
-      if(critical.length > 0){
-      _alertFound = critical[0];
-     } 
-     else if(warning.length > 0){
-      _alertFound = warning[0];
-     } else{
-      _alertFound = advisory[0];
-     }
-     let alertName ='';
-     if(_alertFound.level == 'C')
-     {
-      alertName = 'Critical';
-     }
-     else if(_alertFound.level == 'W')
-     {
-      alertName = 'Warning';
-     }
-     else{
-      alertName = 'Advisory';
-     }
-     element =  Object.defineProperty(element, "alertName", {value : alertName,
-      writable : true,enumerable : true, configurable : true}); 
+  // else{
+    let _alertFound = undefined ;
+    let alertsData =[];    
+    if(element.fleetOverviewAlert.length > 0){
+      // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+      if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
+      // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+       _alertFound = element.fleetOverviewAlert.sort((x,y) => y.time-x.time);
+      if(_alertFound){
+        alertsData.push(_alertFound);
+      }
     }
-       
+    else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
+      _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+      if (_alertFound) {
+        alertsData.push(_alertFound);
+      }
+    }
+    
+    else{
+        //only for never moved type of driving status
+          if(_drivingStatus == "Never Moved"){
+            let latestAlert :any =[];
+            latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
+            _alertFound = latestAlert[0];
+            alertsData.push(_alertFound);
+          }
+        }
+    } 
+
     if(_alertFound){
-      _alertConfig = this.getAlertConfig(_alertFound);  
+      if(alertsData[0].length > 1){ //check for criticality
+        let criticalCount = 0;
+        let warningCount = 0;
+        let advisoryCount = 0;
+        alertsData[0].forEach(element => {
+        //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element.alertId);
+        //   if(_currentElem == undefined && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //--------------------------------------------------------------------------------------------------
+        // let _currentElem = element.level === 'C' ? true : false;
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.level === 'W' ? true : false;
+        //   if(!_currentElem && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(!_currentElem && !warnElem){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+
+          criticalCount += element.level === 'C' ? 1 : 0;
+          warningCount += element.level === 'W' ? 1 : 0;
+          advisoryCount += element.level === 'A' ? 1 : 0;
+         
+        });
+        if(criticalCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
+        }
+        else if(warningCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+        }
+        else if(advisoryCount > 0){
+          _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+        }
+      }
+      else if(alertsData[0].length == 1){
+        _alertConfig = this.getAlertConfig(_alertFound[0]);
+      }  
+    }
+    if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
+        let obj = this.fleetMapService.setIconForUnknownOrNeverMoved(_alertFound,_drivingStatus, _healthStatus,_alertConfig);
+        let data = obj.icon;
+        return {icon: data,alertConfig:_alertConfig};
+}
+    else{
+    if(_alertFound ){
+      // _alertConfig = this.getAlertConfig(_alertFound);  
       _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
@@ -718,10 +860,12 @@ setIconsOnMap(element) {
       </clipPath>
       </defs>
       </svg>`
+      
     }
-  
-  }
-  return {icon: _vehicleIcon,alertConfig:_alertConfig};
+    return {icon: _vehicleIcon,alertConfig:_alertConfig};
+    }
+  // }
+//   return {icon: _vehicleIcon,alertConfig:_alertConfig};
 }
 
 getAlertConfig(_currentAlert){
@@ -766,6 +910,41 @@ getAlertConfig(_currentAlert){
         break;
     }
     return {color : _fillColor , level : _level, type : _type};
+}
+
+filterSelectGroups(groupsearch){
+  console.log("filterselectGroups called");
+  if(!this.finalgroupList){
+    return;
+  }
+  if(!groupsearch){
+    this.resetSelectGroupFilter();
+    return;
+  } else{
+    groupsearch = groupsearch.toLowerCase();
+  }
+  this.filteredSelectGroups.next(    
+    this.finalgroupList.filter(item => item.vehicleGroupName.toLowerCase().indexOf(groupsearch) > -1)
+   
+    );
+  console.log("this.filteredSelectGroups", this.filteredSelectGroups);
+}
+
+filterSelectDrivers(driversearch){
+  console.log("filterSelectDrivers called");
+  if(!this.finalDriverList){
+    return;
+  }
+  if(!driversearch){
+    this.resetDriverSearchFilter();
+    return;
+  } else{
+    driversearch = driversearch.toLowerCase();
+  }
+  this.filteredDrivers.next(
+    this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
+  );
+  console.log("this.filteredDrivers", this.filteredDrivers);
 }
 
 }

@@ -20,6 +20,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -28,7 +29,7 @@ import { FuelBenchmarkingTableComponent } from './fuel-benchmarking-table/fuel-b
 })
 export class FuelBenchmarkingComponent implements OnInit {
   searchExpandPanel: boolean = true;
-  translationData: any;
+  translationData: any = {};
   fuelBenchmarkingSearchData: any = {};
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -53,6 +54,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   vehicleDD: any = [];
+  singleVehicle: any = [];
   vehicleGrpDD: any = [];
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
@@ -81,6 +83,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   chartsColumnData: any = [];
   calenderColumnData: any = [];
   detailColumnData: any = [];
+  fuelBenchmarkingReportId: number;
   timebasedThreshold: any = 0; // hh:mm
   mileagebasedThreshold: any = 0; // km
   mileageDChartType: boolean = true;
@@ -242,7 +245,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   lineChartPlugins = [];
   lineChartType = 'line';
   fromTripPageBack: boolean = false;
-
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
@@ -301,7 +305,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 10 //-- for fleet utilisation
+      menuId: 11 //-- for fleet benchmarking
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -370,20 +374,24 @@ export class FuelBenchmarkingComponent implements OnInit {
   proceedStep(prefData: any, preference: any) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      // this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      // this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      // this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      // this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
+    this.getReportPreferences();
   }
 
   resetPref() {
@@ -392,21 +400,37 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.calenderColumnData = [];
     this.detailColumnData = [];
   }
-  getFleetPreferences() {
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      //data= {"userPreferences":[{"dataAtrributeId":140,"name":"Report.General.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_general_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":123,"name":"Report.General.TotalDistance","description":"","type":"A","reportReferenceType":"","key":"da_report_general_totaldistance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":141,"name":"Report.General.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":18,"name":"Report.General.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_general_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":99,"name":"Report.General.NumberOfVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberofvehicles","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":140,"name":"Report.General.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_general_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":123,"name":"Report.General.TotalDistance","description":"","type":"A","reportReferenceType":"","key":"da_report_general_totaldistance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":141,"name":"Report.General.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberoftrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":18,"name":"Report.General.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_general_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":99,"name":"Report.General.NumberOfVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberofvehicles","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":142,"name":"Report.Charts.DistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_distanceperday","state":"A","chartType":"L","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":143,"name":"Report.Charts.NumberOfVehiclesPerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_numberofvehiclesperday","state":"A","chartType":"L","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":144,"name":"Report.Charts.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_mileagebasedutilization","state":"A","chartType":"P","thresholdType":"U","thresholdValue":99000},{"dataAtrributeId":145,"name":"Report.Charts.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_timebasedutilization","state":"A","chartType":"P","thresholdType":"U","thresholdValue":65100000},{"dataAtrributeId":151,"name":"Report.CalendarView.TotalTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_totaltrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":149,"name":"Report.CalendarView.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_drivingtime","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":148,"name":"Report.CalendarView.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":152,"name":"Report.CalendarView.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_mileagebasedutilization","state":"I","chartType":"P","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":146,"name":"Report.CalendarView.AverageWeight","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_averageweight","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":147,"name":"Report.CalendarView.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":150,"name":"Report.CalendarView.ActiveVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_activevehicles","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":153,"name":"Report.CalendarView.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_timebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":151,"name":"Report.CalendarView.TotalTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_totaltrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":149,"name":"Report.CalendarView.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":148,"name":"Report.CalendarView.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_distance","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":152,"name":"Report.CalendarView.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_mileagebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":146,"name":"Report.CalendarView.AverageWeight","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_averageweight","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":147,"name":"Report.CalendarView.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":150,"name":"Report.CalendarView.ActiveVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_activevehicles","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":153,"name":"Report.CalendarView.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_timebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":135,"name":"Report.Details.VehicleName","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vehiclename","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":107,"name":"Report.Details.RegistrationNumber","description":"","type":"A","reportReferenceType":"","key":"da_report_details_registrationnumber","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":98,"name":"Report.Details.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_details_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":17,"name":"Report.Details.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":24,"name":"Report.Details.AverageSpeed","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagespeed","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":55,"name":"Report.Details.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":84,"name":"Report.Details.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_details_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":119,"name":"Report.Details.StopTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_stoptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":100,"name":"Report.Details.Odometer","description":"","type":"A","reportReferenceType":"","key":"da_report_details_odometer","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":28,"name":"Report.Details.AverageWeightPerTrip","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averageweightpertrip","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":137,"name":"Report.Details.VIN","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vin","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":44,"name":"Report.Details.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_details_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":132,"name":"Report.Details.TripTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_triptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":135,"name":"Report.Details.VehicleName","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vehiclename","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":107,"name":"Report.Details.RegistrationNumber","description":"","type":"A","reportReferenceType":"","key":"da_report_details_registrationnumber","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":98,"name":"Report.Details.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_details_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":17,"name":"Report.Details.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":24,"name":"Report.Details.AverageSpeed","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagespeed","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":55,"name":"Report.Details.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":84,"name":"Report.Details.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_details_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":119,"name":"Report.Details.StopTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_stoptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":100,"name":"Report.Details.Odometer","description":"","type":"A","reportReferenceType":"","key":"da_report_details_odometer","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":28,"name":"Report.Details.AverageWeightPerTrip","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averageweightpertrip","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":137,"name":"Report.Details.VIN","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vin","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":44,"name":"Report.Details.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_details_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":132,"name":"Report.Details.TripTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_triptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0}],"code":200,"message":""}
 
-      this.reportPrefData = data["userPreferences"];
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      let repoId: any = reportListData.filter(i => i.name == 'Fuel Benchmarking');
+      if(repoId.length > 0){
+        this.fuelBenchmarkingReportId = repoId[0].id; 
+        this.getFleetPreferences();
+      }else{
+        console.error("No report id found!")
+      }
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fuel Benchmarking Report', id: this.fuelBenchmarkingReportId}]; 
+      // this.getTripReportPreferences();
+    });
+  }
+
+  getFleetPreferences() {
+    this.reportService.getReportUserPreference(this.fuelBenchmarkingReportId).subscribe((prefData: any) => {
+      this.reportPrefData = prefData["userPreferences"];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
   }
+
   setPrefFormatTime() {
     if (!this.internalSelection && this.fuelBenchmarkingSearchData.modifiedFrom !== "" && ((this.fuelBenchmarkingSearchData.startTimeStamp || this.fuelBenchmarkingSearchData.endTimeStamp) !== "")) {
       if (this.prefTimeFormat == this.fuelBenchmarkingSearchData.filterPrefTimeFormat) { // same format
@@ -436,8 +460,8 @@ export class FuelBenchmarkingComponent implements OnInit {
       } else {
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.selectedStartTime = "12:00 AM";
+        this.selectedEndTime = "11:59 PM";
       }
     }
 
@@ -606,13 +630,23 @@ export class FuelBenchmarkingComponent implements OnInit {
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-      if (filterVIN.length > 0) {
-        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+       
+      let vinArray = [];
+      this.wholeTripData.vinTripList.forEach(element => {
+        if(element.endTimeStamp && element.endTimeStamp.length > 0){
+          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if(search.length > 0){
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         //////console.log("distinctVIN:: ", distinctVIN);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
@@ -648,6 +682,8 @@ export class FuelBenchmarkingComponent implements OnInit {
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+            this.vehicleGrpDD.sort(this.compare);
+            this.resetVehicleGroupFilter();
           }
         });
       }
@@ -656,7 +692,8 @@ export class FuelBenchmarkingComponent implements OnInit {
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.vehicleDD = this.vehicleListData;
+    let vehicleData = this.vehicleListData.slice();
+    this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     if (this.vehicleListData.length > 0) {
       // this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
      
@@ -885,14 +922,15 @@ export class FuelBenchmarkingComponent implements OnInit {
     //console.log("---all selected value--", _startTime, _endTime, selectedVehicleGroup, this.vehicleDD)
 
   }
-
+  
   onVehicleGroupChange(event: any) {
     //this.selectedVehicleGroup = event.value;
    
     if (event.value || event.value == 0) {
       // this.internalSelection = true;
       // if (parseInt(event.value) == 0) { //-- all group
-      //   this.vehicleDD = this.vehicleListData;
+      //     let vehicleData = this.vehicleListData.slice();
+        // this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       // } else {
       //   let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       //   if (search.length > 0) {
@@ -912,17 +950,28 @@ export class FuelBenchmarkingComponent implements OnInit {
     }
   }
 
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.fuelBenchmarkingSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.onVehicleGroupChange(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue)
+      this.onVehicleGroupChange(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue || { value : 0 });
     }
 
   }
 
   loadWholeTripData() {
     this.showLoadingIndicator = true;
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.reportService.getVINFromTripFuelbenchmarking(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
@@ -946,29 +995,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-
-    if (type == "start") {
-      //console.log("--date type--", date)
-      //console.log("--date type--", timeObj)
-      // this.fuelBenchmarkingSearchData["startDateStamp"] = date;
-    } else if (type == "end") {
-    }
-
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
-      } else {
-        date.setHours(_x);
-      }
-      date.setMinutes(_y.split(' ')[0]);
-    } else {
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+   return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   hideloader() {
@@ -1128,6 +1155,43 @@ export class FuelBenchmarkingComponent implements OnInit {
     // }
     // this.changeGridOnVehicleList(event.value);
   }
+  resetVehicleGroupFilter(){
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
+  }
+  compare(a, b) {
+    if (a.vehicleGroupName< b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  compareVin(a, b) {
+    if (a.vin< b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+ 
+    filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGrpDD){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+    } else {
+      vehicleSearch = vehicleSearch.toLowerCase();
+    }
+    this.filteredVehicleGroups.next(
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+    );
+    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
-
+  }
 }

@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.reports.entity
         public double PTODuration { get; set; }
         public double HarshBrakeDuration { get; set; }
         public double HeavyThrottleDuration { get; set; }
-        public double CruiseControlDistance30_50 { get; set; }
-        public double CruiseControlDistance50_75 { get; set; }
+        public double CruiseControlDistance3050 { get; set; }
+        public double CruiseControlDistance5075 { get; set; }
         public double CruiseControlDistance75 { get; set; }
         public double AverageTrafficClassification { get; set; }
         public string AverageTrafficClassificationValue { get; set; } = string.Empty;
@@ -49,15 +49,16 @@ namespace net.atos.daf.ct2.reports.entity
         public string StartPosition { get; set; }
         public string EndPosition { get; set; }
         public double IdleDurationPercentage { get; set; }
-        //public string DPAAnticipationScore { get; set; } = string.Empty;
-        //public string DPABrakingScore{ get; set; } = string.Empty;
-        //public string IdlingPTOScore { get; set; } = string.Empty;
-        //public string IdlingPTO { get; set; } = string.Empty;
-        //public string IdlingWithoutPTO { get; set; } = string.Empty;
-        //public string IdlingWithoutPTOpercent { get; set; } = string.Empty;
-        //public string FootBrake { get; set; } = string.Empty;
-        //public string CO2Emmision { get; set; } = string.Empty;
-
+        public string DPAAnticipationScore { get; set; } = string.Empty;
+        public string DPABrakingScore { get; set; } = string.Empty;
+        public long IdlingPTOScore { get; set; }
+        public double IdlingPTO { get; set; }
+        public long IdlingWithoutPTO { get; set; }
+        public decimal IdlingConsumptionWithPto { get; set; }
+        public double IdlingWithoutPTOpercent { get; set; }
+        public string FootBrake { get; set; } = string.Empty;
+        public double CO2Emmision { get; set; }
+        public List<TripAlert> TripAlert { get; set; }
     }
 
     public class FleetFuelDetailsByDriver : FleetFuelDetails

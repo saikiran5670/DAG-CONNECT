@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string VIN { get; set; }
         [StringLength(50, MinimumLength = 1)]
         public string LicensePlate { get; set; }
+        [StringLength(50, MinimumLength = 1)]
         public string ManufactureDate { get; set; }
     }
 
@@ -20,7 +21,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string Make { get; set; }
         public Series Series { get; set; }
         public Model Model { get; set; }
-        [StringLength(50, MinimumLength = 4)]
+        [StringLength(50, MinimumLength = 1)]
         public string ModelYear { get; set; }
         public Type Type { get; set; }
     }
@@ -212,6 +213,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class VehicleDelivery
     {
+        [StringLength(50, MinimumLength = 1)]
         public string DeliveryDate { get; set; }
     }
 

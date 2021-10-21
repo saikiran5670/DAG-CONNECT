@@ -3,7 +3,11 @@ package net.atos.daf.ct2.util;
 import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.kafka.AlertCdc;
 import net.atos.daf.ct2.models.kafka.CdcPayloadWrapper;
+import net.atos.daf.ct2.models.process.Target;
+import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.table.planner.expressions.In;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,9 +20,11 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.TUESDAY;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.Utils.*;
 import static org.junit.Assert.*;
 
 public class UtilsTest {
@@ -94,13 +100,30 @@ public class UtilsTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
-        String gpsStartDateTime = "2021-03-28T01:38:15.000Z";
-        String gpsEndDateTime   = "2021-03-29T12:49:47.000Z";
+        String gpsStartDateTime = "2021-03-28T12:00:00.000Z";
+        String gpsEndDateTime   = "2021-03-28T22:08:30.000Z";
 
         LocalDateTime endTime = LocalDateTime.parse(gpsEndDateTime, formatter);
         LocalDateTime startTime = LocalDateTime.parse(gpsStartDateTime, formatter);
         Duration duration = Duration.between(startTime, endTime);
-        System.out.println(duration.getSeconds());
+
+        long diffBetweenDatesInSeconds = timeDiffBetweenDates(gpsStartDateTime, gpsEndDateTime);
+        long diffSeconds = diffBetweenDatesInSeconds - 0;
+        System.out.println(diffSeconds);
+        if (diffSeconds > 28800) {
+            System.out.println("Alert found");
+        }
+
+       /* String currentTime = Utils.convertMillisecondToDateTime(System.currentTimeMillis());
+        System.out.println("current time : "+currentTime);
+        String gpsStartDateTime = "2021-09-07T08:40:39.555Z";
+        long eventTimeInMillis = Utils.convertDateToMillis(gpsStartDateTime);
+        long eventTimeInSeconds = Utils.millisecondsToSeconds(eventTimeInMillis);
+        long fromTimeInSeconds = Utils.millisecondsToSeconds(System.currentTimeMillis()) - 28800L;
+        long endTimeInSeconds = Utils.millisecondsToSeconds(System.currentTimeMillis());
+        if(eventTimeInSeconds > fromTimeInSeconds && eventTimeInSeconds <= endTimeInSeconds) {
+            System.out.println("Critical");
+        }*/
     }
 
     @Test
@@ -146,5 +169,50 @@ public class UtilsTest {
         for(int i=1; i < lst.size(); i++){
             System.out.println(lst.get(i-1)+" :: "+lst.get(i));
         }
+    }
+
+    @Test
+    public void flatMapTest(){
+        Target target = Target.builder()
+                .payload(
+                        Optional.of(Arrays.asList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                        Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9))))
+        .build();
+        List<List<Integer>> lst = (List<List<Integer>>) target.getPayload()
+                .get();
+
+        List<Integer> collect = lst.stream().flatMap(integers -> integers.stream().map(i -> i))
+                .collect(Collectors.toList());
+
+        System.out.println(lst);
+        System.out.println(collect);
+
+    }
+
+    @Test
+    public void listToArray(){
+        List<Integer> polygonPointList = new ArrayList<>();
+        for(int i =0; i < 2 ; i++){
+            polygonPointList.add(i);
+        }
+        polygonPointList.stream().forEach(System.out:: println);
+
+        for(int i=0; i < polygonPointList.size() ;i=i+2){
+            System.out.println(polygonPointList.get(i)+" : "+ polygonPointList.get((i+1)%polygonPointList.size()));
+        }
+    }
+
+    @Test
+    public void messageUUIDcheck(){
+        System.out.println(INCOMING_MESSAGE_UUID.format(UUID.randomUUID().toString()));
+    }
+
+
+    @Test
+    public void timeInUTC(){
+        ZonedDateTime utc = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneOffset.UTC);
+        long toEpochMilli = utc.toInstant().toEpochMilli();
+        System.out.println(utc);
+        System.out.println(Utils.convertMillisecondToDateTime(toEpochMilli));
     }
 }

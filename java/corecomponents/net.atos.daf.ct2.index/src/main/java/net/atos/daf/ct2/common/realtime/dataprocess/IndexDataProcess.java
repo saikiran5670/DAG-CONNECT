@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
 import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Monitor;
 
 public class IndexDataProcess {
 	public static void main(String[] args) throws Exception {
@@ -55,7 +57,7 @@ public class IndexDataProcess {
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			consumerStream.print();
+			//consumerStream.print();
 
 			//consumerStream.map(rec -> {System.out.println("Received Index data ::"+rec ); return rec;});
 			/*
@@ -74,15 +76,22 @@ public class IndexDataProcess {
 
 			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
 			// // Writing into Driver Activity PostgreSQL Table
+			
+			KeyedStream<KafkaRecord<Index>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
+			
 
-			consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
+			//consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
 																			// into
 																			// Current
 																			// Trip
 																			// PostgreSQL
 																			// Table
 
-			consumerStream.addSink(new LiveFleetTripTracingPostgreSink());
+			//consumerStream.addSink(new LiveFleetTripTracingPostgreSink());
+			
+			consumerKeyedStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing into current trip table
+			
+			consumerKeyedStream.addSink(new LiveFleetTripTracingPostgreSink());
 
 			log.info("after addsink");
 

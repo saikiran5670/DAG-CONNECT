@@ -17,6 +17,7 @@
     public class ReportUserPreference
     {
         public int DataAttributeId { get; set; }
+        public int ReportId { get; set; }
         public string Name { get; set; }
         public string Key { get; set; }
         public string State { get; set; }
@@ -34,6 +35,12 @@
                 return (ReportAttributeType)AttributeType;
             }
         }
+    }
+
+    public class SubReportDto
+    {
+        public int FeatureId { get; set; }
+        public string HasSubReports { get; set; }
     }
 
     public enum ReportAttributeType

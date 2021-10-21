@@ -9,7 +9,7 @@ import { AlertService } from '../../../../services/alert.service';
   styleUrls: ['./create-edit-corridor.component.less']
 })
 export class CreateEditCorridorComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() selectedElementData : any;
   @Input() corridorNameList : any;
@@ -56,6 +56,8 @@ export class CreateEditCorridorComponent implements OnInit {
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
       this.vehicleGroupList= vehicleGroup;
+      this.showLoadingIndicator = false;
+
       // console.log(this.vehicleGroupList)
     });
   }

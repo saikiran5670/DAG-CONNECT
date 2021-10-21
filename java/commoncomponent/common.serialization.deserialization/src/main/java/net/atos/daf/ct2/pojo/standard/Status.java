@@ -3,6 +3,7 @@ package net.atos.daf.ct2.pojo.standard;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,8 @@ public class Status implements Serializable {
   private String vid;
   @JsonProperty(value = "VIN")
   private String vin;
+  @JsonProperty(value = "FuelType")
+  private String fuelType;
   @JsonProperty(value = "kafkaProcessingTS")
   private String kafkaProcessingTS;
 
@@ -126,6 +129,7 @@ public class Status implements Serializable {
     String json = null;
     try {
       ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       json = mapper.writeValueAsString(this);
 
     } catch (JsonProcessingException e) {

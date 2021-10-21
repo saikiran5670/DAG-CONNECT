@@ -168,7 +168,7 @@ public class SinkMessages<T> {
     		this.streamExecutionEnvironment.addSource(
             new FlinkKafkaConsumer<KafkaRecord<Object>>(
                 listTopics, new KafkaMessageDeSerializeSchema<Object>(), properties));
-    sourceInputStream.print();
+    //sourceInputStream.print();
 
     new MessageProcessing<Object>().consumeMessages(sourceInputStream, "Records", properties);
        

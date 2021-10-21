@@ -5,4 +5,11 @@
         public string Name { get; set; }
         public string RegistrationNo { get; set; }
     }
+
+    public enum VehicleNamelistSSOContext
+    {
+        None = 0,
+        Token,
+        Org
+    }
 }

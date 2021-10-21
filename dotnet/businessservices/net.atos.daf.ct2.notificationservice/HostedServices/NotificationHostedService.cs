@@ -84,10 +84,12 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 };
                 //Pushing message to kafka topic
                 ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
+                _logger.Info("Kafka consumer message: " + response.Message.Value);
                 if (response != null)
                 {
                     Console.WriteLine(response.Message.Value);
                     tripAlert = JsonConvert.DeserializeObject<NotificationEngineEntity.TripAlert>(response.Message.Value);
+                    _logger.Info("Json trip alert object: " + tripAlert);
                     if (tripAlert != null && tripAlert.Alertid > 0)
                     {
                         List<NotificationHistory> identifiedNotificationRec = await _notificationIdentifierManager.GetNotificationDetails(tripAlert);
@@ -134,7 +136,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             try
             {
                 bool isResult = false;
-
+                _logger.Info("Notification Email Method Call");
                 foreach (var item in notificationHistoryEmail)
                 {
                     string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
@@ -143,9 +145,13 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     string languageCode = await _notificationIdentifierManager.GetLanguageCodePreference(item.EmailId);
                     string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                    if (!addAddress.ContainsKey(item.EmailId))
+                    string[] splitemail = item?.EmailId.Split(';');
+                    foreach (var itememail in splitemail)
                     {
-                        addAddress.Add(item.EmailId, null);
+                        if (!addAddress.ContainsKey(itememail))
+                        {
+                            addAddress.Add(itememail, null);
+                        }
                     }
                     var mailNotification = new MailNotificationRequest()
                     {
@@ -162,13 +168,13 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                                 AlertLevelCls = GetAlertTypeCls(urgencyTypeValue),
                                 DefinedThreshold = (item.ThresholdUnitEnum == "H" || item.ThresholdUnitEnum == "T")
                                                     ? item.TimeBasedThresholdValue
-                                                    : item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
+                                                    : item.ThresholdValue == 0 ? "NA" : item.ThresholdValue.ToString() + " " + item.ThresholdValueUnitType,
                                 ActualThresholdValue = item.AlertTypeEnum == "S" && item.AlertCategoryEnum == "L"
                                                         ? item.ValueAtAlertTimeForHoursofServices
                                                         : (
                                                             (item.ThresholdUnitEnum == "H" || item.ThresholdUnitEnum == "T")
                                                             ? item.TimeBasedValueAtAlertTime
-                                                            : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType
+                                                            : item.ValueAtAlertTime == 0 ? "NA" : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType
                                                            ),
                                 AlertCategory = alertCategoryValue,
                                 VehicleGroup = item.Vehicle_group_vehicle_name,
@@ -180,6 +186,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     };
 
                     isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    _logger.Info("Notification Email Method Result: " + isResult + "Alert Id: " + item.AlertId);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await _notificationIdentifierManager.InsertNotificationSentHistory(item);
                 }
@@ -285,7 +292,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             else
             {
                 string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
-                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
+                thresholdNum = notificationHistorySMS.ThresholdValue == 0 ? "NA" : thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
             }
             if (notificationHistorySMS.ThresholdUnitEnum == "H" || notificationHistorySMS.ThresholdUnitEnum == "T")
             {
@@ -296,7 +303,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 string[] valueAtAlerttimeSplit = notificationHistorySMS.ValueAtAlertTime.ToString().Split('.');
                 valueAtAlertTime = notificationHistorySMS.AlertTypeEnum == "S" && notificationHistorySMS.AlertCategoryEnum == "L"
                                           ? notificationHistorySMS.ValueAtAlertTimeForHoursofServices
-                                          : (valueAtAlerttimeSplit.Count() > 1)
+                                          : notificationHistorySMS.ValueAtAlertTime == 0 ? "NA" : (valueAtAlerttimeSplit.Count() > 1)
                                             ? (valueAtAlerttimeSplit[1].Length > 3)
                                                 ? notificationHistorySMS.ValueAtAlertTime.ToString("#.0000")
                                                 : notificationHistorySMS.ValueAtAlertTime.ToString()
@@ -331,7 +338,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             else
             {
                 string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
-                thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
+                thresholdNum = notificationHistoryWS.ThresholdValue == 0 ? "NA" : thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
             }
             if (notificationHistoryWS.ThresholdUnitEnum == "H" || notificationHistoryWS.ThresholdUnitEnum == "T")
             {
@@ -342,7 +349,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 string[] valueAtAlerttimeSplit = notificationHistoryWS.ValueAtAlertTime.ToString().Split('.');
                 valueAtAlertTime = notificationHistoryWS.AlertTypeEnum == "S" && notificationHistoryWS.AlertCategoryEnum == "L"
                                     ? notificationHistoryWS.ValueAtAlertTimeForHoursofServices
-                                    : valueAtAlerttimeSplit.Count() > 1
+                                    : notificationHistoryWS.ValueAtAlertTime == 0 ? "NA" : valueAtAlerttimeSplit.Count() > 1
                                         ? valueAtAlerttimeSplit[1].Length > 3
                                             ? notificationHistoryWS.ValueAtAlertTime.ToString("#.0000") + " " + notificationHistoryWS.ThresholdValueUnitType
                                             : notificationHistoryWS.ValueAtAlertTime.ToString() + " " + notificationHistoryWS.ThresholdValueUnitType

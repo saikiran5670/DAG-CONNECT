@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("CreatePolygonGeofence method in Geofence API called.");
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
                 }
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (request[0].OrganizationId == 0)
                     {
-                        bool hasRights = await HasAdminPrivilege();
+                        bool hasRights = HasAdminPrivilege();
                         if (!hasRights)
                             return StatusCode(400, "You cannot create global geofence.");
                     }
@@ -363,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validate Admin Privilege
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
                 }
@@ -478,7 +478,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validate Admin Privilege
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
+                    bool hasRights = HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
                 }

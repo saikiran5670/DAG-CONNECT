@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -43,6 +44,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+
                 int contextorgid = GetContextOrgId();
                 int roleid = _userDetails.RoleId;
                 accountId = _userDetails.AccountId;
@@ -50,7 +54,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetReportSchedulerParameter", 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
+
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid }, headers);
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
@@ -80,7 +88,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
                 request.OrganizationId = GetContextOrgId();
                 if (request.ScheduledReportVehicleRef.Count > 0)
                 {
@@ -89,7 +96,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         var scheduledReportVehicleRef = request.ScheduledReportVehicleRef;
                         request.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
-                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId });
+
+                        Metadata headers = new Metadata();
+                        headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+
+                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId, ReportId = request.ReportId }, headers);
                         if (vehicleandVehicleGroupId.VehicleIdList.Count > 0)
                         {
                             foreach (var item in vehicleandVehicleGroupId.VehicleIdList)

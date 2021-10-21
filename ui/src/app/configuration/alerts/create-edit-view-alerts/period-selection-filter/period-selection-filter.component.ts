@@ -30,9 +30,16 @@ checkboxChecked: boolean = false;
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+
     this.accountId= parseInt(localStorage.getItem("accountId"));
-    this.days= ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    this.days= [this.translationData.lblSunday, this.translationData.lblMonday, this.translationData.lblTuesday, this.translationData.lblWednesday, this.translationData.lblThursday, this.translationData.lblFriday, this.translationData.lblSaturday];
     
     this.periodSelectionForm = this._formBuilder.group({
       // recipientLabel: ['', [ Validators.required ]],

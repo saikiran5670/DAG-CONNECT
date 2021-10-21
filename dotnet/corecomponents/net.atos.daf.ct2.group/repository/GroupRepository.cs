@@ -101,34 +101,69 @@ namespace net.atos.daf.ct2.group
             return group;
         }
 
-        public async Task<bool> Delete(long groupid, ObjectType objectType)
+        public async Task<bool> CanDelete(long groupId, ObjectType objectType)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", groupid);
+                parameter.Add("@id", groupId);
                 string query = string.Empty;
-                //TODO: Need to prepare this as single for delete all ref. of group
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+
+                if (objectType == ObjectType.AccountGroup)
+                    query = @"select exists(select 1 from master.accessrelationship where account_group_id = @id)";
+                else
                 {
-                    // delete access relation ship
-                    if (objectType == ObjectType.AccountGroup)
-                        query = @"delete from master.accessrelationship where account_group_id = @id";
-                    else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
-                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-
-                    // delete group ref
-                    query = @"delete from master.groupref where group_id = @id";
-                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-                    // delete group 
-                    query = @"delete from master.group where id = @id";
-                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    transactionScope.Complete();
-                    return true;
+                    // Check for existing Access relationship, Alert and Org relationship
+                    // TODO - Scheduler check
+                    query = @"select exists
+                              (
+	                              select 1 from master.accessrelationship where vehicle_group_id = @id
+	                              UNION
+	                              select 1 from master.alert where vehicle_group_id = @id and state in ('A', 'I')
+                                  UNION
+	                              select 1
+	                              from master.orgrelationshipmapping orm
+                                  inner join master.orgrelationship ors on orm.relationship_id=ors.id and orm.vehicle_group_id = @id and ors.state='A' 
+	                              where case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                    else COALESCE(end_date,0) = 0 end
+                              )";
                 }
 
+                return !await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<VehicleGroupDelete> Delete(long groupId, ObjectType objectType)
+        {
+            var response = new VehicleGroupDelete();
+            try
+            {
+                response.CanDelete = await CanDelete(groupId, objectType);
+                if (response.CanDelete)
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@id", groupId);
+                    string query = string.Empty;
+                    //TODO: Need to prepare this as single for delete all ref. of group
+                    using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        // delete group ref
+                        query = @"delete from master.groupref where group_id = @id";
+                        await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                        // delete group 
+                        query = @"delete from master.group where id = @id";
+                        await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        transactionScope.Complete();
+
+                        response.IsDeleted = true;
+                    }
+                }
+                return response;
             }
             catch (Exception)
             {
@@ -253,9 +288,9 @@ namespace net.atos.daf.ct2.group
                         INNER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.id = @GroupId
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
-                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END";
 
                 return await _dataAccess.QueryAsync<int>(queryOwnedG, parameter);
@@ -285,9 +320,9 @@ namespace net.atos.daf.ct2.group
                         SELECT DISTINCT v.id
                         FROM master.vehicle v
                         INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@OrganizationId
-                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
                         WHERE 
-	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        CASE when COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END";
 
                 queryVisible =
@@ -296,9 +331,9 @@ namespace net.atos.daf.ct2.group
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V' AND grp.group_type='G'
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@OrganizationId
-                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         WHERE 
-	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END
                         UNION
                         SELECT v.id
@@ -307,10 +342,10 @@ namespace net.atos.daf.ct2.group
                                     AND orm.owner_org_id=grp.organization_id 
                                     AND orm.target_org_id=@OrganizationId
                                     AND grp.group_type='D' AND grp.object_type='V'
-                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id AND ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         WHERE 
-	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END";
 
                 switch (functionEnum)
@@ -625,7 +660,7 @@ namespace net.atos.daf.ct2.group
                 string query = string.Empty;
                 int count = 0;
                 query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
-                and ag.state='A' where lower(a.type)='p' and ag.organization_id=@organization_id";
+                and ag.state='A' where ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
                 count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;

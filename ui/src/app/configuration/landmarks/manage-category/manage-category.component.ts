@@ -19,7 +19,7 @@ import { DeleteCategoryPopupComponent } from './delete-category-popup/delete-cat
 export class ManageCategoryComponent implements OnInit {
   initData: any = [];
   dataSource = new MatTableDataSource(this.initData);
-  @Input() translationData: any;
+  @Input() translationData: any ={};
   localStLanguage: any;
   accountOrganizationId: any;
   createViewEditStatus: boolean = false;
@@ -41,7 +41,7 @@ export class ManageCategoryComponent implements OnInit {
   userType: any= "";
   categorySelection: any = 0;
   subCategorySelection: any = 0;
-
+  adminAccessType: any;
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
@@ -49,49 +49,79 @@ export class ManageCategoryComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userType= localStorage.getItem("userType");
-    this.loadLandmarkCategoryData();
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    //this.loadLandmarkCategoryData();
+    this.getCategoryDetails();
   }
 
-  loadLandmarkCategoryData(){
-    this.showLoadingIndicator = true;
-    let objData = {
-      type:'C',
-      Orgid: this.accountOrganizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      this.categoryList = parentCategoryData.categories;
-      this.getSubCategoryData();
-    }, (error) => {
-      this.categoryList = [];
-      this.getSubCategoryData();
-    }); 
-  }
+  // loadLandmarkCategoryData(){
+  //   this.showLoadingIndicator = true;
+  //   let objData = {
+  //     type:'C',
+  //     Orgid: this.accountOrganizationId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
+  //     this.categoryList = parentCategoryData.categories;
+  //     this.getSubCategoryData();
+  //   }, (error) => {
+  //     this.categoryList = [];
+  //     this.getSubCategoryData();
+  //   }); 
+  // }
 
-  getSubCategoryData(){
-    let objData = {
-      type:'S',
-      Orgid: this.accountOrganizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
-      this.subCategoryList = subCategoryData.categories;
-      this.getCategoryDetails();
-    }, (error) => {
-      this.subCategoryList = [];
-      this.getCategoryDetails();
-    });
-  }
+  // getSubCategoryData(){
+  //   let objData = {
+  //     type:'S',
+  //     Orgid: this.accountOrganizationId
+  //   }
+  //   this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
+  //     this.subCategoryList = subCategoryData.categories;
+  //     this.getCategoryDetails();
+  //   }, (error) => {
+  //     this.subCategoryList = [];
+  //     this.getCategoryDetails();
+  //   });
+  // }
 
   getCategoryDetails(){
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
       this.hideloader();
       //let data = this.createImageData(categoryData.categories);
       this.allCategoryData = categoryData.categories;
+      this.fillDropdown(categoryData.categories); // fill dropdown
       this.onUpdateDataSource(categoryData.categories);
     }, (error) => {
       this.hideloader();
       this.initData = [];
       this.onUpdateDataSource(this.initData);
     });
+  }
+
+  fillDropdown(categoryData: any){
+    this.categoryList = [];
+    this.subCategoryList = [];
+    if(categoryData.length > 0){
+      let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
+      let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
+      if(catDD && catDD.length > 0){ // category dropdown
+        catDD.forEach(element => {
+          this.categoryList.push({
+            id: element.parentCategoryId,
+            name: element.parentCategoryName,
+            organizationId: element.organizationId
+          });
+        });
+      } 
+      if(subCatDD && subCatDD.length > 0){ // sub-category dropdown
+        subCatDD.forEach(elem => {
+          this.subCategoryList.push({
+            id: elem.subCategoryId,
+            name: elem.subCategoryName,
+            organizationId: elem.organizationId
+          });
+        });
+      }
+    }
   }
 
   createImageData(data: any){
@@ -237,7 +267,8 @@ export class ManageCategoryComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(name, delType));
             this.categorySelection = 0;
             this.subCategorySelection = 0;
-            this.loadLandmarkCategoryData();
+            //this.loadLandmarkCategoryData();
+            this.getCategoryDetails();
             this.selectedCategory = new SelectionModel(true, []);
           });
         }
@@ -415,14 +446,15 @@ export class ManageCategoryComponent implements OnInit {
       this.showSuccessMessage(objData.successMsg);
     }
     if(objData.gridData){
-      this.allCategoryData = objData.gridData;
+      this.allCategoryData = objData.gridData.slice();
+      this.fillDropdown(this.allCategoryData);
     }
-    if(objData.categoryList){
-      this.categoryList = objData.categoryList;
-    }
-    if(objData.subCategoryList){
-      this.subCategoryList = objData.subCategoryList;
-    }
+    // if(objData.categoryList){
+    //   this.categoryList = objData.categoryList;
+    // }
+    // if(objData.subCategoryList){
+    //   this.subCategoryList = objData.subCategoryList;
+    // }
     this.categorySelection = 0;
     this.subCategorySelection = 0;
     this.onUpdateDataSource(this.allCategoryData);
@@ -611,7 +643,8 @@ export class ManageCategoryComponent implements OnInit {
           this.successMsgBlink(this.getDeletMsg());
           this.categorySelection = 0;
           this.subCategorySelection = 0;
-          this.loadLandmarkCategoryData();
+          //this.loadLandmarkCategoryData();
+          this.getCategoryDetails();
           this.selectedCategory = new SelectionModel(true, []);
         });
       }

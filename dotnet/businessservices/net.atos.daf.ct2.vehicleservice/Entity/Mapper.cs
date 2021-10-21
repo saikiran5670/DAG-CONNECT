@@ -279,6 +279,16 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             return vehicleGroupResonse;
         }
 
+        public OrgVehicleGroupDetails ToOrgVehicleGroup(VehicleGroupForOrgRelMapping request)
+        {
+            OrgVehicleGroupDetails vehicleGroupResonse = new OrgVehicleGroupDetails
+            {
+                VehicleGroupId = request.VehicleGroupId,
+                VehicleGroupName = request.VehicleGroupName ?? string.Empty
+            };
+            return vehicleGroupResonse;
+        }
+
         public VehicleGroupDetails ToVehicleGroupDetails(net.atos.daf.ct2.vehicle.entity.VehicleGroup request)
         {
             VehicleGroupDetails vehicleGroupResonse = new VehicleGroupDetails();

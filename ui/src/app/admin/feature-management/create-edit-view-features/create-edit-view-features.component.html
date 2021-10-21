@@ -6,7 +6,7 @@
         <span class='custom-font' (click)="toBack()">
             <span>
                 <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack }}</span>
         </span>
     </div>
 </div>
@@ -16,47 +16,43 @@
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ?
-                        (translationData.lblAddFeatureRelationship || 'Add Feature Relationship') : actionType == 'edit'
-                        ? (translationData.lblEditFeatureRelationship || 'Edit Feature Relationship') :
-                        (translationData.lblFeatureRelationshipDetails || 'Feature Relationship Details') }}</span>
+                        (translationData.lblAddFeatureRelationship ) : actionType == 'edit'
+                        ? (translationData.lblEditFeatureRelationship ) :
+                        (translationData.lblFeatureRelationshipDetails ) }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <div>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}
+                        <div>{{ translationData.lblDataAttributeSetName }}
                         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">
-                            <mat-icon matTooltip="{{ translationData.lblToolTipTextDataAttrSetName || 'New Feature will auto create same as Data Attribute set name' }}" style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
+                            <mat-icon matTooltip="{{ translationData.lblToolTipTextDataAttrSetName  }}" style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
                         </span>
                         </div>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max'
-                        }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax }}</span>
                     </mat-label>
-                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName || 'Duplicate Data Attribute Set
-                        Name' }}</mat-error>
+                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName }}</mat-error>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="250"
-                                placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}"
+                                placeholder="{{ translationData.lblEnterDataAttributeSetName }}"
                                 matInput formControlName="dataAttributeSetName">
                         </mat-form-field>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('required')">
-                            {{ translationData.lblPleasenterdatattributesetname || 'Please enter data attribute set
-                            name'}}
+                            {{ translationData.lblPleasenterdatattributesetname }}
                         </mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
-                            {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set
-                            cannot contain only whitespace' }}
+                            {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace  }}
                         </mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('maxlength')">
-                            {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 250' }}
+                            {{ translationData.lblDataAttributeSetmaxlength }}
                         </mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('specialCharsNotAllowed')">
-                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                            {{ translationData.lblSpecialcharactersnotallowed }}
                         </mat-error>
                         <mat-error #UserValueCheck *ngIf="isDataAttributeSetExist" >
-                            {{ translationData.lblDataAttributeSetalreadyexistsPleasechooseadifferentisAttributeSet || 'Data Attribute Set already exists. Please choose a different.'}}
+                            {{ translationData.lblDataAttributeSetalreadyexistsPleasechooseadifferentisAttributeSet }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -65,30 +61,28 @@
                 </div>
                 <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}
+                        <span>{{ translationData.lblDataAttributeDescription }}
                             <mat-icon *ngIf="actionType != 'view'"
-                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription || 'New Feature description will auto create same as Data Attribute description' }}"
+                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription }}"
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max'
-                            }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="100"
-                                placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}"
+                                placeholder="{{ translationData.lblEnterDataAttributeDescription  }}"
                                 matInput formControlName="dataAttributeDescription">
                         </mat-form-field>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
-                            {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute
-                            Description cannot contain only whitespace' }}
+                            {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace }}
                         </mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('maxlength')">
-                            {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 250' }}
+                            {{ translationData.lblDataAttributeSetmaxlength }}
                         </mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('specialCharsNotAllowed')">
-                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                            {{ translationData.lblSpecialcharactersnotallowed }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -98,38 +92,37 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
+                    <span>{{ translationData.lblDataAttributeSetType }}:</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onSetTypeChange($event)'>
                             <mat-radio-button [checked]="selectedSetType" style='margin-right: 20px;' value="true">{{
-                                translationData.lblExclusive || 'Exclusive' }}
+                                translationData.lblExclusive }}
                             </mat-radio-button>
                             <mat-radio-button [checked]="!selectedSetType" style='margin-right: 20px;' value="false">{{
-                                translationData.lblInclusive || 'Inclusive' }}
+                                translationData.lblInclusive }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttribute.isExclusive ?
-                            (translationData.lblExclusive || 'Exclusive') : (translationData.lblInclusive ||
-                            'Inclusive') }}</span>
+                            (translationData.lblExclusive ) : (translationData.lblInclusive) }}</span>
                     </div>
                 </div>
                 <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <span>{{ translationData.lblStatus || 'Status' }}</span>
+                    <span>{{ translationData.lblStatus  }}</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
                             <mat-radio-button [checked]="selectedStatus ===  'ACTIVE' ? true : false"
-                                style='margin-right: 20px;' value="ACTIVE">{{ translationData.lblActive || 'Active' }}
+                                style='margin-right: 20px;' value="ACTIVE">{{ translationData.lblActive  }}
                             </mat-radio-button>
                             <mat-radio-button [checked]="selectedStatus ===  'INACTIVE' ? true : false"
-                                style='margin-right: 20px;' value="INACTIVE">{{ translationData.lblInactive || 'Inactive' }}
+                                style='margin-right: 20px;' value="INACTIVE">{{ translationData.lblInactive }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.state === 'ACTIVE' ?
-                            (translationData.lblActive || 'Active') : (translationData.lblInactive || 'Inactive')
+                            (translationData.lblActive ) : (translationData.lblInactive )
                             }}</span>
                     </div>
                 </div>
@@ -138,20 +131,18 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ actionType == 'create' ? (translationData.lblFeatureHintMessage || 'You can select
-                            multiple "Data Attributes" from below list to map with this Feature Relationship') :
-                            (translationData.lblEditFeatureHintMessage || 'You can select multiple "Data Attributes"
-                            from below list to map with this Feature Relationship') }}</span>
+                        <span>{{ actionType == 'create' ? (translationData.lblFeatureHintMessage ) :
+                            (translationData.lblEditFeatureHintMessage ) }}</span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="edit">
                     <div fxLayout="row" class='areaWidth'>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
-                            translationData.lblCancel || 'Cancel' }}</button>
+                            translationData.lblCancel }}</button>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
-                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                            (click)='onReset()'>{{ translationData.lblReset }}</button>
                         <button class='no-margin' [disabled]="!featureFormGroup.valid || selectionForDataAttribute.selected.length == 0 || createButtonClicked" mat-raised-button color="primary" 
-                            (click)='onCreate()'>{{ actionType=='edit' ? (translationData.lblConfirm || 'Confirm') : (translationData.lblCreate || 'Create') }}</button>
+                            (click)='onCreate()'>{{ actionType=='edit' ? (translationData.lblConfirm ) : (translationData.lblCreate ) }}</button>
                     </div>
                 </div>
             </div>
@@ -161,8 +152,8 @@
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ?
-                        (translationData.lblSelectedDataAttribute || 'Selected Data Attribute') :
-                        (translationData.lblSelectDataAttribute || 'Select Data Attribute') }}</span>
+                        (translationData.lblSelectedDataAttribute ) :
+                        (translationData.lblSelectDataAttribute ) }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -170,7 +161,7 @@
                     fxLayoutAlign="left">
                     <mat-form-field appearance="outline">
                         <input matInput (keyup)="applyFilter($event.target.value)"
-                            placeholder="{{ translationData.lblSearch || 'Search' }}">
+                            placeholder="{{ translationData.lblSearch }}">
                         <span matPrefix>
                             <mat-icon>search</mat-icon>
                         </span>
@@ -179,11 +170,10 @@
             </div>
             <div class='margin-bottom-xlg'>
                     <mat-icon class='margin-right-10'>info</mat-icon>
-                    <span>{{ translationData.lblMessage || 'Select atleast one Data attritute.'}}<span class='mandatoryColor'>*</span></span>
+                    <span>{{ translationData.lblDataAttributeMessage }}<span class='mandatoryColor'>*</span></span>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data
-                            Attribute' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             {{ row.name }}
                         </mat-cell>
@@ -199,8 +189,7 @@
                                 </mat-slide-toggle>
                                 <span style="margin: 5px 0px 0px 5px;"
                                     [ngClass]="{'opacity-0-5': actionType == 'view'}">{{selectedSetType ?
-                                    (translationData.lblExclude || 'Exclude') : ( translationData.lblInclude ||
-                                    'Include')}}</span>
+                                    (translationData.lblExclude ) : ( translationData.lblInclude )}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'

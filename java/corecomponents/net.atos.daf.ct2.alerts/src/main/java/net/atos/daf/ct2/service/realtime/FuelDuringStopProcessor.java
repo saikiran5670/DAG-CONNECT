@@ -25,27 +25,33 @@ public class FuelDuringStopProcessor extends ProcessFunction<Index, Index> imple
     @Override
     public void processElement(Index index, ProcessFunction<Index, Index>.Context context, Collector<Index> collector) throws Exception {
 
-        BigDecimal fuelPrevState = fuelStopState.get(index.getVin());
-        if (fuelPrevState == null) {
-        	if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
-        		fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
-                logger.info("1st time state inserted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
-        	}
-            
-        } else {
-            net.atos.daf.ct2.models.Index index1 = new net.atos.daf.ct2.models.Index();
-            index1.setVid(index.getVid());
-            index1.setVin(index.getVin());
-            index1.setVEvtID(index.getVEvtID());
-            index1.setVFuelStopPrevVal(fuelPrevState);
-            index1.getIndexList().add(index);
-            if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
-        		fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
-        		logger.info("state upadted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
-        	}
-                
-            collector.collect(index1);
-        }
+        try {
+			BigDecimal fuelPrevState = fuelStopState.get(index.getVin());
+			if (fuelPrevState == null) {
+				if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
+					fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+			        logger.info("1st time state inserted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
+				}
+			    
+			} else {
+			    net.atos.daf.ct2.models.Index index1 = new net.atos.daf.ct2.models.Index();
+			    index1.setVid(index.getVid());
+			    index1.setVin(index.getVin());
+			    index1.setEvtId(index.getVEvtID());
+			    index1.setVFuelStopPrevVal(fuelPrevState);
+			    index1.getIndexList().add(index);
+			    if(Objects.nonNull(index.getDocument()) && Objects.nonNull(index.getDocument().getVFuelLevel1())){
+					fuelStopState.put(index.getVin(), BigDecimal.valueOf(index.getDocument().getVFuelLevel1()));
+					logger.info("state upadted {} vin : {}",BigDecimal.valueOf(index.getDocument().getVFuelLevel1()),index.getVin());
+				}
+			        
+			    collector.collect(index1);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.info("Issue while preparing data for FuelDuringStopProcessor :{}",index);
+			e.printStackTrace();
+		}
 
     }
 

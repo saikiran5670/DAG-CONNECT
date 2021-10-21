@@ -12,6 +12,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-new-user-step',
@@ -23,7 +24,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
   @Input() defaultSetting: any;
   @Input() userGrpData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() userDataForEdit: any;
   @Input() orgPreference: any;
   @Output() userCreate = new EventEmitter<object>();
@@ -46,17 +47,7 @@ export class NewUserStepComponent implements OnInit {
   userGrpDisplayedColumns: string[] = ['select',  'accountGroupName', 'accountCount'];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
-  solutationList: any = [
-    {
-      name: 'Mr'
-    },
-    {
-      name: 'Mrs'
-    },
-    {
-      name: 'Ms'
-    }
-  ];
+  solutationList: any = [];
   userTypeList: any = [];
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
@@ -78,6 +69,7 @@ export class NewUserStepComponent implements OnInit {
   prefId: any = 0;
   orgDefaultFlag: any;
   contextOrgName: any;
+  adminAccessType: any = {};
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -86,6 +78,13 @@ export class NewUserStepComponent implements OnInit {
     return date > now;
   }
   mapRoleIds: any = [];
+
+  public filteredLanguges: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
 
   constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
@@ -101,6 +100,17 @@ export class NewUserStepComponent implements OnInit {
         return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
       });
      }
+     this.solutationList = [
+      {
+        name: this.translationData.lblMr
+      },
+      {
+        name: this.translationData.lblMrs
+      },
+      {
+        name: this.translationData.lblMs
+      }
+    ];
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
@@ -108,13 +118,32 @@ export class NewUserStepComponent implements OnInit {
     if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
+  resetLanguageFilter(){
+    this.filteredLanguges.next(this.defaultSetting.languageDropdownData.slice());
+  }
+  resetTimezoneFilter(){
+    this.filteredTimezones.next(this.defaultSetting.timezoneDropdownData.slice());
+  }
+  resetLandingPageFilter(){
+    this.filteredLandingPageDisplay.next(this.defaultSetting.landingPageDisplayDropdownData.slice());
+  }
+  compareHere(a,b){
+    if (a.value < b.value) {
+      return -1;
+    }
+    if (a.value > b.value) {
+      return 1;
+    }
+    return 0;
+  }
 
   ngOnInit() {
     if(localStorage.getItem('contextOrgId'))
-    this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     else 
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
+    this.adminAccessType =  JSON.parse(localStorage.getItem("accessType"));
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
@@ -154,16 +183,25 @@ export class NewUserStepComponent implements OnInit {
     // this.thirdFormGroup = this._formBuilder.group({
     //   thirdCtrl: ['', Validators.required]
     // });
-    this.userTypeList = [
-      {
-        name: this.translationData.lblPortalUser || 'Portal Account',
-        value: 'P'
-      },
-      {
-        name: this.translationData.lblSystemUser || 'System Account',
-        value: 'S'
-      }
-    ];
+    if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser ,
+          value: 'P'
+        },
+        {
+          name: this.translationData.lblSystemUser ,
+          value: 'S'
+        }
+      ];
+    }else{
+      this.userTypeList = [
+        {
+          name: this.translationData.lblPortalUser ,
+          value: 'P'
+        }
+      ];
+    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
@@ -175,7 +213,7 @@ export class NewUserStepComponent implements OnInit {
       language: true,
       timeZone: true,
       unit: true,
-      currency: true,
+      //currency: true,
       dateFormat: true,
       vehDisplay: true,
       timeFormat: true,
@@ -209,13 +247,24 @@ export class NewUserStepComponent implements OnInit {
     }
     else{ //-- set org default setting
       this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
+      console.log("languagedropdowndata 1", this.defaultSetting.languageDropdownData);
+      this.defaultSetting.languageDropdownData.sort(this.compareHere);
+      this.resetLanguageFilter();
       this.firstFormGroup.get('timeZone').setValue((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id);
+      console.log("timezonedropdowndata 1", this.defaultSetting.timezoneDropdownData);
+      this.defaultSetting.timezoneDropdownData.sort(this.compareHere);
+      this.resetTimezoneFilter();
+      
       this.firstFormGroup.get('unit').setValue((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id);
       this.firstFormGroup.get('currency').setValue((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id);
       this.firstFormGroup.get('dateFormat').setValue((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id);
       this.firstFormGroup.get('vehDisplay').setValue((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id);
       this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      console.log("landingPageDisplayDropdownData 1", this.defaultSetting.landingPageDisplayDropdownData);
+      this.defaultSetting.landingPageDisplayDropdownData.sort(this.compareHere);
+      this.resetLandingPageFilter();
+      
       this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);
       this.setDefaultOrgVal();
     }
@@ -268,6 +317,7 @@ export class NewUserStepComponent implements OnInit {
           pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
           
         }
+        console.log("languagedropdowndata 2", this.defaultSetting.languageDropdownData);
         let createPrefFlag = false;
         for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
           if(!value){
@@ -361,11 +411,11 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
-      existMessage: this.translationData.lblUseraccountalreadyexists || "User account '$' already exists.",
-      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation || "Do you want to link this account to your organisation?",
-      title: this.translationData.lblAlert || "Alert",
+      cancelText: this.translationData.lblNo ,
+      confirmText: this.translationData.lblYes ,
+      existMessage: this.translationData.lblUseraccountalreadyexists ,
+      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation ,
+      title: this.translationData.lblAlert ,
       email: this.firstFormGroup.controls.loginEmail.value
     }
     this.linkDialogRef = this.dialog.open(LinkOrgPopupComponent, dialogConfig);
@@ -548,7 +598,7 @@ export class NewUserStepComponent implements OnInit {
     let _txt: any = '';
     if(createStatus){
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
       }
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return `${this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -556,7 +606,7 @@ export class NewUserStepComponent implements OnInit {
         return `${("New Account '$' Created Successfully").replace('$', this.userName)}. ${_txt}`;
     }else{
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
       }
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return `${this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -696,8 +746,8 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles', 'accountGroupList'],
-      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role',  this.translationData.lblUserGroup || 'Account Group'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
+      colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ,  this.translationData.lblUserGroup ],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
@@ -774,10 +824,10 @@ export class NewUserStepComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;
@@ -800,5 +850,52 @@ export class NewUserStepComponent implements OnInit {
   onOpenChange(event: any, value: any){
     //console.log("event:: ", event);
   }
+
+  filterLanguages(languageSearch){
+    if(!this.defaultSetting.languageDropdownData){
+      return;
+    }
+    if(!languageSearch){
+      this.resetLanguageFilter();
+      return;
+     } else{
+      languageSearch = languageSearch.toLowerCase();
+     }
+     this.filteredLanguges.next(
+       this.defaultSetting.languageDropdownData.filter(item=> item.value.toLowerCase().indexOf(languageSearch) > -1)
+     );
+  }
+
+  filterTimezones(timesearch){
+    console.log("filterTimezones called");
+    if(!this.defaultSetting.timezoneDropdownData){
+      return;
+    }
+    if(!timesearch){
+      this.resetTimezoneFilter();
+      return;
+     } else{
+       timesearch = timesearch.toLowerCase();
+     }
+     this.filteredTimezones.next(
+       this.defaultSetting.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
+     );
+     console.log("this.filteredTimezones", this.filteredTimezones);
+}
+
+filterLandingPageDisplay(search){
+  if(!this.defaultSetting.landingPageDisplayDropdownData){
+    return;
+  }
+  if(!search){
+    this.resetLandingPageFilter();
+    return;
+   } else{
+    search = search.toLowerCase();
+   }
+   this.filteredLandingPageDisplay.next(
+     this.defaultSetting.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(search) > -1)
+   );
+}
 
 }

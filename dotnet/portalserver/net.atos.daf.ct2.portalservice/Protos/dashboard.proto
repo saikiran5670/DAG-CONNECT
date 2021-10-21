@@ -12,6 +12,8 @@ rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationR
 rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
 rpc GetDashboardUserPreference(DashboardUserPreferenceRequest) returns (DashboardUserPreferenceResponse);
+rpc CheckIfSubReportExist (CheckIfSubReportExistRequest) returns (CheckIfSubReportExistResponse);
+
 }
 
 enum Responsecode{
@@ -129,8 +131,8 @@ message VehicleDetailsWithAccountVisibilty {
 
 message VehicleFromTripDetails {
     string Vin = 1;
-    int64 StartTimeStamp=2;
-    int64 EndTimeStamp=3;
+  //  int64 StartTimeStamp=2;
+   repeated int64 EndTimeStamp=3;
  }
 
 message VehicleListAndDetailsResponse{
@@ -161,11 +163,12 @@ message DashboardUserPreferenceCreateResponse{
 
 message DashboardUserPreferenceAttribute {
     int32 DataAttributeId = 1;
-    int32 State = 2;
-    int32 Type = 3;
-    int32 ChartType = 4;
-    int32 ThresholdType = 5;
-    double ThresholdValue = 6;
+    int32 ReportId = 2;
+    int32 State = 3;
+    int32 Type = 4;
+    int32 ChartType = 5;
+    int32 ThresholdType = 6;
+    double ThresholdValue = 7;
 }
 //End ReportUserPreference
 
@@ -181,7 +184,6 @@ message DashboardUserPreferenceRequest {
 
 message SessionFeatures {
     int32 FeatureId=1;
-    string Name=2;
 }
 
 message DashboardUserPreferenceResponse {
@@ -193,12 +195,24 @@ message DashboardUserPreferenceResponse {
 
 message DashboardUserPreference{
     int32 DataAttributeId=1;
-    string Name=2;
-    string Key=3;
-    string State=4;
-    string ChartType=5;
-    string ThresholdType=6;
-    double ThresholdValue=7;
-    repeated DashboardUserPreference SubReportUserPreferences=8;
+    int32 ReportId=2;
+    string Name=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    double ThresholdValue=8;
+    repeated DashboardUserPreference SubReportUserPreferences=9;
+}
+
+message CheckIfSubReportExistRequest {
+    int32 ReportId = 1;
+}
+
+message CheckIfSubReportExistResponse {
+    Responsecode Code = 1;
+    string Message = 2;
+    int32 FeatureId = 3;
+    string HasSubReports = 4;
 }
 //END Get User Dashboard Preferences

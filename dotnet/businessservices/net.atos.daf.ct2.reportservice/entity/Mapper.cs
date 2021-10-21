@@ -98,6 +98,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
                 {
                     DataAttributeId = attribute.DataAttributeId,
+                    ReportId = attribute.ReportId,
                     State = (ReportUserPreferenceState)(char)attribute.State,
                     Type = (ReportPreferenceType)(char)attribute.Type,
                     ChartType = attribute.ChartType > 0 ? (ReportPreferenceChartType)(char)attribute.ChartType : new ReportPreferenceChartType?(),
@@ -169,6 +170,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                         var preference = new ReportUserPreference
                         {
                             DataAttributeId = item.DataAttributeId,
+                            ReportId = item.ReportId,
                             Name = item.Name ?? string.Empty,
                             Key = item.Key ?? string.Empty,
                             State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
@@ -318,7 +320,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     obj = new EcoScoreReportAttribute();
                     obj.DriverId = item.DriverId;
-                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    obj.Value = String.Format("{0:0.00}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }
@@ -510,7 +512,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 objKPI.LimitValue = dataAttribute.LimitValue;
                 objKPI.TargetValue = dataAttribute.TargetValue;
                 if (kpiName == OverallPerformance.EcoScore.ToString())
-                    objKPI.Score = String.Format("{0:0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+                    objKPI.Score = Math.Floor(Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault())).ToString();
                 else
                     objKPI.Score = String.Format("{0:0.0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
             }
@@ -586,7 +588,10 @@ namespace net.atos.daf.ct2.reportservice.entity
                     obj = new EcoScoreReportSingleDriverAttribute();
                     obj.HeaderType = item.HeaderType;
                     obj.VIN = item.VIN ?? string.Empty;
-                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    if (attributeName == "NumberOfTrips" || attributeName == "NumberOfVehicles")
+                        obj.Value = String.Format("{0:0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    else
+                        obj.Value = String.Format("{0:0.00}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }
@@ -748,14 +753,14 @@ namespace net.atos.daf.ct2.reportservice.entity
                 case TrendlinesKPI.EcoScore:
                 case TrendlinesKPI.BrakingScore:
                 case TrendlinesKPI.AnticipationScore:
-                    return Tuple.Create(string.Empty, string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                    return Tuple.Create(string.Empty, string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
 
                 //Ltrs /100 km OR mpg
                 case TrendlinesKPI.FuelConsumption:
                     if (unit == UoM.Imperial)
-                        return Tuple.Create("mpg", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", (100 / Convert.ToDouble(score)) * (3.785 / 1.609)));
+                        return Tuple.Create("mpg", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", (100 / Convert.ToDouble(score)) * (3.785 / 1.609)));
                     else
-                        return Tuple.Create("Ltrs /100 km", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                        return Tuple.Create("Ltrs /100 km", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
 
                 //%
                 case TrendlinesKPI.CruiseControlUsage:
@@ -764,24 +769,24 @@ namespace net.atos.daf.ct2.reportservice.entity
                 case TrendlinesKPI.Idling:
                 case TrendlinesKPI.HarshBraking:
                 case TrendlinesKPI.Braking:
-                    return Tuple.Create("%", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                    return Tuple.Create("%", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
 
                 //km/h(%) OR mph(%)
                 case TrendlinesKPI.CruiseControlUsage30:
                 case TrendlinesKPI.CruiseControlUsage50:
                 case TrendlinesKPI.CruiseControlUsage75:
                     if (unit == UoM.Imperial)
-                        return Tuple.Create("mph(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                        return Tuple.Create("mph(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
                     else
-                        return Tuple.Create("km/h(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                        return Tuple.Create("km/h(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
 
                 //km/h OR mph
                 case TrendlinesKPI.AverageDrivingSpeed:
                 case TrendlinesKPI.AverageSpeed:
                     if (unit == UoM.Imperial)
-                        return Tuple.Create("mph", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score) * 0.6213));
+                        return Tuple.Create("mph", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score) * 0.6213));
                     else
-                        return Tuple.Create("km/h", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                        return Tuple.Create("km/h", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.00}", Convert.ToDouble(score)));
 
                 //hh:mm:ss
                 case TrendlinesKPI.PTODuration:

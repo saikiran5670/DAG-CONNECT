@@ -129,6 +129,7 @@ namespace net.atos.daf.ct2.reports.repository
                 //filter trip data by n days
                 //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
                 parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
+                parameterFleetOverview.Add("@drivinginterval", fleetOverviewFilter.UnknownDrivingStateCheckInterval, System.Data.DbType.Int32);
                 string queryFleetOverview = @"With CTE_Trips_By_Vin as(
                     select 
                     lcts.id,
@@ -179,7 +180,9 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.trip_distance as lcts_TripDistance,
                     lcts.driving_time as lcts_DrivingTime,
                     lcts.fuel_consumption as lcts_FuelConsumption,
-                    lcts.vehicle_driving_status_type as lcts_VehicleDrivingStatusType,
+                    case when lcts.vehicle_driving_status_type in('D','I') 
+                    and EXTRACT(EPOCH FROM (now() - to_timestamp(end_time_stamp / 1000)))/60 >= @drivinginterval 
+                    then 'U' else vehicle_driving_status_type end lcts_VehicleDrivingStatusType,
                     lcts.odometer_val as lcts_OdometerVal,
                     lcts.distance_until_next_service as lcts_DistanceUntilNextService,
                     lcts.latest_received_position_lattitude as lcts_LatestReceivedPositionLattitude,
@@ -197,7 +200,8 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.latest_warning_position_latitude as lcts_LatestWarningPositionLatitude,
                     lcts.latest_warning_position_longitude as lcts_LatestWarningPositionLongitude,
                     coalesce(veh.vid,'') as veh_Vid,
-                    coalesce(veh.registration_no,'') as veh_RegistrationNo,                   
+                    coalesce(veh.registration_no,'') as veh_RegistrationNo,
+                    coalesce(veh.name,'') as veh_name,
                     lps.id as lps_Id,
                     coalesce(lps.trip_id,'') as lps_TripId,
                     coalesce(lps.vin,'') as lps_Vin,
@@ -234,7 +238,7 @@ namespace net.atos.daf.ct2.reports.repository
                     left join master.vehicle veh
                     on lcts.vin=veh.vin                   
                     left join tripdetail.tripalert tripal
-                    on lcts.vin=tripal.vin 
+                    on lcts.vin=tripal.vin and  lcts.trip_id=tripal.trip_id 
                     left join master.geolocationaddress alertgeoadd
                     on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
@@ -270,6 +274,239 @@ namespace net.atos.daf.ct2.reports.repository
                     //need to be implement in upcomming sprint 
                     parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
                     queryFleetOverview += " and tripal.urgency_level_type = Any(@alertlevel) ";
+                }
+                IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
+                return repositoryMapper.GetFleetOverviewDetails(alertResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameterFleetOverview = new DynamicParameters();
+                parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
+                //filter trip data by n days
+                //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
+                parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
+                string queryFleetOverview = @"With CTE_Warnings_By_Vin as (SELECT 
+                                lws.id,
+                                lws.trip_id,
+                                lws.vin,
+                                lws.warning_time_stamp,
+                                lws.warning_class,
+                                lws.warning_number,
+                                lws.latitude,
+                                lws.longitude,
+                                lws.heading,
+                                lws.vehicle_health_status_type,
+                                lws.vehicle_driving_status_type,
+                                lws.driver1_id,
+                                lws.warning_type,
+                                lws.distance_until_next_service,
+                                lws.odometer_val,
+                                lws.lastest_processed_message_time_stamp,
+                                lws.message_type,
+                                coalesce(veh.vid,'') as veh_Vid,
+                                coalesce(veh.registration_no,'') as veh_RegistrationNo,
+                                coalesce(veh.name,'') as veh_name,
+                                wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
+                                coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress,
+                                rank() over (partition by (lws.vin,lws.warning_class,lws.warning_number)
+                                order by warning_time_stamp desc) warningrank
+                                FROM livefleet.livefleet_warning_statistics lws
+                                left join master.vehicle veh
+                                on lws.vin=veh.vin 
+                                left join master.geolocationaddress wangeoadd
+                                on TRUNC(CAST(lws.latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
+                                and TRUNC(CAST(lws.longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
+                                where lws.vin = Any(@vins)  
+                                and to_timestamp(lws.warning_time_stamp/1000)::date >= (now()::date - @days )
+                                )
+                                --select * from CTE_Warnings_By_Vin where warningrank =1 order by latest_warning_class 
+                                ,CTE_Warnings_Vin_Rank as (
+                                 select 
+                                 *,
+                                rank() over (partition by (vin)
+                                order by id desc) row_num
+                                 from CTE_Warnings_By_Vin 
+                                 where warningrank =1 and warning_type='A'   
+                                )
+                                --select * from CTE_Warnings_Vin_Rank
+                                ,CTE_Alerts_By_Vin as
+                                (select 
+                                tripal.id as tripal_Id,
+                                tripal.alert_id as tripal_AlertId,
+                                coalesce(tripal.vin,'') as tripal_Vin,
+                                coalesce(tripal.trip_id,'') as tripal_TripId,
+                                coalesce(tripal.name,'') as alertname,
+                                coalesce(tripal.type,'') as alerttype,
+                                tripal.alert_generated_time as AlertTime,
+                                coalesce(tripal.urgency_level_type,'') as AlertLevel,
+                                coalesce(tripal.category_type,'') as CategoryType,
+                                tripal.latitude as AlertLatitude,
+                                tripal.longitude as AlertLongitude,
+                                alertgeoadd.id as alertgeoadd_LatestAlertGeolocationAddressId,
+                                coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress
+                                from tripdetail.tripalert tripal
+                                left join master.geolocationaddress alertgeoadd
+                                on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
+                                and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
+                                where tripal.vin = Any(@vins) 
+                                and to_timestamp(tripal.alert_generated_time/1000)::date >= (now()::date -  @days)
+                                 )
+                               ,CTE_Result_For_Filter as 
+                                (
+                                select
+                                CWVR.id as lcts_id,
+                                CWVR.trip_id,
+                                CWVR.vin as lcts_vin,
+                                'N' as lcts_VehicleDrivingStatusType,
+                                case when warning_class >=4 and warning_class <= 7 then 'T'
+                                when warning_class >=8 and warning_class <= 10 then 'V'
+                                else 'N' end as lcts_VehicleHealthStatusType,                                
+                                CWVR.warning_class as lcts_LatestWarningClass,
+                                CWVR.warning_number as lcts_LatestWarningNumber,
+                                coalesce(warning_type,'') as lcts_LatestWarningType,
+                                CWVR.warning_time_stamp as lcts_LatestWarningTimestamp,
+                                CWVR.latitude as lcts_LatestWarningPositionLatitude,
+                                CWVR.longitude as lcts_LatestWarningPositionLongitude,
+                                CWVR.wangeoadd_LatestWarningGeolocationAddressId,
+                                CWVR.wangeoadd_LatestWarningGeolocationAddress,
+                                CWVR.veh_Vid,
+                                CWVR.veh_RegistrationNo,
+                                CWVR.veh_name,
+                                CABV.tripal_Id,
+                                CABV.tripal_AlertId,
+                                CABV.tripal_Vin,
+                                CABV.tripal_TripId,
+                                CABV.alertname,
+                                CABV.alerttype,
+                                CABV.AlertTime,
+                                CABV.AlertLevel,
+                                CABV.CategoryType,
+                                CABV.AlertLatitude,
+                                CABV.AlertLongitude,
+                                CABV.alertgeoadd_LatestAlertGeolocationAddress,
+                                CABV.alertgeoadd_LatestAlertGeolocationAddress
+                                from 
+                                CTE_Warnings_Vin_Rank CWVR 
+                                left join 
+                                CTE_Alerts_By_Vin CABV
+                                ON CWVR.vin = CABV.tripal_Vin
+                                AND CWVR.warningrank= 1 and CWVR.warning_type='A'
+                                where CWVR.row_num = 1
+                                )
+                                select * from CTE_Result_For_Filter
+                                where 1=1 
+";
+                //For driver all data all should be return as driver id is not present in result 
+                if (fleetOverviewFilter.DriverId.Count > 0)
+                {
+                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                    //if passed any specific driver id then it should be false the condition and data should not return.
+                    queryFleetOverview += " and 1=2 ";
+                }
+                if (fleetOverviewFilter.HealthStatus.Count > 0)
+                {
+                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                }
+                if (fleetOverviewFilter.AlertCategory.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
+
+                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                }
+                if (fleetOverviewFilter.AlertLevel.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
+                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
+                }
+                IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
+                return repositoryMapper.GetFleetOverviewDetails(alertResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved_NoWarnings(FleetOverviewFilter fleetOverviewFilter)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameterFleetOverview = new DynamicParameters();
+                parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
+                //filter trip data by n days
+                //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
+                string queryFleetOverview = @"with CTE_Result_For_Filter as (
+                    select
+                    veh.id as lcts_id,
+                    '' as trip_id,
+                    veh.vin as lcts_vin,
+                    'N' as lcts_VehicleDrivingStatusType,
+                    'N' as lcts_VehicleHealthStatusType,
+                    0 as lcts_LatestWarningClass,
+                    0 as lcts_LatestWarningNumber,
+                    '' as lcts_LatestWarningType,
+                    0 as lcts_LatestWarningTimestamp,
+                    0 as lcts_LatestWarningPositionLatitude,
+                    0 as lcts_LatestWarningPositionLongitude,
+                    0 as wangeoadd_LatestWarningGeolocationAddressId,
+                    '' as wangeoadd_LatestWarningGeolocationAddress,
+                    0 as tripal_Id,
+                    0 as tripal_AlertId,
+                    '' as tripal_Vin,
+                    '' as tripal_TripId,
+                    '' as alertname,
+                    '' as alerttype,
+                    0 as AlertTime,
+                    '' as AlertLevel,
+                    '' as CategoryType,
+                    0 as AlertLatitude,
+                    0 as AlertLongitude,
+                    0 as alertgeoadd_LatestAlertGeolocationAddress,
+                    0 as alertgeoadd_LatestAlertGeolocationAddress,
+                    coalesce(veh.vid,'') as veh_Vid,
+                    coalesce(veh.registration_no,'') as veh_RegistrationNo,
+                    coalesce(veh.name,'') as veh_name
+                    FROM master.vehicle veh
+                    where  veh.vin = Any(@vins)  
+                    )
+                    select * from CTE_Result_For_Filter
+                    where 1=1 ";
+                //For driver all data all should be return as driver id is not present in result 
+                if (fleetOverviewFilter.DriverId.Count > 0)
+                {
+                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                    //if passed any specific driver id then it should be false the condition and data should not return.
+                    queryFleetOverview += " and 1=2 ";
+                }
+                if (fleetOverviewFilter.HealthStatus.Count > 0)
+                {
+                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                }
+                if (fleetOverviewFilter.AlertCategory.Count > 0)
+                {
+                    //if passed any specific category then it should be false the condition and data should not return.
+                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                }
+                if (fleetOverviewFilter.AlertLevel.Count > 0)
+                {
+                    //if passed any specific level then it should be false the condition and data should not return.
+                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);

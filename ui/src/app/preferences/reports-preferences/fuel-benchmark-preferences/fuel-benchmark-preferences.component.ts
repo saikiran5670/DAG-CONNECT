@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FuelBenchmarkPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Output() setFuelBenchmarkReportFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;
@@ -52,11 +52,11 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
 
     if (repoId.length > 0) {
       this.reportId = repoId[0].id;
+      this.loadFuelBenchmarkReportPreferences();
     } else {
-      this.reportId = 6; //- hard coded for Fuel Benchmarking Report
+      console.error("No report id found!");
     }
-    this.translationUpdate();
-    this.loadFuelBenchmarkReportPreferences();
+    // this.translationUpdate();
   }
 
   translationUpdate() {
@@ -71,7 +71,6 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   }
 
   loadFuelBenchmarkReportPreferences() {
-
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
       this.initData = prefData['userPreferences'];
       this.getReportPreferenceResponse = this.initData;    
@@ -144,7 +143,34 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     if (!this.requestSent) {
       this.requestSent = true;
       let temp_attr = [];
+      let parentAttr = [];
+      parentAttr.push({ dataAttributeId: this.getReportPreferenceResponse.dataAttributeId,
+        state: "A",
+        preferenceType: "D",
+        chartType: '',
+        thresholdType: "",
+        thresholdValue: 0,
+        reportId: this.getReportPreferenceResponse.reportId });
+
       for (let section of this.getReportPreferenceResponse.subReportUserPreferences) {
+        if(section.name.includes('Report.Chart')){
+          parentAttr.push({ dataAttributeId: section.dataAttributeId,
+            state: "A",
+            preferenceType: "C",
+            chartType: '',
+            thresholdType: "",
+            thresholdValue: 0,
+            reportId: section.reportId });           
+        }        
+        else if(section.name.includes('Report.Component')){
+          parentAttr.push({ dataAttributeId: section.dataAttributeId,
+            state: "A",
+            preferenceType: "D",
+            chartType: '',
+            thresholdType: "",
+            thresholdValue: 0,
+            reportId:section.reportId });
+        }       
         for (let field of section.subReportUserPreferences) {
           let testObj;
           if (field.key == "rp_fb_chart_fuelconsumption") {
@@ -154,7 +180,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
               preferenceType: "C",
               chartType: this.fuelBenchmarkForm.get([field.key]).value,
               thresholdType: "",
-              thresholdValue: 0
+              thresholdValue: 0,
+              reportId: field.reportId 
             }
           }
           else {
@@ -164,7 +191,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
               preferenceType: "C",
               chartType: field.chartType,
               thresholdType: "",
-              thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value)
+              thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value),
+              reportId: field.reportId 
               //thresholdValue:4
             }
           }
@@ -175,17 +203,24 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
       }
       let benchmarkObject = {
         reportId: this.reportId,
-        attributes: temp_attr
+        attributes: [...temp_attr, ...parentAttr]
       }
 
       this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
         this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        if ((this.router.url).includes("fuelbenchmarking")) {
+          this.reloadCurrentComponent();
+        }
         this.requestSent = false;
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
       });
     }
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   onDonutPieDDChange(event: any) {

@@ -14,13 +14,9 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
 import net.atos.daf.postgre.bo.Trip;
+import net.atos.daf.postgre.connection.PostgreConnection;
 //import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.TripSinkDao;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.DriverManager;
 
 public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 
@@ -35,7 +31,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 	private List<Trip> queue;
 	private List<Trip> synchronizedCopy;
 	TripSinkDao tripDao;
-	private PreparedStatement tripStatisticQry;
+	//private PreparedStatement tripStatisticQry;
 
 	@Override
 	public void invoke(Trip rec) throws Exception {
@@ -51,7 +47,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 					for (Trip tripData : synchronizedCopy) {
 						logger.info(
 								"tripId :: " + tripData.getTripId() + " co2Emi ::" + tripData.getTripCalC02Emission());
-						tripDao.insert(tripData, tripStatisticQry);
+						tripDao.insert(tripData, statement);
 						logger.info("Trip records inserted to trip table :: "+tripData.getTripId());
 					}
 				}
@@ -77,24 +73,22 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));*/
+					
+			connection = PostgreConnection.getInstance().getConnection(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
 			
-			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
-			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
-						Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
-						envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
-						envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
-						envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-			connection = DriverManager.getConnection(dbUrl);
-			
-			logger.info("In trip sink connection done" + connection);
+			logger.info("In trip sink connection done :{}", connection);
 			tripDao.setConnection(connection);
-			tripStatisticQry = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
+			statement = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
-			logger.error("serverNm :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME) +" port :: "+Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)));
-			logger.error("databaseNm :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME) +" user :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_USER) + " pwd :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.error("connection :: " + connection);
+			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: {}", e);
+			logger.error("serverNm ::{}, port ::{} ",envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME), Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)));
+			logger.error("databaseNm ::{}, user ::{}, pwd ::{} ",envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.DATAMART_POSTGRE_USER), envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+			logger.error("connection ::{} ", connection);
 			throw e;
 		}
 	}
@@ -114,22 +108,4 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		}
 	}
 	
-	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
-			String password) throws Exception {
-
-		String encodedPassword = encodeValue(password);
-		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
-				+ encodedPassword + ETLConstants.POSTGRE_SQL_SSL_MODE;
-
-		return url;
-	}
-	
-	private String encodeValue(String value) {
-		try {
-			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(ex.getCause());
-		}
-	}
-
 }

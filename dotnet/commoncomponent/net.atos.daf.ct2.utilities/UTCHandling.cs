@@ -98,6 +98,10 @@ namespace net.atos.daf.ct2.utilities
             {
                 sConverteddateTime = dtzone.ToString("yyyy-MM-ddTHH:mm:ss.fffz");
             }
+            else if (dateformat == "yyyy-MM-ddThh:mm:ss.fffZ")  //2021-04-26T05:44:42.341+0
+            {
+                sConverteddateTime = dtzone.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            }
             else
             {
                 sConverteddateTime = dtzone.ToString();
@@ -126,6 +130,12 @@ namespace net.atos.daf.ct2.utilities
         {
             DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime), TimeZoneInfo.Local.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();
+            return dtunixTime;
+        }
+        public static long RfmsGetUTCFromDateTime(string sourceDateTime, double second)
+        {
+            DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime), TimeZoneInfo.Local.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
+            long dtunixTime = utcTime.AddSeconds(second).ToUnixTimeMilliseconds();
             return dtunixTime;
         }
 

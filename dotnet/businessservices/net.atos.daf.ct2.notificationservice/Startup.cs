@@ -18,6 +18,12 @@ using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.sms;
 using net.atos.daf.ct2.notificationservice.Services;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 
 namespace net.atos.daf.ct2.notificationservice
 {
@@ -52,6 +58,12 @@ namespace net.atos.daf.ct2.notificationservice
             services.AddTransient<ITranslationManager, TranslationManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ISMSManager, SMSManager>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddGrpc();
         }
 

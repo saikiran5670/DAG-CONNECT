@@ -94,21 +94,23 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
-        public async Task<bool> CheckIfDriverExists(string driverId, int organisationId, string email)
+        public async Task<bool> CheckIfDriverExists(string driverId, int? organisationId, string email)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@DriverId", driverId);
-                parameter.Add("@Email", email);
+                parameter.Add("@Email", email.ToLower());
                 parameter.Add("@OrganisationId", organisationId);
 
                 var queryStatement =
-                        @"SELECT EXISTS (SELECT 1
+                       @"SELECT EXISTS (SELECT 1
                             FROM master.driver drv inner join master.organization org on org.id=drv.organization_id
-                            WHERE driver_id_ext = @DriverId and email = @Email and drv.organization_id = @OrganisationId and drv.state='A')";
+                            WHERE driver_id_ext = @DriverId and LOWER(email) = @Email and drv.state='A'{0})";
 
-                return await _dataAccess.ExecuteScalarAsync<bool>(queryStatement, parameter);
+                string predicate = organisationId.HasValue ? " and drv.organization_id = @OrganisationId" : string.Empty;
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(string.Format(queryStatement, predicate), parameter);
             }
             catch (Exception)
             {
@@ -118,6 +120,8 @@ namespace net.atos.daf.ct2.driver
 
         public async Task<Driver> UpdateDriver(Driver driver)
         {
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
             try
             {
                 var orgOptInStatus = string.Empty;
@@ -153,41 +157,77 @@ namespace net.atos.daf.ct2.driver
                 driverdatamart.FirstName = driver.FirstName;
                 driverdatamart.LastName = driver.LastName;
                 driverdatamart.OrganizationId = driver.Organization_id;
-                await CreateAndUpdateDriverInDataMart(driverdatamart);
+                await CreateAndUpdateDriverInDataMart(driverdatamart, driver.Status);
 
+                transaction.Commit();
                 return driver;
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 _log.Info("Driver update method in repository failed :");
                 _log.Error(ex.ToString());
                 throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
             }
         }
 
 
         public async Task<bool> DeleteDriver(int organizationId, int driverid)
         {
-            _log.Info("Delete driver method called in repository");
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@id", driverid);
                 var query = @"update master.driver set state='D' where id=@id and organization_id=@organization_id";
-                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                query = @"select driver_id_ext from master.driver where id=@id and organization_id=@organization_id";
+                var driverIdExt = await _dataAccess.ExecuteScalarAsync<string>(query, parameter);
+
+                var parameterduplicate = new DynamicParameters();
+                string drvID = driverIdExt;
+                drvID = drvID.Substring(0, drvID.Length - 3);
+                parameterduplicate.Add("@driver_id", drvID);
+                parameterduplicate.Add("@organization_id", organizationId);
+
+                query = @"SELECT id FROM master.driver where LENGTH(driver_id) =19 and SUBSTRING(driver_id ,0, LENGTH(driver_id) -2)=@driver_id and organization_id=@organization_id";
+                int driverDataMartId = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+
+                if (driverDataMartId > 0)
+                {
+                    //Delete driver record from Datamart
+                    parameter = new DynamicParameters();
+                    parameter.Add("@id", driverDataMartId);
+
+                    query = @"DELETE FROM master.driver WHERE id = @id";
+                    await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                transaction.Commit();
                 return true;
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 _log.Info("Delete driver method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 _log.Error(ex.ToString());
                 throw;
             }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
         }
         public async Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus)
         {
-            _log.Info("Delete driver method called in repository");
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
             try
             {
                 var orgOptInStatus = string.Empty;
@@ -209,24 +249,62 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@opt_in", optoutStatus);
                 parameter.Add("@status", status);
                 var query = @"update master.driver set status=@status, opt_in=@opt_in where organization_id=@organization_id and state='A'";
-                int isUpdated = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                if (status == "U")
+                {
+                    //Delete driver record from Datamart
+                    parameter = new DynamicParameters();
+                    parameter.Add("@organization_id", organizationId);
+
+                    query = @"DELETE FROM master.driver WHERE organization_id = @organization_id";
+                    await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                else
+                {
+                    parameter = new DynamicParameters();
+                    parameter.Add("@organization_id", organizationId);
+
+                    query = @"select organization_id, driver_id_ext, first_name FirstName, last_name LastName 
+                                from master.driver where organization_id=@organization_id and state='A'";
+                    var drivers = await _dataAccess.QueryAsync<DriverResponse>(query, parameter);
+                    foreach (var driver in drivers)
+                    {
+                        parameter = new DynamicParameters();
+                        parameter.Add("@driver_id", driver.Driver_id_ext);
+                        parameter.Add("@first_name", driver.FirstName);
+                        parameter.Add("@last_name", driver.LastName);
+                        parameter.Add("@organization_id", driver.Organization_id);
+
+                        query = @"INSERT INTO master.driver (driver_id, first_name, last_name, organization_id)
+                            VALUES(@driver_id, @first_name, @last_name, @organization_id)
+                            ON CONFLICT(driver_id, organization_id)
+                            DO
+                            UPDATE SET driver_id=@driver_id, first_name=@first_name, last_name=@last_name";
+
+                        await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                }
+
+                transaction.Commit();
                 return true;
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 _log.Info("UpdateOptinOptout driver method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 _log.Error(ex.ToString());
                 throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
             }
         }
 
         public async Task<List<DriverImportResponse>> ImportDrivers(List<Driver> drivers, int orgid)
         {
-            List<string> InsertedData = new List<string>();
-            // string driverid = string.Empty;
-            // string ErrorMessage = string.Empty;
             string orgOptInStatus;
-            // Dictionary<string,string> dicMessage=new Dictionary<string, string> ();
 
             List<DriverImportResponse> lstdrivers = new List<DriverImportResponse>();
             DriverImportResponse objDriver = new DriverImportResponse();
@@ -257,15 +335,14 @@ namespace net.atos.daf.ct2.driver
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
-                        //  parameter.Add("@driver_id_ext", item.Driver_id_ext.Substring(0, item.Driver_id_ext.Length - 3));
                         parameter.Add("@first_name", item.FirstName);
                         parameter.Add("@last_name", item.LastName);
                         parameter.Add("@email", item.Email);
                         parameter.Add("@status", status);
                         parameter.Add("@opt_in", orgOptInStatus);
-                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                         parameter.Add("@modified_by", item.ModifiedBy);
-                        parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                        parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                         var parameterduplicate = new DynamicParameters();
 
@@ -276,11 +353,11 @@ namespace net.atos.daf.ct2.driver
                         parameterduplicate.Add("@organization_id", orgid);
 
                         var query = @"SELECT id FROM master.driver where LENGTH(driver_id_ext) =19 and SUBSTRING(driver_id_ext ,0, LENGTH(driver_id_ext) -2)=@driver_id_ext and state='A' and organization_id=@organization_id";
-                        int ObjDriverExist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+                        int objDriverExist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
 
-                        if (ObjDriverExist > 0)
+                        if (objDriverExist > 0)
                         {
-                            parameter.Add("@oldDriverID", ObjDriverExist);
+                            parameter.Add("@oldDriverID", objDriverExist);
                             parameter.Add("@newDriverID", newDriverId);
 
                             var queryUpdate = @"update master.driver set driver_id_ext=@newDriverID, first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
@@ -311,7 +388,7 @@ namespace net.atos.daf.ct2.driver
                         driverdatamart.FirstName = item.FirstName;
                         driverdatamart.LastName = item.LastName;
                         driverdatamart.OrganizationId = orgid;
-                        await CreateAndUpdateDriverInDataMart(driverdatamart);
+                        await CreateAndUpdateDriverInDataMart(driverdatamart, status);
                     }
                     catch (Exception ex)
                     {
@@ -332,12 +409,11 @@ namespace net.atos.daf.ct2.driver
                 objDriver.ReturnMessage = ex.Message;
                 objDriver.Status = "FAIL";
                 lstdrivers.Add(objDriver);
-                // dicMessage.Add(ErrorMessage,ex.Message);
             }
             return lstdrivers;
         }
 
-        public async Task<DriverDatamart> CreateAndUpdateDriverInDataMart(DriverDatamart driver)
+        public async Task<DriverDatamart> CreateAndUpdateDriverInDataMart(DriverDatamart driver, string status)
         {
             try
             {
@@ -348,20 +424,21 @@ namespace net.atos.daf.ct2.driver
                 parameterduplicate.Add("@organization_id", driver.OrganizationId);
 
                 var query = @"SELECT id FROM master.driver where LENGTH(driver_id) =19 and SUBSTRING(driver_id ,0, LENGTH(driver_id) -2)=@driver_id and organization_id=@organization_id";
-                int driverDataMartID = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
-                var QueryStatement = "";
+                int driverDataMartId = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
 
-                var parameter = new DynamicParameters();
-                parameter.Add("@driver_id", driver.DriverID);
-                parameter.Add("@first_name", driver.FirstName);
-                parameter.Add("@last_name", driver.LastName);
-                parameter.Add("@organization_id", driver.OrganizationId);
+                var queryStatement = string.Empty;
+                var parameters = new DynamicParameters();
 
-                if (driverDataMartID == 0)
+                if (status == "I")
                 {
-                    // parameter.Add("@driver_id", driver.DriverID);
+                    parameters.Add("@driver_id", driver.DriverID);
+                    parameters.Add("@first_name", driver.FirstName);
+                    parameters.Add("@last_name", driver.LastName);
+                    parameters.Add("@organization_id", driver.OrganizationId);
 
-                    QueryStatement = @"INSERT INTO master.driver
+                    if (driverDataMartId == 0)
+                    {
+                        queryStatement = @"INSERT INTO master.driver
                                       (
                                         driver_id
                                        ,first_name
@@ -372,28 +449,34 @@ namespace net.atos.daf.ct2.driver
                                         @driver_id
                                        ,@first_name
                                        ,@last_name
-                                       ,@organization_id                                      
+                                       ,@organization_id
                                       ) RETURNING id";
-                }
-                else if (driverDataMartID > 0)
-                {
-                    parameter.Add("@id", driverDataMartID);
-                    parameter.Add("@newDriverID", driver.DriverID);
+                    }
+                    else if (driverDataMartId > 0)
+                    {
+                        parameters.Add("@id", driverDataMartId);
 
-                    //string driverIDNew = driver.DriverID;
-                    //driverIDNew = driverIDNew.Substring(0, driverIDNew.Length - 3); 
-                    //parameter.Add("@newDriverID", driverIDNew);
-
-                    QueryStatement = @" UPDATE master.driver
+                        queryStatement = @" UPDATE master.driver
                                     SET
                                      driver_id=@driver_id
                                     ,first_name=@first_name
-                                    ,last_name=@last_name
-                                    ,organization_id=@organization_id                                    
+                                    ,last_name=@last_name                                
                                      WHERE id = @id and organization_id=@organization_id
                                      RETURNING id;";
+                    }
+                    await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameters);
                 }
-                int driverID = await _dataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                else if (status == "U")
+                {
+                    if (driverDataMartId > 0)
+                    {
+                        //Delete driver record from Datamart
+                        parameters.Add("@id", driverDataMartId);
+
+                        queryStatement = @"DELETE FROM master.driver WHERE id = @id";
+                        await _dataMartdataAccess.ExecuteScalarAsync<int>(queryStatement, parameters);
+                    }
+                }
                 return driver;
             }
             catch (Exception)
@@ -444,7 +527,7 @@ namespace net.atos.daf.ct2.driver
                         parameters.Add("@OrgId", request.OrgId);
 
                         string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId
-                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            from master.driver drv inner join master.account acc on LOWER(drv.email) = LOWER(acc.email)
                                             where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
                                             and drv.state='A' and acc.state='A'";
                         var driverAccount = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);

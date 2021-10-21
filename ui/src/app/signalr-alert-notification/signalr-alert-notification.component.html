@@ -1,0 +1,42 @@
+   <div  *ngFor="let item of signalRService.notificationData" style="background-color: #E5E4E2;padding-left: 2%;padding-right: 2%;margin-bottom: 1px;cursor: pointer;"> 
+        <mat-card class="card1" (click)="gotoLogBook(item)">
+        <div fxLayout="row" fxLayoutAlign="start"
+        fxLayoutGap="6px">
+        <div fxLayout="column" class="areaWidth" style="margin-top: 6px !important;">          
+            <!-- <mat-icon class="line3">{{item.icons}}</mat-icon> -->
+            <span *ngIf="item.alertCategory == 'O' && item.urgencyLevel == '' && item.alertType == 'W'">
+                <img src='assets/images/icons/vehicleStatus/Ota.svg' style="margin-top:6px;"/> </span> 
+            <span *ngIf="item.alertUrgency == 'C' || item.urgencyLevel == 'C'" style="margin-top:6px;">
+                <i class="material-icons" [style]="{ 'color':'#FF0000'} ">warning</i> 
+              </span> 
+              <span *ngIf="item.alertUrgency == 'W' || item.urgencyLevel == 'W'" style="margin-top:6px;">
+                <i class="material-icons" [style]="{ 'color':'#FFBF00'} ">warning</i> 
+              </span>
+              <span *ngIf="item.alertUrgency == 'A' || item.urgencyLevel == 'A'" style="margin-top:6px;">
+                <i class="material-icons" [style]="{ 'color':'#FFFF00'} ">warning</i> 
+              </span>
+        </div>
+        <div fxLayout="column" class="areaWidth min-width-50-per line3">
+            <span>{{ translationData[item.alertTypeKey] }}</span>
+        </div>    
+        <!--  <div fxLayout="column" fxLayoutAlign="flex-end" class="col1">
+            <span class="demo1">{{item.date}}</span>
+            <span class="demo2">{{item.time}}</span>
+        </div>       -->
+    </div>
+
+        <div class="line">
+            <div fxLayout="row" class="areaWidth min-width-45-per demo2" fxLayoutAlign="start"
+            fxLayoutGap="10px">
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'" class="line2"> {{item.vehicleName}} </span>
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'" class="line2"> {{item.vin}} </span>
+            <span *ngIf="signalRService.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'" class="line2"> {{item.vehicleLicencePlate ? item.vehicleLicencePlate : item.vehicleName}} </span>
+            <span class="dateTimeLine"> {{item.date}} , {{item.time}}</span>
+        </div>        
+    </div>
+</mat-card>
+</div>
+<div *ngIf="signalRService.notificationData.length == 0" style="text-align: center;">
+    <span > No notifications available </span>
+</div>
+<a *ngIf="signalRService.notificationData.length > 0" class="more" (click)="gotoLogBookForMoreAlerts()">more ></a>

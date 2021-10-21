@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.utilities;
@@ -8,6 +9,11 @@ namespace net.atos.daf.ct2.rfms.response
 {
     public class RfmsVehicleMapper
     {
+        private readonly RfmsVehicleStatusAccumulator _rfmsVehicleStatusAccumulator;
+        public RfmsVehicleMapper()
+        {
+            _rfmsVehicleStatusAccumulator = new RfmsVehicleStatusAccumulator();
+        }
         internal VehiclePosition MapVehiclePositions(dynamic record)
         {
             VehiclePosition vehiclePosition = new VehiclePosition();
@@ -25,12 +31,13 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
+            //new TachoDriverIdentification();
+            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
+            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
+            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
+            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
+            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
@@ -53,14 +60,15 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (record.createddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehiclePosition.CreatedDateTime = createdDateTime;
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"), out DateTime createdDateTime);
+                vehiclePosition.CreatedDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");// createdDateTime;
+
             }
 
             if (record.receiveddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehiclePosition.ReceivedDateTime = receivedDateTime;
+                // DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"), out DateTime receivedDateTime);
+                vehiclePosition.ReceivedDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");// receivedDateTime;
             }
 
             GnssPosition gnssPosition = new GnssPosition();
@@ -87,7 +95,7 @@ namespace net.atos.daf.ct2.rfms.response
             if (record.positiondatetime != null)
             {
                 DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime positionDateTime);
-                gnssPosition.PositionDateTime = positionDateTime;
+                gnssPosition.PositionDateTime = utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //positionDateTime;
             }
 
             if (record.speed != null)
@@ -109,10 +117,10 @@ namespace net.atos.daf.ct2.rfms.response
             return vehiclePosition;
         }
 
-        internal VehicleStatus MapVehicleStatus(dynamic record)
+        internal VehicleStatus MapVehicleStatus(dynamic record, string contentFilter)
         {
             VehicleStatus vehicleStatus = new VehicleStatus();
-            //vehicleStatus.RecordId = record.id;
+            vehicleStatus.RecordId = null;// record.id;
             vehicleStatus.Vin = record.vin;
 
             TriggerType triggerType = new TriggerType();
@@ -126,12 +134,13 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
-            tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
+            // new TachoDriverIdentification();
+            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
+            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
+            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
+            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
+            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
@@ -141,8 +150,9 @@ namespace net.atos.daf.ct2.rfms.response
             driverId.OemDriverIdentification = oemDriverIdentification;
 
             triggerType.DriverId = driverId;
-            triggerType.PtoId = record.ptoid;
+            triggerType.PtoId = "1";// record.ptoid = 1; //This is which PTO is activacted, DAF only gives the info on CAN of all PTO together. So always 1.
 
+            vehicleStatus.Driver1Id = new Driver1Id() { OemDriverIdentification = driverId.OemDriverIdentification, TachoDriverIdentification = driverId.TachoDriverIdentification };
             TellTaleInfo tellTaleInfo = new TellTaleInfo();
             tellTaleInfo.OemTellTale = record.oemtelltale;
             tellTaleInfo.State = Convert.ToString(record.state);
@@ -154,14 +164,12 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (record.createddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
-                vehicleStatus.CreatedDateTime = createdDateTime;
+                vehicleStatus.CreatedDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //createdDateTime;
             }
 
             if (record.receiveddatetime != null)
             {
-                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
-                vehicleStatus.ReceivedDateTime = receivedDateTime;
+                vehicleStatus.ReceivedDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ"); //receivedDateTime;
             }
 
 
@@ -182,17 +190,18 @@ namespace net.atos.daf.ct2.rfms.response
             {
                 vehicleStatus.GrossCombinationVehicleWeight = Convert.ToString(record.GrossCombinationVehicleWeight);
             }
-            if (record.status2OfDoors != null)
+            if (!string.IsNullOrEmpty(contentFilter))
             {
-                vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
+                vehicleStatus.AccumulatedData = contentFilter.Contains(ContentType.ACCUMULATED.ToString()[0].ToString()) ? MapAccumuatedData(record) : null;
+                vehicleStatus.SnapshotData = contentFilter.Contains(ContentType.SNAPSHOT.ToString()[0].ToString()) ? MapSnapShotData(record) : null;
+                vehicleStatus.UptimeData = contentFilter.Contains(ContentType.UPTIME.ToString()[0].ToString()) ? MapUptimeData(record) : null;
             }
-            if (record.doorStatus != null)
+            else
             {
-                vehicleStatus.DoorStatus = Convert.ToString(record.doorStatus);
+                vehicleStatus.AccumulatedData = MapAccumuatedData(record);
+                vehicleStatus.SnapshotData = MapSnapShotData(record);
+                vehicleStatus.UptimeData = MapUptimeData(record);
             }
-            vehicleStatus.AccumulatedData = MapAccumuatedData();
-            vehicleStatus.SnapshotData = MapSnapShotData();
-            vehicleStatus.UptimeData = MapUptimeData();
             return vehicleStatus;
         }
 
@@ -204,7 +213,7 @@ namespace net.atos.daf.ct2.rfms.response
             vehicle.Vin = record.vin;
             vehicle.CustomerVehicleName = record.customer_vehicle_name;
             vehicle.Brand = record.brand;
-            if (record.production_date != null)
+            if (record.production_date != null && record.production_date != 0)
             {
                 DateTime dtProdDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.production_date, "UTC", targetdateformat));
                 ProductionDate pd = new ProductionDate();
@@ -226,193 +235,214 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (!string.IsNullOrEmpty(Convert.ToString(record.totalfueltankvolume)))
                 vehicle.TotalFuelTankVolume = Convert.ToInt32(record.totalfueltankvolume);
-            else
-                vehicle.TotalFuelTankVolume = 0;
+            // else
+            //  vehicle.TotalFuelTankVolume = 0;
 
             vehicle.GearboxType = record.gearboxtype;
             return vehicle;
         }
-        public AccumulatedData MapAccumuatedData()
+        public AccumulatedData MapAccumuatedData(dynamic record)
         {
 
             var accumulatedData = new AccumulatedData()
             {
-                DurationWheelbaseSpeedOverZero = 123456,
-                DistanceCruiseControlActive = 23456,
-                DurationCruiseControlActive = 45678,
-                FuelConsumptionDuringCruiseActive = 987654,
-                DurationWheelbaseSpeedZero = 12345,
-                FuelWheelbaseSpeedZero = 87654,
-                FuelWheelbaseSpeedOverZero = 0,
-                PtoActiveClass = new List<PtoActiveClass> { new PtoActiveClass() {
-               Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
-              Seconds= 12345,
-              Meters= 2345,
-              MilliLitres= 3456} },
-                BrakePedalCounterSpeedOverZero = 12765,
-                DistanceBrakePedalActiveSpeedOverZero = 1456,
-                AccelerationPedalPositionClass = new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
-                    To = 20,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345} },
-                BrakePedalPositionClass = new List<BrakePedalPositionClass>() { new BrakePedalPositionClass() {  From = 0,
-                    To = 20,
-                    Seconds = 2456,
-                    Meters = 34578,
-                    MilliLitres = 67345 } },
-                AccelerationClass = new List<AccelerationClass>{ new AccelerationClass() { From = -1.1,
-                    To = -0.9,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                } },
-
-                HighAccelerationClass = new List<HighAccelerationClass>(){new HighAccelerationClass()
-            {
-                    From = -3,
-                    To = -2.5,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-                },
-                RetarderTorqueClass = new List<RetarderTorqueClass>(){new RetarderTorqueClass()
-            {
-                    From = 0,
-                    To = 20,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-                },
-                DrivingWithoutTorqueClass = new List<DrivingWithoutTorqueClass>(){new DrivingWithoutTorqueClass()
-            {
-                    Label =MasterMemoryObjectCacheConstants.DRIVING_WITHOUT_TORQUE,
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-                },
-                EngineTorqueClass = new List<EngineTorqueClass>() {new EngineTorqueClass()            {
-                    From = 0,
-                    To = 10,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                EngineTorqueAtCurrentSpeedClass = new List<EngineTorqueAtCurrentSpeedClass>() {new EngineTorqueAtCurrentSpeedClass()
-            {
-                    From = 0,
-                    To = 10,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
-            {
-                    From = 0,
-                    To = 4,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                EngineSpeedClass = new List<EngineSpeedClass>() {new EngineSpeedClass()
-            {
-                    From = 0,
-                    To = 400,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                AccelerationDuringBrakeClass = new List<AccelerationDuringBrakeClass>() { new  AccelerationDuringBrakeClass()
-            {
-                    From = -1.1,
-                    To = -0.9,
-                    Seconds = 23456,
-                    Meters = 345678,
-                    MilliLitres = 678345
-                }
-         },
-                SelectedGearClass = new List<SelectedGearClass>() {new SelectedGearClass()
-            {
-                    Label = "0",
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-         },
-                CurrentGearClass = new List<CurrentGearClass>() { new CurrentGearClass()
-            {
-                    Label = "0",
-                    Seconds = 12345,
-                    Meters = 2345,
-                    MilliLitres = 3456
-                }
-                },
-                ChairliftCounter = 568,
-                StopRequestCounter = 4567,
-                KneelingCounter = 976,
-                PramRequestCounter = 123
-
-
+                DurationWheelbaseSpeedOverZero = record.durationWheelbaseSpeedOverZero,
+                DistanceCruiseControlActive = record.distancecruisecontrolactive,
+                DurationCruiseControlActive = record.durationcruisecontrolactive,
+                FuelConsumptionDuringCruiseActive = record.fuelconsumptionduringcruiseactive,
+                DurationWheelbaseSpeedZero = record.durationwheelbasespeedzero,
+                FuelWheelbaseSpeedZero = record.fuelduringwheelbasespeedzero,
+                BrakePedalCounterSpeedOverZero = record.brakepedalcounterspeedoverzero,
+                DistanceBrakePedalActiveSpeedOverZero = record.distancebrakepedalactivespeedoverzero,
+                FuelWheelbaseSpeedOverZero = record.fuelwheelbasespeedoverzero
             };
+
+            //PtoActiveClass = new List<PtoActiveClass>
+            //{ new PtoActiveClass()
+            //{
+            //Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
+            //Seconds= 12345,
+            //Meters= 2345,
+            //MilliLitres= 3456
+            //}
+            //},
+
+            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null)
+            {
+                accumulatedData.AccelerationPedalPositionClass = _rfmsVehicleStatusAccumulator.AccumulateAccelerationPedalPositionClass(record);
+            }
+            //new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
+            //    To = 20,
+            //    Seconds = 23456,
+            //    Meters = 345678,
+            //    MilliLitres = 678345} },
+            //       BrakePedalPositionClass = new List<BrakePedalPositionClass>() { new BrakePedalPositionClass() {  From = 0,
+            //           To = 20,
+            //           Seconds = 2456,
+            //           Meters = 34578,
+            //           MilliLitres = 67345 } },
+            //       AccelerationClass = new List<AccelerationClass>{ new AccelerationClass() { From = -1.1,
+            //           To = -0.9,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       } },
+
+            //       HighAccelerationClass = new List<HighAccelerationClass>(){new HighAccelerationClass()
+            //   {
+            //           From = -3,
+            //           To = -2.5,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //       },
+            if (record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null)
+            {
+                accumulatedData.RetarderTorqueClass = _rfmsVehicleStatusAccumulator.AccumulateRetarderTorqueClass(record);
+            }
+
+            //       DrivingWithoutTorqueClass = new List<DrivingWithoutTorqueClass>(){new DrivingWithoutTorqueClass()
+            //   {
+            //           Label =MasterMemoryObjectCacheConstants.DRIVING_WITHOUT_TORQUE,
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //       },
+            //       EngineTorqueClass = new List<EngineTorqueClass>() {new EngineTorqueClass()            {
+            //           From = 0,
+            //           To = 10,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            if (record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null)
+            {
+                accumulatedData.EngineTorqueAtCurrentSpeedClass = _rfmsVehicleStatusAccumulator.AccumulateEngineTorqueAtCurrentSpeedClass(record);
+            }
+            //       VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
+            //   {
+            //           From = 0,
+            //           To = 4,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       EngineSpeedClass = new List<EngineSpeedClass>() {new EngineSpeedClass()
+            //   {
+            //           From = 0,
+            //           To = 400,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       AccelerationDuringBrakeClass = new List<AccelerationDuringBrakeClass>() { new  AccelerationDuringBrakeClass()
+            //   {
+            //           From = -1.1,
+            //           To = -0.9,
+            //           Seconds = 23456,
+            //           Meters = 345678,
+            //           MilliLitres = 678345
+            //       }
+            //},
+            //       SelectedGearClass = new List<SelectedGearClass>() {new SelectedGearClass()
+            //   {
+            //           Label = "0",
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //},
+            //       CurrentGearClass = new List<CurrentGearClass>() { new CurrentGearClass()
+            //   {
+            //           Label = "0",
+            //           Seconds = 12345,
+            //           Meters = 2345,
+            //           MilliLitres = 3456
+            //       }
+            //       },
+
+            // };
 
             return accumulatedData;
         }
 
 
-        public SnapshotData MapSnapShotData()
+        public SnapshotData MapSnapShotData(dynamic record)
         {
-            var snapshotData = new SnapshotData()
+
+            GnssPosition gnssPosition = new GnssPosition();
+            if (record.altitude != null)
             {
-                GnssPosition = new GnssPosition()
-                {
-                    Latitude = 57.71727,
-                    Longitude = 11.921161,
-                    Heading = 30,
-                    Altitude = 32,
-                    Speed = 54.5,
-                    PositionDateTime = DateTime.UtcNow//2021-08-23T08=07=40.446Z
-                },
-                WheelBasedSpeed = 54.3,
-                TachographSpeed = 54.4,
-                EngineSpeed = 1234,
-                FuelType = "1A",
-                FuelLevel1 = 86,
-                FuelLevel2 = 45,
-                CatalystFuelLevel = 43,
-                Driver1WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
-                Driver2Id = new Driver2Id()
-                {
-                    TachoDriverIdentification = new TachoDriverIdentification()
-                    {
-                        DriverIdentification = "12345678901234",
-                        CardIssuingMemberState = "S",
-                        DriverAuthenticationEquipment = MasterMemoryObjectCacheConstants.DRIVER_CARD,
-                        CardReplacementIndex = "0",
-                        CardRenewalIndex = "0"
-                    },
-                    OemDriverIdentification = new OemDriverIdentification()
-                    {
-                        IdType = "USB",
-                        DriverIdentification = "ABC-123-DEF"
-                    }
-                },
-                Driver2WorkingState = MasterMemoryObjectCacheConstants.DRIVE,
-                AmbientAirTemperature = 23.7,
-                ParkingBrakeSwitch = false,
-                HybridBatteryPackRemainingCharge = 76
+                gnssPosition.Altitude = Convert.ToInt32(record.altitude);
+            }
+
+            if (record.heading != null)
+            {
+                gnssPosition.Heading = Convert.ToInt32(record.heading);
+            }
+
+            if (record.latitude != null)
+            {
+                gnssPosition.Latitude = Convert.ToDouble(record.latitude);
+            }
+
+            if (record.longitude != null)
+            {
+                gnssPosition.Longitude = Convert.ToDouble(record.longitude);
+            }
+
+            if (record.positiondatetime != null)
+            {
+                gnssPosition.PositionDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddThh:mm:ss.fffZ");
+            }
+
+            if (record.speed != null)
+            {
+                gnssPosition.Speed = Convert.ToDouble(record.speed);
+            }
+
+            var snapshotData = new SnapshotData();
+
+
+
+            snapshotData.GnssPosition = gnssPosition;
+            if (record.wheelBasedSpeed != null)
+            {
+                snapshotData.WheelBasedSpeed = Convert.ToDouble(record.wheelBasedSpeed);
+            }
+            if (record.tachographspeed != null)
+            {
+                snapshotData.TachographSpeed = Convert.ToDouble(record.tachographspeed);
+            }
+            snapshotData.EngineSpeed = record.enginespeed;
+            snapshotData.FuelType = record.fuelType = "Diesel"; //Default value as Diesel as per DAf discussion
+            snapshotData.FuelLevel1 = record.fuelLevel1;
+            // FuelLevel2 = 45,
+            snapshotData.CatalystFuelLevel = record.catalystfuellevel;
+            snapshotData.Driver1WorkingState = record.driver1workingstate;
+            var driver2Id = new Driver2Id();
+            driver2Id.TachoDriverIdentification = GetDriverCardDetails(record.tachodriver2identification, record.driver2authenticationequipment);
+            driver2Id.OemDriverIdentification = new OemDriverIdentification()
+            {
+                IdType = record.driver2oemidtype,
+                DriverIdentification = record.oemdriver2identification
             };
+
+            snapshotData.Driver2WorkingState = record.driver2workingstate;
+            snapshotData.AmbientAirTemperature = record.ambientairtemperature;
+            snapshotData.ParkingBrakeSwitch = null;
+            snapshotData.HybridBatteryPackRemainingCharge = null;
+
             return snapshotData;
 
         }
 
-        public UptimeData MapUptimeData()
+        public UptimeData MapUptimeData(dynamic record)
         {
 
             var uptimeData = new UptimeData()
@@ -420,25 +450,25 @@ namespace net.atos.daf.ct2.rfms.response
 
                 TellTaleInfo = new List<TellTaleInfo>(){ new TellTaleInfo()
                 {
-                    TellTale = MasterMemoryObjectCacheConstants.FUEL_LEVEL,
-                    OemTellTale = MasterMemoryObjectCacheConstants.NO_GPS_SIGNAL,
-                    State = MasterMemoryObjectCacheConstants.YELLOW
+                    TellTale =  Convert.ToString(record.telltale),
+                    OemTellTale =record.oemtelltale,
+                    State = Convert.ToString(record.state)
                 }
                 },
-                ServiceDistance = 100000,
-                EngineCoolantTemperature = 90,
-                ServiceBrakeAirPressureCircuit1 = 512000,
-                ServiceBrakeAirPressureCircuit2 = 534000,
-                DurationAtLeastOneDoorOpen = 0,
+                ServiceDistance = record.serviceDitance,//100000,
+                EngineCoolantTemperature = record.enginecoolanttemperature,
+                ServiceBrakeAirPressureCircuit1 = record.servicebrakeairpressurecircuit1,
+                ServiceBrakeAirPressureCircuit2 = record.servicebrakeairpressurecircuit2,
+                // DurationAtLeastOneDoorOpen = 0,
                 AlternatorInfo = new AlternatorInfo()
                 {
-                    AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
+                    //AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
                     AlternatorNumber = 1
                 },
-                BellowPressureFrontAxleLeft = 234000,
-                BellowPressureFrontAxleRight = 234000,
-                BellowPressureRearAxleLeft = 234000,
-                BellowPressureRearAxleRight = 234000
+                //BellowPressureFrontAxleLeft = 234000,
+                //BellowPressureFrontAxleRight = 234000,
+                //BellowPressureRearAxleLeft = 234000,
+                //BellowPressureRearAxleRight = 234000
             };
             return uptimeData;
 
@@ -446,5 +476,25 @@ namespace net.atos.daf.ct2.rfms.response
         }
 
 
+        public TachoDriverIdentification GetDriverCardDetails(string driverIdentification, int? authenticationEquipment)
+        {
+            //TachoDriverIdentification tacho = new TachoDriverIdentification();
+            // record.tachodriver2identification;
+            //string driverid = record.tachodriveridentification;
+            if (driverIdentification != null && (driverIdentification.Length == 19 || driverIdentification == "*"))
+            {
+                return new TachoDriverIdentification()
+                {
+                    DriverIdentification = driverIdentification,
+                    CardIssuingMemberState = driverIdentification == "*" ? "*" : driverIdentification.Substring(0, 3).Trim(),//first three with trim
+                    DriverAuthenticationEquipment = authenticationEquipment?.ToString(),
+                    CardReplacementIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring((driverIdentification.Length - 4), 2),//16,17th index
+                    CardRenewalIndex = driverIdentification == "*" ? "*" : driverIdentification.Substring(driverIdentification.Length - 2) // last two index
+                };
+            }
+
+            else
+                return new TachoDriverIdentification();
+        }
     }
 }

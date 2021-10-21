@@ -14,7 +14,7 @@ import { FeatureService } from '../../../services/feature.service'
 })
 
 export class CreateEditViewFeaturesComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() actionType: any;
   @Input() dataAttributeList: any;
   @Input() selectedElementData: any;
@@ -276,7 +276,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       if (this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
       else
-        return ("New Details '$' Updated Successfully").replace('$', attrName);
+        return ("Feature '$' Updated Successfully").replace('$', attrName);
     }
   }
 

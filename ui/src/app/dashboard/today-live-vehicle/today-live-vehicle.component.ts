@@ -248,13 +248,17 @@ doughnutDistanceColors: Color[] = [
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -271,6 +275,8 @@ doughnutDistanceColors: Color[] = [
     }
    this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
        //console.log(vehicleData);
+    this.dataError = false;
+
       if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  this.finalVinList.length;
@@ -986,7 +992,7 @@ doughnutDistanceColors: Color[] = [
 
   //****************************** Preference Functions *************************************//
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 1 && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
@@ -1002,7 +1008,7 @@ doughnutDistanceColors: Color[] = [
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 1 && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;

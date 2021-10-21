@@ -210,7 +210,7 @@ namespace net.atos.daf.ct2.organizationservice
                 else
                 {
                     response.Code = Responcecode.Conflict;
-                    response.Message = "Relationship cannot be deleted as it is mapped with organiztion.";
+                    response.Message = "Relationship cannot be deleted as it is mapped with organization.";
 
                 }
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Relationship Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Delete", 1, 2, request.Id.ToString());
@@ -235,7 +235,23 @@ namespace net.atos.daf.ct2.organizationservice
             {
                 OrgRelationshipCreateResponse response = new OrgRelationshipCreateResponse();
 
-                var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrId);
+                //Check if vehicle groups of type 'G' contains any Visible vehicles
+                // if yes then discard the request
+                var conflictResult = await _organizationtmanager.GetVisibleVehiclesGroupCheck(request.VehicleGroupID.ToArray(), request.OwnerOrgId);
+
+                if (conflictResult.Count() > 0)
+                {
+                    response.OrgRelationshipVehicleConflictList
+                        .AddRange(conflictResult.Select(x => new OrgRelationshipVehicleConflict
+                        {
+                            VehicleGroupName = x.Name,
+                            ConflictedVINs = x.VINs
+                        }));
+                    response.Code = Responcecode.Forbidden;
+                    return await Task.FromResult(response);
+                }
+
+                var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrgId);
                 int relationsCount = 0;
                 if (request.Isconfirmed == false)
                 {
@@ -243,7 +259,8 @@ namespace net.atos.daf.ct2.organizationservice
                     {
                         foreach (var vehgroup in request.VehicleGroupID)
                         {
-                            if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup && i.Relationship_id == request.RelationShipId))
+                            if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup &&
+                                                       i.Relationship_id == request.RelationShipId && !i.End_date.HasValue))
                             {
                                 relationsCount++;
                                 response.Code = Responcecode.Conflict;
@@ -260,16 +277,17 @@ namespace net.atos.daf.ct2.organizationservice
                     {
                         objRelationship.Relationship_id = request.RelationShipId;
                         objRelationship.Vehicle_group_id = vehgroup;
-                        objRelationship.Owner_org_id = request.OwnerOrId;
+                        objRelationship.Owner_org_id = request.OwnerOrgId;
                         objRelationship.Created_org_id = request.CreatedOrgId;
                         objRelationship.Target_org_id = organization;
                         objRelationship.Allow_chain = request.AllowChain;
-                        if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id && i.Relationship_id == objRelationship.Relationship_id))
+                        if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id &&
+                                                   i.Relationship_id == objRelationship.Relationship_id && !i.End_date.HasValue))
                         {
                             OrgRelationshipMappingGetRequest presetRelationships = new OrgRelationshipMappingGetRequest();
                             presetRelationships.RelationShipId = request.RelationShipId;
                             presetRelationships.VehicleGroupID = vehgroup;
-                            presetRelationships.OwnerOrId = request.OwnerOrId;
+                            presetRelationships.OwnerOrId = request.OwnerOrgId;
                             presetRelationships.CreatedOrgId = request.CreatedOrgId;
                             presetRelationships.TargetOrgId = organization;
                             response.OrgRelationshipMappingList.Add(presetRelationships);
@@ -289,7 +307,6 @@ namespace net.atos.daf.ct2.organizationservice
                 }
 
                 return await Task.FromResult(response);
-
             }
             catch (Exception ex)
             {
@@ -298,7 +315,6 @@ namespace net.atos.daf.ct2.organizationservice
                 {
                     Code = Responcecode.Failed,
                     Message = "Relationship Create Failed due to - " + ex.Message,
-
                 });
             }
         }
@@ -378,9 +394,9 @@ namespace net.atos.daf.ct2.organizationservice
                                          RelationShipId = x.Relationship_id,
                                          TargetOrgId = x.Target_org_id,
                                          CreatedOrgId = x.Created_org_id,
-                                         StartDate = x.Start_date,
+                                         StartDate = x.Start_date.Value,
                                          CreatedAt = x.Created_at,
-                                         EndDate = x.End_date,
+                                         EndDate = x.End_date.Value,
                                          AllowChain = x.Allow_chain,
                                          OrganizationName = x.OrganizationName,
                                          VehicleGroupID = x.Vehicle_group_id,

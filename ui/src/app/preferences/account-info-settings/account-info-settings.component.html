@@ -7,13 +7,13 @@
           {{ displayMessage }}
           </div>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-          <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+          <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon> 
           </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
           <span
-            style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation || 'Account Information' }}
+            style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation  }}
             <mat-icon *ngIf='!editAccountSettingsFlag' (click)="editAccountSettings()" style="cursor: pointer;">edit</mat-icon></span>
         </div>
       </div>
@@ -23,10 +23,10 @@
             <mat-icon  style="cursor: pointer; font-size: 150px; text-align: center; color: grey;"
               (click)="onchangePictureClick()">account_circle</mat-icon>
             <span fxLayout="row" (click)="onchangePictureClick()"
-              style="cursor: pointer; margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange || 'Change' }}</span>
+              style="cursor: pointer; margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange  }}</span>
           </div>
           <div *ngIf="changePictureFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
-            <input *ngIf="!isSelectPictureConfirm" type="file" (change)="fileChangeEvent($event)" />
+            <input *ngIf="!isSelectPictureConfirm" type="file" accept="image/png, image/gif, image/jpeg" (change)="fileChangeEvent($event)" />
             <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;" 
               [imageChangedEvent]="imageChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
               [resizeToWidth]="100" format="png" roundCropper=true (imageCropped)="imageCropped($event)"
@@ -37,49 +37,55 @@
               <span fxLayout="row">
                 <mat-icon style="margin-left: 40px; font-size: 80px; color: grey;">account_circle</mat-icon>
               </span>
-              <span fxLayout="row" style="margin-left: 72px; margin-top: 20px;">{{ translationData.lblor || 'or' }}</span>
+              <span fxLayout="row" style="margin-left: 72px; margin-top: 20px;">{{ translationData.lblor }}</span>
               <span fxLayout="row"
-                style="margin-left: 50px; margin-top: 20px;">{{ translationData.lblDraghere || 'Drag here' }}</span>
+                style="margin-left: 50px; margin-top: 20px;">{{ translationData.lblDraghere  }}</span>
             </div>
             <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
               <span style="margin-left:20px; margin-top: 15px;">
                 <a style="cursor: pointer;"
-                  (click)="onSelectPictureCancel()">{{ translationData.lblCancel || 'Cancel' }}</a>
+                  (click)="onSelectPictureCancel()">{{ translationData.lblCancel }}</a>
               </span>
               <span
                 style="border-left: 1px solid; height: 20px; margin-left:30px; margin-top: 15px; color: grey;"></span>
               <span style="margin-left:8px; margin-top: 15px;">
                 <button style="cursor: pointer; border: none;" [disabled]="croppedImage == croppedImageTemp"
-                  (click)="onSelectPictureConfirm()">{{ translationData.lblConfirm || 'Confirm' }}</button>
+                  (click)="onSelectPictureConfirm()">{{ translationData.lblConfirm  }}</button>
               </span>
             </div>
             
           </div>
-          <div class="linkBtn" style="margin-top: 10px;">
-            <a style='margin-left: 20px;'
-              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint  }}
+            </span>
           </div>
           <div fxLayout="row" *ngIf="imageError!=''">
             <span style="color:red">{{imageError}}</span>
           </div>
+          <div class="linkBtn" style="margin-top: 10px;">
+            <a style='margin-left: 20px;'
+              (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword  }}</a>
+          </div>
+          
         </div>
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" style="width:34%" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
+              <mat-label>{{ translationData.lblSalutation }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].salutation : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" style="width:32%" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblFirstName || 'First Name' }}</mat-label>
+              <mat-label>{{ translationData.lblFirstName  }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].firstName : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" style="width:32%"  fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
+              <mat-label>{{ translationData.lblLastName }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].lastName : '--' }}
               </mat-label>
@@ -88,22 +94,22 @@
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per"  style="width:34%" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
+              <mat-label>{{ translationData.lblLoginEmail  }}</mat-label>
               <mat-label class='custom-font1'>
                 {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" style="width:32%"  fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
+              <mat-label>{{ translationData.lblOrganisation  }}</mat-label>
               <mat-label class='custom-font'>
                 {{ orgName ? orgName : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per"  style="width:32%" fxLayout="column" fxLayoutAlign="left">
               <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
-                <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
+                <mat-label>{{ translationData.lblDriverId  }}</mat-label>
                 <mat-label class='custom-font'>
-                  {{ accountInfo.length > 0 ? accountInfo[0].driverId : '--' }}
+                  {{ accountInfo.length > 0 ? accountInfo[0].driverId != '' ? accountInfo[0].driverId : '--' : '--' }}
                 </mat-label>
              <!-- </span>-->
             </div>
@@ -114,19 +120,19 @@
               <div fxLayout="row"></div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span
-                  style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation || 'Account Information' }}</span>
+                  style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation}}</span>
               </div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <span
-                  style='color: red;'>*{{ translationData.lblAllDetailsAreMandatory || 'All details are mandatory' }}</span>
+                  style='color: red;'>*{{ translationData.lblAllDetailsAreMandatory  }}</span>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span>
+                <mat-label>{{ translationData.lblSalutation  }}<span class='mandatoryColor'>*</span>
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}"
+                  <mat-select placeholder="{{ translationData.lblSalutation  }}"
                     formControlName="salutation" required>
                     <mat-option *ngFor="let rer of salutationList" [value]="rer.name">
                       {{ rer.name }}
@@ -134,56 +140,56 @@
                   </mat-select>
                 </mat-form-field>
                 <mat-error *ngIf="accountSettingsForm.get('salutation').hasError('required')">
-                  {{ translationData.lblPleasechoosesalutation || 'Please choose salutation' }}
+                  {{ translationData.lblPleasechoosesalutation  }}
                 </mat-error>
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span>
+                <mat-label>{{ translationData.lblFirstName  }}<span class='mandatoryColor'>*</span>
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput
+                  <input maxlength="30" placeholder="{{ translationData.lblFirstName  }}" matInput
                     formControlName="firstName" required>
                 </mat-form-field>
                 <mat-error *ngIf="accountSettingsForm.get('firstName').hasError('required')">
-                  {{ translationData.lblPleaseenterFirstName || 'Please enter First Name' }}
+                  {{ translationData.lblPleaseenterFirstName  }}
                 </mat-error>
                 <mat-error *ngIf="accountSettingsForm.get('firstName').hasError('specialCharsNotAllowed')">
-                  {{ translationData.lblSpecialCharactersNotAllowed || 'Special characters not allowed' }}
+                  {{ translationData.lblSpecialCharactersNotAllowed }}
                 </mat-error>
                 <mat-error *ngIf="accountSettingsForm.get('firstName').hasError('numberNotAllowed')">
-                  {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
+                  {{ translationData.lblNumbersNotAllowed  }}
                 </mat-error>
                 <mat-error *ngIf="!accountSettingsForm.get('firstName').hasError('required')  && accountSettingsForm.get('firstName').hasError('whitespace')">
-                  {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
+                  {{ translationData.lblFirstNamecannotcontainonlywhitespace }}
                  </mat-error>
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span>
+                <mat-label>{{ translationData.lblLastName  }}<span class='mandatoryColor'>*</span>
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput
+                  <input maxlength="20" placeholder="{{ translationData.lblLastName  }}" matInput
                     formControlName="lastName" required>
                 </mat-form-field>
                 <mat-error *ngIf="accountSettingsForm.get('lastName').hasError('required')">
-                  {{ translationData.lblPleaseenterLastName || 'Please enter Last Name' }}
+                  {{ translationData.lblPleaseenterLastName }}
                 </mat-error>
                 <mat-error *ngIf="accountSettingsForm.get('lastName').hasError('specialCharsNotAllowed')">
-                  {{ translationData.lblSpecialCharactersNotAllowed || 'Special characters not allowed' }}
+                  {{ translationData.lblSpecialCharactersNotAllowed  }}
                 </mat-error>
                 <mat-error *ngIf="accountSettingsForm.get('lastName').hasError('numberNotAllowed')">
-                  {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
+                  {{ translationData.lblNumbersNotAllowed }}
                 </mat-error>
                 <mat-error *ngIf="!accountSettingsForm.get('lastName').hasError('required')  && accountSettingsForm.get('lastName').hasError('whitespace')">
-                  {{ translationData.lblLastNamecannotcontainonlywhitespace || 'Last Name cannot contain only whitespace' }}
+                  {{ translationData.lblLastNamecannotcontainonlywhitespace  }}
                  </mat-error>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
+                <mat-label>{{ translationData.lblLoginEmail }}<span class='mandatoryColor'>*</span>
                 </mat-label>              
                 <mat-form-field appearance="outline" class="full-width">
-                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput 
+                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail }}" matInput 
                     formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                 </mat-form-field>
                 <!-- <mat-error *ngIf="accountSettingsForm.get('loginEmail').hasError('required')">
@@ -194,18 +200,18 @@
                 </mat-error> -->
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
+                <mat-label>{{ translationData.lblOrganisation  }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput
+                  <input placeholder="{{ translationData.lblOrganisation }}" matInput
                     value="DAF Connect" formControlName="organization">
                 </mat-form-field>
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
-                  <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
+                  <mat-label>{{ translationData.lblDriverId  }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input placeholder="{{ translationData.lblDriverId || 'Driver Id' }}" matInput
-                      formControlName="driverId">
+                    <input placeholder="{{ translationData.lblDriverId  }}" matInput
+                      formControlName="driverId" [readonly]="true">
                   </mat-form-field>
                <!-- </span>-->
               </div>
@@ -213,11 +219,11 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
               <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
-                (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+                (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel  }}</button>
               <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
-                (click)='onResetAccountSettings()'>{{ translationData.lblReset || 'Reset' }}</button>  
+                (click)='onResetAccountSettings()'>{{ translationData.lblReset }}</button>  
               <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
-                (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+                (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm }}</button>
             </div>
           </form>
         </div>
@@ -226,27 +232,27 @@
         <mat-divider></mat-divider>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings || 'General Settings' }}
-          ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings  }}
+          (<span style='font-weight: normal;'>{{ translationData.lblOrganisationbasedsettings }}</span>)
           <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
+          <mat-label>{{ translationData.lblLanguage }}</mat-label>
           <mat-label class='custom-font'>
             {{ !languageData ? '--' : languageData.length > 0 ? languageData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
+          <mat-label>{{ translationData.lblTimeZone  }}</mat-label>
           <mat-label class='custom-font'>
             {{ !timezoneData ? '--' : timezoneData.length > 0 ? timezoneData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
+          <mat-label>{{ translationData.lblUnit  }}</mat-label>
           <mat-label class='custom-font'>
               {{ !unitData ? '--' : unitData.length > 0 ? unitData[0].value : '--' }}
           </mat-label>
@@ -254,48 +260,60 @@
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
           <mat-label class='custom-font'>
             {{ !currencyData ? '--' : currencyData.length > 0 ? currencyData[0].value : '--' }}
           </mat-label>
-        </div>
+        </div> -->
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
+          <mat-label>{{ translationData.lblDateFormat}}</mat-label>
           <mat-label class='custom-font'>
             {{ !dateFormatData ? '--' : dateFormatData.length > 0 ? dateFormatData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
+          <mat-label>{{ translationData.lblTimeFormat  }}</mat-label>
           <mat-label class='custom-font'>
             {{ !timeFormatData ? '--' : timeFormatData.length > 0 ? timeFormatData[0].value : '--' }}
+          </mat-label>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblVehicleDisplayDefault  }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
           </mat-label>
         </div>
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
           <mat-label class='custom-font'>
             {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
           </mat-label>
-        </div>
+        </div> -->
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
+          <mat-label>{{ translationData.lblLandingPageDisplayDefault  }}</mat-label>
           <mat-label class='custom-font'>
             {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : landingPageDisplayDropdownData[0].value }}
           </mat-label>
         </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblSetPageRefreshTime }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ accountPreferenceData ? (accountPreferenceData.pageRefreshTime ? accountPreferenceData.pageRefreshTime : '--') : '--' }}
+          </mat-label>
+        </div>
         <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+          <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport  }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{ uploadLogo != '' ? uploadLogo : '--' }} -->
             <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="width: 30px; height: 30px;" />
           </mat-label>
         </div>
       </div>
-      <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
+      <!-- <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
         class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
@@ -303,19 +321,21 @@
             {{ accountPreferenceData ? (accountPreferenceData.pageRefreshTime ? accountPreferenceData.pageRefreshTime : '--') : '--' }}
           </mat-label>
         </div>
-      </div>
+      </div> -->
 
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
           <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
+            <mat-label>{{ translationData.lblLanguage  }}</mat-label>
              <mat-form-field appearance="outline" class="full-width">
               
               <mat-select placeholder="Language" 
                           formControlName="language"
                            (selectionChange)="onDropdownChange($event, 'language')"> 
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search><mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearch }}" #search>
+                    <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredLanguages | async" [value]="rer.id">
                   {{ rer.value }}
@@ -325,14 +345,16 @@
             </mat-form-field>
           </div>
           <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
+            <mat-label>{{ translationData.lblTimeZone }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
              
               <mat-select placeholder="TimeZone" 
                           formControlName="timeZone"
                            (selectionChange)="onDropdownChange($event, 'timeZone')">
                 <mat-option>
-                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch><mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" placeholderLabel="{{ translationData.lblSearch}}" #timesearch>
+                    <mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredTimezones | async" [value]="rer.id">
                   {{ rer.value }}
@@ -341,7 +363,7 @@
             </mat-form-field>
           </div>
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.unit}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
+            <mat-label>{{ translationData.lblUnit }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Unit" formControlName="unit" (selectionChange)="onDropdownChange($event, 'unit')">
                 <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
@@ -352,7 +374,7 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.currency}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Currency" formControlName="currency" (selectionChange)="onDropdownChange($event, 'currency')">
@@ -361,9 +383,9 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-          </div>
+          </div> -->
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.dateFormat}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
+            <mat-label>{{ translationData.lblDateFormat }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Date Format" formControlName="dateFormat" (selectionChange)="onDropdownChange($event, 'dateFormat')">
                 <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
@@ -373,19 +395,17 @@
             </mat-form-field>
           </div>
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.timeFormat}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
+            <mat-label>{{ translationData.lblTimeFormat}}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}" formControlName="timeFormat" (selectionChange)="onDropdownChange($event, 'timeFormat')">
+              <mat-select placeholder="{{ translationData.lblTimeFormat  }}" formControlName="timeFormat" (selectionChange)="onDropdownChange($event, 'timeFormat')">
                 <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-        </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
           <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
+            <mat-label>{{ translationData.lblVehicleDisplayDefault  }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Vehicle Display" formControlName="vehDisplay" (selectionChange)="onDropdownChange($event, 'vehDisplay')">
                 <mat-option *ngFor="let rer of vehicleDisplayDropdownData" [value]="rer.id">
@@ -394,29 +414,74 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+          <!-- <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}" formControlName="landingPage" (selectionChange)="onDropdownChange($event, 'landingPage')">
-                <mat-option *ngFor="let rer of landingPageDisplayDropdownData" [value]="rer.id">
+              <mat-select placeholder="Vehicle Display" formControlName="vehDisplay" (selectionChange)="onDropdownChange($event, 'vehDisplay')">
+                <mat-option *ngFor="let rer of vehicleDisplayDropdownData" [value]="rer.id">
+                  {{ rer.value }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div> -->
+          <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblLandingPageDisplayDefault  }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault  }}"
+                           formControlName="landingPage"
+                            (selectionChange)="onDropdownChange($event, 'landingPage')">
+                <mat-option>
+                  <ngx-mat-select-search (keyup)="filterLandingPageDisplay(landingpagesearch.value)" placeholderLabel="{{ translationData.lblSearch }}" #landingpagesearch>
+                  <mat-icon (click) = "resetLandingPageFilter()" ngxMatSelectSearchClear>close</mat-icon>
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let rer of filteredLandingPageDisplay | async " [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
+          <div class="areaWidth min-width-30-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
+            <!-- <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center"> -->
+              <mat-label>{{ translationData.lblSetPageRefreshTime  }}</mat-label>
+            <!-- </div> -->
+            <!-- <div fxLayout="row" fxLayoutAlign="left center"> -->
+              <mat-form-field appearance="outline">
+                <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                <span matSuffix>min</span>   
+              </mat-form-field>
+              <!-- <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span> -->
+            <!-- </div> -->
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('required')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('required')">
+              {{ translationData.lblPleaseEnterTimerValue }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                {{ translationData.lbl  }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                {{ translationData.lbl  }}
+            </mat-error>
+          </div>
           <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+            <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport  }}</mat-label>
             <div fxLayout="row" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px" fxLayoutAlign="center center" >
               <div class="areaWidth min-width-15-per mobile-margin-right-0 myform-wrappe" fxLayout="column" fxLayoutAlign="left">
-                <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete }}">
                   <mat-icon>cancel</mat-icon>
                 </button>
+                <image-cropper *ngIf="uploadLogo != ''" [hidden]="hideImgCropper" style="height: 30px; width: 30px;" 
+                  [imageChangedEvent]="brandLogoChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
+                  [resizeToWidth]="100" format="png"
+                  (imageLoaded)="brandLogoLoaded()" (cropperReady)="brandLogoCropperReady()" (loadImageFailed)="loadImageFailed()">
+                </image-cropper>
                 <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
               </div>
               <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                  <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="{{ translationData.lblUploadLogo || 'Upload Logo' }}" ></ngx-mat-file-input>
-                  <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
+                  <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="{{ translationData.lblUploadLogo }}" ></ngx-mat-file-input>
+                  <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse  }}</button>
                 </mat-form-field>
                 <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
                   <mat-form-field appearance="outline">
@@ -426,18 +491,27 @@
                 </div> -->
               </div>
             </div>
-            <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
+            <span>{{ translationData.lblIconSelectionCriteriaMsg  }}</span>
             <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
+            <!-- <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span> -->
+            <span style="color: grey;">
+              <mat-icon>information</mat-icon> {{ translationData.lblProfilePictureHint }}
+            </span>
+            </mat-error>
+            <!-- <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
                 The total size must not exceed {{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
                 | byteFormat}}).
-            </mat-error>
+            </mat-error> -->
             <mat-error *ngIf="imageEmptyMsg">
-                {{ translationData.lblEmptyFile || 'Empty File' }}
+                {{ translationData.lblEmptyFile }}
+            </mat-error>
+            <mat-error *ngIf="brandLogoError != ''">
+              {{ brandLogoError }}
             </mat-error>
           </div>
         </div>
 
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
           <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
             <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
               <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
@@ -459,15 +533,15 @@
                 {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
             </mat-error>
           </div>
-        </div>
+        </div> -->
 
         <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
-            (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel }}</button>
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
-                            (click)='onResetGeneralSettings()'>{{ translationData.lblReset || 'Reset' }}</button>
+                            (click)='onResetGeneralSettings()'>{{ translationData.lblReset}}</button>
           <button [disabled]='!userSettingsForm.valid' class='mobile-full-width' mat-raised-button color="primary" type="submit"
-            (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+            (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm }}</button>
         </div>
       </form>
     </mat-card-content>

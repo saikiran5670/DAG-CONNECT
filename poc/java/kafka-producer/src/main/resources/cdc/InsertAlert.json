@@ -1,0 +1,7 @@
+{
+  "schema": "master.vehiclealertref",
+  "payload": "{ \"alertId\": \"710\", \"vinOps\": [{ \"vin\": \"TEST_CDC_VIN\", \"op\": \"I\" }] }",
+  "opration": "A",
+  "namespace": "alerts",
+  "timeStamp": 1627539915
+}

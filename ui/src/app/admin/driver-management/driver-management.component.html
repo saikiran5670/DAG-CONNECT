@@ -9,11 +9,11 @@
             <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
             </div>
         </div>
-        <mat-card class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card *ngIf="adminAccessType.adminFullAccess" class='mat-elevation-z margin-bottom-xlg'>
             <form [formGroup]="importDriverFormGroup">
                 <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportNewDrivers || 'Import New Drivers' }}</span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportNewDrivers}}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
@@ -21,35 +21,35 @@
                         <span style='display: flex; align-items: center;'>
                             <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
                             <a (click)='downloadDriverTemplate()' class='cursor-pointer'
-                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadaTemplate || 'Download a Template' }}</a>
+                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadaTemplate }}</a>
                         </span>
-                        <span>{{ translationData.lblDownloadaTemplateMessage || 'You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Only Driver ID is mandatory, rest all fields are optional. See the template for details on valid input criteria for each field. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.'}}</span>
+                        <span>{{ translationData.lblDownloadaTemplateMessage }}</span>
                     </div>
-                    <div *ngIf="!adminAccessType.adminReadOnlyAccess" style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                    <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                         <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                             <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblUploadUpdatedExcelFile || 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                        <mat-label>{{ translationData.lblUploadUpdatedExcelFile }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
                                             <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
-                                            <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                            <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse }}</button>
                                         </mat-form-field>
                                         <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
-                                            {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                                            {{ translationData.lblPleaseselectafile }}
                                         </mat-error>
                                         <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('maxContentSize')">
                                             The total size must not exceed {{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                             | byteFormat}}).
                                         </mat-error>
                                         <mat-error *ngIf="excelEmptyMsg">
-                                            {{ translationData.lblEmptyFile || 'Empty File' }}
+                                            {{ translationData.lblEmptyFile }}
                                         </mat-error>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                         <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid || importDriverPopup || excelEmptyMsg" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') || excelEmptyMsg ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="importDrivers(removableInput)">
-                                            <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
+                                            <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImportDrivers }}
                                         </button>
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@
         <mat-card *ngIf='importDriverPopup' style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportedfiledetails || 'Imported file details' }} ({{ filelist ? filelist.length : 0 }})</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportedfiledetails }} ({{ filelist ? filelist.length : 0 }})</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
                     <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -70,16 +70,21 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblImported || 'Imported' }}  <span style='color: green'>{{ newDriverCount }} {{ translationData.lblnewdriverrecords || 'records processed successfully' }}</span></span>
+                    <span>{{ translationData.lblImported }}  <span style='color: green'>{{ newDriverCount }} {{ translationData.lblnewdriverrecords }}</span></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedDriverList.length }} {{ translationData.lbldriverrecords || 'records' }}</span></span>
+                    <span>{{ translationData.lblRejected }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedDriverList.length }} {{ translationData.lbldriverrecords }}</span></span>
                 </div>
             </div>
         </mat-card>
-        <mat-card class='mat-elevation-z'>
+        <mat-card class='mat-elevation-z' *ngIf="!showLoadingIndicator">
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
+                </div>
+            </div>
             <!-- <form [formGroup]= 'consentFormGroup'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -178,8 +183,8 @@
                 <ng-template #topLeftElements let-gridData='rowData'>
                     <div class='areaWidth' fxLayoutAlign="center center">
                         <mat-form-field appearance="outline" class='margin-right-xxlg'>
-                            <mat-select [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
-                                placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
+                            <mat-select [(ngModel)]='selectedConsentType' [disabled]='initData.length == 0' (selectionChange)="onConsentStatusChange($event)"
+                                placeholder="{{ translationData.lblSelectConsentIDStatus }}">
                                 <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
                                     {{ rer.name }}
                                 </mat-option>
@@ -191,42 +196,39 @@
                 <ng-template #topRightElements let-gridData='rowData'>
                     <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
                         <button mat-flat-button color="primary" [disabled]="initData.length == 0" (click)="onConsentClick('H')">
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll ||
-                            'Reset All'}}
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll }}
                         </button>
                     </div>
                     <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
                         <button mat-flat-button color="primary" [disabled]="initData.length == 0" (click)="onConsentClick('I')">
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll ||
-                            'Opt-In All'}}
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll }}
                         </button>
                     </div>
                     <div class='areaWidth' fxLayoutAlign="center center" *ngIf="!adminAccessType.adminReadOnlyAccess">
                         <button style='background-color: #d62a29 !important;' mat-flat-button color="primary"
                             [disabled]="initData.length == 0" (click)="onConsentClick('U')">
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll ||
-                            'Opt-Out All'}}
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll }}
                         </button>
                     </div>
                 </ng-template>
             
                 <ng-template #viewStatusColumnElements let-gridData='rowData'>
                     <div class='margin-left-10-per' *ngIf="gridData.status == 'I'">
-                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                        <img class='cursor-pointer' (click)="!adminAccessType.adminReadOnlyAccess ? changeOptStatus(gridData) : ''" matTooltip="{{ translationData.lblOptIn }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                     </div>
                     <div class='margin-left-10-per' *ngIf="gridData.status == 'U'">
-                        <img class='cursor-pointer' (click)='changeOptStatus(gridData)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                        <img class='cursor-pointer' (click)="!adminAccessType.adminReadOnlyAccess ? changeOptStatus(gridData) : ''" matTooltip="{{ translationData.lblOptOut }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                     </div>
                 </ng-template>
             
                 <ng-template #actionColumnElements let-gridData='rowData'>
-                    <button class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                    <button class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'view')" matTooltip="{{ translationData.lblView }}">
                         <mat-icon>visibility</mat-icon>
                     </button>
-                    <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                    <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditView(gridData, 'edit')" matTooltip="{{ translationData.lblEdit }}">
                         <mat-icon>create</mat-icon>
                     </button>
-                    <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDelete(gridData)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                    <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDelete(gridData)" matTooltip="{{ translationData.lblDelete }}">
                         <mat-icon class="deleteIcon">delete_outline</mat-icon>
                     </button>
                 </ng-template>

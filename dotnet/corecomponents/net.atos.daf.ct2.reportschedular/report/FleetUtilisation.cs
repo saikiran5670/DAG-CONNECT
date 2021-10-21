@@ -50,11 +50,13 @@ namespace net.atos.daf.ct2.account.report
         internal List<FleetUtilizationPdfDetails> FleetUtilisationPdfDetails { get; private set; }
         public long TotalIdleDuration { get; private set; }
 
+        public int FeatureId { get; }
+
         public FleetUtilisation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType)
+                          EmailEventType evenType, EmailContentType contentType, int featureId)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -64,6 +66,7 @@ namespace net.atos.daf.ct2.account.report
             _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
+            FeatureId = featureId;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)

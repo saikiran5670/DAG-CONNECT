@@ -171,7 +171,7 @@
         </ng-template>
 
         <ng-template #topRightElements let-gridData='rowData'>
-          <div *ngIf="!adminAccessType.adminReadOnlyAccess" class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
+          <div *ngIf="adminAccessType.adminFullAccess" class='areaWidth' fxLayoutAlign="center center" style="letter-spacing: 0.2px;font-size: 16px;">
               <button mat-flat-button color="primary" (click)="onClickNewReportScheduler()">
               <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblScheduleReport || 'Schedule Report'}}
               </button>
@@ -179,8 +179,8 @@
         </ng-template>
     
         <ng-template #viewStatusColumnElements let-gridData='rowData'>
-          <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(gridData)" matTooltip="{{ gridData.status == 'A' ? (translationData.lblClickToDeactivate || 'Click to Deactivate') : translationData.lblClickToActivate || 'Click to Activate' }}">
-            <mat-slide-toggle color="primary" [checked]='gridData.status == "A" ? true : false' >
+          <button [disabled]="adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(gridData)" matTooltip="{{ gridData.status == 'A' ? (translationData.lblClickToDeactivate || 'Click to Deactivate') : translationData.lblClickToActivate || 'Click to Activate' }}">
+            <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess" color="primary" [checked]='gridData.status == "A" ? true : false' >
           </mat-slide-toggle>&nbsp;
           <span>{{ gridData.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
           </button>

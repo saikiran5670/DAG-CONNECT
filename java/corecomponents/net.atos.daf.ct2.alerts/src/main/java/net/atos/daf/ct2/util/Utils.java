@@ -147,14 +147,14 @@ public class Utils implements Serializable {
         return (long)(hours * 3600);
     }
 
-    public static Long calculateAverage(Index index1, Index index2) {
-        Long odometerDiff = index2.getVDist() - index1.getVDist();
-        Long avgValue = 0L;
+    public static Double calculateAverage(Index index1, Index index2) {
+        Double odometerDiff = Double.valueOf(index2.getVDist() - index1.getVDist());
+        Double avgValue = 0.0;
         try {
             /**
              * Time diff in seconds
              */
-            Long timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
+           /* Long timeDiff = ((TimeFormatter.getInstance().convertUTCToEpochMilli(index2.getEvtDateTime().toString(),
                     MSG_EVT_DATE_FORMAT)) - (TimeFormatter.getInstance().convertUTCToEpochMilli(index1.getEvtDateTime().toString(), MSG_EVT_DATE_FORMAT)))
                     / 1000;  // for converting milliseconds to seconds
             logger.trace("time diff :" + timeDiff);
@@ -162,7 +162,10 @@ public class Utils implements Serializable {
             if (timeDiff > 0) {
                 avgValue = odometerDiff / timeDiff;
                 logger.trace("average :" + odometerDiff / timeDiff);
-            }
+            }*/
+        	
+        	avgValue = odometerDiff / 300;
+            logger.trace("average :" +avgValue);
 
         } catch (Exception e) {
             logger.error("Error while calculation avg calculation error:: {} index1:: {}, index2 ::{}", e, index1,index2);
@@ -183,5 +186,14 @@ public class Utils implements Serializable {
 				logger.error("Error while calculation Idle time calculation error:: {} indexMsg{}", e, indexMsg);
 			}
     	 return idleDuration;
+    }
+
+    /**
+     * Get current time in UTC
+     */
+    public static long getCurrentTimeInUTC(){
+        return Instant.ofEpochMilli(System.currentTimeMillis())
+                .atZone(ZoneOffset.UTC)
+                .toInstant().toEpochMilli();
     }
 }

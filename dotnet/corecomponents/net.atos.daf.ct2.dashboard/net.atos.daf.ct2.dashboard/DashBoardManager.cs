@@ -49,14 +49,9 @@ namespace net.atos.daf.ct2.dashboard
         {
             DateTime startDateTime = fleetKpiFilter.StartDateTime.UnixToDateTime();
             DateTime endDateTime = fleetKpiFilter.EndDateTime.UnixToDateTime();
-
-            // Calculate last change duration from current filters
-            TimeSpan dayDifference = endDateTime - startDateTime;
-            int days = dayDifference.Days;
-
             // To calculate last duration date range
-            DateTime lastStartdate = startDateTime.AddDays(days * -1);
-            DateTime lastEnddate = startDateTime.AddDays(-1);
+            DateTime lastStartdate = startDateTime.AddDays(-7);
+            DateTime lastEnddate = startDateTime;
 
             // To prepare copy of existing object for query
             FleetKpiFilter lastFleetKpiFilter = new FleetKpiFilter
@@ -74,6 +69,11 @@ namespace net.atos.daf.ct2.dashboard
         {
             List<Alert24Hours> alert24hours = await _dashboardRepository.GetLastAlert24Hours(alert24HoursFilter);
             return alert24hours;
+        }
+        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId)
+        {
+            List<AlertOrgMap> alerts = await _dashboardRepository.GetAlertNameOrgList(organizationId);
+            return alerts;
         }
         public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {

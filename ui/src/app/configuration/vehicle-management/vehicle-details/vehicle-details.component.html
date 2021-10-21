@@ -100,23 +100,23 @@
     
         <ng-template #viewStatusColumnElements let-gridData='rowData'>
           <span *ngIf="gridData.status == 'O'">
-            <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}"
+            <img matTooltip="{{ translationData.lblOptOut  }}"
               src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'C'">
-            <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg'
+            <img matTooltip="{{ translationData.lblOptIn  }}" src='assets/images/icons/vehicleStatus/Opt_In.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'N'">
-            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}"
+            <img matTooltip="{{ translationData.lblOptInOTA  }}"
               src='assets/images/icons/vehicleStatus/Ota+Optin.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'A'">
-            <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg'
+            <img matTooltip="{{ translationData.lblOTA }}" src='assets/images/icons/vehicleStatus/Ota.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="gridData.status == 'T'">
-            <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}"
+            <img matTooltip="{{ translationData.lblTerminate  }}"
               src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
         </ng-template>
@@ -125,8 +125,7 @@
           <button class='actionBtn' (click)="editViewVehicle(gridData, 'view')" mat-flat-button matTooltip="View">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button class='actionBtn' mat-flat-button (click)="editViewVehicle(gridData, 'edit')" matTooltip="Edit"
-            *ngIf="gridData.hasOwned">
+          <button *ngIf="!adminAccessType.adminReadOnlyAccess && gridData.hasOwned" class='actionBtn' mat-flat-button (click)="editViewVehicle(gridData, 'edit')" matTooltip="Edit">
             <mat-icon>create</mat-icon>
           </button>
         </ng-template>

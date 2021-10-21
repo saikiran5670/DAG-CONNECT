@@ -60,11 +60,13 @@ namespace net.atos.daf.ct2.account.report
         public double TotalDistance { get; private set; }
         public double TotalFuelConsumed { get; private set; }
 
+        public int FeatureId { get; }
+
         public FleetFuel(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager, int featureId)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -76,6 +78,7 @@ namespace net.atos.daf.ct2.account.report
             _contentType = contentType;
             _mapManager = mapManager;
             _mapHelper = new reportscheduler.helper.MapHelper(_mapManager);
+            FeatureId = featureId;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)
@@ -147,9 +150,9 @@ namespace net.atos.daf.ct2.account.report
                         PTODuration = item.PTODuration,
                         HarshBrakeDuration = item.HarshBrakeDuration,
                         HeavyThrottleDuration = item.HeavyThrottleDuration,
-                        CruiseControlDistance30_50 = item.CruiseControlDistance30_50,
-                        CruiseControlDistance50_75 = item.CruiseControlDistance50_75,
-                        CruiseControlDistance75 = item.CruiseControlDistance50_75,
+                        CruiseControlDistance30_50 = item.CruiseControlDistance3050,
+                        CruiseControlDistance50_75 = item.CruiseControlDistance5075,
+                        CruiseControlDistance75 = item.CruiseControlDistance5075,
                         AverageTrafficClassification = item.AverageTrafficClassification,
                         CCFuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistance, item.CCFuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistanceNotActive, item.CCFuelConsumedNotActive, VolumeUnit.MilliLiter, UnitToConvert),
@@ -193,9 +196,9 @@ namespace net.atos.daf.ct2.account.report
                         PTODuration = item.PTODuration,
                         HarshBrakeDuration = item.HarshBrakeDuration,
                         HeavyThrottleDuration = item.HeavyThrottleDuration,
-                        CruiseControlDistance30_50 = item.CruiseControlDistance30_50,
-                        CruiseControlDistance50_75 = item.CruiseControlDistance50_75,
-                        CruiseControlDistance75 = item.CruiseControlDistance50_75,
+                        CruiseControlDistance30_50 = item.CruiseControlDistance3050,
+                        CruiseControlDistance50_75 = item.CruiseControlDistance5075,
+                        CruiseControlDistance75 = item.CruiseControlDistance5075,
                         AverageTrafficClassification = item.AverageTrafficClassification,
                         CCFuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistance, item.CCFuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistanceNotActive, item.CCFuelConsumedNotActive, VolumeUnit.MilliLiter, UnitToConvert),

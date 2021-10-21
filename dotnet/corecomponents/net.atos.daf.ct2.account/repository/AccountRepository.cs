@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
 
-                //parameter.Add("@id", account.Id);
                 parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
@@ -60,7 +59,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
-                    var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
             catch (Exception)
@@ -248,14 +247,6 @@ namespace net.atos.daf.ct2.account
                         query = query + " and (a.first_name || ' ' || a.last_name) like @name ";
                     }
 
-                    //// account type filter 
-                    //if (((char)filter.AccountType) != ((char)AccountType.None))
-                    //{
-                    //    parameter.Add("@type", (char)filter.AccountType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-
-                    //    query = query + " and a.type=@type";
-                    //}
-
                     // account ids filter                    
                     if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
                     {
@@ -278,7 +269,6 @@ namespace net.atos.daf.ct2.account
 
                     foreach (dynamic record in result)
                     {
-
                         accounts.Add(Map(record));
                     }
                 }
@@ -387,6 +377,33 @@ namespace net.atos.daf.ct2.account
                 query = @"SELECT EXISTS 
                             ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id AND state='A')";
                 return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Check if System Account has organization already linked to disallow linkage with another organization
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckIfSystemAccAlreadyHasOrgLinked(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+
+                string query = @"SELECT COUNT(1) 
+                                FROM master.account acc
+                                INNER JOIN master.accountOrg ao ON acc.id=ao.account_id 
+                                WHERE acc.id=@account_id AND acc.type='S'";
+
+                var linkedOrgCount = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                return linkedOrgCount >= 1;
             }
             catch (Exception)
             {
@@ -634,12 +651,12 @@ namespace net.atos.daf.ct2.account
 
                 string query =
                     @"SELECT 
-                        l.name as Language,
+                        l.code as Language,
 	                    df.name as DateFormat,
 	                    tz.name as TimeZone,
-	                    tf.name as TimeFormat,
-	                    u.name as UnitDisplay,
-	                    vd.name as VehicleDisplay
+	                    tf.code as TimeFormat,
+	                    u.code as UnitDisplay,
+	                    vd.code as VehicleDisplay
                     FROM master.accountpreference ap
                     INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id
                     INNER JOIN master.dateformat df ON ap.id = @preferenceId AND ap.date_format_id=df.id
@@ -906,18 +923,18 @@ namespace net.atos.daf.ct2.account
 									                FROM master.vehicle veh 
 									                INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									                INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                            AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                            AND (org.owner_org_id=@organization_id AND lower(ors.code)='owner')
 									                            AND ors.state='A'
-									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+									                            AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date ELSE COALESCE(end_date,0)=0 END
                                                     UNION
                                                     SELECT v.id
                                                         FROM master.vehicle v
                                                         INNER JOIN master.groupref gref ON v.id=gref.ref_id
                                                         INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                                                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                         WHERE 
-	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                        else COALESCE(end_date,0) = 0 end
 
                                                         UNION
@@ -925,10 +942,10 @@ namespace net.atos.daf.ct2.account
                                                         SELECT v.id
                                                         FROM master.group grp
                                                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
-                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                                                         WHERE 
-	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                        else COALESCE(end_date,0) = 0 end
                                                  ) owned_visible_vehicles
                                                 )
@@ -944,9 +961,9 @@ namespace net.atos.daf.ct2.account
                                                     INNER JOIN master.groupref gref ON v.id=gref.ref_id
                                                     INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
                                                     INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                     WHERE 
-	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                    else COALESCE(end_date,0) = 0 end
 
                                                     UNION
@@ -954,10 +971,10 @@ namespace net.atos.daf.ct2.account
                                                     SELECT v.id
                                                     FROM master.group grp
                                                     INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
-                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                                                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                                                     INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                                                     WHERE 
-	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                                                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                                                    else COALESCE(end_date,0) = 0 end
                                                 ) visible_vehicles
                                                )
@@ -968,16 +985,16 @@ namespace net.atos.daf.ct2.account
 									            FROM master.vehicle veh 
 									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
-									                        AND ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                        AND ((org.owner_org_id=@organization_id AND lower(ors.code)='owner') or veh.organization_id=@organization_id)
 									                        AND ors.state='A'
-									                        AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>=now()::date ELSE COALESCE(end_date,0)=0 END
+									                        AND CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date ELSE COALESCE(end_date,0)=0 END
                                                )
 							              ELSE (
                                                 -- Fetch Owned vehicles from vehicle group type 'G'
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
                                                 WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and om.owner_org_id=@organization_id and os.code='Owner'
+                                                      and om.owner_org_id=@organization_id and lower(os.code)='owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
@@ -989,7 +1006,9 @@ namespace net.atos.daf.ct2.account
                                     LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
 							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
-                                    WHERE vg.organization_id=@organization_id
+                                    WHERE vg.organization_id=@organization_id and 
+                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                        else COALESCE(end_date,0) = 0 end
                                     ORDER BY vg.id desc 
                                 ) vehiclegroup
 
@@ -1569,10 +1588,16 @@ namespace net.atos.daf.ct2.account
 	                    INTERSECT
 	                    --Subscription Route
 	                    SELECT f.id
-	                    FROM master.Subscription s
-	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
-	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
- 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    FROM
+	                    (
+		                    SELECT pkg.feature_set_id
+		                    FROM master.Package pkg
+		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+		                    UNION
+		                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+	                    ) subs
+                        INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
                     ) fsets
                     INNER JOIN master.Feature f ON f.id = fsets.id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
@@ -1728,23 +1753,22 @@ namespace net.atos.daf.ct2.account
                 {
                     query = @"WITH cte_account
                                 AS (
-	                                SELECT act.preference_id AS preferenceid
-		                                ,act.id AS accountid
+	                                SELECT DISTINCT act.preference_id AS preferenceid
+		                                ,act.email AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
-                            ,actrole.role_id AS roleid
-                            --,org.id AS orgdefault_id
-                            --,org.org_id AS organizationid
-                            --,org.name AS organizationname
-                            FROM master.account act
-                            INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
-                            --LEFT JOIN master.organization org ON actrole.organization_id = org.id
-                            WHERE act.STATE = 'A' AND act.id=@accountID and actrole.role_id=@roleID)
+                                        ,r.code AS roleid
+                                    FROM master.account act
+                                    INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
+                                    INNER JOIN master.role r ON r.id = actrole.role_id
+                                    WHERE act.STATE = 'A' AND act.id=@accountID and actrole.role_id=@roleID)
                             ,cte_actpreference
                                 AS (
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
-		                                ,_unit.name AS UnitDisplay
-                                        ,_vehicledisplay.name as VehicleDisplay
+		                                ,_unit.code AS UnitDisplay
+                                        ,_vehicledisplay.code as VehicleDisplay
+                                        ,_timeformat.code as TimeFormat
+                                        ,_language.code as Language
 		                                ,actp.id AS accountpreferenceid
 		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
@@ -1755,18 +1779,20 @@ namespace net.atos.daf.ct2.account
 	                                INNER JOIN master.unit _unit ON _unit.id = actp.unit_id
 									INNER JOIN master.DATEFORMAT _dateformat ON _dateformat.id = actp.date_format_id
 									INNER JOIN master.vehicledisplay _vehicledisplay ON _vehicledisplay.id = actp.vehicle_display_id
+                                    INNER JOIN master.timeformat _timeformat ON _timeformat.id = actp.time_format_id
+                                    INNER JOIN translation.language _language ON _language.id = actp.language_id
                             )
                             SELECT cte_act.accountid
                             ,cte_act.accountname
                             ,cte_act.roleid
                             ,(select org_id from master.organization where id=@OrganizationID) as organizationid
                             ,(select name as organizationname from master.organization where id=@OrganizationID) as organizationname
-                            --,cte_act.organizationid
-                            --,cte_act.organizationname
                             ,cte_actp.timezonename as timezone
                             ,cte_actp.DATEFORMAT
                             ,cte_actp.unitdisplay
                             ,cte_actp.vehicledisplay
+                            ,cte_actp.TimeFormat
+                            ,cte_actp.Language
                             FROM cte_actpreference cte_actp
                             RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid";
                     //}
@@ -1826,12 +1852,12 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@PreferenceId", accountPreferenceId.Value);
                     query = @"UPDATE master.accountpreference 
                               SET
-                                language_id = (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                language_id = (SELECT id FROM translation.language WHERE lower(code) = @Language),
                                 date_format_id = (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),
                                 timezone_id = (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat),
-                                unit_id = (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay)
+                                time_format_id = (SELECT id FROM master.timeformat WHERE lower(code) = @TimeFormat),
+                                unit_id = (SELECT id FROM master.unit WHERE lower(code) = @UnitDisplay),
+                                vehicle_display_id = (SELECT id FROM master.vehicledisplay WHERE lower(code) = @VehicleDisplay)
                               WHERE id = @PreferenceId RETURNING id";
                     result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
@@ -1843,12 +1869,12 @@ namespace net.atos.daf.ct2.account
                               VALUES ('A', 'A', NULL, 2, 
                                        (SELECT id FROM master.currency WHERE lower(name) like 'euro%'),
                                        (SELECT id FROM master.landingpagedisplay WHERE lower(name) = 'dashboard'), 
-                                       (SELECT id FROM translation.language WHERE lower(name) = @Language),
+                                       (SELECT id FROM translation.language WHERE lower(code) = @Language),
                                        (SELECT id FROM master.timezone WHERE lower(name) = @TimeZone),
-                                       (SELECT id FROM master.unit WHERE lower(name) = @UnitDisplay),
-                                       (SELECT id FROM master.vehicledisplay WHERE lower(name) = @VehicleDisplay),
+                                       (SELECT id FROM master.unit WHERE lower(code) = @UnitDisplay),
+                                       (SELECT id FROM master.vehicledisplay WHERE lower(code) = @VehicleDisplay),
                                        (SELECT id FROM master.dateformat WHERE lower(name) = @DateFormat),                                       
-                                       (SELECT id FROM master.timeformat WHERE lower(name) = @TimeFormat)) RETURNING id";
+                                       (SELECT id FROM master.timeformat WHERE lower(code) = @TimeFormat)) RETURNING id";
                     var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     parameter = new DynamicParameters();
@@ -1916,6 +1942,44 @@ namespace net.atos.daf.ct2.account
                 return await _dataAccess.ExecuteScalarAsync<int>(query, null);
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter)
+        {
+            try
+            {
+
+                var parameter = new DynamicParameters();
+                var queryStatement = @"SELECT id,name,
+                                        region_type as RegionType, code, 
+                                       dial_code as DialCode
+	                                   FROM master.country where 1=1";
+
+                if (!string.IsNullOrEmpty(countryFilter.Code))
+                {
+                    parameter.Add("@code", countryFilter.Code);
+                    queryStatement = queryStatement + " and code = @code";
+                }
+
+                if (!string.IsNullOrEmpty(countryFilter.RegionType))
+                {
+                    parameter.Add("@region_type", countryFilter.RegionType);
+                    queryStatement = queryStatement + " and region_type = @region_type";
+                }
+
+                if (!string.IsNullOrEmpty(countryFilter.DialCode))
+                {
+                    parameter.Add("@dialCode", countryFilter.DialCode);
+                    queryStatement = queryStatement + " and dial_code = @dialCode";
+
+                }
+                return await _dataAccess.QueryAsync<CountryDetails>(queryStatement, parameter);
+            }
+
+            catch (Exception ex)
             {
                 throw;
             }

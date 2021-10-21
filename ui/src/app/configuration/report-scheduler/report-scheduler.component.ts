@@ -32,7 +32,7 @@ export class ReportSchedulerComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any= [];
   titleText: string;
-  translationData: any= [];
+  translationData: any = {};
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
@@ -46,7 +46,7 @@ export class ReportSchedulerComponent implements OnInit {
   dialogVeh: MatDialogRef<CommonTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  adminAccessType: any = {};
   reportTypeSelection: any= 0;
   statusSelection: any= 0;
   ReportTypeList: any= [];
@@ -72,7 +72,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-
+      this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -119,12 +119,16 @@ export class ReportSchedulerComponent implements OnInit {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
     }
     this.setPrefFormatDate();

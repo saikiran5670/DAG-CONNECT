@@ -21,7 +21,7 @@ import { ReplaySubject } from 'rxjs';
 })
 
 export class AccountInfoSettingsComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   confirmAccountInfoData: any = [];
   dialogRefLogin: MatDialogRef<ChangePasswordComponent>;
   editAccountSettingsFlag : boolean = false;
@@ -63,14 +63,19 @@ export class AccountInfoSettingsComponent implements OnInit {
   organizationId: any;
   driverId: any;
   imageError= '';
+  brandLogoError= '';
   profilePicture: any= '';
   croppedImageTemp= '';
-  readonly maxSize= 5242880; //5 MB
+  readonly maxSize= 1024*200; //200 KB
   imageEmptyMsg: boolean= false;
   clearInput: any;
   imageMaxMsg: boolean = false;
   file: any;
   uploadLogo: any = "";
+  brandLogoFileValidated= false;
+  brandLogoChangedEvent= '';
+  droppedBrandLogo: any= '';
+  hideImgCropper= true;
   salutationList: any = [
     {
       name: 'Mr'
@@ -97,6 +102,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
   public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
               private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
@@ -215,6 +222,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       this.landingPageDisplayDropdownData = accountNavMenu;
+      console.log("landingPageDisplayDropDownData=>", this.landingPageDisplayDropdownData);
+      this.landingPageDisplayDropdownData.sort(this.compare);
+      this.resetLandingPageFilter();
       //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
@@ -259,16 +269,24 @@ export class AccountInfoSettingsComponent implements OnInit {
   resetTimezoneFilter(){
     this.filteredTimezones.next(this.timezoneDropdownData.slice());
   }
+
+  resetLandingPageFilter(){
+    this.filteredLandingPageDisplay.next(this.landingPageDisplayDropdownData.slice());
+  }
+ 
   
   compare(a, b) {
-    if (a.name < b.name) {
+    if (a.value < b.value) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.value > b.value) {
       return 1;
     }
     return 0;
   }
+
+  
+  
 
   goForword(prefInfo: any){
     this.filterDefaultGeneralSetting(prefInfo);
@@ -343,26 +361,28 @@ export class AccountInfoSettingsComponent implements OnInit {
     if(this.accountSettingsForm.controls.loginEmail.value != this.accountInfo[0].emailId){
       //TODO : Check if email id already exists in DB(API call).
     }
+    if(this.imageError == ''){
 
-    let objData: any = {
-        id: this.accountId,
-        emailId: this.accountSettingsForm.controls.loginEmail.value,
-        salutation: this.accountSettingsForm.controls.salutation.value,
-        firstName: this.accountSettingsForm.controls.firstName.value,
-        lastName: this.accountSettingsForm.controls.lastName.value,
-        organizationId: this.organizationId,
-        driverId: this.accountSettingsForm.controls.driverId.value,
-        type: this.accountInfo.type ? this.accountInfo.type : 'P'
+      let objData: any = {
+          id: this.accountId,
+          emailId: this.accountSettingsForm.controls.loginEmail.value,
+          salutation: this.accountSettingsForm.controls.salutation.value,
+          firstName: this.accountSettingsForm.controls.firstName.value,
+          lastName: this.accountSettingsForm.controls.lastName.value,
+          organizationId: this.organizationId,
+          driverId: this.accountSettingsForm.controls.driverId.value,
+          type: this.accountInfo.type ? this.accountInfo.type : 'P'
+      }
+      this.accountService.updateAccount(objData).subscribe((data)=>{
+        this.accountInfo = [data];
+        this.editAccountSettingsFlag = false;
+        this.isSelectPictureConfirm = true;
+        this.setDefaultAccountInfo();
+        this.updateLocalStorageAccountInfo("accountsettings", data);
+        let editText = 'AccountSettings';
+        this.successMsgBlink(this.getEditMsg(editText));
+      });
     }
-    this.accountService.updateAccount(objData).subscribe((data)=>{
-      this.accountInfo = [data];
-      this.editAccountSettingsFlag = false;
-      this.isSelectPictureConfirm = true;
-      this.setDefaultAccountInfo();
-      this.updateLocalStorageAccountInfo("accountsettings", data);
-      let editText = 'AccountSettings';
-      this.successMsgBlink(this.getEditMsg(editText));
-    });
   }
 
   onEditAccountSettingsCancel(){
@@ -386,46 +406,51 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-    this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
-    let objData: any = {
-      id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
-      refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : this.languageDropdownData[0].id,
-      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
-      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
-      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
-      pageRefreshTime: this.userSettingsForm.controls.pageRefreshTime.value ? parseInt(this.userSettingsForm.controls.pageRefreshTime.value) : 1,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
-      iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
-      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
-      createdBy: this.accountId
-      //driverId: ""
-    }
-    if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
-      this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
-       this.savePrefSetting(data);
-      });
-    }
-    else{
-      for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
-        if(!value){
-          this.createPrefFlag = true;
-          break;
-        }
+    if(this.brandLogoError == ''){
+      if(!this.brandLogoFileValidated){
+        this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
       }
-      if(this.createPrefFlag){ //--- pref created
-        this.accountService.createPreference(objData).subscribe((prefData: any) => {
-          this.accountInfo[0]["preferenceId"] = prefData.id;
-          let localAccountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-          localAccountInfo.accountDetail.preferenceId = prefData.id;
-          localStorage.setItem("accountInfo", JSON.stringify(localAccountInfo));
-          this.savePrefSetting(prefData);
-        }, (error) => { });
-      }else{ //--- pref not created
-        this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
+      this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
+      let objData: any = {
+        id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
+        refId: this.accountId,
+        languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : this.languageDropdownData[0].id,
+        timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
+        unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
+        currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
+        dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
+        pageRefreshTime: this.userSettingsForm.controls.pageRefreshTime.value ? parseInt(this.userSettingsForm.controls.pageRefreshTime.value) : 1,
+        timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
+        vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
+        landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
+        iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
+        iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
+        createdBy: this.accountId
+        //driverId: ""
+      }
+      if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
+        this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
+        this.savePrefSetting(data);
+        });
+      }
+      else{
+        for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
+          if(!value){
+            this.createPrefFlag = true;
+            break;
+          }
+        }
+        if(this.createPrefFlag){ //--- pref created
+          this.accountService.createPreference(objData).subscribe((prefData: any) => {
+            this.accountInfo[0]["preferenceId"] = prefData.id;
+            let localAccountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+            localAccountInfo.accountDetail.preferenceId = prefData.id;
+            localStorage.setItem("accountInfo", JSON.stringify(localAccountInfo));
+            this.savePrefSetting(prefData);
+          }, (error) => { });
+        }else{ //--- pref not created
+          this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
+        }
       }
     }
   }
@@ -538,6 +563,15 @@ export class AccountInfoSettingsComponent implements OnInit {
       // show message
   }
 
+  brandLogoLoaded() {
+    this.brandLogoFileValidated = true;
+    // show cropper
+  }
+
+  brandLogoCropperReady() {
+      // cropper ready
+  }
+
   filesDroppedMethod(event : any): boolean {
     this.imageError= CustomValidators.validateImageFile(event);
     if(this.imageError != '')
@@ -603,10 +637,10 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      case "currency":{
-        this.orgDefaultFlag.currency = false;
-        break;
-      }
+      // case "currency":{
+      //   this.orgDefaultFlag.currency = false;
+      //   break;
+      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;
@@ -632,15 +666,22 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.messageService.sendTimerValue(num);
   }
 
-  addfile(event: any, clearInput: any){ 
+  addfile(event: any, clearInput: any){
+    this.brandLogoChangedEvent = event; 
+    this.brandLogoFileValidated= false;
     this.isDefaultBrandLogo= false;
     this.clearInput = clearInput;
     this.imageEmptyMsg = false;  
     this.imageMaxMsg = false;
     this.file = event.target.files[0];     
     if(this.file){
+      this.brandLogoError= CustomValidators.validateImageFile(event.target.files[0])
       if(this.file.size > this.maxSize){ //-- 32*32 px
         this.imageMaxMsg = true;
+        return false;
+      }
+      else if(this.brandLogoError != ''){
+        return false;
       }
       else{
         //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);
@@ -653,6 +694,7 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   _handleReaderLoaded(readerEvt: any) {
     var binaryString = readerEvt.target.result;
+    this.droppedImage= readerEvt.target.result;
     this.uploadLogo = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + btoa(binaryString));
    }
 
@@ -694,6 +736,24 @@ export class AccountInfoSettingsComponent implements OnInit {
       );
       console.log("this.filteredTimezones", this.filteredTimezones);
    }
+
+   filterLandingPageDisplay(landingpagesearch){
+    console.log("LandingPageDisplay called");
+    if(!this.landingPageDisplayDropdownData){
+      return;
+    }
+    if(!landingpagesearch){
+      this.resetLandingPageFilter();
+      return;
+    } else{
+      landingpagesearch = landingpagesearch.toLowerCase();
+    }
+    this.filteredLandingPageDisplay.next(
+       this.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(landingpagesearch) > -1)
+    );
+     console.log("this.filteredLandingPageDisplay", this.filteredLandingPageDisplay);
+  }
+  
 
    keyPressNumbers(event: any){
     var charCode = (event.which) ? event.which : event.keyCode;

@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class TripReportPreferenceComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   @Input() generalPreferences: any;
   @Output() setTripReportFlag = new EventEmitter<any>();
   localStLanguage: any;
@@ -36,14 +36,14 @@ export class TripReportPreferenceComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Trip Report');
-    if(repoId.length > 0){
-      this.reportId = repoId[0].id; 
-    }else{
-      this.reportId = 1; //- hard coded for trip report
+    if (repoId.length > 0) {
+      this.reportId = repoId[0].id;
+      this.loadTripReportPreferences();
+    } else {
+      console.error("No report id found!")
     }
-    this.translationUpdate();
+    // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
-    this.loadTripReportPreferences();
   }
 
   getUnitFormat(accPref: any){
@@ -101,20 +101,20 @@ export class TripReportPreferenceComponent implements OnInit {
               _data = item;
               let txt: any;
               if(item.key == 'rp_tr_report_tripreportdetails_odometer' || item.key == 'rp_tr_report_tripreportdetails_distance'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.translationData.lblmi);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_idleduration' || item.key == 'rp_tr_report_tripreportdetails_drivingtime'){
-                txt = this.translationData.lblhhmm || 'hh:mm';
+                txt = this.translationData.lblhhmm;
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averageweight'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.translationData.lblpound);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_fuelconsumed'){
                 //txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgal || 'gal');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr) : (this.translationData.lblgal);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else if(item.key == 'rp_tr_report_tripreportdetails_averagespeed'){
-                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.translationData.lblmph);
                 _data.translatedName = this.getTranslatedValues(item, txt);
               }else{
                 _data.translatedName = this.getTranslatedValues(item);
@@ -211,17 +211,17 @@ export class TripReportPreferenceComponent implements OnInit {
       this.tripPrefData.forEach(element => {
         let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (search.length > 0) {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         } else {
-          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: element.reportId });
         }
       });
 
-      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId:this.initData.reportId }); // main parent
       if (this.selectionForTripColumns.selected.length == this.tripPrefData.length) { // parent selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.subReportUserPreferences[0].reportId });
       } else { // parent un-selected
-        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.subReportUserPreferences[0].reportId });
       }
 
       let objData: any = {

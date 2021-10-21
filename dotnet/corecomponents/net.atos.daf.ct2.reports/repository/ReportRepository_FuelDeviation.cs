@@ -15,9 +15,9 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                string query = @"SELECT 
+                string query = @"SELECT distinct
                            trpst .trip_id as TripId
-                        ,  fueldev.id as FuelDeviationId
+                        --,  fueldev.id as FuelDeviationId
 	                    , fueldev.fuel_event_type as FuelEventType
 	                    , fueldev.vehicle_activity_type as VehicleActivityType
 	                    , case when fueldev.fuel_event_type='I' then 'enumfueleventtype_increase' else 'enumfueleventtype_decrease' end as FuelEventTypeKey
@@ -32,10 +32,8 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.end_time_stamp as EndTimeStamp
 	                    , trpst.etl_gps_distance as Distance
 	                    , trpst.idle_duration as IdleDuration
-	                    , ROUND(trpst.average_speed,5) as AverageSpeed
+	                    , ROUND(trpst.average_speed,7) as AverageSpeed
 	                    , ROUND(trpst.average_weight,5) as AverageWeight
-                        , startgeoaddr.id AS StartPositionId
-                        , endgeoaddr.id AS EndPositionId
                         , coalesce(startgeoaddr.address,'') AS StartPosition
                         , coalesce(endgeoaddr.address,'') AS EndPosition
 	                    , trpst.etl_gps_fuel_consumed as FuelConsumed
@@ -44,7 +42,6 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
-                        , geoaddr.id as GeoLocationAddressId
 	                    , coalesce(geoaddr.address,'') as GeoLocationAddress
                         , trpst.start_position_lattitude AS StartPositionLattitude
 	                    , trpst.start_position_longitude AS StartPositionLongitude

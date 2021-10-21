@@ -208,6 +208,14 @@ public class CacheService implements Serializable {
                         .dayTypeArray(String.valueOf(row.getField(8)))
                         .startTime(row.getField(9) == null ? 0L : Long.valueOf(String.valueOf(row.getField(9))))
                         .endTime(row.getField(10) == null ? 0L :   Long.valueOf(String.valueOf(row.getField(10))))
+                        .nodeSeq(row.getField(11) == null ? 0 : Integer.valueOf(String.valueOf(row.getField(11))))
+                        .latitude(row.getField(12) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(12))))
+                        .longitude(row.getField(13) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(13))))
+                        .landmarkId(row.getField(14) == null? -1 : Integer.valueOf(String.valueOf(row.getField(14))))
+                        .landMarkType(String.valueOf(row.getField(15)))
+                        .circleLatitude(row.getField(16) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(16))))
+                        .circleLongitude(row.getField(17) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(17))))
+                        .circleRadius(row.getField(18) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(18))))
                         .timestamp(System.currentTimeMillis())
                         .build()
                 ).returns(AlertUrgencyLevelRefSchema.class)
@@ -240,9 +248,9 @@ public class CacheService implements Serializable {
                 vinAlertList = (Set<Long>) listPayload.getData().get();
                 vinAlertList.add(vehicleAlertRefSchema.getAlertId());
                 vinMappingState.put(vehicleAlertRefSchema.getVin(), Payload.builder().data(Optional.of(vinAlertList)).build());
-                logger.info("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
+                logger.trace("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
             } else {
-                logger.info("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
+                logger.trace("New alert added for vin : {}, alert id: {}", vehicleAlertRefSchema.getVin(), vehicleAlertRefSchema.getAlertId());
                 vinAlertList.add(vehicleAlertRefSchema.getAlertId());
                 vinMappingState.put(vehicleAlertRefSchema.getVin(), Payload.builder().data(Optional.of(vinAlertList)).build());
             }
@@ -250,7 +258,7 @@ public class CacheService implements Serializable {
         if (vehicleAlertRefSchema.getOp().equalsIgnoreCase("D")) {
             if (vinMappingState.contains(vehicleAlertRefSchema.getVin())) {
                 vinMappingState.remove(vehicleAlertRefSchema.getVin());
-                logger.info("Alert removed for vin : {}, alert id: {}", vehicleAlertRefSchema, vehicleAlertRefSchema.getAlertId());
+                logger.trace("Alert removed for vin : {}, alert id: {}", vehicleAlertRefSchema, vehicleAlertRefSchema.getAlertId());
             }
         }
     }
@@ -258,7 +266,7 @@ public class CacheService implements Serializable {
     public static void updateAlertDefinationCache(Payload<Object> payload, KeyedBroadcastProcessFunction.Context context) throws Exception {
 
         Tuple2<AlertCdc, AlertUrgencyLevelRefSchema> thresholdTuple = (Tuple2<AlertCdc, AlertUrgencyLevelRefSchema>) payload.getData().get();
-        logger.info("Alert threshold broadcast payload:: {}", thresholdTuple);
+        logger.trace("Alert threshold broadcast payload:: {}", thresholdTuple);
         BroadcastState<Long, Payload> broadcastState = context.getBroadcastState(THRESHOLD_CONFIG_DESCRIPTOR);
         AlertCdc f0 = thresholdTuple.f0;
         AlertUrgencyLevelRefSchema f1 = thresholdTuple.f1;
@@ -270,7 +278,7 @@ public class CacheService implements Serializable {
                 logger.error("Error while removing threshold from cache:: {}",f0);
             }
         } else {
-            logger.info("Adding alert to threshold cache:: {}", f0);
+            logger.trace("Adding alert to threshold cache:: {}", f0);
             List<AlertUrgencyLevelRefSchema> alertDef = new ArrayList<>();
             if(Objects.nonNull(f1) && broadcastState.contains(Long.valueOf(f1.getAlertId())) ){
                 Payload broadcastPayload = broadcastState.get(Long.valueOf(f1.getAlertId()));

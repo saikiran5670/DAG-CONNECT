@@ -101,7 +101,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
   chartXaxis;
   chartYaxis;
   legends = [];
-  backgroundColorPattern = [];
 
   commonAxis = {
     type: 'numeric',
@@ -301,14 +300,14 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   updateChartTitles(performanceType) {
     if(performanceType == 'E') {
-      this.piechartTitle = "Engine Operational Performance";
-      this.bubbleHeatchartTitle = "Engine Load Distribution";
+      this.piechartTitle = this.translationData.lblEngineOperationalPerformance || "Engine Operational Performance";
+      this.bubbleHeatchartTitle = this.translationData.lblEngineLoadDistribution || "Engine Load Distribution";
     } else if(performanceType == 'S') {
       this.piechartTitle = "Road Speed Performance (%)";
-      this.bubbleHeatchartTitle = "Road Speed Distribution";
+      this.bubbleHeatchartTitle = this.translationData.lblRoadSpeedDistribution || "Road Speed Distribution";
     } else {
       this.piechartTitle = "Brake Performance (%)";
-      this.bubbleHeatchartTitle = "Brake Behavior Distribution";
+      this.bubbleHeatchartTitle = this.translationData.lblBrakeBehavior || "Brake Behavior Distribution";
     }
   }
 
@@ -326,35 +325,13 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processYaxis(data) {
-    this.backgroundColorPattern = [];
     if(data.length > 0) {
       let tempArr = [];
       for(let row of data) {
         if(row.index != -1) {
           tempArr.push(row.range);
-          let colors = row.axisvalues.split(',')
-          let offsetX = 0;
-          let width = 41;
-          for(let color of colors) {
-            let leg = this.legends.filter((item) => item.value == color);
-            let colorObj = {
-              y: row.index * 10,
-              y2: ((row.index * 10) + 10),
-              offsetX: offsetX,
-              opacity: 1,
-              strokeDashArray: 0,
-              borderColor: '#fff',
-              width: JSON.stringify(width),
-              fillColor: this.colorToLegends[color],
-              labelName: this.translationData[leg[0].name]
-            }
-            this.backgroundColorPattern.push(colorObj);
-            offsetX = offsetX + 41;
-            width = width - 41;
-          }
         }
       }
-      console.log("this.backgroundColorPattern", this.backgroundColorPattern)
       return tempArr;
     }
     return [];
@@ -390,9 +367,9 @@ export class VehiclePerformanceReportComponent implements OnInit {
         this.pieChartColors.push(this.colorToLegends[pieLabel]);
       }
     }
-    if(this.searchResult.performanceType != 'E') {
-      this.updateDataPercent(pieData);
-    }
+   // if(this.searchResult.performanceType != 'E') {
+   //   this.updateDataPercent(pieData);
+  //  }
   }
 
   updateDataPercent(pieData) {

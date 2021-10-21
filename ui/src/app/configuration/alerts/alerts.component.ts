@@ -29,7 +29,7 @@ export class AlertsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any= [];
   titleText: string;
-  translationData: any= [];
+  translationData: any= {};
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
@@ -50,13 +50,15 @@ export class AlertsComponent implements OnInit {
   vehicleList: any= [];
   alertCriticalityList: any= [];
   alertStatusList: any= [];
-
   alertTypeListBasedOnPrivilege: any= [];
+  vehicleGroupListBasedOnPrivilege: any= [];
+  vehicleListBasedOnPrivilege: any= [];
   stringifiedData: any;  
   parsedJson: any;  
   filterValues = {};  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
+  associatedVehicleData: any= [];
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -75,7 +77,14 @@ export class AlertsComponent implements OnInit {
   
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      if(localStorage.getItem('contextOrgId')){
+        this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+      }
+      else{
+        this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      } 
+      
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -108,8 +117,8 @@ export class AlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
-      console.log("alertTypeList=" +this.alertTypeList);
-      console.log("filterData=" +filterData);
+      // console.log("alertTypeList=" +this.alertTypeList);
+      // console.log("filterData=" +filterData);
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
       this.vehicleList = this.removeDuplicates(this.vehicleList, "vehicleName");
@@ -135,7 +144,7 @@ export class AlertsComponent implements OnInit {
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
-      //this.associatedVehicleData = data["associatedVehicleRequest"];
+      this.associatedVehicleData = data["associatedVehicleRequest"];
 
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
@@ -150,6 +159,26 @@ export class AlertsComponent implements OnInit {
           }
         });
       }
+
+      this.associatedVehicleData.forEach(element => {
+        if(element.vehicleGroupDetails != ""){
+          let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+          vehicleGroupDetails.forEach(item => {
+            let itemSplit = item.split("~");
+            // if(itemSplit[2] != 'S') {
+            let vehicleGroupObj= {
+              "vehicleGroupId" : itemSplit[0],
+              "vehicleGroupName" : itemSplit[1]
+            }
+            this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
+          //  } 
+          });
+        }
+
+        this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+      });
+      
+      this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
 
       this.loadAlertsData();   
     })
@@ -236,12 +265,19 @@ export class AlertsComponent implements OnInit {
       roleId: 0,
       name: ""
     }    
-    this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
-      this.initData =data; 
+    this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+      let initDataBasedOnPrivilege = data;
+      // this.initData =data; 
+      initDataBasedOnPrivilege.forEach(item => {
+        let hasPrivilege = (this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0 && (this.vehicleGroupListBasedOnPrivilege.filter(element => element.vehicleGroupId == item.vehicleGroupId).length > 0 || this.vehicleListBasedOnPrivilege.filter(element => element.vehicleId == item.vehicleGroupId).length > 0));    
+        if(hasPrivilege){
+          this.initData.push(item);
+        }
+      })
+
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {      
-        let hasPrivilege = this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0;    
-        item["hasPrivilege"]  = hasPrivilege;
+       
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;
@@ -427,10 +463,10 @@ export class AlertsComponent implements OnInit {
 
   onDeleteAlert(item: any) {
     const options = {
-      title: this.translationData.lblDeleteAlert || "Delete Alert",
-      message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteAlert,
+      message: this.translationData.lblAreousureyouwanttodeleteAlert,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     let name = item.name;
     this.dialogService.DeleteModelOpen(options, name);
@@ -475,7 +511,7 @@ export class AlertsComponent implements OnInit {
     if(action == 'duplicate'){
       this.actionType = 'duplicate';
     }
-    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert" : this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert  : this.translationData.lblEditAlertDetails;
     this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
     //this.rowsData.push(row);
     //this.editFlag = true;
@@ -500,10 +536,10 @@ export class AlertsComponent implements OnInit {
 
   onChangeAlertStatus(rowData: any){
     const options = {
-      title: this.translationData.lblAlert || "Alert",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
+      title: this.translationData.lblAlert,
+      message: this.translationData.lblYouwanttoDetails,   
+      cancelText: this.translationData.lblCancel,
+      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
       name: rowData.name
     };
@@ -542,9 +578,9 @@ export class AlertsComponent implements OnInit {
 
   onVehicleGroupClick(data: any) {   
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    let objData = {
+    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
+    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles}`;
+   let objData = {
       groupId: data.vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',

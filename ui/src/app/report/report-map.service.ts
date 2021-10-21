@@ -11,6 +11,7 @@ declare var H: any;
 })
 export class ReportMapService {
   platform: any;
+  alertMarker: any;
   clusteringLayer: any;
   markerClusterLayer: any = [];
   overlayLayer: any;
@@ -39,13 +40,13 @@ export class ReportMapService {
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key 
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
   }
 
-  initMap(mapElement: any){
+  initMap(mapElement: any, translationData: any){
     this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
       this.defaultLayers.raster.normal.map, {
@@ -64,18 +65,18 @@ export class ReportMapService {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label: translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label: translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label: translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -88,6 +89,7 @@ export class ReportMapService {
     this.disableGroup.removeAll();
     this.startMarker = null; 
     this.endMarker = null; 
+    this.alertMarker = null;
     if(this.clusteringLayer){
       this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
@@ -122,7 +124,7 @@ export class ReportMapService {
       max: 26,
       opacity: 0.5,
       getURL: function (column, row, zoom) {
-          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
+          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=${this.map_key}&pois`;
         }
     });
     this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
@@ -156,7 +158,7 @@ export class ReportMapService {
     return icon;
   }
 
-  showCategoryPOI(categotyPOI: any, _ui: any){
+  showCategoryPOI(categotyPOI: any, _ui: any, translationData: any){
     categotyPOI.forEach(element => {
       if(element.latitude && element.longitude){
         let categoryPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
@@ -166,16 +168,16 @@ export class ReportMapService {
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             content:`<table style='width: 350px;'>
             <tr>
-              <td style='width: 100px;'>POI Name:</td> <td><b>${element.poiName}</b></td>
+              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td><b>${element.poiName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td><b>${element.categoryName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
             </tr>
           </table>`
           });
@@ -291,7 +293,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, row?: any){
+  viewSelectedRoutes(translationData: any, _selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -300,101 +302,104 @@ export class ReportMapService {
       this.showSearchMarker(_searchMarker);
     }
     if(_displayPOIList && _displayPOIList.length > 0){ 
-      this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
+      this.showCategoryPOI(_displayPOIList, _ui, translationData); //-- show category POi
     }
     if(_selectedRoutes && _selectedRoutes.length > 0){
       _selectedRoutes.forEach(elem => {
-        this.startAddressPositionLat = elem.startPositionLattitude;
-        this.startAddressPositionLong = elem.startPositionLongitude;
-        this.endAddressPositionLat= elem.endPositionLattitude;
-        this.endAddressPositionLong= elem.endPositionLongitude;
-        this.corridorWidth = 1000; //- hard coded
-        this.corridorWidthKm = this.corridorWidth/1000;
-        let houseMarker = this.createHomeMarker();
-        let markerSize = { w: 26, h: 32 };
-        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
-        let endMarker = this.createEndMarker();
-        const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        this.group.addObjects([this.startMarker, this.endMarker]);
-        var startBubble;
-        this.startMarker.addEventListener('pointerenter', function (evt) {
-          // event target is the marker itself, group is a parent event target
-          // for all objects that it contains
-          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            // read custom data
-            content:`<table style='width: 350px;'>
-              <tr>
-                <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
-              </tr>
-              <tr>
-                <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
-              </tr>
-              <tr>
-                <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-              </tr>
-            </table>`
-          });
-          // show info bubble
-          _ui.addBubble(startBubble);
-        }, false);
-        this.startMarker.addEventListener('pointerleave', function(evt) {
-          startBubble.close();
-        }, false);
-
-        var endBubble;
-        this.endMarker.addEventListener('pointerenter', function (evt) {
-          // event target is the marker itself, group is a parent event target
-          // for all objects that it contains
-          endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            // read custom data
-            content:`<table style='width: 350px;'>
-              <tr>
-                <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
-              </tr>
-              <tr>
-                <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
-              </tr>
-              <tr>
-                <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
-              </tr>
-            </table>`
-          });
-          // show info bubble
-          _ui.addBubble(endBubble);
-        }, false);
-        this.endMarker.addEventListener('pointerleave', function(evt) {
-          endBubble.close();
-        }, false);
-
-        //this.calculateAtoB(trackType);
-        if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
-          let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
-          if(_displayRouteView == 'C'){ // classic route
-            let blueColorCode: any = '#436ddc';
-            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
-          }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
-            let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
-            filterDataPoints.forEach((element) => {
-              this.drawPolyline(element, trackType);
+        if(elem.liveFleetPosition.length > 1){
+          this.startAddressPositionLat = elem.startPositionLattitude;
+          this.startAddressPositionLong = elem.startPositionLongitude;
+          this.endAddressPositionLat = elem.endPositionLattitude;
+          this.endAddressPositionLong = elem.endPositionLongitude;
+          this.corridorWidth = 1000; //- hard coded
+          this.corridorWidthKm = this.corridorWidth/1000;
+          let houseMarker = this.createHomeMarker();
+          let markerSize = { w: 26, h: 32 };
+          const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+          this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
+          let endMarker = this.createEndMarker();
+          const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+          this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+          this.group.addObjects([this.startMarker, this.endMarker]);
+          var startBubble;
+          this.startMarker.addEventListener('pointerenter', function (evt) {
+            // event target is the marker itself, group is a parent event target
+            // for all objects that it contains
+            startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+              // read custom data
+              content:`<table style='width: 350px;'>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td><b>${elem.startPosition}</b></td>
+                </tr>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td><b>${elem.convertedStartTime}</b></td>
+                </tr>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                </tr>
+              </table>`
             });
+            // show info bubble
+            _ui.addBubble(startBubble);
+          }, false);
+          this.startMarker.addEventListener('pointerleave', function(evt) {
+            startBubble.close();
+          }, false);
+
+          var endBubble;
+          this.endMarker.addEventListener('pointerenter', function (evt) {
+            // event target is the marker itself, group is a parent event target
+            // for all objects that it contains
+            endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+              // read custom data
+              content:`<table style='width: 350px;'>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td><b>${elem.endPosition}</b></td>
+                </tr>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td><b>${elem.convertedEndTime}</b></td>
+                </tr>
+                <tr>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                </tr>
+              </table>`
+            });
+            // show info bubble
+            _ui.addBubble(endBubble);
+          }, false);
+          this.endMarker.addEventListener('pointerleave', function(evt) {
+            endBubble.close();
+          }, false);
+
+          //this.calculateAtoB(trackType);
+          if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+            let liveFleetPoints: any = elem.liveFleetPosition;
+            liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
+            if(_displayRouteView == 'C'){ // classic route
+              let blueColorCode: any = '#436ddc';
+              this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+            }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+              let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+              filterDataPoints.forEach((element) => {
+                this.drawPolyline(element, trackType);
+              });
+            }
           }
-        }
-        this.hereMap.addObject(this.group);
-        if(elem.id == row.id){
-          let grp= new H.map.Group();
-          grp.addObjects([this.startMarker, this.endMarker]);
-          this.hereMap.addObject(grp);
+
+          if(alertsChecked){
+            if(elem.filterAlerts.length > 0){
+              this.drawAlerts(elem.filterAlerts, _ui, translationData);
+            }
+          }
+
+          this.hereMap.addObject(this.group);
+          this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+          this.hereMap.addObject(this.group);
           this.hereMap.getViewModel().setLookAtData({
-            bounds: grp.getBoundingBox()
+            bounds: this.group.getBoundingBox()
           });
         }
-        
-        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
-      
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
@@ -403,11 +408,128 @@ export class ReportMapService {
     }
    }
 
+   drawAlerts(_alertDetails: any, _ui: any, translationData: any){
+    if(_alertDetails.length > 0){
+      let _fillColor = '#D50017';
+      let _level = 'Critical';
+      let _type = 'Logistics Alerts';
+      // let alertList  = _alertDetails.map(data => data.alertId);
+      // let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
+      // let finalAlerts = [];
+      // distinctAlert.forEach(element => {
+      //   let _currentElem = _alertDetails.find(item=> item.urgencyLevelType === 'C' && item.alertId === element);
+      //   if(_currentElem == undefined){
+      //    _currentElem = _alertDetails.find(item=> item.alertId === element);
+      //   }
+      //   finalAlerts.push(_currentElem);
+      // });
+      _alertDetails.forEach(element => {
+        let _obj: any = this.setColorForAlerts(element, _fillColor, _level);
+        let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="path-1-outside-1" maskUnits="userSpaceOnUse" x="0.416748" y="0.666748" width="23" height="19" fill="black">
+        <rect fill="white" x="0.416748" y="0.666748" width="23" height="19"/>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z"/>
+        </mask>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z" fill="${_obj.color}"/>
+        <path d="M11.7501 4.66675L13.4809 3.66468L11.7501 0.675021L10.0192 3.66468L11.7501 4.66675ZM4.41675 17.3334L2.6859 16.3313L0.947853 19.3334H4.41675V17.3334ZM19.0834 17.3334V19.3334H22.5523L20.8143 16.3313L19.0834 17.3334ZM10.0192 3.66468L2.6859 16.3313L6.1476 18.3355L13.4809 5.66882L10.0192 3.66468ZM4.41675 19.3334H19.0834V15.3334H4.41675V19.3334ZM20.8143 16.3313L13.4809 3.66468L10.0192 5.66882L17.3526 18.3355L20.8143 16.3313Z" fill="white" mask="url(#path-1-outside-1)"/>
+        <path d="M12.4166 14H11.0833V15.3333H12.4166V14Z" fill="white"/>
+        <path d="M12.4166 10H11.0833V12.6667H12.4166V10Z" fill="white"/>
+        </svg>`;
+        let markerSize = { w: 23, h: 20 };
+        const icon = new H.map.Icon(_alertMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.alertMarker = new H.map.Marker({ lat: element.alertLatitude, lng: element.alertLongitude }, { icon: icon });
+        this.group.addObject(this.alertMarker);
+
+        //alert tooltip
+        var startBubble;
+        this.alertMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<table style='width: 300px; font-size:12px;'>
+              <tr>
+                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td><b>${_obj.type}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td><b>${_obj.level}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td><b>${element.convertedAlertTime}</b></td>
+              </tr>
+            </table>`
+          });
+          // show info bubble
+          _ui.addBubble(startBubble);
+        }, false);
+        this.alertMarker.addEventListener('pointerleave', function(evt) {
+          startBubble.close();
+        }, false);
+
+      });
+    }
+   }
+
+  setColorForAlerts(element: any, _fillColor: any, _level: any){
+    let _type: any = '';
+      switch (element.urgencyLevelType) {
+        case 'C':
+          case 'Critical':{
+          _fillColor = '#D50017';
+          _level = 'Critical'
+        }
+        break;
+        case 'W':
+          case 'Warning':{
+          _fillColor = '#FC5F01';
+          _level = 'Warning'
+        }
+        break;
+        case 'A':
+          case 'Advisory':{
+          _fillColor = '#FFD80D';
+          _level = 'Advisory'
+        }
+        break;
+        default:
+          break;
+      }
+    
+      switch (element.categoryType) {
+        case 'L':
+          case 'Logistics Alerts':{
+          _type = 'Logistics Alerts'
+        }
+        break;
+        case 'F':
+          case 'Fuel and Driver Performance':{
+          _type = 'Fuel and Driver Performance'
+        }
+        break;
+        case 'R':
+          case 'Repair and Maintenance':{
+          _type = 'Repair and Maintenance'
+  
+        }
+        break;
+        default:
+          break;
+      }
+      return {color: _fillColor, level: _level, type: _type};
+  }
+
    makeCluster(_selectedRoutes: any, _ui: any){
-    if(_selectedRoutes.length > 9){
-      this.setInitialCluster(_selectedRoutes, _ui); 
-    }else{
-      this.afterPlusClick(_selectedRoutes, _ui);
+    let _s: any = [];
+    if(_selectedRoutes.length > 0){
+      _s = _selectedRoutes.filter(item => (item.startPositionLattitude >= -90 && item.startPositionLattitude <= 90) && (item.startPositionLongitude >= -180 && item.startPositionLongitude <= 180) && (item.endPositionLattitude >= -90 && item.endPositionLattitude <= 90) && (item.endPositionLongitude >= -180 && item.endPositionLongitude <= 180));
+    }
+    if(_s.length > 9){
+      this.setInitialCluster(_s, _ui); 
+    }else if(_s.length > 0){
+      this.afterPlusClick(_s, _ui);
     }
    }
 
@@ -796,7 +918,7 @@ export class ReportMapService {
             this.removedDisabledGroup();
             data.forEach((element, _index) => {
               let liveFleetPoints: any = element.liveFleetPosition;
-              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+              liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); 
               this.selectionPolylineRoute(liveFleetPoints, _index);   
             });
             this.hereMap.addObject(this.disableGroup);
@@ -1143,8 +1265,37 @@ export class ReportMapService {
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
+      element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
+      element.endPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endPositionLattitude; 
+      element.endPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endPositionLongitude; 
+      element.filterAlerts = this.filterAlerts(element.tripAlert, dateFormat, timeFormat, timeZone); 
+      element.totalAlerts = element.filterAlerts.length;
     });
     return gridData;
+  }
+
+  filterAlerts(alertData: any, dateFormat: any, timeFormat: any, timeZone: any){
+    let alertArr: any = [];
+    if(alertData.length > 0){ // lat-> -90 to 90 & lng -> -180 to 180
+      let _s = alertData.filter(i => (i.alertLatitude >= -90 && i.alertLatitude <= 90) && (i.alertLongitude >= -180 && i.alertLongitude <= 180));
+      alertArr = _s.slice();
+      alertArr.forEach(element => {
+        if(element.alertTime && element.alertTime != 0){
+          element.convertedAlertTime = this.getStarttime(element.alertTime, dateFormat, timeFormat, timeZone, true);;
+        }else{
+          element.convertedAlertTime = '-';
+        }
+      });
+    }
+    return alertArr;
+  }
+
+  skipInvalidRecord(livePoints: any){
+    livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // lat-> -90 to 90 & lng -> -180 to 180
+    let filterPoints = livePoints.filter(i => (i.gpsLatitude >= -90 && i.gpsLatitude <= 90) && (i.gpsLongitude >= -180 && i.gpsLongitude <= 180));
+    return filterPoints;
   }
 
   // fuel deviation report data-conversion 
@@ -1242,9 +1393,9 @@ export class ReportMapService {
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
-  convertKgToPound(_data: any){
-    return (_data*2.2).toFixed(2);
-  }
+  // convertKgToPound(_data: any){
+  //   return (_data*2.2).toFixed(2);
+  // }
 
   convertKgToTonnes(_data: any){
     return (_data / 1000).toFixed(2);
@@ -1262,7 +1413,7 @@ export class ReportMapService {
         break;
       }
       case 'dunit_Imperial': {
-        _data = tonFlag ? this.convertKgToTons(data) : data; //-- pound/ton
+        _data = this.convertKgToTons(data); //-- pound/ton
         break;
       }
       default: {
@@ -1299,6 +1450,30 @@ export class ReportMapService {
     let data = _data * 2236.94;
     return data.toFixed(2);
   }
+
+  convertMaxSpeedUnits(data: any, unitFormat: any){
+    let _data:any;
+    switch(unitFormat){
+
+         case 'dunit_Metric' : {
+            _data = data.toFixed(2);//not doing conversion-kmph
+            break;
+         }
+         case 'dunit_Imperial' : {
+           _data = this.convertKmphToMph(data);//mIles per hour
+           break;
+         }
+         default: {
+           _data = data;
+         }
+    }
+    return _data;
+ }
+
+ convertKmphToMph(_data:any){
+  let data = _data * 0.621371;
+  return data.toFixed(2);
+}
 
   convertDistanceUnits(data: any, unitFormat: any){
     let _data: any;
@@ -1404,7 +1579,7 @@ export class ReportMapService {
     return _date; //returns dateTime if addTime is true or date if addTime is false
   }
    
-  getStarttime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
+  getStarttime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean, onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
@@ -1424,7 +1599,7 @@ export class ReportMapService {
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStopTime = this.getStarttime(element.stopTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedStopTime = this.calculateStopTime(element.vehicleActiveDays, element.tripTime);
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
@@ -1433,11 +1608,17 @@ export class ReportMapService {
       element.convertedTripTime = Util.getHhMmTimeFromMS(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
-    
     });
     return gridData;
   }
 
+  calculateStopTime(activeDays: any, tripTime: any){
+    let time: any = 0;
+    let stopTime: any = 0;
+    time = activeDays * 24 * 3600 * 1000; // stop-time in ms
+    stopTime = time - tripTime; // total time - trip time 
+    return Util.getHhMmTimeFromMS(stopTime);
+  }
 
   // Fuel Benchmarking data conversions
   getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
@@ -1471,37 +1652,50 @@ export class ReportMapService {
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
       element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
+      element.convertedTripFuelConsumption = this.getTripFuelConsumption(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convetedCCFuelConsumption = this.getFuelConsumedUnits(element.ccFuelConsumption, unitFormat,true);
+      element.convertedFuelConsumptionCCNonActive = this.getFuelConsumedUnits(element.fuelconsumptionCCnonactive, unitFormat,true);
       //element.convertedIdleDuration =element.idleDuration
+      element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'-';
       element.dpaScore = parseFloat(element.dpaScore);
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);
 
-            //for 2 decimal points
-            // element.convertedDistance = parseFloat(element.convertedDistance);
-            // element.convertedDistance = element.convertedDistance.toFixed(2)*1;
-            // element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
-            // element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
-            // element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
-            // element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
-            // element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
-            // element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
-            // element.fuelConsumed =parseFloat(element.fuelConsumed);
-            // element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
-            // element.fuelConsumption =parseFloat(element.fuelConsumption);
-            // element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
-            // element.cO2Emission =parseFloat(element.cO2Emission);
-            // element.cO2Emission =element.cO2Emission.toFixed(2)*1;
-            // element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
-            // element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
-            // element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
-            // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
-            // element.dpaScore = parseFloat(element.dpaScore);
-            // element.dpaScore = element.dpaScore.toFixed(2)*1;
-            element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
-            element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
-    
-  
+      //for 2 decimal points
+      // element.convertedDistance = parseFloat(element.convertedDistance);
+      // element.convertedDistance = element.convertedDistance.toFixed(2)*1;
+      // element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
+      // element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
+      // element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
+      // element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
+      // element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
+      // element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
+      // element.fuelConsumed =parseFloat(element.fuelConsumed);
+      // element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
+      // element.fuelConsumption =parseFloat(element.fuelConsumption);
+      // element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
+      // element.cO2Emission =parseFloat(element.cO2Emission);
+      // element.cO2Emission =element.cO2Emission.toFixed(2)*1;
+      // element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
+      // element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
+      // element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
+      // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
+      // element.dpaScore = parseFloat(element.dpaScore);
+      // element.dpaScore = element.dpaScore.toFixed(2)*1;
+      //element.convertedMaxSpeed = this.convertSpeedUnits(element.maxSpeed, unitFormat);
+      
+      element.convertedMaxSpeed = this.convertMaxSpeedUnits(element.maxSpeed,unitFormat);
+      element.convertedAverageGrossWeightComb = this.convertWeightUnits(element.averageGrossWeightComb, unitFormat);
+
+      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+      element.startpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startpositionlattitude; 
+      element.startpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startpositionlongitude; 
+      element.endpositionlattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endpositionlattitude; 
+      element.endpositionlongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endpositionlongitude; 
+
+      element.convertedIdlingPTOScore = (element.idlingPTOScore != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingPTOScore)*1000) : '00:00:00';
+      element.convertedIdlingWithoutPTO = (element.idlingWithoutPTO != '') ? Util.getHhMmSsTimeFromMS(parseInt(element.idlingWithoutPTO)*1000) : '00:00:00';
     });
     return gridData;
   }
@@ -1595,6 +1789,52 @@ export class ReportMapService {
     }
     return _fuelConsumed; 
   }
+
+  //fleet fuel report as fuel consumption coming ltr/100km directly
+  getTripFuelConsumption(fuelConsumption: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
+    let _fuelConsumption: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumption = fuelConsumption;
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumption = this.convertFuelConsumptionLtr100kmToMpg(fuelConsumption);
+        break;
+      }
+      default: {
+        _fuelConsumption = fuelConsumption;
+      }
+    }
+    return _fuelConsumption; 
+  }
+  convertFuelConsumptionLtr100kmToMpg(_data:any){
+    let data: any = (282.481/_data);
+    return (data).toFixed(2);
+  }
+
+  //Fuel Consumption in Summary Section
+  getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
+    //console.log("This function works well"); 
+    let _fuelConsumption: any = 0;
+
+    switch(unitFormat){
+      case 'dunit_Metric':{
+        _fuelConsumption = (FuelConsumpt/dt)*100;
+        break;
+      }
+      
+      case 'dunit_Imperial':{
+        _fuelConsumption = (dt/FuelConsumpt);
+        break;
+      }
+      default:{
+        _fuelConsumption = (FuelConsumpt/dt)*100;
+      }
+    }
+    return _fuelConsumption;
+}
+
 
   getDistance(distance: any, unitFormat: any){
     // distance in meter
@@ -1829,7 +2069,8 @@ export class ReportMapService {
         break;
       }
     }
-    return distance.toFixed(2); 
+    // return distance.toFixed(2); 
+    return distance;
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
@@ -1846,7 +2087,7 @@ export class ReportMapService {
         break;
       }
     }
-    return parseFloat(speed.toFixed(2)); 
+    return parseFloat(speed.toFixed(6)); 
   }
 
   getConvertedSpeed(val ,unit){
@@ -1863,23 +2104,99 @@ export class ReportMapService {
         break;
       }
     }
-    return speed.toFixed(2); 
+    // return speed.toFixed(2); 
+    return Math.round(speed);
   }
 
   convertFtToMeters(length){
     let meter;
     meter = length * 0.3048;
-    return parseFloat(meter.toFixed(2));
+    return parseFloat(meter.toFixed(6));
   }
 
   convertMetersToFt(length){
     let ft;
     ft = length * 3.28084;
-    return ft.toFixed(2); 
+    // return ft.toFixed(2); 
+    Math.round(ft);
   }
 
-  convertTimeToMinutes(milisec: any){
-    let newMin = milisec / 60000;
+  convertTimeToMinutes(seconds: any){
+    let newMin = seconds / 60;
     return newMin.toFixed(2);
   }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any, prefTimeFormat:any) {
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if (prefTimeFormat == 12) {
+     if(_y.split(' ')[1] == 'AM'){
+        if (_x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
+      }
+      else if(_y.split(' ')[1] == 'PM'){               
+         if(_x != 12){
+           date.setHours(parseInt(_x) + 12);
+         }
+         else{
+          date.setHours(_x);
+         }
+      }     
+      date.setMinutes(_y.split(' ')[0]);
+    } else {
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  formStartDate(date: any, prefTimeFormat: any, prefDateFormat:any) {
+    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
+    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
+    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
+    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
+    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
+    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if (prefTimeFormat == 12) {
+      if (date.getHours() == 12) {
+        _time = ((date.getHours() == 12 || date.getMinutes() > 0 || date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+      else {
+        _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+    }
+    else {
+      _time = `${h}:${m}:${s}`;
+    }
+    switch (prefDateFormat) {
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default: {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
 }

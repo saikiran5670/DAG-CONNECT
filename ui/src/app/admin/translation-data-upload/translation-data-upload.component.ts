@@ -26,7 +26,7 @@ export class TranslationDataUploadComponent implements OnInit {
   initData: any = [];
   columnCodes: string[] = ['fileName','createdAt','fileSize','description','action'];
   displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
-  columnLabels: String[] = ['File Name', 'Uploaded Date', 'File Size', 'Description', 'Action'];
+  columnLabels: String[] = ['FileName', 'UploadedDate', 'FileSize', 'Description', 'Action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTranslationDataFormGroup: FormGroup;
@@ -35,15 +35,15 @@ export class TranslationDataUploadComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any;
-  translationData: any;
+  translationData: any = {};
   localStLanguage: any;
   type: any = '';
   showLoadingIndicator: any;
   isTranslationDataUploaded: boolean = false;
   dialogRef: MatDialogRef<LanguageSelectionComponent>;
   excelEmptyMsg: boolean = false;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any = {};
+  userType: any = '';
   addedCount: number= 0;
   updatedCount: number= 0;
 
@@ -59,6 +59,8 @@ export class TranslationDataUploadComponent implements OnInit {
 
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    this.userType = localStorage.getItem("userType");
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.uploadTranslationDataFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -135,6 +137,7 @@ export class TranslationDataUploadComponent implements OnInit {
   } 
 
   uploadTranslationData(){ 
+    this.showLoadingIndicator=true;
     let languageData = [];
     //TODO : Read file, parse into JSON and send to API
     this.filelist.forEach(element => {
@@ -165,8 +168,9 @@ export class TranslationDataUploadComponent implements OnInit {
         this.updatedCount= data["translationupload"].updated;
         this.loadInitData();
       }
+      this.showLoadingIndicator=false;
     }, (error) => {
-      
+      this.showLoadingIndicator=false;
     });
     
     
@@ -262,9 +266,9 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   openLanguageSelectionPopup(){
-    let tableHeader: any = this.translationData.lblDownloadTemplate || 'Download Template';
+    let tableHeader: any = this.translationData.lblDownloadTemplate ;
     let colsList: any = ['select', 'name'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lbllanguage || 'Language'];
+    let colsName: any = [this.translationData.lblAll , this.translationData.lbllanguage ];
 
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;

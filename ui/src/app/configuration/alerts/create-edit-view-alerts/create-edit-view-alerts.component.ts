@@ -23,6 +23,8 @@ import { TranslationService } from '../../../services/translation.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { SimpleChanges } from '@angular/core';
 import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
+import { ConfigService } from '@ngx-config/core';
+import { ReplaySubject } from 'rxjs';
 
 declare var H: any;
 
@@ -34,7 +36,7 @@ declare var H: any;
 export class CreateEditViewAlertsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   @Input() actionType: any;
-  @Input() translationData: any = [];
+  @Input() translationData: any = {};
   @Input() selectedRowData: any;
   alertCategoryList: any = [];
   alertTypeList: any = [];
@@ -54,6 +56,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     floor: 0,
     ceil: 100000
   };
+  alertTypeObject: any;
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName', 'address'];
@@ -126,7 +129,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   ui: any;
   isExpandedOpen: boolean = false;
   isExpandedOpenAlert: boolean = true;
-  filterDetailsErrorMsg:any;
+  filterDetailsErrorMsg:any= '';
   filterDetailsCheck:boolean = false;
   isNotificationFormValid: boolean= true;
   isNotifyEmailValid:  boolean= true;
@@ -144,6 +147,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  map_key: any = '';
+  singleVehicle = [];
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -173,6 +178,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @ViewChild("map")
   private mapElement: ElementRef;
   
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  
   constructor(private _formBuilder: FormBuilder,
               private poiService: POIService,
               private geofenceService: GeofenceService, 
@@ -185,15 +195,24 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private el: ElementRef,
               private reportMapService: ReportMapService,
               private translationService: TranslationService,
-              private organizationService: OrganizationService) 
+              private organizationService: OrganizationService,
+              private _configService: ConfigService ) 
   {
+    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });  
    }
 
   ngOnInit(): void {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId')){
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    } 
+    
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.userType= localStorage.getItem("userType");
@@ -203,7 +222,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertType: ['', [Validators.required]],
       applyOn: ['G', [Validators.required]],
       // vehicleGroup: [''],
-      vehicleGroup: ['',[Validators.required]],
+      vehicleGroup: [''],
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
@@ -274,13 +293,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
 proceedStep(prefData: any, preference: any){
   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
   if(_search.length > 0){
-    this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
   }else{
-    this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-    this.prefTimeZone = prefData.timezone[0].value;
+    //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone[0].value;
+    this.prefTimeZone = prefData.timezone[0].name;
     this.prefDateFormat = prefData.dateformat[0].name;
     this.prefUnitFormat = prefData.unit[0].name;
   }
@@ -397,14 +420,15 @@ proceedStep(prefData: any, preference: any){
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);
     }
-    if(this.actionType != 'view'){
-      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
-    }
     
     //Render vehicle group and vehicle dropdowns based on alert type
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    this.getVehicleGroupsForAlertType(alertTypeObj);
-    this.getVehiclesForAlertType(alertTypeObj);
+    this.alertTypeObject = alertTypeObj;
+    if(this.actionType != 'view'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+      this.getVehiclesForAlertType(alertTypeObj);
+      this.getVehicleGroupsForAlertType(alertTypeObj);
+    }
 
     
     //----------------------------------------------------------------------------------------------------------
@@ -445,7 +469,7 @@ proceedStep(prefData: any, preference: any){
         this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
           if(element.urgencyLevelType == 'C'){
             this.isCriticalLevelSelected= true;
-            this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'W'){
             this.isWarningLevelSelected= true;
@@ -453,11 +477,11 @@ proceedStep(prefData: any, preference: any){
             // if(this.alert_category_selected+this.alert_type_selected == 'LU'){
             //   threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
             // }
-            this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'A'){
             this.isAdvisoryLevelSelected= true;
-            this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
+            // this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
           }          
         });
       }
@@ -478,15 +502,15 @@ proceedStep(prefData: any, preference: any){
         this.unitTypes= [
           {
             enum : 'H', 
-            value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
+            value : this.translationData.lblHours ? this.translationData.lblHours : ''
           },
           {
             enum : 'T',
-            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
+            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : ''
           },
           {
             enum : 'S',
-            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : 'Seconds'
+            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : ''
           }
         ];
       }
@@ -500,14 +524,14 @@ proceedStep(prefData: any, preference: any){
         //   break;
         // }
         case "LH": { //Excessive under utilization in hours
-          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           break;
         }
         case "LD": { //Excessive distance done
-          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : this.translationData.lblMiles || 'Miles';
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
          // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           if(this.prefUnitFormat == 'dunit_Metric'){
             this.unitTypeEnum= "K";  }
@@ -524,8 +548,8 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LU": { //Excessive Driving duration
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -537,9 +561,9 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LG": { //Excessive Global Mileage
-          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -555,26 +579,26 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FP": { //Fuel Increase During stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%";
           this.unitTypeEnum= "P";
           break;
         }
         case "FL": { //Fuel loss during stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FT": { //Fuel loss during trip
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FI": { //Excessive Average Idling
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "";
           this.unitTypeEnum= "S";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -586,8 +610,8 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FA": { //Excessive Average speed
-          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour || 'Km/h' : this.translationData.lblMilesPerHour || 'Miles/h';
+          this.labelForThreshold= this.translationData.lblSpeed ? this.translationData.lblSpeed : "";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour : this.translationData.lblMilesPerHour;
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
           if(this.prefUnitFormat == 'dunit_Metric'){
@@ -598,7 +622,7 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FF": { //Fuel Consumed
-          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "";
           // this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
           // this.unitTypeEnum= "L";
            this.unitForThreshold= "%";
@@ -609,86 +633,104 @@ proceedStep(prefData: any, preference: any){
     } 
   }
 
-  getVehicleGroupsForAlertType(alertTypeObj: any){
-    alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
-    vehicleGroups.forEach(element => {
-      let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
-      if(vehGrp.length > 0 && vehGrp.vehicleGroupId!=0){
-        this.vehicleGroupList.push(vehGrp[0]);
-      }
-    });
-    this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
-  }
-
-  getVehiclesForAlertType(alertTypeObj: any){
+  updateVehiclesList(alertTypeObj: any){
+    this.vehicleByVehGroupList = [];
+    this.vehicleListForTable = [];
     let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleId");
     vehicles.forEach(element => {
-      let veh = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+      let veh = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupId == this.selectedRowData.vehicleGroupId);
       if(veh.length > 0){
         this.vehicleByVehGroupList.push(veh[0]);
       }
     });
-    this.vehicleByVehGroupList = this.getUnique(this.vehicleByVehGroupList, "vehicleId");
+        //subscribed vehicles
+        this.vehicleByVehGroupList.forEach(element => {
+          element["subcriptionStatus"] = true;
+          this.vehicleListForTable.push(element);
+        });
     
+        //non-subscribed vehicles
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+          let isDuplicateVehicle= false;
+          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+                isDuplicateVehicle= true;
+                break;
+            }
+          }
+          if(!isDuplicateVehicle){
+            element["subcriptionStatus"] = false;
+            this.vehicleListForTable.push(element);
+          }
+        });
+        
+        this.updateVehiclesDataSource(this.vehicleListForTable);
+  }
+
+  getVehicleGroupsForAlertType(alertTypeObj: any){
+     this.vehicleByVehGroupList.forEach(element => {
+       let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+       vehicleGroupDetails.forEach(item => {
+         let itemSplit = item.split("~");
+         if(itemSplit[2] != 'S') {
+          let vehicleGroupObj= {
+            "vehicleGroupId" : itemSplit[0],
+            "vehicleGroupName" : itemSplit[1],
+            "vehicleId" : element.vehicleId
+          }
+          this.vehicleGroupList.push(vehicleGroupObj);
+          console.log("vehicleGroupList 1", this.vehicleGroupList);
+        } else {
+          this.singleVehicle.push(element);
+        }
+       });
+     });
+     this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
+     console.log("vehicleGroupList 2", this.vehicleGroupList); 
+     this.vehicleGroupList.sort(this.compareHere);
+     this.resetVehicleGroupFilter();
+
+     this.vehicleGroupList.forEach(element => {
+       element.vehicleGroupId = parseInt(element.vehicleGroupId);
+     });
+  }
+ 
+  resetVehicleGroupFilter(){
+		this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
+	  }
+ resetVehiclesFilter(){
+   this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
+ }
+  getVehiclesForAlertType(alertTypeObj: any){
+    this.vehicleByVehGroupList= [];
+    let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
+      this.associatedVehicleData.forEach(element => {        
+          this.vehicleByVehGroupList.push(element);
+      });
+    }
+    else{ //if subscriptionType == 'v'
+      featuresData.forEach(element => {
+        let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+        if(vehicle.length > 0){
+          this.vehicleByVehGroupList.push(vehicle[0]);
+          console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+          this.vehicleByVehGroupList.sort(this.compareVehicleList);
+          this.resetVehiclesFilter();
+        }
+      });
+    }
+ 
     //subscribed vehicles
     this.vehicleByVehGroupList.forEach(element => {
+      console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
       element["subcriptionStatus"] = true;
       this.vehicleListForTable.push(element);
     });
 
     //non-subscribed vehicles
-    this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
-      let isDuplicateVehicle= false;
-      for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-        if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-            isDuplicateVehicle= true;
-            break;
-        }
-      }
-      if(!isDuplicateVehicle){
-        element["subcriptionStatus"] = false;
-        this.vehicleListForTable.push(element);
-      }
-    });
-    
-    this.updateVehiclesDataSource(this.vehicleListForTable);
-
-  }
-
-  onChangeVehicleGroup(value){
-    this.vehicleListForTable= [];
-    this.vehicleByVehGroupList= [];
-    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
-      this.onChangeAlertType(this.selectedRowData.type);
-      this.vehicleByVehGroupList = [];
-      this.vehicleListForTable = [];
-    }
-    this.alertForm.get('vehicle').setValue('');    
-  // this.isUnsubscribedVehicle= false;
-  let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
-    if(value == 'ALL'){
-      this.getVehiclesForAlertType(alertTypeObj);
-    }
-    else{
-      this.vehicle_group_selected= value;
-      let vehicles = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key && item.vehicleGroupId == this.vehicle_group_selected), "vehicleId");
-      vehicles.forEach(element => {
-        let veh = this.associatedVehicleData.filter(item => (item.vehicleId == element.vehicleId && item.vehicleGroupId == this.vehicle_group_selected));
-        if(veh.length > 0){
-          this.vehicleByVehGroupList.push(veh[0]);
-        }
-      });
-      this.vehicleByVehGroupList = this.getUnique(this.vehicleByVehGroupList, "vehicleId");
-      
-      //subscribed vehicles
-      this.vehicleByVehGroupList.forEach(element => {
-        element["subcriptionStatus"] = true;
-        this.vehicleListForTable.push(element);
-      });
-
-      //non-subscribed vehicles
-      this.associatedVehicleData.filter(item => item.vehicleGroupId == this.vehicle_group_selected).forEach(element => {
+    if(featuresData[0].subscriptionType != 'O'){
+      this.associatedVehicleData.forEach(element => {
         let isDuplicateVehicle= false;
         for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
           if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
@@ -701,7 +743,75 @@ proceedStep(prefData: any, preference: any){
           this.vehicleListForTable.push(element);
         }
       });
-      
+    }
+    this.updateVehiclesDataSource(this.vehicleListForTable);
+  }
+
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
+
+  onChangeVehicleGroup(value){
+    this.vehicleListForTable= [];
+    this.vehicleByVehGroupList= [];
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.onChangeAlertType(this.selectedRowData.type);
+      this.vehicleByVehGroupList = [];
+      this.vehicleListForTable = [];
+    }
+    this.alertForm.get('vehicle').setValue('');    
+    let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
+    if(value == 'ALL'){
+      this.getVehiclesForAlertType(alertTypeObj);
+      this.vehicleByVehGroupList = this.getUniqueVINs([...this.vehicleByVehGroupList, ...this.singleVehicle]);
+    }
+    else{
+      //converted vehicle group selection into int val.
+      this.vehicle_group_selected= parseInt(value);
+
+      let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
+        this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+      }
+      else{ //if subscriptionType == 'v'
+        featuresData.forEach(element => {
+          let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+          if(vehicle.length > 0){
+            this.vehicleByVehGroupList.push(vehicle[0]);
+          }
+        });
+      }
+
+      //subscribed vehicles
+      this.vehicleByVehGroupList.forEach(element => {
+        element["subcriptionStatus"] = true;
+        this.vehicleListForTable.push(element);
+      });
+
+      //non-subscribed vehicles
+      if(featuresData[0].subscriptionType != 'O'){  
+        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+          let isDuplicateVehicle= false;
+          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+                isDuplicateVehicle= true;
+                break;
+            }
+          }
+          if(!isDuplicateVehicle){
+            element["subcriptionStatus"] = false;
+            this.vehicleListForTable.push(element);
+          }
+        });
+      }
       this.updateVehiclesDataSource(this.vehicleListForTable);
     }
   }
@@ -1441,10 +1551,32 @@ PoiCheckboxClicked(event: any, row: any) {
     }, 2000);
   }
 
+  compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
+    a = parseInt(a.vehicleGroupId);
+    b = parseInt(b.vehicleGroupId);
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareVehicleList(a: any | String, b: any | String, isAsc: boolean) {
+    a = a.vehicleId;
+    b = b.vehicleId;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
     if(!(a instanceof Number)) a = a.toUpperCase();
     if(!(b instanceof Number)) b = b.toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  compareHere(a,b){
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
   }
 
   updateGroupDatasource(tableData: any){
@@ -1482,8 +1614,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-    const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
-    const tableTitle = this.translationData.lblPOI || 'POI';
+    const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+    const tableTitle = this.translationData.lblPOI;
     let objData = { 
       organizationid : this.accountOrganizationId,
       groupid : row.id
@@ -1508,8 +1640,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onGeofenceClick(row: any){
     const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
-    const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    const colsName = ['Name', this.translationData.lblCategory, this.translationData.lblSubCategory];
+    const tableTitle = this.translationData.lblGeofence;
     let objData = { 
       organizationid : this.accountOrganizationId,
       groupid : row.id
@@ -1587,6 +1719,11 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
+    if(this.selectedApplyOn != 'G'){
+      // this.updateVehiclesList(this.alertTypeObject);
+      this.getVehiclesForAlertType(this.alertTypeObject);
+      this.getVehicleGroupsForAlertType(this.alertTypeObject);
+    }
   }
 
   onClickAdvancedFilter(){
@@ -1617,7 +1754,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1629,7 +1766,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1641,7 +1778,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value;
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -2157,18 +2294,21 @@ PoiCheckboxClicked(event: any, row: any) {
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'levelType' + '"]');
           this.filterDetailsErrorMsg ='Please select atleast one alerts level';
         }
-        else if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && this.isCriticalLevelSelected && (this.alertForm.get('criticalLevelThreshold').value == '')))
+        else if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && this.isCriticalLevelSelected && (this.alertForm.get('criticalLevelThreshold').value == '' || this.alertForm.get('criticalLevelThreshold').value == null)))
         {
           this.alertForm.get('criticalLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Critical level threshold cannot be empty';
         }
-        else if((this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('warningLevelThreshold').value == ''))){
+        else if((this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('warningLevelThreshold').value == '' || this.alertForm.get('warningLevelThreshold').value == null))){
           this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Warning level threshold cannot be empty';
           }
-        else if((!this.isWarningLevelSelected && this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))){
+        else if((!this.isWarningLevelSelected && this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '' || this.alertForm.get('advisoryLevelThreshold').value == null))){
           this.alertForm.get('advisoryLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg= 'Advisory level threshold cannot be empty';
         }
         this.filterDetailsCheck=false;
       }
@@ -2396,10 +2536,10 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onDeleteNotification(){
     const options = {
-      title: this.translationData.lblDeleteAlertNotification || "Delete Notification",
-      message: this.translationData.lblAreousureyouwanttodeleteNotification || "Are you sure you want to delete notification for '$' alert?",
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblDelete || "Delete"
+      title: this.translationData.lblDeleteAlertNotification,
+      message: this.translationData.lblAreousureyouwanttodeleteNotification,
+      cancelText: this.translationData.lblCancel,
+      confirmText: this.translationData.lblDelete
     };
     let name = this.selectedRowData.name;
     this.dialogService.DeleteModelOpen(options, name);
@@ -2435,10 +2575,15 @@ PoiCheckboxClicked(event: any, row: any) {
 }
 
 keyPressNumbers(event) {    
-  var limit = parseInt(event.max);
+  // var limit = parseInt(event.currentTarget.maxLength);
+  // var max = parseInt(event.currentTarget.max);
+  var min = parseInt(event.currentTarget.min);
   var exclude = /Backspace|Enter/;  
-  if (event.value.length == limit) event.preventDefault();
-return true;   
+  var value = Number.parseFloat(event.target.value + '' + event.key);
+  var parts = event.target.value.split('.');
+  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
+  if(event.key=='-' || value < min) event.preventDefault();
+    return true;   
 }
 
 onKey(event: any) { // without type info
@@ -2460,5 +2605,40 @@ ngOnChanges(changes: SimpleChanges) {
     const cur1  = JSON.stringify(chng1.currentValue);
 
   }}
+
+  filterVehicleGroups(vehicleSearch){
+    console.log("filterVehicleGroups called");
+    if(!this.vehicleGroupList){
+      return;
+    }
+    if(!vehicleSearch){
+      this.resetVehicleGroupFilter();
+      return;
+     } else{
+       vehicleSearch = vehicleSearch.toLowerCase();
+     }
+     this.filteredVehicleGroups.next(
+       this.vehicleGroupList.filter(item=> item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+     );
+     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+}
+
+filterVehicles(search){
+  console.log("filterVehicles called");
+  if(!this.vehicleByVehGroupList){
+    return;
+  }
+  if(!search){
+    this.resetVehiclesFilter();
+    return;
+   } else{
+    search = search.toLowerCase();
+   }
+   this.filteredVehicles.next(
+     this.vehicleByVehGroupList.filter(item=> item.vin.toLowerCase().indexOf(search) > -1)
+   );
+   console.log("this.filteredVehicles", this.filteredVehicles);
+}
+
   
 }

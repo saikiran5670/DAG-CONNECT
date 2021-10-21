@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -30,9 +31,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public AlertController(AlertService.AlertServiceClient alertServiceClient,
                                AuditHelper auditHelper,
-                               Common.AccountPrivilegeChecker privilegeChecker,
                                VehicleService.VehicleServiceClient vehicleClient,
-                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper, privilegeChecker)
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _alertServiceClient = alertServiceClient;
             _auditHelper = auditHelper;
@@ -392,9 +392,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 if (orgnizationid == 0) return BadRequest(AlertConstants.ALERT_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
-                AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid }, headers);
 
                 if (response.AlertRequest != null && response.AlertRequest.Count > 0)
                 {
@@ -466,10 +471,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int orgnizationid = GetUserSelectedOrgId();
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                int orgnizationid = GetContextOrgId();
                 if (accountId == 0 || orgnizationid == 0 || roleid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
 
-                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+
+                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid }, headers);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == ResponseCode.Success)
@@ -499,7 +510,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var notificationRequest = new NotificationViewRequest();
                 notificationRequest = _mapper.ToNotificationViewRequest(request);
-                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accountid", Convert.ToString(_userDetails.AccountId));
+                alertservice.NotificationViewResponse notiResponse = await _alertServiceClient.InsertViewNotificationAsync(notificationRequest, headers);
 
                 if (notiResponse != null && notiResponse.Code == ResponseCode.Failed)
                 {
@@ -509,7 +522,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                     AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "CreateAlert", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
+                    string.Format(AlertConstants.ALERT_AUDIT_LOG_MSG, "InsertViewedNotifications", AlertConstants.ALERT_CONTROLLER_NAME), notiResponse.InsertedId, notiResponse.InsertedId, JsonConvert.SerializeObject(request),
                     _userDetails);
                     return Ok(notiResponse.Message);
                 }
@@ -522,7 +535,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "CreateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "InsertViewedNotifications", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
@@ -533,6 +546,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("getofflinenotification")]
+        public async Task<IActionResult> GetOfflinePushNotification()
+        {
+            try
+            {
+                OfflinePushNotiRequest offlinePushNotiRequest = new OfflinePushNotiRequest();
+                offlinePushNotiRequest.AccountId = _userDetails.AccountId;
+                offlinePushNotiRequest.OrganizationId = 0;
+
+                OfflineNotificationResponse response = await _alertServiceClient.GetOfflinePushNotificationAsync(offlinePushNotiRequest);
+
+                if (response.NotificationResponse != null && response.NotificationResponse.Count > 0)
+                {
+                    response.Code = ResponseCode.Success;
+                    return Ok(response);
+                }
+                else if (response.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, AlertConstants.OFFLINE_NOTI_GET_FAILED_MSG);
+                }
+                else
+                {
+                    return StatusCode(404, AlertConstants.OFFLINE_NOTI_NOT_FOUND_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "getofflinenotification", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

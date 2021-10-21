@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitordataprocess-api-deployment
+  labels:
+    app.kubernetes.io/name: monitordataprocess-api-java
+    app.kubernetes.io/type: application-java
+spec:
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        app.kubernetes.io/name: monitordataprocess-api-java
+        app.kubernetes.io/type: application-java
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        fsGroup: 10001
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - monitordataprocess-api-java
+              - key: app.kubernetes.io/type
+                operator: In
+                values:
+                - application-java
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: monitordataprocess-java-container
+        image: acraksfvfajvkuxanm4.azurecr.io/monitordataprocess-image:latest
+        imagePullPolicy: "Always"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        ports:
+          - containerPort: 8443
+      - name: filebeatservice-container
+        image: acraksfvfajvkuxanm4.azurecr.io//filebeat
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: filebeatdata 
+          mountPath: /usr/share/filebeat/data
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        env:
+        - name: serviceName
+          value: "contistreaming-api-java"
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: filebeatdata
+        emptyDir: {}
+      - name: certs
+        secret:
+          secretName: filebeat
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: monitordataprocess-api-java
+        app.kubernetes.io/type: application-java
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitordataprocessservice
+  labels:
+    svc.kubernetes.io/name: monitordataprocess-api-java
+    svc.kubernetes.io/type: application-java
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8443
+    targetPort: 8443
+  selector:
+    app.kubernetes.io/name: monitordataprocess-api-java
+    app.kubernetes.io/type: application-java
+
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1 
+metadata: 
+  name: monitordataprocess-java-hpa
+  labels:
+    hpa.kubernetes.io/name: monitordataprocess-api-java
+    hpa.kubernetes.io/type: application-java 
+spec: 
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: monitordataprocess-api-deployment 
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 70

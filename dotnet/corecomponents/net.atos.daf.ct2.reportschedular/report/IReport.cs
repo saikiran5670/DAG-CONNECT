@@ -15,5 +15,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         Task<string> GenerateTable();
 
         Task<string> GenerateTemplate(byte[] logoBytes);
+
+        public int FeatureId { get; }
     }
 }

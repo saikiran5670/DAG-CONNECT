@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -116,7 +117,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Assign context orgId               
                 vehicleFilter.OrganizationId = GetContextOrgId();
                 var vehicleFilterRequest = _mapper.ToVehicleFilter(vehicleFilter);
-                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("accountId", Convert.ToString(_userDetails.AccountId));
+
+                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest, headers);
                 List<VehicleResponse> response = new List<VehicleResponse>();
                 response = _mapper.ToVehicles(vehicleListResponse);
 
@@ -270,30 +275,69 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpGet]
+        [Route("group/candelete")]
+        public async Task<IActionResult> CanDelete(long groupId)
+        {
+            VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
+            try
+            {
+                _logger.Info("Can delete Group method in vehicle API called.");
+
+                if ((Convert.ToInt32(groupId) <= 0))
+                {
+                    return StatusCode(400, "The vehicle group id is required.");
+                }
+                //Add the organizationId for Vehicle group CDC ogranization filter
+                request.OrganizationId = GetContextOrgId();
+                request.GroupId = Convert.ToInt32(groupId);
+                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.CanDeleteGroupAsync(request);
+                if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
+                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "CanDelete method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
+                    return Ok(response.Result);
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
+                "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "CanDelete method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
 
         [HttpDelete]
         [Route("group/delete")]
-        public async Task<IActionResult> DeleteGroup(long GroupId)
+        public async Task<IActionResult> DeleteGroup(long groupId)
         {
             VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
             try
             {
                 _logger.Info("Delete Group method in vehicle API called.");
 
-                if ((Convert.ToInt32(GroupId) <= 0))
+                if ((Convert.ToInt32(groupId) <= 0))
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
                 //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
-                request.GroupId = Convert.ToInt32(GroupId);
-                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
+                request.GroupId = Convert.ToInt32(groupId);
+                VehicleBusinessService.VehicleGroupDeleteModifiedResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
-                    return Ok(response.Result);
+                  "DeleteGroup method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
+                    return Ok(new { isDeleted = response.IsDeleted, CanDelete = response.CanDelete });
                 }
                 else
                 {
@@ -305,7 +349,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
+                "DeleteGroup method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
@@ -351,22 +395,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("group/getvehiclelist")]
-        public async Task<IActionResult> GetVehiclesByVehicleGroup([FromQuery] int GroupId)
+        public async Task<IActionResult> GetVehiclesByVehicleGroup([FromQuery] int groupId)
         {
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
-                if (Convert.ToInt32(GroupId) <= 0)
+                if (Convert.ToInt32(groupId) <= 0)
                 {
                     return StatusCode(401, "invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
 
 
-                VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
-                VehicleGroupIdRequest.GroupId = GroupId;
+                VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
+                vehicleGroupIdRequest.GroupId = groupId;
 
-                VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
+                VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
 
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -377,7 +421,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle details are found.");
+                        return StatusCode(404, "Vehicle details are not found.");
                     }
                 }
                 else
@@ -922,8 +966,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
                 orgvehicleIdRequest.OrganizationId = organizationId;
+                orgvehicleIdRequest.AccountId = _userDetails.AccountId;
 
-                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
+                var adminRightsFeatureId = GetMappedFeatureIdByStartWithName("Admin#Admin")?.FirstOrDefault() ?? 0;
+
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("admin_rights_featureId", Convert.ToString(adminRightsFeatureId));
+
+                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest, headers);
                 List<VehicleManagementResponse> vehicles = _mapper.ToVehicles(vehiclesResponse);
 
                 if (vehiclesResponse != null && vehiclesResponse.Code == VehicleBusinessService.Responcecode.Success)
@@ -1073,7 +1124,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
     }
 
 }

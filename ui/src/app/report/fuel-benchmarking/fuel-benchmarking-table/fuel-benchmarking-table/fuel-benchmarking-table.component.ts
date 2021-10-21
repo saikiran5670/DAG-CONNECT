@@ -29,6 +29,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() vehicleGroupSelected:any;
   @Input() prefUnitFormat:any;
   @Input() translationData:any;
+  @Input() reportPrefData: any;
   //vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
@@ -49,30 +50,30 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     [55, 25, 20]
   ];
   doughnutChartType: ChartType = 'doughnut';
-  reportPrefData;
-  accountOrganizationId;
-  accountId;
+  // accountOrganizationId: any;
+  // accountId: any;
 
   constructor(private reportService: ReportService , private reportMapService : ReportMapService) { }
 
   ngOnInit(): void {
     this.dataSource = [{
-      "period": "Number of Active Vehicles",
+      "period": this.translationData.lblNoOfActiveVehicles || "Number of Active Vehicles",
     }, {
-      "period": "Total Fuel Consumed",
+      "period": this.translationData.lblTotalFuelConsumed || "Total Fuel Consumed",
     }, {
-      "period": "Total Mileage",
+      "period": this.translationData.lblTotalMileage || "Total Mileage",
     }, {
-      "period": "Average Fuel Consumption",
+      "period": this.translationData.lblAverageFuelConsumption || "Average Fuel Consumption",
     }, {
-      "period": "Ranking",
+      "period": this.translationData.lblRanking || "Ranking",
     }, {
-      "period": "Fuel Consumption",
+      "period": this.translationData.lblFuelConsumption || "Fuel Consumption",
     }];
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    this.getUserPreferenceReport();
-    
+    this.doughnutChartLabels= [ this.translationData.lblHigh || 'High', this.translationData.lblMedium || 'Medium', this.translationData.lblLow || 'Low'];
+    // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    // this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    //this.getUserPreferenceReport();
+    this.loadBenchmarkTable();
   }
 
   loadBenchmarkTable() {
@@ -109,7 +110,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     //this.vehicleHeaderCount--;
   }
 
-  addColumn(data, column) {
+  addColumn(data: any, column: any) {
     if (this.displayedColumns.length < 5) {
       if (!this.displayedColumns.includes(column)) {
         this.displayedColumns.push(column);
@@ -136,12 +137,12 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     //this.vehicleHeaderCount++;
   }
   
-  getUserPreferenceReport() {
-    this.reportService.getReportUserPreference(6).subscribe((data: any) => {
-      this.reportPrefData = data["userPreferences"];
-      this.loadBenchmarkTable();
-    });
-  }
+  // getUserPreferenceReport() {
+  //   this.reportService.getReportUserPreference(6).subscribe((data: any) => {
+  //     this.reportPrefData = data["userPreferences"];
+  //     this.loadBenchmarkTable();
+  //   });
+  // }
 
   updateDoughnutChartData(rakingData) {
     let highthresholdValue;
@@ -166,12 +167,14 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     let low = 0;
     if (rakingData && rakingData.length > 0) {
       for (let ranking of rakingData) {
-        if (highthresholdValue <= parseFloat(ranking.ltrVal)) {
-          high++;
-        } else if (lowthresholdValue >= parseFloat(ranking.ltrVal)) {
-          low++;
-        } else {
+        if(parseFloat(ranking.ltrVal) > highthresholdValue && parseFloat(ranking.ltrVal) < lowthresholdValue){
           medium++;
+        }else if (parseFloat(ranking.ltrVal) <= highthresholdValue) {
+          high++;
+        }else if (parseFloat(ranking.ltrVal) >= lowthresholdValue) {
+          low++;
+        }else{
+          high++; // default if both are same in pref.
         }
       }
     }
@@ -184,9 +187,9 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     let mediumVal = totalparts * medium;
     let lowVal = totalparts * low;
     let testArr = [];
-    testArr.push(highVal);
-    testArr.push(mediumVal);
-    testArr.push(lowVal);
+    testArr.push(highVal.toFixed(2));
+    testArr.push(mediumVal.toFixed(2));
+    testArr.push(lowVal.toFixed(2));
     let test: MultiDataSet = [];
     test.push(testArr);
     return test;

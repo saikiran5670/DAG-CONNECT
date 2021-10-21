@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'unsubscribereport/:token/:id/:emailId', loadChildren: () => import('./unsubscribe-report/unsubscribe-report.module').then(m => m.UnsubscribeReportModule) },
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'fleetoverview', loadChildren: () => import('./live-fleet/live-fleet.module').then(m => m.LiveFleetModule) },
+  { path: 'vehicleupdates', loadChildren: () => import('./vehicle-updates/vehicle-updates.module').then(m => m.VehicleUpdatesModule) },
   { path: 'report', loadChildren: () => import('./report/report.module').then(m => m.ReportModule) },
   { path: 'configuration', loadChildren: () => import('./configuration/configuration.module').then(m => m.ConfigurationModule) },
   { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
@@ -19,7 +20,7 @@ const routes: Routes = [
   { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
   { path: 'menunotfound', loadChildren: () => import('./menu-not-found/menu-not-found-routing.module').then(m => m.MenuNotFoundRoutingModule) },
-  { path: 'switchOrgRole', loadChildren: () => import('./org-role-navigation/org-role-navigation-routing.module').then(m => m.OrgRoleNavigationRoutingModule) },
+  { path: 'switchorgrole', loadChildren: () => import('./org-role-navigation/org-role-navigation.module').then(m => m.OrgRoleNavigationModule) },
 
 ];
 

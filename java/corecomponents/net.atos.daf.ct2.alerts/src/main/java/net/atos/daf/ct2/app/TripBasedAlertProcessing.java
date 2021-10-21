@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.excessiveDistanceDone;
 import static net.atos.daf.ct2.process.functions.LogisticAlertFunction.excessiveGlobalMileage;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
-
+@Deprecated
 public class TripBasedAlertProcessing implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(TripBasedAlertProcessing.class);

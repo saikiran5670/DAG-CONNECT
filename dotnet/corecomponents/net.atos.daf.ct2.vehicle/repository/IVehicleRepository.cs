@@ -54,7 +54,9 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        Task<IEnumerable<DtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+        Task<IEnumerable<response.VehicleRelations>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+
+        Task<IEnumerable<response.VehicleRelations>> GetVehicleRelations(IEnumerable<response.VehicleRelations> vehicles, int orgId);
         #endregion
 
         #region Vehicle Visibility
@@ -68,7 +70,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsByOrganization(int orgId);
         Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
         Task<VehicleCountFilter> GetGroupFilterDetail(int vehicleGroupId, int orgnizationId);
-
+        Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaGroupIds(IEnumerable<int> vehicleGroupIds);
         #endregion
 
         // Task<bool> SetConnectionStatus(char Status);
@@ -79,5 +81,10 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<ProvisioningVehicle> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
         Task<IEnumerable<ProvisioningVehicle>> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
         Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
+
+        Task<IEnumerable<VehicleGroupForOrgRelMapping>> GetVehicleGroupsForOrgRelationshipMapping(long organizationId);
+        #region Get Vehicles property Model Year and Type
+        Task<IEnumerable<VehiclePropertyForOTA>> GetVehiclePropertiesByIds(int[] vehicleIds);
+        #endregion
     }
 }

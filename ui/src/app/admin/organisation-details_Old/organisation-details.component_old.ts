@@ -22,7 +22,7 @@ export class OrganisationDetailsComponent implements OnInit {
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   organizationId: any;
   dataSource: any = new MatTableDataSource([]);
-  translationData: any;
+  translationData: any = {};
   initData: any = [];
   localStLanguage: any;
   showLoadingIndicator: any;

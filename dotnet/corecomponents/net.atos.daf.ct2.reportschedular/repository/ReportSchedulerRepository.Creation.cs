@@ -7,6 +7,7 @@ using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
@@ -20,7 +21,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameter.Add("@from_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(-reportCreationRangeInMinutes)));
                 parameter.Add("@now_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 #region Query GetReportCreationScheduler
-                var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
+                var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, r.feature_id as FeatureId,
                             r.name as ReportName, trim(r.key) as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 
                             rs.type as Type, rs.start_date as StartDate, rs.end_date as EndDate,
                             trim(rs.code) as Code, rs.last_schedule_run_date as LastScheduleRunDate, 
@@ -52,8 +53,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-
-        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
+        public Task<IEnumerable<VehicleList>> GetVehicleListTemp(int reprotSchedulerId, int organizationId)
         {
             try
             {
@@ -144,13 +144,13 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
-	                            on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
-	                            or (orm.target_org_id= du1.Organization_Id and ors.code NOT IN ('Owner','OEM')))
+	                            on ((orm.owner_org_id = du1.Organization_Id and lower(ors.code)='owner') 
+	                            or (orm.target_org_id= du1.Organization_Id and lower(ors.code) NOT IN ('owner','oem')))
 	                            and du1.function_enum='A'
 	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
-	                            --on orm.target_org_id=du2.Organization_Id and ors.code NOT IN ('Owner','OEM') and du2.function_enum='A'
+	                            --on orm.target_org_id=du2.Organization_Id and lower(ors.code) NOT IN ('owner','oem') and du2.function_enum='A'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
                             --select * from cte_account_vehicle_DynamicAll
@@ -170,9 +170,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
-	                            on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
+	                            on ((orm.owner_org_id=du1.Organization_Id and lower(ors.code)='owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
                             --select * from cte_account_vehicle_DynamicOwned
@@ -194,9 +194,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
 	                            on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
 	                            where ors.state='A'
-	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date 
 	                            else COALESCE(end_date,0) =0 end  
-	                            and ors.code NOT IN ('Owner','OEM')
+	                            and lower(ors.code) NOT IN ('owner','oem')
                             )
                             --select * from cte_account_vehicle_DynamicVisible
                             ,
@@ -231,6 +231,31 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             )
                             select distinct * from cte_account_vehicle_CompleteList";
                 return _dataAccess.QueryAsync<VehicleList>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_schedule_id", reprotSchedulerId);
+
+                var query = @"select distinct vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id =@report_schedule_id
+                            ";
+                var vehicles = await _visibilityManager.GetVisibilityVehicles(await _dataAccess.QueryAsync<int>(query, parameter), organizationId);//need to pass parameter
+                var vehicleList = new List<VehicleList>();
+                foreach (var item in vehicles)
+                {
+                    foreach (var v in item.Value)
+                    {
+                        vehicleList.Add(new VehicleList { Id = v.Id, VIN = v.VIN });
+                    }
+                }
+                return await Task.FromResult(vehicleList);
             }
             catch (Exception)
             {
