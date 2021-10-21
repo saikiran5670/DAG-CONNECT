@@ -549,27 +549,27 @@ export class DriverManagementComponent implements OnInit {
     //else{
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - Required ${type} field `;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - Required ${type} field `;  
         return obj;
       }
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
         return obj;
       }
       if(!numberRegex.test(value)){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
         return obj;
       }
       if(value.toString().trim().length == 0){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+2} - `+this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin );
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin );
         return obj;
       }
       return obj;
