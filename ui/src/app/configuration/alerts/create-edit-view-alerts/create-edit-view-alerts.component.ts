@@ -1283,6 +1283,19 @@ PoiCheckboxClicked(event: any, row: any) {
                 this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
               }
             }
+
+            if(this.alert_category_selected+this.alert_type_selected == 'FL' || this.alert_category_selected+this.alert_type_selected == 'FT' ||
+            this.alert_category_selected+this.alert_type_selected == 'FP' || this.alert_category_selected+this.alert_type_selected == 'FF'){
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
+              }
+            }
         
     });
   }
@@ -2581,8 +2594,12 @@ keyPressNumbers(event) {
   var exclude = /Backspace|Enter/;  
   var value = Number.parseFloat(event.target.value + '' + event.key);
   var parts = event.target.value.split('.');
-  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
-  if(event.key=='-' || value < min) event.preventDefault();
+  if (parts.length == 2 && parts[1].length >= 2){
+     event.preventDefault();
+  }
+  if(event.key=='-' || value < min) {
+    event.preventDefault();
+  }
     return true;   
 }
 
