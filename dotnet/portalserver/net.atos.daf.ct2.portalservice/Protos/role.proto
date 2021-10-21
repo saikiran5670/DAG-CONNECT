@@ -6,9 +6,14 @@ package role;
 
 
 enum Responcecode{
-  Success = 0;
-  Failed = 1;
+  None = 0;
   Assigned =2;
+  Success = 200;
+  Failed = 400;
+  Forbidden = 403;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
 }
 
 
@@ -24,6 +29,7 @@ service RoleService {
   rpc Delete (RoleRequest) returns (DeleteRoleResponce);
   rpc Get (RoleFilterRequest) returns (RoleListResponce);  
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
+  rpc GetCodes (RoleCodeFilterRequest) returns (RoleCodeResponse); 
 }
 
 message RoleRequest {
@@ -37,7 +43,6 @@ message RoleRequest {
     int32 UpdatedBy=7;
     int32 Level = 8;
     string Code=9; 
-    bool IsGlobal = 11;
   }
 
   message RoleListResponce {
@@ -50,7 +55,7 @@ message RoleRequest {
     Responcecode code=1;
     string message = 2;
   }
-   message DeleteRoleResponce {
+  message DeleteRoleResponce {
     Responcecode code=1;
     string message = 2;
     repeated AssignedRole role=3;
@@ -70,8 +75,8 @@ message RoleRequest {
     int32 OrganizationId = 2;
     int32 AccountId = 3;
     bool Active =4;
-    bool IsGlobal = 9;
-  string LangaugeCode = 5;
+    string LangaugeCode = 5;
+    bool IsGlobal = 9;  
   }
 
   message FeaturesRequest
@@ -95,4 +100,15 @@ message RoleRequest {
     Responcecode code=1;
     string message = 2;
     repeated FeaturesRequest Features = 3;
+  }
+
+  message RoleCodeFilterRequest {
+    int32 OrganizationId = 1;
+    int32 RoleLevel = 2;
+  }
+
+   message RoleCodeResponse {
+    repeated string RoleCodeList = 1;
+    Responcecode code=2;
+    string message = 3;
   }
