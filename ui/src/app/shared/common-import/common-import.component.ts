@@ -307,7 +307,7 @@ export class CommonImportComponent implements OnInit {
                 item.returnMessage = objData.reason;
               }
               else{
-                item.type = value === "VIN" ? "V" : "O";
+                item.type = value === "Org+VIN" ? "V" :(value === "VIN" ? "N" : "O");
               }
               break;
             }
@@ -859,9 +859,10 @@ export class CommonImportComponent implements OnInit {
         case 'type':
           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
+              if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
-
+              }
             }
           }
           break;
