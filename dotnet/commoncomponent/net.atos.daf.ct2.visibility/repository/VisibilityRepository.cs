@@ -537,14 +537,15 @@ namespace net.atos.daf.ct2.visibility.repository
                 var queryStatement = @"select type as Packagetype,coalesce(HasOwned,true) as HasOwned, array_agg(distinct coalesce(vehicle_id, 0)) as VehicleIds
                                             from
                                             (
-                                                select p.type, s.vehicle_id, s.organization_id=v.organization_id as HasOwned
+                                                select p.type, s.vehicle_id, case when s.organization_id=v.organization_id 
+	                                                then true else false end as HasOwned
                                                 from master.subscription s
                                                 inner join master.package p on p.id=s.package_id
                                                 inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                                 inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                                 inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                                 left join master.vehicle v on s.vehicle_id = v.id
-                                                where s.organization_id=@organizationid and f.id=@featureid and p.type In ('V','O') AND s.state = 'A'
+                                                where (s.organization_id=@organizationid or s.type  ='N')  and f.id=@featureid and p.type In ('V','O','N') AND s.state = 'A'
                                             ) temp
                                             group by HasOwned,type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
