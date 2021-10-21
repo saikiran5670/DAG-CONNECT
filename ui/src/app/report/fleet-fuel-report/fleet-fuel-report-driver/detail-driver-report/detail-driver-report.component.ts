@@ -58,6 +58,7 @@ export class DetailDriverReportComponent implements OnInit {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   graphData: any;
   idleDuration: any =[];
+  fuelConsumptionSummary: any;
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -1240,6 +1241,7 @@ createEndMarker(){
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
+    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     });
     let searchDataParam=
     {
