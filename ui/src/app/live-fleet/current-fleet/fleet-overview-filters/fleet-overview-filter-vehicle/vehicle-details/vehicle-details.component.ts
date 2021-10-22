@@ -14,11 +14,14 @@ import { TranslationService } from 'src/app/services/translation.service';
 })
 export class VehicleDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
+  @Input() filterData: any; 
   @Input() selectedElementData: any;
   @Input() translationData: any = {};
   @Input() levelList: any;
   @Input() categoryList: any;
   @Input() vehInfoPrefData: any;
+  vehicleGroups: any;
+  vehicleGroupId: any;
   gridData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
@@ -143,6 +146,15 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   gotoLogBook(){
+    this.vehicleGroups =this.filterData.vehicleGroups;   
+    for(let i=0; i< this.vehicleGroups.length; i++)
+    {
+      if(this.vehicleGroups[i].vin == this.selectedElementData.vin)
+      {
+        this.vehicleGroupId = this.vehicleGroups[i].vehicleGroupId;
+      }
+    }   
+   this.selectedElementData.vehicleGroupId = this.vehicleGroupId;   
     const navigationExtras: NavigationExtras = {
       state: {
         fromVehicleDetails: true,
