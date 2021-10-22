@@ -143,6 +143,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         private IActionResult ValidateRequest(VehicleNamelistRequest request)
         {
             bool isInMillis = false;
+
+            if (!string.IsNullOrEmpty(request.Token) && !string.IsNullOrEmpty(request.Org))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, $"{ nameof(request.Token) }/{ nameof(request.Org) }");
+
             if (!string.IsNullOrEmpty(request.Since))
             {
                 var since = request.Since;
@@ -153,8 +157,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 request.Since = since;
             }
 
-            if (!string.IsNullOrEmpty(request.Token) && !string.IsNullOrEmpty(request.Org))
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, $"{ nameof(request.Token) }/{ nameof(request.Org) }");
+            if (!string.IsNullOrEmpty(request.Token) && !Guid.TryParse(request.Token, out _))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, $"{ nameof(request.Token) }");
+
+            if (!string.IsNullOrEmpty(request.Org) && !Guid.TryParse(request.Org, out _))
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, $"{ nameof(request.Org) }");
 
             return new OkObjectResult(isInMillis);
         }

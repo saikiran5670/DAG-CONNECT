@@ -73,14 +73,16 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.urgency_level_type as AlertLevel,
                                 extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
-                                ts.start_time_stamp as TripStartTime,
-                                ts.end_time_stamp as TripEndTime,
+                                case when (ts.id is not null ) then ts.start_time_stamp when (ts.id is null and tr.id is not null ) then tr.start_time_stamp end  as TripStartTime,
+                                case when (ts.id is not null ) then ts.end_time_stamp when (ts.id is null and tr.id is not null ) then tr.end_time_stamp end as TripEndTime,
                                 ts.vehicle_health_status_type as VehicleHealthStatusType,
                                 alertgeoadd.id as AlertGeolocationAddressId,
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
                                 left join livefleet.livefleet_current_trip_statistics ts
-                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id 
+                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id
+                                left join tripdetail.trip_statistics tr 
+                                on  ta.vin = tr.vin  and tr.trip_id=ta.trip_id
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
