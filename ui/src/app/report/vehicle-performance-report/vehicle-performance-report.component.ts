@@ -300,14 +300,14 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   updateChartTitles(performanceType) {
     if(performanceType == 'E') {
-      this.piechartTitle = "Engine Operational Performance";
-      this.bubbleHeatchartTitle = "Engine Load Distribution";
+      this.piechartTitle = this.translationData.lblEngineOperationalPerformance || "Engine Operational Performance";
+      this.bubbleHeatchartTitle = this.translationData.lblEngineLoadDistribution || "Engine Load Distribution";
     } else if(performanceType == 'S') {
       this.piechartTitle = "Road Speed Performance (%)";
-      this.bubbleHeatchartTitle = "Road Speed Distribution";
+      this.bubbleHeatchartTitle = this.translationData.lblRoadSpeedDistribution || "Road Speed Distribution";
     } else {
       this.piechartTitle = "Brake Performance (%)";
-      this.bubbleHeatchartTitle = "Brake Behavior Distribution";
+      this.bubbleHeatchartTitle = this.translationData.lblBrakeBehavior || "Brake Behavior Distribution";
     }
   }
 

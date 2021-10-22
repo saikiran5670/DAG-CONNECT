@@ -21,8 +21,8 @@
             <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-            <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+            <button mat-menu-item (click)="exportAsPdf()">{{ translationData.lblPDF || 'PDF (as snapshot)'}}</button>
+            <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV || 'CSV (as full data)' }}</button>
         </mat-menu>
     </div>
 
@@ -75,7 +75,7 @@
             <ng-container *ngIf="column == 'isExclusive'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.isExclusive ? translationData.lblExclusive : translationData.lblInclusive }}</mat-cell>
             </ng-container>
 
             <ng-container *ngIf="column == 'select'">

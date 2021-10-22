@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.role.repository
         Task<int> Updaterolefeatureset(int RoleId, int FeatureSetId);
         int CheckRoleNameExist(string roleName, int Organization_Id, int roleid);
         Task<IEnumerable<AssignedRoles>> IsRoleAssigned(int roleid);
+        Task<IEnumerable<string>> GetCode(RoleCodeFilter roleFilter);
     }
 }

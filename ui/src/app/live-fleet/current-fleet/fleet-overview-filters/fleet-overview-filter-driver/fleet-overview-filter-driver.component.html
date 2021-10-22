@@ -23,7 +23,7 @@
             </div>
             <div>               
                 <span class="vehicle-details-head" >           
-                    {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+                    {{ item.driverName == '' ?  translationData.lblDriverId || 'Driver Id' : translationData.lblDriverName || 'Driver Name'
                 </span>
                 <span class="vehicle-details-data">
                       {{ (item.driverName == '' ? item.driver1Id : item.driverName) || ((item.driverName == '' && item.driver1Id == '') ? 'Unknown' : item.driverName)}} 

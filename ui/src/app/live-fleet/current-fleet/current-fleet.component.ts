@@ -303,12 +303,12 @@ export class CurrentFleetComponent implements OnInit {
     if(this.userPreferencesFlag){
     summary.style.width = '67%';
     sidenav.style.width = '32%';
-    this.clickOpenClose='Click to Hide';
+    this.clickOpenClose=this.translationData.lblClickToHide ? this.translationData.lblClickToHide :'Click To Hide';
     }
     else{
       summary.style.width = '100%';
       sidenav.style.width = '0%';
-      this.clickOpenClose='Click To Open';
+      this.clickOpenClose=this.translationData.lblClickToOpen ? this.translationData.lblClickToOpen :'Click To Open';
     }
   
   } 

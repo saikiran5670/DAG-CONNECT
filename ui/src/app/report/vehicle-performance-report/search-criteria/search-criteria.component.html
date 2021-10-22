@@ -68,7 +68,7 @@
                                 placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                                 formControlName="vehicleName">
                                 <mat-option>
-                                    <ngx-mat-select-search (keyup)="filterVehicle(VehicleSearch.value)"  placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #VehicleSearch>
+                                    <ngx-mat-select-search (keyup)="filterVehicle(search.value)"  placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #search>
                                         <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
                                     </ngx-mat-select-search>
                                 </mat-option>

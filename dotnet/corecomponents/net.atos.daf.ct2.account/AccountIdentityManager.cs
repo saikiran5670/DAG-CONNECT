@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.account
         readonly IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
         private readonly IConfiguration _configuration;
         private readonly IAuditTraillib _auditlog;
-        private readonly SSOConfiguration _ssoConfiguration;
 
         public AccountIdentityManager(IdentityComponent.ITokenManager TokenManager, IdentityComponent.IAccountAuthenticator Autheticator,
                                     IAccountManager AccountManager, IAuditTraillib Auditlog,
@@ -43,9 +42,6 @@ namespace net.atos.daf.ct2.account
             this._identityAccountManager = IdentityAccountManager;
             this._configuration = Configuration;
             this._auditlog = Auditlog;
-            _ssoConfiguration = new SSOConfiguration();
-            Configuration.GetSection("SSOConfiguration").Bind(_ssoConfiguration);
-
         }
 
         public async Task<AccountIdentity> Login(Identity user)
@@ -700,7 +696,7 @@ namespace net.atos.daf.ct2.account
                     }
 
                     // To Return valid SSO details 
-                    ssoToken.Token = _ssoConfiguration.ZuoraBaseUrl + "=" + Convert.ToString(ssoGuid);
+                    ssoToken.Token = _configuration["SSOConfiguration:" + request.FeatureName] + "=" + Convert.ToString(ssoGuid);
                     ssoToken.TokenType = IdentitySessionComponent.ENUM.TokenType.SSO.ToString();
                     ssoToken.StatusCode = HttpStatusCode.OK;
                     ssoToken.Message = "Request to redirect";
@@ -708,13 +704,13 @@ namespace net.atos.daf.ct2.account
                 }
                 else
                 {
-                    ssoToken.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    ssoToken.StatusCode = HttpStatusCode.NotFound;
                     ssoToken.Message = "User or User Token not found";
                 }
             }
             else
             {
-                ssoToken.StatusCode = System.Net.HttpStatusCode.NotFound;
+                ssoToken.StatusCode = HttpStatusCode.NotFound;
                 ssoToken.Message = "Invalid Account";
             }
             return ssoToken;
@@ -739,8 +735,7 @@ namespace net.atos.daf.ct2.account
         {
             SSOResponse ssoResponse = new SSOResponse();
             IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenList = await _accountTokenManager.GetTokenDetails(tokenGuid);
-            // TODO: delete after testing
-            //IdentitySessionComponent.entity.AccountToken _savedToeken = _tokenlist.FirstOrDefault();
+
             IdentitySessionComponent.entity.AccountToken savedToken = tokenList.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
             if (savedToken?.AccountId > 0)
             {
@@ -768,6 +763,36 @@ namespace net.atos.daf.ct2.account
             }
             return ssoResponse;
         }
+
+        public async Task<SSOResponseForNamelist> ValidateSSOTokenForNamelist(string tokenGuid)
+        {
+            SSOResponseForNamelist ssoResponse = new SSOResponseForNamelist();
+            IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenList = await _accountTokenManager.GetTokenDetails(tokenGuid);
+
+            IdentitySessionComponent.entity.AccountToken savedToken = tokenList.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
+            if (savedToken?.AccountId > 0)
+            {
+                if (UtcDateCompare(savedToken.CreatedAt, savedToken.ExpireIn))
+                {
+                    ssoResponse.StatusCode = HttpStatusCode.OK;
+                    ssoResponse.Message = "OK";
+                    ssoResponse.AccountID = savedToken.AccountId;
+                    ssoResponse.OrganizationID = savedToken.OrganizationId;
+                }
+                else
+                {
+                    ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                    ssoResponse.Message = "TOKEN_EXPIRED";
+                }
+            }
+            else
+            {
+                ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                ssoResponse.Message = "INVALID_TOKEN";
+            }
+            return ssoResponse;
+        }
+
         private async Task<identitysession.entity.AccountToken> GetAccountTokenDetails(int accountID)
         {
 

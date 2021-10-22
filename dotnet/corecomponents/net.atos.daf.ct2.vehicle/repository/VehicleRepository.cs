@@ -589,6 +589,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,status=@status
                                         ,reference_date=@reference_date
                                         ,is_ota=@is_ota
+                                        ,tcu_id=@tcu_id
+                                        ,is_tcu_register=@is_tcu_register
                                          WHERE id = @id
                                          RETURNING id;";
 
@@ -602,6 +604,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                 parameter.Add("@is_ota", vehicle.Is_Ota);
+                parameter.Add("@tcu_id", vehicle.Tcu_Id);
+                parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
+
+
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
@@ -877,7 +883,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             // Vehicle Id list Filter
-            if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
+            //////if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
             {
                 List<int> vehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
                 queryStatement = queryStatement + " and v.id  = ANY(@VehicleIds)";
@@ -2162,7 +2168,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        public async Task<IEnumerable<DtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter)
+        public async Task<IEnumerable<response.VehicleRelations>> GetVehicleNamelist(long startDate, long endDate, bool noFilter)
         {
             try
             {
@@ -2181,7 +2187,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     queryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
-                IEnumerable<DtoVehicleNamelist> namelistData = await _dataMartdataAccess.QueryAsync<DtoVehicleNamelist>(queryStatement, parameter);
+                IEnumerable<response.VehicleRelations> namelistData = await _dataMartdataAccess.QueryAsync<response.VehicleRelations>(queryStatement, parameter);
 
                 return namelistData;
             }
@@ -2190,6 +2196,66 @@ namespace net.atos.daf.ct2.vehicle.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<response.VehicleRelations>> GetVehicleRelations(IEnumerable<response.VehicleRelations> vehicles, int orgId)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@vins", vehicles.Select(x => x.VIN).ToArray());
+                parameters.Add("@orgId", orgId);
+
+                var queryStatement =
+                    @"--Owner relationships
+                    select v.vin, ors.code as type, null as orgid
+                    from master.orgrelationshipmapping orm
+                    INNER JOIN master.vehicle v on orm.vehicle_id = v.id and v.vin= any(@vins)
+                    INNER JOIN master.orgrelationship ors on orm.relationship_id=ors.id and ors.state='A' and orm.target_org_id = @orgId
+                    WHERE 
+	                    case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                    else COALESCE(end_date,0) = 0 end
+                    UNION	
+                    --Non-owner relationships
+                    -- Visible vehicles of type G
+                    SELECT v.vin, ors.code as type, o.org_id as orgid
+                    FROM master.vehicle v
+                    INNER JOIN master.groupref gref ON v.id=gref.ref_id and v.vin= any(@vins)
+                    INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id = @orgId
+                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                    INNER JOIN master.organization o on o.id = grp.organization_id and o.id = orm.owner_org_id
+                    WHERE 
+	                    case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                    else COALESCE(end_date,0) = 0 end
+                    UNION
+                    -- Visible vehicles of type D, method O
+                    SELECT v.vin, ors.code as type, o.org_id as orgid
+                    FROM master.group grp
+                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id = @orgId and grp.group_type='D' AND grp.object_type='V'
+                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                    INNER JOIN master.vehicle v on v.organization_id = grp.organization_id and v.vin= any(@vins)
+                    INNER JOIN master.organization o on o.id = grp.organization_id and o.id = orm.owner_org_id
+                    WHERE 
+	                    case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                    else COALESCE(end_date,0) = 0 end";
+
+                IEnumerable<response.VehicleRelationDto> dtoVehicleRelations = await _dataAccess.QueryAsync<response.VehicleRelationDto>(queryStatement, parameters);
+
+                foreach (var vr in vehicles)
+                {
+                    vr.Relations = new List<response.Relation>();
+                    var dtos = dtoVehicleRelations.Where(x => x.VIN.Equals(vr.VIN));
+                    foreach (var dto in dtos)
+                        vr.Relations.Add(new response.Relation { Type = dto?.Type ?? string.Empty, OrgId = dto?.OrgId });
+                }
+                return vehicles;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
         #region Vehicle Visibility
