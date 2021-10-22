@@ -1173,9 +1173,10 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT ag.id,ag.name,
                                     CASE WHEN (ag.group_type ='D') 
-                                         THEN (SELECT count(gr.group_id) 
-                                                FROM master.groupref gr 
-                                                INNER JOIN master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+                                         THEN (SELECT count(acc.id) 
+                                                FROM master.account acc 
+                                                INNER JOIN master.accountorg ao on acc.id=ao.account_id and ao.organization_id=@organization_id
+                                                WHERE acc.state='A' and ao.state='A')
 	                                     ELSE (SELECT count(gr.group_id) FROM master.groupref gr WHERE gr.group_id=ag.id ) END as count
                                     FROM master.group ag 
                                     WHERE ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
