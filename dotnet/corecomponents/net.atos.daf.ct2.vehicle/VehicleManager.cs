@@ -811,7 +811,7 @@ namespace net.atos.daf.ct2.vehicle
         #endregion
     }
 
-    internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+    public class ObjectComparer : IEqualityComparer<VisibilityVehicle>
     {
         public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
         {

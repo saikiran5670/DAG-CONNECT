@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.account
         Task<int> Update(int id, ResetTokenStatus status);
         Task<ResetPasswordToken> GetIssuedResetToken(Guid tokenSecret);
         Task<ResetPasswordToken> GetIssuedResetTokenByAccountId(int accountId);
-        Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request);
+        Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request, int[] vehicleIds);
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
         Task<string> GetCodeByPreferenceId(int preferenceId);
         Task<string> GetLanguageCodePreference(string emailId, int? orgId);
