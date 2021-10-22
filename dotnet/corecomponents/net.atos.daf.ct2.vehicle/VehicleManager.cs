@@ -267,41 +267,29 @@ namespace net.atos.daf.ct2.vehicle
                 {
                     resultDict = await GetVisibilityVehicles(accountId, orgId);
                 }
-                var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
+                var visibleVehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
                 var vehicleList = await _vehicleRepository.GetAllRelationshipVehicles(contextOrgId);
 
                 //Filter out not accessible vehicles
-                var visibleVehicleList = vehicleList.Where(e => visibleVehicles.Contains(e.VIN)).ToList();
+                var visibleVehicleList = vehicleList.Where(x => visibleVehicles.Any(veh => veh.VIN == x.VIN && veh.Id == x.Id)).ToList();
 
-                //Fetch relationship behavioural features to check for Admin#Admin privilege
                 //Get vehicles which has Admin#Admin privilege
-                //IEnumerable<RelationshipFeatureVehicles> featureVehicles = null;
-                //List<int> adminRelFeatVehicles = null;
                 if (adminRightsFeatureId > 0)
                 {
-                    //if (visibleVehicleList.Any(x => x.HasOwned == false))
-                    //{
-                    //    featureVehicles = await _vehicleRepository.GetAdminBehaviouralRelationshipFeatures(contextOrgId);
-                    //    if (featureVehicles != null && featureVehicles.Count() > 0)
-                    //    {
-                    //        adminRelFeatVehicles = featureVehicles.Where(x => x.B_FeatureIds?.Contains(adminRightsFeatureId) ?? false).SelectMany(x => x.VehicleIds).ToList();
-                    //    }
-                    //}
-
                     //Loop through final vehicle list to update the flag as per privileges
                     //To decide who should have access to edit the vehicle details 
                     foreach (var vehicle in visibleVehicleList)
                     {
                         var details = resultDict.Where(x => x.Value.Any(y => y.VIN.Equals(vehicle.VIN))).Select(x => x.Key);
+                        var visibleVehicle = visibleVehicles.Where(x => x.VIN.Equals(vehicle.VIN)).FirstOrDefault();
 
                         //If context switch happens, make isAccessible true by default because Access Relationship does not come into picture.
                         var isAccessible = (orgId == contextOrgId) ? details.Any(x => x.AccessRelationType?.Equals("F") ?? false) : true;
 
                         // For owned vehicles, Access Relationship(F/V) ANDed with User role+Subscription Admin#Admin feature presence
                         // For visible vehicles, User role+Subscription Admin#Admin feature presence ANDed with vehicle source org relationship Admin#Admin feature presence
-                        //vehicle.HasOwned = vehicle.HasOwned ? isAccessible && (adminRightsFeatureId > 0)
-                        //                                    : isAccessible && (adminRightsFeatureId > 0) && (adminRelFeatVehicles?.Contains(vehicle.Id) ?? false);
-                        vehicle.HasOwned = isAccessible && (adminRightsFeatureId > 0);
+                        vehicle.HasOwned = vehicle.HasOwned ? isAccessible && (adminRightsFeatureId > 0)
+                                                            : isAccessible && (adminRightsFeatureId > 0) && (visibleVehicle?.Btype_Features?.Any(x => x == adminRightsFeatureId) ?? false);
                     }
                 }
                 else

@@ -1173,9 +1173,10 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT ag.id,ag.name,
                                     CASE WHEN (ag.group_type ='D') 
-                                         THEN (SELECT count(gr.group_id) 
-                                                FROM master.groupref gr 
-                                                INNER JOIN master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+                                         THEN (SELECT count(acc.id) 
+                                                FROM master.account acc 
+                                                INNER JOIN master.accountorg ao on acc.id=ao.account_id and ao.organization_id=@organization_id
+                                                WHERE acc.state='A' and ao.state='A')
 	                                     ELSE (SELECT count(gr.group_id) FROM master.groupref gr WHERE gr.group_id=ag.id ) END as count
                                     FROM master.group ag 
                                     WHERE ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
@@ -1186,7 +1187,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     else
@@ -1204,7 +1205,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);

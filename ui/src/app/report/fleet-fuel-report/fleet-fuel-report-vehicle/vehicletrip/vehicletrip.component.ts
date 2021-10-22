@@ -55,6 +55,7 @@ export class VehicletripComponent implements OnInit {
   @Input() _vinData: any;
   
   graphData: any;
+  fuelConsumptionSummary: any;
   // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
   // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
   // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
@@ -1181,6 +1182,7 @@ createEndMarker(){
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
+    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);

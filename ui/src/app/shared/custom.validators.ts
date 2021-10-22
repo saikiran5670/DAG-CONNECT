@@ -145,7 +145,7 @@ export class CustomValidators {
       const NAME = formGroup.controls[name];
       var regex = /[!@#\$%&*]/;
 
-      if(NAME.value.length > 0){
+      if(NAME.value && NAME.value.length > 0){
         if (regex.test(NAME.value)) {
           NAME.setErrors({ specialCharsNotAllowed: true });
         }
@@ -186,7 +186,7 @@ export class CustomValidators {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
       var regex = /[0-9]/;
-      if(NAME.value.length > 0){
+      if(NAME.value && NAME.value.length > 0){
         if (regex.test(NAME.value)) {
           NAME.setErrors({ numberNotAllowed: true });
         }

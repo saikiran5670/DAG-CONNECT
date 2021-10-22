@@ -3,6 +3,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ReportMapService } from 'src/app/report/report-map.service';
 @Component({
   selector: 'app-alerts-filter',
   templateUrl: './alerts-filter.component.html',
@@ -49,7 +50,7 @@ export class AlertsFilterComponent implements OnInit {
 
  filterListValues = {};
  dataSource = new MatTableDataSource();
- constructor(private translationService: TranslationService) { }
+ constructor(private translationService: TranslationService, private reportMapService : ReportMapService) { }
    
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -167,7 +168,7 @@ export class AlertsFilterComponent implements OnInit {
   }
   
   createFilter() {
-    let filterFunction = function (data: any, filter: string): boolean {
+    return (data: any, filter: string): boolean => {
       let searchTerms = JSON.parse(filter);
       let isFilterSet = false;
       for (const col in searchTerms) {
@@ -246,8 +247,8 @@ export class AlertsFilterComponent implements OnInit {
         if( levelVal == searchTerms.highUrgencyLevel){
           if(criticality.length > 0){
               criticality.forEach(obj => { 
-              data["highUrgencyLevel"]=obj.urgencyLevelType;
-              data["highThresholdValue"]=obj.thresholdValue;
+                data["highUrgencyLevel"]=obj.urgencyLevelType;
+                data["highThresholdValue"]=obj.unitType !='N' ? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) :  obj.thresholdValue;
               });     
               highUrgencyLevel = data.highUrgencyLevel;
               if(highUrgencyLevel.includes(searchTerms.highUrgencyLevel)){
@@ -281,7 +282,25 @@ export class AlertsFilterComponent implements OnInit {
       }
       return nameSearch()
     }
-    return filterFunction
+    // return filterFunction
   }
+
+  getConvertedThresholdValues(originalThreshold,unitType){
+    let threshold;
+    if(unitType == 'H' || unitType == 'T' ||unitType == 'S'){
+     threshold =this.reportMapService.getConvertedTime(originalThreshold,unitType);
+    }
+    else if(unitType == 'K' || unitType == 'L'){
+     threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
+     }
+   else if(unitType == 'A' || unitType == 'B'){
+     threshold =this.reportMapService.getConvertedSpeed(originalThreshold,unitType);
+    }
+    else if(unitType == 'P'){
+      threshold=originalThreshold;
+    }
+    return threshold;
+  }
+ 
 
 }

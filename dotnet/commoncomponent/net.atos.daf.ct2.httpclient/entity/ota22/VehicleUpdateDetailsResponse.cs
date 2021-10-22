@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota22
     {
         [JsonProperty("campaignID")]
         public string CampaignID { get; set; }
+        [JsonProperty("baselineAssignment")]
         public string BaselineAssignment { get; set; }
         [JsonProperty("campaignSubject")]
         public string CampaignSubject { get; set; }
@@ -22,6 +23,7 @@ namespace net.atos.daf.ct2.httpclientfactory.entity.ota22
         public string UpdateStatus { get; set; }
         [JsonProperty("endDate")]
         public string EndDate { get; set; }
+
     }
 
     public class VehicleUpdateDetails

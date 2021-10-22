@@ -69,6 +69,7 @@ export class AppComponent {
   globalCategoryAccess: boolean = false;
   accessType: object;
   userType: any = "";
+  userLevel: any = 40;
   public landingPageForm: FormGroup;
   accountInfo: any;
   localStLanguage: any;
@@ -688,12 +689,16 @@ export class AppComponent {
       // Viewer
       if (accessNameList.includes("Admin#Platform")) {
         this.userType = "Admin#Platform";
+        this.userLevel = 10;
       } else if (accessNameList.includes("Admin#Global")) {
         this.userType = "Admin#Global";
+        this.userLevel = 20;
       } else if (accessNameList.includes("Admin#Organisation")) {
         this.userType = "Admin#Organisation";
+        this.userLevel = 30;
       } else if (accessNameList.includes("Admin#Account")) {
         this.userType = "Admin#Account";
+        this.userLevel = 40;
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
@@ -708,6 +713,7 @@ export class AppComponent {
         localStorage.removeItem("orgContextStatus");
       }
       localStorage.setItem("userType", this.userType);
+      localStorage.setItem("userLevel", this.userLevel);
     }else{
       if (from && from == 'orgContextSwitch') {
         let _menu = this.menuPages.menus;
@@ -725,6 +731,7 @@ export class AppComponent {
         localStorage.removeItem('appRouterUrl'); 
       }
     }
+    this.setPageTitle();
   }
 
   getAccountInfo() {

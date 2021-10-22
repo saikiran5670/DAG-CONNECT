@@ -325,7 +325,8 @@ export class TranslationDataUploadComponent implements OnInit {
     tempObj["Labels"] = langObj.name;
     if(langObj.code == "EN-GB"){
       tempObj[langObj.code] = langObj.value;
-      languages.pop();
+      //languages.pop();
+      languages.splice(languages.indexOf("EN-GB"), 1);
       languages.forEach(element => {
         tempObj[element]= "";
       });

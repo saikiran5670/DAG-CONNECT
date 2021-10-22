@@ -9,6 +9,7 @@ package pushnotificationservice;
 service PushNotificationService {
   rpc GetAlertMessageStream (google.protobuf.Empty) returns (stream AlertMessageData);
   rpc GetEligibleAccountForAlert (AlertMesssageProp) returns (AlertVehicleDetails);
+  rpc GetVehicleByAccountVisibility (VisibilityVehicleRequest) returns (AssociatedVehicleResponse);
 }
 
 message AlertMessageData {
@@ -66,4 +67,18 @@ message AlertVehicleDetails{
 	string AlertTypeKey =  10;
 	string UrgencyTypeKey =  11;
 	repeated int32 OTAAccountIds = 12;
+}
+message AssociatedVehicleResponse {
+  repeated AssociatedVehicle AssociatedVehicle = 1;
+  ResponseCode Code = 2;
+}
+message AssociatedVehicle {	
+    int32 VehicleId =  1;        
+    string Vin =  2;        
+}
+
+message VisibilityVehicleRequest {
+	int32 AccountId = 1;
+	int32 OrganizationId = 2;
+	repeated int32 FeatureIds = 3;
 }

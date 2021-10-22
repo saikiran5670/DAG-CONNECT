@@ -336,7 +336,7 @@ export class DriverManagementComponent implements OnInit {
   validateFields(driverList: any){
     let validData: any = [];
     let invalidData: any = [];
-    driverList.forEach((item: any) => {
+    driverList.forEach((item: any, index: any) => {
       let driverIdCountryCode: any;
       let driverIdNumber: any;
       let fname: any;
@@ -346,7 +346,7 @@ export class DriverManagementComponent implements OnInit {
         ////console.log(`${key}: ${value}`);
         switch(key){
           case "countryCode":{
-            let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code');  
+            let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code',index);  
             driverIdCountryCode = objData.status;
             if(!driverIdCountryCode){
               item.returnMassage = objData.reason;
@@ -363,7 +363,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "driverNumber":{
-            let objData: any = this.driverIDNumberValidation(value);  
+            let objData: any = this.driverIDNumberValidation(value,index);  
             driverIdNumber = objData.status;
             if(!driverIdNumber){
               item.returnMassage = objData.reason;
@@ -371,7 +371,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "firstName":{
-            let objData: any = this.nameValidation(value, 30, 'First Name'); 
+            let objData: any = this.nameValidation(value, 30, 'First Name',index); 
             fname = objData.status;
             if(!fname){
               item.returnMassage = objData.reason;
@@ -383,7 +383,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "lastName":{
-            let objData: any = this.nameValidation(value, 20, 'Last Name'); 
+            let objData: any = this.nameValidation(value, 20, 'Last Name',index); 
             lname = objData.status;
             if(!lname){
               item.returnMassage = objData.reason;
@@ -397,7 +397,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "email":{
-            let objData: any = this.emailValidation(value); 
+            let objData: any = this.emailValidation(value,index); 
             email = objData.status;
             if(!email){
               item.returnMassage = objData.reason;
@@ -430,7 +430,7 @@ export class DriverManagementComponent implements OnInit {
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
-  emailValidation(value: any){ 
+  emailValidation(value: any,index:any){ 
     let obj: any = { status: true, reason: 'correct data' };
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
     // if(!value){
@@ -443,46 +443,46 @@ export class DriverManagementComponent implements OnInit {
     //else{
       if(!value || value == '' || value.length == 0 || value.trim().length == 0){
         obj.status = false;
-        obj.reason = 'Required Email field';
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblRequireEmailField || 'Required Email field'}`;
         return obj;  
       }
       if(value.length > 100){ //-- as per db table
         obj.status = false;
-        obj.reason = this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars}`;  
         return obj;
       }
       if(!regx.test(value)){
         obj.status = false;
-        obj.reason = this.translationData.lblEmailIDformatisinvalid ;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDformatisinvalid}`;  
         return obj;
       }
       return obj;
     //}
   }
 
-  countryCodeValidation(value: any, type: any){
+  countryCodeValidation(value: any, type: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
     //const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}/;
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^-!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDCountryCodeismandatoryinput ;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeismandatoryinput}`;
       return obj;  
     }
     if(value.trim().length > 3){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength ;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength}`;  
       return obj;
     }
     if(!numberRegex.test(value)){
       obj.status = false;
-      obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+ this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
       return obj;
     }
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
-      obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
       return obj;
     }
     // if(!regx.test(value)){
@@ -493,49 +493,49 @@ export class DriverManagementComponent implements OnInit {
     return obj; 
   }
 
-  driverIDNumberValidation(value: any){
+  driverIDNumberValidation(value: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumberismandatoryinput ;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
       return obj;  
     }
-    if(value.trim().length > 16){
+    if(value.trim().length != 16){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumbershouldnotbemorethan16charsinlength;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDNumberformatisinvalid;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;  
       return obj;
     }
     return obj; 
   }
 
-  driveIdValidation(value: any){
+  driveIdValidation(value: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDismandatoryinput ;
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDismandatoryinput}`;
       return obj;  
     }
-    if(value.length > 19){
+    if(value.length != 19){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDshouldbeexactly19charsinlength ;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly19charsinlength}`;  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = this.translationData.lblDriverIDformatisinvalid ;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDformatisinvalid}`;  
       return obj;
     }
     return obj;
   }
 
-  nameValidation(value: any, maxLength: any, type: any){
+  nameValidation(value: any, maxLength: any, type: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
@@ -549,27 +549,27 @@ export class DriverManagementComponent implements OnInit {
     //else{
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
-        obj.reason = `Required ${type} field `;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - Required ${type} field `;  
         return obj;
       }
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
         return obj;
       }
       if(!numberRegex.test(value)){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
         return obj;
       }
       if(value.toString().trim().length == 0){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin );
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin );
         return obj;
       }
       return obj;
