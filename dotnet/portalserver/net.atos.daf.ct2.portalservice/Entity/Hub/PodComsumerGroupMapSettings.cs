@@ -13,4 +13,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Hub
             set;
         }
     }
+
+    public static class NotificationHubConstant
+    {
+        public const string ALERT_FEATURE_STARTWITH = "Alerts.";
+    }
 }

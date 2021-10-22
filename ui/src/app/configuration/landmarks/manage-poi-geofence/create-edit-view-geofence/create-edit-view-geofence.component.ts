@@ -77,7 +77,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   map_key: any = '';
   dataService: any;
   searchMarker: any = {};
-
+  accessType: any = {};
+  
   @ViewChild("map")
   public mapElement: ElementRef;
 
@@ -94,6 +95,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
+    this.accessType = JSON.parse(localStorage.getItem("accessType"));
     this.circularGeofenceFormGroup = this._formBuilder.group({
       circularName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       type: ['', []],
@@ -124,6 +126,12 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         ]
       });
     //this.initMap();
+    if(this.accessType && !this.accessType.globalPOIAccess){
+      this.types = ['Regular'];
+    }else{
+      this.types = ['Regular', 'Global'];
+    }
+
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if (this.actionType == 'create') {
       this.geoSelectionFlag = true;
@@ -237,13 +245,15 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   setDefaultCircularGeofenceFormValue() {
     this.circularGeofenceFormGroup.get('circularName').setValue(this.selectedElementData.name);
-    this.circularGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    // this.circularGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? (this.types.length > 1) ? this.types[1] : this.types[0] : this.types[0]);
     this.circularGeofenceFormGroup.get('radius').setValue(this.selectedElementData.distance);
   }
 
   setDefaultPolygonGeofenceFormValue() {
     this.polygonGeofenceFormGroup.get('name').setValue(this.selectedElementData.name);
-    this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    // this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? (this.types.length > 1) ? this.types[1] : this.types[0] : this.types[0]);
     this.polygonGeofenceFormGroup.get('category').setValue(this.selectedElementData.categoryId);
     this.polygonGeofenceFormGroup.get('subCategory').setValue(this.selectedElementData.subCategoryId);
     this.polygonGeofenceFormGroup.get('address').setValue(this.selectedElementData.address);

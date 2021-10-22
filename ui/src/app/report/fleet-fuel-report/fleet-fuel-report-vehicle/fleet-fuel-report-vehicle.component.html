@@ -327,8 +327,8 @@
               <div *ngIf="checkForPreference('summary_fuelconsumed')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                 <span>{{ translationData.lblFuelConsumed }}</span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{
-                  (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km ) : (prefUnitFormat ==
-                  'dunit_Imperial') ? (translationData.lblmpg ) : (translationData.lblmpg) }}
+                  (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr ) : (prefUnitFormat ==
+                  'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile) }}
                 </span>
               </div>
               <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
@@ -630,8 +630,8 @@
           <ng-container matColumnDef="fuelConsumed">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed 
               }}
-              <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblmpg ) : (translationData.lblmpg
+              <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr) : (prefUnitFormat ==
+                'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile
             ) }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">

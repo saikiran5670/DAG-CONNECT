@@ -85,7 +85,8 @@
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+                <!-- <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
+                <span style='font-weight: 500!important;'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -238,7 +239,8 @@
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+                <!-- <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
+                <span style='font-weight: 500!important;'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
