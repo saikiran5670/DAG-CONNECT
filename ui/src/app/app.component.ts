@@ -731,6 +731,7 @@ export class AppComponent {
         localStorage.removeItem('appRouterUrl'); 
       }
     }
+    this.setPageTitle();
   }
 
   getAccountInfo() {

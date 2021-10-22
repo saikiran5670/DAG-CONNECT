@@ -21,7 +21,7 @@
                 <mat-label>{{ (actionType == 'view') ? (translationData.lblAssociationBy ) : (translationData.lblCreateAssociationBy ) }}<span class='mandatoryColor'>*</span></mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-select (selectionChange)="onAssociationChange($event)" placeholder="{{ translationData.lblSelectAssociationType }}" formControlName="associationType" required>
+                    <mat-select [disabled]="actionType != 'create'" (selectionChange)="onAssociationChange($event)" placeholder="{{ translationData.lblSelectAssociationType }}" formControlName="associationType" required>
                       <mat-option *ngFor="let rer of associationTypeList" [value]="rer.id">
                         {{ rer.name }}
                       </mat-option>
@@ -39,11 +39,11 @@
                   <mat-label>{{ (associationTypeLocal == 1) ? (translationData.lblVehicleGroupVehicle) : (translationData.lblAccountGroupAccount ) }}<span class='mandatoryColor'>*</span></mat-label>
                   <div *ngIf="actionType != 'view'">
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-select placeholder="{{ (associationTypeLocal == 1) ? (translationData.lblSelectVehicleGroupVehicle ) : (translationData.lblSelectAccountGroupAccount ) }}" formControlName="vehAccountType" required>
+                      <mat-select [disabled]="actionType != 'create'" placeholder="{{ (associationTypeLocal == 1) ? (translationData.lblSelectVehicleGroupVehicle ) : (translationData.lblSelectAccountGroupAccount ) }}" formControlName="vehAccountType" required>
                         <mat-option *ngFor="let rer of associationData" [value]="rer.id">
                           <!-- {{ rer.name }} -->
-                          <span *ngIf="associationTypeLocal == 2">{{ rer.name }} <mat-icon *ngIf='rer.isGroup' class='grpDotIcon'>circle</mat-icon></span>
-                          <span *ngIf="associationTypeLocal == 1 && rer.isGroup"> {{ rer.name }} <mat-icon class='grpDotIcon'>circle</mat-icon></span>
+                          <span *ngIf="associationTypeLocal == 2">{{ rer.name }} <!--<mat-icon *ngIf='rer.isGroup' class='grpDotIcon'>circle</mat-icon>--></span>
+                          <span *ngIf="associationTypeLocal == 1 && rer.isGroup"> {{ rer.name }} <!-- <mat-icon class='grpDotIcon'>circle</mat-icon>--></span>
                           <span *ngIf="associationTypeLocal == 1 && !rer.isGroup && vehicleDisplayPreference == 'dvehicledisplay_VehicleName'">{{ rer.name }}</span>
                           <span *ngIf="associationTypeLocal == 1 && !rer.isGroup && vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'">{{ rer.vin }}</span>
                           <span *ngIf="associationTypeLocal == 1 && !rer.isGroup && vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'">{{ rer.registrationNo ? rer.registrationNo : rer.name }}</span>
