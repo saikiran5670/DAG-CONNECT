@@ -102,4 +102,14 @@ export class RoleService {
       .pipe(catchError(this.handleError));
   }
 
+  getLevelCodes(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj })
+    };
+    return this.httpClient
+      .get<any[]>(`${this.roleServiceUrl}/getcodes?organizationId=${data.organizationId}&roleLevel=${data.roleLevel}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
 }
