@@ -68,6 +68,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @ViewChild(MdePopoverTrigger) trigger: MdePopoverTrigger;
   @Input('mdePopoverPositionX') positionX;
+  @Input() prefDefaultTimeFormat: any;
+  @Input() prefDefaultDateFormat: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ReleaseNoteComponent>;
@@ -107,7 +109,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       date: [''],
       time: ['']
     });
-    this.breadcumMsg = this.getBreadcum();
+    this.breadcumMsg = this.getBreadcum();    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
@@ -256,7 +258,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     if (selectedVehicleUpdateDetailsData) {
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
         var todaysDate = moment();
-        if (element.endDate) {
+        if (element.endDate) {        
           element.endDate = Util.convertUtcToDateFormat(element.endDate,this.dateFormats.display.dateInput, this.prefTimeZone);
          if(moment(element.endDate).isBefore(todaysDate['_d'])){
             this.campaignOverFlag = true;
@@ -267,8 +269,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
         }
         if (element.scheduleDateTime) {
           element.scheduleDateTime = new Date( element.scheduleDateTime);
-          console.log(this.prefTimeFormat, this.prefDateFormat, 'this.prefTimeFormat, this.prefDateFormat');
-          element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefTimeFormat, this.prefDateFormat);
+         // console.log('Default:',this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
+          element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
         } else {
           element.scheduleDateTime = '-';
         }
