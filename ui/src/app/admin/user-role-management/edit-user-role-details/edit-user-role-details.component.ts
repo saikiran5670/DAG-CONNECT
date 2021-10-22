@@ -96,7 +96,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
 
     let reqObj: any = {
-      organizationId: this.organizationId,
       roleLevel: parseInt(this.userLevel)
     }    
     this.roleService.getLevelCodes(reqObj).subscribe((codeList: any) => {
@@ -294,7 +293,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       if(!this.customCodeBtnEnable){ // custom code
         _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
       }else{ // code from dropdown
-        _code = parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value;
+        _code = parseInt(this.userLevel) >= 30 ? this.gridData[0].code : this.userRoleFormGroup.controls.codeType.value;
       }
 
     let objData = {

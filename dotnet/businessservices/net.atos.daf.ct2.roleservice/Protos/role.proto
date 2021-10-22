@@ -103,8 +103,8 @@ message RoleRequest {
   }
 
   message RoleCodeFilterRequest {
-    int32 OrganizationId = 1;
-    int32 RoleLevel = 2;
+    //int32 OrganizationId = 1;
+    int32 RoleLevel = 1;
   }
 
    message RoleCodeResponse {

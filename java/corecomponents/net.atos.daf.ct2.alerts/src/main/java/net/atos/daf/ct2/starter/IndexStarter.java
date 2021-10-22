@@ -26,15 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.enteringZoneFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveAverageSpeedFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveIdlingFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.excessiveUnderUtilizationInHoursFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.exitZoneFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDecreaseDuringStopFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelDuringTripFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.fuelIncreaseDuringStopFun;
-import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.hoursOfServiceFun;
+import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
@@ -96,7 +88,8 @@ public class IndexStarter implements Serializable {
     Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
         put("functions", Arrays.asList(
                 enteringZoneFun,
-                exitZoneFun
+                exitZoneFun,
+                exitCorridorFun
         ));
     }};
 

@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.role.entity
 
     public class RoleCodeFilter
     {
-        public int OrganizationId { get; set; }
+        //public int OrganizationId { get; set; }
         public bool IsGlobal { get; set; }
         public int RoleLevel { get; set; }
     }
