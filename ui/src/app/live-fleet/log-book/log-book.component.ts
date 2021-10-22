@@ -306,6 +306,10 @@ ngOnDestroy(){
              },0);
             this.setDefaultTodayDate();
           }
+          if(this._state && this._state.fromVehicleDetails){
+            this.selectionTimeRange('today');
+            // this.setDefaultTodayDate();
+          }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true; 
@@ -368,13 +372,17 @@ ngOnDestroy(){
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
+      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
@@ -577,6 +585,13 @@ ngOnDestroy(){
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
+
+  if(this._state && this._state.fromVehicleDetails){
+    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+    this.logBookForm.get('vehicle').setValue(this._state.data.vin); 
+     
+  }
 
   if(this.showBack && this.selectionTab == 'today'){
   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
@@ -979,6 +994,11 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.logBookForm.get('alertCategory').setValue("all");
       
     }
+    if(this._state && this._state.fromVehicleDetails){
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+      this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+      this.logBookForm.get('vehicle').setValue(this._state.data.vin);   
+    }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){
       this.logBookForm.get('alertCategory').setValue("L");
@@ -1067,22 +1087,32 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       });
       this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
       console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compare);
+      this.vehicleDD.sort(this.compareVehName);
       this.resetVehicleNamesFilter();
    
     }   
   }
 
-  compare(a, b) {
-    if (a.name < b.name) {
+  compareVehName(a, b) {
+    if (a.vehicleName < b.vehicleName) {
       return -1;
     }
-    if (a.name > b.name) {
+    if (a.vehicleName > b.vehicleName) {
       return 1;
     }
     return 0;
   }
 
+  compareGrpName(a, b) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+  
   resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD);
   }
@@ -1146,20 +1176,26 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     });
   }
 
+  getPDFExcelHeader(){
+    let col: any = [];
+    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblGeneratedDate || 'Generated Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblStartTime || 'Start Time' }`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblVehicle || 'Vehicle' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
+    return col;
+  }
+
   exportAsExcelFile(){  
-    const title = 'Logbook';
-    const summary = 'Logbook Details Section';
-    const detail = 'Alert Detail Section';
-    
-    const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle', 'VIN', 'Occurrence', 'Threshold Value'];
-    const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
-    let summaryObj=[
-      ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    const title = this.translationData.lblLogbook || 'Logbook';
+    const summary = this.translationData.lblLogbookDetailsSection || 'Logbook Details Section';
+    const detail = this.translationData.lblAlertDetailSection || 'Alert Detail Section';
+    //const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle', 'VIN', 'Occurrence', 'Threshold Value'];
+    const header = this.getPDFExcelHeader();
+    const summaryHeader = [ this.translationData.lblLogbookName || 'Logbook Name', this.translationData.lblLogbookCreated || 'Logbook Created', this.translationData.lblLogbookStartTime || 'Logbook Start Time', this.translationData.lblLogbookEndTime || 'Logbook End Time', this.translationData.lblVehicleGroup || 'Vehicle Group', this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblAlertLevel || 'Alert Level', this.translationData.lblAlertType || 'Alert Type', this.translationData.lblAlertCategory || 'Alert Category'];
+    let summaryObj = [
+      [this.translationData.lblLogbookData || 'Logbook Data', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
       this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.alertLevel,
       this.tableInfoObj.alertType,this.tableInfoObj.alertCategory
       ] 
     ];
-    const summaryData= summaryObj;
+    const summaryData = summaryObj;
    
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1242,7 +1278,8 @@ exportAsPDFFile(){
     }
 });
 
-let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+//let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+let pdfColumns = this.getPDFExcelHeader();
 let prepare = []
   this.initData.forEach(e=>{   
     var tempObj =[];
@@ -1261,7 +1298,7 @@ let prepare = []
     prepare.push(tempObj);
   });
   (doc as any).autoTable({
-    head: pdfColumns,
+    head: [pdfColumns],
     body: prepare,
     theme: 'striped',
     didDrawCell: data => {
@@ -1575,7 +1612,7 @@ let prepare = []
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
     console.log("vhicleGrpDD5", this.vehicleGrpDD);
-    this.vehicleGrpDD.sort(this.compare);
+    this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
  
     
@@ -1818,18 +1855,18 @@ let prepare = []
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: this.translationData.lblLayerIncidents ||  "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -1863,22 +1900,22 @@ let prepare = []
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Vehicle Name:</td> <td><b>${elem.vehicleName}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>VIN:</td> <td><b>${elem.vin}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblVIN}:</td> <td><b>${elem.vin}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Registration Number:</td> <td><b>${elem.vehicleRegNo}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblRegistrationNumber}:</td> <td><b>${elem.vehicleRegNo}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Date:</td> <td><b>${elem.alertGeneratedTime} km</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${elem.alertGeneratedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Position:</td> <td><b>${elem.alertGeolocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${elem.alertGeolocationAddress || '-' }</b></td>
             </tr>
             <tr class='warningClass'>
-              <td style='width: 100px;'>Alert Level:</td> <td><b>${elem.alertLevel}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblAlertLevel}:</td> <td><b>${elem.alertLevel}</b></td>
             </tr>
           </table>`
         });

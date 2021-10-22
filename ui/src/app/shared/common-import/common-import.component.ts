@@ -53,7 +53,7 @@ export class CommonImportComponent implements OnInit {
   parsedGPXData : any;
   accountOrganizationId: any = 0;
   filetypeError : boolean = false;
-  fileIcon = 'assets/images/icons/microsoftExcel/file-download.svg';
+  fileIcon = 'assets/images/icons/microsoftExcel/excel_icon.svg';
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
@@ -307,7 +307,7 @@ export class CommonImportComponent implements OnInit {
                 item.returnMessage = objData.reason;
               }
               else{
-                item.type = value === "VIN" ? "V" : "O";
+                item.type = value === "Org+VIN" ? "V" :(value === "VIN" ? "N" : "O");
               }
               break;
             }
@@ -859,9 +859,10 @@ export class CommonImportComponent implements OnInit {
         case 'type':
           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
+              if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
-
+              }
             }
           }
           break;

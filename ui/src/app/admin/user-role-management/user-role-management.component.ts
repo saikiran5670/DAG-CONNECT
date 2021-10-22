@@ -39,8 +39,9 @@ export class UserRoleManagementComponent implements OnInit {
   isGlobal: boolean;
   localStLanguage: any;
   showLoadingIndicator: any = false;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any = {};
+  userType: any = '';
+  userLevel: any = 0;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
   constructor(
@@ -101,6 +102,9 @@ export class UserRoleManagementComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.userType = localStorage.getItem("userType");
+    this.userLevel = parseInt(localStorage.getItem("userLevel"));
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.isGlobal = true;
     let translationObj = {
       id: 0,

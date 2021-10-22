@@ -6,9 +6,9 @@ namespace net.atos.daf.ct2.account.entity
     {
         public string OrganizationID { get; set; }
         public string OrganizationName { get; set; }
-        public int AccountID { get; set; }
+        public string AccountID { get; set; }
         public string AccountName { get; set; }
-        public int RoleID { get; set; }
+        public string RoleID { get; set; }
         public string TimeZone { get; set; }
         public string DateFormat { get; set; }
         public string UnitDisplay { get; set; }
@@ -23,5 +23,13 @@ namespace net.atos.daf.ct2.account.entity
         public HttpStatusCode StatusCode { get; set; }
         public string Message { get; set; }
         public string Value { get; set; }
+    }
+
+    public class SSOResponseForNamelist
+    {
+        public int AccountID { get; set; }
+        public int OrganizationID { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
     }
 }

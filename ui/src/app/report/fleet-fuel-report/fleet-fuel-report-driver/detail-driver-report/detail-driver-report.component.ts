@@ -58,6 +58,7 @@ export class DetailDriverReportComponent implements OnInit {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   graphData: any;
   idleDuration: any =[];
+  fuelConsumptionSummary: any;
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -332,7 +333,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Minutes'    
+          labelString: this.translationData.lblMinutes || 'Minutes'    
         }
       }],
       xAxes: [{       
@@ -372,7 +373,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'No of Trips'     
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'     
         }
       }],
       xAxes: [{       
@@ -410,7 +411,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')   
         }
       }],
       xAxes: [{       
@@ -448,7 +449,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')  
         }
       }],
       xAxes: [{       
@@ -486,7 +487,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'    
+          labelString: this.translationData.lblton || 'Ton'  
         }
       }],
       xAxes: [{       
@@ -524,7 +525,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'  
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }
       }],
       xAxes: [{       
@@ -567,7 +568,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'No of Trips'  
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips' 
         }}
       ],
       xAxes: [{ 
@@ -603,7 +604,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  'Minutes'      
+          labelString:  this.translationData.lblMinutes || 'Minutes'      
         }}
       ],
       xAxes: [{ 
@@ -639,7 +640,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? 'Kms' : 'Miles'    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')    
         }}
       ],
       xAxes: [{ 
@@ -675,7 +676,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs' : 'Gallon'     
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')
         }}
       ],
       xAxes: [{ 
@@ -711,7 +712,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 'Ton'      
+          labelString: this.translationData.lblton || 'Ton'    
         }}
       ],
       xAxes: [{ 
@@ -747,7 +748,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? 'Ltrs /100 km' : 'Miles per gallon'   
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs/100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }}
       ],
       xAxes: [{ 
@@ -825,9 +826,7 @@ tripTraceArray: any = [];
                }
 
                defaultTranslation(){
-                this.translationData = {
-                  lblSearchReportParameters: 'Search Report Parameters'
-                }    
+                this.translationData = { }    
               }
                
   ngOnInit(): void {
@@ -1242,6 +1241,7 @@ createEndMarker(){
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
+    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     });
     let searchDataParam=
     {
@@ -1801,7 +1801,7 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: 'Number of Trips'    
+        labelString: this.translationData.lblNoOfTrips || 'Number Of Trips'       
       }
     }]; 
     this.barChartOptions.scales.xAxes= [{ 
@@ -1822,7 +1822,7 @@ createEndMarker(){
    }];  
     this.barChartData2= [
       { data: this.barData,
-        label: 'Number of Trips',
+        label: this.translationData.lblNoOfTrips || 'Number Of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1908,7 +1908,7 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: 'Minutes'      
+        labelString: this.translationData.lblMinutes || 'Minutes'      
       }
     }];
     this.barChartOptions1.scales.xAxes= [{      
@@ -1927,7 +1927,7 @@ createEndMarker(){
          },             
       }      
   }]; 
-  this.barChartData6= [{ data: this.idleDuration, label: 'Minutes' , backgroundColor: '#7BC5EC',
+  this.barChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
     
   }
@@ -2116,7 +2116,7 @@ createEndMarker(){
            },             
         }     
     }]; 
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }, ];
   }
       this.lineChartColors= [
       {
@@ -2153,16 +2153,20 @@ createEndMarker(){
    // if (prefData && preference) {
       let _search = prefData?.timeformat?.filter(i => i.id == preference.timeFormatId);
       if (_search && _search.length > 0) {
-        this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+        this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+        //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
         this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
         this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
       } else {
         if (prefData.timeformat && prefData.timeformat.length > 0) {
-          this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+          //this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+          this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
         }
         if (prefData.timezone && prefData.timezone.length > 0) {
-          this.prefTimeZone = prefData.timezone[0].value;
+          //this.prefTimeZone = prefData.timezone[0].value;
+          this.prefTimeZone = prefData.timezone[0].name;
         }
         if (prefData.dateformat && prefData.dateformat.length > 0) {
           this.prefDateFormat = prefData.dateformat[0].name;

@@ -85,7 +85,8 @@
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+                <!-- <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
+                <span style='font-weight: 500!important;'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -238,7 +239,8 @@
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+                <!-- <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
+                <span style='font-weight: 500!important;'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -315,7 +317,7 @@
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
           <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]="poiData.length == 0 || actionType == 'view'" (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-            <mat-option value="0">--All--</mat-option>
+            <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
             <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                 {{ rer.name }}
             </mat-option>
@@ -325,7 +327,7 @@
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
           <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]="poiData.length == 0  || actionType == 'view'" (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-            <mat-option value="0">--All--</mat-option>
+            <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
             <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
               {{ rer.name }}
             </mat-option>

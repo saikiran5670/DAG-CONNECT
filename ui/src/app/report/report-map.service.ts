@@ -46,7 +46,7 @@ export class ReportMapService {
     this.entryPoint = H.service.PlacesService.EntryPoint;
   }
 
-  initMap(mapElement: any){
+  initMap(mapElement: any, translationData: any){
     this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
       this.defaultLayers.raster.normal.map, {
@@ -65,18 +65,18 @@ export class ReportMapService {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label: translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label: translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label: translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -158,7 +158,7 @@ export class ReportMapService {
     return icon;
   }
 
-  showCategoryPOI(categotyPOI: any, _ui: any){
+  showCategoryPOI(categotyPOI: any, _ui: any, translationData: any){
     categotyPOI.forEach(element => {
       if(element.latitude && element.longitude){
         let categoryPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
@@ -168,16 +168,16 @@ export class ReportMapService {
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             content:`<table style='width: 350px;'>
             <tr>
-              <td style='width: 100px;'>POI Name:</td> <td><b>${element.poiName}</b></td>
+              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td><b>${element.poiName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td><b>${element.categoryName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
             </tr>
           </table>`
           });
@@ -293,7 +293,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: any){
+  viewSelectedRoutes(translationData: any, _selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -302,7 +302,7 @@ export class ReportMapService {
       this.showSearchMarker(_searchMarker);
     }
     if(_displayPOIList && _displayPOIList.length > 0){ 
-      this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
+      this.showCategoryPOI(_displayPOIList, _ui, translationData); //-- show category POi
     }
     if(_selectedRoutes && _selectedRoutes.length > 0){
       _selectedRoutes.forEach(elem => {
@@ -329,13 +329,13 @@ export class ReportMapService {
               // read custom data
               content:`<table style='width: 350px;'>
                 <tr>
-                  <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td><b>${elem.startPosition}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td><b>${elem.convertedStartTime}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
                 </tr>
               </table>`
             });
@@ -354,13 +354,13 @@ export class ReportMapService {
               // read custom data
               content:`<table style='width: 350px;'>
                 <tr>
-                  <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td><b>${elem.endPosition}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td><b>${elem.convertedEndTime}</b></td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
                 </tr>
               </table>`
             });
@@ -388,7 +388,7 @@ export class ReportMapService {
 
           if(alertsChecked){
             if(elem.filterAlerts.length > 0){
-              this.drawAlerts(elem.filterAlerts, _ui);
+              this.drawAlerts(elem.filterAlerts, _ui, translationData);
             }
           }
 
@@ -408,7 +408,7 @@ export class ReportMapService {
     }
    }
 
-   drawAlerts(_alertDetails: any, _ui: any){
+   drawAlerts(_alertDetails: any, _ui: any, translationData: any){
     if(_alertDetails.length > 0){
       let _fillColor = '#D50017';
       let _level = 'Critical';
@@ -449,16 +449,16 @@ export class ReportMapService {
             // read custom data
             content:`<table style='width: 300px; font-size:12px;'>
               <tr>
-                <td style='width: 100px;'>Alert Name:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Alert Type:</td> <td><b>${_obj.type}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td><b>${_obj.type}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Alert Level:</td> <td><b>${_obj.level}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td><b>${_obj.level}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Alert Time:</td> <td><b>${element.convertedAlertTime}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td><b>${element.convertedAlertTime}</b></td>
               </tr>
             </table>`
           });
@@ -2069,8 +2069,8 @@ export class ReportMapService {
         break;
       }
     }
-    // return distance.toFixed(2); 
-    return distance;
+    return distance.toFixed(2); 
+    //return distance;
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){

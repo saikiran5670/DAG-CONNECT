@@ -75,6 +75,7 @@ public class RichPostgresMapImpl extends RichPostgresMap<AlertCdc,Payload<Object
                     .circleLatitude(row.getObject(17) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(17))))
                     .circleLongitude(row.getObject(18) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(18))))
                     .circleRadius(row.getObject(19) == null? 0.0 : Double.valueOf(String.valueOf(row.getObject(19))))
+                    .width(row.getObject(20) == null ? 0 : Integer.valueOf(String.valueOf(row.getObject(20))))
                     .timestamp(System.currentTimeMillis())
                     .build();
         }

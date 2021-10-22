@@ -1,6 +1,5 @@
 package net.atos.daf.ct2.util;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.common.ct2.util.DAFConstants;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -123,7 +121,7 @@ public class MessageParseUtil {
 
 			String vin = (String) getValueByAttributeKey("vin", jsonNode);
 
-			String start = (String) getValueByAttributeKey("start", jsonNode);
+			String end = (String) getValueByAttributeKey("end", jsonNode);
 			JsonNode document = (JsonNode) jsonNode.get("Document");
 			if (document != null) {
 
@@ -142,7 +140,7 @@ public class MessageParseUtil {
 
 				Long receiveTimeStamp = TimeFormatter.getInstance().getCurrentUTCTime();
 				indexobj.setReceivedTimestamp(receiveTimeStamp);
-				indexobj.setEvtDateTime(start);
+				indexobj.setEvtDateTime(end);
 
 				// validation check for each mesage
 
@@ -458,7 +456,7 @@ public class MessageParseUtil {
 
 			String vin = (String) getValueByAttributeKey("vin", jsonNode);
 
-			String start = (String) getValueByAttributeKey("start", jsonNode);
+			String end = (String) getValueByAttributeKey("end", jsonNode);
 			JsonNode document = (JsonNode) jsonNode.get("Document");
 
 			if (document != null) {
@@ -506,11 +504,11 @@ public class MessageParseUtil {
 
 				System.out.println("After changed Trans id :" + monitorObj.getTransID() + " , trip id ==>" + tripid);
 
-				monitorObj.setEvtDateTime(start);
+			//	monitorObj.setEvtDateTime(end);
 
 				Long receivedTimestamp = System.currentTimeMillis();
 				Long storedTimestamp = null;
-				String evtDateTime = start;
+				//String evtDateTime = end;
 				Long increment = null;
 				String roProfil = null;
 				String tenantID = null;
@@ -601,7 +599,7 @@ public class MessageParseUtil {
 
 				monitorObj.setReceivedTimestamp(receivedTimestamp);
 				monitorObj.setStoredTimestamp(storedTimestamp);
-				monitorObj.setEvtDateTime(evtDateTime);
+				monitorObj.setEvtDateTime(end);
 				monitorObj.setIncrement(increment);
 				monitorObj.setRoProfil(roProfil);
 				monitorObj.setTenantID(tenantID);
@@ -735,7 +733,7 @@ public class MessageParseUtil {
 			Long receivedTimestamp = System.currentTimeMillis();
 			String vid = (String) getValueByAttributeKey("vehicleId", jsonNode);
 			String vin = (String) getValueByAttributeKey("vin", jsonNode);
-			String start = (String) getValueByAttributeKey("start", jsonNode);
+			String end = (String) getValueByAttributeKey("end", jsonNode);
 			JsonNode reasonData = (JsonNode) jsonNode.get("reasonData");
 			JsonNode document = (JsonNode) jsonNode.get("Document");
 			if (document != null) {
@@ -862,7 +860,7 @@ public class MessageParseUtil {
 						(String) getValueByAttributeKey("VTripPTOFuelConsumed", document));
 
 				statusObj.setReceivedTimestamp(receivedTimestamp);
-				statusObj.setEvtDateTime(start);
+				statusObj.setEvtDateTime(end);
 				statusObj.setVid(vehicleId);
 				statusObj.setKafkaProcessingTS(kafkaProcessingTS);
 				statusObj.setJobName(jobName);

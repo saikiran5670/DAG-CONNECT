@@ -105,7 +105,7 @@
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [disabled]="poiGridData.length == 0  || actionType == 'view'"  (selectionChange)="onPOICategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
                 <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -115,7 +115,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <mat-select [disabled]="poiGridData.length == 0  || actionType == 'view'"  (selectionChange)="onPOISubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                  <mat-option value="0">--All--</mat-option>  
+                  <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>  
                   <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                       {{ rer.name }}
                   </mat-option>
@@ -148,19 +148,19 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="categoryName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="subCategoryName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblSubCategory || 'Sub-Category'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="address">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblAddress || 'Address' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumnsPOI"></mat-header-row>
@@ -190,7 +190,7 @@
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [disabled]="geofenceGridData.length == 0  || actionType == 'view'"  (selectionChange)="onGeoCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-              <mat-option value="0">--All--</mat-option>
+              <mat-option value="0">{{ translationData.lblAll || '--All--' }} </mat-option>
               <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -200,7 +200,7 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <mat-select [disabled]="geofenceGridData.length == 0  || actionType == 'view'" (selectionChange)="onGeoSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                  <mat-option value="0">--All--</mat-option>
+                  <mat-option value="0">{{ translationData.lblAll || '--All--' }}</mat-option>
                   <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                     {{ rer.name }}
                   </mat-option>
@@ -226,15 +226,15 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="geofenceName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="categoryName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="subCategoryName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblSubCategory || 'Sub-Category'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>

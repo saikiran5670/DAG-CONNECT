@@ -1955,7 +1955,7 @@ namespace net.atos.daf.ct2.accountservice
                 ssoRequest.RoleID = request.RoleID;
                 ssoRequest.OrganizaitonID = request.OrganizationID;
                 ssoRequest.Email = request.Email;
-
+                ssoRequest.FeatureName = request.FeatureName;
                 SSOToken responseDetails = new SSOToken();
                 var response = await _accountIdentityManager.GenerateSSOToken(ssoRequest);
                 if (response?.StatusCode == System.Net.HttpStatusCode.OK)

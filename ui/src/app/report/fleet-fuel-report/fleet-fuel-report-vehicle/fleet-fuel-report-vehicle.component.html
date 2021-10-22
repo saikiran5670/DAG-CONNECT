@@ -228,12 +228,12 @@
             <mat-header-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matHeaderCellDef mat-sort-header>{{ translationData.lblConsumption }}
                &nbsp; <span
                 style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblgallonmile) : (translationData.lblgallonmile
+                'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg
                ) }})</span>
             </mat-header-cell>
             <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
-              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
-                value={{row.convertedFuelConsumed100Km}}></mat-progress-bar>
+              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - row.convertedFuelConsumption"
+                value={{row.convertedFuelConsumption}}></mat-progress-bar>
               <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumption | number : '.2-2'}} </div>
             </mat-cell>
           </ng-container>
@@ -327,7 +327,7 @@
               <div *ngIf="checkForPreference('summary_fuelconsumed')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                 <span>{{ translationData.lblFuelConsumed }}</span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{
-                  (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km ) : (prefUnitFormat ==
+                  (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr ) : (prefUnitFormat ==
                   'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile) }}
                 </span>
               </div>
@@ -341,7 +341,7 @@
                 <span
                   style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{
                   (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km ) : (prefUnitFormat ==
-                  'dunit_Imperial') ? (translationData.lblgallonmile) : (translationData.lblgallonmile) }}</span>
+                  'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg) }}</span>
               </div>
               <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                 <span>{{ translationData.lblCO2Emission }}</span>
@@ -630,7 +630,7 @@
           <ng-container matColumnDef="fuelConsumed">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed 
               }}
-              <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
+              <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr) : (prefUnitFormat ==
                 'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile
             ) }})</span>
             </mat-header-cell>
@@ -643,7 +643,7 @@
           <ng-container matColumnDef="fuelConsumption">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption  }}
               <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
-            'dunit_Imperial') ? (translationData.lblgallonmile) : (translationData.lblgallonmile
+            'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg
             ) }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">
@@ -746,7 +746,7 @@
           <ng-container matColumnDef="ccFuelConsumption">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption }}
               <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km ) : (prefUnitFormat ==
-            'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile
+            'dunit_Imperial') ? (translationData.lblmpg ) : (translationData.lblmpg
            ) }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
@@ -757,7 +757,7 @@
           <ng-container matColumnDef="fuelconsumptionCCnonactive">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive }}
               <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km ) : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile
+                'dunit_Imperial') ? (translationData.lblmpg ) : (translationData.lblmpg
                ) }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
@@ -874,7 +874,7 @@
           <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
           </mat-row>
         </mat-table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
 
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

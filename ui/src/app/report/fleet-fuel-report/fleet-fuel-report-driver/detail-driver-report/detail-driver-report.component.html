@@ -126,7 +126,7 @@
       
                 <div *ngIf="checkForPreference('summary_numberoftrips')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
       
-                  <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+                  <span>{{ translationData.lblNoOfTrips || 'Number Of Trips' }}</span>
       
                   <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('noOfTrips')}}</span>
       
@@ -145,9 +145,8 @@
       
                   <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
       
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                    l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' gal') :
-                    (translationData.lblgallonmile || ' gal') }} </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || 'ltr100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' mpg') :
+                    (translationData.lblgallonmile || ' mpg') }} </span>
       
                 </div>
       
@@ -163,9 +162,9 @@
       
                   <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
       
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                    Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' mpg') :
-                    (translationData.lblgallonmile || ' mpg') }}</span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{fuelConsumptionSummary}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                    Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || ' mpg') :
+                    (translationData.lblmpg || ' mpg') }}</span>
       
                 </div>
       
@@ -237,7 +236,7 @@
               <div *ngIf="checkForPreference('chart_numberoftrips')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
               fxFlex.lt-sm="100%">
       
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblNoOfTrips || 'Number Of Trips' }}</span>
       
                 <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
       
@@ -412,7 +411,7 @@
       
               <mat-panel-title>
       
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllTripDetails || 'All Trip Details' }}</span>
       
               </mat-panel-title>
       
@@ -420,7 +419,7 @@
       
             <div *ngIf='displayData.length == 0'>
       
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found' }}
       
               </div>
       
@@ -565,14 +564,14 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="startPosition">      
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startposition')">{{ translationData.lblstartDate || 'Start Position' }}         
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startposition')">{{ translationData.lblStartPosition || 'Start Position' }}         
                           </mat-header-cell>         
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_startposition')">         
                             <span>{{row.startPosition}}</span>          
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="endPosition">
-                              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_endposition')">{{ translationData.lblendDate || ' End Position ' }}             
+                              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_endposition')">{{ translationData.lblEndPosition || ' End Position ' }}             
                               </mat-header-cell>              
                               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_endposition')">              
                                 <span>{{row.endPosition}}</span>              
@@ -580,7 +579,7 @@
                         </ng-container>
                         <ng-container matColumnDef="fuelConsumed">      
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}              
-                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
                               l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
                               (translationData.lblgallonmile || ' gal') }})</span>              
                           </mat-header-cell>          
@@ -590,9 +589,9 @@
                         </ng-container>              
                         <ng-container matColumnDef="fuelConsumption">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
-                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                              Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') :
-                              (translationData.lblgallonmile || ' mpg') }})</span>              
+                            <span style="font-weight: normal;">{{sumOfColumns('fuelConsumption')}}({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                              Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
+                              (translationData.lblmpg || ' mpg') }})</span>              
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
                             <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>              
@@ -624,7 +623,7 @@
                           </mat-cell>              
                         </ng-container>
                         <ng-container matColumnDef="cruiseControlDistance3050">      
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50 km/h(%)' }}              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance3050 || 'Cruise Control Distance 30-50' }} km/h(%)             
                             <span style="font-weight: normal;"></span>             
                           </mat-header-cell>             
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">              
@@ -632,7 +631,7 @@
                           </mat-cell>              
                         </ng-container>              
                         <ng-container matColumnDef="cruiseControlDistance5075">              
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75 km/h(%)' }}             
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance5075 || 'Cruise Control Distance 50-75' }} km/h(%)           
                             <span style="font-weight: normal;"></span>  
                           </mat-header-cell>             
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">             
@@ -640,7 +639,7 @@
                           </mat-cell>             
                         </ng-container>             
                         <ng-container matColumnDef="cruiseControlDistance75">              
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75 km/h(%)' }}              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75' }} km/h(%)              
                             <span style="font-weight: normal;"></span>      
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">              
@@ -648,21 +647,21 @@
                           </mat-cell>              
                         </ng-container>
                         <ng-container matColumnDef="heavyThrottleDuration">      
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration%' }}              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }} %              
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">              
                             <span>{{row.heavyThrottleDuration}}</span>             
                           </mat-cell>              
                         </ng-container>
                         <ng-container matColumnDef="harshBrakeDuration">      
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_harshbrakeduration')">{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration%' }}              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_harshbrakeduration')">{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration' }} %             
                           </mat-header-cell>             
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_harshbrakeduration')">              
                             <span>{{row.harshBrakeDuration}}</span>             
                           </mat-cell>              
                         </ng-container>                        
                 <ng-container matColumnDef="averageGrossWeightComb">      
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || ' Gross Weight Combination(ton)' }}      
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || ' Gross Weight Combination' }} (ton)    
                   </mat-header-cell>     
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">      
                     <span>{{row.convertedAverageGrossWeightComb}}</span>      

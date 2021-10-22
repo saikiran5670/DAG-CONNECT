@@ -83,6 +83,8 @@ namespace net.atos.daf.ct2.roleservice
                 roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
                 roleMaster.Description = request.Description;
+                roleMaster.Level = request.Level;
+                roleMaster.Code = request.Code;
                 roleMaster.FeatureSet = new FeatureSet();
                 //ObjRole.FeatureSet = new FeatureSet();
                 roleMaster.FeatureSet.Features = new List<Feature>();
@@ -234,6 +236,34 @@ namespace net.atos.daf.ct2.roleservice
         //    }
         //}
 
+        public async override Task<RoleCodeResponse> GetCodes(RoleCodeFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                RoleCodeFilter objroleFilter = new RoleCodeFilter();
+                RoleCodeResponse objroleList = new RoleCodeResponse();
+                objroleFilter.RoleLevel = request.RoleLevel;
+                //objroleFilter.OrganizationId = request.OrganizationId;
 
+                var role = _roleManagement.GetCode(objroleFilter).Result;
+                foreach (var item in role)
+                {
+                    objroleList.RoleCodeList.Add(item);
+                }
+
+                objroleList.Message = "Role codes data retrieved";
+                objroleList.Code = Responcecode.Success;
+                return await Task.FromResult(objroleList);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new RoleCodeResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
     }
 }

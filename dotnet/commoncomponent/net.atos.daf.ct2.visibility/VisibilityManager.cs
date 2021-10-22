@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.visibility
                     {
                         //do nothing (if org type package no need to remove from owned vehicles)
                     }
-                    else if (vehiclePackages.Any(e => e.PackageType == "V" && e.HasOwned == true)) // check if any v type and owned subscription available
+                    else if (vehiclePackages.Any(e => (e.PackageType == "V" || e.PackageType == "N") && e.HasOwned == true)) // check if any v type and owned subscription available
                     {
                         var filteredOwnedVehicleIds = ownedVehicles
                             .Where(e => vehiclePackages.FirstOrDefault(e => e.HasOwned == true).VehicleIds.Contains(e.Id)).Select(k => k.Id);
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.visibility
                     //Filter vehicles out those are not in relationship vehicles and subscribed vehicles.
                     if (vehiclePackages.Any(e => e.HasOwned == false))
                     {
-                        var subscriptionVehicleIds = vehiclePackages.First(e => e.HasOwned == false).VehicleIds;
+                        var subscriptionVehicleIds = vehiclePackages.First(e => e.HasOwned == false || e.PackageType == "N").VehicleIds;
                         var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
 
                         //Fetch vehicles records to be removed from visible vehicles list

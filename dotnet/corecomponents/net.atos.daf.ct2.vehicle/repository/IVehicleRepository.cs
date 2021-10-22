@@ -54,7 +54,9 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        Task<IEnumerable<DtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+        Task<IEnumerable<response.VehicleRelations>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+
+        Task<IEnumerable<response.VehicleRelations>> GetVehicleRelations(IEnumerable<response.VehicleRelations> vehicles, int orgId);
         #endregion
 
         #region Vehicle Visibility

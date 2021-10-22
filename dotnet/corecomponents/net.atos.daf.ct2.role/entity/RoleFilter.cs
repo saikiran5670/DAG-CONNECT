@@ -10,4 +10,11 @@ namespace net.atos.daf.ct2.role.entity
         public string State { get; set; }
         public string LangaugeCode { get; set; }
     }
+
+    public class RoleCodeFilter
+    {
+        //public int OrganizationId { get; set; }
+        public bool IsGlobal { get; set; }
+        public int RoleLevel { get; set; }
+    }
 }

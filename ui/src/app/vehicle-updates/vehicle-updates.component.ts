@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms'
 import { OtaSoftwareUpdateService } from 'src/app/services/ota-softwareupdate.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { OrganizationService } from '../services/organization.service';
 @Component({
   selector: 'app-vehicle-updates',
   templateUrl: './vehicle-updates.component.html',
@@ -46,6 +47,7 @@ export class VehicleUpdatesComponent implements OnInit {
   ngVehicleName = '';
   ngSoftStatus = '';
   actionType: any;
+  accountPrefObj: any;
   selectedVehicleUpdateDetails: any = [];
   selectedVehicleUpdateDetailsData: any;
   viewVehicleUpdateDetailsFlag: boolean = false;
@@ -56,14 +58,18 @@ export class VehicleUpdatesComponent implements OnInit {
   public filteredVehicleGroup: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicleName: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   allSelected:any = false;
-
-  constructor(private translationService: TranslationService, private otaSoftwareUpdateService: OtaSoftwareUpdateService, private _formBuilder: FormBuilder) { }
+  allDeselected:any = false;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting  
+  constructor(private translationService: TranslationService, private otaSoftwareUpdateService: OtaSoftwareUpdateService, private _formBuilder: FormBuilder,  private organizationService: OrganizationService) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -80,6 +86,18 @@ export class VehicleUpdatesComponent implements OnInit {
     });
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+       if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }  
+      });
       this.loadVehicleStatusData();
     });
   }
@@ -101,19 +119,25 @@ export class VehicleUpdatesComponent implements OnInit {
           }
           this.vehicleSoftwareStatus.push(element);
         });
-      }
+      }     
     }, (error) => {
-    })
+    })   
   }
 
   searchAllDataFilter() {
     this.dataSource.filterPredicate = this.createFilter();
+  
     this.searchFilter.valueChanges.subscribe(filterValue => {
       this.filteredValues['search'] = filterValue.trim().toLowerCase();
       this.dataSource.filter = JSON.stringify(this.filteredValues);
       this.vehicleUpdatesForm.get('vehicle').setValue("all");
       this.vehicleUpdatesForm.get('vehicleGroup').setValue("all");
-      this.vehicleUpdatesForm.get('softStatus').setValue("all");
+      this.filterListValues['vehicleName'] = '';
+      this.filterListValues['vehicleGroup'] = '';
+      this.filterListValues['vehicleGroupNames'] = '';
+      this.vehicleName = this.removeDuplicates(this.vehicleNameArr, "vehicleName");
+      
+      this.select.options.forEach((item: MatOption) => item.select());      
     });
   }
 
@@ -135,18 +159,18 @@ export class VehicleUpdatesComponent implements OnInit {
   }
 
   loadVehicleStatusData() {
-    this.showLoadingIndicator = true;
+    this.showLoadingIndicator = true;    
     this.getVehicleSoftStatus();
     let vehicleStatusObj = {
       languageCode: 'en',
       retention: 'active'
-    }
-    this.otaSoftwareUpdateService.getVehicleStatusList(vehicleStatusObj).subscribe((data) => {
+    }  
+      this.otaSoftwareUpdateService.getVehicleStatusList(vehicleStatusObj).subscribe((data) => {
       this.showLoadingIndicator = false;
       this.vehicleStatusList = data["vehicleStatusList"];
       this.vehicleStatusList.filter((element) => {
-        this.vehicleGroupArr.push(element.vehicleGroupNames);
-        this.vehicleNameArr.push({ 'vehicleName': element.vehicleName.trim(), 'vehicleGroup': element.vehicleGroupNames.trim() });
+      this.vehicleGroupArr.push(element.vehicleGroupNames);
+      this.vehicleNameArr.push({ 'vehicleName': element.vehicleName.trim(), 'vehicleGroup': element.vehicleGroupNames.trim() });
       });
 
       let vehGrp: any = [];
@@ -160,13 +184,13 @@ export class VehicleUpdatesComponent implements OnInit {
       this.vehicleName = this.removeDuplicates(this.vehicleNameArr, "vehicleName");
      
       this.initData = this.vehicleStatusList;
-      this.updateDataSource(this.initData);
+      this.updateDataSource(this.initData);        
       this.searchAllDataFilter();
       this.resetSoftStatusFilter();
       this.resetVehicleGroupFilter();
-      this.resetVehicleNameFilter();
+      this.resetVehicleNameFilter();      
     }, (error) => {
-      this.showLoadingIndicator = false;
+      this.showLoadingIndicator = false; 
     })
   }
 
@@ -185,7 +209,7 @@ export class VehicleUpdatesComponent implements OnInit {
   onVehicleGroupChange(filter, event) {    
     this.vehicleName = [];
     this.ngVehicleName = 'all';    
-    this.vehicleUpdatesForm.get('softStatus').setValue("all");
+   
     let event_val;
 
     if (event == 'all') {
@@ -205,9 +229,8 @@ export class VehicleUpdatesComponent implements OnInit {
       event_val = event.vehicleGroup.trim();
     }
     this.filterListValues['vehicleName'] = '';
-    this.filterListValues['softwareStatus'] = '';
+    this.select.options.forEach((item: MatOption) => item.select());   
     this.filterListValues[filter] = event_val.toLowerCase();
-
     this.dataSource.filter = JSON.stringify(this.filterListValues);
   }
 
@@ -220,11 +243,11 @@ export class VehicleUpdatesComponent implements OnInit {
 
   getVehicleUpdateDetails(selectedVehicleUpdateDetails: any) {
     this.showLoadingIndicator = true;
-    this.showVehicalDetails = true;
-    // Uncomment for Actual API
+    this.showVehicalDetails = true;   
+       // Uncomment for Actual API
     this.otaSoftwareUpdateService.getvehicleupdatedetails(selectedVehicleUpdateDetails.vin).subscribe((data: any) => {
       // this.otaSoftwareUpdateService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
-      if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+        if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
         this.selectedVehicleUpdateDetailsData = data.vehicleUpdateDetails;
       }
       this.hideloader();
@@ -288,61 +311,48 @@ export class VehicleUpdatesComponent implements OnInit {
     );
   }
 
-  toggleAllSelection() {
+  toggleAllSelection() { 
+     let filter = "softwareStatus";  
+    // this.filterListValues[filter]='';  
     if (this.allSelected) {
       this.select.options.forEach((item: MatOption) => item.select());
-    } else {
+      } else {
+      this.allDeselected=true;
+      let vehicleNm = this.vehicleUpdatesForm.get('vehicle');
+      let vehicleGrp = this.vehicleUpdatesForm.get('vehicleGroup');
+      if(vehicleGrp.value == 'all' || vehicleNm.value=='all'){
+        this.filterListValues['vehicleName'] = '';
+        this.filterListValues['vehicleGroupNames'] = '';
+      }     
       this.select.options.forEach((item: MatOption) => item.deselect());
-    }
+      this.allDeselected = false;
+     }
   }
    optionClick(filter, event) {
-    let newStatus = true;
-    let event_val;
+    let newStatus = true;  
+    let newSelectAll = false; 
     this.select.options.forEach((item: MatOption) => {
       if (!item.selected) {
         newStatus = false;
+        if(event.length==1 && event[0]==''){
+          newSelectAll= true;          
+        }
+        else{
+          newSelectAll= false;
+        }
       }
     });
-    this.allSelected = newStatus;
-    let softStatusArr:any =[];
-    if (filter == "softwareStatus") {
-     // this.select.options.forEach((item: MatOption) => item.select());
-     softStatusArr = this.vehicleUpdatesForm.get('softStatus');
-      if (event.value == 'all') {
-        event_val = '';
-      } else {
-        event_val = event.currentTarget.innerText.trim();
-      }
+    this.allSelected = newStatus;  
+    if((this.allDeselected || newSelectAll) && !this.allSelected){  
+     this.filterListValues[filter] = 'No Data'; 
+     this.dataSource.filter = JSON.stringify(this.filterListValues);     
+       }
+    else{
+      this.filterListValues[filter] = event; 
+      this.dataSource.filter = JSON.stringify(this.filterListValues);  
     }
-    else {
-      event_val = '';
-    }
-    this.filterListValues[filter]='';
-    softStatusArr.value.forEach(element => {  
-      if(element!= undefined){
-      if(this.allSelected)   {
-        this.filterListValues[filter] = ''; 
-      }
-      this.filterListValues[filter] += element.toLowerCase()+","; 
-    }
-    });
-    this.dataSource.filter = JSON.stringify(this.filterListValues);
-    // this.filterListValues[filter] = event_val.toLowerCase();
-    // this.dataSource.filter = JSON.stringify(this.filterListValues);
-
   }
-  // toggleAllSelectionHealth() {
-  //   if (this.allSelected.selected) {
-  //     this.vehicleUpdatesForm.controls.status.patchValue([
-       
-  //      // ...this.filteredSoftwareStatus.map(item => item.value),
-  //      // 0
-  //     ]);
-  //   } else {
-  //     this.vehicleUpdatesForm.controls.status.patchValue([]);
-  //   }
-  //   this.loadVehicleStatusData();
-  // }
+  
   resetSoftStatusFilter() {
     this.filteredSoftwareStatus.next(this.vehicleSoftwareStatus.slice());
   }
@@ -384,26 +394,12 @@ export class VehicleUpdatesComponent implements OnInit {
   }
 
   onVehicleChange(filter, event) {
-    let event_val;
-    // if (filter == "vehicleName" || filter == "softwareStatus") {
-    //   if (event.value == 'all') {
-    //     event_val = '';
-    //   } else {
-    //     event_val = event.value.trim();
-    //   }
-    // }
+    let event_val;   
     if (filter == "vehicleName") {
       if (event == 'all') {
         event_val = '';
       } else {
         event_val = event.vehicleName.trim();
-      }
-    }
-    else if (filter == "softwareStatus") {
-      if (event.value == 'all') {
-        event_val = '';
-      } else {
-        event_val = event.value.trim();
       }
     }
     else {
@@ -412,7 +408,6 @@ export class VehicleUpdatesComponent implements OnInit {
     this.filterListValues[filter] = event_val.toLowerCase();
     this.dataSource.filter = JSON.stringify(this.filterListValues);
 
-    // this.filterValues.emit(this.dataSource); 
   }
   createFilter() {
     let filterFunction = function (data: any, filter: string): boolean {
@@ -448,35 +443,17 @@ export class VehicleUpdatesComponent implements OnInit {
               return false;
             }
           }
-          // if (searchTerms.softwareStatus) {
-          //   let softStatus = '';
-          //   softStatus = data.softwareStatus;
-          //   let softStatusArr:any =searchTerms.softwareStatus.split(',');
-          //   if(softStatusArr.length>0){
-          //   softStatusArr.forEach(element => {
-          //     if(element!=""){
-          //     if (softStatus.toLowerCase().includes(element.trim())) {
-          //       found = true;
-          //     }
-          //     else {
-          //       return false;
-          //     }  
-          //   }  
-          //   }); 
-          // }     
-          // else {
-          //   return false;
-          // }     
+            
           if (searchTerms.softwareStatus) {
             let softStatus = '';
-            softStatus = data.softwareStatus;
-            if (softStatus.toLowerCase().includes(searchTerms.softwareStatus)) {
+            softStatus = data.softwareStatus.slice('.',-1);
+            if (searchTerms.softwareStatus.includes(softStatus.toLowerCase())) {
               found = true;
             }
             else {
               return false;
             }
-          }
+          }         
           if (searchTerms.search) {
 
             let searchData = '';
@@ -511,5 +488,18 @@ export class VehicleUpdatesComponent implements OnInit {
     }
     return filterFunction
   }
-
+  
+  proceedStep(prefData: any, preference: any) {
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if (_search.length > 0) {
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    } else {
+       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = prefData.timezone[0].name;
+      this.prefDateFormat = prefData.dateformat[0].name;
+    }
+   
+  }
 }

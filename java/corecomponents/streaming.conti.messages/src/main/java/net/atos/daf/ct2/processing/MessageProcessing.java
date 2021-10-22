@@ -88,7 +88,9 @@ public class MessageProcessing<U,R, T> {
   public void contiKeyedMessageForHistorical(
 	      DataStream<KafkaRecord<Tuple3<String, String, Object>>> messageDataStream,
 	      Properties properties,
-		  BroadcastStream<KafkaRecord<R>> broadcastStream) {
+		  BroadcastStream<KafkaRecord<R>> broadcastStream,
+		  String msgType,
+		  int parallelismNo) {
 
 		messageDataStream.connect(broadcastStream)
 				.process(new KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<R>, KafkaRecord<String>>() {
@@ -140,8 +142,8 @@ public class MessageProcessing<U,R, T> {
 					}
 					
 				}).filter(rec -> !rec.getKey().startsWith("UnknownMessage")).returns(new TypeHint<KafkaRecord<String>>() {
-				}.getTypeInfo())
-				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
+				}.getTypeInfo()).name("Filter "+msgType)
+				//.keyBy(rec -> rec.getKey())
 				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
 						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
 						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
@@ -150,8 +152,8 @@ public class MessageProcessing<U,R, T> {
 						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
 						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
 						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)))
-				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
-				.name("Historial Data");
+				.setParallelism(parallelismNo)
+				.name("Historial Data load : "+msgType);
 	}
   
   public void contiMessageForHistorical(

@@ -189,25 +189,26 @@
     <mat-expansion-panel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                Additional Data
+                {{ translationData.lblAdditionalData || 'Additional Data' }}
             </mat-panel-title>
         </mat-expansion-panel-header>
 
         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-sm">
-            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">Transport Data</mat-checkbox>
-            <mat-checkbox class="example-margin" [checked]="trafficFlowChecked" (change)="trafficFlowCheckedFn($event.checked)"  [disabled]="actionType==='view'">Traffic Flow</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">{{ translationData.lblTransportData || 'Transport Data' }} </mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="trafficFlowChecked" (change)="trafficFlowCheckedFn($event.checked)"  [disabled]="actionType==='view'">{{ translationData.lblTrafficFlow || 'Traffic Flow' }} </mat-checkbox>
         </div>
         <div class='fixDiv'></div>
             <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            Attributes
+                            {{ translationData.lblAttributes || 'Attributes' }}
+                            
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <div fxLayout="row" fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
                         <span class="col-sm">
-                            <mat-label><span>{{ translationData.lblTrailer|| 'Trailer' }}</span></mat-label>
+                            <mat-label><span>{{ translationData.lblTrailer || 'Trailer' }}</span></mat-label>
                             <mat-form-field *ngIf="actionType !== 'view'"appearance="outline" class="full-width">
                                 <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" [disabled]="actionType==='view'">
                                     <mat-option *ngFor="let type of trailerList" [value]="type">
@@ -219,21 +220,21 @@
                                 <span style='font-weight: 500!important;'>{{trailerValue}}</span>
                             </div>
                         </span>
-                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')" [disabled]="actionType==='view'">Explosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')" [disabled]="actionType==='view'">Gas</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')" [disabled]="actionType==='view'">Flammable</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')" [disabled]="actionType==='view'">{{ translationData.lblExplosive || 'Explosive' }}</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')" [disabled]="actionType==='view'">{{ translationData.lblGas || 'Gas' }}</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')" [disabled]="actionType==='view'">{{ translationData.lblFlammable || 'Flammable' }} </mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class=" container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')" [disabled]="actionType==='view'">Combustible</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')" [disabled]="actionType==='view'">Organic</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')" [disabled]="actionType==='view'">Poison</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')" [disabled]="actionType==='view'">Radio Active</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')" [disabled]="actionType==='view'">{{ translationData.lblCombustible || 'Combustible' }} </mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')" [disabled]="actionType==='view'">{{ translationData.lblOrganic || 'Organic' }} </mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')" [disabled]="actionType==='view'">{{ translationData.lblPoison || 'Poison' }}</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')" [disabled]="actionType==='view'">{{ translationData.lblRadioActive || 'Radio Active' }} </mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')" [disabled]="actionType==='view'">Corrosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonousInhalation')" [disabled]="actionType==='view'">Poisonous Inhalation</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'harmfulToWater')" [disabled]="actionType==='view'">Water Harm</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'other')" [disabled]="actionType==='view'">Others</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')" [disabled]="actionType==='view'">{{ translationData.lblCorrosive || 'Corrosive' }} </mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonousInhalation')" [disabled]="actionType==='view'">{{ translationData.lblPoisonousInhalation || 'Poisonous Inhalation' }} </mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'harmfulToWater')" [disabled]="actionType==='view'">{{ translationData.lblWaterHarm || 'Water Harm' }} </mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'other')" [disabled]="actionType==='view'">{{ translationData.lblOthers || 'Others' }} </mat-checkbox>
                      </div>
                 </mat-expansion-panel>
                 </mat-accordion>
@@ -243,18 +244,18 @@
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            Exclusions
+                            {{ translationData.lblExclusions || 'Exclusions' }}
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                         <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                            <mat-checkbox class="example-margin col-sm" [checked]="tollRoadChecked"  (change)="exclusionCheck($event.checked,'tollRoad')" [disabled]="actionType==='view'">Toll Road</mat-checkbox>
-                            <mat-checkbox class="example-margin col-sm" [checked]="motorwayChecked"  (change)="exclusionCheck($event.checked,'controlledAccessHighway')" [disabled]="actionType==='view'">Motor Way</mat-checkbox>
-                            <mat-checkbox class="example-margin col-sm" [checked]="boatFerriesChecked"  (change)="exclusionCheck($event.checked,'ferry')" [disabled]="actionType==='view'">Boat Ferries</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="tollRoadChecked"  (change)="exclusionCheck($event.checked,'tollRoad')" [disabled]="actionType==='view'">{{ translationData.lblTollRoad || 'Toll Road' }}</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="motorwayChecked"  (change)="exclusionCheck($event.checked,'controlledAccessHighway')" [disabled]="actionType==='view'">{{ translationData.lblMotorWay || 'Motor Way' }}</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="boatFerriesChecked"  (change)="exclusionCheck($event.checked,'ferry')" [disabled]="actionType==='view'">{{ translationData.lblBoatFerries || 'Boat Ferries' }}</mat-checkbox>
                          </div>
                          <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                            <mat-checkbox class="example-margin col-sm" [checked]="railFerriesChecked"  (change)="exclusionCheck($event.checked,'carShuttleTrain')" [disabled]="actionType==='view'">Rail Ferries</mat-checkbox>
-                            <mat-checkbox class="example-margin col-sm" [checked]="tunnelsChecked"  (change)="exclusionCheck($event.checked,'tunnel')" [disabled]="actionType==='view'">Tunnels</mat-checkbox>
-                            <mat-checkbox class="example-margin col-sm" [checked]="dirtRoadChecked"  (change)="exclusionCheck($event.checked,'dirtRoad')" [disabled]="actionType==='view'">Dirt Road</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="railFerriesChecked"  (change)="exclusionCheck($event.checked,'carShuttleTrain')" [disabled]="actionType==='view'">{{ translationData.lblRailFerries || 'Rail Ferries' }}</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="tunnelsChecked"  (change)="exclusionCheck($event.checked,'tunnel')" [disabled]="actionType==='view'">{{ translationData.lblTunnels || 'Tunnels' }}</mat-checkbox>
+                            <mat-checkbox class="example-margin col-sm" [checked]="dirtRoadChecked"  (change)="exclusionCheck($event.checked,'dirtRoad')" [disabled]="actionType==='view'">{{ translationData.lblDirtRoad || 'Dirt Road' }}</mat-checkbox>
                          </div>
                 </mat-expansion-panel>
             </mat-accordion>
@@ -264,7 +265,7 @@
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            Vehicle Size
+                            {{ translationData.lblVehicleSize || 'Vehicle Size' }}
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
@@ -366,7 +367,7 @@
        
                 <div class="example-button-row pt-2" fxLayoutAlign="right" *ngIf="actionType !== 'view'">
                     <button mat-button color="primary" (click)="resetValues()">
-                        <span>Reset</span>
+                        <span>{{ translationData.lblReset || 'Reset' }} </span>
                     </button>
                 </div>
     </mat-expansion-panel>
@@ -376,23 +377,23 @@
 <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
     <span *ngIf="actionType !== 'view'">
     <button mat-flat-button color="primary" (click)="backToCorridorList()">
-        <span>Cancel</span>
+        <span>{{ translationData.lblCancel || 'Cancel' }}</span>
     </button>
     </span>
 
     <span *ngIf="actionType === 'edit'">
    <button mat-button color="primary" (click)="resetToEditData()">  <!-- [disabled]="corridorFormGroup.pristine" -->
-        <span>Reset</span>
+        <span>{{ translationData.lblReset || 'Reset' }}</span>
     </button>
 </span>
 <span *ngIf="actionType === 'create'">
     <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!corridorFormGroup.valid || !onSearchClicked"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
-        <span>Create</span>
+        <span>{{ translationData.lblCreate || 'Create' }} </span>
     </button>
 </span>
 <span *ngIf="actionType === 'edit'">
     <button mat-button  color="primary" (click)="createCorridorClicked()"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
-        <span>Save</span>
+        <span>{{ translationData.lblSave || 'Save' }}</span>
     </button>
 </span>
 </div>

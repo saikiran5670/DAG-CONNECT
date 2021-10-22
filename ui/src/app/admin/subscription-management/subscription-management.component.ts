@@ -62,24 +62,19 @@ export class SubscriptionManagementComponent implements OnInit {
   accountDetails : any =[];
   TypeList: any = [
     {
-      name: 'Organization',
-      value: 'O'
+      name: 'VIN',
+      value: 'N'
     },
     {
-      name: 'VIN',
+      name: 'Organization',
+      value: 'O'
+    }, 
+    {
+      name: 'Org+VIN',
       value: 'V'
     }
   ];
-  StatusList: any = [
-    {
-      name: 'Active',
-      value: '1'
-    },
-    {
-      name: 'Inactive',
-      value: '2'
-    }
-  ];
+  StatusList: any = [];
   showLoadingIndicator: any = true;
   filterData: any = [];
 
@@ -189,6 +184,17 @@ export class SubscriptionManagementComponent implements OnInit {
         this.processTranslation(data);
         this.loadSubscriptionData();
     });
+
+    this.StatusList= [
+      {
+        name: this.translationData.lblActive,
+        value: '1'
+      },
+      {
+        name: this.translationData.lblInactive,
+        value: '2'
+      }
+    ]
   }
 
   loadSubscriptionData(){

@@ -537,14 +537,15 @@ namespace net.atos.daf.ct2.visibility.repository
                 var queryStatement = @"select type as Packagetype,coalesce(HasOwned,true) as HasOwned, array_agg(distinct coalesce(vehicle_id, 0)) as VehicleIds
                                             from
                                             (
-                                                select p.type, s.vehicle_id, s.organization_id=v.organization_id as HasOwned
+                                                select p.type, s.vehicle_id, case when s.organization_id=v.organization_id 
+	                                                then true else false end as HasOwned
                                                 from master.subscription s
                                                 inner join master.package p on p.id=s.package_id
                                                 inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                                 inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                                 inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                                 left join master.vehicle v on s.vehicle_id = v.id
-                                                where s.organization_id=@organizationid and f.id=@featureid and p.type In ('V','O') AND s.state = 'A'
+                                                where (s.organization_id=@organizationid or s.type  ='N')  and f.id=@featureid and p.type In ('V','O','N') AND s.state = 'A'
                                             ) temp
                                             group by HasOwned,type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
@@ -621,7 +622,7 @@ namespace net.atos.daf.ct2.visibility.repository
                 parameter.Add("@featureid", featureId.ToArray());
                 parameter.Add("@organizationid", organizationId);
 
-                var queryStatement = @"select distinct s.type as SubscriptionType, s.vehicle_id as VehicleId,e.key as FeatureKey
+                var queryStatement = @"select distinct (Case when s.type ='N' Then 'V' ELSE s.type end) as SubscriptionType, s.vehicle_id as VehicleId,e.key as FeatureKey
                                     from master.subscription s
                                     inner join master.package p on p.id=s.package_id 
                                     inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
@@ -629,7 +630,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                     inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                     left join translation.enumtranslation e
                                     on f.id = e.feature_id and e.type='T'
-                                    where s.organization_id=@organizationid and f.id= ANY(@featureid) AND s.state = 'A'";
+                                    where (s.organization_id=@organizationid or s.type  ='N') AND f.id= ANY(@featureid) AND s.state = 'A'";
                 var result = await _dataAccess.QueryAsync<VehicleDetailsVisibiltyAndFeatureTemp>(queryStatement, parameter);
 
                 return result;

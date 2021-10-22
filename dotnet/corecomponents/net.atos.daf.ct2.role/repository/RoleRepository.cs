@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.role.repository
             roleparameter.Add("@description", roleMaster.Description);
             roleparameter.Add("@feature_set_id", roleMaster.Feature_set_id > 0 ? roleMaster.Feature_set_id : null);
             roleparameter.Add("@level", roleMaster.Level);
-            roleparameter.Add("@code", roleMaster.Code);
+            roleparameter.Add("@code", roleMaster.Code.ToUpper());
 
             int insertedRoleId = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, roleparameter);
 
@@ -205,14 +205,15 @@ namespace net.atos.daf.ct2.role.repository
             parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@description", roleMaster.Description);
             parameter.Add("@level", roleMaster.Level);
-
+            parameter.Add("@code", roleMaster.Code.ToUpper());
             var RoleQueryStatement = @" UPDATE master.role
                                             SET name=@name,
                                             description= @Description,
                                              feature_set_id = @feature_set_id,
                                             modified_by=@updatedby,
                                            modified_at=@updateddate,
-                                           level=@level
+                                           level=@level,
+                                           code=@code
                                         WHERE id = @id
                                         RETURNING id;";
             int resultUpdatedRole = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
@@ -250,5 +251,34 @@ namespace net.atos.daf.ct2.role.repository
             return resultRoleId;
 
         }
+
+        public async Task<IEnumerable<string>> GetCode(RoleCodeFilter roleFilter)
+        {
+
+            var queryStatement = @"select distinct code 
+                                            from master.role 
+                                            where state=@state and level>=@level ";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@level", roleFilter.RoleLevel);
+            parameter.Add("@state", 'A');
+            //// organization id filter
+            //if (roleFilter.OrganizationId > 0)
+            //{
+            //    parameter.Add("@organization_id", roleFilter.OrganizationId);
+            //    queryStatement = queryStatement + " and organization_id  = @organization_id";
+            //}
+            //else if (roleFilter.OrganizationId == 0)
+            //{
+            //    //if (roleFilter.IsGlobal == true)
+            //    //{
+            //    queryStatement = queryStatement + " and  organization_id  is null";
+
+            //    // }
+            //}
+            IEnumerable<string> roledetails = await _dataAccess.QueryAsync<string>(queryStatement, parameter);
+            return roledetails;
+        }
+
     }
 }

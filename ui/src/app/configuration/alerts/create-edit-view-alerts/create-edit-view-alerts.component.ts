@@ -293,13 +293,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
 proceedStep(prefData: any, preference: any){
   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
   if(_search.length > 0){
-    this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
   }else{
-    this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-    this.prefTimeZone = prefData.timezone[0].value;
+    //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone[0].value;
+    this.prefTimeZone = prefData.timezone[0].name;
     this.prefDateFormat = prefData.dateformat[0].name;
     this.prefUnitFormat = prefData.unit[0].name;
   }
@@ -498,15 +502,15 @@ proceedStep(prefData: any, preference: any){
         this.unitTypes= [
           {
             enum : 'H', 
-            value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
+            value : this.translationData.lblHours ? this.translationData.lblHours : ''
           },
           {
             enum : 'T',
-            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
+            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : ''
           },
           {
             enum : 'S',
-            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : 'Seconds'
+            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : ''
           }
         ];
       }
@@ -520,14 +524,14 @@ proceedStep(prefData: any, preference: any){
         //   break;
         // }
         case "LH": { //Excessive under utilization in hours
-          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           break;
         }
         case "LD": { //Excessive distance done
-          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : this.translationData.lblMiles;
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
          // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           if(this.prefUnitFormat == 'dunit_Metric'){
             this.unitTypeEnum= "K";  }
@@ -544,8 +548,8 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LU": { //Excessive Driving duration
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "";
           this.unitTypeEnum= "H";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -557,9 +561,9 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "LG": { //Excessive Global Mileage
-          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkm : this.translationData.lblmile;
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -575,26 +579,26 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FP": { //Fuel Increase During stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%";
           this.unitTypeEnum= "P";
           break;
         }
         case "FL": { //Fuel loss during stop
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FT": { //Fuel loss during trip
-          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "";
           this.unitForThreshold= "%"
           this.unitTypeEnum= "P";
           break;
         }
         case "FI": { //Excessive Average Idling
-          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "";
           this.unitTypeEnum= "S";
           if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
@@ -606,7 +610,7 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FA": { //Excessive Average speed
-          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
+          this.labelForThreshold= this.translationData.lblSpeed ? this.translationData.lblSpeed : "";
           this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour : this.translationData.lblMilesPerHour;
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
@@ -618,7 +622,7 @@ proceedStep(prefData: any, preference: any){
           break;
         }
         case "FF": { //Fuel Consumed
-          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "";
           // this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
           // this.unitTypeEnum= "L";
            this.unitForThreshold= "%";
@@ -1255,7 +1259,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 else{
                   this.unitTypeEnum= "L";
                 }
-              threshold = this.reportMapService.getConvertedDistance(element.thresholdValue,this.unitTypeEnum);
+              threshold = this.reportMapService.getDistance(element.thresholdValue,this.prefUnitFormat);
               if(element.urgencyLevelType == 'C'){
                 this.alertForm.get('criticalLevelThreshold').setValue(threshold);
               }
@@ -1277,6 +1281,19 @@ PoiCheckboxClicked(event: any, row: any) {
               }
               else{
                 this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
+
+            if(this.alert_category_selected+this.alert_type_selected == 'FL' || this.alert_category_selected+this.alert_type_selected == 'FT' ||
+            this.alert_category_selected+this.alert_type_selected == 'FP' || this.alert_category_selected+this.alert_type_selected == 'FF'){
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
               }
             }
         
@@ -2577,8 +2594,12 @@ keyPressNumbers(event) {
   var exclude = /Backspace|Enter/;  
   var value = Number.parseFloat(event.target.value + '' + event.key);
   var parts = event.target.value.split('.');
-  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
-  if(event.key=='-' || value < min) event.preventDefault();
+  if (parts.length == 2 && parts[1].length >= 2){
+     event.preventDefault();
+  }
+  if(event.key=='-' || value < min) {
+    event.preventDefault();
+  }
     return true;   
 }
 
