@@ -13,6 +13,8 @@ using System.Reflection;
 using net.atos.daf.ct2.confluentkafka.entity;
 using net.atos.daf.ct2.notificationservice.Entity;
 using net.atos.daf.ct2.visibility;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
@@ -113,6 +115,45 @@ namespace net.atos.daf.ct2.notificationservice.services
                 {
                     Code = ResponseCode.Failed,
                     Message = "Get alert vehicle fail : " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<AssociatedVehicleResponse> GetVehicleByAccountVisibility(VisibilityVehicleRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new AssociatedVehicleResponse();
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                if (request.FeatureIds != null)
+                {
+                    foreach (int featureId in request.FeatureIds)
+                    {
+                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                        //append visibile vins
+                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                        //remove duplicate vins by key as vin
+                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    }
+                }
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    response.AssociatedVehicle.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicle>>(res)
+                        );
+                    response.Code = ResponseCode.Success;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AssociatedVehicleResponse
+                {
+                    Code = ResponseCode.Failed
                 });
             }
         }
