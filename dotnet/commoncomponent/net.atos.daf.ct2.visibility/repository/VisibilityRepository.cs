@@ -630,7 +630,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                     inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                     left join translation.enumtranslation e
                                     on f.id = e.feature_id and e.type='T'
-                                    where (s.organization_id=@organizationid or s.type  ='N') AND f.id= ANY(@featureid) AND p.type In ('V','O','N') AND s.state = 'A'";
+                                    where (s.organization_id=@organizationid or s.type  ='N') AND f.id= ANY(@featureid) AND s.state = 'A'";
                 var result = await _dataAccess.QueryAsync<VehicleDetailsVisibiltyAndFeatureTemp>(queryStatement, parameter);
 
                 return result;
