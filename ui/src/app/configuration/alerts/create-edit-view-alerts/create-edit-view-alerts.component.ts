@@ -1259,7 +1259,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 else{
                   this.unitTypeEnum= "L";
                 }
-              threshold = this.reportMapService.getConvertedDistance(element.thresholdValue,this.unitTypeEnum);
+              threshold = this.reportMapService.getDistance(element.thresholdValue,this.prefUnitFormat);
               if(element.urgencyLevelType == 'C'){
                 this.alertForm.get('criticalLevelThreshold').setValue(threshold);
               }
