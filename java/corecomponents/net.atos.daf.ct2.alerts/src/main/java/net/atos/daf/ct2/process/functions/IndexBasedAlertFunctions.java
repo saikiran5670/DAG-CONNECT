@@ -12,10 +12,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.atos.daf.ct2.models.VehicleGeofenceState;
 import net.atos.daf.ct2.service.geofence.CircularGeofence;
 import net.atos.daf.ct2.service.geofence.RayCasting;
+import net.atos.daf.ct2.service.geofence.exit.corridor.GeoCorridor;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.state.MapState;
 import org.slf4j.Logger;
@@ -394,6 +396,43 @@ public class IndexBasedAlertFunctions implements Serializable {
         return build;
     };
 
+    /**
+     * Exit corridor function
+     */
+    public static AlertLambdaExecutor<Message, Target> exitCorridorFun = (Message s) -> {
+        Index index = (Index) s.getPayload().get();
+        Map<String,Object> threshold = (Map<String, Object>) s.getMetaData().getThreshold().get();
+        List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas = (List<AlertUrgencyLevelRefSchema>) threshold.get("exitCorridorFun");
+        try{
+            if(Objects.isNull(index.getDocument()))
+                return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+
+            Map<Long, List<AlertUrgencyLevelRefSchema>> alertMapExistingRoute = new HashMap<>();
+            Map<Long, List<AlertUrgencyLevelRefSchema>> alertMapNewRoute = new HashMap<>();
+            for(AlertUrgencyLevelRefSchema schema : urgencyLevelRefSchemas){
+                populateGeofenceAlertMap(alertMapExistingRoute, schema, "E");
+                populateGeofenceAlertMap(alertMapNewRoute, schema, "R");
+            }
+
+            if(!alertMapExistingRoute.isEmpty()){
+                List<Target> targetList = alertMapExistingRoute.entrySet()
+                        .stream()
+                        .map(entries -> entries.getValue())
+                        .map(schemaList -> checkExitCorridor(index, schemaList))
+                        .filter(target -> target.getAlert().isPresent())
+                        .collect(Collectors.toList());
+                if(!targetList.isEmpty()){
+                    logger.info("Exit corridor alert generated for  vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    return  targetList.get(0);
+                }
+            }
+
+        }catch (Exception ex){
+            logger.error("Error while calculating exitCorridorFun:: {}",ex);
+        }
+        return Target.builder().metaData(s.getMetaData()).payload(s.getPayload()).alert(Optional.empty()).build();
+    };
+
     public static Target checkGeofence(Index index, List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas,
                                        Double[] point,MapState<String, VehicleGeofenceState> vehicleGeofenceSateEnteringZone,
                                        String alertType,String areaType
@@ -519,6 +558,58 @@ public class IndexBasedAlertFunctions implements Serializable {
                 alertMap.put(schema.getAlertId(), tmplist);
             }
         }
+    }
+
+    public static Target checkExitCorridor(Index index, List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas){
+        List<String> priorityList = Arrays.asList("C", "W", "A");
+        String messageUUID = String.format(INCOMING_MESSAGE_UUID,index.getJobName());
+        Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
+        for (String priority : priorityList) {
+            /**
+             * sort lat lon based not node seq
+             */
+            //group the schema by landmark id
+            Map<Integer, List<AlertUrgencyLevelRefSchema>> groupSchema= urgencyLevelRefSchemas.stream()
+                    .filter(alertUrgencyLevelRefSchema -> alertUrgencyLevelRefSchema.getUrgencyLevelType().equalsIgnoreCase(priority))
+                    .sorted(Comparator.comparing(AlertUrgencyLevelRefSchema::getLandmarkId).thenComparing(AlertUrgencyLevelRefSchema::getNodeSeq))
+                    .collect(Collectors.groupingBy(AlertUrgencyLevelRefSchema::getLandmarkId));
+
+            AlertUrgencyLevelRefSchema tempSchema = new AlertUrgencyLevelRefSchema();
+            Set<Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>>> entries = groupSchema.entrySet();
+            Iterator<Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>>> iterator = entries.iterator();
+
+            while (iterator.hasNext()) {
+                List<Double> routePointList = new ArrayList<>();
+                Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>> next = iterator.next();
+                List<AlertUrgencyLevelRefSchema> schemasOrdered = next.getValue();
+                for (AlertUrgencyLevelRefSchema schema : schemasOrdered) {
+                    routePointList.add(schema.getLatitude());
+                    routePointList.add(schema.getLongitude());
+                    tempSchema = schema;
+                }
+                if(! routePointList.isEmpty()){
+                    logger.trace("Exit corridor  nodes {} for {}",routePointList,messageUUID);
+                    logger.trace("Exit corridor test point {} for {}",Arrays.asList(point),messageUUID);
+//                    double[][] route = routePointList.toArray(new double[0][0]);
+                    double[][] route = new double[routePointList.size() / 2][routePointList.size() / 2];
+                    int indexCounter=0;
+                    for (int i = 0; i < routePointList.size(); i=i+2) {
+                        route[indexCounter] = new double[]{routePointList.get(i), routePointList.get((i + 1) % routePointList.size())};
+                        indexCounter++;
+                    }
+                    // TODO get the width from table
+                    GeoCorridor instance = new GeoCorridor(route, tempSchema.getWidth());
+                    if(!instance.liesWithin(point[0], point[1])){
+                        Target target = getTarget(index, tempSchema, 0);
+                        logger.info("Exit corridor alert generated for alertId {} landmarkId {} alert message {} {}",
+                                target.getAlert().get().getAlertid(),tempSchema.getLandmarkId(),target.getAlert().get(),messageUUID);
+                        return target;
+
+                    }
+                }
+            }
+        }
+        return Target.builder().alert(Optional.empty()).build();
     }
 
     private static Target getTarget(Index index, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {

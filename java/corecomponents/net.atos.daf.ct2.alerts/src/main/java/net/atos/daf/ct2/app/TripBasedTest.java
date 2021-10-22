@@ -85,7 +85,7 @@ public class TripBasedTest implements Serializable {
          */
         Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    enteringZoneFun
+                    exitCorridorFun
             ));
         }};
         /**
@@ -103,7 +103,6 @@ public class TripBasedTest implements Serializable {
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class)
                 .filter(index -> index.getVid() != null && index.getVin() != null)
-                .filter(index ->index.getVin().equalsIgnoreCase("TEST_CDC_VIN"))
                 .returns(Index.class)
                 .map(idx -> {
                     idx.setJobName(UUID.randomUUID().toString());

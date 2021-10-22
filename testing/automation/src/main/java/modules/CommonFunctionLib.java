@@ -299,6 +299,24 @@ public static void waitForElements() throws Exception
    	  DriverScript.bResult = false;
      }
    } 
+public static void waitForElement_HC() throws Exception
+{
+  try 
+  {
+ 	Thread.sleep(8000);
+	   // String object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+	    //waitForElementClick(object);
+  }
+  catch (Exception e)
+  {
+	  test.log(LogStatus.FAIL, e.getMessage());
+	  Log.error("Not able to click on Webelement..." + e.getMessage());	  
+	  String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+	  test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));	  
+	  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+	  DriverScript.bResult = false;
+  }
+} 
 //*********************IMAGE LOAD**************************************************************  
 public static void waitForLoadingImage() throws Exception
      
@@ -1645,7 +1663,7 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 		String ANo =  getTextFromOR("GRP_COLUMNHEADER")+ "[" + a + "]";
 		String ActionCol = driver.findElement(By.xpath(ANo)).getText();
 		String ActionColN = ActionCol.trim();
-		if (ActionColN.equals("Action")|| ActionColN.equals("Actions"))  
+		if (ActionColN.equals("Action")|| ActionColN.equals("Actions") ||  ActionColN.equals(" Action ") )  
 		{
 			ActionColNo = a;
 			break;
@@ -1689,7 +1707,7 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	for (int j = 1; j <= options1.size(); j++) 
 	{String rowvalueF = null;
 	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-		if(column.contains("/Vehicle")||column.equals("Vehicle")||column.equals("Email ID")) {//||column.equals("Package Code")
+		if(column.contains("/Vehicle")||column.equals("Vehicle")||column.equals("Email ID")||column.equals("Name")) {//||column.equals("Package Code")
 			rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]")).getText();
 		}else {
 	 rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
@@ -3000,7 +3018,6 @@ if (rowvalue.equals(value.trim()))
 	Log.info(value +" Value Matched");	
 temp = true;
 return temp;
-
 }
 }
 }

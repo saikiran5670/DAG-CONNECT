@@ -108,7 +108,7 @@ export class RoleService {
      headers: new HttpHeaders({ headerObj })
     };
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/getcodes?organizationId=${data.organizationId}&roleLevel=${data.roleLevel}`, headers)
+      .get<any[]>(`${this.roleServiceUrl}/getcodes?roleLevel=${data.roleLevel}`, headers)
       .pipe(catchError(this.handleError));
   }
 
