@@ -96,7 +96,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
 
     let reqObj: any = {
-      organizationId: this.organizationId,
       roleLevel: parseInt(this.userLevel)
     }    
     this.roleService.getLevelCodes(reqObj).subscribe((codeList: any) => {
