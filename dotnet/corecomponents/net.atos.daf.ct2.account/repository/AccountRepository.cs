@@ -1186,7 +1186,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     else
@@ -1204,7 +1204,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
