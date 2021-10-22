@@ -139,13 +139,13 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div [ngClass]="{'margin-top-xlg': !userRoleFormGroup.get('levelType').hasError('required')}"  class="areaWidth min-width-33-per" fxLayout="column" fxLayoutAlign="center">
+                <div [ngClass]="{'margin-top-xlg': !userRoleFormGroup.get('levelType').hasError('required')}"  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="center">
                     <div *ngIf="!duplicateFlag && userLevel < 30" fxLayout="row" fxLayoutAlign="left center">
                         <button style="width: 200px;" *ngIf="customCodeBtnEnable" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblAddCustomCode || 'Add Custom Code' }}</button>
                         <mat-form-field style="width: 200px; margin-right: 10px;" *ngIf="!customCodeBtnEnable" appearance="outline" class="full-width">
                             <input (keyup)="validateCode($event.target.value)" #input [value]="input.value.toUpperCase()" placeholder="{{ translationData.lblEnterCustomCode || 'Enter Custom Code' }}" matInput formControlName="customCodeValue" maxlength="20">
                         </mat-form-field>
-                        <button style="width: 130px" *ngIf="!customCodeBtnEnable" class='resetCancelBtnColor' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblRemoveCode || 'Remove Code' }}</button>
+                        <button style="width: 100px; padding: 0; font-size: 14px;" *ngIf="!customCodeBtnEnable" class='resetCancelBtnColor' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblRemoveCode || 'Remove Code' }}</button>
                         <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('specialCharsNotAllowed') && !customCodeBtnEnable">
                             {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                         </mat-error>
