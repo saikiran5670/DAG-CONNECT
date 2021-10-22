@@ -243,7 +243,7 @@ namespace net.atos.daf.ct2.roleservice
                 RoleCodeFilter objroleFilter = new RoleCodeFilter();
                 RoleCodeResponse objroleList = new RoleCodeResponse();
                 objroleFilter.RoleLevel = request.RoleLevel;
-                objroleFilter.OrganizationId = request.OrganizationId;
+                //objroleFilter.OrganizationId = request.OrganizationId;
 
                 var role = _roleManagement.GetCode(objroleFilter).Result;
                 foreach (var item in role)

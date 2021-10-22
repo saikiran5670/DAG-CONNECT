@@ -262,20 +262,20 @@ namespace net.atos.daf.ct2.role.repository
             var parameter = new DynamicParameters();
             parameter.Add("@level", roleFilter.RoleLevel);
             parameter.Add("@state", 'A');
-            // organization id filter
-            if (roleFilter.OrganizationId > 0)
-            {
-                parameter.Add("@organization_id", roleFilter.OrganizationId);
-                queryStatement = queryStatement + " and organization_id  = @organization_id";
-            }
-            else if (roleFilter.OrganizationId == 0)
-            {
-                //if (roleFilter.IsGlobal == true)
-                //{
-                queryStatement = queryStatement + " and  organization_id  is null";
+            //// organization id filter
+            //if (roleFilter.OrganizationId > 0)
+            //{
+            //    parameter.Add("@organization_id", roleFilter.OrganizationId);
+            //    queryStatement = queryStatement + " and organization_id  = @organization_id";
+            //}
+            //else if (roleFilter.OrganizationId == 0)
+            //{
+            //    //if (roleFilter.IsGlobal == true)
+            //    //{
+            //    queryStatement = queryStatement + " and  organization_id  is null";
 
-                // }
-            }
+            //    // }
+            //}
             IEnumerable<string> roledetails = await _dataAccess.QueryAsync<string>(queryStatement, parameter);
             return roledetails;
         }
