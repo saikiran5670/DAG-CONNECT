@@ -264,13 +264,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getcodes")]
-        public async Task<IActionResult> GetCodes(int? organizationId, int roleLevel)
+        public async Task<IActionResult> GetCodes(int roleLevel)
         {
             try
             {
                 RoleCodeFilterRequest obj = new RoleCodeFilterRequest();
                 obj.RoleLevel = roleLevel;
-                obj.OrganizationId = organizationId == null ? 0 : Convert.ToInt32(organizationId);
+                //obj.OrganizationId = organizationId == null ? 0 : Convert.ToInt32(organizationId);
                 var role = await _roleclient.GetCodesAsync(obj);
                 return Ok(role);
             }
