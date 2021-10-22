@@ -152,8 +152,8 @@
                         <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('numberNotAllowed') && !customCodeBtnEnable">
                             {{ translationData.lblNumbersNotAllowed || 'Numbers Not Allowed' }}
                         </mat-error>
-                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="invalidCode && !customCodeBtnEnable">
-                            {{ translationData.lblCodecannotcontainORGNISATIONorACCOUNT || 'Code cannot contain ORGNISATION or ACCOUNT' }}
+                        <mat-error style="position: absolute; margin-top: 80px; font-size: 13px;" *ngIf="invalidCode && !customCodeBtnEnable">
+                            {{ translationData.lblCodecannotcontainRestrictKeywords || 'Code cannot contain PLATFORM, GLOBAL, ORGNISATION, ACCOUNT or DRIVER' }}
                          </mat-error>
                     </div>
                 </div>

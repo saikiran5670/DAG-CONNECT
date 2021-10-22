@@ -41,7 +41,7 @@ export class UserRoleManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = {};
   userType: any = '';
-  userLevel: any = 0;
+  userLevel: any = 40;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
   constructor(
@@ -135,10 +135,12 @@ export class UserRoleManagementComponent implements OnInit {
   
     this.roleService.getUserRoles(objData).subscribe((data: any) => {
       this.hideloader();
-      this.initData = data; //temporary
-      if(data && data.length > 0){
-        this.initData = this.getNewTagData(data); 
-      } 
+      let filterData = data.filter(i => i.level >= this.userLevel); // get records >= loged In userlevel
+      if(filterData && filterData.length > 0){
+        this.initData = this.getNewTagData(filterData); 
+      }else{
+        this.initData = filterData;   
+      }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;

@@ -38,7 +38,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
-  featuresData : any = [];
   allChildrenIds : any = [];
   selectedChildrens : any = [];
   organizationId: number;
@@ -52,6 +51,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   sampleLevel: any = [];
   customCodeBtnEnable: boolean = true;
   invalidCode: boolean = false;
+  roleFeaturesList: any = [];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -116,20 +116,24 @@ export class EditUserRoleDetailsComponent implements OnInit {
       organization_Id: this.organizationId
     }
     this.roleService.getFeatures(objData).subscribe((data: any) => {
-      let initData = data.filter(item => item.state == "ACTIVE");
-      setTimeout(() => {
-        this.dataSource = new MatTableDataSource(initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        if (!this.createStatus || this.duplicateFlag || this.viewFlag) {
-          this.onReset();
-        }
-      });
-      this.featuresData = data;
+      let initData = data.filter(item => item.state == "ACTIVE" && item.level >= parseInt(this.userLevel));
+      this.roleFeaturesList = initData.slice();
+      this.setTableFeatures(this.roleFeaturesList);
       this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblOrganisation || 'Organisation'];
     }, (error) => {
       console.log('error');
      });
+  }
+
+  setTableFeatures(tabelData: any){
+    setTimeout(() => {
+      this.dataSource = new MatTableDataSource(tabelData);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      if (!this.createStatus || this.duplicateFlag || this.viewFlag) { // edit | duplicate | view
+        this.onReset();
+      }
+    });
   }
 
   changeRoleLevel(_eventVal: any) {
@@ -152,6 +156,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onReset() {
+    this.selectionForFeatures.clear();
     this.gridData.forEach(element => {
       switch(parseInt(element.level)){
         case 10: {
@@ -248,7 +253,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       let featureIds = [];
       this.selectionForFeatures.selected.forEach(feature => {
         featureIds.push(feature.id);
-      })
+      });
       
       let _code: any = '';
       if(!this.customCodeBtnEnable){ // custom code
@@ -283,7 +288,21 @@ export class EditUserRoleDetailsComponent implements OnInit {
     let featureIds = [];
     this.selectionForFeatures.selected.forEach(feature => {
       featureIds.push(feature.id);
-    })
+    });
+
+    //---------- add high level feature - handle from UI -------------//
+    if(this.gridData && this.gridData.length > 0){
+      this.gridData[0].featureIds.forEach(_elem => {
+        let _s = this.roleFeaturesList.filter(i => i.id == _elem); 
+        if(_s.length == 0){ // not present
+          featureIds.push(_elem);
+        }
+      });
+    }
+    
+    featureIds = featureIds.filter((el, i, a) => i === a.indexOf(el)); // unique feature id's
+    //-----------------------------------------------------//
+
     if (featureIds.length == 0) {
       alert("Please select at least one feature for access");
       return;
