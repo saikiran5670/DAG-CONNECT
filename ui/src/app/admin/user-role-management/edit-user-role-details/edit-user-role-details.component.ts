@@ -50,6 +50,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
   levelDD: any = [];
   codeDD: any = [];
   sampleLevel: any = [];
+  customCodeBtnEnable: boolean = true;
+  invalidCode: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -62,7 +64,13 @@ export class EditUserRoleDetailsComponent implements OnInit {
       roleType: ['', [Validators.required]],
       userRoleDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       levelType: ['', [Validators.required]],
-      codeType: []
+      codeType: [],
+      customCodeValue: []
+    },{
+      validator: [
+        CustomValidators.specialCharValidationForNameWithoutRequired('customCodeValue'),
+        CustomValidators.numberValidationForNameWithoutRequired('customCodeValue')
+      ]
     });
 
     this.sampleLevel = [{
@@ -170,6 +178,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
       }
     });
     this.featuresSelected = this.gridData[0].featureIds;
+    this.customCodeBtnEnable = true;
+    this.invalidCode = false;
+    this.userRoleFormGroup.get('customCodeValue').setValue('');
     if((!this.createStatus || this.duplicateFlag) && !this.viewFlag){ //-- edit | duplicate
       this.userRoleFormGroup.patchValue({
         userRoleName: this.gridData[0].roleName,
@@ -239,6 +250,13 @@ export class EditUserRoleDetailsComponent implements OnInit {
       this.selectionForFeatures.selected.forEach(feature => {
         featureIds.push(feature.id);
       })
+      
+      let _code: any = '';
+      if(!this.customCodeBtnEnable){ // custom code
+        _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
+      }else{ // code from dropdown
+        _code = parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value
+      }
 
       let objData = {
         organizationId: (this.userRoleFormGroup.controls.roleType.value == (this.translationData.lblGlobal || 'Global')) ? 0 : this.organizationId,
@@ -247,7 +265,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         description: this.userRoleFormGroup.controls.userRoleDescription.value,
         featureIds: featureIds,
         createdby: 0,
-        code: parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value,
+        code: _code,
         level: parseInt(this.userRoleFormGroup.controls.levelType.value)
       }
       this.roleService.createUserRole(objData).subscribe((res) => {
@@ -271,6 +289,14 @@ export class EditUserRoleDetailsComponent implements OnInit {
       alert("Please select at least one feature for access");
       return;
     }
+
+    let _code: any = '';
+      if(!this.customCodeBtnEnable){ // custom code
+        _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
+      }else{ // code from dropdown
+        _code = parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value;
+      }
+
     let objData = {
       organizationId: (this.userRoleFormGroup.controls.roleType.value == (this.translationData.lblGlobal || 'Global')) ? 0 : this.gridData[0].organizationId,
       roleId: this.gridData[0].roleId,
@@ -279,7 +305,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       featureIds: featureIds,
       createdby: 0,
       updatedby: 0,
-      code: parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value,
+      code: _code,
       level: parseInt(this.userRoleFormGroup.controls.levelType.value)
     }
     this.roleService.updateUserRole(objData).subscribe((res) => {
@@ -297,7 +323,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.isAllSelectedForFeatures() ?
       this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => { this.selectionForFeatures.select(row) });
 
-    console.log("==SelectionForFeatures---", this.selectionForFeatures)
+    //console.log("==SelectionForFeatures---", this.selectionForFeatures)
     // const user = "Hello.World.abc"
 
     // var splitString = user.split(".")
@@ -503,5 +529,18 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
   }
 
+  showCodeField(){
+    if(!this.customCodeBtnEnable){
+      this.userRoleFormGroup.get('customCodeValue').setValue('');
+    }
+    this.customCodeBtnEnable = !this.customCodeBtnEnable;
+  }
+
+  validateCode(value: any){
+    this.invalidCode = false;
+    if(value.includes('ORGNISATION') || value.includes('ACCOUNT')){
+      this.invalidCode = true;
+    }
+  }
 
 }

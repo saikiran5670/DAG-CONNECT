@@ -55,7 +55,7 @@
         </mat-card-content>
     </mat-card> 
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="!viewFlag">
-        <mat-card-content>
+        <mat-card-content style='margin-bottom: 30px;'>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
@@ -132,14 +132,31 @@
                         <!-- <span class='mandatoryColor'>*</span> -->
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select [disabled]="duplicateFlag" formControlName="codeType">
+                        <mat-select [disabled]="duplicateFlag || !customCodeBtnEnable" formControlName="codeType">
                             <mat-option *ngFor="let code of codeDD" [value]="code">
                                 {{ code }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="areaWidth min-width-33-per" fxLayout="column" fxLayoutAlign="left"></div>
+                <div [ngClass]="{'margin-top-xlg': !userRoleFormGroup.get('levelType').hasError('required')}"  class="areaWidth min-width-33-per" fxLayout="column" fxLayoutAlign="center">
+                    <div *ngIf="!duplicateFlag && userLevel < 30" fxLayout="row" fxLayoutAlign="left center">
+                        <button style="width: 200px;" *ngIf="customCodeBtnEnable" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblAddCustomCode || 'Add Custom Code' }}</button>
+                        <mat-form-field style="width: 200px; margin-right: 10px;" *ngIf="!customCodeBtnEnable" appearance="outline" class="full-width">
+                            <input (keyup)="validateCode($event.target.value)" #input [value]="input.value.toUpperCase()" placeholder="{{ translationData.lblEnterCustomCode || 'Enter Custom Code' }}" matInput formControlName="customCodeValue" maxlength="20">
+                        </mat-form-field>
+                        <button style="width: 130px" *ngIf="!customCodeBtnEnable" class='resetCancelBtnColor' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblRemoveCode || 'Remove Code' }}</button>
+                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('specialCharsNotAllowed') && !customCodeBtnEnable">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
+                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('numberNotAllowed') && !customCodeBtnEnable">
+                            {{ translationData.lblNumbersNotAllowed || 'Numbers Not Allowed' }}
+                        </mat-error>
+                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="invalidCode && !customCodeBtnEnable">
+                            {{ translationData.lblCodecannotcontainORGNISATIONorACCOUNT || 'Code cannot contain ORGNISATION or ACCOUNT' }}
+                         </mat-error>
+                    </div>
+                </div>
             </div>
         </mat-card-content>        
         <mat-card-actions class='no-margin no-padding'>
@@ -155,7 +172,7 @@
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button>
                         <button class='resetCancelBtnColor margin-right-10 no-margin'  mat-raised-button color="primary" *ngIf="!createStatus"
                             (click)='onReset()'>{{ translationData.lblReset  }}</button>
-                        <button [disabled]="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0 || isUserRoleExist" mat-raised-button color="primary"
+                        <button style='margin: 0px;' [disabled]="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0 || isUserRoleExist || invalidCode || (!customCodeBtnEnable && !userRoleFormGroup.controls.customCodeValue.value) || (!customCodeBtnEnable && userRoleFormGroup.controls.customCodeValue.value && userRoleFormGroup.controls.customCodeValue.value.trim() == '')" mat-raised-button color="primary"
                             (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate ) : (translationData.lblConfirm ) }}</button>
                     </div>
                 </div>
