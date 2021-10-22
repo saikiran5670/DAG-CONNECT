@@ -10,11 +10,8 @@
 
 package net.atos.daf.ct2.geo;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.Comparator;
 import java.util.Objects;
-
 
 /**
  * Simple GPS location data holder.
@@ -23,7 +20,7 @@ import java.util.Objects;
 public class GPSLocation implements Comparable<GPSLocation> {
 
 	/** The logger to use. */
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger(GPSLocation.class);
+	//private static final Logger log = LogManager.getLogger(GPSLocation.class);
 	
 	/** Latitude. */
 	protected final double	latitude;

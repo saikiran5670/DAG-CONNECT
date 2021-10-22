@@ -10,11 +10,12 @@
 
 package net.atos.daf.ct2.geo;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.TreeSet;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Simple Geo corridor implementation.
@@ -23,10 +24,10 @@ import java.util.TreeSet;
 public class GeoCorridor {
 
 	/** The logger to use. */
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger(GeoCorridor.class);
+	private static final Logger log = LogManager.getLogger(GeoCorridor.class);
 	
 	/** Corridor route points. */
-	private final TreeSet<RoutePoint> points = new TreeSet<>(RoutePoint.COMPARATOR);
+	private final TreeSet<RoutePoint> points = new TreeSet<>(RoutePoint.COMPARATOR);	// NOPMD
 	
 	/** First route point. */
 	private final RoutePoint startPoint;
@@ -50,12 +51,12 @@ public class GeoCorridor {
 	private final double maxLongitude;
 
 	/** Strategy to find closest route point, 1 = simple, 2 = ordering. */
-	private int strategy = SIMPLE;
+	private int strategy = ORDERING;
 
-	/** Constant for simple stategy. */
+	/** Constant for simple strategy. */
 	public static final int SIMPLE = 1;
 	
-	/** Constant for simple stategy. */
+	/** Constant for ordering strategy. */
 	public static final int ORDERING = 2;
 	
 	/**
@@ -88,7 +89,7 @@ public class GeoCorridor {
 				double lat = point[0];
 				double lng = point[1];
 
-				points.add(cur = new RoutePoint(step++, lat, lng));
+				points.add(cur = new RoutePoint(step++, lat, lng));	// NOPMD
 				
 				if (null == prv) {
 					start = cur;
@@ -119,7 +120,7 @@ public class GeoCorridor {
 		minLongitude = minLng - longitudeDistanceToDegrees;
 		maxLongitude = maxLng + longitudeDistanceToDegrees;
 
-		if (log.isErrorEnabled()) {
+		if (log.isDebugEnabled()) {
 			log.debug("Created corridor " + toString());
 		}
 	}
@@ -171,13 +172,16 @@ public class GeoCorridor {
 
 		if (null == location) {
 			// nothing to check
+			if (log.isDebugEnabled()) {
+				log.debug("liesWithin: location == null");
+			}
 
 		} else if (minLatitude > location.latitude || minLongitude > location.longitude ||
 					maxLatitude < location.latitude || maxLongitude < location.longitude) {
 			// outside of the bounding box
 			if (log.isDebugEnabled()) {
-				log.debug("Outside bounding box:\n\tlat=" + location.latitude + ",min=" + minLatitude + ",max=" + maxLatitude +
-												"\n\tlng=" + location.longitude + ",min=" + minLongitude + ",max=" + maxLongitude);
+				log.debug("liesWithin: Outside bounding box:\n\tlat=" + location.latitude + ",min=" + minLatitude + ",max=" + maxLatitude +
+														"\n\tlng=" + location.longitude + ",min=" + minLongitude + ",max=" + maxLongitude);
 			}
 		} else {
 
@@ -221,6 +225,7 @@ public class GeoCorridor {
 	 */
 	private boolean simpleLiesWithin(RoutePoint location) {
 		boolean result = false;
+		int steps = 0;	// Informational, can be removed.
 
 		double 		distance = Double.MAX_VALUE;
 		RoutePoint 	closest = null;
@@ -230,7 +235,8 @@ public class GeoCorridor {
 		//   remember the closest route point
 		for (RoutePoint point = startPoint; null != point; point = point.getNext()) {
 			double dist = location.gpsDistance(point);
-			
+			steps++;
+
 			if (width >= dist) {
 				result = true;
 				break;
@@ -253,6 +259,116 @@ public class GeoCorridor {
 
 			// check within route section between closest point and previous/next  
 			result = liesWithinSection(location, closest, distance);
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("simpleLiesWithin: result=" + result + " steps=" + steps + "/" + points.size());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Implementation using ordering, uses Tree search to locate closest route point.
+	 * @param location The location to check.
+	 * @return boolean
+	 */
+	private boolean orderLiesWithin(RoutePoint location) {
+		boolean result;
+
+		// Start with closest point based on ordering
+		RoutePoint point = points.floor(location);
+
+		if (null == point) {
+			point = points.ceiling(location);
+		}
+
+		// Are we done?
+		double distance = location.gpsDistance(point);
+		int steps = 1;	// Informational, can be removed.
+
+		result = (width >= distance);
+
+		// If not done search for closest point based on ordering
+		if (!result && null != point) {
+			RoutePoint closest = point;
+			RoutePoint lower = point;
+			RoutePoint higher = point;
+
+			// determine max order difference for the search
+			double odlat = location.latitude  + GPSLocation.latitudeDistanceToDegrees(width);
+			double odlng = location.longitude + GPSLocation.longitudeDistanceToDegrees(odlat, width);
+			double odmax = 3.3 * Math.abs(location.order - RoutePoint.orderFormula(odlat, odlng));
+					
+			if (log.isDebugEnabled()) {
+				log.debug("searching odmax=" + odmax + " loc=" + location);
+			}
+
+			double odlow = 0;
+			double odhigh = 0;
+			double dist = 0;
+
+			// look further up & down until found or the ordering difference becomes too large
+			while (!result && ((odlow  < odmax && null != lower) ||
+							   (odhigh < odmax && null != higher))) {
+
+				// look down, remember closest
+				if (odlow  < odmax && null != lower && null != (lower  = points.lower(lower))) {	// NOPMD
+					steps++;
+					odlow = Math.abs(point.order - lower.order);
+					dist = location.gpsDistance(lower);
+
+					if (log.isTraceEnabled()) {
+						log.trace("step:" + steps + " lower od=" + odlow + " dist=" + distance + " alt=" + lower);
+					}
+					
+					if (width >= dist) {
+						result = true;
+						break;
+					}
+					
+					if (dist < distance) {
+						distance = dist;
+						closest = lower;
+					}
+				}
+				
+				// look up, remember closest
+				if (odhigh  < odmax && null != higher && null != (higher  = points.higher(higher))) {	// NOPMD
+					steps++;
+					odhigh = Math.abs(point.order - higher.order);
+					dist = location.gpsDistance(higher);
+
+					if (log.isTraceEnabled()) {
+						log.trace("step:" + steps + " highr od=" + odhigh + " dist=" + distance + " alt=" + higher);
+					}
+					
+					if (width >= dist) {
+						result = true;
+						break;
+					}
+					
+					if (dist < distance) {
+						distance = dist;
+						closest = higher;
+					}
+				}
+			}
+
+			// check within route section between closest point and previous/next  
+			if (!result) {
+				if (log.isDebugEnabled()) {
+					log.debug("!within dist=" + distance + "\n\t  loc=" + location + 
+							"\n\tclose=" + closest +
+							"\n\t prev=" + closest.getPrevious() + "\n\t next=" + closest.getNext());
+				}
+
+				result = liesWithinSection(location, closest, distance);
+			}
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("orderLiesWithin: result=" + result + " steps=" + steps + "/" + points.size());
 		}
 
 		return result;
@@ -298,35 +414,14 @@ public class GeoCorridor {
 		boolean result = (width >= distToCross);
 
 		if (log.isDebugEnabled()) {
-			log.debug("? dist=" + distToCross + "\n\t  loc=" + location + 
-						"\n\tcross=" + cross +
-						"\n\tscSta=" + sectionStart + "\n\tscEnd=" + sectionEnd);
+			log.debug("liesWithinSection: result=" + result + " dist=" + distToCross + " loc=" + location + "cross=" + cross);
 		}
 
-		return result;
-	}
-
-	/**
-	 * Implementation using ordering, uses Tree search to locate closest route point.
-	 * @param location The location to check.
-	 * @return boolean
-	 */
-	private boolean orderLiesWithin(RoutePoint location) {
-		boolean result;
-		RoutePoint point = points.floor(location);
-
-		result = liesWithin(location, point);
-
-		if (!result) {
-			point = points.ceiling(location);
-			
-			result = liesWithin(location, point);
-		}
 		return result;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "GeoCorridor [points=" + points.size() + ", width=" + width + ", startPoint=" + startPoint + "]";
 	}
 
@@ -335,9 +430,6 @@ public class GeoCorridor {
 	 * @author Andl
 	 */
 	private static final class RoutePoint extends GPSLocation {
-
-		/** Order represents ordering between coordinates. */
-		private final int step;
 
 		/** Order represents ordering between coordinates. */
 		private final double order;
@@ -350,6 +442,9 @@ public class GeoCorridor {
 
 		/** Length of the route section between this route point and the next. */
 		private double sectionLength = -1;
+
+		/** Order represents ordering between coordinates. (Informational, can be removed.) */
+		private final int step;
 
 		/** GeoCoordinate comparator. */
 		public static final RoutePointComparator COMPARATOR = new RoutePointComparator();
@@ -373,9 +468,19 @@ public class GeoCorridor {
 			super(lat, lng);
 			step = nr;
 
-			// both order algorithms seem to work
-			//order = lat * lat + lng * lng;
-			order = lng * 90 + lat;
+			order = orderFormula(lat, lng);
+		}
+
+		/**
+		 * Calculate order from latitude and longitude.
+		 * @param lat latitude
+		 * @param lng longitude
+		 */
+		private static double orderFormula(double lat, double lng) {
+			// multiple order algorithms seem to work
+			//return lat * lat + lng * lng;
+			//return lng * 90 + lat;
+			return lng + lat;
 		}
 
 		/**
