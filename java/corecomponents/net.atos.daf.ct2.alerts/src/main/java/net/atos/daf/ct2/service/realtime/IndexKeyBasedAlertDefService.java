@@ -53,6 +53,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         List<AlertUrgencyLevelRefSchema> excessiveIdlingAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> enteringExitingZoneAlertDef = new ArrayList<>();
         List<AlertUrgencyLevelRefSchema> exitingZoneAlertDef = new ArrayList<>();
+        List<AlertUrgencyLevelRefSchema> exitingCorridorAlertDef = new ArrayList<>();
 
         for (Long alertId : alertIds) {
             if (broadcastState.contains(alertId)) {
@@ -86,6 +87,9 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
                     if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("X")) {
                         exitingZoneAlertDef.add(schema);
                     }
+                    if (schema.getAlertCategory().equalsIgnoreCase("L") && schema.getAlertType().equalsIgnoreCase("C")) {
+                        exitingCorridorAlertDef.add(schema);
+                    }
                 }
             }
         }
@@ -101,6 +105,7 @@ public class IndexKeyBasedAlertDefService extends KeyedBroadcastProcessFunction<
         functionThresh.put("exitingZoneFun", exitingZoneAlertDef);
         functionThresh.put("enteringAndExitingZoneVehicleState", vehicleGeofenceSateEnteringZone);
         functionThresh.put("exitingZoneVehicleState", vehicleGeofenceSateExitZone);
+        functionThresh.put("exitCorridorFun", exitingCorridorAlertDef);
 
         AlertConfig
                 .buildMessage(f0, configMap, functionThresh)
