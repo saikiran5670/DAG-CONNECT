@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.process.functions;
 
 import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
+import static net.atos.daf.ct2.props.AlertConfigProp.exitCorridorRouteTree;
 import static net.atos.daf.ct2.util.Utils.*;
 import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 import static net.atos.daf.ct2.util.Utils.getCurrentDayOfWeek;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.atos.daf.ct2.models.VehicleGeofenceState;
+import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.geofence.CircularGeofence;
 import net.atos.daf.ct2.service.geofence.RayCasting;
 import net.atos.daf.ct2.service.geofence.exit.corridor.GeoCorridor;
@@ -598,7 +600,7 @@ public class IndexBasedAlertFunctions implements Serializable {
                         indexCounter++;
                     }
                     // TODO get the width from table
-                    GeoCorridor instance = new GeoCorridor(route, tempSchema.getWidth());
+                    GeoCorridor instance = getRouteTree(tempSchema, route, messageUUID);
                     if(!instance.liesWithin(point[0], point[1])){
                         Target target = getTarget(index, tempSchema, 0);
                         logger.info("Exit corridor alert generated for alertId {} landmarkId {} alert message {} {}",
@@ -610,6 +612,28 @@ public class IndexBasedAlertFunctions implements Serializable {
             }
         }
         return Target.builder().alert(Optional.empty()).build();
+    }
+
+    private static GeoCorridor getRouteTree(AlertUrgencyLevelRefSchema schema,double[][] route,String messageUUID){
+        GeoCorridor geoCorridor = exitCorridorRouteTree.get(schema.getLandmarkId());
+        if(Objects.isNull(geoCorridor)){
+            logger.info("Exit corridor route tree not found creating new one for landmark {} {}",schema.getLandmarkId(),messageUUID);
+            geoCorridor = setGeoCorridorTree(schema, route);
+        }
+        // Update exiting if change occur in alert defination
+        if(geoCorridor.getLastModifiedTimeStamp() != schema.getTimestamp()){
+            logger.info("Exit corridor route tree alert definition updated for landmark {} {}",schema.getLandmarkId(),messageUUID);
+            geoCorridor = setGeoCorridorTree(schema, route);
+        }
+        return geoCorridor;
+    }
+
+    private static GeoCorridor setGeoCorridorTree(AlertUrgencyLevelRefSchema schema, double[][] route) {
+        GeoCorridor geoCorridor;
+        geoCorridor= new GeoCorridor(route, schema.getWidth());
+        geoCorridor.setLastModifiedTimeStamp(schema.getTimestamp());
+        exitCorridorRouteTree.put(schema.getLandmarkId(),geoCorridor);
+        return geoCorridor;
     }
 
     private static Target getTarget(Index index, AlertUrgencyLevelRefSchema urgency, Object valueAtAlertTime) {
