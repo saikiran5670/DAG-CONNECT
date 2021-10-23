@@ -30,7 +30,7 @@ export class UserRoleManagementComponent implements OnInit {
   initData: any = [];
   rowsData: any;
   actionBtn:any;  
-  createStatus: boolean;
+  createStatus: boolean = false;
   titleText: string;
   translationData: any = {};
   grpTitleVisible : boolean = false;
@@ -189,6 +189,8 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData = this.initData; 
     this.editFlag = true;
     this.createStatus = true;
+    this.duplicateFlag = false;
+    this.viewFlag = false;
   }
 
   editUserRole(row: any, action : string) {
@@ -201,6 +203,7 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData.push(row);
     this.editFlag = true;
     this.createStatus = false;    
+    this.viewFlag = false;
   }
 
   viewUserRole(row: any){
@@ -208,6 +211,8 @@ export class UserRoleManagementComponent implements OnInit {
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
+    this.createStatus = false;
+    this.duplicateFlag = false;
     this.rowsData.push(row);
   }
 
