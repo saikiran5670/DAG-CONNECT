@@ -201,7 +201,7 @@
                         <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess }}
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess }} &nbsp;
                             <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
                               [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                               [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
