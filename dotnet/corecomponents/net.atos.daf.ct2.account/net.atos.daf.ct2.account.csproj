@@ -21,6 +21,7 @@
       <ProjectReference Include="..\net.atos.daf.ct2.driver\net.atos.daf.ct2.driver.csproj" />
       <ProjectReference Include="..\net.atos.daf.ct2.identitysession\net.atos.daf.ct2.identitysession.csproj" />
       <ProjectReference Include="..\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
+      <ProjectReference Include="..\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
     </ItemGroup>
 
 </Project>

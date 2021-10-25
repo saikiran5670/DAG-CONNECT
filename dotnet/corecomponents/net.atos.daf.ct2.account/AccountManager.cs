@@ -16,6 +16,7 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
 using Newtonsoft.Json;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
@@ -32,9 +33,10 @@ namespace net.atos.daf.ct2.account
         private readonly IConfiguration _configuration;
         private readonly ITranslationManager _translationManager;
         private readonly IDriverManager _driverManager;
+        readonly IVehicleManager _vehicleManager;
 
         public AccountManager(IAccountRepository Repository, IAuditTraillib Auditlog, Identity.IAccountManager Identity,
-                              IConfiguration Configuration, ITranslationManager TranslationManager, IDriverManager driverManager)
+                              IConfiguration Configuration, IVehicleManager vehicleManager, ITranslationManager TranslationManager, IDriverManager driverManager)
         {
             this._repository = Repository;
             this._auditlog = Auditlog;
@@ -44,6 +46,7 @@ namespace net.atos.daf.ct2.account
             Configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
             this._translationManager = TranslationManager;
             _driverManager = driverManager;
+            _vehicleManager = vehicleManager;
         }
 
         public async Task<Account> Create(Account account)
@@ -512,7 +515,9 @@ namespace net.atos.daf.ct2.account
 
         public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(MenuFeatureRquest request)
         {
-            return await _repository.GetMenuFeaturesList(request);
+            var result = await _vehicleManager.GetVisibilityVehicles(request.AccountId, request.ContextOrgId);
+            var visibleVehiclesIds = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(e => e.Id).ToArray();
+            return await _repository.GetMenuFeaturesList(request, visibleVehiclesIds);
         }
 
         public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)
