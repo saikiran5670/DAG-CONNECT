@@ -493,6 +493,16 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  getSessionInfo(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.accountServiceUrl}/getsessioninfo`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(
