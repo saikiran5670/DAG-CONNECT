@@ -1036,8 +1036,10 @@ namespace net.atos.daf.ct2.account
                             FROM (
                                  SELECT ag.id,ag.name,ar.access_type, 
                                      case when (ag.group_type ='D') then 
-                                     (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id 
-                                     and g.organization_id=@organization_id)
+                                     (SELECT count(acc.id) 
+                                        FROM master.account acc 
+                                        INNER JOIN master.accountorg ao on acc.id=ao.account_id and ao.organization_id=@organization_id
+                                        WHERE acc.state='A' and ao.state='A')
                                      else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count,
                                      case when (v.id is NULL) then vg.id else v.id end as group_id,
                                      case when (v.id is NULL) then vg.name else v.name end as group_name,
@@ -1117,8 +1119,8 @@ namespace net.atos.daf.ct2.account
                         query = @"select id,name,count,true as is_group from (
                                 select vg.id,vg.name,
                                 case when (vg.group_type ='D') then 
-	                                (select count(gr.group_id) 
-                                        from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+	                                (select count(v.id) 
+                                        from master.vehicle v where v.organization_id=@organization_id)
 	                                else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count
                                 from master.group vg 
                                 where length(vg.name) > 0 and vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
@@ -1173,9 +1175,10 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT ag.id,ag.name,
                                     CASE WHEN (ag.group_type ='D') 
-                                         THEN (SELECT count(gr.group_id) 
-                                                FROM master.groupref gr 
-                                                INNER JOIN master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+                                         THEN (SELECT count(acc.id) 
+                                                FROM master.account acc 
+                                                INNER JOIN master.accountorg ao on acc.id=ao.account_id and ao.organization_id=@organization_id
+                                                WHERE acc.state='A' and ao.state='A')
 	                                     ELSE (SELECT count(gr.group_id) FROM master.groupref gr WHERE gr.group_id=ag.id ) END as count
                                     FROM master.group ag 
                                     WHERE ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
@@ -1186,7 +1189,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     else
@@ -1204,7 +1207,7 @@ namespace net.atos.daf.ct2.account
                                 FROM (
                                     SELECT a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                     FROM master.account a INNER JOIN master.accountorg ar on ar.account_id=a.id 
-                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0
+                                    WHERE ar.organization_id=@organization_id and length(a.first_name) > 0 and a.state='A' and ar.state='A'
                                 ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
@@ -1560,7 +1563,7 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request, int[] vehicleids)
         {
             try
             {
@@ -1571,7 +1574,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@organization_id", request.OrganizationId);
                 parameter.Add("@code", request.LanguageCode);
                 parameter.Add("@context_org_id", request.ContextOrgId);
-
+                parameter.Add("@vehicleids", vehicleids);
                 string query =
                     @"SELECT DISTINCT
                     f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.sort_id as MenuSortId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
@@ -1595,6 +1598,11 @@ namespace net.atos.daf.ct2.account
 		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
 		                    UNION
 		                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+                            UNION 
+                            select p.feature_set_id
+                            from master.subscription s 
+                            inner join master.package p on p.id=s.package_id and s.type='N'
+                            inner join master.vehicle v on s.vehicle_id = v.id  and v.id = ANY(@vehicleids) 
 	                    ) subs
                         INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id

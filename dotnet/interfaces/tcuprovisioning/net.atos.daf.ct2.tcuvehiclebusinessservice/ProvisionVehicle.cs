@@ -319,7 +319,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             ITranslationManager translationManager = new TranslationManager(translationRepository);
 
             IAccountRepository accountrepo = new AccountRepository(_dataacess);
-            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, _auditlog, iaccountManager, _config, translationManager, null);
+            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, _auditlog, iaccountManager, _config, null, translationManager, null);
 
             OrganizationRepository orgRepo = new OrganizationRepository(_dataacess, null, vehicleManager, groupManager, accManager, subscriptionManager, accountSessionManager, accountTokenManager);
             OrganizationManager org = new OrganizationManager(orgRepo, _auditlog);

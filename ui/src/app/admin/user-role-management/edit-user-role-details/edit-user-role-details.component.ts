@@ -27,6 +27,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @Input() viewFlag: boolean;
   @Input() translationData: any = {};
   @Input() roleData: any;
+  @Input() userType: any;
+  @Input() adminAccessType: any;
+  @Input() userLevel: any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -35,7 +38,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
-  featuresData : any = [];
   allChildrenIds : any = [];
   selectedChildrens : any = [];
   organizationId: number;
@@ -44,7 +46,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
   // remainingChar: any;
   showCount: boolean = false;
   createButtonFlag: boolean = false;
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  levelDD: any = [];
+  codeDD: any = [];
+  sampleLevel: any = [];
+  customCodeBtnEnable: boolean = true;
+  invalidCode: boolean = false;
+  roleFeaturesList: any = [];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -54,36 +61,156 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userRoleFormGroup = this._formBuilder.group({
       userRoleName: ['', [Validators.required, Validators.maxLength(60), CustomValidators.noWhitespaceValidator]],
-      roleType: ['Regular', [Validators.required]],
-      userRoleDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+      roleType: ['', [Validators.required]],
+      userRoleDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      levelType: ['', [Validators.required]],
+      codeType: [],
+      customCodeValue: []
+    },{
+      validator: [
+        CustomValidators.specialCharValidationForNameWithoutRequired('customCodeValue'),
+        CustomValidators.numberValidationForNameWithoutRequired('customCodeValue')
+      ]
     });
 
+    this.sampleLevel = [{
+      level: 10,
+      name: this.translationData.lblPlatform || 'Platform'
+    },
+    {
+      level: 20,
+      name: this.translationData.lblGlobal || 'Global'
+    },
+    {
+      level: 30,
+      name: this.translationData.lblOrganisation || 'Organisation'
+    },
+    {
+      level: 40,
+      name: this.translationData.lblAccount || 'Account'
+    }];
+
+    let _s: any = this.sampleLevel.filter(i => parseInt(i.level) >= parseInt(this.userLevel));
+    if(_s && _s.length > 0){
+      this.levelDD = _s.slice();
+    }
+
+    let reqObj: any = {
+      roleLevel: parseInt(this.userLevel)
+    }    
+    this.roleService.getLevelCodes(reqObj).subscribe((codeList: any) => {
+      if(codeList){
+        this.codeDD = codeList.roleCodeList.slice();
+        this.getRoleFeatures();
+      }
+    }, (error) => {
+      console.log('error');
+      this.getRoleFeatures();
+    });
+    this.doneFlag = this.createStatus ? false : true;
+    this.breadcumMsg = this.getBreadcum();
+  }
+
+  getRoleFeatures(){
     let objData = {
       organization_Id: this.organizationId
     }
+    this.roleService.getFeatures(objData).subscribe((data: any) => {
+      let initData = data.filter(item => item.state == "ACTIVE" && item.level >= parseInt(this.userLevel));
+      this.roleFeaturesList = initData.slice();
+      if (!this.createStatus || this.duplicateFlag || this.viewFlag) { // edit | duplicate | view
+        if(this.viewFlag){
+          this.gridData.forEach(element => {
+            switch(parseInt(element.level)){
+              case 10: {
+                element.levelName = this.translationData.lblPlatform || 'Platform';
+                break;
+              }
+              case 20: {
+                element.levelName = this.translationData.lblGlobal || 'Global';
+                break;
+              }
+              case 30: {
+                element.levelName = this.translationData.lblOrganisation || 'Organisation';
+                break;
+              }
+              case 40: {
+                element.levelName = this.translationData.lblAccount || 'Account';
+                break;
+              }
+              default: {
+                element.levelName = this.translationData.lblAccount || 'Account';
+                break;
+              }
+            }
+          });
+        }
+        this.callToProceed();
+      }else{
+        this.updateDataSource(this.roleFeaturesList);   
+      }
+      this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblOrganisation || 'Organisation'];
+    }, (error) => {
+      console.log('error');
+     });
+  }
 
-    this.roleService.getFeatures(objData).subscribe((data) => {
-      let initData = data.filter(item => item.state == "ACTIVE");
-      setTimeout(() => {
-        this.dataSource = new MatTableDataSource(initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        if (!this.createStatus || this.duplicateFlag || this.viewFlag) {
-          this.onReset();
+  callToProceed(){
+    this.featuresSelected = this.gridData[0].featureIds;
+    this.customCodeBtnEnable = true;
+    this.invalidCode = false;
+    this.userRoleFormGroup.get('customCodeValue').setValue('');
+    if((!this.createStatus || this.duplicateFlag) && !this.viewFlag){ //-- edit | duplicate
+      this.userRoleFormGroup.patchValue({
+        userRoleName: this.gridData[0].roleName,
+        userRoleDescription: this.gridData[0].description,
+        roleType: (this.gridData[0].organizationId == 0) ? this.translationData.lblGlobal || 'Global' : this.translationData.lblOrganisation || 'Organisation',
+        levelType: this.gridData[0].level,
+        codeType: this.gridData[0].code
+      });
+    }
+    this.loadData(this.roleFeaturesList);
+  }
+
+  loadData(tableData: any){
+    let selectedFeatureList: any = [];
+    if(this.viewFlag){ // view
+      tableData.forEach((row: any) => {
+        let search = this.featuresSelected.filter((item: any) => item == row.id);
+        if (search.length > 0) {
+          selectedFeatureList.push(row);
         }
       });
-      this.featuresData = data;
+      tableData = selectedFeatureList;
+      this.featureDisplayedColumns = ['name'];
+    }
+    this.updateDataSource(tableData);
+    if((!this.createStatus && !this.viewFlag) || this.duplicateFlag){ // edit | duplicate
+      this.selectTableRows();
+    }
+  }
 
-      this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblRegular];
-    }, (error) => { });
+  selectTableRows(){
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.featuresSelected.filter((item: any) => item == row.id);
+      if (search.length > 0) {
+        this.selectionForFeatures.select(row);
+      }
+    });
+  }
 
-    this.doneFlag = this.createStatus ? false : true;
-    this.breadcumMsg = this.getBreadcum();
+  updateDataSource(tabelData: any){
+    this.dataSource = new MatTableDataSource(tabelData);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
-    // this.selectionForFeatures.selected.forEach(feature => {
-    //   this.preSelectedValues.push(feature.id);
-    // })
-    // console.log("---onInit--",this.preSelectedValues )
+  changeRoleLevel(_eventVal: any) {
+    if(!this.duplicateFlag){ // code value cannot change while duplicate
+      this.userRoleFormGroup.patchValue({
+          codeType: this.codeDD[0]
+      });
+    }
   }
 
   getBreadcum() {
@@ -98,26 +225,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onReset() {
-    this.featuresSelected = this.gridData[0].featureIds;
-    this.userRoleFormGroup.patchValue({
-      userRoleName: this.gridData[0].roleName,
-      userRoleDescription: this.gridData[0].description,
-      roleType: ((this.adminAccessType.adminFullAccess) ? (this.gridData[0].organizationId == 0 ? 'Global' : 'Regular') : 'Regular')
-    })
-
-    this.dataSource.data.forEach(row => {
-      if (this.featuresSelected) {
-        for (let selectedFeature of this.featuresSelected) {
-          if (selectedFeature == row.id) {
-            this.selectionForFeatures.select(row);
-            break;
-          }
-          else {
-            this.selectionForFeatures.deselect(row);
-          }
-        }
-      }
-    })
+    this.selectionForFeatures.clear();
+    this.callToProceed();
   }
 
   onCreate() {
@@ -162,18 +271,27 @@ export class EditUserRoleDetailsComponent implements OnInit {
       let featureIds = [];
       this.selectionForFeatures.selected.forEach(feature => {
         featureIds.push(feature.id);
-      })
+      });
+      
+      let _code: any = '';
+      if(!this.customCodeBtnEnable){ // custom code
+        _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
+      }else{ // code from dropdown
+        _code = parseInt(this.userLevel) >= 30 ? 'OTHER' : this.userRoleFormGroup.controls.codeType.value
+      }
 
       let objData = {
-        organizationId: this.userRoleFormGroup.controls.roleType.value == 'Global' ? 0 : this.organizationId,
+        organizationId: (this.userRoleFormGroup.controls.roleType.value == (this.translationData.lblGlobal || 'Global')) ? 0 : this.organizationId,
         roleId: 0,
         roleName: (this.userRoleFormGroup.controls.userRoleName.value).trim(),
         description: this.userRoleFormGroup.controls.userRoleDescription.value,
         featureIds: featureIds,
-        createdby: 0
+        createdby: 0,
+        code: _code,
+        level: parseInt(this.userRoleFormGroup.controls.levelType.value)
       }
       this.roleService.createUserRole(objData).subscribe((res) => {
-        this.backToPage.emit({ editFlag: false, editText: 'create', rolename: this.userRoleFormGroup.controls.userRoleName.value });
+        this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'create', rolename: this.userRoleFormGroup.controls.userRoleName.value });
       }, (error) => {
         if (error.status == 409) {
           this.isUserRoleExist = true;
@@ -188,22 +306,46 @@ export class EditUserRoleDetailsComponent implements OnInit {
     let featureIds = [];
     this.selectionForFeatures.selected.forEach(feature => {
       featureIds.push(feature.id);
-    })
+    });
+
+    //---------- add high level feature - handle from UI -------------//
+    if(this.gridData && this.gridData.length > 0){
+      this.gridData[0].featureIds.forEach(_elem => {
+        let _s = this.roleFeaturesList.filter(i => i.id == _elem); 
+        if(_s.length == 0){ // not present
+          featureIds.push(_elem);
+        }
+      });
+    }
+    
+    featureIds = featureIds.filter((el, i, a) => i === a.indexOf(el)); // unique feature id's
+    //-----------------------------------------------------//
+
     if (featureIds.length == 0) {
       alert("Please select at least one feature for access");
       return;
     }
+
+    let _code: any = '';
+      if(!this.customCodeBtnEnable){ // custom code
+        _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
+      }else{ // code from dropdown
+        _code = parseInt(this.userLevel) >= 30 ? this.gridData[0].code : this.userRoleFormGroup.controls.codeType.value;
+      }
+
     let objData = {
-      organizationId: (this.userRoleFormGroup.controls.roleType.value == 'Global') ? 0 : this.gridData[0].organizationId,
+      organizationId: (this.userRoleFormGroup.controls.roleType.value == (this.translationData.lblGlobal || 'Global')) ? 0 : this.gridData[0].organizationId,
       roleId: this.gridData[0].roleId,
       roleName: (this.userRoleFormGroup.controls.userRoleName.value).trim(),
       description: this.userRoleFormGroup.controls.userRoleDescription.value,
       featureIds: featureIds,
       createdby: 0,
-      updatedby: 0
+      updatedby: 0,
+      code: _code,
+      level: parseInt(this.userRoleFormGroup.controls.levelType.value)
     }
     this.roleService.updateUserRole(objData).subscribe((res) => {
-      this.backToPage.emit({ editFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value });
+      this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value });
     }, (error) => { });
   }
 
@@ -217,7 +359,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.isAllSelectedForFeatures() ?
       this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => { this.selectionForFeatures.select(row) });
 
-    console.log("==SelectionForFeatures---", this.selectionForFeatures)
+    //console.log("==SelectionForFeatures---", this.selectionForFeatures)
     // const user = "Hello.World.abc"
 
     // var splitString = user.split(".")
@@ -423,5 +565,18 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
   }
 
+  showCodeField(){
+    if(!this.customCodeBtnEnable){
+      this.userRoleFormGroup.get('customCodeValue').setValue('');
+    }
+    this.customCodeBtnEnable = !this.customCodeBtnEnable;
+  }
+
+  validateCode(value: any){
+    this.invalidCode = false;
+    if(value.includes('PLATFORM') || value.includes('GLOBAL') || value.includes('ORGANISATION') || value.includes('ACCOUNT') || value.includes('DRIVER')){
+      this.invalidCode = true;
+    }
+  }
 
 }

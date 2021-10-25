@@ -306,6 +306,10 @@ ngOnDestroy(){
              },0);
             this.setDefaultTodayDate();
           }
+          if(this._state && this._state.fromVehicleDetails){
+            this.selectionTimeRange('today');
+            // this.setDefaultTodayDate();
+          }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true; 
@@ -581,6 +585,13 @@ ngOnDestroy(){
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
+
+  if(this._state && this._state.fromVehicleDetails){
+    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+    this.logBookForm.get('vehicle').setValue(this._state.data.vin); 
+     
+  }
 
   if(this.showBack && this.selectionTab == 'today'){
   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
@@ -982,6 +993,11 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.logBookForm.get('alertType').setValue("all");
       this.logBookForm.get('alertCategory').setValue("all");
       
+    }
+    if(this._state && this._state.fromVehicleDetails){
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+      this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+      this.logBookForm.get('vehicle').setValue(this._state.data.vin);   
     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){

@@ -81,6 +81,7 @@
               </ng-container> -->
               <ng-container matColumnDef="type">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType }}</mat-header-cell>
+                <!-- <mat-cell *matCellDef="let row">{{ row.type == 'O' ? (translationData.lblOrganization ) : (row.type == 'V' ? translationData.lblOrgVin : translationData.lblVehicle) }}</mat-cell> -->
                 <mat-cell *matCellDef="let row">{{ row.type == 'O' ? (translationData.lblOrganization ) : translationData.lblVehicle }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="count" >
@@ -99,8 +100,8 @@
               <ng-container matColumnDef="state">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.state == 'A' ? (translationData.lblActive ) : translationData.lblInActive }}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="action">
+              </ng-container>
+              <ng-container matColumnDef="action">
                 <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction }} </mat-header-cell>
                 <mat-cell *matCellDef="let row" class="action">
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
@@ -114,7 +115,7 @@
                    -->
                    <mat-icon matTooltip= "Login to Webshop" style="cursor: pointer; margin: 0px 0px 5px 5px;">open_in_new</mat-icon>
                   </span>
-                  <!--<button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.state ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>-->       
+                  <!--<button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.state ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>-->
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

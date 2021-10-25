@@ -556,8 +556,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 OfflinePushNotiRequest offlinePushNotiRequest = new OfflinePushNotiRequest();
                 offlinePushNotiRequest.AccountId = _userDetails.AccountId;
                 offlinePushNotiRequest.OrganizationId = 0;
-
-                OfflineNotificationResponse response = await _alertServiceClient.GetOfflinePushNotificationAsync(offlinePushNotiRequest);
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                _logger.Info($"\n\rGetOfflinePushNotificationVin - {GetUserSelectedOrgId()} - {JsonConvert.SerializeObject(featureIds)}");
+                OfflineNotificationResponse response = await _alertServiceClient.GetOfflinePushNotificationAsync(offlinePushNotiRequest, headers);
 
                 if (response.NotificationResponse != null && response.NotificationResponse.Count > 0)
                 {

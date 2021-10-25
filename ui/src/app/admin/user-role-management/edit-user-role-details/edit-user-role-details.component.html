@@ -31,19 +31,31 @@
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div> -->
 
-                <div *ngIf="(adminAccessType.adminFullAccess)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleType}}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? translationData.lblGlobal : translationData.lblRegular  }}</mat-label>
+                    <mat-label class='custom-font'>{{ (this.gridData[0].organizationId == 0) ? translationData.lblGlobal || 'Global' : translationData.lblOrganisation || 'Organisation' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleDescriptionOptional }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>  
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblLevel || 'Level' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].levelName }}</mat-label>
+                </div>
+                <!-- <div *ngIf="userLevel < 30 || (gridData && gridData.length > 0 && gridData[0].code)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"> -->
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblCode || 'Code' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+            </div>  
         </mat-card-content>
     </mat-card> 
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="!viewFlag">
-        <mat-card-content>
+        <mat-card-content style='margin-bottom: 30px;'>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
@@ -76,10 +88,13 @@
                     <mat-form-field appearance="outline" class="full-width">
                         <mat-select formControlName="roleType" [disabled]="(!adminAccessType.adminFullAccess) || (!createStatus && !duplicateFlag)">
                             <mat-option *ngFor="let roleType of roleTypes" [value]="roleType">
-                                {{roleType}}
+                                {{ roleType }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+                    <mat-error *ngIf="userRoleFormGroup.get('roleType').hasError('required')">
+                        {{ translationData.lblPleasechooseroletype || 'Please choose role type' }}
+                    </mat-error>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
@@ -91,8 +106,56 @@
                         <input maxlength="100" (keyup)="textCounter($event,100)" placeholder="{{ translationData.lblEnterAboutUserRole  }}" matInput formControlName="userRoleDescription">
                     </mat-form-field>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleDescription').hasError('whitespace')">
-                      User Role Description cannot contain only whitespace
+                      {{ translationData.lblAccountRoleDescriptioncannotcontainonlywhitespace || 'Account Role Description cannot contain only whitespace' }}
                     </mat-error>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-top-10" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblLevel || 'Level' }}<span class='mandatoryColor'>*</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="levelType" (selectionChange)="changeRoleLevel($event.value)">
+                            <mat-option *ngFor="let roleLevel of levelDD" [value]="roleLevel.level">
+                                {{ roleLevel.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-error *ngIf="userRoleFormGroup.get('levelType').hasError('required')">
+                        {{ translationData.lblPleasechooserolelevel || 'Please choose role level' }}
+                    </mat-error>
+                </div>
+                <div *ngIf="userLevel < 30" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblCode || 'Code' }}
+                        <!-- <span class='mandatoryColor'>*</span> -->
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select [disabled]="duplicateFlag || !customCodeBtnEnable" formControlName="codeType">
+                            <mat-option *ngFor="let code of codeDD" [value]="code">
+                                {{ code }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div [ngClass]="{'margin-top-xlg': !userRoleFormGroup.get('levelType').hasError('required')}"  class="areaWidth min-width-33-per" fxLayout="column" fxLayoutAlign="center">
+                    <div *ngIf="!duplicateFlag && userLevel < 30" fxLayout="row" fxLayoutAlign="left center">
+                        <button style="width: 200px;" *ngIf="customCodeBtnEnable" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblAddCustomCode || 'Add Custom Code' }}</button>
+                        <mat-form-field style="width: 200px; margin-right: 10px;" *ngIf="!customCodeBtnEnable" appearance="outline" class="full-width">
+                            <input (keyup)="validateCode($event.target.value)" #input [value]="input.value.toUpperCase()" placeholder="{{ translationData.lblEnterCustomCode || 'Enter Custom Code' }}" matInput formControlName="customCodeValue" maxlength="20">
+                        </mat-form-field>
+                        <button style="width: 100px; padding: 0; font-size: 14px;" *ngIf="!customCodeBtnEnable" class='resetCancelBtnColor' mat-raised-button color="primary" (click)='showCodeField()'>{{ translationData.lblRemoveCode || 'Remove Code' }}</button>
+                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('specialCharsNotAllowed') && !customCodeBtnEnable">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
+                        <mat-error style="position: absolute; margin-top: 60px;" *ngIf="userRoleFormGroup.get('customCodeValue').hasError('numberNotAllowed') && !customCodeBtnEnable">
+                            {{ translationData.lblNumbersNotAllowed || 'Numbers Not Allowed' }}
+                        </mat-error>
+                        <mat-error style="position: absolute; margin-top: 80px; font-size: 13px;" *ngIf="invalidCode && !customCodeBtnEnable">
+                            {{ translationData.lblCodecannotcontainRestrictKeywords || 'Code cannot contain PLATFORM, GLOBAL, ORGANISATION, ACCOUNT or DRIVER' }}
+                         </mat-error>
+                    </div>
                 </div>
             </div>
         </mat-card-content>        
@@ -109,7 +172,7 @@
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button>
                         <button class='resetCancelBtnColor margin-right-10 no-margin'  mat-raised-button color="primary" *ngIf="!createStatus"
                             (click)='onReset()'>{{ translationData.lblReset  }}</button>
-                        <button class="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0 || createButtonFlag" mat-raised-button color="primary"
+                        <button style='margin: 0px;' [disabled]="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0 || isUserRoleExist || invalidCode || (!customCodeBtnEnable && !userRoleFormGroup.controls.customCodeValue.value) || (!customCodeBtnEnable && userRoleFormGroup.controls.customCodeValue.value && userRoleFormGroup.controls.customCodeValue.value.trim() == '')" mat-raised-button color="primary"
                             (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate ) : (translationData.lblConfirm ) }}</button>
                     </div>
                 </div>

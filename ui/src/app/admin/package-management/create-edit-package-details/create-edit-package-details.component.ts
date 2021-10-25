@@ -44,9 +44,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
+    // {
+    //   name: 'VIN',
+    //   value: 'VIN'
+    // }, 
     {
-      name: 'VIN',
-      value: 'VIN'
+      name: 'Org+VIN',
+      value: 'Org+VIN'
     }
   ];
   TypeList2: any = [
@@ -54,9 +58,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
+    // {
+    //   name: 'VIN',
+    //   value: 'VIN'
+    // }, 
     {
-      name: 'VIN',
-      value: 'VIN'
+      name: 'Org+VIN',
+      value: 'Org+VIN'
     },
     {
       name: 'Platform',
@@ -265,7 +273,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "featureSetID" : 24,
       "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V"  : this.packageFormGroup.controls.type.value === "Platform" ? "P" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "N" : (this.packageFormGroup.controls.type.value === "Platform" ? "P" : (this.packageFormGroup.controls.type.value === "Organization" ? "O" : "V")),
       "description": this.packageFormGroup.controls.description.value,
       "state": this.selectedStatus === "Inactive" ? "I" : "A" //TODO: For delete, add option "D"
     }
@@ -294,7 +302,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "featureSetID" : this.selectedElementData.featureSetID,
       "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : this.packageFormGroup.controls.type.value === "Platform" ? "P" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "N" : (this.packageFormGroup.controls.type.value === "Platform" ? "P" : (this.packageFormGroup.controls.type.value === "Organization" ? "O" : "V")),
       "description": this.packageFormGroup.controls.description.value,
       "state": this.selectedStatus === "Inactive" ? "I" : "A"
     }

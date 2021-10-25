@@ -87,13 +87,19 @@ namespace net.atos.daf.ct2.visibility
                     {
                         //do nothing (if org type package no need to remove from owned vehicles)
                     }
-                    else if (vehiclePackages.Any(e => e.PackageType == "V" && e.HasOwned == true)) // check if any v type and owned subscription available
+                    else if (vehiclePackages.Any(e => (e.PackageType == "V" && e.HasOwned == true) || e.PackageType == "N")) // check if any v type and owned subscription available
                     {
-                        var filteredOwnedVehicleIds = ownedVehicles
-                            .Where(e => vehiclePackages.FirstOrDefault(e => e.HasOwned == true).VehicleIds.Contains(e.Id)).Select(k => k.Id);
 
-                        //Removing other vins from owned vehicles list and not allow them in the visibility
-                        ownedVehicles.RemoveAll(e => !filteredOwnedVehicleIds.Contains(e.Id));
+                        var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").SelectMany(e => e.VehicleIds);
+                        var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
+
+                        var visibleVehiclesFromVR = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id));//v1, v2, v3
+                        var visibleVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        ownedVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
+
+                        //Step1- take subscribed vehicle id org+vin
+                        //step2- take vin type vehicle id vin
+                        // step 3 Union and assigned to owned vehicle
                     }
                 }
 
@@ -105,16 +111,23 @@ namespace net.atos.daf.ct2.visibility
                     //Fetch visible relationship vehicles of having reportFeatureId in it's allowed features list
                     //Intersect those vehicles with Org+VIN package subscribed vehicles where reportFeatureId is present in the subscription
                     //Filter vehicles out those are not in relationship vehicles and subscribed vehicles.
-                    if (vehiclePackages.Any(e => e.HasOwned == false))
+                    if (vehiclePackages.Any(e => e.HasOwned == false || e.PackageType == "N"))
                     {
-                        var subscriptionVehicleIds = vehiclePackages.First(e => e.HasOwned == false).VehicleIds;
+                        var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == false && e.PackageType == "V").SelectMany(e => e.VehicleIds);
+                        var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
                         var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
 
                         //Fetch vehicles records to be removed from visible vehicles list
                         var filteredVisibleVehicleIds = relationshipVehicleIds.Except(subscriptionVehicleIds).ToList();
                         filteredVisibleVehicleIds.AddRange(subscriptionVehicleIds.Except(relationshipVehicleIds));
 
-                        visibleVehicles.RemoveAll(e => filteredVisibleVehicleIds.Contains(e.Id));
+                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id));//v1, v2, v3
+                        var visibleVehiclesFromN = visibleVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
+
+                        //Step1- take subscribed vehicle id org+vin
+                        //step2- take vin type vehicle id vin
+                        // step 3 Union and assigned to visible  vehicle
                     }
                     else
                     {

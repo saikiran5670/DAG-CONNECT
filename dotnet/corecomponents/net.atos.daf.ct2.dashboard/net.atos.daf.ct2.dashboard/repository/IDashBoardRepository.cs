@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         Task<List<TodayLiveVehicleData>> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest);
         Task<List<TodayLiveVehicleData>> GetYesterdayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest);
         Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters);
-        Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId);
+        Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId, List<int> featureIds);
 
     }
 }

@@ -589,6 +589,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,status=@status
                                         ,reference_date=@reference_date
                                         ,is_ota=@is_ota
+                                        ,tcu_id=@tcu_id
+                                        ,is_tcu_register=@is_tcu_register
                                          WHERE id = @id
                                          RETURNING id;";
 
@@ -602,6 +604,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                 parameter.Add("@is_ota", vehicle.Is_Ota);
+                parameter.Add("@tcu_id", vehicle.Tcu_Id);
+                parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
+
+
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
                 if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
@@ -877,7 +883,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             // Vehicle Id list Filter
-            if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
+            //////if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
             {
                 List<int> vehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
                 queryStatement = queryStatement + " and v.id  = ANY(@VehicleIds)";
@@ -2290,7 +2296,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                        else COALESCE(end_date,0) = 0 end
                         UNION
                         -- Visible vehicles of type S/G
-                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_agg(f.id) as btype_features
+                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_remove(array_agg(f.id),NULL) as btype_features
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
@@ -2298,21 +2304,21 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.featureset fset on fset.id=ors.feature_set_id
                         INNER JOIN master.featuresetfeature ff on ff.feature_set_id=fset.id
-                        INNER JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
+                        LEFT JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
                         WHERE 
 	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         GROUP BY v.id, v.vin, v.name, license_plate_number
                         UNION
                         -- Visible vehicles of type D, method O
-                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_agg(f.id) as btype_features
+                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_remove(array_agg(f.id),NULL) as btype_features
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         INNER JOIN master.featureset fset on fset.id=ors.feature_set_id
                         INNER JOIN master.featuresetfeature ff on ff.feature_set_id=fset.id
-                        INNER JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
+                        LEFT JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
                         WHERE 
 	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
@@ -2334,7 +2340,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 var queryStatement = @"
                         -- Visible vehicles of type S/G
-                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_agg(f.id) as btype_features
+                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_remove(array_agg(f.id),NULL) as btype_features
                         FROM master.vehicle v
                         LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
                         INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
@@ -2342,21 +2348,21 @@ namespace net.atos.daf.ct2.vehicle.repository
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.featureset fset on fset.id=ors.feature_set_id
                         INNER JOIN master.featuresetfeature ff on ff.feature_set_id=fset.id
-                        INNER JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
+                        LEFT JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
                         WHERE 
 	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end
                         GROUP BY v.id, v.vin, v.name, license_plate_number
                         UNION
                         -- Visible vehicles of type D, method O
-                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_agg(f.id) as btype_features
+                        SELECT v.id, v.vin, v.name, license_plate_number as RegistrationNo, false as hasowned, array_remove(array_agg(f.id),NULL) as btype_features
                         FROM master.group grp
                         INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
                         INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
                         INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
                         INNER JOIN master.featureset fset on fset.id=ors.feature_set_id
                         INNER JOIN master.featuresetfeature ff on ff.feature_set_id=fset.id
-                        INNER JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
+                        LEFT JOIN master.feature f on f.id=ff.feature_id and f.type = 'B' and f.name not like 'api.%'
                         WHERE 
 	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        else COALESCE(end_date,0) = 0 end

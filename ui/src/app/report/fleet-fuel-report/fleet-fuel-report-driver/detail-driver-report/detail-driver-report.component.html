@@ -145,9 +145,8 @@
       
                   <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
       
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                    l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' gal') :
-                    (translationData.lblgallonmile || ' gal') }} </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || 'ltr100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' mpg') :
+                    (translationData.lblgallonmile || ' mpg') }} </span>
       
                 </div>
       
@@ -163,9 +162,9 @@
       
                   <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
       
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                    Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || ' mpg') :
-                    (translationData.lblgallonmile || ' mpg') }}</span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{fuelConsumptionSummary}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                    Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || ' mpg') :
+                    (translationData.lblmpg || ' mpg') }}</span>
       
                 </div>
       
@@ -485,7 +484,7 @@
       
               <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
                   <ng-container matColumnDef="All">
-                      <mat-header-cell *matHeaderCellDef class="max-width-10-per">
+                      <mat-header-cell *matHeaderCellDef style='max-width: 2%;'>
                         <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
                           [checked]='selectedTrip.hasValue() && isAllSelectedForTrip()'
                           [indeterminate]='selectedTrip.hasValue() && !isAllSelectedForTrip()'
@@ -493,7 +492,7 @@
                         </mat-checkbox>
                         <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row" class="max-width-10-per">
+                      <mat-cell *matCellDef="let row" style='max-width: 2%;'>
                         <mat-checkbox (click)='$event.stopPropagation()'
                           (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
                           [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
@@ -510,14 +509,14 @@
                     <ng-container matColumnDef="vin">
                       <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
                       </mat-header-cell>          
-                      <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
+                      <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ tableInfoObj.vin }}" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
                         <span>{{tableInfoObj.vin}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="vehicleRegistrationNo">      
-                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
+                     <mat-header-cell *matHeaderCellDef mat-sort-header style='max-width: 3%;' [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
                       </mat-header-cell>          
-                      <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
+                      <mat-cell *matCellDef="let row" class="text-truncate" style='max-width: 10%;' matTooltip="{{ tableInfoObj.vehicleRegistrationNo }}"  [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
                         <span>{{tableInfoObj.vehicleRegistrationNo}}</span>          
                      </mat-cell>                   
                     </ng-container>
@@ -580,7 +579,7 @@
                         </ng-container>
                         <ng-container matColumnDef="fuelConsumed">      
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}              
-                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
                               l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
                               (translationData.lblgallonmile || ' gal') }})</span>              
                           </mat-header-cell>          
@@ -590,9 +589,9 @@
                         </ng-container>              
                         <ng-container matColumnDef="fuelConsumption">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
-                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                              Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') :
-                              (translationData.lblgallonmile || ' mpg') }})</span>              
+                            <span style="font-weight: normal;">{{sumOfColumns('fuelConsumption')}}({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                              Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
+                              (translationData.lblmpg || ' mpg') }})</span>              
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
                             <span>{{row.convertedFuelConsumption  | number : '.2-2'}}</span>              
