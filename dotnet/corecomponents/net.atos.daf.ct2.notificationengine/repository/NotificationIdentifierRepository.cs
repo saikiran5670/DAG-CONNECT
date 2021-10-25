@@ -99,6 +99,11 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@state", 'A');
 
             List<Notification> notificationdetailsOutput = (List<Notification>)await _dataAccess.QueryAsync<Notification>(queryStatement, parameter);
+
+            foreach (var item in notificationdetailsOutput)
+            {
+                item.Vehiclename = await _dataAccess.QuerySingleOrDefaultAsync<string>("select name from master.vehicle where vin =@vin", new { vin = tripAlert.Vin });
+            }
             return notificationdetailsOutput;
         }
 

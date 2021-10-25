@@ -165,9 +165,10 @@ namespace net.atos.daf.ct2.notificationengine
                         }
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;
-                        notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
+                        notificationHistory.Vehicle_group_vehicle_name = item.Vehiclegroupname;
                         notificationHistory.Vin = tripAlert.Vin;
                         notificationHistory.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
+                        notificationHistory.Vehiclename = item.Vehiclename;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
