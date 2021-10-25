@@ -484,7 +484,7 @@
       
               <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
                   <ng-container matColumnDef="All">
-                      <mat-header-cell *matHeaderCellDef class="max-width-10-per">
+                      <mat-header-cell *matHeaderCellDef style='max-width: 2%;'>
                         <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
                           [checked]='selectedTrip.hasValue() && isAllSelectedForTrip()'
                           [indeterminate]='selectedTrip.hasValue() && !isAllSelectedForTrip()'
@@ -492,7 +492,7 @@
                         </mat-checkbox>
                         <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row" class="max-width-10-per">
+                      <mat-cell *matCellDef="let row" style='max-width: 2%;'>
                         <mat-checkbox (click)='$event.stopPropagation()'
                           (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
                           [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
@@ -509,14 +509,14 @@
                     <ng-container matColumnDef="vin">
                       <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
                       </mat-header-cell>          
-                      <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
+                      <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ tableInfoObj.vin }}" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
                         <span>{{tableInfoObj.vin}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="vehicleRegistrationNo">      
-                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
+                     <mat-header-cell *matHeaderCellDef mat-sort-header style='max-width: 3%;' [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
                       </mat-header-cell>          
-                      <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
+                      <mat-cell *matCellDef="let row" class="text-truncate" style='max-width: 10%;' matTooltip="{{ tableInfoObj.vehicleRegistrationNo }}"  [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
                         <span>{{tableInfoObj.vehicleRegistrationNo}}</span>          
                      </mat-cell>                   
                     </ng-container>
