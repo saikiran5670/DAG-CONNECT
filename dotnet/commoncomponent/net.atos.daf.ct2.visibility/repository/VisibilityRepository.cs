@@ -540,7 +540,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                                 select p.type, s.vehicle_id, case when s.organization_id=v.organization_id 
 	                                                then true else false end as HasOwned
                                                 from master.subscription s
-                                                inner join master.package p on p.id=s.package_id and p.state='A' and p.type In ('V','O','N') AND s.state = 'A'
+                                                inner join master.package p on p.id=s.package_id and p.state='A' AND s.state = 'A'
                                                 inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                                 inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                                 inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
