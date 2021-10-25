@@ -1036,8 +1036,10 @@ namespace net.atos.daf.ct2.account
                             FROM (
                                  SELECT ag.id,ag.name,ar.access_type, 
                                      case when (ag.group_type ='D') then 
-                                     (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id 
-                                     and g.organization_id=@organization_id)
+                                     (SELECT count(acc.id) 
+                                        FROM master.account acc 
+                                        INNER JOIN master.accountorg ao on acc.id=ao.account_id and ao.organization_id=@organization_id
+                                        WHERE acc.state='A' and ao.state='A')
                                      else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count,
                                      case when (v.id is NULL) then vg.id else v.id end as group_id,
                                      case when (v.id is NULL) then vg.name else v.name end as group_name,
@@ -1117,8 +1119,8 @@ namespace net.atos.daf.ct2.account
                         query = @"select id,name,count,true as is_group from (
                                 select vg.id,vg.name,
                                 case when (vg.group_type ='D') then 
-	                                (select count(gr.group_id) 
-                                        from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+	                                (select count(v.id) 
+                                        from master.vehicle v where v.organization_id=@organization_id)
 	                                else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count
                                 from master.group vg 
                                 where length(vg.name) > 0 and vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')

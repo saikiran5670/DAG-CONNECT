@@ -365,21 +365,21 @@
                   <ng-container matColumnDef="vehicleName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehiclename')">{{ translationData.lblVehicleName || 'Vehicle Name' }}
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vehiclename')">
+                    <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"  [hidden]="!checkForPreference('singlevehicledetails_vehiclename')">
                       <span>{{tableInfoObj.vehicleName}}</span>
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="vin">
                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
                     </mat-header-cell>          
-                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
+                    <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ tableInfoObj.vin }}" [hidden]="!checkForPreference('singlevehicledetails_vin')">         
                       <span>{{tableInfoObj.vin}}</span>
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="vehicleRegistrationNo">      
                    <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
                     </mat-header-cell>          
-                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
+                    <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ tableInfoObj.vehicleRegistrationNo }}"  [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
                       <span>{{tableInfoObj.vehicleRegistrationNo}}</span>          
                    </mat-cell>                   
                   </ng-container>

@@ -202,7 +202,7 @@
           <ng-container matColumnDef="vehicleName">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName  }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"  [hidden]="!checkForPreference('vehicleranking_vehiclename')">
               <span>{{row.vehicleName}}</span>
             </mat-cell>
           </ng-container>
@@ -211,7 +211,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vin')">{{ translationData.lblVIN }}
   
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vin')">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vin }}" [hidden]="!checkForPreference('vehicleranking_vin')">
               <span>{{row.vin}}</span>
             </mat-cell>
           </ng-container>
@@ -219,7 +219,7 @@
           <ng-container matColumnDef="vehicleRegistrationNo">
             <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo  }}
             </mat-header-cell>
-            <mat-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row" >
+            <mat-cell class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}"  [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row" >
               <span>{{row.vehicleRegistrationNo}}</span>
             </mat-cell>
           </ng-container>
@@ -539,7 +539,7 @@
               <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
                 }}</span>
             </mat-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"  [hidden]="!checkForPreference('vehicleranking_vehiclename')" >
               <span>{{row.vehicleName}}</span>
             </mat-cell>
           </ng-container>
@@ -547,7 +547,7 @@
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{ translationData.lblVIN  }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.vin}}" [hidden]="!checkForPreference('vehicledetails_vin')">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.vin}}" [hidden]="!checkForPreference('vehicledetails_vin')" style="max-width: 145px;">
               <span>{{row.vin}}</span>
             </mat-cell>
             <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
