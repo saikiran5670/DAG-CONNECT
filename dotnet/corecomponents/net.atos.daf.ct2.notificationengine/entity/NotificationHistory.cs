@@ -44,5 +44,6 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public long AlertGeneratedTime { get; set; }
         public string ValueAtAlertTimeForHoursofServices { get; set; }
         public string Vehiclename { get; set; }
+        public string Vehiclegroup { get; set; }
     }
 }

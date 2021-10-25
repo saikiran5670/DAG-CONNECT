@@ -169,6 +169,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.Vin = tripAlert.Vin;
                         notificationHistory.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
                         notificationHistory.Vehiclename = item.Vehiclename;
+                        notificationHistory.Vehiclegroup = item.Vehiclegroup;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }

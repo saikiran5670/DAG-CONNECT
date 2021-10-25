@@ -73,8 +73,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.state as Aletimenoti_state
                                         ,ale.organization_id as Ale_organization_id
                                         ,ale.name as Ale_name
-	                                    ,vgrp.name as Vehicle_group_name
-										,vgrp.group_type as vehiclegroup
+	                                    ,vgrp.name as Vehiclegroupname
+										,vgrp.group_type as Vehiclegroup
 										, case when vgrp.group_type ='S' then 
 											(select name from master.vehicle where id=vgrp.ref_id)
 											else vgrp.name
