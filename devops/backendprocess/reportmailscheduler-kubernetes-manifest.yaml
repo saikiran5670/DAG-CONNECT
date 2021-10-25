@@ -7,6 +7,7 @@ metadata:
     app.kubernetes.io/type: reportmailscheduler
 spec:
   schedule: "#{ReportMailSchedulerCronJobFirstRunMin}# * * * *"
+  successfulJobsHistoryLimit: 0
   jobTemplate:
     spec:
       template:
