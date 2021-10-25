@@ -10,12 +10,12 @@
 
 package net.atos.daf.ct2.service.geofence.exit.corridor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.TreeSet;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Simple Geo corridor implementation.
@@ -58,6 +58,9 @@ public class GeoCorridor {
 	
 	/** Constant for ordering strategy. */
 	public static final int ORDERING = 2;
+
+	/** For maintain last modified time*/
+	private long lastModifiedTimeStamp;
 	
 	/**
 	 * Instantiate geo corridor.
@@ -298,7 +301,7 @@ public class GeoCorridor {
 			// determine max order difference for the search
 			double odlat = location.latitude  + GPSLocation.latitudeDistanceToDegrees(width);
 			double odlng = location.longitude + GPSLocation.longitudeDistanceToDegrees(odlat, width);
-			double odmax = 3.3 * Math.abs(location.order - RoutePoint.orderFormula(odlat, odlng));
+			double odmax = 4 * Math.abs(location.order - RoutePoint.orderFormula(odlat, odlng));
 					
 			if (log.isDebugEnabled()) {
 				log.debug("searching odmax=" + odmax + " loc=" + location);
@@ -423,6 +426,14 @@ public class GeoCorridor {
 	@Override
 	public final String toString() {
 		return "GeoCorridor [points=" + points.size() + ", width=" + width + ", startPoint=" + startPoint + "]";
+	}
+
+	public long getLastModifiedTimeStamp() {
+		return lastModifiedTimeStamp;
+	}
+
+	public void setLastModifiedTimeStamp(long lastModifiedTimeStamp) {
+		this.lastModifiedTimeStamp = lastModifiedTimeStamp;
 	}
 
 	/**

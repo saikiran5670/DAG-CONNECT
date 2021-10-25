@@ -1563,7 +1563,7 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request, int[] vehicleids)
         {
             try
             {
@@ -1574,7 +1574,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@organization_id", request.OrganizationId);
                 parameter.Add("@code", request.LanguageCode);
                 parameter.Add("@context_org_id", request.ContextOrgId);
-
+                parameter.Add("@vehicleids", vehicleids);
                 string query =
                     @"SELECT DISTINCT
                     f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.sort_id as MenuSortId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
@@ -1598,6 +1598,11 @@ namespace net.atos.daf.ct2.account
 		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
 		                    UNION
 		                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'    --Consider platform type packages
+                            UNION 
+                            select p.feature_set_id
+                            from master.subscription s 
+                            inner join master.package p on p.id=s.package_id and s.type='N'
+                            inner join master.vehicle v on s.vehicle_id = v.id  and v.id = ANY(@vehicleids) 
 	                    ) subs
                         INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id

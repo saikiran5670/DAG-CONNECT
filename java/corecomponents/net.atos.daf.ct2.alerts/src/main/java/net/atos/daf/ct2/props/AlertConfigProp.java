@@ -5,6 +5,7 @@ import net.atos.daf.ct2.models.Alert;
 import net.atos.daf.ct2.models.Payload;
 import net.atos.daf.ct2.models.schema.AlertUrgencyLevelRefSchema;
 import net.atos.daf.ct2.models.schema.VehicleAlertRefSchema;
+import net.atos.daf.ct2.service.geofence.exit.corridor.GeoCorridor;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.BasicArrayTypeInfo;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
@@ -12,6 +13,9 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.table.planner.expressions.In;
 import org.apache.flink.util.OutputTag;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AlertConfigProp {
 
@@ -127,4 +131,9 @@ public class AlertConfigProp {
   	public static final Integer INDEX_TRIP_START = 4;
   	public static final Integer INDEX_TRIP_END = 5;
   	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    /**
+     * Exit corridor alert tree
+     */
+    public static Map<Integer, GeoCorridor> exitCorridorRouteTree = new HashMap();
 }
