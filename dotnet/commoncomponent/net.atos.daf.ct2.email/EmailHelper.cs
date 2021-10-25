@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.email
                         emailContent = GetEmailContent(emailTemplate);
                         break;
                     case EmailEventType.AlertNotificationEmail:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AlertNotification.AlertName, messageRequest.AlertNotification.AlertLevelCls, messageRequest.AlertNotification.AlertLevel, messageRequest.AlertNotification.DefinedThreshold, messageRequest.AlertNotification.ActualThresholdValue, messageRequest.AlertNotification.AlertCategory, messageRequest.AlertNotification.VehicleGroup, messageRequest.AlertNotification.AlertDateTime, messageRequest.Description, messageRequest.AlertNotification.DafEmailId);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AlertNotification.AlertName, messageRequest.AlertNotification.AlertLevelCls, messageRequest.AlertNotification.AlertLevel, messageRequest.AlertNotification.DefinedThreshold, messageRequest.AlertNotification.ActualThresholdValue, messageRequest.AlertNotification.AlertCategory, messageRequest.AlertNotification.VehicleGroup, messageRequest.AlertNotification.AlertDateTime, messageRequest.Description, messageRequest.AlertNotification.DafEmailId, messageRequest.AlertNotification.VehicleName);
                         break;
                 }
 

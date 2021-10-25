@@ -72,6 +72,7 @@
         #region FleetOverview
         public const string FLEETOVERVIEW_SERVICE_NAME = "Report Service";
         public const string FLEETOVERVIEW_FILTER_FAILURE_MSG = "Error fetching fleet over view filter details.";
+        public const string FLEETOVERVIEW_ALERT_FEATURE_STARTWITH = "Alerts.";
         #endregion
 
         #region Feet Fuel Report
