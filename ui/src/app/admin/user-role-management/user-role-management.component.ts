@@ -30,7 +30,7 @@ export class UserRoleManagementComponent implements OnInit {
   initData: any = [];
   rowsData: any;
   actionBtn:any;  
-  createStatus: boolean;
+  createStatus: boolean = false;
   titleText: string;
   translationData: any = {};
   grpTitleVisible : boolean = false;
@@ -41,7 +41,7 @@ export class UserRoleManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = {};
   userType: any = '';
-  userLevel: any = 0;
+  userLevel: any = 40;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
   constructor(
@@ -135,10 +135,12 @@ export class UserRoleManagementComponent implements OnInit {
   
     this.roleService.getUserRoles(objData).subscribe((data: any) => {
       this.hideloader();
-      this.initData = data; //temporary
-      if(data && data.length > 0){
-        this.initData = this.getNewTagData(data); 
-      } 
+      let filterData = data.filter(i => i.level >= this.userLevel); // get records >= loged In userlevel
+      if(filterData && filterData.length > 0){
+        this.initData = this.getNewTagData(filterData); 
+      }else{
+        this.initData = filterData;   
+      }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
@@ -187,6 +189,8 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData = this.initData; 
     this.editFlag = true;
     this.createStatus = true;
+    this.duplicateFlag = false;
+    this.viewFlag = false;
   }
 
   editUserRole(row: any, action : string) {
@@ -199,6 +203,7 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData.push(row);
     this.editFlag = true;
     this.createStatus = false;    
+    this.viewFlag = false;
   }
 
   viewUserRole(row: any){
@@ -206,6 +211,8 @@ export class UserRoleManagementComponent implements OnInit {
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
+    this.createStatus = false;
+    this.duplicateFlag = false;
     this.rowsData.push(row);
   }
 

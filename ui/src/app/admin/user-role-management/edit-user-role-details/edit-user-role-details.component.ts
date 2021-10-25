@@ -38,7 +38,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
-  featuresData : any = [];
   allChildrenIds : any = [];
   selectedChildrens : any = [];
   organizationId: number;
@@ -52,6 +51,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   sampleLevel: any = [];
   customCodeBtnEnable: boolean = true;
   invalidCode: boolean = false;
+  roleFeaturesList: any = [];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -116,20 +116,93 @@ export class EditUserRoleDetailsComponent implements OnInit {
       organization_Id: this.organizationId
     }
     this.roleService.getFeatures(objData).subscribe((data: any) => {
-      let initData = data.filter(item => item.state == "ACTIVE");
-      setTimeout(() => {
-        this.dataSource = new MatTableDataSource(initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        if (!this.createStatus || this.duplicateFlag || this.viewFlag) {
-          this.onReset();
+      let initData = data.filter(item => item.state == "ACTIVE" && item.level >= parseInt(this.userLevel));
+      this.roleFeaturesList = initData.slice();
+      if (!this.createStatus || this.duplicateFlag || this.viewFlag) { // edit | duplicate | view
+        if(this.viewFlag){
+          this.gridData.forEach(element => {
+            switch(parseInt(element.level)){
+              case 10: {
+                element.levelName = this.translationData.lblPlatform || 'Platform';
+                break;
+              }
+              case 20: {
+                element.levelName = this.translationData.lblGlobal || 'Global';
+                break;
+              }
+              case 30: {
+                element.levelName = this.translationData.lblOrganisation || 'Organisation';
+                break;
+              }
+              case 40: {
+                element.levelName = this.translationData.lblAccount || 'Account';
+                break;
+              }
+              default: {
+                element.levelName = this.translationData.lblAccount || 'Account';
+                break;
+              }
+            }
+          });
         }
-      });
-      this.featuresData = data;
+        this.callToProceed();
+      }else{
+        this.updateDataSource(this.roleFeaturesList);   
+      }
       this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblOrganisation || 'Organisation'];
     }, (error) => {
       console.log('error');
      });
+  }
+
+  callToProceed(){
+    this.featuresSelected = this.gridData[0].featureIds;
+    this.customCodeBtnEnable = true;
+    this.invalidCode = false;
+    this.userRoleFormGroup.get('customCodeValue').setValue('');
+    if((!this.createStatus || this.duplicateFlag) && !this.viewFlag){ //-- edit | duplicate
+      this.userRoleFormGroup.patchValue({
+        userRoleName: this.gridData[0].roleName,
+        userRoleDescription: this.gridData[0].description,
+        roleType: (this.gridData[0].organizationId == 0) ? this.translationData.lblGlobal || 'Global' : this.translationData.lblOrganisation || 'Organisation',
+        levelType: this.gridData[0].level,
+        codeType: this.gridData[0].code
+      });
+    }
+    this.loadData(this.roleFeaturesList);
+  }
+
+  loadData(tableData: any){
+    let selectedFeatureList: any = [];
+    if(this.viewFlag){ // view
+      tableData.forEach((row: any) => {
+        let search = this.featuresSelected.filter((item: any) => item == row.id);
+        if (search.length > 0) {
+          selectedFeatureList.push(row);
+        }
+      });
+      tableData = selectedFeatureList;
+      this.featureDisplayedColumns = ['name'];
+    }
+    this.updateDataSource(tableData);
+    if((!this.createStatus && !this.viewFlag) || this.duplicateFlag){ // edit | duplicate
+      this.selectTableRows();
+    }
+  }
+
+  selectTableRows(){
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.featuresSelected.filter((item: any) => item == row.id);
+      if (search.length > 0) {
+        this.selectionForFeatures.select(row);
+      }
+    });
+  }
+
+  updateDataSource(tabelData: any){
+    this.dataSource = new MatTableDataSource(tabelData);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   changeRoleLevel(_eventVal: any) {
@@ -152,58 +225,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onReset() {
-    this.gridData.forEach(element => {
-      switch(parseInt(element.level)){
-        case 10: {
-          element.levelName = this.translationData.lblPlatform || 'Platform';
-          break;
-        }
-        case 20: {
-          element.levelName = this.translationData.lblGlobal || 'Global';
-          break;
-        }
-        case 30: {
-          element.levelName = this.translationData.lblOrganisation || 'Organisation';
-          break;
-        }
-        case 40: {
-          element.levelName = this.translationData.lblAccount || 'Account';
-          break;
-        }
-        default: {
-          element.levelName = this.translationData.lblAccount || 'Account';
-          break;
-        }
-      }
-    });
-    this.featuresSelected = this.gridData[0].featureIds;
-    this.customCodeBtnEnable = true;
-    this.invalidCode = false;
-    this.userRoleFormGroup.get('customCodeValue').setValue('');
-    if((!this.createStatus || this.duplicateFlag) && !this.viewFlag){ //-- edit | duplicate
-      this.userRoleFormGroup.patchValue({
-        userRoleName: this.gridData[0].roleName,
-        userRoleDescription: this.gridData[0].description,
-        //roleType: ((this.adminAccessType.adminFullAccess) ? (this.gridData[0].organizationId == 0 ? this.translationData.lblGlobal || 'Global' : this.translationData.lblOrganisation || 'Organisation') : (this.translationData.lblOrganisation || 'Organisation')),
-        roleType: (this.gridData[0].organizationId == 0) ? this.translationData.lblGlobal || 'Global' : this.translationData.lblOrganisation || 'Organisation',
-        levelType: this.gridData[0].level,
-        codeType: this.gridData[0].code
-      });
-    }
-
-    this.dataSource.data.forEach(row => {
-      if (this.featuresSelected) {
-        for (let selectedFeature of this.featuresSelected) {
-          if (selectedFeature == row.id) {
-            this.selectionForFeatures.select(row);
-            break;
-          }
-          else {
-            this.selectionForFeatures.deselect(row);
-          }
-        }
-      }
-    })
+    this.selectionForFeatures.clear();
+    this.callToProceed();
   }
 
   onCreate() {
@@ -248,7 +271,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       let featureIds = [];
       this.selectionForFeatures.selected.forEach(feature => {
         featureIds.push(feature.id);
-      })
+      });
       
       let _code: any = '';
       if(!this.customCodeBtnEnable){ // custom code
@@ -268,7 +291,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         level: parseInt(this.userRoleFormGroup.controls.levelType.value)
       }
       this.roleService.createUserRole(objData).subscribe((res) => {
-        this.backToPage.emit({ editFlag: false, editText: 'create', rolename: this.userRoleFormGroup.controls.userRoleName.value });
+        this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'create', rolename: this.userRoleFormGroup.controls.userRoleName.value });
       }, (error) => {
         if (error.status == 409) {
           this.isUserRoleExist = true;
@@ -283,7 +306,21 @@ export class EditUserRoleDetailsComponent implements OnInit {
     let featureIds = [];
     this.selectionForFeatures.selected.forEach(feature => {
       featureIds.push(feature.id);
-    })
+    });
+
+    //---------- add high level feature - handle from UI -------------//
+    if(this.gridData && this.gridData.length > 0){
+      this.gridData[0].featureIds.forEach(_elem => {
+        let _s = this.roleFeaturesList.filter(i => i.id == _elem); 
+        if(_s.length == 0){ // not present
+          featureIds.push(_elem);
+        }
+      });
+    }
+    
+    featureIds = featureIds.filter((el, i, a) => i === a.indexOf(el)); // unique feature id's
+    //-----------------------------------------------------//
+
     if (featureIds.length == 0) {
       alert("Please select at least one feature for access");
       return;
@@ -308,7 +345,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       level: parseInt(this.userRoleFormGroup.controls.levelType.value)
     }
     this.roleService.updateUserRole(objData).subscribe((res) => {
-      this.backToPage.emit({ editFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value });
+      this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value });
     }, (error) => { });
   }
 
@@ -537,7 +574,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   validateCode(value: any){
     this.invalidCode = false;
-    if(value.includes('ORGNISATION') || value.includes('ACCOUNT')){
+    if(value.includes('PLATFORM') || value.includes('GLOBAL') || value.includes('ORGANISATION') || value.includes('ACCOUNT') || value.includes('DRIVER')){
       this.invalidCode = true;
     }
   }
