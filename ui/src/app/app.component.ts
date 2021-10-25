@@ -659,44 +659,44 @@ export class AppComponent {
       // Office Staff
       // Viewer
       
-      // if (accessNameList.includes("Admin#Platform")) {
-      //   this.userType = "Admin#Platform";
-      //   //this.userLevel = 10;
-      // } else if (accessNameList.includes("Admin#Global")) {
-      //   this.userType = "Admin#Global";
-      //   //this.userLevel = 20;
-      // } else if (accessNameList.includes("Admin#Organisation")) {
-      //   this.userType = "Admin#Organisation";
-      //   //this.userLevel = 30;
-      // } else if (accessNameList.includes("Admin#Account")) {
-      //   this.userType = "Admin#Account";
-      //   //this.userLevel = 40;
-      // }
+      if (accessNameList.includes("Admin#Platform")) {
+        this.userType = "Admin#Platform";
+        //this.userLevel = 10;
+      } else if (accessNameList.includes("Admin#Global")) {
+        this.userType = "Admin#Global";
+        //this.userLevel = 20;
+      } else if (accessNameList.includes("Admin#Organisation")) {
+        this.userType = "Admin#Organisation";
+        //this.userLevel = 30;
+      } else if (accessNameList.includes("Admin#Account")) {
+        this.userType = "Admin#Account";
+        //this.userLevel = 40;
+      }
 
       if(accountData && accountData.roleLevel){ // added logIn user level. Bug- #19027
         this.userLevel = Number(accountData.roleLevel);
-        switch(Number(accountData.roleLevel)){
-          case 10:{
-            this.userType = "Admin#Platform";
-            break;
-          }
-          case 20:{
-            this.userType = "Admin#Global";
-            break;
-          }
-          case 30:{
-            this.userType = "Admin#Organisation";
-            break;
-          }
-          case 40:{
-            this.userType = "Admin#Account";
-            break;
-          }
-          default:{
-            this.userType = "Admin#Account";
-            break;
-          }
-        }
+        // switch(Number(accountData.roleLevel)){
+        //   case 10:{
+        //     this.userType = "Admin#Platform";
+        //     break;
+        //   }
+        //   case 20:{
+        //     this.userType = "Admin#Global";
+        //     break;
+        //   }
+        //   case 30:{
+        //     this.userType = "Admin#Organisation";
+        //     break;
+        //   }
+        //   case 40:{
+        //     this.userType = "Admin#Account";
+        //     break;
+        //   }
+        //   default:{
+        //     this.userType = "Admin#Account";
+        //     break;
+        //   }
+        // }
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){

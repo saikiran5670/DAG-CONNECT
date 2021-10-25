@@ -116,6 +116,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "0");
 
                 var vehicleDeatilsWithAccountVisibility =
                                 await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
@@ -126,7 +127,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Code = Responsecode.Failed;
                     return response;
                 }
-
+                //get vehicle for alert visibility
+                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                {
+                    foreach (int alertfeatureId in alertFeatureIds)
+                    {
+                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
+                        //append visibile vins
+                        vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
+                        //remove duplicate vins by key as vin
+                        vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    }
+                }
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
                     AlertCategory = request.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertCategories.ToList(),
@@ -138,43 +152,62 @@ namespace net.atos.daf.ct2.reportservice.Services
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Days = request.Days,
-                    UnknownDrivingStateCheckInterval = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"])
+                    UnknownDrivingStateCheckInterval = Convert.ToInt32(_configuration["UnknownDrivingStateCheckInterval"])
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
+                // remove the alerts dont have visibility for user 
+                foreach (var element in result)
+                {
+                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                    {
+                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                    }
+                }
                 //check if atleast one trip is available 
                 if (result?.Count > 0)
                 {
-                    // Identify the vehicle dont have trip in last 'N' days
-                    //List<string> neverMovedVins = result.Where(x => !fleetOverviewFilter.VINIds.Contains(x.Vin)).Select(x => x.Vin).Distinct().ToList();
-                    List<string> neverMovedVins = fleetOverviewFilter.VINIds.Where(x => !result.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
-                    neverMovedVins.RemoveAll(item => item == null);
-                    if (neverMovedVins.Count > 0)
+                    // Ignore never moved vehicles if today's checkbox is checked
+                    if (fleetOverviewFilter.Days >= 90)
                     {
-                        fleetOverviewFilter.VINIds = new List<string>();
-                        fleetOverviewFilter.VINIds = neverMovedVins;
-                        var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
-                        if (resultNeverMoved?.Count > 0)
-                        {
-                            //If vehicel has only warnings and not trip then add to vehicle with trips 
-                            result.AddRange(resultNeverMoved);
-                        }
-                        //extract vehicles neither having trips nor warnings against it.
-                        List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
-                        neverMoved_NoWarningsVins.RemoveAll(item => item == null);
-                        if (neverMoved_NoWarningsVins?.Count > 0)
+                        // Identify the vehicle dont have trip in last 'N' days
+                        //List<string> neverMovedVins = result.Where(x => !fleetOverviewFilter.VINIds.Contains(x.Vin)).Select(x => x.Vin).Distinct().ToList();
+                        List<string> neverMovedVins = fleetOverviewFilter.VINIds.Where(x => !result.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                        neverMovedVins.RemoveAll(item => item == null);
+                        if (neverMovedVins.Count > 0)
                         {
                             fleetOverviewFilter.VINIds = new List<string>();
-                            fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
-                            //prepare response for never moved vehicles those  neither having trips nor warnings against it.
-                            var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
-                            //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
-                            if (resultNeverMoved_NoWarnings?.Count > 0)
+                            fleetOverviewFilter.VINIds = neverMovedVins;
+                            var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+                            if (resultNeverMoved?.Count > 0)
                             {
-                                result.AddRange(resultNeverMoved_NoWarnings);
+                                // remove the alerts dont have visibility for user 
+                                foreach (var element in resultNeverMoved)
+                                {
+                                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                                    {
+                                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                                    }
+                                }
+                                //If vehicel has only warnings and not trip then add to vehicle with trips 
+                                result.AddRange(resultNeverMoved);
+                            }
+                            //extract vehicles neither having trips nor warnings against it.
+                            List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                            neverMoved_NoWarningsVins.RemoveAll(item => item == null);
+                            if (neverMoved_NoWarningsVins?.Count > 0)
+                            {
+                                fleetOverviewFilter.VINIds = new List<string>();
+                                fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
+                                //prepare response for never moved vehicles those  neither having trips nor warnings against it.
+                                var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+                                //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
+                                if (resultNeverMoved_NoWarnings?.Count > 0)
+                                {
+                                    result.AddRange(resultNeverMoved_NoWarnings);
+                                }
                             }
                         }
                     }
-
                     List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
                                                                                              .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
@@ -219,33 +252,45 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else
                 {
-                    //if no trip is available    
-                    // Identify the vehicle don't have trip in last 'N' days, and retrive warnings if any
-                    List<string> neverMovedVins = fleetOverviewFilter.VINIds;
-                    neverMovedVins.RemoveAll(item => item == null);
-                    if (result != null && neverMovedVins.Count > 0)
+                    // Ignore never moved vehicles if today's checkbox is checked
+                    if (fleetOverviewFilter.Days >= 90)
                     {
-                        fleetOverviewFilter.VINIds = new List<string>();
-                        fleetOverviewFilter.VINIds = neverMovedVins;
-                        var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
-                        if (resultNeverMoved?.Count > 0)
-                        {
-                            //If vehicel has only warnings and not trip then add to vehicle with trips 
-                            result.AddRange(resultNeverMoved);
-                        }
-                        //extract vehicles neither having trips nor warnings against it.
-                        List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
-                        neverMoved_NoWarningsVins.RemoveAll(item => item == null);
-                        if (neverMoved_NoWarningsVins?.Count > 0)
+                        //if no trip is available    
+                        // Identify the vehicle don't have trip in last 'N' days, and retrive warnings if any
+                        List<string> neverMovedVins = fleetOverviewFilter.VINIds;
+                        neverMovedVins.RemoveAll(item => item == null);
+                        if (result != null && neverMovedVins.Count > 0)
                         {
                             fleetOverviewFilter.VINIds = new List<string>();
-                            fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
-                            //prepare response for never moved vehicles those  neither having trips nor warnings against it.
-                            var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
-                            if (resultNeverMoved_NoWarnings.Count > 0)
+                            fleetOverviewFilter.VINIds = neverMovedVins;
+                            var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
+                            if (resultNeverMoved?.Count > 0)
                             {
-                                //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
-                                result.AddRange(resultNeverMoved_NoWarnings);
+                                // remove the alerts dont have visibility for user 
+                                foreach (var element in resultNeverMoved)
+                                {
+                                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                                    {
+                                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                                    }
+                                }
+                                //If vehicel has only warnings and not trip then add to vehicle with trips 
+                                result.AddRange(resultNeverMoved);
+                            }
+                            //extract vehicles neither having trips nor warnings against it.
+                            List<string> neverMoved_NoWarningsVins = fleetOverviewFilter.VINIds.Where(x => !resultNeverMoved.Select(y => y.Vin).Distinct().ToList().Contains(x)).Distinct().ToList();
+                            neverMoved_NoWarningsVins.RemoveAll(item => item == null);
+                            if (neverMoved_NoWarningsVins?.Count > 0)
+                            {
+                                fleetOverviewFilter.VINIds = new List<string>();
+                                fleetOverviewFilter.VINIds = neverMoved_NoWarningsVins;
+                                //prepare response for never moved vehicles those  neither having trips nor warnings against it.
+                                var resultNeverMoved_NoWarnings = await _reportManager.GetFleetOverviewDetails_NeverMoved_NoWarnings(fleetOverviewFilter);
+                                if (resultNeverMoved_NoWarnings.Count > 0)
+                                {
+                                    //If vehicel neither having trips nor warnings then add to vehicle with trips & having only warnings
+                                    result.AddRange(resultNeverMoved_NoWarnings);
+                                }
                             }
                         }
                     }

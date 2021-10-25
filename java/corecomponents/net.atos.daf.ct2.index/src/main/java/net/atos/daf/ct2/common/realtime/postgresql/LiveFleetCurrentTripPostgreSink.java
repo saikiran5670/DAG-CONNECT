@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.rowset.FilteredRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
+
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -288,17 +292,28 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									try { 
 										if (this.connection!=null) {
 											
-											createWarnStatusStmt = connection.createStatement();
-											updateWarnStatusStmt = connection.prepareStatement(DafConstants.INSERT_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START,
-													Statement.RETURN_GENERATED_KEYS);
-											readWarnStatusStmt = connection.prepareStatement(DafConstants.READ_LATEST_ACTIVE_WARNING_STATUS_AT_TRIP_START,
-													ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+											/*
+											 * createWarnStatusStmt = connection.createStatement(); updateWarnStatusStmt
+											 * = connection.prepareStatement(DafConstants.
+											 * INSERT_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START,
+											 * Statement.RETURN_GENERATED_KEYS); readWarnStatusStmt =
+											 * connection.prepareStatement(DafConstants.
+											 * READ_LATEST_ACTIVE_WARNING_STATUS_AT_TRIP_START,
+											 * ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+											 */
+											readWarnStatusStmt = connection.prepareStatement(DafConstants.READ_LATEST_WARNING_STATUS_AT_TRIP_START,
+													 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+											
 										}
 										
 										
-										updateWarnStatusStmt.setString(1, indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid());
-										
-										System.out.println("INSERT INTO TABLE STATEMENT PARAMETER METADATA : " + updateWarnStatusStmt.getParameterMetaData());
+										/*
+										 * updateWarnStatusStmt.setString(1, indexValue.getVin()!=null ?
+										 * indexValue.getVin() : indexValue.getVid());
+										 * 
+										 * System.out.println("INSERT INTO TABLE STATEMENT PARAMETER METADATA : " +
+										 * updateWarnStatusStmt.getParameterMetaData());
+										 */
 										
 										readWarnStatusStmt.setString(1, indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid());
 										
@@ -311,53 +326,68 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 									}
 									
-									log.info("LiveFleetCurrentTripPostgreSink- Trying to create, update and read temporary table ...");
+									/*
+									 * log.
+									 * info("LiveFleetCurrentTripPostgreSink- Trying to create, update and read temporary table ..."
+									 * );
+									 */
+									 log.info("LiveFleetCurrentTripPostgreSink- Trying to read latest warning warning status ...");
+									
 									
 									try {
 										
-										System.out.println("CREATE TABLE STATEMENT QUERY EXECUTED : " + DafConstants.CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
-										
-										createWarnStatusStmt.execute(DafConstants.CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
-										
-										System.out.println("INSERT INTO TABLE STATEMENT QUERY EXECUTED : " + updateWarnStatusStmt);
-										
-										int warning_status_affected_row = updateWarnStatusStmt.executeUpdate();
-										
-										if (warning_status_affected_row == 1) {
-											try(ResultSet warning_vehicle_health_status = updateWarnStatusStmt.getGeneratedKeys()) {
-												while(warning_vehicle_health_status.next()) {
-													System.out.println(warning_vehicle_health_status.getString("vehicle_health_status_type"));
-													System.out.println(warning_vehicle_health_status.getInt("warning_class"));
-													System.out.println(warning_vehicle_health_status.getInt("warning_number"));
-													System.out.println(warning_vehicle_health_status.getString("warning_type"));
-													System.out.println(warning_vehicle_health_status.getLong("warning_time_stamp"));
-													System.out.println(warning_vehicle_health_status.getDouble("latitude")); 
-													System.out.println(warning_vehicle_health_status.getDouble("longitude"));
-													System.out.println(warning_vehicle_health_status.getInt("message_type"));
-													System.out.println(warning_vehicle_health_status.getString("trip_id"));
-													System.out.println(warning_vehicle_health_status.getString("vin"));
-												}
-											} catch (SQLException e) {
-													log.error("Error iterating over warning_vehicle_health_status : Failed to iterate over and print the inserted row ");
-													log.error(e.getMessage());
-											}
-										}
+										/*
+										 * System.out.println("CREATE TABLE STATEMENT QUERY EXECUTED : " +
+										 * DafConstants.CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
+										 * 
+										 * createWarnStatusStmt.execute(DafConstants.
+										 * CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START);
+										 * 
+										 * System.out.println("INSERT INTO TABLE STATEMENT QUERY EXECUTED : " +
+										 * updateWarnStatusStmt);
+										 * 
+										 * int warning_status_affected_row = updateWarnStatusStmt.executeUpdate();
+										 * 
+										 * if (warning_status_affected_row == 1) { try(ResultSet
+										 * warning_vehicle_health_status = updateWarnStatusStmt.getGeneratedKeys()) {
+										 * while(warning_vehicle_health_status.next()) {
+										 * System.out.println(warning_vehicle_health_status.getString(
+										 * "vehicle_health_status_type"));
+										 * System.out.println(warning_vehicle_health_status.getInt("warning_class"));
+										 * System.out.println(warning_vehicle_health_status.getInt("warning_number"));
+										 * System.out.println(warning_vehicle_health_status.getString("warning_type"));
+										 * System.out.println(warning_vehicle_health_status.getLong("warning_time_stamp"
+										 * )); System.out.println(warning_vehicle_health_status.getDouble("latitude"));
+										 * System.out.println(warning_vehicle_health_status.getDouble("longitude"));
+										 * System.out.println(warning_vehicle_health_status.getInt("message_type"));
+										 * System.out.println(warning_vehicle_health_status.getString("trip_id"));
+										 * System.out.println(warning_vehicle_health_status.getString("vin")); } } catch
+										 * (SQLException e) { log.
+										 * error("Error iterating over warning_vehicle_health_status : Failed to iterate over and print the inserted row "
+										 * ); log.error(e.getMessage()); } }
+										 */
 										
 										System.out.println("READ TABLE STATEMENT QUERY EXECUTED : " + readWarnStatusStmt);
 										
 										rs_warn_vehicle_health_status = readWarnStatusStmt.executeQuery();
 										
 										while (rs_warn_vehicle_health_status.next()) {
-											warnStatsPojo.setVehicleHealthStatusType(rs_warn_vehicle_health_status.getString("vehicle_health_status_type"));
-											warnStatsPojo.setWarningClass(rs_warn_vehicle_health_status.getInt("warning_class"));
-											warnStatsPojo.setWarningNumber(rs_warn_vehicle_health_status.getInt("warning_number"));
-											warnStatsPojo.setWarningType(rs_warn_vehicle_health_status.getString("warning_type"));
-											warnStatsPojo.setWarningTimeStamp(rs_warn_vehicle_health_status.getLong("warning_time_stamp"));
-											warnStatsPojo.setLatitude(rs_warn_vehicle_health_status.getDouble("latitude")); 
-											warnStatsPojo.setLongitude(rs_warn_vehicle_health_status.getDouble("longitude"));
-											warnStatsPojo.setMessageType(rs_warn_vehicle_health_status.getInt("message_type"));
-											warnStatsPojo.setTripId(rs_warn_vehicle_health_status.getString("trip_id"));
-											warnStatsPojo.setVin(rs_warn_vehicle_health_status.getString("vin"));
+											
+											if (rs_warn_vehicle_health_status.getString("warning_type").equalsIgnoreCase("A")) {
+												warnStatsPojo.setVehicleHealthStatusType(rs_warn_vehicle_health_status.getString("vehicle_health_status_type"));
+												warnStatsPojo.setWarningClass(rs_warn_vehicle_health_status.getInt("warning_class"));
+												warnStatsPojo.setWarningNumber(rs_warn_vehicle_health_status.getInt("warning_number"));
+												warnStatsPojo.setWarningType(rs_warn_vehicle_health_status.getString("warning_type"));
+												warnStatsPojo.setWarningTimeStamp(rs_warn_vehicle_health_status.getLong("warning_time_stamp"));
+												warnStatsPojo.setLatitude(rs_warn_vehicle_health_status.getDouble("latitude")); 
+												warnStatsPojo.setLongitude(rs_warn_vehicle_health_status.getDouble("longitude"));
+												warnStatsPojo.setMessageType(rs_warn_vehicle_health_status.getInt("message_type"));
+												warnStatsPojo.setTripId(rs_warn_vehicle_health_status.getString("trip_id"));
+												warnStatsPojo.setVin(rs_warn_vehicle_health_status.getString("vin"));
+											}
+											
+											
+
 										}
 										 
 										 System.out.println("LATEST WARNING STATUS RECEIVED from LIVEFLEET_WARNING_STATUS FOR vin/vid = "
