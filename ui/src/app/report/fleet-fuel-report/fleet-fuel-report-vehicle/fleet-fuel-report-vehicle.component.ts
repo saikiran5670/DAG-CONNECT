@@ -2312,7 +2312,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idleDuration' :{
-            tempObj.push(e.convertedIdleDuration);
+            tempObj.push(e.idleDurationPercentage);
             break;
           }
           case 'ptoDuration' :{

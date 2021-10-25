@@ -324,10 +324,6 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
-      if (this.isLogedIn) {
-        this.getOfflineNotifications();
-        this.connectWithSignalR();
-      }
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -463,7 +459,9 @@ export class AppComponent {
       this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
         this.getMenu(result, 'orgRoleChange');
         this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-
+        // if (this.isLogedIn) {
+          this.getOfflineNotifications();
+        // }
         //this.getReportDetails();
       }, (error) => {
         console.log(error);
@@ -1354,21 +1352,13 @@ export class AppComponent {
     this.alertService.getOfflineNotifications().subscribe(data => {
       if(data){
         this.signalRService.notificationCount= data["notAccResponse"].notificationCount;
-        // data["notificationResponse"].forEach(element => {
-        //   element["alertTypeValue"] = this.signalRService.translationData[element["alertTypeKey"]] 
-        // });
         this.signalRService.notificationData= data["notificationResponse"];
         this.signalRService.getDateAndTime();
       }
-      // setTimeout(() => {
-      //   this.getOfflineNotifications();
-      // }, 180000);
-  
+      this.connectWithSignalR();
     },
     error => {
-      // setTimeout(() => {
-      //   this.getOfflineNotifications();
-      // }, 180000);
+      this.connectWithSignalR();
     })
   }
 
