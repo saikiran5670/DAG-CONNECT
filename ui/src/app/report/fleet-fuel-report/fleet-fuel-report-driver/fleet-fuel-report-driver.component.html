@@ -644,7 +644,7 @@
   
               </mat-header-cell>
   
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vin')">
+              <mat-cell class="text-truncate" matTooltip="{{ row.vin }}" *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vin')">
   
                 <span>{{row.vin}}</span>
   
@@ -660,7 +660,7 @@
   
               </mat-header-cell>
   
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
+              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
   
                 <span>{{row.vehicleRegistrationNo}}</span>
   
