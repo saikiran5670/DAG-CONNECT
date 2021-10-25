@@ -987,7 +987,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             try
-            {
+            {  // Fetch Feature Ids of the alert for visibility
+                var alertFeatureIds = GetMappedFeatureIdByStartWithName(ReportConstants.FLEETOVERVIEW_ALERT_FEATURE_STARTWITH);
                 // Fetch Feature Id of the report for visibility
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
 
@@ -1013,6 +1014,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("alert_feature_ids", JsonConvert.SerializeObject(alertFeatureIds));
 
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest, headers);
                 if (response == null)
