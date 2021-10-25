@@ -846,7 +846,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
-    vehName = vehCount[0].vehicleName;
+    vehName = vehCount[0].vin;
      
     }
 
