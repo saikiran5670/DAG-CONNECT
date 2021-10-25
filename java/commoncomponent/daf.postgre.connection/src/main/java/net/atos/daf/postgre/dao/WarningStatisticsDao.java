@@ -538,13 +538,13 @@ public class WarningStatisticsDao implements Serializable {
 		WarningStatisticsPojo warningData = new WarningStatisticsPojo();
 		try {
 
-			logger.info("inside map function--: ");
+			//logger.info("inside map function--: ");
 			warningData.setVin(resultSet.getString("vin"));
 			warningData.setId(resultSet.getInt("id"));
 			warningData.setWarningClass(resultSet.getInt("warning_class"));
 			warningData.setWarningNumber(resultSet.getInt("warning_number"));
 			warningData.setWarningType(resultSet.getString("warning_type"));
-			logger.info("warningDataObject is ready to return: ");
+			//logger.info("warningDataObject is ready to return: ");
 		} catch (Exception e) {
 			logger.error("Error in map method : " + e.getMessage());
 		}
