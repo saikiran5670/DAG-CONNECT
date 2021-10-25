@@ -68,7 +68,7 @@ export class AppComponent {
   systemAccountAccess: boolean = false;
   globalCategoryAccess: boolean = false;
   accessType: object;
-  userType: any = "";
+  userType: any = "Admin#Account";
   userLevel: any = 40;
   public landingPageForm: FormGroup;
   accountInfo: any;
@@ -87,6 +87,7 @@ export class AppComponent {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   alertDateFormat: any;
   startDateValue: any;
+  reportListData: any = [];
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
@@ -457,61 +458,22 @@ export class AppComponent {
         "languageCode": parseLanguageCode.code
       }
       this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
-        this.getMenu(result, 'orgRoleChange');
-        this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-        // if (this.isLogedIn) {
-          this.getOfflineNotifications();
-        // }
-        //this.getReportDetails();
+        this.accountService.getSessionInfo().subscribe((accountData: any) => {
+          this.getMenu(result, 'orgRoleChange', accountData);
+          this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+          // if (this.isLogedIn) {
+            this.getOfflineNotifications();
+          // }
+          //this.getReportDetails();
+        }, (err) => {
+          console.log(err);
+        });
       }, (error) => {
         console.log(error);
       });
     }
-
-    // // For checking Access of the User
-    // let accessNameList = [];
-    // this.menuPages.features.forEach((obj: any) => {
-    //     accessNameList.push(obj.name)
-    //   });
-    //   // console.log("---print name access ---",accessNameList)
-    //   if(accessNameList.includes("Admin#Admin")){
-    //     this.adminFullAccess = true;
-    //   }else if(accessNameList.includes("Admin#Contributor")){
-    //     this.adminContributorAccess = true;
-    //   }else {
-    //     this.adminReadOnlyAccess = true;
-    //   }
-
-    //   this.accessType = {
-    //     adminFullAccess : this.adminFullAccess,
-    //     adminContributorAccess: this.adminContributorAccess,
-    //     adminReadOnlyAccess: this.adminReadOnlyAccess
-    //   }
-    //   localStorage.setItem("accessType", JSON.stringify(this.accessType));
-    //   // For checking Type of the User
-    //   if(accessNameList.includes("Admin#Platform")){
-    //     this.userType = "Admin#Platform";
-    //   }else if(accessNameList.includes("Admin#Global")){
-    //     this.userType = "Admpin#Global";
-    //   }else if(accessNameList.includes("Admin#Organisation")){
-    //     this.userType = "Admin#Organisation";
-    //   }else if(accessNameList.includes("Admin#Account")){
-    //     this.userType = "Admin#Account";
-    //   }
-    //   localStorage.setItem("userType", this.userType);
-
-
-    //   // This will handle externalLink and Icons for Navigation Menu
-    // this.menuPages.menus.forEach(elem => {
-    //   elem.externalLink = this.menuStatus[elem.url].externalLink ;
-    //   elem.icon = this.menuStatus[elem.url].icon;
-    //   if(elem.externalLink){
-    //     elem.link = this.menuStatus[elem.url].link;
-    //   }
-    //   })
   }
 
-  reportListData: any = [];
   getReportDetails(){
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       this.reportListData = reportList.reportDetails;
@@ -561,7 +523,7 @@ export class AppComponent {
     // }
   }
 
-  getMenu(data: any, from?: any) {
+  getMenu(data: any, from?: any, accountData?: any) {
     this.menuPages = data;
     //-- This will handle externalLink and Icons for Navigation Menu --//
     let landingPageMenus: any = [];
@@ -583,7 +545,7 @@ export class AppComponent {
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-    localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+    //localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
@@ -650,6 +612,17 @@ export class AppComponent {
       this.globalPOIAccess = false;
       this.systemAccountAccess = false;
       this.globalCategoryAccess = false;
+
+      // if(accountData && accountData.roleLevel){ // access based on role level
+      //   if(Number(accountData.roleLevel) == 10 || Number(accountData.roleLevel) == 20){
+      //     this.adminFullAccess = true;
+      //   }else if(Number(accountData.roleLevel) == 10){
+      //     this.adminContributorAccess = true;
+      //   }else{
+      //     this.adminReadOnlyAccess = true;
+      //   }
+      // }
+
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
       } else if (accessNameList.includes("Admin#Contributor")) {
@@ -685,18 +658,45 @@ export class AppComponent {
       // Admin          
       // Office Staff
       // Viewer
-      if (accessNameList.includes("Admin#Platform")) {
-        this.userType = "Admin#Platform";
-        this.userLevel = 10;
-      } else if (accessNameList.includes("Admin#Global")) {
-        this.userType = "Admin#Global";
-        this.userLevel = 20;
-      } else if (accessNameList.includes("Admin#Organisation")) {
-        this.userType = "Admin#Organisation";
-        this.userLevel = 30;
-      } else if (accessNameList.includes("Admin#Account")) {
-        this.userType = "Admin#Account";
-        this.userLevel = 40;
+      
+      // if (accessNameList.includes("Admin#Platform")) {
+      //   this.userType = "Admin#Platform";
+      //   //this.userLevel = 10;
+      // } else if (accessNameList.includes("Admin#Global")) {
+      //   this.userType = "Admin#Global";
+      //   //this.userLevel = 20;
+      // } else if (accessNameList.includes("Admin#Organisation")) {
+      //   this.userType = "Admin#Organisation";
+      //   //this.userLevel = 30;
+      // } else if (accessNameList.includes("Admin#Account")) {
+      //   this.userType = "Admin#Account";
+      //   //this.userLevel = 40;
+      // }
+
+      if(accountData && accountData.roleLevel){ // added logIn user level. Bug- #19027
+        this.userLevel = Number(accountData.roleLevel);
+        switch(Number(accountData.roleLevel)){
+          case 10:{
+            this.userType = "Admin#Platform";
+            break;
+          }
+          case 20:{
+            this.userType = "Admin#Global";
+            break;
+          }
+          case 30:{
+            this.userType = "Admin#Organisation";
+            break;
+          }
+          case 40:{
+            this.userType = "Admin#Account";
+            break;
+          }
+          default:{
+            this.userType = "Admin#Account";
+            break;
+          }
+        }
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
@@ -711,7 +711,7 @@ export class AppComponent {
         localStorage.removeItem("orgContextStatus");
       }
       localStorage.setItem("userType", this.userType);
-      localStorage.setItem("userLevel", this.userLevel);
+      localStorage.setItem("userLevel", this.userLevel); 
     }else{
       if (from && from == 'orgContextSwitch') {
         let _menu = this.menuPages.menus;
@@ -1237,7 +1237,9 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
-      this.getMenu(data, 'orgContextSwitch');
+      this.accountService.getSessionInfo().subscribe((accountData: any) => {
+        this.getMenu(data, 'orgContextSwitch', accountData);
+      });
     }, (error) => {
       console.log(error)
     });

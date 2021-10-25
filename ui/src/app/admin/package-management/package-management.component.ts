@@ -38,7 +38,7 @@ export class PackageManagementComponent implements OnInit {
   importTranslationData : any = {};
   templateTitle = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
   templateValue = [
-    ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
+    ['PTest100', 'Package1', "Package Template", "Org+VIN", "Active","Dashboard, Report"]
   ];
   tableColumnList = ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'];
   tableColumnName = ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'];
