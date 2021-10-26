@@ -36,7 +36,6 @@ namespace net.atos.daf.ct2.portalservice.hubs
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly SessionHelper _sessionHelper;
         private readonly HeaderObj _userDetails;
-        private static int _pkId = 1;
         private readonly AuditHelper _auditHelper;
         private readonly PodConsumerGroupMapSettings _podComsumerGroupMapSettings = new PodConsumerGroupMapSettings();
         public NotificationHub(PushNotificationService.PushNotificationServiceClient pushNotofocationServiceClient, IConfiguration configuration, AccountSignalRClientsMappingList accountSignalRClientsMappingList, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AuditHelper auditHelper)
@@ -86,6 +85,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     {
                         //Get Feature ids for alert feature
                         var featureIds = GetMappedFeatureIdByStartWithName(NotificationHubConstant.ALERT_FEATURE_STARTWITH);
+                        _logger.Info("featureIds:" + JsonConvert.SerializeObject(featureIds));
+                        _logger.Info("_userDetails.UserFeatures:" + JsonConvert.SerializeObject(_userDetails));
                         AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
                         {
                             AccountId = _userDetails.AccountId,
@@ -96,6 +97,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         };
                         _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
                         _logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
+
                     }
                 }
                 await base.OnConnectedAsync();
