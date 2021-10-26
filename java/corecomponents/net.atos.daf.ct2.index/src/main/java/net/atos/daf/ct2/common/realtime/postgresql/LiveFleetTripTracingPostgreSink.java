@@ -79,7 +79,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 						if (indexData.getVEvtID() != 4) {
 							
 							LiveFleetPojo previousRecordInfo = positionDAO.read(vin, tripID);
-							logger.info("inside LiveFleet Sink class after read :{}");
+							//logger.info("inside LiveFleet Sink class after read :{}");
 							if (previousRecordInfo != null) {
 								logger.info("inside LiveFleet previousRecordInfo is not null :{}");
 								Double previousMessageTimeStamp = previousRecordInfo.getMessageTimestamp();
@@ -93,13 +93,14 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 								drivingTime = ((currentMessageTimeStamp - previousMessageTimeStamp)
 										+ previousRecordInfo.getDrivingTime() - idleDuration);
 							}
-							System.out.println("drivingTime-->" + drivingTime);
+							//System.out.println("drivingTime-->" + drivingTime);
 							logger.info("inside LiveFleet drivingTime-->:{}"+ drivingTime);
 						}
 
 						LiveFleetPojo currentPosition = tripCalculation(row, drivingTime);
 
 						positionDAO.insert(currentPosition);
+						logger.info("Data inserted in Live fleet position :: "+currentPosition.getTripId());
 
 					}
 				}
@@ -291,7 +292,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		if (row.getDocument().getVWheelBasedSpeed() != null)
 			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());
 
-		if(row.getDriverID() !=null || ! row.getDriverID().isEmpty()) {
+		if(row.getDriverID() !=null && ! row.getDriverID().isEmpty()) {
 			currentPosition.setDriver1Id(row.getDriverID());
 		} else {
 			currentPosition.setDriver1Id("Unknown");

@@ -1276,6 +1276,7 @@ this.barChartOptionsPerformance = {
   }
 
   exportAsExcelFile(){
+    return;
     // this.getAllSummaryData();
     const title = 'Fleet Fuel Vehicle Report';
     const ranking = 'Ranking Section'

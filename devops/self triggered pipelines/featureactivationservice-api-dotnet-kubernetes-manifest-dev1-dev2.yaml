@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: featureactivationservice-auto-deployment
+  name: featureactivationservice-deployment
   labels:
-    app.kubernetes.io/name: featureactivationservice-auto
+    app.kubernetes.io/name: featureactivationservice
     app.kubernetes.io/type: dataservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: featureactivationservice-auto
+        app.kubernetes.io/name: featureactivationservice
         app.kubernetes.io/type: dataservice
     spec:
       automountServiceAccountToken: false
@@ -28,15 +28,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - featureactivationservice-auto
+                - featureactivationservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - dataservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: featureactivationservice-auto-container
-        image: #{acrurl}#/featureactivationservice-auto
+      - name: featureactivationservice-container
+        image: #{acrurl}#/featureactivationservice
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
@@ -87,7 +87,7 @@ spec:
             memory: 20Mi
         env:
         - name: serviceName
-          value: "FeatureActivationService-Auto"
+          value: "FeatureActivationService"
       volumes:
       - name: tmp
         emptyDir: {}
@@ -100,15 +100,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: featureactivationservice-auto
+        app.kubernetes.io/name: featureactivationservice
         app.kubernetes.io/type: dataservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: featureactivationservice-auto
+  name: featureactivationservice
   labels:
-    svc.kubernetes.io/name: featureactivationservice-auto
+    svc.kubernetes.io/name: featureactivationservice
     svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -119,16 +119,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: featureactivationservice-auto
+    app.kubernetes.io/name: featureactivationservice
     app.kubernetes.io/type: dataservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: featureactivationservice-auto-hpa
+  name: featureactivationservice-hpa
   labels:
-    hpa.kubernetes.io/name: featureactivationservice-auto
+    hpa.kubernetes.io/name: featureactivationservice
     hpa.kubernetes.io/type: dataservice 
 spec: 
   maxReplicas: 5 
@@ -136,7 +136,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: featureactivationservice-auto-deployment 
+    name: featureactivationservice-deployment 
   metrics: 
   - type: Resource 
     resource: 

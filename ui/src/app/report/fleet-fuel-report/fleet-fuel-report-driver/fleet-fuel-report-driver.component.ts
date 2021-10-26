@@ -1761,18 +1761,19 @@ setDefaultTodayDate(){
         });
       }
      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-
+     this.resetVehicleGroupFilter();
     }
 
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
+    //console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
     
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-      console.log("vehicleDD 2", this.vehicleDD);
+     // console.log("vehicleDD 2", this.vehicleDD);
+      this.resetVehicleFilter();
       this.resetTripFormControlValue();
     };
     this.setVehicleGroupAndVehiclePreSelection();

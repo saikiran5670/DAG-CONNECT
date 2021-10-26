@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public List<POIResponse> GlobalPois { get; set; }
         public List<DriverFilter> DriverList { get; set; }
         public List<FleetOverviewFilterAlert> FleetOverviewAlerts { get; set; }
+        public List<FilterProperty> AlertType { get; set; }
 
     }
 

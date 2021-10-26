@@ -33,17 +33,19 @@ public class LiveFleetTripIndexDao implements Serializable {
 				tripIndexQry.executeBatch();
 			} else {
 				if (connection == null) {
-					logger.error(" Issue indexTripData connection is null : " + connection);
+					logger.error(" Issue indexTripData connection is null : {}" , connection);
 					throw new TechnicalException("indexTripData Datamart connection is null :: ");
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Sql Issue while inserting data to indexMessageData table : " + e.getMessage());
-			logger.error("Issue while inserting TripIndex record :: " + tripIndexQry);
+			logger.error("Sql Issue while inserting data to indexMessageData table :{} ", e.getMessage());
+			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);
+			logger.error("Issue while inserting TripIndex, connection ::{}, indexTripData :{} " , connection, indexTripData);
 			e.printStackTrace();
 		} catch (Exception e) {
-			logger.error("Issue while inserting data to indexMessageData table : " + e.getMessage());
-			logger.error("Issue while inserting TripIndex record :: " + tripIndexQry);
+			logger.error("Issue while inserting data to indexMessageData table :{} ", e.getMessage());
+			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);
+			logger.error("Issue while inserting TripIndex, connection ::{}, indexTripData :{} " , connection, indexTripData);
 			e.printStackTrace();
 		}
 
