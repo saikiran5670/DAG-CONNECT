@@ -97,7 +97,7 @@
       
                   <span>{{ translationData.lbldriverName || 'driver Name' }}: </span>
   
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.driverName }}
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (this.driverDetails.unknownDriver) ? 'Unknown' : this.driverDetails.driverName }}
                   </span>
   
                 </span>
