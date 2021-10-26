@@ -38,34 +38,34 @@ import net.atos.daf.ct2.processing.BroadcastState;
 import net.atos.daf.ct2.processing.ConsumeSourceStream;
 import net.atos.daf.ct2.processing.ValidateSourceStream;
 
-public class MonitorDataProcess {
+public class MonitorDataHbaseProcess {
 	
-//    private static final Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
-    private static final Logger log = LogManager.getLogger(MonitorDataProcess.class);
-    public static String FILE_PATH;
-    private StreamExecutionEnvironment streamExecutionEnvironment;
-    private static final long serialVersionUID = 1L;
+//  private static final Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+  private static final Logger log = LogManager.getLogger(MonitorDataHbaseProcess.class);
+  public static String FILE_PATH;
+  private StreamExecutionEnvironment streamExecutionEnvironment;
+  private static final long serialVersionUID = 1L;
 	
-    public static Properties configuration() throws DAFCT2Exception {
+  public static Properties configuration() throws DAFCT2Exception {
 
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(FILE_PATH));
-            properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.getProperty(AUTO_OFFSET_RESET_CONFIG));
-            log.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
-        } catch (IOException e) {
-            log.error("Unable to Find the File " + FILE_PATH, e);
-            throw new DAFCT2Exception("Unable to Find the File " + FILE_PATH, e);
-        }
-        return properties;
-    }
+      Properties properties = new Properties();
+      try {
+          properties.load(new FileReader(FILE_PATH));
+          properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.getProperty(AUTO_OFFSET_RESET_CONFIG));
+          log.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
+      } catch (IOException e) {
+          log.error("Unable to Find the File " + FILE_PATH, e);
+          throw new DAFCT2Exception("Unable to Find the File " + FILE_PATH, e);
+      }
+      return properties;
+  }
 	
 	public static void main(String[] args) throws Exception {
 
 		Map<String, String> auditMap = null;
 		AuditETLJobClient auditing = null;
 		Integer valueSeven=7;
-		//Properties properties = new Properties();
+
 		ParameterTool envParams = null;
 
 		try {
@@ -84,31 +84,11 @@ public class MonitorDataProcess {
 
 			DataStream<KafkaRecord<Monitor>> consumerStream =flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			//consumerStream.print();
-			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
+			
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
-			}
-			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
-			
-			DriverProcessing driverProcess= new DriverProcessing();
-			
-			
-			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class).filter(monitor -> monitor.getMessageType().equals(valueSeven) && monitor.getDocument().getDriverID()!=null).returns(Monitor.class);
-			
-			SingleOutputStreamOperator<Monitor> driverManagementProcessing = driverProcess.driverManagementProcessing(monitorStream, Long.parseLong(envParams.get(DafConstants.DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS)));
-			
-			driverManagementProcessing.map(monitor -> {
-                log.info("monitor message received after driver calculation processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
-                return monitor;
-            });
-			driverManagementProcessing.addSink(new DriverTimeManagementSink());  // Drive Time Management
-			
-			consumerKeyedStream.addSink(new WarningStatisticsSink()); 
-			
-
 			log.info("after addsink");
 			try {
 
-				
 				
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
@@ -118,13 +98,11 @@ public class MonitorDataProcess {
 				  
 				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
 				 
-				 
 			} catch (Exception e) {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			//env.execute("Realtime_MonitorDataProcess");
-			env.execute(envParams.get(DafConstants.MONITOR_PROCESS));
+			env.execute(" Realtime_MonitorDataHbaseProcess");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -133,7 +111,6 @@ public class MonitorDataProcess {
 
 			try {
 				
-				
 				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 				  "Realtime Data Monitoring processing Job Failed, reason :: " +
 				  e.getMessage());
@@ -141,7 +118,6 @@ public class MonitorDataProcess {
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
-				 
 				 
 			} catch (Exception ex) {
 				log.error("Issue while auditing :: " + ex.getMessage());
@@ -169,32 +145,16 @@ public class MonitorDataProcess {
 		return auditMap;
 	}
 	
-    public void flinkConnection() {
+  public void flinkConnection() {
 
-        this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
-        log.info("Flink Processing Started.");
-    }
-    
-    public void processing(Properties properties) {
-
-        ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
-        ValidateSourceStream validateSourceStream = new ValidateSourceStream();
-        
-        MapStateDescriptor<Message<String>, KafkaRecord<Monitor>> mapStateDescriptor =
-                new BroadcastState<String, Monitor>()
-                        .stateInitialization(properties.getProperty(BROADCAST_NAME));
-
-        DataStream<KafkaRecord<String>> monitorInputStream = consumeSrcStream.consumeSourceInputStream(
-                streamExecutionEnvironment, DafConstants.MONITOR_TOPIC_NAME, properties);
-
-        DataStream<Tuple2<Integer, KafkaRecord<String>>> monitorStreamValiditySts = validateSourceStream
-                .isValidJSON(monitorInputStream);
-
-    }
+      this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
+      log.info("Flink Processing Started.");
+  }
+  
 	
-    public StreamExecutionEnvironment getstreamExecutionEnvironment() {
-        return this.streamExecutionEnvironment;
-    }
+  public StreamExecutionEnvironment getstreamExecutionEnvironment() {
+      return this.streamExecutionEnvironment;
+  }
 	
 
 }
