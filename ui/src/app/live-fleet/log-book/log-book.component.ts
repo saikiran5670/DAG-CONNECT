@@ -589,7 +589,7 @@ ngOnDestroy(){
   if(this._state && this._state.fromVehicleDetails){
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
     this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-    this.logBookForm.get('vehicle').setValue(this._state.data.vid); 
+    this.logBookForm.get('vehicle').setValue(this._state.data.vin); 
      
   }
 
@@ -843,7 +843,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
-    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    let vehCount = this.vehicleDD.filter(i => i.vin == parseInt(this.logBookForm.controls.vehicle.value));
     console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
@@ -997,7 +997,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(this._state && this._state.fromVehicleDetails){
       this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
       this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-      this.logBookForm.get('vehicle').setValue(this._state.data.vid);   
+      this.logBookForm.get('vehicle').setValue(this._state.data.vin);   
     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){
