@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customerdataservice-deployment
+  name: ecoscoredataservice-deployment
   labels:
-    app.kubernetes.io/name: customerdataservice
+    app.kubernetes.io/name: ecoscoredataservice
     app.kubernetes.io/type: dataservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: customerdataservice
+        app.kubernetes.io/name: ecoscoredataservice
         app.kubernetes.io/type: dataservice
     spec:
       automountServiceAccountToken: false
@@ -28,15 +28,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - customerdataservice
+                - ecoscoredataservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - dataservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: customerdataservice-container
-        image: #{acrurl}#/customerdataservice
+      - name: ecoscoredataservice-container
+        image: #{acrurl}#/ecoscoredataservice
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
@@ -87,7 +87,7 @@ spec:
             memory: 20Mi
         env:
         - name: serviceName
-          value: "CustomerDataService"
+          value: "ecoscoredataservice"
       volumes:
       - name: tmp
         emptyDir: {}
@@ -100,15 +100,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: customerdataservice
+        app.kubernetes.io/name: ecoscoredataservice
         app.kubernetes.io/type: dataservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: customerdataservice
+  name: ecoscoredataservice
   labels:
-    svc.kubernetes.io/name: customerdataservice
+    svc.kubernetes.io/name: ecoscoredataservice
     svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -119,16 +119,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: customerdataservice
+    app.kubernetes.io/name: ecoscoredataservice
     app.kubernetes.io/type: dataservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: customerdataservice-hpa
+  name: ecoscoredataservice-hpa
   labels:
-    hpa.kubernetes.io/name: customerdataservice
+    hpa.kubernetes.io/name: ecoscoredataservice
     hpa.kubernetes.io/type: dataservice 
 spec: 
   maxReplicas: 5 
@@ -136,7 +136,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: customerdataservice-deployment 
+    name: ecoscoredataservice-deployment 
   metrics: 
   - type: Resource 
     resource: 
