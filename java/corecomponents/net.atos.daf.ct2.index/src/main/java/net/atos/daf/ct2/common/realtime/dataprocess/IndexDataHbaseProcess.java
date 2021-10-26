@@ -2,7 +2,6 @@ package net.atos.daf.ct2.common.realtime.dataprocess;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -13,19 +12,17 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.common.ct2.util.DAFConstants;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetCurrentTripPostgreSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetTripTracingPostgreSink;
-//import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
 import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
-import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.common.AuditETLJobClient;
 
-public class IndexDataProcess {
+public class IndexDataHbaseProcess {
 	public static void main(String[] args) throws Exception {
 
 		/*
@@ -33,17 +30,16 @@ public class IndexDataProcess {
 		 * it in HBase and Postgres
 		 */
 
-		Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
+		Logger log = LoggerFactory.getLogger(IndexDataHbaseProcess.class);
 
 		Map<String, String> auditMap = null;
 		AuditETLJobClient auditing = null;
 
 		ParameterTool envParams = null;
-		Properties properties = new Properties();
 
 		try {
 
-			log.info("============== Start of IndexDataProcess =============");
+			log.info("============== Start of IndexDataHbaseProcess =============");
 
 			ParameterTool params = ParameterTool.fromArgs(args);
 
@@ -61,54 +57,17 @@ public class IndexDataProcess {
 			
 
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
-			//consumerStream.print();
+		
+			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
-			//consumerStream.map(rec -> {System.out.println("Received Index data ::"+rec ); return rec;});
-			/*
-			 * BucketingSink<KafkaRecord<Index>> hdfsSink = new
-			 * BucketingSink<>("file:///home/flink-vm0-user1/checkpoint");
-			 * 
-			 * hdfsSink.setBucketer(new
-			 * DateTimeBucketer<>("yyyy-MM-dd--HH-mm"));
-			 * 
-			 * consumerStream.print();
-			 * 
-			 * consumerStream.addSink(hdfsSink);
-			 */
-			 
-			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
-			
-			//consumerStream.addSink(new IndexDataHbaseSink()); // Writing into
-			}											// HBase Table
-
-			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
-			// // Writing into Driver Activity PostgreSQL Table
-			
-			KeyedStream<KafkaRecord<Index>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
-			
-
-			//consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
-																			// into
-																			// Current
-																			// Trip
-																			// PostgreSQL
-																			// Table
-
-			//consumerStream.addSink(new LiveFleetTripTracingPostgreSink());
-			
-			consumerKeyedStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing into current trip table
-			
-			consumerKeyedStream.addSink(new LiveFleetTripTracingPostgreSink());
-
-			log.info("after addsink");
+			log.info("after addsinkHbase");
 
 			try {
-				// System.out.println("Inside try of audit");
+				
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
 						"Realtime Data Monitoring processing Job Started");
-				// System.out.println("before calling auditTrail in catch");
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception e) {
@@ -116,11 +75,11 @@ public class IndexDataProcess {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_IndexDataProcess");
+			env.execute(" Realtime_IndexDataHbaseProcess");
 
 		} catch (Exception e) {
 
-			log.error("Error in Index Data Process" + e.getMessage());
+			log.error("Error in Index Hbase Data Process" + e.getMessage());
 			e.printStackTrace();
 
 			try {
