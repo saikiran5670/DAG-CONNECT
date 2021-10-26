@@ -1593,7 +1593,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return offlinePushNotification;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
