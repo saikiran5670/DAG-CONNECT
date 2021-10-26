@@ -1541,7 +1541,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 if (offlinePushNotificationFilter.OrganizationId > 0)
                 {
-                    queryString.Append(" and organization_id = @organization_id ");
+                    queryString.Append(" and ale.organization_id = @organization_id ");
                     parameterAlert.Add("@organization_id", offlinePushNotificationFilter.OrganizationId);
                 }
 
@@ -1593,7 +1593,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return offlinePushNotification;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

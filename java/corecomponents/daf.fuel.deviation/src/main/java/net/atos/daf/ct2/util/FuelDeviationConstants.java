@@ -86,5 +86,6 @@ public class FuelDeviationConstants {
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
 	public static final Double ZERO_DOUBLE_VAL = 0.0;
+	public static final String FUEL_DEVIATION_STREAMING_JOB_NAME = "fuel.deviation.streaming.job.name";
 		
 }

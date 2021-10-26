@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.reports.repository
     {
         //vin,trip_id,level,alert_generated_time,alert type,alert from datamart of 90 days and in(vinid)
 
-        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins, List<int> featureIds)
         {
 
 
@@ -20,7 +20,13 @@ namespace net.atos.daf.ct2.reports.repository
             //  public string AlertGeolocationAddress { get; set; }
 
             var parameter = new DynamicParameters();
+            var parameterAlert = new DynamicParameters();
+            parameterAlert.Add("@featureIds", featureIds);
+            var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+            List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
+
             parameter.Add("@vins", vins);
+            parameter.Add("@features", resultFeaturEnum);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
             string query = @"select distinct id, tripalert.vin as Vin
@@ -42,6 +48,7 @@ namespace net.atos.daf.ct2.reports.repository
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
+                             and tripalert.type = ANY(@features)
                              and tripalert.category_type <> 'O'
                              and tripalert.type <> 'W'
                            and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";

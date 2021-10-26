@@ -21,7 +21,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  breadcumMsg: any = ''; 
+  breadcumMsg: any = '';
   editPackageFlag : boolean = false;
   // featureDisplayedColumns: string[] = ['name', 'select'];
   // dataSource: any;
@@ -44,10 +44,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
-    // {
-    //   name: 'VIN',
-    //   value: 'VIN'
-    // }, 
+    {
+      name: 'VIN',
+      value: 'VIN'
+    },
     {
       name: 'Org+VIN',
       value: 'Org+VIN'
@@ -58,10 +58,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
-    // {
-    //   name: 'VIN',
-    //   value: 'VIN'
-    // }, 
+    {
+      name: 'VIN',
+      value: 'VIN'
+    },
     {
       name: 'Org+VIN',
       value: 'Org+VIN'
@@ -75,14 +75,14 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   columnCodes = ['name', 'select'];
   columnLabels = ['FeatureName','Include'];
   showLoadingIndicator: boolean = true;
-  
- 
+
+
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
 
   getBreadcum(type: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackageDetails ? this.translationData.lblViewPackageDetails : 'View Package Details') : (type == 'edit') ? (this.translationData.lblEditPackageDetails ? this.translationData.lblEditPackageDetails : 'Edit Package Details') : (this.translationData.lblNewPackageDetails ? this.translationData.lblNewPackageDetails : 'New Package Details')}`;
   }
-  
+
   ngOnInit() {
     this.menuFeatures = localStorage.getItem("accountFeatures");
     let data = JSON.parse(this.menuFeatures)["features"];
@@ -171,9 +171,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           this.onReset();
         }
       });
-      // this.featuresData 
+      // this.featuresData
   }, (error) => { });
-  //  this.updatedTableData(this.dataSource); 
+  //  this.updatedTableData(this.dataSource);
 }
 
 // compare(a: Number | String, b: Number | String, isAsc: boolean) {
@@ -188,7 +188,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   //   this.dataSource.filter = filterValue;
   //   this.updatedTableData(this.dataSource.filteredData);
   // }
-  
+
   selectTableRows() {
     if(this.selectedElementData) {
       this.initData.forEach((row: any) => {
@@ -246,8 +246,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     let emitObj = {
       stepFlag: false,
       msg: ""
-    }    
-    this.createViewEditPackageEmit.emit(emitObj);    
+    }
+    this.createViewEditPackageEmit.emit(emitObj);
   }
 
   onStatusChange(event: any){
@@ -257,11 +257,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   onCancel(){
     let emitObj = {
       stepFlag: false
-    }    
-    this.createViewEditPackageEmit.emit(emitObj); 
+    }
+    this.createViewEditPackageEmit.emit(emitObj);
   }
 
-  
+
   onCreate(){
     let featureIds = [];
     this.selectionForFeatures.selected.forEach(feature => {
@@ -286,8 +286,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           stepFlag: false,
           successMsg: this.userCreatedMsg,
           tableData: this.updatedData,
-        }    
-        this.createViewEditPackageEmit.emit(emitObj); 
+        }
+        this.createViewEditPackageEmit.emit(emitObj);
     });
   },(err) => {
     if (err.status == 409) {
@@ -314,8 +314,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         stepFlag: false,
         successMsg: this.userCreatedMsg,
         tableData: this.updatedData,
-      }    
-      this.createViewEditPackageEmit.emit(emitObj); 
+      }
+      this.createViewEditPackageEmit.emit(emitObj);
       });
     },(err) => {
 
@@ -368,7 +368,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   }
 
   masterToggleForFeatures(){
-    this.isAllSelectedForFeatures() ? 
+    this.isAllSelectedForFeatures() ?
     this.selectionForFeatures.clear() : this.initData.forEach(row => {this.selectionForFeatures.select(row)});
 
   }
@@ -376,11 +376,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   checkboxLabelForFeatures(row?: any): string{
     if(row)
       return `${this.isAllSelectedForFeatures() ? 'select' : 'deselect'} all`;
-    else  
+    else
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
-  onChange(event: any, row: any){    
+  onChange(event: any, row: any){
     var selectName = row.name;
     var selectId = row.id;
     var splitName =selectName.slice(0, selectName.indexOf('.'));
@@ -397,24 +397,24 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     else{
     this.initData.forEach( row => {
       if(event.checked){
-      if(row.name == splitName)    
+      if(row.name == splitName)
         this.selectionForFeatures.select(row);           }
       else if(!event.checked)
       {
         if(row.name == splitName)
-        { 
+        {
         let searchElement = this.selectionForFeatures.selected.filter(element => element.name.startsWith(splitName + '.'));
-       
-          if(searchElement.length){      
-            this.selectionForFeatures.select(row);  
-          }         
+
+          if(searchElement.length){
+            this.selectionForFeatures.select(row);
+          }
           else{
             this.selectionForFeatures.deselect(row);
-          }   
+          }
         }
       }
     });
     }
   }
 }
-  
+

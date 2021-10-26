@@ -38,7 +38,7 @@ export class PackageManagementComponent implements OnInit {
   importTranslationData : any = {};
   templateTitle = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
   templateValue = [
-    ['PTest100', 'Package1', "Package Template", "Org+VIN", "Active","Dashboard, Report"]
+    ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
   ];
   tableColumnList = ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'];
   tableColumnName = ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'];
@@ -46,12 +46,12 @@ export class PackageManagementComponent implements OnInit {
 
   constructor(
       private translationService: TranslationService,
-      private packageService: PackageService, 
-      private dialogService: ConfirmDialogService, 
+      private packageService: PackageService,
+      private dialogService: ConfirmDialogService,
       private dialog: MatDialog,
       private _snackBar: MatSnackBar,
       private route:Router
-    ) { 
+    ) {
     // this.defaultTranslation();
   }
 
@@ -112,9 +112,9 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  
 
-  
+
+
 
   createNewPackage(){
     this.actionType = 'create';
@@ -144,7 +144,7 @@ export class PackageManagementComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){ 
+      if(res == true){
         // TODO: change status with latest grid data
         let updatePackageParams = {
           "packageId": rowData.id,
@@ -167,7 +167,7 @@ export class PackageManagementComponent implements OnInit {
       title: this.translationData.lblDelete ,
       message: this.translationData.lblAreyousureyouwanttodelete,
       cancelText: this.translationData.lblCancel ,
-      confirmText: this.translationData.lblDelete 
+      confirmText: this.translationData.lblDelete
     };
     this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -201,7 +201,7 @@ export class PackageManagementComponent implements OnInit {
   successMsgBlink(msg: any){
     this.titleVisible = true;
     this.packageCreatedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.titleVisible = false;
     }, 5000);
   }

@@ -679,13 +679,13 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.setTableInfo();
     if(this.prefUnitFormat == 'dunit_Metric')
     {
-    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0))
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) > Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) > Number(a.convertedFuelConsumption)) ? -1 : 0))
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);
   }
     if(this.prefUnitFormat == 'dunit_Imperial')
     {
-    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption < b.fuelConsumption) ? -1 : ((b.fuelConsumption < a.fuelConsumption) ? 1 : 0))
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) < Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) < Number(a.convertedFuelConsumption)) ? -1 : 0))
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);  
   }
@@ -704,7 +704,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         if (filterData[0].state == 'A') {
           return true;
         } else {
-          return false;
+          return false
         }
       }
     }
@@ -879,7 +879,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       writable : true,enumerable : true, configurable : true
     });
   });
-
     this.dataSource2 = new MatTableDataSource(this.initData);
     setTimeout(() => {
       this.dataSource2.paginator = this.paginator.toArray()[0];

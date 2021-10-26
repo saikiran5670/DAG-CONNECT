@@ -64,12 +64,13 @@ namespace net.atos.daf.ct2.reports
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
         Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
         Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
+        Task<List<AlertType>> GetAlertTypeList();
 
         #region Fuel Deviation Report
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
         Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters);
         #endregion
-        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);
+        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins, List<int> featureIds);
         Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter);
         Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
