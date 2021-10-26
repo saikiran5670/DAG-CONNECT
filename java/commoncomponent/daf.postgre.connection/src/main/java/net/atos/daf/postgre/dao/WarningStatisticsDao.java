@@ -45,7 +45,7 @@ public class WarningStatisticsDao implements Serializable {
 	 */
 
 	public void warning_insert(WarningStatisticsPojo warningDetail) throws TechnicalException, SQLException {
-		PreparedStatement stmt_insert_warning_statistics;
+		PreparedStatement stmt_insert_warning_statistics=null;
 
 		try {
 
@@ -59,10 +59,16 @@ public class WarningStatisticsDao implements Serializable {
 				stmt_insert_warning_statistics.executeBatch();
 				// System.out.println("data inserted in warning table");
 				logger.info("warning dao --inserted for message 10--" + warningDetail.getVin());
-			}
+			}else {
+				if(connection == null) {
+					logger.error(" Issue -- Warning connection is null : " + connection);
+					throw new TechnicalException("Warning connection is null :: ");
+				}
+		}
 		} catch (SQLException e) {
 			// System.out.println("inside catch LiveFleetDriverActivityDao Insert");
 			logger.error("Error in inside catch LiveFleetWarning Statistics Insert" + e.getMessage());
+			logger.error("Error in inside catch LiveFleetWarning Statistics Insert" + stmt_insert_warning_statistics);
 			e.printStackTrace();
 		} catch (Exception e) {
 			logger.error("Error in inside catch LiveFleetWarning Statistics Insert : " + e.getMessage());
@@ -122,16 +128,20 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.executeUpdate();
 				// System.out.println("warning dao --updated for another table for message 10");
 				logger.info("warning dao --updated for another table for message 10--" + warningDetail.getVin());
-			}
+			} else {
+				if(connection == null) {
+					logger.error(" Issue -- Warning connection is null  while update: " + connection);
+					throw new TechnicalException("Warning connection is null while update:: ");
+				}
+		}
 		} catch (SQLException e) {
-			logger.error("Sql Issue while updating data in common trip statistics table : " + updateWarningCommonTrip);
-			// System.out.println("sql-exception in update for message 10" +
-			// e.getMessage());
+			logger.error("Sql Issue while updating data in warning statistics table : " + e.getMessage());
+			logger.error("Sql Issue while updating data in warning statistics table : " + updateWarningCommonTrip);
+			
 			e.printStackTrace();
 		} catch (Exception e) {
-			logger.error("Issue while inserting data in common trip statistics table : " + e.getMessage());
-			// System.out.println("sql-exception in update for message 10" +
-			// e.getMessage());
+			logger.error("Issue while inserting data in warning statistics table : " + e.getMessage());
+			
 			e.printStackTrace();
 		}
 
@@ -528,13 +538,13 @@ public class WarningStatisticsDao implements Serializable {
 		WarningStatisticsPojo warningData = new WarningStatisticsPojo();
 		try {
 
-			logger.info("inside map function--: ");
+			//logger.info("inside map function--: ");
 			warningData.setVin(resultSet.getString("vin"));
 			warningData.setId(resultSet.getInt("id"));
 			warningData.setWarningClass(resultSet.getInt("warning_class"));
 			warningData.setWarningNumber(resultSet.getInt("warning_number"));
 			warningData.setWarningType(resultSet.getString("warning_type"));
-			logger.info("warningDataObject is ready to return: ");
+			//logger.info("warningDataObject is ready to return: ");
 		} catch (Exception e) {
 			logger.error("Error in map method : " + e.getMessage());
 		}
