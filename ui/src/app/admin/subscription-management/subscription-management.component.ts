@@ -44,31 +44,31 @@ export class SubscriptionManagementComponent implements OnInit {
   contextOrgId: any =0;
   organizationId: any = 0;
   localStLanguage: any;
-  dataSource: any; 
+  dataSource: any;
   orgID: any;
   roleID: any;
   changedOrgId: any;
   translationData: any = {};
   createEditViewSubscriptionFlag: boolean = false;
   actionType: any;
-  actionBtn:any;  
+  actionBtn:any;
   // dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   selectionForSubscription = new SelectionModel(true, []);
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   organizationList: any = [];
-  organisationData : any; 
+  organisationData : any;
   accountDetails : any =[];
   TypeList: any = [
-    {
-      name: 'VIN',
-      value: 'N'
-    },
+    // {
+    //   name: 'VIN',
+    //   value: 'N'
+    // },
     {
       name: 'Organization',
       value: 'O'
-    }, 
+    },
     {
       name: 'Org+VIN',
       value: 'V'
@@ -79,16 +79,16 @@ export class SubscriptionManagementComponent implements OnInit {
   filterData: any = [];
 
   constructor(
-    private httpClient: HttpClient, 
+    private httpClient: HttpClient,
     private config: ConfigService,
     private translationService: TranslationService,
     private dialogService: ConfirmDialogService,
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
-    this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL; 
+    this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL;
     // this.defaultTranslation();
   }
-  
+
   generateHeader(){
     let genericHeader : object = {
       'accountId' : localStorage.getItem('accountId'),
@@ -128,25 +128,25 @@ export class SubscriptionManagementComponent implements OnInit {
 
   exportAsPdf() {
     let DATA = document.getElementById('subscriptionData');
-      
+
     html2canvas( DATA , { onclone: (document) => {
       this.actionBtn = document.getElementsByClassName('action');
       for (let obj of this.actionBtn) {
-        obj.style.visibility = 'hidden';  }       
+        obj.style.visibility = 'hidden';  }
     }})
-    .then(canvas => {   
-        
+    .then(canvas => {
+
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
+
         const FILEURI = canvas.toDataURL('image/png')
         let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-        
+
         PDF.save('subscription_Data.pdf');
         PDF.output('dataurlnewwindow');
-    });     
+    });
   }
 
   setDate(date : any){
@@ -161,16 +161,16 @@ export class SubscriptionManagementComponent implements OnInit {
     }
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
-    // this.organisationData = this.accountDetails["organization"];    
+    // this.organisationData = this.accountDetails["organization"];
     this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
-  
+
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -198,7 +198,7 @@ export class SubscriptionManagementComponent implements OnInit {
   }
 
   loadSubscriptionData(){
-    this.showLoadingIndicator = true;  
+    this.showLoadingIndicator = true;
     this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
@@ -212,7 +212,7 @@ export class SubscriptionManagementComponent implements OnInit {
       this.updatedTableData(this.initData);
     });
   }
-  
+
   getOrgListData(){
     let inputData = {
       "id" : this.accountOrganizationId,
@@ -220,13 +220,13 @@ export class SubscriptionManagementComponent implements OnInit {
     }
     this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
       if(data){
-        this.organizationList = data["organizationList"];    
+        this.organizationList = data["organizationList"];
         // var newRole = {
         //   "id":0,
         //   "name":"All"
         // }
         // this.organizationList.push(newRole);
-        localStorage.setItem("allOrgList", JSON.stringify(this.organizationList));    
+        localStorage.setItem("allOrgList", JSON.stringify(this.organizationList));
       }
     });
   }
@@ -284,7 +284,7 @@ export class SubscriptionManagementComponent implements OnInit {
        }
      })
     }
-  
+
 
   onVehicleClick(rowData: any){
     const colsList = ['name','vin','licensePlateNumber'];
@@ -348,8 +348,8 @@ export class SubscriptionManagementComponent implements OnInit {
   }
 
   filterStatus(selectedValue) {
-    selectedValue = selectedValue.trim(); 
-    selectedValue = selectedValue.toLowerCase(); 
+    selectedValue = selectedValue.trim();
+    selectedValue = selectedValue.toLowerCase();
     this.dataSource.filter= selectedValue != 'all' ? selectedValue : ''
   }
 
@@ -361,10 +361,10 @@ export class SubscriptionManagementComponent implements OnInit {
       this.changedOrgId = filterValue;
     });
    }
-  
+
    applyFilterOnStatus(status: any){
       let newData = this.filterData.filter(element=>element.state == ((status==1) ? "A" : "I"));
-      this.updatedTableData(newData);    
+      this.updatedTableData(newData);
   }
 
   applyFilterOnType(data: any, type: any){

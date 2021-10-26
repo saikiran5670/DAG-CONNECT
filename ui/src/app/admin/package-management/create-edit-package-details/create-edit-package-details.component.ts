@@ -44,10 +44,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
-    {
-      name: 'VIN',
-      value: 'VIN'
-    }, 
+    // {
+    //   name: 'VIN',
+    //   value: 'VIN'
+    // }, 
     {
       name: 'Org+VIN',
       value: 'Org+VIN'
@@ -58,10 +58,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       name: 'Organization',
       value: 'Organization'
     },
-    {
-      name: 'VIN',
-      value: 'VIN'
-    }, 
+    // {
+    //   name: 'VIN',
+    //   value: 'VIN'
+    // }, 
     {
       name: 'Org+VIN',
       value: 'Org+VIN'
