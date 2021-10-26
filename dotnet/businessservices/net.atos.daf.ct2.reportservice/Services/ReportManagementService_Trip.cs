@@ -69,16 +69,34 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
+                List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                //get vehicle for alert visibility
+                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                {
+                    foreach (int alertfeatureId in alertFeatureIds)
+                    {
+                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                        = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
+                        //append visibile vins
+                        vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
+                        //remove duplicate vins by key as vin
+                        vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    }
+                }
+                var vehVisibility = vehicleDetailsAccountVisibiltyForAlert.Where(x => x.Vin == request.VIN).ToList();
+                TripResponse response = new TripResponse();
                 _logger.Info("Get GetAllTripDetails.");
                 ReportComponent.entity.TripFilterRequest objTripFilter = new ReportComponent.entity.TripFilterRequest
                 {
                     VIN = request.VIN,
                     StartDateTime = request.StartDateTime,
-                    EndDateTime = request.EndDateTime
+                    EndDateTime = request.EndDateTime,
+                    FeatureIds = alertFeatureIds
                 };
 
                 var result = await _reportManager.GetFilteredTripDetails(objTripFilter);
-                TripResponse response = new TripResponse();
                 if (result?.Count > 0)
                 {
                     string res = JsonConvert.SerializeObject(result);
