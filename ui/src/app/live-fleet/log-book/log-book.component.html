@@ -82,7 +82,7 @@
                     </ngx-mat-select-search>
                   </mat-option>
                   <mat-option value="all">{{translationData.lblAll }}</mat-option>
-                  <mat-option *ngFor="let rer of filteredVehicleNames | async " [value]="rer.vehicleId">
+                  <mat-option *ngFor="let rer of filteredVehicleNames | async " [value]="rer.vin">
                       {{ rer.vehicleName }}
                   </mat-option>
                 </mat-select>
