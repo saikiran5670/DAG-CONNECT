@@ -326,7 +326,7 @@ public class ContiHBaseProcessing implements Serializable {
 						
 						kafkaRec.setValue(Tuple3.of(vid,transId, monitorObj));
 					}else{
-						logger.info("Issue received different transId type :{}",value.getValue() );
+						logger.info("Issue received different transId type for HBase processing:{}", value);
 						kafkaRec.setValue(Tuple3.of(vid, transId, value.getValue()));
 					}
 					logger.info("KafkaRecord entry :{}",kafkaRec.getValue());
