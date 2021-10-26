@@ -39,7 +39,7 @@ public class IndexDataProcess {
 		AuditETLJobClient auditing = null;
 
 		ParameterTool envParams = null;
-		Properties properties = new Properties();
+		//Properties properties = new Properties();
 
 		try {
 
@@ -116,7 +116,8 @@ public class IndexDataProcess {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_IndexDataProcess");
+			//env.execute(" Realtime_IndexDataProcess");
+			env.execute(envParams.get(DafConstants.INDEX_PROCESS));
 
 		} catch (Exception e) {
 

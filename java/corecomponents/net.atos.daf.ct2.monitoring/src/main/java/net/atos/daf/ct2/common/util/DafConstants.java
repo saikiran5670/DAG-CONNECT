@@ -114,6 +114,7 @@ public class DafConstants {
 	public static final String DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS= "driver.management.time.window.seconds";
 	
 	public static final String STORE_HISTORICAL_DATA="store.historical.data";
+	public static final String MONITOR_PROCESS="monitor.process";
 		
 		
 	

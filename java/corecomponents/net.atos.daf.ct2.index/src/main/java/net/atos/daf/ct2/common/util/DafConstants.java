@@ -103,6 +103,7 @@ public static final int FUEL_CONSUMPTION_INDICATOR = 2;
 public static final String Index="I";
 
 public static final String STORE_HISTORICAL_DATA="store.historical.data";
+public static final String INDEX_PROCESS="index.process";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";

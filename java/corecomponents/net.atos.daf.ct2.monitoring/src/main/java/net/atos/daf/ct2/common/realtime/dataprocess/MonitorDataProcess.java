@@ -123,7 +123,8 @@ public class MonitorDataProcess {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_MonitorDataProcess");
+			//env.execute("Realtime_MonitorDataProcess");
+			env.execute(envParams.get(DafConstants.MONITOR_PROCESS));
 
 		} catch (Exception e) {
 			e.printStackTrace();
