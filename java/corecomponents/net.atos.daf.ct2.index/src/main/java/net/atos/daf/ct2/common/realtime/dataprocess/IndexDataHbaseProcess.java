@@ -75,7 +75,8 @@ public class IndexDataHbaseProcess {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_IndexDataHbaseProcess");
+			//env.execute(" Realtime_IndexDataHbaseProcess");
+			env.execute(envParams.get(DafConstants.INDEX_HBASE_PROCESS));
 
 		} catch (Exception e) {
 
