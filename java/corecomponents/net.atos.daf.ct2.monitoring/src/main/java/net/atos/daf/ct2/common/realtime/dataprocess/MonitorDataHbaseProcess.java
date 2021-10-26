@@ -102,7 +102,8 @@ public class MonitorDataHbaseProcess {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_MonitorDataHbaseProcess");
+			//env.execute(" Realtime_MonitorDataHbaseProcess");
+			env.execute(envParams.get(DafConstants.MONITOR_HBASE_PROCESS));
 
 		} catch (Exception e) {
 			e.printStackTrace();
