@@ -21,4 +21,10 @@ namespace net.atos.daf.ct2.reports.entity
         public string LastName { get; set; }
         public int OrganizationId { get; set; }
     }
+
+    public class AlertType
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
 }

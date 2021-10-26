@@ -116,6 +116,25 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<List<AlertType>> GetAlertTypeList()
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@type", "T");
+            string queryAlertTypePull = @"SELECT key as Name,
+                                                enum as Value
+                                                FROM translation.enumtranslation
+                                                Where type=@type and enum !='W'";
+
+            List<AlertType> lstAlertType = (List<AlertType>)await _dataAccess.QueryAsync<AlertType>(queryAlertTypePull, parameter);
+            if (lstAlertType.Count > 0)
+            {
+                return lstAlertType;
+            }
+            else
+            {
+                return new List<AlertType>();
+            }
+        }
         #endregion
 
         public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
