@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authenticationdataservice-auto-deployment
+  name: autenticationdataservice-deployment
   labels:
-    app.kubernetes.io/name: authenticationdataservice-auto
+    app.kubernetes.io/name: autenticationdataservice
     app.kubernetes.io/type: dataservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: authenticationdataservice-auto
+        app.kubernetes.io/name: autenticationdataservice
         app.kubernetes.io/type: dataservice
     spec:
       automountServiceAccountToken: false
@@ -28,15 +28,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - authenticationdataservice-auto
+                - autenticationdataservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - dataservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: authenticationdataservice-auto-container
-        image: #{acrurl}#/authenticationservicerest-auto
+      - name: autenticationdataservice-container
+        image: #{acrurl}#/authenticationservicerest
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
@@ -87,7 +87,7 @@ spec:
             memory: 20Mi
         env:
         - name: serviceName
-          value: "AuthenticationDataService-Auto"
+          value: "AuthenticationDataService"
       volumes:
       - name: tmp
         emptyDir: {}
@@ -100,15 +100,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: authenticationdataservice-auto
+        app.kubernetes.io/name: autenticationdataservice
         app.kubernetes.io/type: dataservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: authenticationdataservice-auto
+  name: autenticationdataservice
   labels:
-    svc.kubernetes.io/name: authenticationdataservice-auto
+    svc.kubernetes.io/name: autenticationdataservice
     svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -119,16 +119,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: authenticationdataservice-auto
+    app.kubernetes.io/name: autenticationdataservice
     app.kubernetes.io/type: dataservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: authenticationdataservice-auto-hpa
+  name: autenticationdataservice-hpa
   labels:
-    hpa.kubernetes.io/name: authenticationdataservice-auto
+    hpa.kubernetes.io/name: autenticationdataservice
     hpa.kubernetes.io/type: dataservice 
 spec: 
   maxReplicas: 5 
@@ -136,7 +136,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: authenticationdataservice-auto-deployment 
+    name: autenticationdataservice-deployment 
   metrics: 
   - type: Resource 
     resource: 

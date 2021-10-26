@@ -589,7 +589,7 @@ ngOnDestroy(){
   if(this._state && this._state.fromVehicleDetails){
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
     this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-    this.logBookForm.get('vehicle').setValue(this._state.data.vin); 
+    this.logBookForm.get('vehicle').setValue(this._state.data.vid); 
      
   }
 
@@ -997,7 +997,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(this._state && this._state.fromVehicleDetails){
       this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
       this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-      this.logBookForm.get('vehicle').setValue(this._state.data.vin);   
+      this.logBookForm.get('vehicle').setValue(this._state.data.vid);   
     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){

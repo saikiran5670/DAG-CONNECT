@@ -21,7 +21,7 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(FuelDeviationDuringStopCalculation.class);
 	ParameterTool envParam = null;
-	private MapState<String, BigDecimal> fuelStopState;
+	private MapState<String, BigDecimal> fuelStopDeviationState;
 	
 	
 	@Override
@@ -33,11 +33,12 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 			
 			for (FuelDeviationData vFuelObj : values) {
 				
-				BigDecimal vFuelStopPrevVal = fuelStopState.get(key);
+				BigDecimal vFuelStopPrevVal = fuelStopDeviationState.get(key);
 				
 				if(vFuelStopPrevVal == null){
-					fuelStopState.put(key, vFuelObj.getVFuelLevel());
+					fuelStopDeviationState.put(key, vFuelObj.getVFuelLevel());
 				}else{
+					logger.info(" vFuelStopPrevVal:{},  vFuelObj.getVFuelLevel() :{}", vFuelStopPrevVal, vFuelObj.getVFuelLevel());
 					//1st cond is not required cross check 
 					if(Objects.nonNull(vFuelStopPrevVal) && Objects.nonNull(vFuelObj.getVFuelLevel())){
 					
@@ -65,7 +66,7 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 							}
 						}
 						
-						fuelStopState.put(key, vFuelObj.getVFuelLevel());
+						fuelStopDeviationState.put(key, vFuelObj.getVFuelLevel());
 					}
 					
 				}
@@ -81,9 +82,9 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 	public void open(org.apache.flink.configuration.Configuration config) {
 		envParam = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
-		MapStateDescriptor<String, BigDecimal> descriptor = new MapStateDescriptor<String, BigDecimal>("modelState",
+		MapStateDescriptor<String, BigDecimal> descriptor = new MapStateDescriptor<String, BigDecimal>("fuelStopDeviationState",
 				TypeInformation.of(String.class), TypeInformation.of(BigDecimal.class));
-		fuelStopState = getRuntimeContext().getMapState(descriptor);
+		fuelStopDeviationState = getRuntimeContext().getMapState(descriptor);
 	}
 
 	private FuelDeviation createFuelDeviationEvtObj(FuelDeviationData vFuelObj, String evtType, String activityType) {

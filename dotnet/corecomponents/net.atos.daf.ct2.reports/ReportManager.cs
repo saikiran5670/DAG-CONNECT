@@ -452,8 +452,11 @@ namespace net.atos.daf.ct2.reports
             List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds, organizationId);
             return lstDriverDetails;
         }
-
-
+        public async Task<List<AlertType>> GetAlertTypeList()
+        {
+            List<AlertType> lstAlertType = await _reportRepository.GetAlertTypeList();
+            return lstAlertType;
+        }
         #endregion
 
         #region Feet Fuel Report
@@ -718,9 +721,9 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region LogBook
-        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins, List<int> featureIds)
         {
-            return await _reportRepository.GetLogbookSearchParameter(vins);
+            return await _reportRepository.GetLogbookSearchParameter(vins, featureIds);
         }
 
         public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
