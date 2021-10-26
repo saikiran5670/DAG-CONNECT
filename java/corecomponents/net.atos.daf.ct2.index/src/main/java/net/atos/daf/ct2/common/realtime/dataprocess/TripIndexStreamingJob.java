@@ -60,7 +60,7 @@ public class TripIndexStreamingJob {
 
 			indexTripData.addSink(new TripIndexSink());
 			
-			env.execute("Trip Index Streaming Job");
+			env.execute(envParams.get(DafConstants.INDEX_TRIP_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 			//tripIndexData.createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL, "TripIndex streaming job failed ::" + e.getMessage());
@@ -114,7 +114,11 @@ public class TripIndexStreamingJob {
 
 			indexTripData.setDriverId(idxMsg.getDriverID());
 			indexTripData.setJobName(idxMsg.getJobName());
-			indexTripData.setIncrement(idxMsg.getIncrement());
+			
+			if(Objects.nonNull(idxMsg.getIncrement()))
+				indexTripData.setIncrement(idxMsg.getIncrement());
+			else
+				indexTripData.setIncrement(DafConstants.ZERO_VAL);
 			
 			if(Objects.nonNull(idxMsg.getVDist()))
 				indexTripData.setVDist(idxMsg.getVDist());
