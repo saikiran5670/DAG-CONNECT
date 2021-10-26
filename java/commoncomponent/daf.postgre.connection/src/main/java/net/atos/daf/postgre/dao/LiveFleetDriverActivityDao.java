@@ -60,7 +60,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	}
 
 	public boolean driver_insert(DriverActivityPojo DriverDetails) throws TechnicalException, SQLException {
-		PreparedStatement stmt_insert_driver_activity;
+		PreparedStatement stmt_insert_driver_activity=null;
 
 		boolean result = false;
 		try {
@@ -74,9 +74,22 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				stmt_insert_driver_activity.addBatch();
 				stmt_insert_driver_activity.executeBatch();
 				log.info("data inserted for driver-->" + DriverDetails.getDriverID());
-			}
-		} catch (SQLException e) {
+			}else {
+				if(connection == null) {
+					log.error(" Issue in Driver connection is null : " + connection);
+					throw new TechnicalException("Driver connection is null :: ");
+				}
+		}  }catch (SQLException e) {
 			log.error("inside catch LiveFleetDriverActivityDao Driver Insert" + e.getMessage());
+			
+			log.error("Issue while inserting  LivefleetPosition record :: " + stmt_insert_driver_activity);
+			
+			e.printStackTrace();
+		}catch (Exception e) {
+			log.error("inside catch LiveFleetDriverActivityDao Driver Insert" + e.getMessage());
+			
+			log.error("Issue while inserting  LivefleetPosition record :: " + stmt_insert_driver_activity);
+			
 			e.printStackTrace();
 		}
 

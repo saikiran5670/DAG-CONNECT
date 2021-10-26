@@ -112,6 +112,8 @@ public class DafConstants {
 		public static final String AUTO_OFFSET_RESET ="auto.offset.reset";
 	public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
 	public static final String DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS= "driver.management.time.window.seconds";
+	
+	public static final String STORE_HISTORICAL_DATA="store.historical.data";
 		
 		
 	
