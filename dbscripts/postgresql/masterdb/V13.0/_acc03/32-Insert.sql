@@ -6659,3 +6659,230 @@ from translation.translation where code<>'xr-XR'
 and name not in (select name from translation.translation where code='xr-XR');
 
 update master.package set packagecode='CT2-0001' where id=(select id from master.package where name='Base');
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblRequireEmailField','Required Email field',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblRequireEmailField');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblRowNo','Row No',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblRowNo');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblDriverIDshouldbeexactly16charsinlength','Driver ID should be exactly 16 chars in length',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblDriverIDshouldbeexactly16charsinlength');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblRequireEmailField',(select id from master.menu where name = 'Driver Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblRequireEmailField' and ref_id=(select id from master.menu where name = 'Driver Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblRowNo',(select id from master.menu where name = 'Driver Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblRowNo' and ref_id=(select id from master.menu where name = 'Driver Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblDriverIDshouldbeexactly16charsinlength',(select id from master.menu where name = 'Driver Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblDriverIDshouldbeexactly16charsinlength' and ref_id=(select id from master.menu where name = 'Driver Management'));
+update translation.translation set value='Required Email field' where lower(code)=lower('EN-GB') and name='lblRequireEmailField';
+update translation.translation set value='Row No' where lower(code)=lower('EN-GB') and name='lblRowNo';
+update translation.translation set value='Driver ID should be exactly 16 chars in length' where lower(code)=lower('EN-GB') and name='lblDriverIDshouldbeexactly16charsinlength';
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblPlatform','Platform',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblPlatform');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblOrganisation','Organisation',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblOrganisation');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAccount','Account',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAccount');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblLevel','Level',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblLevel');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblCode','Code',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblCode');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblPleasechooserolelevel','Please choose role level',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblPleasechooserolelevel');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAddCustomCode','Add Custom Code',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAddCustomCode');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblEnterCustomCode','Enter Custom Code',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblEnterCustomCode');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblRemoveCode','Remove Code',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblRemoveCode');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSpecialcharactersnotallowed','Special characters not allowed',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSpecialcharactersnotallowed');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblNumbersNotAllowed','Numbers Not Allowed',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblNumbersNotAllowed');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblCodecannotcontainORGNISATIONorACCOUNT','Code cannot contain ORGNISATION or ACCOUNT',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblCodecannotcontainORGNISATIONorACCOUNT');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblPlatform',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblPlatform' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblOrganisation',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblOrganisation' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAccount',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAccount' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblLevel',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblLevel' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblCode',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblCode' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblPleasechooserolelevel',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblPleasechooserolelevel' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAddCustomCode',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAddCustomCode' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblEnterCustomCode',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblEnterCustomCode' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblRemoveCode',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblRemoveCode' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSpecialcharactersnotallowed',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSpecialcharactersnotallowed' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblNumbersNotAllowed',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblNumbersNotAllowed' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblCodecannotcontainORGNISATIONorACCOUNT',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblCodecannotcontainORGNISATIONorACCOUNT' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+update translation.translation set value='Platform' where lower(code)=lower('EN-GB') and name='lblPlatform';
+update translation.translation set value='Organisation' where lower(code)=lower('EN-GB') and name='lblOrganisation';
+update translation.translation set value='Account' where lower(code)=lower('EN-GB') and name='lblAccount';
+update translation.translation set value='Level' where lower(code)=lower('EN-GB') and name='lblLevel';
+update translation.translation set value='Code' where lower(code)=lower('EN-GB') and name='lblCode';
+update translation.translation set value='Please choose role level' where lower(code)=lower('EN-GB') and name='lblPleasechooserolelevel';
+update translation.translation set value='Add Custom Code' where lower(code)=lower('EN-GB') and name='lblAddCustomCode';
+update translation.translation set value='Enter Custom Code' where lower(code)=lower('EN-GB') and name='lblEnterCustomCode';
+update translation.translation set value='Remove Code' where lower(code)=lower('EN-GB') and name='lblRemoveCode';
+update translation.translation set value='Special characters not allowed' where lower(code)=lower('EN-GB') and name='lblSpecialcharactersnotallowed';
+update translation.translation set value='Numbers Not Allowed' where lower(code)=lower('EN-GB') and name='lblNumbersNotAllowed';
+update translation.translation set value='Code cannot contain ORGNISATION or ACCOUNT' where lower(code)=lower('EN-GB') and name='lblCodecannotcontainORGNISATIONorACCOUNT';
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSearch','Search',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSearch');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblViewAccountGroupDetails','View Account Group Details',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblViewAccountGroupDetails');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSearch',(select id from master.menu where name = 'Account Group Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSearch' and ref_id=(select id from master.menu where name = 'Account Group Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblViewAccountGroupDetails',(select id from master.menu where name = 'Account Group Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblViewAccountGroupDetails' and ref_id=(select id from master.menu where name = 'Account Group Management'));
+update translation.translation set value='Search' where lower(code)=lower('EN-GB') and name='lblSearch';
+update translation.translation set value='View Account Group Details' where lower(code)=lower('EN-GB') and name='lblViewAccountGroupDetails';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAccountDetails','Edit Account Details',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAccountDetails');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSearch','Search',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSearch');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAccountDetails','View Account Details',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAccountDetails');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAccountDetails',(select id from master.menu where name = 'Account Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAccountDetails' and ref_id=(select id from master.menu where name = 'Account Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSearch',(select id from master.menu where name = 'Account Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSearch' and ref_id=(select id from master.menu where name = 'Account Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAccountDetails',(select id from master.menu where name = 'Account Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAccountDetails' and ref_id=(select id from master.menu where name = 'Account Management'));
+update translation.translation set value='Edit Account Details' where lower(code)=lower('EN-GB') and name='lblAccountDetails';
+update translation.translation set value='Search' where lower(code)=lower('EN-GB') and name='lblSearch';
+update translation.translation set value='View Account Details' where lower(code)=lower('EN-GB') and name='lblAccountDetails';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblOptIn','Opt-In',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblOptIn');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblOptOut','Opt-Out',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblOptOut');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblOptIn',(select id from master.menu where name = 'Driver Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblOptIn' and ref_id=(select id from master.menu where name = 'Driver Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblOptOut',(select id from master.menu where name = 'Driver Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblOptOut' and ref_id=(select id from master.menu where name = 'Driver Management'));
+update translation.translation set value='Opt-In' where lower(code)=lower('EN-GB') and name='lblOptIn';
+update translation.translation set value='Opt-Out' where lower(code)=lower('EN-GB') and name='lblOptOut';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblHome','Home',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblHome');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblConfiguration','Configuration',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblConfiguration');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblEcoScoreProfileManagement','lblEcoScoreProfileManagement',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblEcoScoreProfileManagement');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblManageProfile','Manage Profile',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblManageProfile');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblHome',(select id from master.menu where name = 'EcoScore Profile Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblHome' and ref_id=(select id from master.menu where name = 'EcoScore Profile Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblConfiguration',(select id from master.menu where name = 'EcoScore Profile Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblConfiguration' and ref_id=(select id from master.menu where name = 'EcoScore Profile Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblEcoScoreProfileManagement',(select id from master.menu where name = 'EcoScore Profile Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblEcoScoreProfileManagement' and ref_id=(select id from master.menu where name = 'EcoScore Profile Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblManageProfile',(select id from master.menu where name = 'EcoScore Profile Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblManageProfile' and ref_id=(select id from master.menu where name = 'EcoScore Profile Management'));
+update translation.translation set value='Home' where lower(code)=lower('EN-GB') and name='lblHome';
+update translation.translation set value='Configuration' where lower(code)=lower('EN-GB') and name='lblConfiguration';
+update translation.translation set value='lblEcoScoreProfileManagement' where lower(code)=lower('EN-GB') and name='lblEcoScoreProfileManagement';
+update translation.translation set value='Manage Profile' where lower(code)=lower('EN-GB') and name='lblManageProfile';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblCoEmission','CO2 Emission',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblCoEmission');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblCoEmission',(select id from master.menu where name = 'Fleet Fuel Report'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblCoEmission' and ref_id=(select id from master.menu where name = 'Fleet Fuel Report'));
+update translation.translation set value='CO2 Emission' where lower(code)=lower('EN-GB') and name='lblCoEmission';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAll','All',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAll');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAll',(select id from master.menu where name = 'Fleet Overview' and parent_id is not null),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAll' and ref_id=(select id from master.menu where name = 'Fleet Overview' and parent_id is not null));
+update translation.translation set value='All' where lower(code)=lower('EN-GB') and name='lblAll';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblLanguage','Language',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblLanguage');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSuspended','Suspended',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSuspended');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblActive','Active',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblActive');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAll','All',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAll');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblLanguage',(select id from master.menu where name = 'Report Scheduler'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblLanguage' and ref_id=(select id from master.menu where name = 'Report Scheduler'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSuspended',(select id from master.menu where name = 'Report Scheduler'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSuspended' and ref_id=(select id from master.menu where name = 'Report Scheduler'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblActive',(select id from master.menu where name = 'Report Scheduler'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblActive' and ref_id=(select id from master.menu where name = 'Report Scheduler'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAll',(select id from master.menu where name = 'Report Scheduler'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAll' and ref_id=(select id from master.menu where name = 'Report Scheduler'));
+update translation.translation set value='Language' where lower(code)=lower('EN-GB') and name='lblLanguage';
+update translation.translation set value='Suspended' where lower(code)=lower('EN-GB') and name='lblSuspended';
+update translation.translation set value='Active' where lower(code)=lower('EN-GB') and name='lblActive';
+update translation.translation set value='All' where lower(code)=lower('EN-GB') and name='lblAll';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblDownloadTranslatedData','Download Translated Data',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblDownloadTranslatedData');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblDownloadTranslatedData',(select id from master.menu where name = 'Translation Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblDownloadTranslatedData' and ref_id=(select id from master.menu where name = 'Translation Management'));
+update translation.translation set value='Download Translated Data' where lower(code)=lower('EN-GB') and name='lblDownloadTranslatedData';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSearch','Search',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSearch');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSearch',(select id from master.menu where name = 'Vehicle Group Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSearch' and ref_id=(select id from master.menu where name = 'Vehicle Group Management'));
+update translation.translation set value='Search' where lower(code)=lower('EN-GB') and name='lblSearch';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblEdit','Edit',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblEdit');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblView','View',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblView');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblEdit',(select id from master.menu where name = 'Vehicle Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblEdit' and ref_id=(select id from master.menu where name = 'Vehicle Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblView',(select id from master.menu where name = 'Vehicle Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblView' and ref_id=(select id from master.menu where name = 'Vehicle Management'));
+update translation.translation set value='Edit' where lower(code)=lower('EN-GB') and name='lblEdit';
+update translation.translation set value='View' where lower(code)=lower('EN-GB') and name='lblView';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblSearch','Search',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblSearch');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblVehicleGroup','Vehicle Group',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblVehicleGroup');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblVehicleName','Vehicle Name',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblVehicleName');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblVehicleSoftwareStatus','Vehicle Software Status',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblVehicleSoftwareStatus');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAll','All',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAll');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblSearch',(select id from master.menu where name = 'Vehicle Updates'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblSearch' and ref_id=(select id from master.menu where name = 'Vehicle Updates'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblVehicleGroup',(select id from master.menu where name = 'Vehicle Updates'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblVehicleGroup' and ref_id=(select id from master.menu where name = 'Vehicle Updates'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblVehicleName',(select id from master.menu where name = 'Vehicle Updates'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblVehicleName' and ref_id=(select id from master.menu where name = 'Vehicle Updates'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblVehicleSoftwareStatus',(select id from master.menu where name = 'Vehicle Updates'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblVehicleSoftwareStatus' and ref_id=(select id from master.menu where name = 'Vehicle Updates'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblAll',(select id from master.menu where name = 'Vehicle Updates'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblAll' and ref_id=(select id from master.menu where name = 'Vehicle Updates'));
+update translation.translation set value='Search' where lower(code)=lower('EN-GB') and name='lblSearch';
+update translation.translation set value='Vehicle Group' where lower(code)=lower('EN-GB') and name='lblVehicleGroup';
+update translation.translation set value='Vehicle Name' where lower(code)=lower('EN-GB') and name='lblVehicleName';
+update translation.translation set value='Vehicle Software Status' where lower(code)=lower('EN-GB') and name='lblVehicleSoftwareStatus';
+update translation.translation set value='All' where lower(code)=lower('EN-GB') and name='lblAll';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblTermsAndCondition','Terms And Condition',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblTermsAndCondition');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblTermsAndCondition',(select id from master.menu where name = 'Dummy'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblTermsAndCondition' and ref_id=(select id from master.menu where name = 'Dummy'));
+update translation.translation set value='Terms And Condition' where lower(code)=lower('EN-GB') and name='lblTermsAndCondition';
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblCodecannotcontainRestrictKeywords','Code cannot contain PLATFORM, GLOBAL, ORGANISATION, ACCOUNT or DRIVER',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblCodecannotcontainRestrictKeywords');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblCodecannotcontainRestrictKeywords',(select id from master.menu where name = 'Account Role Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblCodecannotcontainRestrictKeywords' and ref_id=(select id from master.menu where name = 'Account Role Management'));
+update translation.translation set value='Code cannot contain PLATFORM, GLOBAL, ORGANISATION, ACCOUNT or DRIVER' where lower(code)=lower('EN-GB') and name='lblCodecannotcontainRestrictKeywords';
+
+update master.feature set  name ='Admin#Organisation' where name='Admin#Orgnisation';
+update translation.translation set value='Admin#Organisation' where value='Admin#Orgnisation';
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblEcoScoreProfileManagement','ECO Score Profile Management',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblEcoScoreProfileManagement');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblEcoScoreProfileManagement',(select id from master.menu where name = 'Dummy'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblEcoScoreProfileManagement' and ref_id=(select id from master.menu where name = 'Dummy'));
+update translation.translation set value='ECO Score Profile Management' where lower(code)=lower('EN-GB') and name='lblEcoScoreProfileManagement';
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblIdleDuration','Idle Duration%',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblIdleDuration');
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblIdleDuration',(select id from master.menu where name = 'Fleet Fuel Report'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblIdleDuration' and ref_id=(select id from master.menu where name = 'Fleet Fuel Report'));
+update translation.translation set value='Idle Duration%' where lower(code)=lower('EN-GB') and name='lblIdleDuration';
+
+insert into translation.translation (code,type,name,value,created_at,modified_at)
+select 'xr-XR',type,name,name,(select extract(epoch from now()) * 1000),modified_at 
+from translation.translation where code<>'xr-XR'
+and name not in (select name from translation.translation where code='xr-XR');
+
+update master.emailtemplate
+set description='<!DOCTYPE html>
+<html>
+<head>
+<style>
+body div {{
+ margin-bottom: 5px;
+}}
+.mainContainer {{
+ margin:20px;
+ width:100%;
+ font-family: Roboto, "Helvetica Neue", sans-serif;
+ font-size: 15px;
+}}
+.alertLevel {{
+  margin: 8px 0;
+}}
+.alertCriticalLevel {{
+background:rgb(255, 0, 0) !important;
+color:white;
+}}
+.alertWarningLevel {{
+background:rgb(255, 191, 0) !important;
+color: black;
+}}
+.alertAdvisoryLevel {{
+background:rgb(255, 255, 0) !important;
+color:black;
+}}
+</style>
+</head>
+  <body>
+
+<table style="width: 100%;">
+  <tr>
+  <td><img style="margin:20px 0px" align="left" width="180px" height="80px"  src="{0}"></td>
+</tr>
+</table>
+    
+<div class="mainContainer">
+<h2>[lblAlertName]: <span style="color: blue;">{1}</span></h2>
+  <h3><span class="{2}" style="padding:5px;">{3}</span></h3>
+  <div>[lblDefinedThreshold]:{4} </div>
+  <div>[lblActualThresholdValue]:{5}</div>
+<div>[lblAlertCategory]: {6}</div>
+<div>[lblVehicleGroup]: {7}</div>
+<div>[lblVehicleName]: {11}</div>
+<div>[lblDateTime]: {8}</div>
+
+<p>{9}</p>
+<br/>
+
+<p>[lblQuestionText]<br/>
+
+<a href="mailto: "{10}">{10}</a></p>
+<br/>
+
+    <p>[lblWithKindRegards]</p>
+    <p><strong>[lblSignatureLine1]</strong></p>
+
+</div>
+  </body>
+</html>'
+where event_name='AlertNotificationEmail';
+
+insert into master.emailtemplatelabels (email_template_id,key)
+select (select id from master.emailtemplate where event_name='AlertNotificationEmail'),'lblVehicleName'
+where not exists (   SELECT 1   FROM master.emailtemplatelabels   WHERE key ='lblVehicleName' and email_template_id in (select id from master.emailtemplate where event_name='AlertNotificationEmail'));
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   
+SELECT 'EN-GB','L','lblVehicleName','Vehicle Name',(select extract(epoch from now()) * 1000),null 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblVehicleName');
+
+
+
+
+
+

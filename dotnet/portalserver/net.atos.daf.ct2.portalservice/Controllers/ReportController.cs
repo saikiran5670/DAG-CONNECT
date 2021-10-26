@@ -17,6 +17,7 @@ using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
 using net.atos.daf.ct2.vehicleservice;
+using Alert = net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -248,7 +249,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
 
                 _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
-                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                request.AccountId = _userDetails.AccountId;
+                request.OrganizationId = GetContextOrgId();
+                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request, headers);
 
                 data.TripData.Select(x =>
                 {

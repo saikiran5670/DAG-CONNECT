@@ -452,8 +452,11 @@ namespace net.atos.daf.ct2.reports
             List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds, organizationId);
             return lstDriverDetails;
         }
-
-
+        public async Task<List<AlertType>> GetAlertTypeList()
+        {
+            List<AlertType> lstAlertType = await _reportRepository.GetAlertTypeList();
+            return lstAlertType;
+        }
         #endregion
 
         #region Feet Fuel Report
