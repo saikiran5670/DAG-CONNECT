@@ -190,7 +190,7 @@ public class ETLConstants {
 	public static final String CLIENT_ID = "client.id";
 	public static final String EGRESS_TRIP_AGGR_TOPIC_NAME = "egress.trip.aggr.data.topic";
 	public static final String EGRESS_TRIP_AGGR_DATA = "egress.trip.aggr.data";
-	public static final String REQUEST_TIMEOUT_MILLISEC = "request.timeout.ms";
+	//public static final String REQUEST_TIMEOUT_MILLISEC = "request.timeout.ms";
 		
 
 	//Testing parameter
@@ -212,4 +212,5 @@ public class ETLConstants {
 	
 	public static final String TRUE ="true";
 	public static final String LOOKPUP_HBASE_TABLE ="lookup.hbase.table";
+	public static final String ETL_STREAMING_JOB_NAME = "etl.streaming.job.name";
 }

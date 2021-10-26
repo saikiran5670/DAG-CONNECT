@@ -72,5 +72,6 @@ public class MileageConstants {
 	public static final String UNKNOWN = "UNKNOWN";
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
+	public static final String MILEAGE_STREAMING_JOB_NAME = "mileage.streaming.job.name";
 		
 }

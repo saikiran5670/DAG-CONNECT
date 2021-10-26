@@ -48,31 +48,27 @@ public class Co2MasterDao implements Serializable {
 			
 			while (rs_position.next()) {
 
-				/*
-				 * if (rs_position.getString("fuel_type").equals("D")) {
-				 * cm.setCoefficient_D(rs_position.getDouble("coefficient"));
-				 * System.out.println("coefficient of D --  " +
-				 * rs_position.getDouble("coefficient"));
-				 * 
-				 * } else { cm.setCoefficient_B(rs_position.getDouble("coefficient"));
-				 * System.out.println("coefficient of B --  " +
-				 * rs_position.getDouble("coefficient")); }
-				 */
-				
 				cm.setCoefficient(rs_position.getDouble("coefficient"));
 								
 			}
 
 		} catch (SQLException e) {
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: " + e.getMessage());
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: ",stmt_read_co2_coefficient);
 			e.printStackTrace();
-		} finally {
+		}  catch (Exception e) {
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: " + e.getMessage());
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job:: ",stmt_read_co2_coefficient);
+			// throw e;
+		}finally {
 
 			if (null != rs_position) {
 
 				try {
 					rs_position.close();
-				} catch (SQLException ignore) {
-					/** ignore any errors here */
+				} catch (Exception e) {
+					
+					logger.error("Issue while closing Co2CoEfficient trip Tracing Position :: " + e.getMessage());
 				}
 			}
 		}

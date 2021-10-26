@@ -102,7 +102,7 @@ public class MileageStreamingJob {
 					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));*/
 
 			tripMileageData.addSink(new MileageSink());
-			env.execute("Mileage Streaming Job");
+			env.execute(envParams.get(MileageConstants.MILEAGE_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 			mileageStreamingJob.auditMileageJobDetails(envParams, "Mileage streaming job failed ::" + e.getMessage());
