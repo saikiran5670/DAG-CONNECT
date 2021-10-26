@@ -89,6 +89,11 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
                     );
 
+                var alertType = await _reportManager.GetAlertTypeList();
+                var resAlertType = JsonConvert.SerializeObject(alertType);
+                response.ATFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertType)
+                    );
 
                 response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
                 response.Code = Responsecode.Success;
