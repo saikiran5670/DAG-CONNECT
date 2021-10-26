@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "0");
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
 
                 var enumTranslationList = await _reportManager.GetAlertCategory();
@@ -36,7 +37,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
                     var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
-                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds);
+                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
                     response.LogbookSearchParameter.LogbookTripAlertDetailsRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,

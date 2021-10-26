@@ -292,7 +292,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		if (row.getDocument().getVWheelBasedSpeed() != null)
 			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());
 
-		if(row.getDriverID() !=null || ! row.getDriverID().isEmpty()) {
+		if(row.getDriverID() !=null && ! row.getDriverID().isEmpty()) {
 			currentPosition.setDriver1Id(row.getDriverID());
 		} else {
 			currentPosition.setDriver1Id("Unknown");
