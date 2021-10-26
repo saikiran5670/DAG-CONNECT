@@ -2617,7 +2617,7 @@ setVehicleGroupAndVehiclePreSelection() {
             
           this.summaryNewObj = [
            ['Fleet Fuel Driver Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.driverName, this.tableInfoObj.driverID, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
           ];        
@@ -2643,7 +2643,7 @@ setVehicleGroupAndVehiclePreSelection() {
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
         'Cruise Control Distance 50-75('+unitValkmh+')(%)','Cruise Control Distance>75('+unitValkmh+')(%)','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination(Ton)', 'AverageTrafficClassification',
         'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore'];
-        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name','Driver Name','Driver ID', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
         const summaryData= this.summaryNewObj;
         //Create workbook and worksheet
         let workbook = new Workbook();
