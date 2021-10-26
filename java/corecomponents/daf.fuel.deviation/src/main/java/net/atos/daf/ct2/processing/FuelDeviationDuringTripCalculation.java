@@ -23,7 +23,7 @@ public class FuelDeviationDuringTripCalculation
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(FuelDeviationDuringTripCalculation.class);
 	ParameterTool envParam = null;
-	private MapState<String, FuelMeasurement> fuelMeasurementState;
+	private MapState<String, FuelMeasurement> fuelDeviationMeasurementState;
 
 	@Override
 	public void process(String key, Context ctx, Iterable<FuelDeviationData> values, Collector<FuelDeviation> out) {
@@ -38,11 +38,11 @@ public class FuelDeviationDuringTripCalculation
 
 			for (FuelDeviationData vFuelTripObj : values) {
 
-				FuelMeasurement vFuelPrevTripRecData = fuelMeasurementState.get(vFuelTripObj.getVin());
+				FuelMeasurement vFuelPrevTripRecData = fuelDeviationMeasurementState.get(vFuelTripObj.getVin());
 
 				if (FuelDeviationConstants.INDEX_TRIP_START == vFuelTripObj.getVEvtId()) {
 					FuelMeasurement fuelMeasurementAtStart = createFuelMeasurementObj(vFuelTripObj);
-					fuelMeasurementState.put(vFuelTripObj.getVin(), fuelMeasurementAtStart);
+					fuelDeviationMeasurementState.put(vFuelTripObj.getVin(), fuelMeasurementAtStart);
 					
 					logger.info("fuelMeasurementAtStart Obj :" + fuelMeasurementAtStart);
 				} else {
@@ -53,9 +53,9 @@ public class FuelDeviationDuringTripCalculation
 
 						if (vFuelTripObj.getEvtDateTime() >= measurementTime) {
 							// 5 mins measurement
-							fuelMeasurementState.put(vFuelTripObj.getVin(), createFuelMeasurementObj(vFuelTripObj));
+							fuelDeviationMeasurementState.put(vFuelTripObj.getVin(), createFuelMeasurementObj(vFuelTripObj));
 							
-							logger.info("fuelMeasurementAfterUpdate Obj :"+ fuelMeasurementState.get(vFuelTripObj.getVin()));
+							logger.info("fuelMeasurementAfterUpdate Obj :"+ fuelDeviationMeasurementState.get(vFuelTripObj.getVin()));
 							
 							if (vFuelTripObj.getVFuelLevel() != null && vFuelPrevTripRecData.getVFuelLevel() != null) {
 								BigDecimal fuelIncreaseDiff = vFuelTripObj.getVFuelLevel()
@@ -118,8 +118,8 @@ public class FuelDeviationDuringTripCalculation
 		envParam = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		MapStateDescriptor<String, FuelMeasurement> descriptor = new MapStateDescriptor<String, FuelMeasurement>(
-				"modelState", TypeInformation.of(String.class), TypeInformation.of(FuelMeasurement.class));
-		fuelMeasurementState = getRuntimeContext().getMapState(descriptor);
+				"fuelDeviationMeasurementState", TypeInformation.of(String.class), TypeInformation.of(FuelMeasurement.class));
+		fuelDeviationMeasurementState = getRuntimeContext().getMapState(descriptor);
 	}
 
 	private FuelDeviation createFuelDeviationEvtObj(FuelDeviationData vFuelStopObj, String evtType,

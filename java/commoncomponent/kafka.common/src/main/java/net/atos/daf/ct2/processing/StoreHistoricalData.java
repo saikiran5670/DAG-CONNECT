@@ -65,11 +65,11 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 
 		} catch (IOException e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing HBase connection :: " + e.getMessage());
+			logger.error("Issue while establishing HBase connection ::{} " , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing HBase connection :: " + e.getMessage());
+			logger.error("Issue while establishing HBase connection ::{} " , e.getMessage());
 			throw e;
 		}
 
@@ -99,7 +99,7 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 			}
 
 		} catch (IOException e) {
-			logger.error("Issue while closing historical table HBase connection :: ", e.getMessage());
+			logger.error("Issue while closing historical table HBase connection :: {}", e.getMessage());
 		}
 
 	}

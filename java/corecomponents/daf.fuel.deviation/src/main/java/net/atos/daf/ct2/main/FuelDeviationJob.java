@@ -100,7 +100,7 @@ public class FuelDeviationJob {
 
 			fuelDeviationDuringTripData.addSink(new FuelDeviationSink());
 
-			env.execute("Fuel Deviation Streaming Job");
+			env.execute(envParams.get(FuelDeviationConstants.FUEL_DEVIATION_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 			fuelDeviationJob.auditFuelDevialJobDetails(envParams,
@@ -172,9 +172,11 @@ public class FuelDeviationJob {
 			else
 				fuelStopObj.setGpsHeading(FuelDeviationConstants.ZERO_DOUBLE_VAL);
 
+			logger.info("fuelStopObj object :: {}" , fuelStopObj);
 		} catch (Exception e) {
-			logger.error("Issue while mapping deserialized Index object to fuelDeviationDuringStop object :: " + e);
-			logger.error("Issue while processing fuelDeviationDuringStop record :: " + idxMsg);
+			logger.error("Issue while mapping deserialized Index object to fuelDeviationDuringStop object ::{} ", e.getMessage());
+			logger.error("Issue while processing fuelDeviationDuringStop record :: {}", idxMsg);
+			e.printStackTrace();
 		}
 		return fuelStopObj;
 	}

@@ -165,7 +165,7 @@ public class TripEtlStreamingJob {
 						FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Egress Data");
 			}
 				
-			env.execute("Trip Streaming ETL Job");
+			env.execute(envParams.get(ETLConstants.ETL_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 

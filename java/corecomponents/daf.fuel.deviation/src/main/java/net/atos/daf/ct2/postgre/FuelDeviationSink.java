@@ -30,21 +30,28 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 	@Override
 	public void invoke(FuelDeviation rec) throws Exception {
 
-		statement.setString(1, rec.getTripId());
-		statement.setString(2, rec.getVin());
-		statement.setString(3, rec.getFuelEvtType());
-		statement.setString(4, rec.getVehActivityType());
-		statement.setLong(5, rec.getEvtDateTime());
-		statement.setDouble(6, rec.getFuelDiff());
-		statement.setLong(7, rec.getVDist());
-		statement.setDouble(8, rec.getGpsLatitude());
-		statement.setDouble(9, rec.getGpsLongitude());
-		statement.setDouble(10, rec.getGpsHeading());
-		statement.setDouble(11, TimeFormatter.getInstance().getCurrentUTCTime());
+		try {
+			statement.setString(1, rec.getTripId());
+			statement.setString(2, rec.getVin());
+			statement.setString(3, rec.getFuelEvtType());
+			statement.setString(4, rec.getVehActivityType());
+			statement.setLong(5, rec.getEvtDateTime());
+			statement.setDouble(6, rec.getFuelDiff());
+			statement.setLong(7, rec.getVDist());
+			statement.setDouble(8, rec.getGpsLatitude());
+			statement.setDouble(9, rec.getGpsLongitude());
+			statement.setDouble(10, rec.getGpsHeading());
+			statement.setDouble(11, TimeFormatter.getInstance().getCurrentUTCTime());
 
-		logger.info("FuelDeviation data for veh: " + rec);
-		statement.addBatch();
-		statement.executeBatch();
+			logger.info("FuelDeviation data for veh: " + rec);
+			statement.addBatch();
+			statement.executeBatch();
+		} catch (Exception e) {
+			logger.error("Issue while inserting data to fuelDeviation table :{} ", e.getMessage());
+			logger.error("Issue while inserting to fuelDeviation record :: {}", statement);
+			logger.error("Issue while inserting to fuelDeviation, connection ::{}, FuelDeviation rec :{} " , connection, rec);
+			e.printStackTrace();
+		}
 	}
 
 	@Override

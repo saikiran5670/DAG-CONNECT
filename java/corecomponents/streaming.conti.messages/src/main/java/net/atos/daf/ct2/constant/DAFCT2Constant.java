@@ -122,4 +122,7 @@ public class DAFCT2Constant {
   	public static final String TRANSID_INDEX = "03000";
   	public static final String TRANSID_MONITOR = "03030";
   	public static final String TRANSID_STATUS = "03010";
+  	public static final String ATOS_STANDARD = "ATOSSTD";
+  	public static final String EGRESS_RAW_DATA_FORMAT ="egress.raw.data.format";
+  	public static final String EGRESS_RAW_DATA_TOPIC_NAME = "egress.raw.data.topic.name";
 }
