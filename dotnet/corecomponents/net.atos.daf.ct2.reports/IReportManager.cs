@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.reports
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
         Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters);
         #endregion
-        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);
+        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins, List<int> featureIds);
         Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter);
         Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
