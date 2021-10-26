@@ -857,14 +857,14 @@ export class CommonImportComponent implements OnInit {
     else{
       switch (type) {
         case 'type':
-          // if(value.toLowerCase() != "vin"){
+           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
               if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
               }
             }
-          // }
+          }
           break;
           case 'status':
           if(value.toLowerCase() != "active" ){

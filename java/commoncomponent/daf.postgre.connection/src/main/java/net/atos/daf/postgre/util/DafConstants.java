@@ -13,7 +13,7 @@ public class DafConstants {
 		public static final String BLANK = "";
 		public static  int RETRY_COUNTER=0;
 		public static final int MAX_RETRIES=3;
-		public static final int MAX_CONNECTIONS =30;
+		public static final int MAX_CONNECTIONS =95;
 		public static final Long DTM_NULL_VAL =0L;
 		public static final int DTM_NULL_VAL_int =0;
 		
