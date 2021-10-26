@@ -1683,7 +1683,7 @@ createEndMarker(){
        vehicleName:this.driverDetails.vehicleName,
        vin : this.driverDetails.vin,
        plateNo :this.driverDetails.vehicleRegistrationNo,
-       driverName : this.driverDetails.driverName,
+       driverName : this.driverDetails.unknownDriver ? 'Unknown' : this.driverDetails.driverName,
        driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID 
 
      }     
