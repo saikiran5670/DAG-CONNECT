@@ -536,9 +536,9 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
-                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
-                List<string> visiblityVehicle = await GetVehicleByAccountVisibility(loggedInOrgId, request.AccountId, request.OrganizationId, featureIds);
+                //var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                //IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                //List<string> visiblityVehicle = await GetVehicleByAccountVisibility(loggedInOrgId, request.AccountId, request.OrganizationId, featureIds);
                 OfflinePushNotificationFilter offlinePushNotificationFilter = new OfflinePushNotificationFilter();
                 offlinePushNotificationFilter.AccountId = request.AccountId;
                 offlinePushNotificationFilter.OrganizationId = request.OrganizationId;
@@ -546,12 +546,12 @@ namespace net.atos.daf.ct2.alertservice.Services
                 offlinePushNotification = await _alertManager.GetOfflinePushNotification(offlinePushNotificationFilter);
 
                 //Intersect Vin by visibility
-                var intersectNotVin = (from notiVin in offlinePushNotification.NotificationDisplayProp
-                                       join visiVin in visiblityVehicle on notiVin.Vin equals visiVin
-                                       select notiVin).ToList();
+                //var intersectNotVin = (from notiVin in offlinePushNotification.NotificationDisplayProp
+                //                       join visiVin in visiblityVehicle on notiVin.Vin equals visiVin
+                //                       select notiVin).ToList();
 
-                offlinePushNotification.NotificationDisplayProp = null;
-                offlinePushNotification.NotificationDisplayProp = intersectNotVin;
+                //offlinePushNotification.NotificationDisplayProp = null;
+                //offlinePushNotification.NotificationDisplayProp = intersectNotVin;
                 OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
                 offlineNotificationResponse = _mapper.ToOfflineNotificationResponse(offlinePushNotification);
                 offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp != null ? $" Offline notification data fetched successful" : $" Offline notification data not found";
