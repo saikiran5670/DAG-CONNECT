@@ -1,6 +1,6 @@
     <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
     <div id="summary" class="full-width">
-        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-card style='background: transparent;' class='mat-elevation-z no-padding margin-bottom-xlg'>
         <app-fleet-overview-summary [translationData]='translationData'></app-fleet-overview-summary>
         <app-live-fleet-map *ngIf='filterData' [translationData]='translationData' [detailsData]='detailsData' [filterData]='filterData'></app-live-fleet-map>
         </mat-card>
@@ -16,6 +16,7 @@
         <app-fleet-overview-filters *ngIf="userPreferencesFlag" [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData'></app-fleet-overview-filters>
         </div>
     </div>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </div>
     <div *ngIf = 'isOpen' class="bgtrans">
         <div  fxLayout="row" fxLayoutAlign="end" class='full-width margin-right-xxlg'>
