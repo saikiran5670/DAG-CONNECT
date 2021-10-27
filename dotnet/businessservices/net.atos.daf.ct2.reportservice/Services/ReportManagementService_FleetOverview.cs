@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "[0]");
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
 
 
                 var vehicleDetailsAccountVisibilty
@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
 
                 var vehicleDeatilsWithAccountVisibility =
                                 await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
