@@ -1,4 +1,4 @@
-import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from '../../services/here.service';
 import { Util } from '../../shared/util';
 import { ConfigService } from '@ngx-config/core';
@@ -16,7 +16,7 @@ declare var H: any;
 export class FleetMapService {
   platform: any;
   alertConfigMap: any;
-  alertFoundFlag: boolean =false;
+  alertFoundFlag: boolean = false;
   clusteringLayer: any;
   markerClusterLayer: any = [];
   overlayLayer: any;
@@ -24,24 +24,24 @@ export class FleetMapService {
   ui: any
   hereMap: any;
   public mapElement: ElementRef;
-  drivingStatus: boolean =false;
+  drivingStatus: boolean = false;
   mapGroup: any;
   iconsGroup: any;
-  startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
-  startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
-  startMarker : any;
-  endMarker :any;
-  rippleMarker:any;
-  routeCorridorMarker : any;
-  routeOutlineMarker : any;
-  endAddressPositionLat : number = 0;
-  endAddressPositionLong : number = 0;
-  corridorWidth : number = 100;
-  corridorWidthKm : number = 0.1;
+  startAddressPositionLat: number = 0; // = {lat : 18.50424,long : 73.85286};
+  startAddressPositionLong: number = 0; // = {lat : 18.50424,long : 73.85286};
+  startMarker: any;
+  endMarker: any;
+  rippleMarker: any;
+  routeCorridorMarker: any;
+  routeOutlineMarker: any;
+  endAddressPositionLat: number = 0;
+  endAddressPositionLong: number = 0;
+  corridorWidth: number = 100;
+  corridorWidthKm: number = 0.1;
   group = new H.map.Group();
   disableGroup = new H.map.Group();
-  map_key : string = "";
-  defaultLayers : any;
+  map_key: string = "";
+  defaultLayers: any;
   herePOISearch: any = '';
   entryPoint: any = '';
   prefTimeZone: any;
@@ -49,26 +49,26 @@ export class FleetMapService {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  alertMarker : any;
-  vehicleIconMarker : any;
+  alertMarker: any;
+  vehicleIconMarker: any;
   localStLanguage: any;
-  prefData : any;
-  preference : any;
+  prefData: any;
+  preference: any;
   orgId: any;
-  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
+  vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
   translationData: any = {};
 
-  constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive : HereService, private _configService: ConfigService,private reportMapService : ReportMapService) {
-    this.map_key =  _configService.getSettings("hereMap").api_key;
+  constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive: HereService, private _configService: ConfigService, private reportMapService: ReportMapService) {
+    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": this.map_key 
+      "apikey": this.map_key
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
 
- 
 
-    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+
+    let _langCode = this.localStLanguage ? this.localStLanguage.code : "EN-GB";
     let translationObj = {
       id: 0,
       code: _langCode,
@@ -79,31 +79,31 @@ export class FleetMapService {
       menuId: 17 //-- for alerts
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);      
-    }); 
+      this.processTranslation(data);
+    });
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-      if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
         this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
-        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+      } else { // org pref
+        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any) => {
           this.proceedStep(prefData, orgPref);
         }, (error) => { // failed org API
           let pref: any = {};
           this.proceedStep(prefData, pref);
         });
       }
-      if(this.prefData) {
-        this.setInitialPref(this.prefData,this.preference);
+      if (this.prefData) {
+        this.setInitialPref(this.prefData, this.preference);
       }
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
+      if (vehicleDisplayId) {
         let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
+        if (vehicledisplay.length != 0) {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
-      }  
-      
+      }
+
     });
 
   }
@@ -113,18 +113,18 @@ export class FleetMapService {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  setInitialPref(prefData,preference){
+  setInitialPref(prefData, preference) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
+    if (_search.length > 0) {
       //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
       //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+    } else {
       //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0, 2));
       //this.prefTimeZone = prefData.timezone[0].value;
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
@@ -132,18 +132,18 @@ export class FleetMapService {
     }
   }
 
-  proceedStep(prefData: any, preference: any){
+  proceedStep(prefData: any, preference: any) {
     this.prefData = prefData;
     this.preference = preference;
     // this.setPrefFormatDate();
 
   }
 
-  setPrefObject(_prefObj){
+  setPrefObject(_prefObj) {
     this.prefUnitFormat = _prefObj.prefUnitFormat;
   }
 
-  initMap(mapElement: any, translationData: any){
+  initMap(mapElement: any, translationData: any) {
     this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
       this.defaultLayers.raster.normal.map, {
@@ -160,59 +160,59 @@ export class FleetMapService {
 
     this.ui.removeControl("mapsettings");
     // create custom one
-    var ms = new H.ui.MapSettingsControl( {
-        baseLayers : [ { 
-          label: translationData.lblNormal || "Normal", layer:this.defaultLayers.raster.normal.map
-        },{
-          label: translationData.lblSatellite || "Satellite", layer:this.defaultLayers.raster.satellite.map
-        }, {
-          label: translationData.lblTerrain || "Terrain", layer:this.defaultLayers.raster.terrain.map
-        }
-        ],
-      layers : [{
-            label: translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
-        },
-        {
-            label: translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
-        }
-    ]
-      });
-      this.ui.addControl("customized", ms);
+    var ms = new H.ui.MapSettingsControl({
+      baseLayers: [{
+        label: translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+      }, {
+        label: translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+      }, {
+        label: translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+      }
+      ],
+      layers: [{
+        label: translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+      },
+      {
+        label: translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+      }
+      ]
+    });
+    this.ui.addControl("customized", ms);
   }
 
-  clearRoutesFromMap(){
+  clearRoutesFromMap() {
     this.hereMap.removeObjects(this.hereMap.getObjects());
     this.group.removeAll();
     this.mapGroup.removeAll();
     this.disableGroup.removeAll();
-    this.startMarker = null; 
-    this.endMarker = null; 
-    if(this.clusteringLayer){
+    this.startMarker = null;
+    this.endMarker = null;
+    if (this.clusteringLayer) {
       this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
       this.clusteringLayer = null;
     }
-    if(this.markerClusterLayer && this.markerClusterLayer.length > 0){
+    if (this.markerClusterLayer && this.markerClusterLayer.length > 0) {
       this.markerClusterLayer.forEach(element => {
         this.hereMap.removeLayer(element);
       });
       this.markerClusterLayer = [];
     }
-    if(this.overlayLayer){
+    if (this.overlayLayer) {
       this.hereMap.removeLayer(this.overlayLayer);
       this.overlayLayer = null;
     }
   }
 
-  getUI(){
+  getUI() {
     return this.ui;
   }
 
-    getHereMap() {
-      return this.hereMap
-    }
+  getHereMap() {
+    return this.hereMap
+  }
 
-  getPOIS(){
+  getPOIS() {
     //let hexString = (35).toString(16);
     let tileProvider = new H.map.provider.ImageTileProvider({
       // We have tiles only for zoom levels 12â€“15,
@@ -221,30 +221,30 @@ export class FleetMapService {
       max: 26,
       opacity: 0.5,
       getURL: function (column, row, zoom) {
-          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=${this.map_key}&pois`;
-        }
+        return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=${this.map_key}&pois`;
+      }
     });
     this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
       // Let's make it semi-transparent
       //opacity: 0.5
     });
     this.hereMap.addLayer(this.overlayLayer);
-  
-   // let poi = this.platform.createDefaultLayers({pois:true});
+
+    // let poi = this.platform.createDefaultLayers({pois:true});
     //     let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois';
-      
+
     // var normalLayer = this.platform.getMapTileService({type: 'base'}).createTileLayer(
     //   routeURL
     // );   
-   // this.hereMap.addLayer(poi.raster.normal.map);
+    // this.hereMap.addLayer(poi.raster.normal.map);
 
     // this.hereSerive.getHerePois().subscribe(data=>{
     //   console.log(data)
     // });
-   
+
   }
 
-  getCategoryPOIIcon(){
+  getCategoryPOIIcon() {
     let locMarkup = `<svg width="25" height="39" viewBox="0 0 25 39" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.9991 12.423C23.2909 20.9156 12.622 28.5702 12.622 28.5702C12.622 28.5702 1.45279 21.6661 1.16091 13.1735C1.06139 10.2776 2.11633 7.46075 4.09368 5.34265C6.07103 3.22455 8.8088 1.9787 11.7047 1.87917C14.6006 1.77965 17.4175 2.83459 19.5356 4.81194C21.6537 6.78929 22.8995 9.52706 22.9991 12.423Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M12.6012 37.9638C12.6012 37.9638 22.5882 18.1394 22.3924 12.444C22.1967 6.74858 17.421 2.29022 11.7255 2.48596C6.03013 2.6817 1.57177 7.45742 1.76751 13.1528C1.96325 18.8482 12.6012 37.9638 12.6012 37.9638Z" fill="#00529C"/>
@@ -255,15 +255,15 @@ export class FleetMapService {
     return icon;
   }
 
-  showCategoryPOI(categotyPOI: any, _ui: any){
+  showCategoryPOI(categotyPOI: any, _ui: any) {
     categotyPOI.forEach(element => {
-      if(element.latitude && element.longitude){
-        let categoryPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
+      if (element.latitude && element.longitude) {
+        let categoryPOIMarker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getCategoryPOIIcon() });
         this.group.addObject(categoryPOIMarker);
         let bubble: any;
         categoryPOIMarker.addEventListener('pointerenter', function (evt) {
-          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            content:`<table style='width: 350px;'>
+          bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content: `<table style='width: 350px;'>
             <tr>
               <td style='width: 100px;'>POI Name:</td> <td><b>${element.poiName}</b></td>
             </tr>
@@ -281,22 +281,22 @@ export class FleetMapService {
           // show info bubble
           _ui.addBubble(bubble);
         }, false);
-        categoryPOIMarker.addEventListener('pointerleave', function(evt) {
+        categoryPOIMarker.addEventListener('pointerleave', function (evt) {
           bubble.close();
         }, false);
       }
     });
   }
 
-  showGlobalPOI(globalPOI: any, _ui: any){
+  showGlobalPOI(globalPOI: any, _ui: any) {
     globalPOI.forEach(element => {
-      if(element.latitude && element.longitude){
-        let globalPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
+      if (element.latitude && element.longitude) {
+        let globalPOIMarker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getCategoryPOIIcon() });
         this.group.addObject(globalPOIMarker);
         let bubble: any;
         globalPOIMarker.addEventListener('pointerenter', function (evt) {
-          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            content:`<table style='width: 350px;'>
+          bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content: `<table style='width: 350px;'>
             <tr>
               <td style='width: 100px;'>POI Name:</td> <td><b>${element.name}</b></td>
             </tr>
@@ -314,43 +314,43 @@ export class FleetMapService {
           // show info bubble
           _ui.addBubble(bubble);
         }, false);
-        globalPOIMarker.addEventListener('pointerleave', function(evt) {
+        globalPOIMarker.addEventListener('pointerleave', function (evt) {
           bubble.close();
         }, false);
       }
     });
   }
 
-  showSearchMarker(markerData: any){
-    if(markerData && markerData.lat && markerData.lng){
+  showSearchMarker(markerData: any) {
+    if (markerData && markerData.lat && markerData.lng) {
       let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
-      if(markerData.from && markerData.from == 'search'){
-        this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      if (markerData.from && markerData.from == 'search') {
+        this.hereMap.setCenter({ lat: markerData.lat, lng: markerData.lng }, 'default');
       }
       this.group.addObject(selectedMarker);
     }
   }
 
-  showHereMapPOI(POIArr: any, selectedRoutes: any, _ui: any){
+  showHereMapPOI(POIArr: any, selectedRoutes: any, _ui: any) {
     let lat: any = 51.43175839453286; // DAF Netherland lat
     let lng: any = 5.519981221425336; // DAF Netherland lng
-    if(selectedRoutes && selectedRoutes.length > 0){
+    if (selectedRoutes && selectedRoutes.length > 0) {
       lat = selectedRoutes[selectedRoutes.length - 1].startPositionLattitude;
       lng = selectedRoutes[selectedRoutes.length - 1].startPositionLongitude;
     }
-    if(POIArr.length > 0){
+    if (POIArr.length > 0) {
       POIArr.forEach(element => {
         this.herePOISearch.request(this.entryPoint.SEARCH, { 'at': lat + "," + lng, 'q': element }, (data) => {
           //console.log(data);
-          for(let i = 0; i < data.results.items.length; i++) {
+          for (let i = 0; i < data.results.items.length; i++) {
             this.dropMapPOIMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i], element, _ui);
           }
         }, error => {
           console.log('ERROR: ' + error);
         });
       });
-      if(selectedRoutes && selectedRoutes.length == 0){
-        this.hereMap.setCenter({lat: lat, lng: lng}, 'default');
+      if (selectedRoutes && selectedRoutes.length == 0) {
+        this.hereMap.setCenter({ lat: lat, lng: lng }, 'default');
       }
     }
   }
@@ -359,13 +359,13 @@ export class FleetMapService {
     let marker = this.createMarker(poiType);
     let markerSize = { w: 26, h: 32 };
     const icon = new H.map.Icon(marker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-    let poiMarker = new H.map.Marker(coordinates, {icon:icon});
+    let poiMarker = new H.map.Marker(coordinates, { icon: icon });
     let bubble: any = '';
     poiMarker.addEventListener('pointerenter', event => {
-        bubble = new H.ui.InfoBubble(event.target.getGeometry(), {
-          content: `<p> ${data.title}<br> ${data.vicinity}</p>`
-        });
-        _ui.addBubble(bubble);
+      bubble = new H.ui.InfoBubble(event.target.getGeometry(), {
+        content: `<p> ${data.title}<br> ${data.vicinity}</p>`
+      });
+      _ui.addBubble(bubble);
     }, false);
     poiMarker.addEventListener('pointerleave', evt => {
       bubble.close();
@@ -373,31 +373,31 @@ export class FleetMapService {
     this.group.addObject(poiMarker);
   }
 
-  getVehicleHealthStatusType(element,_healthStatus,healthColor,drivingStatus){
+  getVehicleHealthStatusType(element, _healthStatus, healthColor, drivingStatus) {
     switch (element.vehicleHealthStatusType) {
-    case 'T': // stop now;
-    case 'Stop Now':
-      _healthStatus = 'Stop Now';
-      healthColor = '#D50017'; //red
-      break;
-    case 'V': // service now;
-    case 'Service Now':
-      _healthStatus = 'Service Now';
-      healthColor = '#FC5F01'; //orange
-      break;
-    case 'N': // no action;
-    case 'No Action':
-      _healthStatus = 'No Action';
-      healthColor = '#00AE10'; //green for no action
-      break
-    default:
-      break;
+      case 'T': // stop now;
+      case 'Stop Now':
+        _healthStatus = 'Stop Now';
+        healthColor = '#D50017'; //red
+        break;
+      case 'V': // service now;
+      case 'Service Now':
+        _healthStatus = 'Service Now';
+        healthColor = '#FC5F01'; //orange
+        break;
+      case 'N': // no action;
+      case 'No Action':
+        _healthStatus = 'No Action';
+        healthColor = '#00AE10'; //green for no action
+        break
+      default:
+        break;
     }
-    return {_healthStatus,healthColor};
+    return { _healthStatus, healthColor };
   }
 
   getHealthStatus(element) {
-    let _healthStatus='';
+    let _healthStatus = '';
     switch (element.vehicleHealthStatusType) {
       case 'T': // stop now;
       case 'Stop Now':
@@ -413,18 +413,18 @@ export class FleetMapService {
         break
       default:
         break;
-      }
-      return _healthStatus;
+    }
+    return _healthStatus;
   }
 
-  getDrivingStatus(element,_drivingStatus){
+  getDrivingStatus(element, _drivingStatus) {
     switch (element.vehicleDrivingStatusType) {
-      case 'N': 
+      case 'N':
       case 'Never Moved':
         _drivingStatus = 'Never Moved';
         break;
       case 'D':
-        case 'Driving':
+      case 'Driving':
         _drivingStatus = 'Driving';
         break;
       case 'I': // no action;
@@ -439,17 +439,17 @@ export class FleetMapService {
       case 'Stopped':
         _drivingStatus = 'Stopped';
         break
-      
+
       default:
         break;
     }
     return _drivingStatus;
   }
 
-  createMarker(poiType: any){
+  createMarker(poiType: any) {
     let homeMarker: any = '';
-    switch(poiType){
-      case 'Hotel':{
+    switch (poiType) {
+      case 'Hotel': {
         homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12.9998 29.6667C18.6665 25.0001 24.3332 19.2593 24.3332 13.0001C24.3332 6.74085 19.2591 1.66675 12.9998 1.66675C6.74061 1.66675 1.6665 6.74085 1.6665 13.0001C1.6665 19.2593 7.6665 25.3334 12.9998 29.6667Z" fill="#00529C"/>
@@ -458,7 +458,7 @@ export class FleetMapService {
         </svg>`;
         break;
       }
-      case 'Petrol Station':{
+      case 'Petrol Station': {
         homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12.9998 29.6667C18.6665 25.0001 24.3332 19.2593 24.3332 13.0001C24.3332 6.74085 19.2591 1.66675 12.9998 1.66675C6.74061 1.66675 1.6665 6.74085 1.6665 13.0001C1.6665 19.2593 7.6665 25.3334 12.9998 29.6667Z" fill="#00529C"/>
@@ -467,7 +467,7 @@ export class FleetMapService {
         </svg>`;
         break;
       }
-      case 'Parking':{
+      case 'Parking': {
         homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M13.3333 29.6667C19 25.0001 24.6667 19.2593 24.6667 13.0001C24.6667 6.74085 19.5926 1.66675 13.3333 1.66675C7.07411 1.66675 2 6.74085 2 13.0001C2 19.2593 8 25.3334 13.3333 29.6667Z" fill="#00529C"/>
@@ -476,7 +476,7 @@ export class FleetMapService {
         </svg>`;
         break;
       }
-      case 'Railway Station':{
+      case 'Railway Station': {
         homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12.9998 29.6667C18.6665 25.0001 24.3332 19.2593 24.3332 13.0001C24.3332 6.74085 19.2591 1.66675 12.9998 1.66675C6.74061 1.66675 1.6665 6.74085 1.6665 13.0001C1.6665 19.2593 7.6665 25.3334 12.9998 29.6667Z" fill="#00529C"/>
@@ -496,15 +496,15 @@ export class FleetMapService {
     return homeMarker;
   }
 
-  private createSVGMarker(_value,_health, elem) {
+  private createSVGMarker(_value, _health, elem) {
     let healthColor = this.getHealthUpdateForDriving(_health);
     let direction = this.getDirectionIconByBearings(_value);
-    let markerSvg = this.createDrivingMarkerSVG(direction,healthColor,elem);
+    let markerSvg = this.createDrivingMarkerSVG(direction, healthColor, elem);
     let rippleSize = { w: 50, h: 50 };
     let rippleMarker = this.createRippleMarker(direction);
-    const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:-(Math.round(rippleSize.w / 2)), y: -(Math.round(rippleSize.h / 2) )} });
-    this.rippleMarker = new H.map.DomMarker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
- 
+    const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x: -(Math.round(rippleSize.w / 2)), y: -(Math.round(rippleSize.h / 2)) } });
+    this.rippleMarker = new H.map.DomMarker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconRipple });
+
     return `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
@@ -516,13 +516,13 @@ export class FleetMapService {
     let iconWd = 34;
     let iconCenter = iconWd / 2;
     let iconCentery = 41 / 2;
-    let rippleX = -20 ,rippleY = -25;
+    let rippleX = -20, rippleY = -25;
     let outerRotation = `rotate(0 ${iconCenter} ${iconCenter})`;
 
     let innerRotation = `translate(0 0) scale(1  1) rotate(0 ${iconCenter} ${iconCenter})`;
     let image = "";
     //let bearings = ["NE", "E", "SE", "S", "SW", "W", "NW", "N"];
-    let bearings = ["S","SE","E","NE","N","NW","W","SW"];
+    let bearings = ["S", "SE", "E", "NE", "N", "NW", "W", "SW"];
 
     let index = -1;
     if (!isNaN(brng))
@@ -548,21 +548,21 @@ export class FleetMapService {
         innerRotation = `translate(9 14) scale(0.8)`;
         break;
       case "E":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.)`; 
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.)`;
         innerRotation = `translate(6 12) scale(0.8)`;
-        rippleX =  -25;
+        rippleX = -25;
         rippleY = -25;
         break;
       case "SE":
         outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.9)`; // translate(0 8) scale(1.2)
         innerRotation = `translate(6 7) scale(0.9)`;
-        rippleX =  -26;
+        rippleX = -26;
         rippleY = -25;
         break;
       case "S":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`; 
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
         innerRotation = `translate(6 7) scale(0.8)`;
-        rippleX  = -27;
+        rippleX = -27;
         rippleY = -30;
         break;
       case "SW":
@@ -571,33 +571,33 @@ export class FleetMapService {
 
         break;
       case "W":
-       // outerRotation = `rotate(180 ${iconCenter} ${iconCenter}) scale(1)`; //translate(20 4) scale(1.2)
+        // outerRotation = `rotate(180 ${iconCenter} ${iconCenter}) scale(1)`; //translate(20 4) scale(1.2)
         outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
         innerRotation = `translate(12 6) scale(0.8)`;
-        rippleX  = -21;
+        rippleX = -21;
         rippleY = -31;
         break;
       case "NW":
         outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.9)`; // translate(0 8) scale(1.2)
         innerRotation = `translate(10 8) scale(0.9)`;
-        rippleX  = -24;
+        rippleX = -24;
         rippleY = -28;
         break;
       default:
         break;
     }
-    return { outer: outerRotation, inner: innerRotation,rippleX : rippleX,rippleY:rippleY };
+    return { outer: outerRotation, inner: innerRotation, rippleX: rippleX, rippleY: rippleY };
   }
 
-  private createRippleMarker(direction?){
+  private createRippleMarker(direction?) {
     let rippleIcon = `<div class='rippleSVG' style='left:${direction.rippleX}px;top:${direction.rippleY}px'></div>`
-   
+
     return rippleIcon;
   }
-  private createDrivingMarkerSVG(direction: any,healthColor:any, elem): string {
+  private createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
 
-    if(!this.alertFoundFlag){
-    return `
+    if (!this.alertFoundFlag) {
+      return `
       <g id="svg_15">
 			<g id="svg_1" transform="${direction.outer}">
       <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -634,136 +634,136 @@ export class FleetMapService {
 		
 		</g>`;
     }
-    else{
+    else {
       // let alertConfig = this.getAlertConfig(elem);
-      let alertIcon = this.setAlertFoundIcon(healthColor,this.alertConfigMap);
+      let alertIcon = this.setAlertFoundIcon(healthColor, this.alertConfigMap);
       return alertIcon;
     }
   }
 
-    viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
     this.clearRoutesFromMap();
-    if(_herePOI){
+    if (_herePOI) {
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
     }
-    if(_searchMarker){
+    if (_searchMarker) {
       this.showSearchMarker(_searchMarker);
     }
-    if(_displayPOIList && _displayPOIList.length > 0){ 
+    if (_displayPOIList && _displayPOIList.length > 0) {
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
     }
-    if(_globalPOIList && _globalPOIList.length > 0){
-      this.showGlobalPOI(_globalPOIList,_ui);
+    if (_globalPOIList && _globalPOIList.length > 0) {
+      this.showGlobalPOI(_globalPOIList, _ui);
     }
-    if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show initial icons on map
-      this.drawIcons(_selectedRoutes,_ui);
+    if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
+      let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 && _elem.fleetOverviewAlert.length > 0));
+      this.drawIcons(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
       if (objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: 4, // 16665 - zoom added with bounds 
+          zoom: _iconCount.length > 1 ? 3 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }
       this.makeCluster(_selectedRoutes, _ui);
-      
-      //this.makeCluster(_selectedRoutes, _ui);
     }
-    else if(!showIcons && _selectedRoutes && _selectedRoutes.length > 0){ //to show trip when clicked on details
+    else if (!showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show trip when clicked on details
       _selectedRoutes.forEach(elem => {
         this.startAddressPositionLat = elem.startPositionLattitude;
         this.startAddressPositionLong = elem.startPositionLongitude;
-        this.endAddressPositionLat= elem.latestReceivedPositionLattitude;
-        this.endAddressPositionLong= elem.latestReceivedPositionLongitude;
+        this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
+        this.endAddressPositionLong = elem.latestReceivedPositionLongitude;
         this.corridorWidth = 1000; //- hard coded
-        this.corridorWidthKm = this.corridorWidth/1000;
+        this.corridorWidthKm = this.corridorWidth / 1000;
         let vehicleDrivingStatus = elem.vehicleDrivingStatusType == 'D' || elem.vehicleDrivingStatusType == 'Driving' ? true : false;
-        let houseMarker = this.createHomeMarker(); 
+        let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon }); //home icon
-         
-        if(this.validateLatLng(this.startAddressPositionLat,this.startAddressPositionLong)){
+        this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon }); //home icon
+
+        if (this.validateLatLng(this.startAddressPositionLat, this.startAddressPositionLong)) {
           this.group.addObject(this.startMarker);
         }
         let endMarkerSize = { w: 34, h: 40 }; //selected icon
-        if(vehicleDrivingStatus){
+        if (vehicleDrivingStatus) {
           let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem);
           const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
-          this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-          if(this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong)){
+          this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
+          if (this.validateLatLng(this.endAddressPositionLat, this.endAddressPositionLong)) {
             this.group.addObjects([this.rippleMarker, this.endMarker]);
-           } 
-        }
-          else{
-            let _vehicleMarkerDetails = this.setIconsOnMap(elem,_ui);
-            let _vehicleMarker = _vehicleMarkerDetails['icon'];
-            let _alertConfig = _vehicleMarkerDetails['alertConfig'];
-            let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-            this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-            if(this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong)){
-              this.group.addObject( this.endMarker);
-             }
           }
-       
-        if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+        }
+        else {
+          let _vehicleMarkerDetails = this.setIconsOnMap(elem, _ui);
+          let _vehicleMarker = _vehicleMarkerDetails['icon'];
+          let _alertConfig = _vehicleMarkerDetails['alertConfig'];
+          let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+          this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
+          if (this.validateLatLng(this.endAddressPositionLat, this.endAddressPositionLong)) {
+            this.group.addObject(this.endMarker);
+          }
+        }
+
+        if (elem.liveFleetPosition.length > 1) { // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on messageTimeStamp
-          if(_displayRouteView == 'C'){ // classic route
+          if (_displayRouteView == 'C') { // classic route
             let blueColorCode: any = '#436ddc';
             this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
-          }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+          } else if (_displayRouteView == 'F' || _displayRouteView == 'CO') { // fuel consumption/CO2 emissiom route
             let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
             filterDataPoints.forEach((element) => {
               this.drawPolyline(element, trackType);
             });
           }
         }
-        
-      if(alertsChecked){
-        if(elem.fleetOverviewAlert.length > 0){
-          this.drawAlerts(elem.fleetOverviewAlert,_ui);
+
+        if (alertsChecked) {
+          if (elem.fleetOverviewAlert.length > 0) {
+            this.drawAlerts(elem.fleetOverviewAlert, _ui);
+          }
         }
-      }
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
+          zoom: 15,
           bounds: this.group.getBoundingBox()
         });
         // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
-        
+
       });
-   
-      
-    }else{
-      if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
+
+
+    } else {
+      if (_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.group.getBoundingBox()
         });
       }
     }
-   }
+  }
 
-   drawAlerts(_alertDetails,_ui){
-    if(_alertDetails.length > 0){
+  drawAlerts(_alertDetails, _ui) {
+    if (_alertDetails.length > 0) {
       let _fillColor = '#D50017';
       let _level = 'Critical';
       let _type = 'Logistics Alerts';
-      let alertList  = _alertDetails.map(data=>data.alertId);
+      let alertList = _alertDetails.map(data => data.alertId);
       let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
       let finalAlerts = [];
       distinctAlert.forEach(element => {
-        let _currentElem = _alertDetails.find(item=> item.level === 'C' && item.alertId === element);
-        if(_currentElem == undefined){
-         _currentElem = _alertDetails.find(item=> item.alertId === element);
+        let _currentElem = _alertDetails.find(item => item.level === 'C' && item.alertId === element);
+        if (_currentElem == undefined) {
+          _currentElem = _alertDetails.find(item => item.alertId === element);
 
         }
         finalAlerts.push(_currentElem);
 
       });
       finalAlerts.forEach(element => {
-        
-        this.setColorForAlerts(element,_fillColor,_level);
+
+        this.setColorForAlerts(element, _fillColor, _level);
 
         let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="path-1-outside-1" maskUnits="userSpaceOnUse" x="0.416748" y="0.666748" width="23" height="19" fill="black">
@@ -778,18 +778,18 @@ export class FleetMapService {
         `
         let markerSize = { w: 23, h: 20 };
         const icon = new H.map.Icon(_alertMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.alertMarker = new H.map.Marker({ lat:element.latitude, lng: element.longitude },{ icon:icon });
+        this.alertMarker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: icon });
         this.group.addObject(this.alertMarker);
-        let _time = Util.convertUtcToDateFormat(element.time,'DD/MM/YYYY hh:mm:ss');
+        let _time = Util.convertUtcToDateFormat(element.time, 'DD/MM/YYYY hh:mm:ss');
 
         //alert tooltip
         var startBubble;
         this.alertMarker.addEventListener('pointerenter', function (evt) {
           // event target is the marker itself, group is a parent event target
           // for all objects that it contains
-          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+          startBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<table style='width: 300px; font-size:12px;'>
+            content: `<table style='width: 300px; font-size:12px;'>
               <tr>
                 <td style='width: 100px;'>Alert Name:</td> <td><b>${element.name}</b></td>
               </tr>
@@ -810,74 +810,74 @@ export class FleetMapService {
           // show info bubble
           _ui.addBubble(startBubble);
         }, false);
-        this.alertMarker.addEventListener('pointerleave', function(evt) {
+        this.alertMarker.addEventListener('pointerleave', function (evt) {
           startBubble.close();
         }, false);
 
       });
     }
-   }
+  }
 
-   setMapToLocation(_position){
-    this.hereMap.setCenter({lat: _position.lat, lng: _position.lng}, 'default');
+  setMapToLocation(_position) {
+    this.hereMap.setCenter({ lat: _position.lat, lng: _position.lng }, 'default');
 
-   }
-   
-   setColorForAlerts(element,_fillColor,_level){
-let _type ='';
+  }
+
+  setColorForAlerts(element, _fillColor, _level) {
+    let _type = '';
     switch (element.level) {
       case 'C':
-        case 'Critical':{
+      case 'Critical': {
         _fillColor = '#D50017';
         _level = 'Critical'
       }
-      break;
+        break;
       case 'W':
-        case 'Warning':{
+      case 'Warning': {
         _fillColor = '#FC5F01';
         _level = 'Warning'
       }
-      break;
+        break;
       case 'A':
-        case 'Advisory':{
+      case 'Advisory': {
         _fillColor = '#FFD80D';
         _level = 'Advisory'
       }
-      break;
+        break;
       default:
         break;
     }
-  
+
     switch (element.type) {
       case 'L':
-        case 'Logistics Alerts':{
+      case 'Logistics Alerts': {
         _type = 'Logistics Alerts'
       }
-      break;
+        break;
       case 'F':
-        case 'Fuel and Driver Performance':{
-        _type='Fuel and Driver Performance'
+      case 'Fuel and Driver Performance': {
+        _type = 'Fuel and Driver Performance'
       }
-      break;
+        break;
       case 'R':
-        case 'Repair and Maintenance':{
-        _type='Repair and Maintenance'
+      case 'Repair and Maintenance': {
+        _type = 'Repair and Maintenance'
 
       }
-      break;
+        break;
       default:
         break;
     }
-    return {color : _fillColor , level : _level, type : _type};
+    return { color: _fillColor, level: _level, type: _type };
   }
 
 
-   setIconForUnknownOrNeverMoved(alertFound, _drivingStatus, _healthStatus,_alertConfig){
+  setIconForUnknownOrNeverMoved(alertFound, _drivingStatus, _healthStatus, _alertConfig) {
     let _vehicleIcon;
- if(alertFound){
-   if(_drivingStatus == 'Unknown'){
-     if(_healthStatus == 'No Action'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+    if (alertFound) {
+      if (_drivingStatus == 'Unknown') {
+        if (_healthStatus == 'No Action') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
      <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#00AE10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
      <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#00AE10"/>
      <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -898,9 +898,9 @@ let _type ='';
      </clipPath>
      </defs>
      </svg>`
-     }
-     if(_healthStatus == 'Service Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Service Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#FC5F01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#FC5F01"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -921,9 +921,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Stop Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Stop Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#D50017"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -944,12 +944,12 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     return {icon: _vehicleIcon,alertConfig:_alertConfig};
-   }
-   if(_drivingStatus == 'Never Moved'){
-     if(_healthStatus == 'No Action'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        return { icon: _vehicleIcon, alertConfig: _alertConfig };
+      }
+      if (_drivingStatus == 'Never Moved') {
+        if (_healthStatus == 'No Action') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#00AE10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 39.375C24.3125 33.25 31.75 25.7152 31.75 17.5C31.75 9.28477 25.0902 2.625 16.875 2.625C8.65977 2.625 2 9.28477 2 17.5C2 25.7152 9.875 33.6875 16.875 39.375Z" fill="#00AE10"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -977,9 +977,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Service Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Service Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#FC5F01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 39.375C24.3125 33.25 31.75 25.7152 31.75 17.5C31.75 9.28477 25.0902 2.625 16.875 2.625C8.65977 2.625 2 9.28477 2 17.5C2 25.7152 9.875 33.6875 16.875 39.375Z" fill="#FC5F01"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1007,9 +1007,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Stop Now'){
-       _vehicleIcon = `<svg width="34" height="43" viewBox="0 0 34 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Stop Now') {
+          _vehicleIcon = `<svg width="34" height="43" viewBox="0 0 34 43" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 18.5C32.5 30.75 16.75 41.25 16.75 41.25C16.75 41.25 1 30.75 1 18.5C1 14.3228 2.65937 10.3168 5.61307 7.36307C8.56677 4.40937 12.5728 2.75 16.75 2.75C20.9272 2.75 24.9332 4.40937 27.8869 7.36307C30.8406 10.3168 32.5 14.3228 32.5 18.5Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 40.375C24.3125 34.25 31.75 26.7152 31.75 18.5C31.75 10.2848 25.0902 3.625 16.875 3.625C8.65977 3.625 2 10.2848 2 18.5C2 26.7152 9.875 34.6875 16.875 40.375Z" fill="#D50017"/>
        <path d="M16.75 31.1875C23.9987 31.1875 29.875 25.6051 29.875 18.7188C29.875 11.8324 23.9987 6.25 16.75 6.25C9.50126 6.25 3.625 11.8324 3.625 18.7188C3.625 25.6051 9.50126 31.1875 16.75 31.1875Z" fill="white"/>
@@ -1037,15 +1037,15 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     return {icon: _vehicleIcon,alertConfig:_alertConfig};
-   }
-   
- }
- else{
-   if(_drivingStatus == 'Unknown'){
-     if(_healthStatus == 'No Action'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        return { icon: _vehicleIcon, alertConfig: _alertConfig };
+      }
+
+    }
+    else {
+      if (_drivingStatus == 'Unknown') {
+        if (_healthStatus == 'No Action') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
      <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#00AE10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
      <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#00AE10"/>
      <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1058,9 +1058,9 @@ let _type ='';
      </clipPath>
      </defs>
      </svg>`
-     }
-     if(_healthStatus == 'Service Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Service Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#FC5F01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#FC5F01"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1073,9 +1073,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Stop Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Stop Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28477 24.9652 2.625 16.75 2.625C8.53477 2.625 1.875 9.28477 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="#D50017"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1088,12 +1088,12 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     return {icon: _vehicleIcon,alertConfig:_alertConfig};
-   }
-   if(_drivingStatus == 'Never Moved'){
-     if(_healthStatus == 'No Action'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        return { icon: _vehicleIcon, alertConfig: _alertConfig };
+      }
+      if (_drivingStatus == 'Never Moved') {
+        if (_healthStatus == 'No Action') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#00AE10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 39.375C24.3125 33.25 31.75 25.7152 31.75 17.5C31.75 9.28477 25.0902 2.625 16.875 2.625C8.65977 2.625 2 9.28477 2 17.5C2 25.7152 9.875 33.6875 16.875 39.375Z" fill="#00AE10"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1113,9 +1113,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Service Now'){
-       _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Service Now') {
+          _vehicleIcon = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="#FC5F01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 39.375C24.3125 33.25 31.75 25.7152 31.75 17.5C31.75 9.28477 25.0902 2.625 16.875 2.625C8.65977 2.625 2 9.28477 2 17.5C2 25.7152 9.875 33.6875 16.875 39.375Z" fill="#FC5F01"/>
        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.6051 29.875 17.7188C29.875 10.8324 23.9987 5.25 16.75 5.25C9.50126 5.25 3.625 10.8324 3.625 17.7188C3.625 24.6051 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1135,9 +1135,9 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     if(_healthStatus == 'Stop Now'){
-       _vehicleIcon = `<svg width="34" height="43" viewBox="0 0 34 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+        }
+        if (_healthStatus == 'Stop Now') {
+          _vehicleIcon = `<svg width="34" height="43" viewBox="0 0 34 43" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M32.5 18.5C32.5 30.75 16.75 41.25 16.75 41.25C16.75 41.25 1 30.75 1 18.5C1 14.3228 2.65937 10.3168 5.61307 7.36307C8.56677 4.40937 12.5728 2.75 16.75 2.75C20.9272 2.75 24.9332 4.40937 27.8869 7.36307C30.8406 10.3168 32.5 14.3228 32.5 18.5Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
        <path d="M16.875 40.375C24.3125 34.25 31.75 26.7152 31.75 18.5C31.75 10.2848 25.0902 3.625 16.875 3.625C8.65977 3.625 2 10.2848 2 18.5C2 26.7152 9.875 34.6875 16.875 40.375Z" fill="#D50017"/>
        <path d="M16.75 31.1875C23.9987 31.1875 29.875 25.6051 29.875 18.7188C29.875 11.8324 23.9987 6.25 16.75 6.25C9.50126 6.25 3.625 11.8324 3.625 18.7188C3.625 25.6051 9.50126 31.1875 16.75 31.1875Z" fill="white"/>
@@ -1157,65 +1157,65 @@ let _type ='';
        </clipPath>
        </defs>
        </svg>`
-     }
-     return {icon: _vehicleIcon,alertConfig:_alertConfig};
-   }
- }
-   }
+        }
+        return { icon: _vehicleIcon, alertConfig: _alertConfig };
+      }
+    }
+  }
 
 
-   drawIcons(_selectedRoutes,_ui){
+  drawIcons(_selectedRoutes, _ui) {
     _selectedRoutes.forEach(elem => {
       this.startAddressPositionLat = elem.startPositionLattitude;
       this.startAddressPositionLong = elem.startPositionLongitude;
-      this.endAddressPositionLat= elem.latestReceivedPositionLattitude;
-      this.endAddressPositionLong= elem.latestReceivedPositionLongitude;
-      let _vehicleMarkerDetails = this.setIconsOnMap(elem,_ui);
+      this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
+      this.endAddressPositionLong = elem.latestReceivedPositionLongitude;
+      let _vehicleMarkerDetails = this.setIconsOnMap(elem, _ui);
       let vehicleDrivingStatus = elem.vehicleDrivingStatusType == 'D' || elem.vehicleDrivingStatusType == 'Driving' ? true : false;
       let _vehicleMarker = _vehicleMarkerDetails['icon'];
       let _alertConfig = _vehicleMarkerDetails['alertConfig'];
       let _type = 'No Warning';
-      if(_alertConfig){
+      if (_alertConfig) {
         _type = _alertConfig.type;
       }
-      let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat,this.endAddressPositionLong);
+      let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat, this.endAddressPositionLong);
       let markerSize = { w: 34, h: 40 };
-      if(vehicleDrivingStatus){
+      if (vehicleDrivingStatus) {
         let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem);
         const icon = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.vehicleIconMarker = new H.map.Marker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon });
-        if(_checkValidLatLong) {//16705 
-        this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
-      } 
+        if (_checkValidLatLong) {//16705 
+          this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
+        }
       }
-        else{
-            
-      let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-      this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-      if(_checkValidLatLong) {//16705 
-        this.group.addObject(this.vehicleIconMarker);
-      }     
-    }
-      
-        
+      else {
+
+        let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.vehicleIconMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
+        if (_checkValidLatLong) {//16705 
+          this.group.addObject(this.vehicleIconMarker);
+        }
+      }
+
+
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
       let _healthStatus = this.getHealthStatus(elem);
-      let _drivingStatus = this.getDrivingStatus(elem,'');
-     
-      let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
+      let _drivingStatus = this.getDrivingStatus(elem, '');
+
+      let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
-      let _mileage = this.reportMapService.getDistance(elem.odometerVal,this.prefUnitFormat); //19040
-      let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService,this.prefUnitFormat);
-      let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ?  'km' : 'miles';
+      let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
+      let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
+      let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
       let iconBubble;
       this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
-        iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+        iconBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content: `<table style='width: 300px; font-size:12px;'>
             <tr>
               <td style='width: 100px;'>Vehicle:</td> <td><b>${_vehicleName}</b></td>
             </tr>
@@ -1245,112 +1245,112 @@ let _type ='';
         // show info bubble
         _ui.addBubble(iconBubble);
       }, false);
-      this.vehicleIconMarker.addEventListener('pointerleave', function(evt) {
+      this.vehicleIconMarker.addEventListener('pointerleave', function (evt) {
         iconBubble.close();
       }, false);
     });
-    
-      
-   }
 
-   validateLatLng(lat, lng) {    
+
+  }
+
+  validateLatLng(lat, lng) {
     let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
-    
+
     return pattern.test(lat) && pattern.test(lng);
   }
 
-  setIconsOnMap(element,_ui) {
-    let _healthStatus ='',_drivingStatus = '';
+  setIconsOnMap(element, _ui) {
+    let _healthStatus = '', _drivingStatus = '';
     let healthColor = '#606060';
     let _alertConfig = undefined;
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       this.drivingStatus = true
     }
 
-    _drivingStatus =  this.getDrivingStatus(element,_drivingStatus);
-    let obj =this.getVehicleHealthStatusType(element,_healthStatus,healthColor,this.drivingStatus);
+    _drivingStatus = this.getDrivingStatus(element, _drivingStatus);
+    let obj = this.getVehicleHealthStatusType(element, _healthStatus, healthColor, this.drivingStatus);
     _healthStatus = obj._healthStatus;
     healthColor = obj.healthColor;
-    let _vehicleIcon : any;
+    let _vehicleIcon: any;
 
-      let _alertFound = undefined ;
-      let alertsData =[];  
-      if(element.fleetOverviewAlert.length > 0){
-        if(element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length >0){
-            // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
-            _alertFound = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
-            if(_alertFound){
-              this.alertFoundFlag = true;
-               alertsData.push(_alertFound);
-                }
+    let _alertFound = undefined;
+    let alertsData = [];
+    if (element.fleetOverviewAlert.length > 0) {
+      if (element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length > 0) {
+        // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+        _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+        if (_alertFound) {
+          this.alertFoundFlag = true;
+          alertsData.push(_alertFound);
         }
-        else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
-          // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
-          _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
-          if (_alertFound) {
-            this.alertFoundFlag = true;
+      }
+      else if (element.tripId == "" && element.fleetOverviewAlert.length > 0) {
+        // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
+        _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+        if (_alertFound) {
+          this.alertFoundFlag = true;
+          alertsData.push(_alertFound);
+        }
+      }
+
+      else {
+        //only for never moved type of driving status
+        if (_drivingStatus == "Never Moved") {
+          let latestAlert: any = [];
+          if (element.latestWarningClass == 0) {
+            latestAlert = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
+            _alertFound = latestAlert[0];
             alertsData.push(_alertFound);
+            this.endAddressPositionLat = _alertFound.latitude;
+            this.endAddressPositionLong = _alertFound.longitude;
           }
-        }
-
-        else{
-          //only for never moved type of driving status
-            if(_drivingStatus == "Never Moved"){
-              let latestAlert :any =[];
-              if(element.latestWarningClass ==0){
-              latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time); //latest timestamp
+          else {
+            // need to display never moved icon on map if alert/warning is present.
+            latestAlert = element.fleetOverviewAlert.sort((x, y) => y.time - x.time);
+            let a = latestAlert[0].time;
+            let b = element.latestWarningTimestamp;
+            let newDate = Math.max(a, b);
+            if (newDate == a) {//for alert
               _alertFound = latestAlert[0];
               alertsData.push(_alertFound);
               this.endAddressPositionLat = _alertFound.latitude;
-              this.endAddressPositionLong =_alertFound.longitude;
-              }
-              else{
-                // need to display never moved icon on map if alert/warning is present.
-                latestAlert = element.fleetOverviewAlert.sort((x,y) => y.time-x.time);
-                let a = latestAlert[0].time;
-                let b = element.latestWarningTimestamp;
-                let newDate = Math.max(a, b);
-                if(newDate == a){//for alert
-                  _alertFound = latestAlert[0];
-                  alertsData.push(_alertFound);
-                  this.endAddressPositionLat = _alertFound.latitude;
-                  this.endAddressPositionLong =_alertFound.longitude;
-                }
-                else{ //for warning
-                  _alertFound = latestAlert[0];
-                  alertsData.push(_alertFound);
-                  this.endAddressPositionLat = element.latestWarningPositionLatitude;
-                  this.endAddressPositionLong = element.latestWarningPositionLongitude;
-                }
-
-              }
+              this.endAddressPositionLong = _alertFound.longitude;
             }
+            else { //for warning
+              _alertFound = latestAlert[0];
+              alertsData.push(_alertFound);
+              this.endAddressPositionLat = element.latestWarningPositionLatitude;
+              this.endAddressPositionLong = element.latestWarningPositionLongitude;
+            }
+
+          }
         }
       }
-      else{ //if alert is not present then need to display warning lat long for never moved vehicle.
-        if(_drivingStatus == "Never Moved"){
+    }
+    else { //if alert is not present then need to display warning lat long for never moved vehicle.
+      if (_drivingStatus == "Never Moved") {
         this.endAddressPositionLat = element.latestWarningPositionLatitude;
         this.endAddressPositionLong = element.latestWarningPositionLongitude;
-        }
       }
+    }
 
-        if(_alertFound && alertsData[0].length > 1){ //check for criticality
-          let criticalCount = 0;
-          let warningCount = 0;
-          let advisoryCount = 0;
-          alertsData[0].forEach(element => {
-          //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
-          //   if(_currentElem){
-          //     _alertConfig = this.getAlertConfig(element);  
-          //   }
-          //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
-          //   if(_currentElem == undefined && warnElem){
-          //     _alertConfig = this.getAlertConfig(element); 
-          //   }
-          //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
-          //     _alertConfig = this.getAlertConfig(element); 
-          //   }
-          //------------------------------------------------------------------------------------------
+    if (_alertFound && alertsData[0].length > 1) { //check for criticality
+      let criticalCount = 0;
+      let warningCount = 0;
+      let advisoryCount = 0;
+      alertsData[0].forEach(element => {
+        //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element);
+        //   if(_currentElem){
+        //     _alertConfig = this.getAlertConfig(element);  
+        //   }
+        //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element);
+        //   if(_currentElem == undefined && warnElem){
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
+        //     _alertConfig = this.getAlertConfig(element); 
+        //   }
+        //------------------------------------------------------------------------------------------
         //   let _currentElem = element.level === 'C' ? true : false;
         //   if(_currentElem){
         //     _alertConfig = this.getAlertConfig(element);  
@@ -1363,39 +1363,39 @@ let _type ='';
         //     _alertConfig = this.getAlertConfig(element); 
         //   }
 
-              criticalCount += element.level === 'C' ? 1 : 0;
-              warningCount += element.level === 'W' ? 1 : 0;
-              advisoryCount += element.level === 'A' ? 1 : 0;
-       
-          });
-          if(criticalCount > 0){
-            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
-          }
-          else if(warningCount > 0){
-            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
-          }
-          else if(advisoryCount > 0){
-            _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
-          }
-        }
-        else if(_alertFound && alertsData[0].length == 1){
-          _alertConfig = this.getAlertConfig(_alertFound[0]);
-        }  
-      
-      if(_drivingStatus == "Unknown" || _drivingStatus == "Never Moved"){
-          let obj = this.setIconForUnknownOrNeverMoved(_alertFound,_drivingStatus, _healthStatus,_alertConfig);
-          let data = obj.icon;
-          return {icon: data,alertConfig:_alertConfig};
+        criticalCount += element.level === 'C' ? 1 : 0;
+        warningCount += element.level === 'W' ? 1 : 0;
+        advisoryCount += element.level === 'A' ? 1 : 0;
+
+      });
+      if (criticalCount > 0) {
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
       }
-      else{
-      if(_alertFound){
+      else if (warningCount > 0) {
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+      }
+      else if (advisoryCount > 0) {
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+      }
+    }
+    else if (_alertFound && alertsData[0].length == 1) {
+      _alertConfig = this.getAlertConfig(_alertFound[0]);
+    }
+
+    if (_drivingStatus == "Unknown" || _drivingStatus == "Never Moved") {
+      let obj = this.setIconForUnknownOrNeverMoved(_alertFound, _drivingStatus, _healthStatus, _alertConfig);
+      let data = obj.icon;
+      return { icon: data, alertConfig: _alertConfig };
+    }
+    else {
+      if (_alertFound) {
         // _alertConfig = this.getAlertConfig(_alertFound);
-        _vehicleIcon = this.setAlertFoundIcon(healthColor,_alertConfig);
+        _vehicleIcon = this.setAlertFoundIcon(healthColor, _alertConfig);
         this.alertConfigMap = _alertConfig;
 
       }
-      else{
-         _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+      else {
+        _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28475 24.9652 2.62498 16.75 2.62498C8.53477 2.62498 1.875 9.28475 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="${healthColor}"/>
         <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.605 29.875 17.7187C29.875 10.8324 23.9987 5.24998 16.75 5.24998C9.50126 5.24998 3.625 10.8324 3.625 17.7187C3.625 24.605 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
@@ -1416,11 +1416,11 @@ let _type ='';
         </svg>`
       }
     }
-    
-    return {icon: _vehicleIcon,alertConfig:_alertConfig};
+
+    return { icon: _vehicleIcon, alertConfig: _alertConfig };
   }
 
-  setAlertFoundIcon(healthColor,_alertConfig){
+  setAlertFoundIcon(healthColor, _alertConfig) {
     let _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
@@ -1451,58 +1451,58 @@ let _type ='';
     return _vehicleIcon;
   }
 
-  getAlertConfig(_currentAlert){
-    let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
+  getAlertConfig(_currentAlert) {
+    let _alertConfig = { color: '#D50017', level: 'Critical', type: '' };
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.level) {
-        case 'C':
-          case 'Critical':{
-          _fillColor = '#D50017';
-          _level = 'Critical'
-        }
-        break;
-        case 'W':
-          case 'Warning':{
-          _fillColor = '#FC5F01';
-          _level = 'Warning'
-        }
-        break;
-        case 'A':
-          case 'Advisory':{
-          _fillColor = '#FFD80D';
-          _level = 'Advisory'
-        }
-        break;
-        default:
-          break;
+    switch (_currentAlert.level) {
+      case 'C':
+      case 'Critical': {
+        _fillColor = '#D50017';
+        _level = 'Critical'
       }
-      switch (_currentAlert.categoryType) {
-        case 'L':
-          case 'Logistics Alerts':{
-          _type = 'Logistics Alerts'
-        }
         break;
-        case 'F':
-          case 'Fuel and Driver Performance':{
-          _type='Fuel and Driver Performance'
-        }
+      case 'W':
+      case 'Warning': {
+        _fillColor = '#FC5F01';
+        _level = 'Warning'
+      }
         break;
-        case 'R':
-          case 'Repair and Maintenance':{
-          _type='Repair and Maintenance'
+      case 'A':
+      case 'Advisory': {
+        _fillColor = '#FFD80D';
+        _level = 'Advisory'
+      }
+        break;
+      default:
+        break;
+    }
+    switch (_currentAlert.categoryType) {
+      case 'L':
+      case 'Logistics Alerts': {
+        _type = 'Logistics Alerts'
+      }
+        break;
+      case 'F':
+      case 'Fuel and Driver Performance': {
+        _type = 'Fuel and Driver Performance'
+      }
+        break;
+      case 'R':
+      case 'Repair and Maintenance': {
+        _type = 'Repair and Maintenance'
 
-        }
-        break;
-        default:
-          break;
       }
-      return {color : _fillColor , level : _level, type : _type};
+        break;
+      default:
+        break;
+    }
+    return { color: _fillColor, level: _level, type: _type };
   }
 
-  getHealthUpdateForDriving(_health){
-    let  healthColor = '#D50017';
+  getHealthUpdateForDriving(_health) {
+    let healthColor = '#D50017';
     switch (_health) {
       case 'T': // stop now;
       case 'Stop Now':
@@ -1514,72 +1514,76 @@ let _type ='';
         break;
       case 'N': // no action;
       case 'No Action':
-          healthColor = '#00AE10'; //green
+        healthColor = '#00AE10'; //green
         break
       default:
         break;
     }
     return healthColor;
   }
-   makeCluster(_selectedRoutes: any, _ui: any){
+
+  makeCluster(_selectedRoutes: any, _ui: any) {
     let newRoutes = _selectedRoutes.slice();
-    let removeValFromIndex : any =[];
-    newRoutes.forEach((element,index,object) => { //removing never moved type of records having no alert/warnings
-       if((element.vehicleDrivingStatusType == 'N'|| element.vehicleDrivingStatusType =='Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0){
+    let removeValFromIndex: any = [];
+    newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+      if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
         //  newRoutes.splice(index, 1);
         removeValFromIndex.push(index);
-       }
-     });
-     for (var i = removeValFromIndex.length -1; i >= 0; i--){
-      newRoutes.splice(removeValFromIndex[i],1);
-     }
-     
-    if(newRoutes.length > 9){
-      this.setInitialCluster(newRoutes, _ui); 
-    }else{
-      this.afterPlusClick(newRoutes, _ui);
+      }
+    });
+    for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+      newRoutes.splice(removeValFromIndex[i], 1);
     }
-   }
 
-   showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+    // if(newRoutes.length > 9){
+    //   this.setInitialCluster(newRoutes, _ui); 
+    // }else{
+    //   this.afterPlusClick(newRoutes, _ui);
+    // }
+    if (newRoutes.length > 1) {
+      this.clusterAllPoints(newRoutes, _ui);
+    }
+  }
+
+  showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any) {
     let lineString: any = new H.geo.LineString();
     dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+      lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
     });
 
     let _style: any = {
-      lineWidth: 4, 
+      lineWidth: 4,
       strokeColor: _colorCode
     }
-    if(_trackType == 'dotted'){
-      _style.lineDash = [2,2];
+    if (_trackType == 'dotted') {
+      _style.lineDash = [2, 2];
     }
     let polyline = new H.map.Polyline(
       lineString, { style: _style }
     );
-    
-    this.group.addObject(polyline);
-   }
 
-   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
+    this.group.addObject(polyline);
+  }
+
+  selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any) {
     let lineString: any = new H.geo.LineString();
     dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+      lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
     });
 
     let _style: any = {
-      lineWidth: 4, 
+      lineWidth: 4,
       strokeColor: checkStatus ? 'blue' : 'grey'
     }
     let polyline = new H.map.Polyline(
       lineString, { style: _style }
     );
-    polyline.setData({id: _index});
-    
-    this.disableGroup.addObject(polyline);
-   }
+    polyline.setData({ id: _index });
 
-   getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
+    this.disableGroup.addObject(polyline);
+  }
+
+  getFilterDataPoints(_dataPoints: any, _displayRouteView: any) {
     //-----------------------------------------------------------------//
     // Fuel Consumption	Green	 	Orange	 	Red	 
     // VehicleSerie	Min	Max	Min	Max	Min	Max
@@ -1587,7 +1591,7 @@ let _type ='';
     // CF	0	100	100	500	500	infinity
     // XF	0	100	100	500	500	infinity
     // XG	0	100	100	500	500	infinity
-    
+
     // CO2	A	 	B	 	C	 	D	 	E	 	F	 
     // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
     // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
@@ -1595,35 +1599,35 @@ let _type ='';
     // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
     // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
     //--------------------------------------------------------------------//
-  
+
     let innerArray: any = [];
     let outerArray: any = [];
     let finalDataPoints: any = [];
-    _dataPoints.forEach((element) => { 
+    _dataPoints.forEach((element) => {
       let elemChecker: any = 0;
-      if(_displayRouteView == 'F'){ //------ fuel consumption
+      if (_displayRouteView == 'F') { //------ fuel consumption
         elemChecker = element.fuelconsumtion;
-        if(elemChecker <= 100){
+        if (elemChecker <= 100) {
           element.color = '#57A952'; // green
-        }else if(elemChecker > 100 && elemChecker <= 500){ 
+        } else if (elemChecker > 100 && elemChecker <= 500) {
           element.color = '#FFA500'; // orange
-        }else{ 
+        } else {
           element.color = '#FF010F';  // red 
         }
-      }else{ //---- co2 emission
+      } else { //---- co2 emission
         elemChecker = element.co2Emission;
-        if(elemChecker <= 270){
+        if (elemChecker <= 270) {
           element.color = '#01FE75'; // light green
-        }else if(elemChecker > 270 && elemChecker <= 540){ // green
-          element.color = '#57A952'; 
-        }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
-          element.color = '#867B3F'; 
-        }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
-          element.color = '#9C6236'; 
-        }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
-          element.color = '#C13F28'; 
-        }else{ // red
-          element.color = '#FF010F'; 
+        } else if (elemChecker > 270 && elemChecker <= 540) { // green
+          element.color = '#57A952';
+        } else if (elemChecker > 540 && elemChecker <= 810) { // green-brown
+          element.color = '#867B3F';
+        } else if (elemChecker > 810 && elemChecker <= 1080) { // red-brown
+          element.color = '#9C6236';
+        } else if (elemChecker > 1080 && elemChecker <= 1350) { // brown
+          element.color = '#C13F28';
+        } else { // red
+          element.color = '#FF010F';
         }
       }
       finalDataPoints.push(element);
@@ -1632,16 +1636,16 @@ let _type ='';
     let curColor: any = '';
     finalDataPoints.forEach((element, index) => {
       innerArray.push(element);
-      if(index != 0){
-        if(curColor != element.color){
-          outerArray.push({dataPoints: innerArray, color: curColor});
+      if (index != 0) {
+        if (curColor != element.color) {
+          outerArray.push({ dataPoints: innerArray, color: curColor });
           innerArray = [];
           curColor = element.color;
           innerArray.push(element);
-        }else if(index == (finalDataPoints.length - 1)){ // last point
-          outerArray.push({dataPoints: innerArray, color: curColor}); 
+        } else if (index == (finalDataPoints.length - 1)) { // last point
+          outerArray.push({ dataPoints: innerArray, color: curColor });
         }
-      }else{ // 0
+      } else { // 0
         curColor = element.color;
       }
     });
@@ -1649,27 +1653,27 @@ let _type ='';
     return outerArray;
   }
 
-  setInitialCluster(data: any, ui: any){
-  // let data = newData.filter(i=>i.vehicleDrivingStatusType !='N' || i.vehicleDrivingStatusType !='Never Moved');
+  setInitialCluster(data: any, ui: any) {
+    // let data = newData.filter(i=>i.vehicleDrivingStatusType !='N' || i.vehicleDrivingStatusType !='Never Moved');
     let dataPoints = data.map((item) => {
-      item.startPositionLattitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLatitude : item.startPositionLattitude; 
-      item.startPositionLongitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLongitude : item.startPositionLongitude; 
+      item.startPositionLattitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLatitude : item.startPositionLattitude;
+      item.startPositionLongitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLongitude : item.startPositionLongitude;
       return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
     });
     var noiseSvg =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
-    '<circle cx="20px" cy="20px" r="20" fill="red" />' +
-    '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">{text}</text></svg>';
-  
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
+      '<circle cx="20px" cy="20px" r="20" fill="red" />' +
+      '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">{text}</text></svg>';
+
     // var noiseIcon = new H.map.Icon(noiseSvg, {
     //   size: { w: 22, h: 22 },
     //   anchor: { x: 11, y: 11 }
     // });
-    
+
     var clusterSvgTemplate =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
-    '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
-    '</svg>';
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
+      '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
+      '</svg>';
     // // Create a clustering provider with custom options for clusterizing the input
     let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
       clusteringOptions: {
@@ -1680,21 +1684,20 @@ let _type ='';
       },
       theme: {
         getClusterPresentation: (markerCluster: any) => {
-  
+
           // Use cluster weight to change icon size:
           var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
-          if(data && data.length > 9){
+          if (data && data.length > 9) {
             svgString = svgString.replace('{text}', '+');
-          }else{
+          } else {
             svgString = svgString.replace('{text}', markerCluster.getWeight());
           }
-  
+
           var w, h;
           var weight = markerCluster.getWeight();
-  
+
           //Set cluster size depending on the weight
-          if (weight <= 6)
-          {
+          if (weight <= 6) {
             w = 35;
             h = 35;
           }
@@ -1706,12 +1709,12 @@ let _type ='';
             w = 75;
             h = 75;
           }
-  
+
           var clusterIcon = new H.map.Icon(svgString, {
             size: { w: w, h: h },
-            anchor: { x: (w/2), y: (h/2) }
+            anchor: { x: (w / 2), y: (h / 2) }
           });
-  
+
           // Create a marker for clusters:
           var clusterMarker = new H.map.Marker(markerCluster.getPosition(), {
             icon: clusterIcon,
@@ -1720,27 +1723,26 @@ let _type ='';
             min: markerCluster.getMinZoom(),
             max: markerCluster.getMaxZoom()
           });
-  
+
           // Bind cluster data to the marker:
-          clusterMarker.setData(markerCluster);		
-  
+          clusterMarker.setData(markerCluster);
+
           return clusterMarker;
         },
         getNoisePresentation: (noisePoint) => {
           //let infoBubble: any;
           var noiseSvgString = noiseSvg.replace('{radius}', noisePoint.getWeight());
-          if(data && data.length > 9){
+          if (data && data.length > 9) {
             noiseSvgString = noiseSvgString.replace('{text}', '+');
-          }else{
+          } else {
             noiseSvgString = noiseSvgString.replace('{text}', noisePoint.getWeight());
           }
-  
+
           var w, h;
           var weight = noisePoint.getWeight();
-  
+
           //Set cluster size depending on the weight
-          if (weight <= 6)
-          {
+          if (weight <= 6) {
             w = 30;
             h = 30;
           }
@@ -1752,33 +1754,33 @@ let _type ='';
             w = 50;
             h = 50;
           }
-  
+
           var noiseIcon = new H.map.Icon(noiseSvgString, {
             size: { w: w, h: h },
-            anchor: { x: (w/2), y: (h/2) }
+            anchor: { x: (w / 2), y: (h / 2) }
           });
-  
+
           // Create a marker for noise points:
           var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
             icon: noiseIcon,
-  
+
             // Use min zoom from a noise point to show it correctly at certain
             // zoom levels:
             min: noisePoint.getMinZoom(),
             max: 20
           });
-  
+
           // Bind cluster data to the marker:
           noiseMarker.setData(noisePoint);
-  
+
           return noiseMarker;
         }
       }
     });
-  
+
     // // Create a layer tha will consume objects from our clustering provider
     this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
-  
+
     // // To make objects from clustering provder visible,
     // // we need to add our layer to the map
     this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
@@ -1789,24 +1791,150 @@ let _type ='';
     });
   }
 
-  setMarkerCluster(data: any, ui: any){
+  clusterAllPoints(data: any, ui: any) {
+    let dataPoints = data.map((item) => {
+      item.lat = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLatitude : item.latestReceivedPositionLattitude;
+      item.lng = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLongitude : item.latestReceivedPositionLongitude;
+      return new H.clustering.DataPoint(item.lat, item.lng);
+    });
+    var noiseSvg =
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
+      '<circle cx="20px" cy="20px" r="20" fill="transparent" />' +
+      '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="transparent" textContent="!">{text}</text></svg>';
+
+    var clusterSvgTemplate =
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="#2fc82f" stroke-opacity="0.5" />' +
+      '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
+      '</svg>';
+
+    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+      clusteringOptions: {
+        eps: 32,
+        minWeight: 2
+      },
+      theme: {
+        getClusterPresentation: (markerCluster: any) => {
+          var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
+          if (data && data.length > 9 && markerCluster.getWeight() > 9) {
+            svgString = svgString.replace('{text}', '+');
+          } else {
+            svgString = svgString.replace('{text}', markerCluster.getWeight());
+          }
+
+          var w = 50, h = 50;
+          var clusterIcon = new H.map.Icon(svgString, {
+            size: { w: w, h: h },
+            anchor: { x: (w / 2), y: (h / 2) }
+          });
+
+          var clusterMarker = new H.map.Marker(markerCluster.getPosition(), {
+            icon: clusterIcon,
+            min: markerCluster.getMinZoom(),
+            max: markerCluster.getMaxZoom()
+          });
+
+          clusterMarker.setData(markerCluster);
+
+          let infoBubble: any;
+          clusterMarker.addEventListener('tap', (event: any) => {
+            this.removedDisabledGroup();
+            let colName: any;
+            if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+              colName = 'Vehicle Name';
+            }
+            else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+              colName = 'Vin';
+            }
+            else {
+              colName = 'Vehicle Registration No';
+            }
+            var point = event.target.getGeometry(),
+              screenPosition = this.hereMap.geoToScreen(point),
+              t = event.target,
+              _data = t.getData(),
+
+              // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
+            var chkBxId = 0;
+            _data.forEachEntry((p) => {
+              if (colName == 'Vehicle Name') {
+                tooltipContent += "<tr>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
+                tooltipContent += "</tr>";
+                chkBxId++;
+              }
+              else if (colName == 'Vin') {
+                tooltipContent += "<tr>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                tooltipContent += "</tr>";
+                chkBxId++;
+              }
+              else {
+                tooltipContent += "<tr>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                tooltipContent += "</tr>";
+                chkBxId++;
+              }
+            });
+            tooltipContent += "</tbody></table>";
+            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), {
+              content: tooltipContent,
+              onStateChange: (event) => {
+                this.removedDisabledGroup();
+              }
+            });
+            ui.addBubble(infoBubble);
+          });
+
+          return clusterMarker;
+        },
+        getNoisePresentation: (noisePoint) => {
+          var noiseSvgString = noiseSvg.replace('{radius}', noisePoint.getWeight());
+          if (data && data.length > 9) {
+            noiseSvgString = noiseSvgString.replace('{text}', '+');
+          } else {
+            noiseSvgString = noiseSvgString.replace('{text}', noisePoint.getWeight());
+          }
+
+          var w = 0, h = 0;
+          var noiseIcon = new H.map.Icon(noiseSvgString, {
+            size: { w: w, h: h },
+            anchor: { x: (w / 2), y: (h / 2) }
+          });
+
+          var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+            icon: noiseIcon,
+            min: noisePoint.getMinZoom(),
+            max: 20
+          });
+
+          noiseMarker.setData(noisePoint);
+          return noiseMarker;
+        }
+      }
+    });
+    this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+    this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
+  }
+
+  setMarkerCluster(data: any, ui: any) {
     let dataPoints = data.map((item) => {
       return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
     });
     var noiseSvg =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
-    '<circle cx="20px" cy="20px" r="20" fill="red" />' +
-    '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">!</text>{text}</svg>';
-  
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
+      '<circle cx="20px" cy="20px" r="20" fill="red" />' +
+      '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">!</text>{text}</svg>';
+
     // var noiseIcon = new H.map.Icon(noiseSvg, {
     //   size: { w: 22, h: 22 },
     //   anchor: { x: 11, y: 11 }
     // });
-    
+
     var clusterSvgTemplate =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
-    '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
-    '</svg>';
+      '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
+      '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
+      '</svg>';
     // // Create a clustering provider with custom options for clusterizing the input
     let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
       clusteringOptions: {
@@ -1820,17 +1948,16 @@ let _type ='';
           // Use cluster weight to change icon size:
           var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
           //svgString = svgString.replace('{text}', markerCluster.getWeight());
-          if(data && data.length > 9){
+          if (data && data.length > 9) {
             svgString = svgString.replace('{text}', '+');
-          }else{
+          } else {
             svgString = svgString.replace('{text}', markerCluster.getWeight());
           }
           var w, h;
           var weight = markerCluster.getWeight();
-  
+
           //Set cluster size depending on the weight
-          if (weight <= 6)
-          {
+          if (weight <= 6) {
             w = 35;
             h = 35;
           }
@@ -1842,12 +1969,12 @@ let _type ='';
             w = 75;
             h = 75;
           }
-  
+
           var clusterIcon = new H.map.Icon(svgString, {
             size: { w: w, h: h },
-            anchor: { x: (w/2), y: (h/2) }
+            anchor: { x: (w / 2), y: (h / 2) }
           });
-  
+
           // Create a marker for clusters:
           var clusterMarker = new H.map.Marker(markerCluster.getPosition(), {
             icon: clusterIcon,
@@ -1856,11 +1983,11 @@ let _type ='';
             min: markerCluster.getMinZoom(),
             max: markerCluster.getMaxZoom()
           });
-  
+
           // Bind cluster data to the marker:
           clusterMarker.setData(markerCluster);
-          let infoBubble: any
-          clusterMarker.addEventListener("tap",  (event) => {
+          let infoBubble: any;
+          clusterMarker.addEventListener("tap", (event) => {
             this.removedDisabledGroup();
             // data.forEach((element, _index) => {
             //   let liveFleetPoints: any = element.liveFleetPosition;
@@ -1869,53 +1996,53 @@ let _type ='';
             // });
             // this.hereMap.addObject(this.disableGroup);
             let colName: any;
-            if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
+            if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
               colName = 'Vehicle Name';
             }
-            else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'){
+            else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
               colName = 'Vin';
             }
-            else{
+            else {
               colName = 'Vehicle Registration No';
             }
             var point = event.target.getGeometry(),
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
               _data = t.getData(),
-  
+
               // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
-              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`; 
-              var chkBxId = 0;
-              _data.forEachEntry(
-              (p) => 
-              { 
-                if(colName == 'Vehicle Name'){
-                tooltipContent += "<tr>";
-                tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
-                tooltipContent += "</tr>";
-               chkBxId++;
-                }
-                else if(colName == 'Vin'){
+              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
+            var chkBxId = 0;
+            _data.forEachEntry(
+              (p) => {
+                if (colName == 'Vehicle Name') {
                   tooltipContent += "<tr>";
-                  tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                  tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
                   tooltipContent += "</tr>";
-                 chkBxId++;
-                  }
-                else{
-                    tooltipContent += "<tr>";
-                    tooltipContent += "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
-                    tooltipContent += "</tr>";
-                   chkBxId++;
-                    
+                  chkBxId++;
+                }
+                else if (colName == 'Vin') {
+                  tooltipContent += "<tr>";
+                  tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                  tooltipContent += "</tr>";
+                  chkBxId++;
+                }
+                else {
+                  tooltipContent += "<tr>";
+                  tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                  tooltipContent += "</tr>";
+                  chkBxId++;
+
                 }
               }
-            ); 
+            );
             tooltipContent += "</tbody></table>";
 
-            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent, 
-              onStateChange: (event) => {​​​
+            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), {
+              content: tooltipContent,
+              onStateChange: (event) => {
                 this.removedDisabledGroup();
-              }​​​
+              }
             });
 
             ui.addBubble(infoBubble);
@@ -1927,24 +2054,23 @@ let _type ='';
               })
             })
           });
-          
+
           return clusterMarker;
         },
         getNoisePresentation: (noisePoint) => {
           let infoBubble: any;
 
           var noiseSvgString = clusterSvgTemplate.replace('{radius}', noisePoint.getWeight());
-          if(data && data.length > 9){
+          if (data && data.length > 9) {
             noiseSvgString = noiseSvgString.replace('{text}', '+');
-          }else{
+          } else {
             noiseSvgString = noiseSvgString.replace('{text}', noisePoint.getWeight());
           }
           var w, h;
           var weight = noisePoint.getWeight();
-  
+
           //Set cluster size depending on the weight
-          if (weight <= 6)
-          {
+          if (weight <= 6) {
             w = 35;
             h = 35;
           }
@@ -1959,19 +2085,19 @@ let _type ='';
 
           var noiseIcon = new H.map.Icon(noiseSvgString, {
             size: { w: w, h: h },
-            anchor: { x: (w/2), y: (h/2) }
+            anchor: { x: (w / 2), y: (h / 2) }
           });
-  
+
           // Create a marker for noise points:
           var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
             icon: noiseIcon,
-  
+
             // Use min zoom from a noise point to show it correctly at certain
             // zoom levels:
             min: noisePoint.getMinZoom(),
             max: 20
           });
-  
+
           // Bind cluster data to the marker:
           noiseMarker.setData(noisePoint);
           return noiseMarker;
@@ -1987,70 +2113,70 @@ let _type ='';
     this.hereMap.addLayer(_markerClusterLayer, 100);
   }
 
-  removedDisabledGroup(){
+  removedDisabledGroup() {
     this.disableGroup.removeAll();
     //this.disableGroup = null;
   }
 
-  afterPlusClick(_selectedRoutes: any, _ui: any){
+  afterPlusClick(_selectedRoutes: any, _ui: any) {
     this.hereMap.removeLayer(this.clusteringLayer);
     // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
     // this.hereMap.setZoom(10);
-    if(_selectedRoutes.length > 1){
+    if (_selectedRoutes.length > 1) {
       let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.latestReceivedPositionLongitude === elem.latestReceivedPositionLongitude) === index);
       let _a: any = [];
-      _arr.forEach(i=> {
-        i.startPositionLattitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLatitude : i.startPositionLattitude; 
-        i.startPositionLongitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLongitude : i.startPositionLongitude;   
+      _arr.forEach(i => {
+        i.startPositionLattitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLatitude : i.startPositionLattitude;
+        i.startPositionLongitude = (i.liveFleetPosition.length > 1) ? i.liveFleetPosition[0].gpsLongitude : i.startPositionLongitude;
         let b: any = _selectedRoutes.filter(j => i.startPositionLattitude == j.startPositionLattitude && i.startPositionLongitude == j.startPositionLongitude)
         _a.push(b);
-      }); 
-      if(_a.length > 0){
+      });
+      if (_a.length > 0) {
         let _check: any = false;
         _a.forEach(element => {
-          if(element.length > 1){
+          if (element.length > 1) {
             _check = true;
             this.setMarkerCluster(element, _ui); // cluster route marker    
           }
         });
-        if(!_check){
+        if (!_check) {
           // TODO: cluster all element
         }
       }
     }
   }
 
-  checkPolylineSelection(chkBxId: any, _checked: any){
+  checkPolylineSelection(chkBxId: any, _checked: any) {
     let _a = this.disableGroup.getObjects();
-    if(_a && _a.length > 0){
+    if (_a && _a.length > 0) {
       _a.forEach(element => {
-        if((chkBxId) == element.data.id){
+        if ((chkBxId) == element.data.id) {
           element.setStyle({
-              lineWidth: 4, 
-              strokeColor: _checked ? 'transparent' : 'grey'
+            lineWidth: 4,
+            strokeColor: _checked ? 'transparent' : 'grey'
           });
-        } 
+        }
       });
     }
   }
 
-  infoBubbleCheckBoxClick(chkBxId, _data, _checked: any){
+  infoBubbleCheckBoxClick(chkBxId, _data, _checked: any) {
     var checkBox: any = document.getElementById(chkBxId);
     this.checkPolylineSelection(parseInt(chkBxId), _checked);
   }
-   
-  drawPolyline(finalDatapoints: any, trackType?: any){
+
+  drawPolyline(finalDatapoints: any, trackType?: any) {
     var lineString = new H.geo.LineString();
     finalDatapoints.dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+      lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
     });
-  
+
     let _style: any = {
-      lineWidth: 4, 
+      lineWidth: 4,
       strokeColor: finalDatapoints.color
     }
-    if(trackType == 'dotted'){
-      _style.lineDash = [2,2];
+    if (trackType == 'dotted') {
+      _style.lineDash = [2, 2];
     }
     let polyline = new H.map.Polyline(
       lineString, { style: _style }
@@ -2058,7 +2184,7 @@ let _type ='';
     this.group.addObject(polyline);
   }
 
-  createHomeMarker(){
+  createHomeMarker() {
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#0D7EE7"/>
@@ -2068,7 +2194,7 @@ let _type ='';
     return homeMarker;
   }
 
-  createEndMarker(){
+  createEndMarker() {
     const endMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#D50017"/>
@@ -2078,21 +2204,21 @@ let _type ='';
     return endMarker;
   }
 
-  processedLiveFLeetData(fleetData: any){
+  processedLiveFLeetData(fleetData: any) {
     fleetData.forEach(element => {
-      if(element.tripId != "" && element.liveFleetPosition.length > 0){
-      element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
-      element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude; 
-      element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
-      element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude; 
-      element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude; 
+      if (element.tripId != "" && element.liveFleetPosition.length > 0) {
+        element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+        element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude;
+        element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
+        element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
+        element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
       }
-      else if(element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0){
-        element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude; 
-        element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude; 
-   
+      else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
+        element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
+        element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
+
       }
-      else{
+      else {
         element.latestReceivedPositionLattitude = 48.8566;
         element.latestReceivedPositionLongitude = 2.3522;
       }
@@ -2100,8 +2226,8 @@ let _type ='';
     return fleetData;
   }
 
-  skipInvalidRecord(livePoints: any){
-    livePoints.sort((a, b) => parseInt(a.messageTimeStamp ) - parseInt(b.messageTimeStamp));
+  skipInvalidRecord(livePoints: any) {
+    livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp));
     let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
     return filterPoints;
   }
