@@ -393,23 +393,47 @@ export class CommonImportComponent implements OnInit {
 
   getCategoryId(name:string,id:any)
   {
+    let valid=0;
     switch(id){
       case 'C' : for(let i=0; i< this.poiData.length; i++)
                 {
-                  if(this.poiData[i].categoryName == name)
-                  {
+                  if(name != ''){
+                  if(this.poiData[i].categoryName == name){
+                  valid=1;
                     return this.poiData[i].categoryId;
                   }
+                  else{
+                    valid=0;}
+                  }
+                  else{ 
+                    return 0;
+                  }
+                }
+                if(valid == 0)
+                {
+                  return 'invalid';
                 }
                 break;
       case 'S'  : for(let i=0; i< this.poiData.length; i++)
                   {
-                    if(this.poiData[i].subCategoryName == name)
-                    {
-                      return this.poiData[i].subCategoryId;
+                    if(name != ''){
+                    if(this.poiData[i].subCategoryName == name){
+                      valid=1;
+                      return this.poiData[i].subCategoryId;                    
+                    }
+                    else{
+                      valid=0;}
+                    }
+                    else{ 
+                    return 0;
                     }
                   }
+                  if(valid == 0)
+                  {
+                    return 'invalid';
+                  }
                   break;
+      default :  return 0;
     }
   }
 
@@ -941,7 +965,11 @@ export class CommonImportComponent implements OnInit {
       if(value == 0 || value == '' || !value)
       {
         obj.status = false;
-        obj.reason = 'Category name blank or invalid';
+        obj.reason = 'Category name blank';
+      }
+      else if(value == 'invalid'){
+        obj.status = false;
+        obj.reason = 'Category name invalid';
       }
       else{
         obj.status = true;
@@ -951,15 +979,15 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type == 'subCategoryId'){
-      if(value == 0 || value == '' || !value)
-      {
+       if(value == 'invalid')
+       {
         obj.status = false;
-        obj.reason = ' Sub Category name blank or invalid';
-      }
+        obj.reason = ' Sub Category name invalid';
+       }
       else{
         obj.status = true;
         obj.reason = 'correct data';
-      }
+     }
       return obj;
     }
 
