@@ -69,8 +69,8 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
-                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Get("report_feature_ids").Value);
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid")?.Value ?? "0");
                 //get vehicle for alert visibility
                 //List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
                 //if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
