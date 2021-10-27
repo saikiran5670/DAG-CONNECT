@@ -185,7 +185,7 @@ export class CommonImportComponent implements OnInit {
           var workbook = XLSX.read(bstr, { type: "binary" });
           var first_sheet_name = workbook.SheetNames[0];
           var worksheet = workbook.Sheets[first_sheet_name];
-          var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          var arraylist = XLSX.utils.sheet_to_json(worksheet,{ raw: true, header: 0, defval: ""});
           this.filelist = [];
           this.filelist = arraylist;
         }
@@ -453,8 +453,8 @@ export class CommonImportComponent implements OnInit {
             "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
             "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
             "zipcode":String(this.filelist[i]["Zipcode"] == undefined ? '' : this.filelist[i]["Zipcode"]),
-            "latitude": this.filelist[i]["Latitude"],
-            "longitude": this.filelist[i]["Longitude"],
+            "latitude": parseFloat(this.filelist[i]["Latitude"]),
+            "longitude": parseFloat(this.filelist[i]["Longitude"]),
             "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
             "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
             "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]

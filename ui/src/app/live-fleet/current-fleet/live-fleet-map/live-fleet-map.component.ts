@@ -160,10 +160,11 @@ export class LiveFleetMapComponent implements OnInit {
       this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
       this.tripTraceArray = this.detailsData;
-    this.makeHerePOIList();
-    this.loadUserPOI();
-    this.loadGlobalPOI();
-    this.mapIconData();
+      this.showMap = true;
+      this.makeHerePOIList();
+      this.loadUserPOI();
+      this.loadGlobalPOI();
+      this.mapIconData();
     }, 0);
   }
 
