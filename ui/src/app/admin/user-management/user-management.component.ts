@@ -455,6 +455,7 @@ export class UserManagementComponent implements OnInit {
       else{
         row.newTag = false;
       }
+      // row.userFullName= row.firstName.toLowerCase()+" "+row.lastName.toLowerCase();
     });
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
@@ -543,7 +544,7 @@ export class UserManagementComponent implements OnInit {
         isRole = true;
       }
       if(val.firstName !== ''){
-        if(item.firstName.toString().toLowerCase() === val.firstName) isName = true;
+        if((item.firstName.toString().toLowerCase()+" "+item.lastName.toString().toLowerCase()).indexOf(val.firstName) > -1) isName = true;
       } else {
         isName = true;
       }
