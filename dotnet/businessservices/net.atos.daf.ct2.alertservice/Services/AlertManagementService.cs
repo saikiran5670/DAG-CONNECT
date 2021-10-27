@@ -287,19 +287,19 @@ namespace net.atos.daf.ct2.alertservice.Services
                 List<int> vehicleIds = new List<int>();
                 if (featureIds != null && featureIds.Count() > 0)
                 {
-                    foreach (int featureId in featureIds)
-                    {
-                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
-                        //append visibile vins
-                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                        //remove duplicate vins by key as vin
-                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                    }
-                    foreach (var item in vehicleDetailsAccountVisibilty)
-                    {
-                        vehicleIds.Add(item.VehicleId);
-                    }
+                    //foreach (int featureId in featureIds)
+                    //{
+                    //    IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                    //     = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                    //    //append visibile vins
+                    //    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //    //remove duplicate vins by key as vin
+                    //    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    //}
+                    //foreach (var item in vehicleDetailsAccountVisibilty)
+                    //{
+                    //    vehicleIds.Add(item.VehicleId);
+                    //}
                 }
                 IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds, vehicleIds);
 
@@ -462,15 +462,15 @@ namespace net.atos.daf.ct2.alertservice.Services
                 List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
                 if (featureIds != null && featureIds.Count() > 0)
                 {
-                    foreach (int featureId in featureIds)
-                    {
-                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
-                        //append visibile vins
-                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                        //remove duplicate vins by key as vin
-                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                    }
+                    //foreach (int featureId in featureIds)
+                    //{
+                    //    IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                    //     = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                    //    //append visibile vins
+                    //    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //    //remove duplicate vins by key as vin
+                    //    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    //}
                 }
                 if (vehicleDetailsAccountVisibilty.Any())
                 {

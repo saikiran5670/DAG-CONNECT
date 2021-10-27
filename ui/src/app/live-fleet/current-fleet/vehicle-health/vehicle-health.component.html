@@ -243,7 +243,8 @@
                   </div>
                   <div fxLayout="row" class="class_padding">
                     <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                      <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Activated Time</span>
+                      <span  *ngIf='warning.warningType=="A"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Activated Time</span>
+                      <span  *ngIf='warning.warningType=="D"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Deactivated Time</span>
                       <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
                     </div>
                     <ng-container *ngIf="warning.warningDeactivatedTimestamp">
