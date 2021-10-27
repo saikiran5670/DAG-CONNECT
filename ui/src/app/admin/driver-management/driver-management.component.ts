@@ -657,7 +657,7 @@ export class DriverManagementComponent implements OnInit {
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
         ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
-        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+        var arraylist = XLSX.utils.sheet_to_json(worksheet, {raw:true, header: 0, defval: ""});     
         this.filelist = [];
         this.filelist = arraylist;    
     }    
