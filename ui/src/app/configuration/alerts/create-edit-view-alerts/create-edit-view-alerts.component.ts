@@ -2590,21 +2590,37 @@ PoiCheckboxClicked(event: any, row: any) {
 keyPressNumbers(event) {    
   // var limit = parseInt(event.currentTarget.maxLength);
   // var max = parseInt(event.currentTarget.max);
-  var min = parseInt(event.currentTarget.min);
-  var exclude = /Backspace|Enter/;  
-  var value = Number.parseFloat(event.target.value + '' + event.key);
-  var parts = event.target.value.split('.');
-  if (parts.length == 2 && parts[1].length >= 2){
-     event.preventDefault();
+  // var min = parseInt(event.currentTarget.min);
+  // var exclude = /Backspace|Enter/;  
+  // var value = Number.parseFloat(event.target.value + '' + event.key);
+  // var parts = event.target.value.split('.');
+  // if (parts.length == 2 && parts[1].length >= 2){
+  //    event.preventDefault();
+  // }
+  // if(event.key=='-' || value < min) {
+  //   event.preventDefault();
+  // }
+
+  let charCode = (event.which) ? event.which : event.keyCode;
+  let number = event.target.value.split('.');
+  if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
   }
-  if(event.key=='-' || value < min) {
-    event.preventDefault();
+  //just one dot
+  if(number.length>1 && charCode == 46){
+       return false;
   }
-    return true;   
+  var caratPos = event.target.selectionStart;
+  var dotPos = event.target.value.indexOf(".");
+  if( caratPos > dotPos && dotPos>-1 && (number[1].length > 1)){
+      return false;
+  }
+    return true;     
 }
 
 onKey(event: any) { // without type info
   // let values += event.target.value + ' | ';
+ //  console.log('Key Up',event);
 }
 
 onChange($event){
