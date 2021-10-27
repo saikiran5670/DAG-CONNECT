@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "[0]");
 
 
                 var vehicleDetailsAccountVisibilty
@@ -33,29 +33,29 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     //get vehicle for alert visibility
                     List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
-                    if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
-                    {
-                        foreach (int alertfeatureId in alertFeatureIds)
-                        {
-                            IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                             = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
-                            //append visibile vins
-                            vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
-                            //remove duplicate vins by key as vin
-                            vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                        }
-                    }
+                    //if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                    //{
+                    //    foreach (int alertfeatureId in alertFeatureIds)
+                    //    {
+                    //        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                    //         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
+                    //        //append visibile vins
+                    //        vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
+                    //        //remove duplicate vins by key as vin
+                    //        vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    //    }
+                    //}
 
                     var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
-                    var tripAlertDataOld = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
-                    List<LogbookTripAlertDetails> tripAlertdData = tripAlertDataOld.ToList();
-                    foreach (var element in tripAlertDataOld)
-                    {
-                        if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Distinct().Contains(element.Vin))
-                        {
-                            tripAlertdData.Remove(element);
-                        }
-                    }
+                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
+                    //List<LogbookTripAlertDetails> tripAlertdData = tripAlertDataOld.ToList();
+                    //foreach (var element in tripAlertDataOld)
+                    //{
+                    //    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Distinct().Contains(element.Vin))
+                    //    {
+                    //        tripAlertdData.Remove(element);
+                    //    }
+                    //}
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);
                     response.LogbookTripAlertDetailsRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,
@@ -158,19 +158,19 @@ namespace net.atos.daf.ct2.reportservice.Services
                     return response;
                 }
                 //get vehicle for alert visibility
-                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
-                if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
-                {
-                    foreach (int alertfeatureId in alertFeatureIds)
-                    {
-                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
-                        //append visibile vins
-                        vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
-                        //remove duplicate vins by key as vin
-                        vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                    }
-                }
+                //List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibiltyForAlert = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                //if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                //{
+                //    foreach (int alertfeatureId in alertFeatureIds)
+                //    {
+                //        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                //         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, alertfeatureId);
+                //        //append visibile vins
+                //        vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
+                //        //remove duplicate vins by key as vin
+                //        vehicleDetailsAccountVisibiltyForAlert = vehicleDetailsAccountVisibiltyForAlert.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                //    }
+                //}
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
                     AlertCategory = request.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertCategories.ToList(),
@@ -186,13 +186,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 // remove the alerts dont have visibility for user 
-                foreach (var element in result)
-                {
-                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
-                    {
-                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
-                    }
-                }
+                //foreach (var element in result)
+                //{
+                //    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                //    {
+                //        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                //    }
+                //}
                 //check if atleast one trip is available 
                 if (result?.Count > 0)
                 {
@@ -210,14 +210,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                             var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
                             if (resultNeverMoved?.Count > 0)
                             {
-                                // remove the alerts dont have visibility for user 
-                                foreach (var element in resultNeverMoved)
-                                {
-                                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
-                                    {
-                                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
-                                    }
-                                }
+                                //// remove the alerts dont have visibility for user 
+                                //foreach (var element in resultNeverMoved)
+                                //{
+                                //    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                                //    {
+                                //        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                                //    }
+                                //}
                                 //If vehicel has only warnings and not trip then add to vehicle with trips 
                                 result.AddRange(resultNeverMoved);
                             }
@@ -296,14 +296,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                             var resultNeverMoved = await _reportManager.GetFleetOverviewDetails_NeverMoved(fleetOverviewFilter);
                             if (resultNeverMoved?.Count > 0)
                             {
-                                // remove the alerts dont have visibility for user 
-                                foreach (var element in resultNeverMoved)
-                                {
-                                    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
-                                    {
-                                        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
-                                    }
-                                }
+                                //// remove the alerts dont have visibility for user 
+                                //foreach (var element in resultNeverMoved)
+                                //{
+                                //    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                                //    {
+                                //        element.FleetOverviewAlert = new List<ReportComponent.entity.FleetOverviewAlert>();
+                                //    }
+                                //}
                                 //If vehicel has only warnings and not trip then add to vehicle with trips 
                                 result.AddRange(resultNeverMoved);
                             }
