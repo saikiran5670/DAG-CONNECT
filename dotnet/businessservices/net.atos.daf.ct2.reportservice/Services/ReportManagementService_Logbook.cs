@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDetailsAccountVisibilty.Any() && vehicleAccountVisibiltyAlertList.Any())
                 {
-                    var vinIds = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Intersect(vehicleDetailsAccountVisibilty.Select(x => x.Vin)).Distinct().ToList();
+                    var vinIds = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Union(vehicleDetailsAccountVisibilty.Select(x => x.Vin)).Distinct().ToList();
 
                     var alertVehicleresult = vehicleAccountVisibiltyAlertList.Where(x => vinIds.Contains(x.Vin));
 
