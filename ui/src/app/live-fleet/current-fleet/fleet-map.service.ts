@@ -726,7 +726,7 @@ export class FleetMapService {
         }
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: 15,
+          //zoom: 15,
           bounds: this.group.getBoundingBox()
         });
         // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
