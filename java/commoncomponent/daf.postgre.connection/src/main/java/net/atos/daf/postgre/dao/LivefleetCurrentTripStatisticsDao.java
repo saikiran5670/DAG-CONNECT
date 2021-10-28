@@ -12,6 +12,8 @@ import org.apache.flink.shaded.curator4.org.apache.curator.shaded.com.google.com
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.esotericsoftware.minlog.Log;
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.TripStatisticsPojo;
@@ -62,6 +64,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				int[] res = trip_stats_insert_stmt.executeBatch();
 
 				System.out.println("NUMBER OF ROWS inserted by INSERT_CURRENT_TRIP query is " + Arrays.toString(res));
+				logger.info("data inserted for trip  ::" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
@@ -450,6 +453,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				int num = trip_stats_update_stmt.executeUpdate();
 
 				System.out.println("NUMBER OF ROWS updated by UPDATE_CURRENT_TRIP is " + num);
+				logger.info("NUMBER OF ROWS updated by UPDATE_for_TRIP is" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
