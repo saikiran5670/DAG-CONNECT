@@ -956,8 +956,9 @@ filterSelectDrivers(driversearch){
     driversearch = driversearch.toLowerCase();
   }
   this.filteredDrivers.next(
-    this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
-  );
+    //this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
+    this.finalDriverList.filter(item => (item.firstName.toLowerCase() + ' ' + item.lastName.toLowerCase()).indexOf(driversearch) > -1)
+    );
   //console.log("this.filteredDrivers", this.filteredDrivers);
 }
 
