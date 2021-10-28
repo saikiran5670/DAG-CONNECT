@@ -78,7 +78,7 @@ public class IndexDataProcess {
 			 
 			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
 			
-			//consumerStream.addSink(new IndexDataHbaseSink()); // Writing into
+			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into
 			}											// HBase Table
 
 			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
@@ -104,13 +104,14 @@ public class IndexDataProcess {
 
 			try {
 				// System.out.println("Inside try of audit");
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
-						"Realtime Data Monitoring processing Job Started");
-				// System.out.println("before calling auditTrail in catch");
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT))); auditMap =
+				  createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
+				  "Realtime Data Monitoring processing Job Started"); //
+				  //System.out.println("before calling auditTrail in catch");
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 			} catch (Exception e) {
 
 				log.error("Issue while auditing :: " + e.getMessage());
@@ -125,13 +126,14 @@ public class IndexDataProcess {
 			e.printStackTrace();
 
 			try {
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
-						"Realtime index data processing Job Failed, reason :: " + e.getMessage());
-				System.out.println("before calling auditTrail in catch");
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				
+				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
+				  "Realtime index data processing Job Failed, reason :: " + e.getMessage());
+				 // System.out.println("before calling auditTrail in catch");
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 			} catch (Exception ex) {
 
 				log.error("Issue while auditing :: " + ex.getMessage());

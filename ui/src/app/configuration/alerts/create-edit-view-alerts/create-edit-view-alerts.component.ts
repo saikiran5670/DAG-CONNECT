@@ -1490,6 +1490,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.corridorGridData = data;
       this.updateCorridorDatasource(this.corridorGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.loadCorridorSelectedData(this.corridorGridData);
+      }
     }, (error) => {
       
     });
@@ -1539,8 +1542,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.poiDataSource.paginator = this.paginator.toArray()[1];
-      this.poiDataSource.sort = this.sort.toArray()[1];
+      this.poiDataSource.paginator = this.paginator.toArray()[0];
+      this.poiDataSource.sort = this.sort.toArray()[0];
     });
   }
 
@@ -1554,8 +1557,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.geofenceDataSource.paginator = this.paginator.toArray()[2];
-      this.geofenceDataSource.sort = this.sort.toArray()[2];
+      this.geofenceDataSource.paginator = this.paginator.toArray()[1];
+      this.geofenceDataSource.sort = this.sort.toArray()[1];
       // this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
       //   const isAsc = sort.direction === 'asc';
       //   return data.sort((a: any, b: any) => {
@@ -1603,8 +1606,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.groupDataSource.paginator = this.paginator.toArray()[3];
-      this.groupDataSource.sort = this.sort.toArray()[3];
+      this.groupDataSource.paginator = this.paginator.toArray()[2];
+      this.groupDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -1620,8 +1623,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.corridorDataSource.paginator = this.paginator.toArray()[1];
-      this.corridorDataSource.sort = this.sort.toArray()[1];
+      this.corridorDataSource.paginator = this.paginator.toArray()[0];
+      this.corridorDataSource.sort = this.sort.toArray()[0];
     });
   }
 
