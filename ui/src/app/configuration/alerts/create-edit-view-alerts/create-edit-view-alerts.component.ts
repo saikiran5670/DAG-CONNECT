@@ -1768,7 +1768,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
+      this.criticalThreshold =parseFloat(this.alertForm.get('criticalLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1780,7 +1780,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
+      this.warningThreshold = parseFloat(this.alertForm.get('warningLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1792,7 +1792,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value;
+      this.advisoryThreshold =parseFloat(this.alertForm.get('advisoryLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -2625,9 +2625,9 @@ onKey(event: any) { // without type info
 }
 
 onChange($event){
-this.criticalThreshold = this.alertForm.controls.criticalLevelThreshold.value;
-this.warningThreshold = this.alertForm.controls.warningLevelThreshold.value;
-this.advisoryThreshold = this.alertForm.controls.advisoryLevelThreshold.value;
+this.criticalThreshold =parseFloat(this.alertForm.controls.criticalLevelThreshold.value);
+this.warningThreshold = parseFloat(this.alertForm.controls.warningLevelThreshold.value);
+this.advisoryThreshold =parseFloat(this.alertForm.controls.advisoryLevelThreshold.value);
 }
 
 ngOnChanges(changes: SimpleChanges) {
