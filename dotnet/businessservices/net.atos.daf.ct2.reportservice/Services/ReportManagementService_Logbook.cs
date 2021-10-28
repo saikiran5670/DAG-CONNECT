@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
 
                 var enumTranslationList = await _reportManager.GetAlertCategory();
