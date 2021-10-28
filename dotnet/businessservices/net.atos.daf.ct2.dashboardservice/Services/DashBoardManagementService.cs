@@ -72,39 +72,42 @@ namespace net.atos.daf.ct2.dashboardservice
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
                 var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
 
-                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
 
                 List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(contextOrgId, featureIds);
 
-                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
-                List<string> vehicleVins = new List<string>();
-                if (featureIds != null && featureIds.Count() > 0)
-                {
-                    foreach (int featureId in featureIds)
-                    {
-                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(accountId, loggedInOrgId, contextOrgId, featureId);
-                        //append visibile vins
-                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                        //remove duplicate vins by key as vin
-                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                    }
-                    foreach (var item in vehicleDetailsAccountVisibilty)
-                    {
-                        vehicleVins.Add(item.Vin);
-                    }
-                }
-                if (vehicleVins.Count() == 0 || alerts.Count() == 0)
-                {
-                    return await Task.FromResult(new Alert24HoursResponse
-                    {
-                        Code = Responsecode.Failed,
-                        Message = "No Records found as per the user visibility"
-                    });
-                }
+                //List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                //List<string> vehicleVins = new List<string>();
+                //if (featureIds != null && featureIds.Count() > 0)
+                //{
+                //    foreach (int featureId in featureIds)
+                //    {
+                //        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                //         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(accountId, loggedInOrgId, contextOrgId, featureId);
+                //        //append visibile vins
+                //        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                //        //remove duplicate vins by key as vin
+                //        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                //    }
+                //    foreach (var item in vehicleDetailsAccountVisibilty)
+                //    {
+                //        vehicleVins.Add(item.Vin);
+                //    }
+                //}
+                //if (vehicleVins.Count() == 0 || alerts.Count() == 0)
+                //{
+                //    return await Task.FromResult(new Alert24HoursResponse
+                //    {
+                //        Code = Responsecode.Failed,
+                //        Message = "No Records found as per the user visibility"
+                //    });
+                //}
+                var vehicleDetailsAccountVisibilty
+                                             = await _visibilityManager
+                                                .GetVehicleByAccountVisibilityTemp(accountId, loggedInOrgId, contextOrgId, 0);
                 Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
                 {
-                    VINs = vehicleVins?.Distinct().ToList<string>(),//request.VINs.Where(w=> vehicleVins.Contains(w))?.Distinct().ToList<string>(),
+                    VINs = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList(), //vehicleVins?.Distinct().ToList<string>(),//request.VINs.Where(w=> vehicleVins.Contains(w))?.Distinct().ToList<string>(),
                     AlertIds = alerts.Select(x => x.Id).Distinct().ToList()
                 };
 

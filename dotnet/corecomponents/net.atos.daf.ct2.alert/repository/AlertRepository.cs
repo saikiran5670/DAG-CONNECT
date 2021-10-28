@@ -747,7 +747,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
                 parameterAlert.Add("@featureEnums", resultFeaturEnum);
-                parameterAlert.Add("@vehicleIds", vehicleIds);
+                //parameterAlert.Add("@vehicleIds", vehicleIds);
                 //parameterAlert.Add("@name", alert.Name);
                 //parameterAlert.Add("@category", alert.Category);
                 //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
@@ -1541,7 +1541,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 if (offlinePushNotificationFilter.OrganizationId > 0)
                 {
-                    queryString.Append(" and organization_id = @organization_id ");
+                    queryString.Append(" and ale.organization_id = @organization_id ");
                     parameterAlert.Add("@organization_id", offlinePushNotificationFilter.OrganizationId);
                 }
 
