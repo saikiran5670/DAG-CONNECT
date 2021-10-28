@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                 response.Message = "Alert Category data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -311,7 +311,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                 response.Message = "Alert data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -396,7 +396,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = "Alert notification template data is retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("GetNotificationTemplate method in alert service called.");
+                //_logger.Info("GetNotificationTemplate method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -426,7 +426,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = "Notification Recipient data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get notification recipient method in alert service called.");
+                //_logger.Info("Get notification recipient method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -490,7 +490,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

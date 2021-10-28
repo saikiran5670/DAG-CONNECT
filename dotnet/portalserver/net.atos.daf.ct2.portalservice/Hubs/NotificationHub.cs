@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                             ContextOrgId = GetContextOrgId()
                         };
                         _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
-                        _logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
+                        //_logger.Info("accountClientMapper_List:" + JsonConvert.SerializeObject(accountSignalRClientMapper));
 
                     }
                 }

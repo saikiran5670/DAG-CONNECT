@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.account
 {
     public interface IAccountManager
     {
+        Task<AccountMigrationResponse> CreateMigratedUsersInKeyCloak();
         Task<Account> Create(Account account);
         Task<Account> Update(Account account);
         Task<bool> Delete(Account account);

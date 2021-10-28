@@ -49,6 +49,52 @@ namespace net.atos.daf.ct2.account
             _vehicleManager = vehicleManager;
         }
 
+        public async Task<AccountMigrationResponse> CreateMigratedUsersInKeyCloak()
+        {
+            List<int> failedAccountIds = new List<int>();
+
+            try
+            {
+                //Fetch eligible accounts from account migration table with state "P" for creation
+                var eligibleAccounts = await _repository.GetPendingAccountsForCreation();
+                foreach (var account in eligibleAccounts)
+                {
+                    IdentityEntity.Identity identityEntity = new IdentityEntity.Identity
+                    {
+                        UserName = account.Email,
+                        EmailId = account.Email,
+                        FirstName = account.FirstName,
+                        LastName = account.LastName
+                    };
+                    var identityResult = await _identity.CreateUser(identityEntity);
+
+                    var state = identityResult.StatusCode == HttpStatusCode.Created
+                        ? AccountMigrationState.Completed
+                        : AccountMigrationState.Failed;
+                    await _repository.UpdateAccountMigrationState(account.AccountId, state);
+
+                    if (state == AccountMigrationState.Failed)
+                    {
+                        await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager",
+                            AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED,
+                            $"Account migration for { account.Email }", account.AccountId, account.AccountId,
+                            JsonConvert.SerializeObject(identityResult.Result));
+                        failedAccountIds.Add(account.AccountId);
+                    }
+                }
+
+                return new AccountMigrationResponse
+                {
+                    Message = $"Migrated users count - { eligibleAccounts.Count() - failedAccountIds.Count }. Failed users count - { failedAccountIds.Count }",
+                    FailedAccountIds = failedAccountIds.ToArray()
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<Account> Create(Account account)
         {
             // create user in identity
@@ -118,6 +164,7 @@ namespace net.atos.daf.ct2.account
             }
             return account;
         }
+
         public async Task<Account> Update(Account account)
         {
             // create user in identity
