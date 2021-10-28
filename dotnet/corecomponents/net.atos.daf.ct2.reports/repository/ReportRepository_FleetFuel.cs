@@ -442,7 +442,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                             as tripcount,
                         sum(etl_gps_distance)                               as totaldistance,
                         sum(idle_duration)                                  as totalidleduration,
-						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance)) as fuelconsumption,                        
+						(SUM(etl_gps_fuel_consumed)/SUM(CASE WHEN etl_gps_distance >0 THEN etl_gps_distance ELSE 1 END)) AS fuelconsumption,                        
                         sum(etl_gps_fuel_consumed)                          as fuelconsumed,
 						sum(co2_emission)                                   as co2emission
                         FROM tripdetail.trip_statistics CT
@@ -470,9 +470,9 @@ namespace net.atos.daf.ct2.reports.repository
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                string str = ex.Message;
                 throw;
             }
         }
