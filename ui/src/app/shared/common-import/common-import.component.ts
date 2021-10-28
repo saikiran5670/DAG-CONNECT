@@ -453,8 +453,8 @@ export class CommonImportComponent implements OnInit {
             "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
             "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
             "zipcode":String(this.filelist[i]["Zipcode"] == undefined ? '' : this.filelist[i]["Zipcode"]),
-            "latitude": parseFloat(this.filelist[i]["Latitude"]),
-            "longitude": parseFloat(this.filelist[i]["Longitude"]),
+            "latitude": this.filelist[i]["Latitude"],
+            "longitude": this.filelist[i]["Longitude"],
             "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
             "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
             "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
@@ -937,6 +937,7 @@ export class CommonImportComponent implements OnInit {
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(type== 'latitude')
     {
+      if(value !== ''){
       if(value < -90 || value > 90){
         obj.status = false;
         obj.reason = 'invalid latitude';
@@ -945,11 +946,17 @@ export class CommonImportComponent implements OnInit {
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
     if(type== 'longitude')
     {
+      if(value !== '' ){
       if(value < -180 || value > 180){
         obj.status = false;
         obj.reason = 'invalid longitude';
@@ -958,6 +965,11 @@ export class CommonImportComponent implements OnInit {
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
@@ -1111,8 +1123,8 @@ export class CommonImportComponent implements OnInit {
             "categoryName": this.rejectedList[i]["categoryName"],
             "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
-            "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
-            "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
+            "latitude" :this.rejectedList[i]["latitude"] ? parseFloat(this.rejectedList[i]["latitude"]).toFixed(2) :this.rejectedList[i]["latitude"] ,
+            "longitude" :this.rejectedList[i]["longitude"] ? parseFloat(this.rejectedList[i]["longitude"]).toFixed(2) :this.rejectedList[i]["longitude"] ,
             "returnMessage" :this.rejectedList[i]["returnMessage"] ? this.rejectedList[i]["returnMessage"] : "Duplicate POI"
           }
         )
