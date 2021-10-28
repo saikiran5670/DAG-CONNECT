@@ -51,18 +51,6 @@ namespace net.atos.daf.ct2.Audittrail.test
         }
 
         [TestCategory("Unit-Test-Case")]
-        [Description("Test for GetVehicleByFeatureAndSubsction Sucess case")]
-        [TestMethod]
-        [Timeout(TestTimeout.Infinite)]
-        public async Task GetVehicleByFeature()
-        {
-
-            var result = await _visibilityManager
-                                    .GetSubscribedVehicleByFeature(51, 36);
-            Assert.IsTrue(result.Count() > 0);
-        }
-
-        [TestCategory("Unit-Test-Case")]
         [Description("Test for GetVehicleByVisibilityAndFeature Sucess case")]
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]

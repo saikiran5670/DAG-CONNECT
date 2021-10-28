@@ -1992,5 +1992,40 @@ namespace net.atos.daf.ct2.account
                 throw;
             }
         }
+
+        public async Task<IEnumerable<AccountMigration>> GetPendingAccountsForCreation()
+        {
+            try
+            {
+                var query = @"SELECT account_id as AccountId, first_name as FirstName, last_name as LastName, email 
+                              FROM master.accountmigration am
+                              INNER JOIN master.account a ON a.id = am.account_id
+                              WHERE am.state='P'";
+
+                return await _dataAccess.QueryAsync<AccountMigration>(query, null);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateAccountMigrationState(int accountId, AccountMigrationState state)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@account_id", accountId);
+                parameters.Add("@state", (char)state);
+                var query = @"UPDATE master.accountmigration SET state=@state WHERE account_id = @account_id RETURNING id";
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
+                return id > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
