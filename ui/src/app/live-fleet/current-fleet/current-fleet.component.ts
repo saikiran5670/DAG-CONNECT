@@ -42,6 +42,7 @@ export class CurrentFleetComponent implements OnInit {
   preferenceObject : any;
   _state: any;
   filterData : any;
+  showLoadingIndicator: boolean = false;
 
   // detailsData =[
   //   {
@@ -179,24 +180,10 @@ export class CurrentFleetComponent implements OnInit {
       filter: "",
       menuId: 3 
     }
+    this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      //   }else{ // org pref
-      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-      //       this.proceedStep(prefData, orgPref);
-      //     }, (error) => { // failed org API
-      //       let pref: any = {};
-      //       this.proceedStep(prefData, pref);
-      //     });
-      //   }
-      // });
       this.getFleetOverviewPreferences();
-    });
-    this.reportService.getFilterDetails().subscribe((data: any) => {
-      this.filterData = data;
     });
    }
 
@@ -220,13 +207,19 @@ export class CurrentFleetComponent implements OnInit {
 
   callPreferences(){
     this.reportService.getReportUserPreference(this.currentFleetReportId).subscribe((data : any) => {
+      this.hideLoader();
       let _preferencesData = data['userPreferences'];
       this.getTranslatedColumnName(_preferencesData);
-      this.getFleetOverviewDetails();
+      this.getFilterData();
     }, (error)=>{
       console.log('Pref not found...');
-      this.getFleetOverviewDetails();
+      this.hideLoader();
+      this.getFilterData();
     });
+  }
+
+  hideLoader(){
+    this.showLoadingIndicator = false;
   }
 
   timerPrefData: any = [];
@@ -264,8 +257,9 @@ export class CurrentFleetComponent implements OnInit {
     }
   }
 
-   getFleetOverviewDetails(){
+  getFleetOverviewDetails(){
     this.clickOpenClose='Click to Open';
+    this.showLoadingIndicator = true;
     let objData = {
       "groupId": ["all"],
       "alertLevel": ["all"],
@@ -277,6 +271,7 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
+      this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data);
       this.detailsData = processedData;
       let _dataObj = {
@@ -288,8 +283,22 @@ export class CurrentFleetComponent implements OnInit {
         this.userPreferencesSetting();
         this.toBack();
       }
+    }, (err) => {
+      this.hideLoader();
     });
-   }
+  }
+
+  getFilterData(){
+    this.showLoadingIndicator = true;
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+      this.hideLoader();
+      this.filterData = data;
+      this.getFleetOverviewDetails();
+    }, (error) => {
+      this.hideLoader();
+      this.getFleetOverviewDetails();
+    });
+  }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});

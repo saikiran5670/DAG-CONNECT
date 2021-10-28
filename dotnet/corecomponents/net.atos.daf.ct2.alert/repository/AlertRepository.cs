@@ -747,7 +747,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
                 parameterAlert.Add("@featureEnums", resultFeaturEnum);
-                parameterAlert.Add("@vehicleIds", vehicleIds);
+                // parameterAlert.Add("@vehicleIds", vehicleIds);
                 //parameterAlert.Add("@name", alert.Name);
                 //parameterAlert.Add("@category", alert.Category);
                 //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
@@ -914,9 +914,9 @@ namespace net.atos.daf.ct2.alert.repository
 					left join master.groupref vgrpref
 					on  grp.id=vgrpref.group_id and grp.object_type='V'	
 					left join master.vehicle veh
-					on vgrpref.ref_id=veh.id 
+					on vgrpref.ref_id=veh.id
                     left join master.vehicle vehs
-					on grp.ref_id=vehs.id and grp.group_type='S'
+					on grp.ref_id=vehs.id and grp.group_type='S' 
                         ";
 
                 //if (accountid > 0 && organizationid > 0)
@@ -927,7 +927,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //}
                 //else if (accountid == 0 && organizationid > 0)
                 //{
-                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums) and (veh.id = ANY(@vehicleIds) or vehs.id = ANY(@vehicleIds))";
+                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums)";
                 parameterAlert.Add("@organization_id", organizationid);
                 //}               
 
