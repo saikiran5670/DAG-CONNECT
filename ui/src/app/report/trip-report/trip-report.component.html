@@ -135,11 +135,13 @@
       </mat-expansion-panel-header>
       <div>
         <form [formGroup]="mapFilterForm">
-        <a (click)='onAdvanceFilterOpen()' class='advanceFilterAnchor'>
-          <span style='text-decoration: underline;'>{{ translationData.lblAdvancedMapFilter  }}</span>
-          <mat-icon>
-            {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-          </mat-icon>
+        <a class='advanceFilterAnchor'>
+          <span (click)='onAdvanceFilterOpen()' class='flex-class'>
+            <span style='text-decoration: underline;'>{{ translationData.lblAdvancedMapFilter  }}</span>
+            <mat-icon>
+              {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+            </mat-icon>
+          </span>
         </a>  
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">

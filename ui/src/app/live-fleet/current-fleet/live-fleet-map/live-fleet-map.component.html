@@ -9,11 +9,13 @@
       </mat-expansion-panel-header>
       <div>
         <form [formGroup]="mapFilterForm">
-        <a (click)='onAdvanceFilterOpen()' class='advanceFilterAnchor'>
-          <span style='text-decoration: underline;'>{{ translationData.lblAdvanceMapFilter }}</span>
-          <mat-icon>
-            {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-          </mat-icon>
+        <a class='advanceFilterAnchor'>
+          <span (click)='onAdvanceFilterOpen()' class='flex-class'>
+            <span style='text-decoration: underline;'>{{ translationData.lblAdvanceMapFilter }}</span>
+            <mat-icon>
+              {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+            </mat-icon>
+          </span>
         </a>  
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
@@ -74,27 +76,29 @@
                 </div>
             </div>
           </div>
-           <!-- global -->
-          <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
-                translationData.lblGlobalPois }}</div>
-              <div class='scrollArea' *ngIf='globalPOIList.length > 0'>
-                <div *ngFor="let globalPOI of globalPOIList; let i = index" class="full-width" fxLayoutGap="10px">
-                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                    <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedGlobalPOI.toggle(globalPOI) : null; changeGlobalPOISelection($event, globalPOI, i)' [checked]='globalPOI.parentChecked'>{{ globalPOI.categoryName }} ({{ globalPOI.poiList.length }})</mat-checkbox>
-                    <mat-icon style='cursor: pointer;' *ngIf='globalPOI.subCategoryPOIList.length > 0' (click)='openClosedGlobalPOI(i)'>
-                      {{ globalPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-                    </mat-icon>
-                  </div>
-                  <div [ngClass]="{'filterHide': !globalPOI.open}" *ngFor="let subCatPOI of globalPOI.subCategoryPOIList; let j = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-left-10-per" fxLayoutGap="10px">
-                      <mat-checkbox [checked]="subCatPOI.checked" (change)='changeGlobalSubCategory($event, subCatPOI, i)'>{{ subCatPOI.subCategoryName }} ({{ subCatPOI.poiList.length }})</mat-checkbox>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <!-- global -->
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
+                  translationData.lblGlobalPois }}</div>
+                <div class='scrollArea' *ngIf='globalPOIList.length > 0'>
+                  <div *ngFor="let globalPOI of globalPOIList; let i = index" class="full-width" fxLayoutGap="10px">
+                    <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                      <mat-checkbox (click)='$event.stopPropagation()'
+                      (change)='$event ? selectedGlobalPOI.toggle(globalPOI) : null; changeGlobalPOISelection($event, globalPOI, i)' [checked]='globalPOI.parentChecked'>{{ globalPOI.categoryName }} ({{ globalPOI.poiList.length }})</mat-checkbox>
+                      <mat-icon style='cursor: pointer;' *ngIf='globalPOI.subCategoryPOIList.length > 0' (click)='openClosedGlobalPOI(i)'>
+                        {{ globalPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+                      </mat-icon>
+                    </div>
+                    <div [ngClass]="{'filterHide': !globalPOI.open}" *ngFor="let subCatPOI of globalPOI.subCategoryPOIList; let j = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-left-10-per" fxLayoutGap="10px">
+                        <mat-checkbox [checked]="subCatPOI.checked" (change)='changeGlobalSubCategory($event, subCatPOI, i)'>{{ subCatPOI.subCategoryName }} ({{ subCatPOI.poiList.length }})</mat-checkbox>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div *ngIf='globalPOIList.length == 0'>{{  translationData.lblNoGlobalPOIFound }}</div>
+                <div *ngIf='globalPOIList.length == 0'>{{  translationData.lblNoGlobalPOIFound }}</div>
+            </div>
           </div>
         </div>
       </form>
