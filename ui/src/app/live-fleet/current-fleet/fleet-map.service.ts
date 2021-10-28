@@ -658,6 +658,7 @@ export class FleetMapService {
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
       let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 && _elem.fleetOverviewAlert.length > 0));
       this.drawIcons(_selectedRoutes, _ui);
+      this.makeCluster(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
       if (objArr.length > 0) {
         this.hereMap.addObject(this.group);
@@ -666,7 +667,6 @@ export class FleetMapService {
           bounds: this.group.getBoundingBox()
         });
       }
-      this.makeCluster(_selectedRoutes, _ui);
     }
     else if (!showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show trip when clicked on details
       _selectedRoutes.forEach(elem => {
@@ -1836,7 +1836,7 @@ export class FleetMapService {
           clusterMarker.setData(markerCluster);
 
           let infoBubble: any;
-          clusterMarker.addEventListener('tap', (event: any) => {
+          clusterMarker.addEventListener('tap', (event) => {
             this.removedDisabledGroup();
             let colName: any;
             if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
