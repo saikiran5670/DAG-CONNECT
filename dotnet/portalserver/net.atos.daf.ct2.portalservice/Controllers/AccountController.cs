@@ -2009,5 +2009,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("createmigratedusers")]
+        public async Task<IActionResult> CreateMigratedUsersInKeyCloak()
+        {
+            try
+            {
+                var response = await _accountClient.CreateMigratedUsersInKeyCloakAsync(new Google.Protobuf.WellKnownTypes.Empty());
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                            "Account migration activity", 0, 0, ex.Message, _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
+                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? null);
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
 
                 var enumTranslationList = await _reportManager.GetAlertCategory();
@@ -34,9 +34,18 @@ namespace net.atos.daf.ct2.reportservice.Services
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
 
-                if (vehicleDetailsAccountVisibilty.Any())
+                //IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList = null;
+                //if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                //{
+                var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
+                //}
+
+                if (vehicleDetailsAccountVisibilty.Any() && vehicleAccountVisibiltyAlertList.Any())
                 {
-                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
+                    var vinIds = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Union(vehicleDetailsAccountVisibilty.Select(x => x.Vin)).Distinct().ToList();
+
+                    var alertVehicleresult = vehicleAccountVisibiltyAlertList.Where(x => vinIds.Contains(x.Vin));
+
                     var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
                     response.LogbookSearchParameter.LogbookTripAlertDetailsRequest.AddRange(
@@ -44,7 +53,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
 
-                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
+                    var res = JsonConvert.SerializeObject(alertVehicleresult);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
                     response.LogbookSearchParameter.AssociatedVehicleRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
@@ -63,7 +72,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                     var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.VehicleId).Intersect(vehicleByVisibilityAndFeature.Select(x => x.VehicleId));
                     var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.VehicleId));
-                    result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.VehicleId == x.VehicleId));
+                    result = result.Where(x => alertVehicleresult.Any(y => y.VehicleId == x.VehicleId));
                     res = JsonConvert.SerializeObject(result);
                     response.LogbookSearchParameter.AlertTypeFilterRequest.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res,
@@ -75,7 +84,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
                     );
 
-
                 var alertCategory = await _reportManager.GetAlertCategoryList();// tripAlertdData.Select(x => x.AlertCategoryType).Distinct().ToList());
                 var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
                 response.LogbookSearchParameter.ACFilterResponse.AddRange(
@@ -85,7 +93,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
                 response.Code = Responsecode.Success;
 
-                _logger.Info("Get method in report service called.");
+                //_logger.Info("Get method in report service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -105,7 +113,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                _logger.Info("Get GetLogbookDetails ");
+                //_logger.Info("Get GetLogbookDetails ");
                 LogbookDetailsResponse response = new LogbookDetailsResponse();
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
@@ -114,36 +122,41 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var vehicleDetailsWithAccountVisibility =
                                 await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, featureId);
 
-                if (vehicleDetailsWithAccountVisibility.Count() == 0)
+                var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, 0);
+
+                if (vehicleDetailsWithAccountVisibility.Count() == 0 || vehicleAccountVisibiltyAlertList.Count() == 0)
                 {
                     response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, logbookDetailsRequest.AccountId, logbookDetailsRequest.OrganizationId);
                     response.Code = Responsecode.Failed;
                     return response;
                 }
+                var vins = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Union(vehicleDetailsWithAccountVisibility.Select(x => x.Vin)).Distinct().ToList();
 
-                IEnumerable<string> vins;
+                var unionvehicleAccountVisibiltyAlertList = vehicleAccountVisibiltyAlertList.Union(vehicleDetailsWithAccountVisibility).Where(x => vins.Contains(x.Vin));
+
+                //IEnumerable<string> vins;
                 if (logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) &&
                 logbookDetailsRequest.VIN.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
                 {
-                    vins = vehicleDetailsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList();
+                    vins = unionvehicleAccountVisibiltyAlertList.Select(x => x.Vin).Distinct().ToList();
                 }
                 else if (logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) &&
                         !logbookDetailsRequest.VIN.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
                 {
-                    vins = vehicleDetailsWithAccountVisibility.Where(x => logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
+                    vins = unionvehicleAccountVisibiltyAlertList.Where(x => logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
                 }
                 else if (!logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) &&
                         logbookDetailsRequest.VIN.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)))
                 {
                     var requestedGroups = logbookDetailsRequest.GroupIds.Select(x => Convert.ToInt32(x));
-                    var visibleGroups = vehicleDetailsWithAccountVisibility.SelectMany(x => x.VehicleGroupIds).Distinct().ToList();
+                    var visibleGroups = unionvehicleAccountVisibiltyAlertList.SelectMany(x => x.VehicleGroupIds).Distinct().ToList();
                     var resultGroups = requestedGroups.Intersect(visibleGroups);
 
-                    vins = vehicleDetailsWithAccountVisibility.Where(x => resultGroups.Any(y => x.VehicleGroupIds.Contains(y))).Select(x => x.Vin).Distinct().ToList();
+                    vins = unionvehicleAccountVisibiltyAlertList.Where(x => resultGroups.Any(y => x.VehicleGroupIds.Contains(y))).Select(x => x.Vin).Distinct().ToList();
                 }
                 else
                 {
-                    vins = vehicleDetailsWithAccountVisibility.Where(x => logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
+                    vins = unionvehicleAccountVisibiltyAlertList.Where(x => logbookDetailsRequest.VIN.ToList().Contains(x.Vin.ToString())).Select(x => x.Vin).Distinct().ToList();
                 }
 
                 if (vins.Count() == 0)

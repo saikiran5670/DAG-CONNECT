@@ -454,7 +454,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", poi.OrganizationId != null ? poi.OrganizationId : 0);
                         parameter.Add("@category_id", poi.CategoryId);
-                        parameter.Add("@sub_category_id", poi.SubCategoryId);
+                        parameter.Add("@sub_category_id", poi.SubCategoryId == 0 ? null : poi.SubCategoryId);
                         parameter.Add("@name", poi.Name);
                         parameter.Add("@address", poi.Address);
                         parameter.Add("@city", poi.City);

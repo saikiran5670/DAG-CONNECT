@@ -71,6 +71,7 @@ namespace net.atos.daf.ct2.identity
                 throw;
             }
         }
+
         public async Task<Response> UpdateUser(Identity user)
         {
             return await UpdateOrDeleteUser(user, "UPDATE");

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option csharp_namespace = "net.atos.daf.ct2.accountservice";
 
+import "google/protobuf/empty.proto";
+
 package net.atos.daf.ct2.accountservice;
 
 // The account service definition.
@@ -13,6 +15,7 @@ service AccountService
 
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
+  rpc CreateMigratedUsersInKeyCloak (google.protobuf.Empty) returns (AccountMigrationResponse);
   rpc Update (AccountRequest) returns (AccountData);
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (ChangePasswordRequest) returns (AccountResponse);
@@ -95,6 +98,10 @@ message AccountData {
   Responcecode Code=1;
   string Message = 2;
   AccountRequest Account = 3;
+}
+message AccountMigrationResponse {
+  string Message = 1;
+  repeated int32 FailedAccountIds = 2;
 }
 message KeyValue
 {
