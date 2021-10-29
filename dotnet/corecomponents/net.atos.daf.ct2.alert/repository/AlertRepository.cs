@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameterurgencylevelref.Add("@urgency_level_type", Convert.ToChar(urgencylevel.UrgencyLevelType));
                 else
                     parameterurgencylevelref.Add("@urgency_level_type", null);
-                parameterurgencylevelref.Add("@threshold_value", urgencylevel.ThresholdValue);
+                parameterurgencylevelref.Add("@threshold_value", decimal.Parse(urgencylevel.ThresholdValue));
                 if (urgencylevel.UnitType != null && urgencylevel.UnitType.Length > 0)
                     parameterurgencylevelref.Add("@unit_type", Convert.ToChar(urgencylevel.UnitType));
                 else
