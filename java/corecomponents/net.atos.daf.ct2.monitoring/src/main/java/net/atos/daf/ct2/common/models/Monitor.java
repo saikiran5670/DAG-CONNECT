@@ -1,9 +1,7 @@
 package net.atos.daf.ct2.common.models;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import net.atos.daf.ct2.common.processing.DriverCalculation;
 import net.atos.daf.ct2.common.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

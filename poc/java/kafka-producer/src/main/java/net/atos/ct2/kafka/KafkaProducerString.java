@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 
 public class KafkaProducerString {
 
@@ -23,39 +24,26 @@ public class KafkaProducerString {
         System.out.println("Command liner runner............!");
         String prop = args[0];
         String jsonFile = args[1];
-        Properties kafkaTopicProp = new Properties();
         Properties env = new Properties();
         InputStream iStream = new FileInputStream(prop);
         env.load(iStream);
 
-
-
-        kafkaTopicProp.put("request.timeout.ms", env.getProperty("request.timeout.ms","60000"));
-        kafkaTopicProp.put("client.id", env.getProperty("client.id"));
-        kafkaTopicProp.put("auto.offset.reset", env.getProperty("auto.offset.reset"));
-        kafkaTopicProp.put("group.id", env.getProperty("group.id"));
-        kafkaTopicProp.put("bootstrap.servers", env.getProperty("bootstrap.servers"));
-        if(Objects.nonNull(env.getProperty("security.protocol")))
-            kafkaTopicProp.put("security.protocol", env.getProperty("security.protocol"));
-        if(Objects.nonNull(env.getProperty("sasl.jaas.config")))
-            kafkaTopicProp.put("sasl.jaas.config", env.getProperty("sasl.jaas.config"));
-        if(Objects.nonNull(env.getProperty("sasl.mechanism")))
-            kafkaTopicProp.put("sasl.mechanism", env.getProperty("sasl.mechanism"));
-
-        kafkaTopicProp.put("value.serializer", "net.atos.ct2.kafka.serde.Serializastion");
-        kafkaTopicProp.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
         String sinkTopicName=env.getProperty("daf.produce.topic");
-        KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaTopicProp);
+        System.out.println("Topic name:: "+sinkTopicName);
+        env.entrySet().forEach(System.out::println);
+        KafkaProducer<String, String> producer = new KafkaProducer<>(env);
 
         Files.readAllLines(Paths.get(jsonFile))
                 .stream()
                 .forEach(
                         line -> {
                             try {
-//                                producer.send(new ProducerRecord(sinkTopicName, "Input", line));
-                                Index index  = mapper.readValue(line, Index.class);
-                                System.out.println("Data pushed:: "+mapper.writeValueAsString(index));
+                                for(int i=0;i<10;i++){
+                                    String key = UUID.randomUUID().toString();
+                                    producer.send(new ProducerRecord(sinkTopicName,key , line));
+                                    System.out.println("Data pushed:: key "+key+" data: "+line);
+                                }
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

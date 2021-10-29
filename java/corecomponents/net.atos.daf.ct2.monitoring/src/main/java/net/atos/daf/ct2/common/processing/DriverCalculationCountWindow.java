@@ -1,52 +1,47 @@
 package net.atos.daf.ct2.common.processing;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.postgre.bo.TwoMinuteRulePojo;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction.Context;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.ct2.common.util.DafConstants;
-import net.atos.daf.ct2.common.util.Utils;
-import net.atos.daf.ct2.pojo.standard.Monitor;
-import net.atos.daf.postgre.bo.DriverActivityPojo;
-import net.atos.daf.postgre.bo.TwoMinuteRulePojo;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.atos.daf.ct2.common.util.DafConstants.INCOMING_MESSAGE_UUID;
-import static net.atos.daf.ct2.common.util.Utils.*;
+import static net.atos.daf.ct2.common.util.Utils.convertDateToMillis;
 
-public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, String, TimeWindow> {
+public class DriverCalculationCountWindow extends ProcessWindowFunction<Monitor, Monitor, String, GlobalWindow>
+    implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LogManager.getLogger(DriverCalculation.class);
-    ParameterTool envParam = null;
-        private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
-//    private Map<String, TwoMinuteRulePojo> driverPreviousRecord = new HashMap<>();
-   // private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
-    private static final long restBuffer = 120000;
+    private static final Logger logger = LogManager.getLogger(DriverCalculationCountWindow.class);
+    private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
+    // private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
+    private static final long restBuffer = 2000;
     @Override
-    public void process(String driverId, Context ctx, Iterable<Monitor> values, Collector<Monitor> out) {
+    public void process(String s, ProcessWindowFunction<Monitor, Monitor, String, GlobalWindow>.Context context, Iterable<Monitor> values, Collector<Monitor> collector) throws Exception {
         Monitor monitor = new Monitor();
         try {
-            logger.trace("Monitor driver activity Window data:: {}", values);
+            logger.info("Monitor driver activity Window data:: {}", values);
             List<Monitor> monitorList = new ArrayList();
             values.forEach(monitorList::add);
             //sort on received timestamp
             monitorList.sort(Comparator.comparing(Monitor::getReceivedTimestamp));
 
             getStartEndTime(monitorList)
-                    .forEach(lst -> out.collect(lst));
+                    .forEach(lst -> collector.collect(lst));
         } catch (Exception e) {
-            logger.error("Error while processing monitor data for drive time error {}, {}", e, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+            logger.error("Error while processing monitor data for drive time error {}, {}", e.getCause().getMessage(), String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
         }
     }
 
@@ -57,8 +52,6 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                 TypeInformation.of(String.class), TypeInformation.of(TwoMinuteRulePojo.class));
         driverPreviousRecord = getRuntimeContext().getMapState(descriptor);
     }
-
-
     public List<Monitor> getStartEndTime(List<Monitor> monitorList) throws Exception {
         TwoMinuteRulePojo driverPreviousInfo = new TwoMinuteRulePojo();
         List<Monitor> monitorSaveList = new ArrayList();
@@ -110,7 +103,7 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
                     //add into save list
                     long restDuration = getRestDuration(twoMinEndTime, startTime);
                     if(restDuration > restBuffer)
-                      populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
+                        populateDriverSaveList(monitorSaveList, monitorEnd, startTime, monitorStartIndex.getDocument().getDriver1WorkingState());
                 }
                 else {
                     if (twoMinuteRulePojo.getCode().equals("2") && driver1WorkingState != 2) {
@@ -178,5 +171,4 @@ public class DriverCalculation extends ProcessWindowFunction<Monitor, Monitor, S
         }
         return chuck;
     }
-
 }
