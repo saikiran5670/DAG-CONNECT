@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
             if (rfmsVehicles.MoreDataAvailable)
             {
                 responseObject.MoreDataAvailable = true;
-                responseObject.MoreDataAvailableLink = "/rfms/vehicles?lastVin='" + rfmsVehicles.Vehicles.Last().Vin + "'";
+                responseObject.MoreDataAvailableLink = "/rfms/vehicles?lastVin=" + rfmsVehicles.Vehicles.Last().Vin;
             }
             else
             {

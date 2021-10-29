@@ -61,14 +61,14 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 	private List<Index> synchronizedCopy = new ArrayList<Index>();
 
 	LivefleetCurrentTripStatisticsDao currentTripDAO = null;
-	LiveFleetPosition positionDAO = null;
+	//LiveFleetPosition positionDAO = null;
 	TripStatisticsPojo currentTripPojo = null;
 	WarningStatisticsPojo warnStatsPojo = null;
 	
-	Statement createWarnStatusStmt = null;
+	/*Statement createWarnStatusStmt = null;
 	PreparedStatement updateWarnStatusStmt = null;
 	PreparedStatement readWarnStatusStmt = null;
-	ResultSet rs_warn_vehicle_health_status = null;
+	ResultSet rs_warn_vehicle_health_status = null; */
 	
 
 	@Override
@@ -196,8 +196,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						}
 
 						//System.out.println("CURRENT TRIP POJO BEFORE VAREVTID = 4 CHECK : " + currentTripPojo + " vevtId ::" + indexValue.getVEvtID());
-						log.info("CURRENT TRIP POJO BEFORE VAREVTID = 4 CHECK : " + currentTripPojo
-								+ " vevtId ::" + indexValue.getVEvtID());
+						log.info("CURRENT TRIP POJO BEFORE VAREVTID = 4 CHECK : " + currentTripPojo);
+						log.info("CURRENT TRIP POJO BEFORE VAREVTID = 4 CHECK  and Trip_Id: " + indexValue.getDocument().getTripID());
 
 						int varVEvtid = 0;
 
@@ -271,13 +271,14 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 									System.out.println("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 									log.info("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
+									log.info("CURRENT TRIP POJO BEFORE UPDATE for Trip_Id: " + indexValue.getDocument().getTripID());
 
 									currentTripDAO.update(currentTripPojo);
 								} else {
 									System.out.println(
-											"Received other index data before start message :: " + currentTripPojo);
+											"Received other index data before start message ::" + currentTripPojo);
 									log.info(
-											"Received other index data before start message :: " + currentTripPojo);
+											"Received other index data before start message :: {} {}" + currentTripPojo, indexValue.getDocument().getTripID());
 
 								}
 
@@ -309,6 +310,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 				
 									} catch(Exception e) {
 										log.error("Error in LiveFleet Current Trip Statstics: Failed read latest warning status table " + e.getMessage());
+										log.error("Error in LiveFleet Current Trip Statstics: Failed read latest warning status table " + row);
 										e.printStackTrace();
 									}
 									
@@ -397,6 +399,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						} catch (Exception e) {
 							//System.out.println("exception in insert or update" + e.getMessage());
 							log.info("exception in insert or update" + e.getMessage());
+							log.info("exception in insert or update" +row);
 							e.printStackTrace();
 						}
 					}

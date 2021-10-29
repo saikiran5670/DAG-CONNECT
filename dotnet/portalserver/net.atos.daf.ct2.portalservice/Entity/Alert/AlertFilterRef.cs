@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Filter type should be 1 character")]
         public string FilterType { get; set; }
 
-        public double ThresholdValue { get; set; }
+        public string ThresholdValue { get; set; }
         [StringLength(1, MinimumLength = 0, ErrorMessage = "Unit type should be 1 character")]
         //[AlertUnitTypeCheck(ErrorMessage = "Unit Type is invalid")]
         public string UnitType { get; set; }

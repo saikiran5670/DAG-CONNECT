@@ -81,7 +81,7 @@
               </ng-container> -->
               <ng-container matColumnDef="type">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.type == 'O' ? (translationData.lblOrganization ) : (row.type == 'V' ? translationData.lblOrgVin : translationData.lblVehicle) }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.type == 'O' ? (translationData.lblOrganization ) : (row.type == 'V' ? translationData.lblOrgVin : translationData.lblVIN) }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="count" >
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle }}</mat-header-cell>
