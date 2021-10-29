@@ -944,9 +944,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
         elem = value.filter(item => item.headerType === 'Overall_Driver');
       else
         elem = value.filter(item => (item.vin === val && item.headerType === 'VIN_Driver'));
-        if(elem){
-        let color = this.getColor(dataContext, elem[0].value);
-        return '<span style="color:' + color + '">' + this.formatValues(dataContext, elem[0].value) + "</span>";
+      if(elem){
+        let value = elem[0].value;
+        let color = this.getColor(dataContext, value);
+        if(dataContext.key === 'rp_numberofvehicles' && elem[0].headerType === 'VIN_Driver') value = '-';
+        return '<span style="color:' + color + '">' + this.formatValues(dataContext, value) + "</span>";
       }
     }
     return '';
