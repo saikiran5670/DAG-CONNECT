@@ -898,51 +898,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-
-    if(key.indexOf('rp_heavythrottleduration') !== -1 || key.indexOf('rp_ptoduration') !== -1 
-        || key.indexOf('rp_harshbrakeduration') !== -1 || key.indexOf('rp_brakeduration') !== -1 
-        || key.indexOf('rp_idleduration') !== -1){
-      value += ' (hh:mm:ss)';
-    } else if(key.indexOf('rp_braking') !== -1 || key.indexOf('rp_idling') !== -1 || key.indexOf('rp_heavythrottling') !== -1
-              || key.indexOf('rp_ptousage') !== -1 || key.indexOf('rp_harshbraking') !== -1){
-      value += ' (%)';
-    } else if(this.prefUnitFormat === 'dunit_Imperial'){
-      if(key.indexOf('rp_fuelconsumption') !== -1)
-        value += ' (mpg)';
-      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
-        value += ' (mph)';
-      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
-        if(key.indexOf('30') !== -1)
-          value += ' 15-30 mph ';
-        else if(key.indexOf('50') !== -1)
-          value += ' 30-45 mph ';
-        else if(key.indexOf('75') !== -1)
-          value += ' >45 mph ';
-        value += '(%)';
-      } else if(key.indexOf('rp_averagegrossweight') !== -1){
-        value += ' (ton) ';
-      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
-        value += ' (mile) ';
-      }
-    }  else if(this.prefUnitFormat === 'dunit_Metric'){
-      if(key.indexOf('rp_fuelconsumption') !== -1)
-        value += ' (ltrs/100km)';
-      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
-        value += ' (km/h)';
-      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
-          if(key.indexOf('30') !== -1)
-           value += ' 30-50 km/h ';
-          else if(key.indexOf('50') !== -1)
-           value += ' 50-75 km/h ';
-          else if(key.indexOf('75') !== -1)
-           value += ' >75 km/h ';
-          value += '(%)';
-        } else if(key.indexOf('rp_averagegrossweight') !== -1){
-          value += ' (tonne) ';
-        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
-          value += ' (km) ';
-        }
-    }
+    value = this.appendUnits(key, value);
     
     const dataView = grid.getData();
     const data = dataView.getItems();
@@ -1041,6 +997,54 @@ export class EcoScoreReportDriverComponent implements OnInit {
       }
       return "#000000";
     }
+  }
+
+  appendUnits(key:string, value:string){
+    if(key.indexOf('rp_heavythrottleduration') !== -1 || key.indexOf('rp_ptoduration') !== -1 
+        || key.indexOf('rp_harshbrakeduration') !== -1 || key.indexOf('rp_brakeduration') !== -1 
+        || key.indexOf('rp_idleduration') !== -1){
+      value += ' (hh:mm:ss)';
+    } else if(key.indexOf('rp_braking') !== -1 || key.indexOf('rp_idling') !== -1 || key.indexOf('rp_heavythrottling') !== -1
+              || key.indexOf('rp_ptousage') !== -1 || key.indexOf('rp_harshbraking') !== -1){
+      value += ' (%)';
+    } else if(this.prefUnitFormat === 'dunit_Imperial'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (mpg)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (mph)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+        if(key.indexOf('30') !== -1)
+          value += ' 15-30 mph ';
+        else if(key.indexOf('50') !== -1)
+          value += ' 30-45 mph ';
+        else if(key.indexOf('75') !== -1)
+          value += ' >45 mph ';
+        value += '(%)';
+      } else if(key.indexOf('rp_averagegrossweight') !== -1){
+        value += ' (ton) ';
+      } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+        value += ' (mile) ';
+      }
+    }  else if(this.prefUnitFormat === 'dunit_Metric'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (ltrs/100km)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (km/h)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+          if(key.indexOf('30') !== -1)
+           value += ' 30-50 km/h ';
+          else if(key.indexOf('50') !== -1)
+           value += ' 50-75 km/h ';
+          else if(key.indexOf('75') !== -1)
+           value += ' >75 km/h ';
+          value += '(%)';
+        } else if(key.indexOf('rp_averagegrossweight') !== -1){
+          value += ' (tonne) ';
+        } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
+          value += ' (km) ';
+        }
+    }
+    return value;
   }
 
   angularGridReady(angularGrid: AngularGridInstance) {
@@ -1295,9 +1299,11 @@ this.barChartOptionsPerformance = {
   }
 
   exportAsExcelFile(){
-    return;
+    // return;
     // this.getAllSummaryData();
-    const title = 'Fleet Fuel Vehicle Report';
+    const title = this.translationData.lblEcoScoreReport || 'Eco-Score Report';
+    const general = this.translationData.lblGeneral;
+    const performance = this.translationData.lblDriverPerformance;
     const ranking = 'Ranking Section'
     const summary = 'Summary Section';
     const detail = 'Detail Section';
@@ -1325,7 +1331,9 @@ this.barChartOptionsPerformance = {
     let titleRow = worksheet.addRow([title]);
     worksheet.addRow([]);
     titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-
+    // this.datasetGen.forEach(element =>{
+    //   worksheet.addRow(element);
+    // });
 
     worksheet.addRow([]);
     let subTitleRankingRow = worksheet.addRow([ranking]);
@@ -1397,10 +1405,45 @@ this.barChartOptionsPerformance = {
       worksheet.columns[j].width = 20;
     }
     worksheet.addRow([]);
+    this.datasetGen.forEach(element =>{
+      let genObj=[];
+        let key=element.key;
+        genObj.push(this.appendUnits(key, this.translationData[key]));
+        element.score.forEach(score => {
+          if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
+            genObj.push(this.formatValues(element, score.value));
+          }
+        });
+      worksheet.addRow(genObj);
+    });
+    worksheet.addRow([]);
+    this.datasetHierarchical.forEach(element =>{
+      let perfObj1=this.convertedRowValue(element);
+      worksheet.addRow(perfObj1);
+        element.subSingleDriver.forEach(sub => {
+          let perfObj2=this.convertedRowValue(sub);
+          worksheet.addRow(perfObj2);
+          sub.subSingleDriver.forEach(sub1 => {
+            let perfObj3=this.convertedRowValue(sub1);
+            worksheet.addRow(perfObj3);
+          });
+        });
+    });
+    worksheet.addRow([]);
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(blob, 'Fleet_Fuel_Vehicle.xlsx');
+      fs.saveAs(blob, 'Eco-Score_Report.xlsx');
     })    
+  }
+  
+  convertedRowValue(element:any){
+    let perObj=[];
+    let key=element.key;
+    perObj.push(this.appendUnits(key, this.translationData[key]));
+    element.score.forEach(score => {
+        perObj.push(this.formatValues(element, score.value));
+    });
+    return perObj;
   }
 
    exportAsPDFFile(){
