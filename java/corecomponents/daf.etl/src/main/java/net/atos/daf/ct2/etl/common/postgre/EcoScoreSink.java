@@ -81,6 +81,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 			logger.info("In EcoScore sink connection done:{}", connection);
 			ecoScoreDao.setConnection(connection);
 			ecoScoreQryStmt = connection.prepareStatement(ETLQueries.ECOSCORE_INSERT_STATEMENT);
+			logger.info("In EcoScore sink prepared statement done:{}", ecoScoreQryStmt);
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job EcoScore Sink ::{} ", e);

@@ -23,6 +23,7 @@ public class TripAggregatedData implements Serializable {
 	private Long gpsTripDist;
 	private Long tripCalDist;
 	private Long vIdleDuration;
+	//normal sum/count
 	private Double vGrossWeightCombination;
 	private Double tripCalAvgSpeed;
 	private Long gpsStartVehDist;
