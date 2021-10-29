@@ -124,13 +124,12 @@ public class MessageProcessing<U, T> implements Serializable {
 				return null;
 
 			}
-		}).filter(record -> record != null).addSink(
+		}).filter(record -> {
+			logger.info("Message publish on kafka topic {} data {}" , sinkTopicName , record);
+			return record != null;
+		}).addSink(
 				new FlinkKafkaProducer<KafkaRecord<T>>(sinkTopicName, new KafkaMessageSerializeSchema<T>(sinkTopicName),
 						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
-
-		System.out.println("Message publish on kafka topic " + sinkTopicName + "successfully.");
-		logger.info("Message publish on kafka topic " + sinkTopicName + "successfully.");
-
 	}
 
 }

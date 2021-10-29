@@ -3394,7 +3394,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@EndTimestamp", request.EndTimestamp);
                 parameters.Add("@VIN", request.VIN);
                 parameters.Add("@DriverId", request.DriverId);
-                parameters.Add("@MinTripDistance", request.MinDistance);
+                parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
                 parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
@@ -3697,7 +3697,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 parameters.Add("@VIN", request.VIN);
                 parameters.Add("@DriverId", request.DriverId);
-                parameters.Add("@MinTripDistance", request.MinDistance);
+                parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
                 parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
