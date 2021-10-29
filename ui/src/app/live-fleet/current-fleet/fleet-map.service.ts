@@ -656,14 +656,14 @@ export class FleetMapService {
       this.showGlobalPOI(_globalPOIList, _ui);
     }
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
-      let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 && _elem.fleetOverviewAlert.length > 0));
+      let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
       this.drawIcons(_selectedRoutes, _ui);
       this.makeCluster(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
       if (objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: _iconCount.length > 1 ? 3 : 15, // 16665 - zoom added with bounds 
+          zoom: (_iconCount.length > 1) ? 3 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }
@@ -2205,30 +2205,43 @@ export class FleetMapService {
   }
 
   processedLiveFLeetData(fleetData: any) {
+    let _arr : any = [];
     fleetData.forEach(element => {
+      let flag: boolean = false;
       if (element.tripId != "" && element.liveFleetPosition.length > 0) {
         element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
         element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude;
         element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
         element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
         element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
+        if(element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+          flag = true;
+        }
       }
       else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
+        if(element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+          flag = true;
+        }
+      }
+      else if(element.latestReceivedPositionLattitude != 255 &&  element.latestReceivedPositionLongitude != 255){ // why ?
+        element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude; // 48.8566
+        element.latestReceivedPositionLongitude = element.latestReceivedPositionLongitude; // 2.3522
+        flag = true;
+      }
 
+      if(flag){
+        _arr.push(element); // valid record only
       }
-      else {
-        element.latestReceivedPositionLattitude = 48.8566;
-        element.latestReceivedPositionLongitude = 2.3522;
-      }
-    })
-    return fleetData;
+    });
+
+    return _arr;
   }
 
   skipInvalidRecord(livePoints: any) {
-    livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp));
-    let filterPoints = livePoints.filter(i => i.gpsLatitude != 255 && i.gpsLongitude != 255);
+    livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // lat-> -90 to 90 & lng -> -180 to 180
+    let filterPoints = livePoints.filter(i => (i.gpsLatitude >= -90 && i.gpsLatitude <= 90) && (i.gpsLongitude >= -180 && i.gpsLongitude <= 180));
     return filterPoints;
   }
 }
