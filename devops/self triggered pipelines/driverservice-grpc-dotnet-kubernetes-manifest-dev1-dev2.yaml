@@ -36,7 +36,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: driverservice-grpc-container
-        image: #{acrurl}#/driverservice-grpc
+        image: #{acrurl}#/driverservice
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
