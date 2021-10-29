@@ -574,7 +574,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   validateCode(value: any){
     this.invalidCode = false;
-    if(value.includes('PLATFORM') || value.includes('GLOBAL') || value.includes('ORGANISATION') || value.includes('ACCOUNT') || value.includes('DRIVER')){
+    //if(value.includes('PLATFORM') || value.includes('GLOBAL') || value.includes('ORGANISATION') || value.includes('ACCOUNT') || value.includes('DRIVER')){
+    if(value.includes('DRIVER') || value.includes('PLADM') || value.includes('GLADM') || value.includes('ADMIN')){ // as per Andre suggestion
       this.invalidCode = true;
     }
   }
