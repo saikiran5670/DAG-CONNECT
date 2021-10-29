@@ -54,7 +54,7 @@ public class FlinkUtil {
 				(StateBackend) new FsStateBackend(envParams.get(ETLConstants.CHECKPOINT_DIRECTORY), true));
 
 		// enable externalized checkpoints which are retained after job cancellation
-		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+		//env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 		// sets the checkpoint storage where checkpoint snapshots will be written
 		// env.getCheckpointConfig().setsetCheckpointStorage("hdfs:///my/checkpoint/dir");

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +26,14 @@ public class LiveFleetTripIndexDao implements Serializable {
 
 	public void insert(IndexTripData indexTripData, PreparedStatement tripIndexQry) throws TechnicalException {
 		try {
-			if (null != indexTripData && null != (connection = getConnection())) {
+			if (Objects.nonNull(indexTripData)) {
 
 				tripIndexQry = fillStatement(tripIndexQry, indexTripData);
 				//logger.info("LiveFleetTripIndexDao indexTripData:: "+indexTripData);
-				tripIndexQry.addBatch();
-				tripIndexQry.executeBatch();
-			} else {
-				if (connection == null) {
-					logger.error(" Issue indexTripData connection is null : {}" , connection);
-					throw new TechnicalException("indexTripData Datamart connection is null :: ");
-				}
-			}
+				//tripIndexQry.addBatch();
+				//tripIndexQry.executeBatch();
+				tripIndexQry.execute();
+			} 
 		} catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to indexMessageData table :{} ", e.getMessage());
 			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);
