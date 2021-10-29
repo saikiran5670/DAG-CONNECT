@@ -1053,10 +1053,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           day:  this.chartLabelDateFormat,            
          },             
       }    
-    }];     
+    }];   
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.barChartData2= [
       { data: this.barData,
-        label: 'Number of Trips',
+        label:  this.translationData.lblnumberofvehicles || 'Number of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1170,7 +1171,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           day:  this.chartLabelDateFormat,            
          },             
       }     
-    }];     
+    }];
+    this.barChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes';     
     this.barChartData6= [
       { data: this.idleDuration,
         label: this.translationData.lblMinutes || 'Minutes',
@@ -1222,7 +1224,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }   
       }]; 
-   
+      this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
@@ -1325,6 +1327,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }     
       }];
+      this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'
     this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }];
   }
   
