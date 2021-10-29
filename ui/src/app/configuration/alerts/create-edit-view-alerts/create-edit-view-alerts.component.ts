@@ -138,9 +138,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isEnteringZone: boolean= true;
   isValidityCalender: boolean= true;
   isFiltersDetailsValidate: boolean= true;
-  criticalThreshold: any;
-  warningThreshold: any;
-  advisoryThreshold: any;
+  criticalThreshold: any ='';
+  warningThreshold: any ='';
+  advisoryThreshold: any ='';
   localStLanguage: any;
   accountPrefObj: any;
   prefTimeFormat: any; //-- coming from pref setting
@@ -1771,7 +1771,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold =parseFloat(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold =Number(this.alertForm.get('criticalLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1783,7 +1783,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = parseFloat(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold = Number(this.alertForm.get('warningLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1795,7 +1795,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold =parseFloat(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold =Number(this.alertForm.get('advisoryLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -1803,7 +1803,7 @@ PoiCheckboxClicked(event: any, row: any) {
         this.advisoryThreshold =this.reportMapService.getConvertedDistanceToMeter(this.advisoryThreshold, this.unitTypeEnum);
         }
       else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
-        this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
+       this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
       }
     }
   }
@@ -1902,7 +1902,7 @@ PoiCheckboxClicked(event: any, row: any) {
       if(this.actionType == 'create' || this.actionType == 'duplicate'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": 0,
+          "thresholdValue": '',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -1917,7 +1917,7 @@ PoiCheckboxClicked(event: any, row: any) {
       else if(this.actionType == 'edit'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": 0,
+          "thresholdValue": '',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -2063,11 +2063,11 @@ PoiCheckboxClicked(event: any, row: any) {
     }
     else{
       if(this.isCriticalLevelSelected){
-        let criticalUrgenyLevelObj= {};
+        let criticalUrgenyLevelObj= {};      
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
-          criticalUrgenyLevelObj = {
+           criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": this.criticalThreshold,
+            "thresholdValue": this.criticalThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2081,9 +2081,9 @@ PoiCheckboxClicked(event: any, row: any) {
         }
         else if(this.actionType == 'edit'){
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'C'); 
-          criticalUrgenyLevelObj = {
+            criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": this.criticalThreshold,
+            "thresholdValue": this.criticalThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2104,7 +2104,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": this.warningThreshold,
+            "thresholdValue": this.warningThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2120,7 +2120,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'W'); 
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": this.warningThreshold,
+            "thresholdValue": this.warningThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2141,7 +2141,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": this.advisoryThreshold,
+            "thresholdValue": this.advisoryThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2157,7 +2157,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'A');
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": this.advisoryThreshold,
+            "thresholdValue": this.advisoryThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2628,9 +2628,9 @@ onKey(event: any) { // without type info
 }
 
 onChange($event){
-this.criticalThreshold =parseFloat(this.alertForm.controls.criticalLevelThreshold.value);
-this.warningThreshold = parseFloat(this.alertForm.controls.warningLevelThreshold.value);
-this.advisoryThreshold =parseFloat(this.alertForm.controls.advisoryLevelThreshold.value);
+this.criticalThreshold =Number(this.alertForm.controls.criticalLevelThreshold.value);
+this.warningThreshold = Number(this.alertForm.controls.warningLevelThreshold.value);
+this.advisoryThreshold =Number(this.alertForm.controls.advisoryLevelThreshold.value);
 }
 
 ngOnChanges(changes: SimpleChanges) {

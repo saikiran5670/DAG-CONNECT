@@ -1,5 +1,5 @@
 import { EventEmitter, Input, Output } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataInterchangeService } from '../../../../services/data-interchange.service';
 
 
@@ -30,8 +30,11 @@ todayFlagClicked : boolean = true;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
-constructor(private dataInterchangeService: DataInterchangeService) { }
+constructor(private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) { }
 
+ngAfterViewInit(){
+  this.cdr.detectChanges();
+}
 
   ngOnInit(): void {
     this.vehicleFilterComponentEmitFlag= true;
