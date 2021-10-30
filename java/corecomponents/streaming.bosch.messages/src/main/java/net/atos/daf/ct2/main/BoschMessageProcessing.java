@@ -88,66 +88,7 @@ public class BoschMessageProcessing {
 		//data load in hbase
 		log.info("data loading in hbase process started..");
 		MessageParseUtil.storeDataInHbase(boschInputStream,properties);
-		/*DataStream<Tuple2<Integer, KafkaRecord<String>>> boschSourceStreamSts = 
-				new MessageProcessing<String, Tuple2<Integer, KafkaRecord<String>>>()
-						.boschSourceStreamStatus(boschInputStream);*/
-
-		/*boschInputStream.map(new MapFunction<KafkaRecord<String>,KafkaRecord<String>>(){
-
-		private static final long serialVersionUID = 1L;
-        String rowKey = null;
-		@Override
-		public KafkaRecord<String> map(KafkaRecord<String> value) throws Exception {
-			try{
-				JsonNode jsonNodeRec = JsonMapper.configuring().readTree(value.getValue());
-				log.info("Bosch rec for history :: "+jsonNodeRec);
-				String vin = DAFCT2Constant.UNKNOWN;
-				String transId = DAFCT2Constant.UNKNOWN;
-				
-				if(jsonNodeRec != null && jsonNodeRec.get("metaData") != null && jsonNodeRec.get("metaData").get("vehicle") != null){
-					if(jsonNodeRec.get("metaData").get("vehicle").get("vin") != null)
-						vin = jsonNodeRec.get("metaData").get("vehicle").get("vin").asText();
-					
-					if(jsonNodeRec.get("metaData").get("vehicle").get("TransID") != null)
-						transId = jsonNodeRec.get("metaData").get("vehicle").get("TransID").asText();
-				}
-				
-				rowKey = transId + "_" + vin + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
-				
-			}catch(Exception e){
-				rowKey = "UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
-			}
-			
-			value.setKey(rowKey);
-			return value;
-		}
-    	}).addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
-			properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
-			properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
-			properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
-			properties.getProperty(DAFCT2Constant.HBASE_MASTER),
-			properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
-			properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_NAME),
-			properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));*/
-
-		/*DataStream<Tuple2<Integer, KafkaRecord<String>>> boschStreamValidSts = validateSourceStream
-				.isValidJSON(boschInputStream);
-		DataStream<KafkaRecord<String>> boschValidInputStream = validateSourceStream
-				.getValidSourceMessages(boschStreamValidSts);
-		//TODO 
-
-	/*	new EgressCorruptMessages().egressCorruptMessages(boschSourceStreamSts, properties,
-				properties.getProperty(DAFCT2Constant.BOSCH_CORRUPT_MESSAGE_TOPIC_NAME)); */
-
-		/*DataStream<KafkaRecord<String>> boschMeasurementInputStream = validateSourceStream
-				.getValidSourceMessages(boschSourceStreamSts, DAFCT2Constant.MEASUREMENT_DATA);*/
 		
-		//DataStream<KafkaRecord<String>> boschTCUInputStream = 
-	/*	validateSourceStream
-				.getValidSourceMessages(boschSourceStreamSts, DAFCT2Constant.TCU_DATA)
-				.addSink(new FlinkKafkaProducer<>(properties.getProperty(DAFCT2Constant.SINK_TCU_TOPIC_NAME), 
-						new ProducerStringSerializationSchema(properties.getProperty(DAFCT2Constant.SINK_TCU_TOPIC_NAME)), 
-						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));*/
 				
 		log.info("Stage 3. data filtering as per message type start ");
 		
@@ -170,9 +111,9 @@ public class BoschMessageProcessing {
 				properties.getProperty(DAFCT2Constant.STATUS_TRANSID), "Status",
 				properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME), properties, Status.class);
 		
-		log.info("Stage 6. data parsing and publishing message on kafka topic end");
+		log.info("Stage 6.Bosch data parsing and publishing message on kafka topic completed.");
 		
-	
+		System.out.println("Stage 6.Bosch data parsing and publishing message on kafka topic completed.");
 
 	}
 
@@ -180,13 +121,7 @@ public class BoschMessageProcessing {
 
 	public StreamExecutionEnvironment getstreamExecutionEnvironment() {
 		return this.streamExecutionEnvironment;
-		/*this.streamExecutionEnvironment.enableCheckpointing(5000);
-	    this.streamExecutionEnvironment.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
-	    this.streamExecutionEnvironment
-	        .getCheckpointConfig()
-	        .enableExternalizedCheckpoints(
-	            CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);*/
-	    // this.streamExecutionEnvironment.setStateBackend(new FsStateBackend("file:///checkpointDir"));
+		
 	}
 
 	public void startExecution() throws DAFCT2Exception {

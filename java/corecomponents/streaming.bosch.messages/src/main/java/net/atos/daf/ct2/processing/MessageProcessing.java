@@ -38,98 +38,112 @@ public class MessageProcessing<U, T> implements Serializable {
 				System.out.println("INFO: Raw Message processing start at executor end ====>" + value.toString());
 				try {
 					if ("Index".equalsIgnoreCase(key)) {
-						
+
 						Index indexObj = MessageParseUtil.processIndexBoschMessage(value.getValue().toString(),
 								properties, value.getTimeStamp().toString());
-						if( indexObj.getTransID() != null && indexObj.getDocument().getTripID() != null &&
-								indexObj.getVEvtID()  != null && indexObj.getVid() != null && indexObj.getVin() != null ) {
-							
-							//indexObj.setKafkaProcessingTS(value.getTimeStamp().toString());
+						if (indexObj.getTransID() != null && indexObj.getDocument().getTripID() != null
+								&& indexObj.getVEvtID() != null && indexObj.getVid() != null
+								&& indexObj.getVin() != null) {
+
 							T record = JsonMapper.configuring().readValue(indexObj.toString(), tClass);
 
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 							kafkaRecord.setKey(key);
 							kafkaRecord.setValue(record);
-							logger.info("Before publishing  kafka record :: Message TYpe:" + key + " Extracted Message is::"
-									+ record);
-							System.out.println("before publishing indexObj.toString() record :: " + key
-									+ " Extracted Message is::" + indexObj.toString());
-							logger.info("Data extraction is  successfully done.");
+							logger.info("Before Bosch Index message publishing  kafka record :: Message TYpe:" + key
+									+ " Extracted Message is::" + record);
+							System.out.println("before Bosch Index message publishing indexObj.toString() record :: "
+									+ key + " Extracted Message is::" + indexObj.toString());
+							logger.info("Bosch Index message Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + indexObj.toString());
-							logger.info(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + indexObj.toString());
+							System.err.println(key + ":"
+									+ " Bosch Index Invalid message . mandatory fields are empty. Please check parse  Message"
+									+ indexObj.toString());
+							logger.info(key + ":"
+									+ " Bosch Index Invalid message . mandatory fields are empty. Please check parse  Message"
+									+ indexObj.toString());
 						}
-						
+
 					} else if ("Monitor".equalsIgnoreCase(key)) {
 						Monitor monitorObj = MessageParseUtil.processMonitorBoschMessage(value.getValue().toString(),
 								properties, value.getTimeStamp().toString());
-						if( monitorObj.getTransID() != null && monitorObj.getDocument().getTripID() != null &&
-								monitorObj.getMessageType()  != null && monitorObj.getVid() != null && monitorObj.getVin() != null ) {
-							
-						
+
+						if (monitorObj.getTransID() != null && monitorObj.getDocument().getTripID() != null
+								&& monitorObj.getMessageType() != null && monitorObj.getVid() != null
+								&& monitorObj.getVin() != null) {
+
 							T record = JsonMapper.configuring().readValue(monitorObj.toString(), tClass);
 
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 							kafkaRecord.setKey(key);
 							kafkaRecord.setValue(record);
-							logger.info("Before publishing  kafka record :: Message TYpe:" + messageType
-									+ " Extracted Message is::" + record);
-							System.out.println("before publishing indexObj.toString() record :: " + messageType
-									+ " Extracted Message is::" + monitorObj.toString());
-							logger.info("Data extraction is  successfully done.");
+							logger.info("Before Bosch Monitor message publishing  kafka record :: Message TYpe:"
+									+ messageType + " Extracted Message is::" + record);
+							System.out.println("before Bosch Monitor message publishing indexObj.toString() record :: "
+									+ messageType + " Extracted Message is::" + monitorObj.toString());
+							logger.info("Bosch Monitor message Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + monitorObj.toString());
-							logger.info(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + monitorObj.toString());
+							System.err.println(key + ":"
+									+ " Bosch Monitor message Invalid message . mandatory fields are empty. Please check parse  Message"
+									+ monitorObj.toString());
+							logger.info(key + ":"
+									+ " Bosch Invalid Monitor  message . mandatory fields are empty. Please check parse  Message"
+									+ monitorObj.toString());
 						}
-						
+
 					} else if ("Status".equalsIgnoreCase(key)) {
 						Status statusObj = MessageParseUtil.processStatusBoschMessage(value.getValue().toString(),
 								properties, value.getTimeStamp().toString());
-						if( statusObj.getTransID() != null && statusObj.getDocument().getTripID() != null &&
-								statusObj.getVEvtID()  != null && statusObj.getVid() != null && statusObj.getVin() != null ) {
-							
-							//statusObj.setKafkaProcessingTS(value.getTimeStamp().toString());
+						if (statusObj.getTransID() != null && statusObj.getDocument().getTripID() != null
+								&& statusObj.getVEvtID() != null && statusObj.getVid() != null
+								&& statusObj.getVin() != null) {
+
 							T record = JsonMapper.configuring().readValue(statusObj.toString(), tClass);
 
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 							kafkaRecord.setKey(key);
 							kafkaRecord.setValue(record);
-							logger.info("Before publishing  kafka record :: Message TYpe:" + messageType
-									+ " Extracted Message is::" + record);
-							System.out.println("before publishing indexObj.toString() record :: " + messageType
-									+ " Extracted Message is::" + statusObj.toString());
-							logger.info("Data extraction is  successfully done.");
+							logger.info("Before Bosch Status message publishing  kafka record :: Message TYpe:"
+									+ messageType + " Extracted Message is::" + record);
+							System.out.println("Before Bosch Status publishing indexObj.toString() record :: "
+									+ messageType + " Extracted Message is::" + statusObj.toString());
+							logger.info("Bosch Status Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + statusObj.toString());
-							logger.info(key + ":" + " Invalid message . mandatory fields are empty. Please check parse  Message" + statusObj.toString());
+							System.err.println(key + ":"
+									+ " Bosch Status Invalid message . mandatory fields are empty. Please check parse  Message"
+									+ statusObj.toString());
+							logger.info(key + ":"
+									+ " Bosch Invalid Status message . mandatory fields are empty. Please check parse  Message"
+									+ statusObj.toString());
 						}
-						
+
 					}
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					logger.error("Error while data processingan for publish on kafka topic . Raw message is :"
+					logger.error("Error while Bosch data processing for publish on kafka topic . Raw message is :"
 							+ value.toString());
-					System.out.println(
-							"Error while data setting in index object for publish on kafka topic . Raw message is :"
-									+ value.toString());
-					logger.error("Raw Message processing  ending failed" + ex.getMessage());
-					logger.error("Data  parsing and  data setting in index object failed "
+					System.out.println("Error while Bosch data processing for publish on kafka topic . Raw message is :"
+							+ value.toString());
+					logger.error("Bosch Raw Message processing  ending failed" + ex.getMessage());
+					logger.error(" Bosch Data  parsing and  data setting in index object failed "
 							+ ExceptionUtils.getFullStackTrace(ex));
 
 				}
 				return null;
 
 			}
-		}).filter(record -> {
-			logger.info("Message publish on kafka topic {} data {}" , sinkTopicName , record);
-			return record != null;
-		}).addSink(
-				new FlinkKafkaProducer<KafkaRecord<T>>(sinkTopicName, new KafkaMessageSerializeSchema<T>(sinkTopicName),
-						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+		}).filter(record -> record != null)
+				.addSink(new FlinkKafkaProducer<KafkaRecord<T>>(sinkTopicName,
+						new KafkaMessageSerializeSchema<T>(sinkTopicName), properties,
+						FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+
+		System.out.println("Message publish on kafka topic " + sinkTopicName + "successfully.");
+		logger.info("Message publish on kafka topic " + sinkTopicName + "successfully.");
+
 	}
 
 }
