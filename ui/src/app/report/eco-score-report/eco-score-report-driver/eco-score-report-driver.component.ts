@@ -120,8 +120,16 @@ export class EcoScoreReportDriverComponent implements OnInit {
  selectionLimitLast3Month: boolean=false;
  selectionLimitLast6Month: boolean=false;
  selectionLimitLastYear: boolean=false;
+ fuelConsumption: any;
  public pluginsCommon: PluginServiceGlobalRegistrationAndOptions[];
-
+ tableStyle: any ={
+  type: 'pattern',
+  pattern: 'solid',
+  fgColor: { argb: 'FFbee3f8' },
+  bgColor: { argb: 'FF0000FF' }
+};
+tableBorder: any =  { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
  constructor() {}
 
   ngOnInit(): void {
@@ -193,10 +201,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
     // Doughnut - Fuel Consumption
     this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption ), '', ''];
     //litre/100 km - mpg pending
-    let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
-    if(this.prefUnitFormat == 'dunit_Imperial' && fuelConsumption !== '0.0')
-      fuelConsumption = (282.481/(fuelConsumption)).toFixed(2);
-    this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
+    this.fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
+    if(this.prefUnitFormat == 'dunit_Imperial' && this.fuelConsumption !== '0.0')
+      this.fuelConsumption = (282.481/(this.fuelConsumption)).toFixed(2);
+    this.doughnutChartDataFuelConsumption= [ [this.fuelConsumption, 100-this.fuelConsumption] ];
     // Doughnut - Anticipation Score
     this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore ), '', ''];
     this.doughnutChartDataAnticipationScore= [ [this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue] ];
@@ -757,24 +765,24 @@ export class EcoScoreReportDriverComponent implements OnInit {
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'category', name: (this.translationData.lblCategory), field: 'key',
+        id: 'Category', name: (this.translationData.lblCategory), field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       },
       {
-        id: 'target', name: (this.translationData.lblTarget ), field: 'targetValue',
+        id: 'Target', name: (this.translationData.lblTarget ), field: 'targetValue',
         type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true, sortable: true
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'categoryG', name: (this.translationData.lblCategory ), field: 'key',
+        id: 'Category', name: (this.translationData.lblCategory ), field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       }
     ];
     
-    this.columnPerformance.push({columnId: 'category'});
-    this.columnPerformance.push({columnId: 'target'});
-    this.columnGeneral.push({columnId: 'categoryG'})
+    this.columnPerformance.push({columnId: 'Category'});
+    this.columnPerformance.push({columnId: 'Target'});
+    this.columnGeneral.push({columnId: 'Category'})
     if(this.driverDetails !== undefined && this.driverDetails !== null){
       for(var i=0; i<this.driverDetails.length;i++){
         this.columnPerformance.push({columnId: 'driver_'+i});
@@ -1301,112 +1309,65 @@ this.barChartOptionsPerformance = {
   }
 
   exportAsExcelFile(){
-    // return;
-    // this.getAllSummaryData();
-    const title = this.translationData.lblEcoScoreReport || 'Eco-Score Report';
-    const general = this.translationData.lblGeneral;
-    const performance = this.translationData.lblDriverPerformance;
-    const ranking = 'Ranking Section'
-    const summary = 'Summary Section';
-    const detail = 'Detail Section';
-    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
-    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
-    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
-
-    const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
-    const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
-    'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg1+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
-    'CO2 Emission('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
-    'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
-    'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 
-    'Idling PTO (hh:mm:ss) Score','Idling PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
-    'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitValkg+')'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
-    // const summaryData= this.summaryNewObj;
     //Create workbook and worksheet
     let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+    let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport || 'Eco-Score Report');
+    const title = this.translationData.lblEcoScoreReport || 'Eco-Score Report';
     //Add Row and formatting
     let titleRow = worksheet.addRow([title]);
     worksheet.addRow([]);
-    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-    // this.datasetGen.forEach(element =>{
-    //   worksheet.addRow(element);
-    // });
-
-    worksheet.addRow([]);
-    let subTitleRankingRow = worksheet.addRow([ranking]);
-    let RankingRow = worksheet.addRow(rankingHeader);
-    worksheet.addRow([]);
-    RankingRow.eachCell((cell, number) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFFFFF00' },
-        bgColor: { argb: 'FF0000FF' }
-      }
-      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-    })
-    // this.initData.forEach(item => {
-    //   worksheet.addRow([item.ranking,item.vehicleName,item.vin,item.vehicleRegistrationNo,item.convertedFuelConsumption
-    //   ]);
-    // });
-
-
-    
-    worksheet.addRow([]);
-    let subTitleRow = worksheet.addRow([summary]);
-    let summaryRow = worksheet.addRow(summaryHeader);
-    // summaryData.forEach(element => {
-    //   worksheet.addRow(element);
-    // });
-    worksheet.addRow([]);
-    summaryRow.eachCell((cell, number) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFFFFF00' },
-        bgColor: { argb: 'FF0000FF' }
-      }
-      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-    })
-    worksheet.addRow([]);
-    let subTitleDetailRow = worksheet.addRow([detail]);
-    let headerRow = worksheet.addRow(header);
-    headerRow.eachCell((cell, number) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFFFFF00' },
-        bgColor: { argb: 'FF0000FF' }
-      }
-      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-    })    
-    // this.initData.forEach(item => {
-    //   worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
-    //   item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
-    //   item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage, item.ptoDuration.toFixed(2),
-    //   item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
-    //   item.cruiseControlDistance75, item.averageTrafficClassificationValue, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
-    //   item.idlingConsumptionValue, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
-    //   item.footBrake, item.cO2Emmision, item.idlingConsumptionValue
-    // ]);
-    // });
-
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true } 
     worksheet.mergeCells('A1:D2');
-    subTitleRankingRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-    for (var i = 0; i < header.length; i++) {
-      worksheet.columns[i].width = 20;
-    }
-    for (var j = 0; j < summaryHeader.length; j++) {
-      worksheet.columns[j].width = 20;
-    }
     worksheet.addRow([]);
+    worksheet.addRow([]);
+    let oapTitle=[this.translationData.lblDriver + ':', this.selectedDriverName, '-' + this.translationData.lblOverallPerformance];
+    let oapTitleRow=worksheet.addRow(oapTitle);
+    oapTitleRow.font = this.titleStyle;
+    worksheet.addRow([]);
+    let overAllPerformanceColumns=[this.translationData.lblFrom, this.translationData.lblTo, this.translationData.lblVehicle,
+    this.translationData.lblVehicleGroup, this.translationData.lblDriverId, this.translationData.lblDriverOption];
+    let overAllPerformanceValues=[this.fromDisplayDate, this.toDisplayDate, this.selectedVehicle, this.selectedVehicleGroup,
+    this.selectedDriverId, this.selectedDriverOption];
+    let overAllHeaders=worksheet.addRow(overAllPerformanceColumns);
+    let opValues=worksheet.addRow(overAllPerformanceValues);
+    worksheet.addRow([]);
+    let overAllChartColumns=[this.translationData.lblEcoScore, this.translationData.lblFuelConsumption,
+    this.translationData.lblAnticipationScore, this.translationData.lblBrakingscore];
+    let overAllChartValues=[this.ecoScoreDriverDetails.overallPerformance.ecoScore.score, this.fuelConsumption,
+      this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.brakingScore.score]
+    let chartHeaders=worksheet.addRow(overAllChartColumns);
+    let oaValues=worksheet.addRow(overAllChartValues);
+    overAllHeaders.eachCell((cell, number) => {
+      cell.fill = this.tableStyle;
+      cell.border = this.tableBorder;
+    });
+    overAllHeaders.font = {bold: true};
+    chartHeaders.font = {bold: true};
+    chartHeaders.eachCell((cell, number) => {
+      cell.fill = this.tableStyle;
+      cell.border = this.tableBorder;
+    });
+    opValues.eachCell(cell => {
+      cell.border = this.tableBorder;
+    });
+    oaValues.eachCell(cell => {
+      cell.border =  this.tableBorder;
+    });
+    worksheet.addRow([]);
+    worksheet.addRow([]);
+    let genTableTitle=worksheet.addRow([this.translationData.lblGeneral]);
+    genTableTitle.font = this.titleStyle;
+    let genColList = [];
+    let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
+    this.columnGeneral.forEach((col, index) => {
+      genColList.push(col.columnId);
+      if(index>1) {
+        perfVinList.push(col.columnId);
+        perfVinList.push(col.columnId);
+      }
+    });
+    let tableHeaderGen=worksheet.addRow(genColList);
+    
     this.datasetGen.forEach(element =>{
       let genObj=[];
         let key=element.key;
@@ -1416,18 +1377,44 @@ this.barChartOptionsPerformance = {
             genObj.push(this.formatValues(element, score.value));
           }
         });
-      worksheet.addRow(genObj);
+      let row=worksheet.addRow(genObj);
+      row.eachCell(cell => {
+        cell.border = this.tableBorder;
+      });
     });
     worksheet.addRow([]);
+    worksheet.addRow([]);
+    let perfTableTitle=worksheet.addRow([this.translationData.lblDriverPerformance]);
+    perfTableTitle.font = this.titleStyle;
+    let perfColList=[];
+    this.columnPerformance.forEach((col, index) => {
+      worksheet.columns[index].width = 25;
+      if(index>1){
+        if(index%2==0)
+          perfColList.push(perfVinList[index]+'-'+this.translationData.lblDriver);
+        else
+          perfColList.push(perfVinList[index]+'-'+this.translationData.lblCompany);
+      } else
+          perfColList.push(col.columnId);
+    });
+   tableHeaderGen.eachCell((cell, number) => {
+      cell.fill = this.tableStyle;
+      cell.border = this.tableBorder;
+    });
+    tableHeaderGen.font = { bold: true }
+
+    let tableHeaderPerf=worksheet.addRow(perfColList);
+    tableHeaderPerf.eachCell((cell, number) => {
+      cell.fill = this.tableStyle;
+      cell.border = this.tableBorder;
+    });
+    tableHeaderPerf.font = { bold: true }
     this.datasetHierarchical.forEach(element =>{
-      let perfObj1=this.convertedRowValue(element);
-      worksheet.addRow(perfObj1);
+      this.convertedRowValue(element, worksheet);
         element.subSingleDriver.forEach(sub => {
-          let perfObj2=this.convertedRowValue(sub);
-          worksheet.addRow(perfObj2);
+          this.convertedRowValue(sub, worksheet);
           sub.subSingleDriver.forEach(sub1 => {
-            let perfObj3=this.convertedRowValue(sub1);
-            worksheet.addRow(perfObj3);
+            this.convertedRowValue(sub1, worksheet);
           });
         });
     });
@@ -1438,12 +1425,17 @@ this.barChartOptionsPerformance = {
     })    
   }
   
-  convertedRowValue(element:any){
+  convertedRowValue(element:any, worksheet:any){
     let perObj=[];
     let key=element.key;
     perObj.push(this.appendUnits(key, this.translationData[key]));
+    perObj.push(element.targetValue);
     element.score.forEach(score => {
         perObj.push(this.formatValues(element, score.value));
+    });
+    let row=worksheet.addRow(perObj);
+    row.eachCell(cell => {
+      cell.border = this.tableBorder;
     });
     return perObj;
   }
