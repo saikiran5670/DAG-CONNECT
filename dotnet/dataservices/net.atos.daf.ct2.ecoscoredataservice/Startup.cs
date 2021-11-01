@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
-
+            services.AddMemoryCache();
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
             services.AddTransient<IAccountManager, AccountManager>();

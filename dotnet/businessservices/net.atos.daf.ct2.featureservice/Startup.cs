@@ -36,6 +36,7 @@ namespace net.atos.daf.ct2.featureservice
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IFeatureManager, FeatureManager>();
             services.AddTransient<IFeatureRepository, FeatureRepository>();
         }

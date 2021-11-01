@@ -48,6 +48,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IPoiManager, PoiManager>();
             services.AddTransient<IPoiRepository, PoiRepository>();
             services.AddTransient<ICategoryManager, CategoryManager>();

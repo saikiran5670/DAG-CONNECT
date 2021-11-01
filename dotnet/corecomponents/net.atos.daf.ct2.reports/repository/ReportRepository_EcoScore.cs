@@ -834,7 +834,7 @@ namespace net.atos.daf.ct2.reports.repository
                                   INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
                                   INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
                                   INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D' and r.level <= f.level
                                   INTERSECT
                                   --Subscription Route
                                   SELECT f.id, f.data_attribute_set_id

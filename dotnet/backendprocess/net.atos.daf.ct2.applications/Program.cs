@@ -26,6 +26,7 @@ using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 using Identity = net.atos.daf.ct2.identity;
 
+
 namespace net.atos.daf.ct2.applications
 {
     public class Program
@@ -42,6 +43,7 @@ namespace net.atos.daf.ct2.applications
                     var connectionString = hostContext.Configuration["ConnectionStrings:ConnectionString"];
                     IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
                     services.AddSingleton(dataAccess);
+                    services.AddMemoryCache();
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();
                     services.AddSingleton<ITranslationRepository, TranslationRepository>();
                     services.AddSingleton<ITranslationManager, TranslationManager>();
