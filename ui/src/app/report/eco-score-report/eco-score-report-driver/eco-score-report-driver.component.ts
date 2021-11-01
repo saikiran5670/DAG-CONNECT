@@ -1502,8 +1502,8 @@ this.barChartOptionsPerformance = {
     //   performancePieHref = canvas.toDataURL('image/png');
     // });
     
-    let DATA = document.getElementById('trendLineChart');
-    html2canvas( (DATA),
+    let trendLineChart = document.getElementById('trendLineChart');
+    html2canvas( (trendLineChart),
     {scale:2})
     .then(canvas => { 
       (doc as any).autoTable({
@@ -1527,9 +1527,15 @@ this.barChartOptionsPerformance = {
           top:40 
          }  
       });
-      
-      // doc.addPage();
       doc.addImage(ohref, 'PNG', 10, 40, oWidth, oheight) ;
+      doc.addPage();
+      let fileWidth = 175;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+
+      const FILEURI = canvas.toDataURL('image/png')
+      // let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
       doc.addPage();
 
       let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
@@ -1582,14 +1588,14 @@ this.barChartOptionsPerformance = {
       }
     });
     doc.addPage();
-    let fileWidth = 175;
-      let fileHeight = canvas.height * fileWidth / canvas.width;
+    // let fileWidth = 175;
+    //   let fileHeight = canvas.height * fileWidth / canvas.width;
 
-      const FILEURI = canvas.toDataURL('image/png')
-      // let PDF = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-      doc.addPage();
+    //   const FILEURI = canvas.toDataURL('image/png')
+    //   // let PDF = new jsPDF('p', 'mm', 'a4');
+    //   let position = 0;
+    //   doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+    //   doc.addPage();
 
       doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
       // if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
@@ -1603,7 +1609,7 @@ this.barChartOptionsPerformance = {
           //console.log(data.column.index)
         }
       });
-      doc.addPage();
+      doc.addPage('a4','p');
       doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
       // if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
     
