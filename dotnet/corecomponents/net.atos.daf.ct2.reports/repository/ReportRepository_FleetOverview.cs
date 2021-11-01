@@ -149,7 +149,11 @@ namespace net.atos.daf.ct2.reports.repository
                 //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
                 parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
                 parameterFleetOverview.Add("@drivinginterval", fleetOverviewFilter.UnknownDrivingStateCheckInterval, System.Data.DbType.Int32);
-                string queryFleetOverview = @"With CTE_Trips_By_Vin as(
+                string queryFleetOverview = @"with CTE_geolocationaddress as 
+                    (
+                    select * from master.geolocationaddress
+                    ),
+                    CTE_Trips_By_Vin as(
                     select 
                     lcts.id,
                     lcts.trip_id,
@@ -180,15 +184,19 @@ namespace net.atos.daf.ct2.reports.repository
                     RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
-                    and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date -  @days )
+                    and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date - @days)
                     )
+                    --select * from CTE_Trips_By_Vin
                     ,CTE_Unique_latest_trip as (
-                     select 
-                     *,
-                     ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
-                     from CTE_Trips_By_Vin 
-                     where Veh_trip_rank =1 
+                    select 
+                    *,
+                    ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
+                    from CTE_Trips_By_Vin 
+                    where Veh_trip_rank =1 
                     )
+                    --select * from CTE_Unique_latest_trip
+                    ,CTE_fleetOverview as
+                    (
                     select 
                     lcts.id as lcts_Id,
                     lcts.trip_id as lcts_TripId,
@@ -231,17 +239,9 @@ namespace net.atos.daf.ct2.reports.repository
                     lps.co2_emission as lps_Co2Emission,
                     lps.fuel_consumption as lps_FuelConsumption,
                     lps.last_odometer_val as lps_LastOdometerVal,
-                    latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
-                    coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress,
-                    stageoadd.id as stageoadd_StartGeolocationAddressId,
-                    coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
-                    wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                    coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress,
-                    alertgeoadd.id as alertgeoadd_LatestAlertGeolocationAddressId,
-                    coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress,
                     tripal.id as tripal_Id,
-					tripal.alert_id as tripal_AlertId,
-					coalesce(tripal.vin,'') as tripal_Vin,
+                    tripal.alert_id as tripal_AlertId,
+                    coalesce(tripal.vin,'') as tripal_Vin,
                     coalesce(tripal.trip_id,'') as tripal_TripId,
                     coalesce(tripal.name,'') as alertname,
                     coalesce(tripal.type,'') as alerttype,
@@ -258,41 +258,80 @@ namespace net.atos.daf.ct2.reports.repository
                     on lcts.vin=veh.vin                   
                     left join tripdetail.tripalert tripal
                     on lcts.vin=tripal.vin and  lcts.trip_id=tripal.trip_id 
-                    left join master.geolocationaddress alertgeoadd
-                    on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
-                    left join master.geolocationaddress latgeoadd
-                    on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
-                    left join master.geolocationaddress stageoadd
-                    on TRUNC(CAST(lcts.start_position_lattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.start_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
-                    left join master.geolocationaddress wangeoadd
-                    on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
-                    where row_num=1 ";
+                    where row_num=1
+                    ) 
+                    --select * from CTE_fleetOverview 
+                    ,CTE_fleetOverview_alertgeoadd as
+                    (
+                    select cfo.*, 
+                    alertgeoadd.id as alertgeoadd_LatestAlertGeolocationAddressId,
+                    coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress
+                    from CTE_fleetOverview cfo
+                    left join CTE_geolocationaddress alertgeoadd
+                    on AlertLatitude > 0 and AlertLongitude >0 and 
+                    TRUNC(CAST(AlertLatitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(AlertLongitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
+                    )
+                    --select * from CTE_fleetOverview_alertgeoadd
+                    ,CTE_fleetOverview_latgeoadd as 
+                    (
+                    select cfa.*,	
+                    latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
+                    coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress
+                    from CTE_fleetOverview_alertgeoadd cfa
+                    left join CTE_geolocationaddress latgeoadd
+                    on lcts_LatestReceivedPositionLattitude > 0 and  lcts_LatestReceivedPositionLongitude>0 and
+                    TRUNC(CAST(lcts_LatestReceivedPositionLattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(lcts_LatestReceivedPositionLongitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
+                    )
+                    --select * from CTE_fleetOverview_latgeoadd
+                    ,CTE_fleetOverview_stageoadd as 
+                    (
+                    select cfl.*,	
+                    stageoadd.id as stageoadd_StartGeolocationAddressId,
+                    coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress
+                    from CTE_fleetOverview_latgeoadd cfl
+                    left join CTE_geolocationaddress stageoadd
+                    on lcts_StartPositionLattitude>0 and lcts_StartPositionLongitude>0 and
+                    TRUNC(CAST(lcts_StartPositionLattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(lcts_StartPositionLongitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
+                    )
+                    --select * from CTE_fleetOverview_stageoadd
+                    ,CTE_fleetOverview_wangeoadd as 
+                    (
+                    select cfs.*,	
+                    wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
+                    coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+                    from CTE_fleetOverview_stageoadd cfs
+                    left join CTE_geolocationaddress wangeoadd
+                    on lcts_StartPositionLattitude>0 and lcts_StartPositionLongitude>0 and 
+                    TRUNC(CAST(lcts_StartPositionLattitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(lcts_StartPositionLongitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
+                    )
+                    select * from CTE_fleetOverview_stageoadd
+                    where 1=1 ";
                 if (fleetOverviewFilter.DriverId.Count > 0)
                 {
                     parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
-                    queryFleetOverview += " and lcts.driver1_id = Any(@driverids) ";
+                    queryFleetOverview += " and lcts_Driver1Id = Any(@driverids) ";
                 }
                 if (fleetOverviewFilter.HealthStatus.Count > 0)
                 {
                     parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
-                    queryFleetOverview += " and lcts.vehicle_health_status_type = Any(@healthstatus) ";
+                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
                 }
                 if (fleetOverviewFilter.AlertCategory.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
 
                     parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
-                    queryFleetOverview += " and tripal.category_type = Any(@alertcategory) ";
+                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
                 }
                 if (fleetOverviewFilter.AlertLevel.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
                     parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and tripal.urgency_level_type = Any(@alertlevel) ";
+                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
