@@ -1444,12 +1444,8 @@ this.barChartOptionsPerformance = {
 
    exportAsPDFFile(){
     var doc = new jsPDF('p', 'mm', 'a4');
-
-    let overallPerformanceChart = document.getElementById('charts-overallPerformancePanel');
     let generalBar = document.getElementById('generalChart');
-    // let generalPie = document.getElementById('generalPie');
     let performanceBar = document.getElementById('performanceChart');
-    // let performancePie = document.getElementById('performancePie');
     let summaryArea = document.getElementById('summaryCard');
     
     let src;
@@ -1457,13 +1453,9 @@ this.barChartOptionsPerformance = {
     let oheight;
     let oWidth=175;
     let generalBarHeight;
-    let generalPieHeight;
     let performanceBarHeight;
-    let performancePieHeight;
     let generalBarHref;
-    let generalPieHref;
     let performanceBarHref;
-    let performancePieHref;
 
     html2canvas(summaryArea).then(canvas => {
       oheight= canvas.height * oWidth/canvas.width;
@@ -1471,36 +1463,18 @@ this.barChartOptionsPerformance = {
       src = canvas.toDataURL();
       ohref = canvas.toDataURL('image/png');
     });
-    // html2canvas(overallPerformanceChart).then(canvas => {
-    //   oheight= canvas.height * oWidth/canvas.width;
-    //   //oWidth= canvas.width;
-    //   src = canvas.toDataURL();
-    //   ohref = canvas.toDataURL('image/png');
-    // });
     html2canvas(generalBar).then(canvas => {
       generalBarHeight= canvas.height * oWidth/canvas.width;
       //oWidth= canvas.width;
       src = canvas.toDataURL ();
       generalBarHref = canvas.toDataURL('image/png');
     });
-    // html2canvas(generalPie).then(canvas => {
-    //   generalPieHeight= canvas.height * oWidth/canvas.width;
-    //   //oWidth= canvas.width;
-    //   src = canvas.toDataURL();
-    //   generalPieHref = canvas.toDataURL('image/png');
-    // });
     html2canvas(performanceBar).then(canvas => {
       performanceBarHeight= canvas.height * oWidth/canvas.width;
       //oWidth= canvas.width;
       src = canvas.toDataURL();
       performanceBarHref = canvas.toDataURL('image/png');
     });
-    // html2canvas(performancePie).then(canvas => {
-    //   performancePieHeight= canvas.height * oWidth/canvas.width;
-    //   //oWidth= canvas.width;
-    //   src = canvas.toDataURL();
-    //   performancePieHref = canvas.toDataURL('image/png');
-    // });
     
     let trendLineChart = document.getElementById('trendLineChart');
     html2canvas( (trendLineChart),
@@ -1533,10 +1507,8 @@ this.barChartOptionsPerformance = {
       let fileHeight = canvas.height * fileWidth / canvas.width;
 
       const FILEURI = canvas.toDataURL('image/png')
-      // let PDF = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-      doc.addPage();
+      doc.addPage('a2','p');
 
       let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
       let pdfColumns=[];
@@ -1579,40 +1551,33 @@ this.barChartOptionsPerformance = {
           });
         });
     });
+    doc.setFontSize(11);
+    doc.text(this.translationData.lblGeneral, 7, 7);
     (doc as any).autoTable({
       head: [pdfColumns],
       body: pdfgenObj,
       theme: 'striped',
+      startX: 15,
+      startY: 15,
       didDrawCell: data => {
-        //console.log(data.column.index)
       }
     });
-    doc.addPage();
-    // let fileWidth = 175;
-    //   let fileHeight = canvas.height * fileWidth / canvas.width;
-
-    //   const FILEURI = canvas.toDataURL('image/png')
-    //   // let PDF = new jsPDF('p', 'mm', 'a4');
-    //   let position = 0;
-    //   doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-    //   doc.addPage();
+    doc.addPage('a4','p');
 
       doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
-      // if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
-      // doc.addPage();
       doc.addPage('a2','p');
+      doc.text(this.translationData.lblDriverPerformance, 7, 7);
       (doc as any).autoTable({
         head: [perfColList],
         body: pdfPerfTable,
         theme: 'striped',
+        startX: 15,
+        startY: 15,
         didDrawCell: data => {
-          //console.log(data.column.index)
         }
       });
       doc.addPage('a4','p');
       doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
-      // if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
-    
       doc.save('Eco-Score_Report.pdf');
     });
   }
