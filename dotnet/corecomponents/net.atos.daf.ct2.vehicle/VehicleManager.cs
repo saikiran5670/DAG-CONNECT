@@ -499,6 +499,8 @@ namespace net.atos.daf.ct2.vehicle
                 List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId, orgId);
 
+                IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
+                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -520,15 +522,31 @@ namespace net.atos.daf.ct2.vehicle
                             {
                                 case "A":
                                     //All
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() == 0)
+                                    {
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                    }
+                                    else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                    else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    if (vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesVisible);
                                     break;
                                 case "M":
                                     //OEM
@@ -560,16 +578,8 @@ namespace net.atos.daf.ct2.vehicle
                 List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsByOrganization(orgId);
 
-                if (vehicleGroups.Any(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")))
-                {
-                    var dynamicAllGrp = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")).First();
-                    var oemGrps = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("M"));
-                    var nonDynamicGrps = vehicleGroups.Where(x => !x.GroupType.Equals("D"));
-                    var finalVehicleGroups = nonDynamicGrps.Concat(new List<VehicleGroupDetails>() { dynamicAllGrp });
-
-                    vehicleGroups = finalVehicleGroups.Concat(oemGrps);
-                }
-
+                IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
+                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -591,15 +601,31 @@ namespace net.atos.daf.ct2.vehicle
                             {
                                 case "A":
                                     //All
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() == 0)
+                                    {
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                    }
+                                    else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                    else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    if (vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesVisible);
                                     break;
                                 case "M":
                                     //OEM
@@ -632,16 +658,8 @@ namespace net.atos.daf.ct2.vehicle
                 List<VisibilityVehicle> vehicles;
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaGroupIds(vehicleGroupIds);
 
-                if (vehicleGroups.Any(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")))
-                {
-                    var dynamicAllGrp = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")).First();
-                    var oemGrps = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("M"));
-                    var nonDynamicGrps = vehicleGroups.Where(x => !x.GroupType.Equals("D"));
-                    var finalVehicleGroups = nonDynamicGrps.Concat(new List<VehicleGroupDetails>() { dynamicAllGrp });
-
-                    vehicleGroups = finalVehicleGroups.Concat(oemGrps);
-                }
-
+                IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
+                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -663,15 +681,31 @@ namespace net.atos.daf.ct2.vehicle
                             {
                                 case "A":
                                     //All
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() == 0)
+                                    {
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                    }
+                                    else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                    else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    if (vehiclesOwned.Count() == 0)
+                                        vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
-                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    if (vehiclesVisible.Count() == 0)
+                                        vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                    vehicles.AddRange(vehiclesVisible);
                                     break;
                                 case "M":
                                     //OEM

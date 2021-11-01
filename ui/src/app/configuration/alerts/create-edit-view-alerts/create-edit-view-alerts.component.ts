@@ -1902,7 +1902,7 @@ PoiCheckboxClicked(event: any, row: any) {
       if(this.actionType == 'create' || this.actionType == 'duplicate'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": '',
+          "thresholdValue": '0',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -1917,7 +1917,7 @@ PoiCheckboxClicked(event: any, row: any) {
       else if(this.actionType == 'edit'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": '',
+          "thresholdValue": '0',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -2342,15 +2342,15 @@ PoiCheckboxClicked(event: any, row: any) {
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
         }
         else if((this.isWarningLevelSelected && (this.alertForm.get('warningLevelThreshold').value == '')) ||
-        ((this.isWarningLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value)) 
+        ((this.isWarningLevelSelected && this.isCriticalLevelSelected) && Number(this.alertForm.get('warningLevelThreshold').value) >= Number(this.alertForm.get('criticalLevelThreshold').value))) 
         {
          // this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
           this.filterDetailsErrorMsg ='Warning value should be less than critical value';
         }
         else if((this.isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '')) ||
-        ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value ) ||
-        ((this.isAdvisoryLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))
+        ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('warningLevelThreshold').value )) ||
+        ((this.isAdvisoryLevelSelected && this.isCriticalLevelSelected) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('criticalLevelThreshold').value )))
         {
          // this.alertForm.get('advisoryLevelThreshold').setValue(''); 
         invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
