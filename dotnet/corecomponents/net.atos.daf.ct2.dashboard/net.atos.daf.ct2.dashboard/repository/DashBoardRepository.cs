@@ -205,7 +205,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 						--*/
                         SELECT
 						vin as TodayVin
-                        ,ROUND(SUM(todaydistance)/1000,2) as TodayDistance
+                        ,ROUND(SUM(todaydistance),2) as TodayDistance
                         ,SUM(todaydrivingtime) as TodayDrivingTime
                         ,todayalertcount as TodayAlertCount 
 						FROM cte_clubAlert 
