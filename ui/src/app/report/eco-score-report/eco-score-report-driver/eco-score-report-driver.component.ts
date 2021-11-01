@@ -1502,13 +1502,13 @@ this.barChartOptionsPerformance = {
          }  
       });
       doc.addImage(ohref, 'PNG', 10, 40, oWidth, oheight) ;
-      doc.addPage('a2','p');
+      doc.addPage();
       let fileWidth = 175;
       let fileHeight = canvas.height * fileWidth / canvas.width;
 
       const FILEURI = canvas.toDataURL('image/png')
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-      doc.addPage();
+      doc.addPage('a2','p');
 
       let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
       let pdfColumns=[];
@@ -1562,7 +1562,7 @@ this.barChartOptionsPerformance = {
       didDrawCell: data => {
       }
     });
-    doc.addPage();
+    doc.addPage('a4','p');
 
       doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
       doc.addPage('a2','p');
