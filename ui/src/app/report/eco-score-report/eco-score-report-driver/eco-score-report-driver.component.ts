@@ -1443,7 +1443,7 @@ this.barChartOptionsPerformance = {
   }
 
    exportAsPDFFile(){
-    var doc = new jsPDF('p', 'mm', 'a4');
+    var doc = new jsPDF('p', 'mm', 'a3');
     let generalBar = document.getElementById('generalChart');
     let performanceBar = document.getElementById('performanceChart');
     let summaryArea = document.getElementById('summaryCard');

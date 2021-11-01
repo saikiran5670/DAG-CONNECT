@@ -271,13 +271,13 @@ export class CurrentFleetComponent implements OnInit {
       "days": 0,
       "languagecode":"cs-CZ"
     }
-    this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
+    this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data);
       this.detailsData = processedData;
       let _dataObj = {
         vehicleDetailsFlag: false,
-        data: data
+        data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
       if (this._state && this._state.data) {

@@ -656,14 +656,14 @@ export class FleetMapService {
       this.showGlobalPOI(_globalPOIList, _ui);
     }
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
-      let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
+      //let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
       this.drawIcons(_selectedRoutes, _ui);
       this.makeCluster(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
       if (objArr && objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: (_iconCount.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
+          zoom: (objArr.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }
@@ -1258,9 +1258,10 @@ export class FleetMapService {
   }
 
   validateLatLng(lat, lng) {
-    let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
-
-    return pattern.test(lat) && pattern.test(lng);
+    // let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
+    // return pattern.test(lat) && pattern.test(lng);
+    let flag: any = (lat >= -90 && lat <= 90) && (lng >= -180 && lng <= 180);
+    return flag ? true : false;
   }
 
   setIconsOnMap(element, _ui) {
@@ -1799,7 +1800,7 @@ export class FleetMapService {
     let dataPoints = data.map((item) => {
       item.lat = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLatitude : item.latestReceivedPositionLattitude;
       item.lng = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLongitude : item.latestReceivedPositionLongitude;
-      return new H.clustering.DataPoint(item.lat, item.lng);
+      return new H.clustering.DataPoint(item.lat, item.lng, null, item);
     });
     var noiseSvg =
       '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
@@ -1863,19 +1864,22 @@ export class FleetMapService {
             _data.forEachEntry((p) => {
               if (colName == 'Vehicle Name') {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vehicleName + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else if (colName == 'Vin') {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vin + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.registrationNo + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }

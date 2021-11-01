@@ -865,7 +865,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.resetDriverFilter();
       }
       let vehicleData = this.vehicleListData.slice();
-      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      this.vehicleDD = this.getUniqueVINs([...vehicleData]);
       this.vehicleDD.sort(this.compareVin);
       this.resetVehicleFilter();
       this.driverDD = this.driverListData;

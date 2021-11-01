@@ -77,8 +77,9 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "days": 0,
       "languagecode": localStLanguage.code
     }
-    this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
-      this.summaryData = data;
+    this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      let filterData = this.fleetMapService.processedLiveFLeetData(data);
+      this.summaryData = filterData;
       this.refreshData();
       this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
       this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
