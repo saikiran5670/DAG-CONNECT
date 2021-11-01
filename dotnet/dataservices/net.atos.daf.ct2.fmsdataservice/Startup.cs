@@ -72,6 +72,7 @@ namespace net.atos.daf.ct2.fmsdataservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();

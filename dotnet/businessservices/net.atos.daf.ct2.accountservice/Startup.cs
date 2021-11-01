@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.accountservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
-
+            services.AddMemoryCache();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();

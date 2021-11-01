@@ -663,7 +663,7 @@ export class FleetMapService {
       if (objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: (_iconCount.length > 1) ? 3 : 15, // 16665 - zoom added with bounds 
+          zoom: (_iconCount.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }

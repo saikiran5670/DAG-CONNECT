@@ -8,6 +8,7 @@
     <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF  }}</button>
   </mat-menu>
 </div>
+<div id="summaryCard">
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'id="eco-score-report-driver" >
   <mat-expansion-panel [(expanded)]="overallPerformancePanel" class="full-width" fxLayoutGap="10px" [style.overflow]="'auto'">
     <mat-expansion-panel-header class="full-width">
@@ -121,6 +122,8 @@
             </div>
           </mat-expansion-panel>
           </mat-card>
+          </div>
+          <div id="trendLineChart">
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="trendlinesPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -168,6 +171,7 @@
 
             </mat-expansion-panel>
           </mat-card>
+          </div>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalTablePanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -189,6 +193,7 @@
               </div>
               <br/>
               <br/>
+          <div id="generalChart">    
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -255,6 +260,7 @@
               <br/>
             </mat-expansion-panel>
           </mat-card>
+          </div>
         </mat-expansion-panel>
       </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -279,6 +285,7 @@
               <br/>
               <br/>
               <br/>
+              <div id="performanceChart">
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformanceChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -340,6 +347,7 @@
               </div>
             </mat-expansion-panel>
           </mat-card>
+          </div>
         </mat-expansion-panel>
       </mat-card>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

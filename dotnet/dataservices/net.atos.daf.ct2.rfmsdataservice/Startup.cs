@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.rfmsdataservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
-
+            services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();

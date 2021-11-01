@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.organizationservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
-
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
