@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.customerdataservice
             });
 
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
-
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IOrganizationManager, OrganizationManager>();

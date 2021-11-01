@@ -1514,7 +1514,7 @@ PoiCheckboxClicked(event: any, row: any) {
       this.displayedColumnsCorridor= ['corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
       this.updateCorridorDatasource(tableData);
     }
-    else if(this.actionType == 'edit'){
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.selectCorridorTableRows();
     }
   }

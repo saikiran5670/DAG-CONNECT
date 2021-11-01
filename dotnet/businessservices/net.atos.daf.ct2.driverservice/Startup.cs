@@ -44,6 +44,8 @@ namespace net.atos.daf.ct2.driverservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
+
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IDriverManager, DriverManager>();

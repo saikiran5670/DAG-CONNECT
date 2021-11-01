@@ -20,6 +20,8 @@ using net.atos.daf.ct2.notificationengine;
 using net.atos.daf.ct2.notificationengine.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
@@ -59,7 +61,7 @@ namespace net.atos.daf.ct2.notificationdataservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
-
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IAccountManager, AccountManager>();
@@ -86,7 +88,8 @@ namespace net.atos.daf.ct2.notificationdataservice
             services.AddTransient<IOtaSoftwareNotificationManager, OtaSoftwareNotificationManager>();
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
-
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
             //services.AddMvc(options =>
             //{
             //    options.Filters.Add(new ProducesAttribute("application/json"));

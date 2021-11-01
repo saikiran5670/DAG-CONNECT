@@ -660,10 +660,10 @@ export class FleetMapService {
       this.drawIcons(_selectedRoutes, _ui);
       this.makeCluster(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
-      if (objArr.length > 0) {
+      if (objArr && objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: (_iconCount.length > 1) ? 3 : 15, // 16665 - zoom added with bounds 
+          zoom: (_iconCount.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }
@@ -724,11 +724,15 @@ export class FleetMapService {
             this.drawAlerts(elem.fleetOverviewAlert, _ui);
           }
         }
-        this.hereMap.addObject(this.group);
-        this.hereMap.getViewModel().setLookAtData({
-          //zoom: 15,
-          bounds: this.group.getBoundingBox()
-        });
+        let _objArr = this.group.getObjects();
+        if(_objArr && _objArr.length > 0) {
+          this.hereMap.addObject(this.group);
+          this.hereMap.getViewModel().setLookAtData({
+            //zoom: 15,
+            bounds: this.group.getBoundingBox()
+          });
+        }
+        
         // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
 
       });
