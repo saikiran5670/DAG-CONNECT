@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,28 +26,22 @@ public class EcoScoreDao implements Serializable {
 
 	public void insert(EcoScore ecoScoreData, PreparedStatement ecoScoreInsertQry) throws TechnicalException {
 		try {
-			if (null != ecoScoreData && null != (connection = getConnection())) {
+			if (Objects.nonNull(ecoScoreData)) {
 
 				ecoScoreInsertQry = fillStatement(ecoScoreInsertQry, ecoScoreData);
-				ecoScoreInsertQry.addBatch();
-				ecoScoreInsertQry.executeBatch();
-				//ecoScoreInsertQry.execute();
+				//ecoScoreInsertQry.addBatch();
+				//ecoScoreInsertQry.executeBatch();
+				ecoScoreInsertQry.execute();
 				
 				logger.info("EcoScore records inserted to ecoscore table :: "+ecoScoreData.getTripId());
-	
-			} else {
-				if (connection == null) {
-					logger.error(" Issue EcoScore connection is null : " + connection);
-					throw new TechnicalException("EcoScore Datamart connection is null :: ");
-				}
-			}
+			} 
 		} catch (SQLException e) {
-			logger.error("Sql Issue while inserting data to ecoscore table : " + e.getMessage());
-			logger.error("Issue while inserting EcoScore record :: " + ecoScoreInsertQry);
+			logger.error("Sql Issue while inserting data to ecoscore table :{}, connection:{} " , e.getMessage(), connection);
+			logger.error("Issue while inserting EcoScore record ::{} " , ecoScoreInsertQry);
 			e.printStackTrace();
 		} catch (Exception e) {
-			logger.error("Issue while inserting data to ecoscore table : " + e.getMessage());
-			logger.error("Issue while inserting ecoscore record :: " + ecoScoreInsertQry);
+			logger.error("Issue while inserting data to ecoscore table : {} " , e.getMessage());
+			logger.error("Issue while inserting ecoscore record ::{} " , ecoScoreInsertQry);
 			e.printStackTrace();
 		}
 

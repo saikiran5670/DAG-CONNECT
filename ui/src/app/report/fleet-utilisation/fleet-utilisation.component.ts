@@ -1133,6 +1133,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   assignChartData(){
     this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+    this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
     // let startDate =this.startDateValue;
     // let endDate = this.endDateValue;        
     // this.chartsLabelsdefined=[ startDate, endDate ]
@@ -1161,6 +1163,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
     this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
     
     this.distanceLineChartData = [
       { 
@@ -1180,13 +1183,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
     this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
   
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: this.translationData.lblnumberofvehicles || 'Number of Vehicles' },
     ];
     this.lineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.lineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
- 
+    this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+    this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
     this.VehicleBarChartData = [
       { 
         label: this.translationData.lblnumberofvehicles || 'Number of Vehicles',

@@ -258,7 +258,8 @@ export class CurrentFleetComponent implements OnInit {
   }
 
   getFleetOverviewDetails(){
-    this.clickOpenClose='Click to Open';
+    // this.clickOpenClose='Click to Open';
+    this.clickOpenClose = this.translationData.lblClickToOpen || 'Click to Open';
     this.showLoadingIndicator = true;
     let objData = {
       "groupId": ["all"],

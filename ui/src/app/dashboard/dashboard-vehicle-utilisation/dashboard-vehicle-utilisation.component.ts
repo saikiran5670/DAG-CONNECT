@@ -568,7 +568,7 @@ setAlertChartData(){
     let warningPercent = (this.alertsData.warning/totalAlerts)* 100;
     let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
     this.alertPieChartData= [parseFloat(crticalPercent.toFixed(2)),parseFloat(warningPercent.toFixed(2)),parseFloat(advisoryPercent.toFixed(2))];
-    this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
+    this.alertPieChartLabels=  [`${this.translationData.lblCritical}|| 'Critical' (${this.alertsData.critical})`,`${this.translationData.lblWarning} || 'Warning' (${this.alertsData.warning})`,`${this.translationData.lblAdvisory} || 'Advisory' (${this.alertsData.advisory})`];
     this.alertPieChartOptions = {
         responsive: true,
         legend: {
@@ -1032,7 +1032,7 @@ if(this.prefTimeFormat == 12){
       },
         }
     }
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.doughnutChartLabels1 = [`${this.translationData.lblFullUtilisation} || 'Full Utilisation' >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation} || 'Under Utilisation' < ${this.getTimeDisplay(this.totalThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -1059,7 +1059,7 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.totalThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.timePieChartLabels = [`${this.translationData.lblFullUtilisation} || 'Full Utilisation' >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation} || 'Under Utilisation' < ${this.getTimeDisplay(this.totalThreshold)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
@@ -1120,7 +1120,7 @@ if(this.prefTimeFormat == 12){
     label3 = 'Miles'
   }
   if(this.mileageDChartType =='doughnut'){
-    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
+    this.doughnutChartLabels2 = [`${this.translationData.lblFullUtilisation} || 'Full Utilisation' >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`${this.translationData.lblUnderUtilisation} || 'Under Utilisation' <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.doughnutChartData2 = [percentage2, 0];
     }
@@ -1147,7 +1147,7 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
+    this.mileagePieChartLabels= [`${this.translationData.lblFullUtilisation} || 'Full Utilisation' >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`${this.translationData.lblUnderUtilisation} || 'Under Utilisation' <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
     this.mileagePieChartData = [percentage2, 0];
     }

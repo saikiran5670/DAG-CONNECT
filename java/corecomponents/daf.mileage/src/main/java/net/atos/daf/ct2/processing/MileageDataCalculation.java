@@ -130,7 +130,7 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 
 			out.collect(tripMileage);
 		} catch (Exception e) {
-			logger.error("Issue while processing Mileage Data for key : " + key + "  error :: " + e.getMessage());
+			logger.error("Issue while processing Mileage Data for key :{}, Error:{}, tripMileage:{} " , key , e.getMessage(), tripMileage);
 			e.printStackTrace();
 		}
 	}

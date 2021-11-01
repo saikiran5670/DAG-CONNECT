@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -72,13 +72,17 @@ public filteredSelectGroups: ReplaySubject<String[]> = new ReplaySubject<String[
 public filteredDrivers: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
 constructor(private fleetMapService: FleetMapService, private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
-    private dataInterchangeService: DataInterchangeService) { 
+    private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.loadVehicleData();
         }
       });
-    }
+}
+
+ngAfterViewInit(){
+  this.cdr.detectChanges();
+}
 
   ngOnInit(): void {
     
@@ -249,18 +253,21 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
       this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
       data.forEach(item => {
-        this.filterData["healthStatus"].forEach(e => {
-         if(item.vehicleHealthStatusType==e.value)
-         {         
-          item.vehicleHealthStatusType = this.translationData[e.name];
-         }
-        });
-        this.filterData["otherFilter"].forEach(element => {
-          if(item.vehicleDrivingStatusType==element.value)
-          {         
-           item.vehicleDrivingStatusType = this.translationData[element.name];
-          }
-         });         
+        if(this.filterData && this.filterData.healthStatus){
+          this.filterData["healthStatus"].forEach(e => {
+            if(item.vehicleHealthStatusType == e.value){         
+              item.vehicleHealthStatusType = this.translationData[e.name];
+            }
+          });
+        }
+
+        if(this.filterData && this.filterData.otherFilter){
+          this.filterData["otherFilter"].forEach(element => {
+            if(item.vehicleDrivingStatusType == element.value){         
+             item.vehicleDrivingStatusType = this.translationData[element.name];
+            }
+          });   
+        }      
     
       });    
     //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
@@ -319,30 +326,41 @@ getFilterData(){
         let levelName =  this.translationData[item.name];
         this.levelList.push({'name':levelName, 'value': item.value})}); 
       
-        this.filterData["healthStatus"].forEach(item=>{
-        let statusName = this.translationData[item.name];
-        this.healthList.push({'name':statusName, 'value': item.value})});
+        if(this.filterData && this.filterData.healthStatus){
+          this.filterData["healthStatus"].forEach(item=>{
+            let statusName = this.translationData[item.name];
+            this.healthList.push({'name':statusName, 'value': item.value});
+          });
+        }
 
-        this.filterData["otherFilter"].forEach(item=>{
-        if(item.value=='N'){
-        let statusName = this.translationData[item.name];           
-        this.otherList.push({'name':statusName, 'value': item.value})
-        }});
+        if(this.filterData && this.filterData.otherFilter){
+          this.filterData["otherFilter"].forEach(item=>{
+            if(item.value == 'N'){
+              let statusName = this.translationData[item.name];           
+              this.otherList.push({'name':statusName, 'value': item.value})
+            }
+          });
+        }
        
        this.detailsData.forEach(item => {
-       this.filterData["healthStatus"].forEach(e => {
-         if(item.vehicleHealthStatusType==e.value)
-         {         
-          item.vehicleHealthStatusType = this.translationData[e.name];
-         }
-        });
-        this.filterData["otherFilter"].forEach(element => {
-          if(item.vehicleDrivingStatusType==element.value)
-          {         
-           item.vehicleDrivingStatusType = this.translationData[element.name];
+          if(this.filterData && this.filterData.healthStatus){
+            this.filterData["healthStatus"].forEach(e => {
+              if(item.vehicleHealthStatusType==e.value)
+              {         
+                item.vehicleHealthStatusType = this.translationData[e.name];
+              }
+            });
           }
-         });        
-      }); 
+        
+          if(this.filterData && this.filterData.otherFilter){
+            this.filterData["otherFilter"].forEach(element => {
+              if(item.vehicleDrivingStatusType==element.value)
+              {         
+                item.vehicleDrivingStatusType = this.translationData[element.name];
+              }
+            });
+          }                  
+        }); 
       this.vehicleListData = this.detailsData;      
       this.loadVehicleData();
     }
@@ -387,15 +405,20 @@ getFilterData(){
       let levelName =  this.translationData[item.name];
       this.levelList.push({'name':levelName, 'value': item.value})}); 
  
-        this.filterData["healthStatus"].forEach(item=>{
-        let statusName = this.translationData[item.name];
-        this.healthList.push({'name':statusName, 'value': item.value})});
-
-        this.filterData["otherFilter"].forEach(item=>{
-        if(item.value=='N'){
-        let statusName = this.translationData[item.name];           
-        this.otherList.push({'name':statusName, 'value': item.value})
-        }});
+        if(this.filterData && this.filterData.healthStatus){
+          this.filterData["healthStatus"].forEach(item=>{
+            let statusName = this.translationData[item.name];
+            this.healthList.push({'name':statusName, 'value': item.value});
+          });
+        }
+        if(this.filterData && this.filterData.otherFilter){
+          this.filterData["otherFilter"].forEach(item => {
+            if(item.value == 'N'){
+              let statusName = this.translationData[item.name];           
+              this.otherList.push({'name':statusName, 'value': item.value})
+            }
+          });
+        }
         this.setDefaultDropValue();
         this.vehicleListData = this.detailsData;
     }
@@ -560,16 +583,20 @@ removeDuplicates(originalArray, prop) {
     this.messageService.sendMessage("refreshTimer");
     this.drawIcons(data);
     data.forEach(item => {
-      this.filterData["healthStatus"].forEach(e => {
-        if (item.vehicleHealthStatusType == e.value) {
-          item.vehicleHealthStatusType = this.translationData[e.name];
-        }
-      });
-      this.filterData["otherFilter"].forEach(element => {
-        if (item.vehicleDrivingStatusType == element.value) {
-          item.vehicleDrivingStatusType = this.translationData[element.name];
-        }
-      });
+      if(this.filterData && this.filterData.healthStatus){
+        this.filterData["healthStatus"].forEach(e => {
+          if (item.vehicleHealthStatusType == e.value) {
+            item.vehicleHealthStatusType = this.translationData[e.name];
+          }
+        });
+      }
+      if(this.filterData && this.filterData.otherFilter){
+        this.filterData["otherFilter"].forEach(element => {
+          if (item.vehicleDrivingStatusType == element.value) {
+            item.vehicleDrivingStatusType = this.translationData[element.name];
+          }
+        });
+      }
       if (this.categoryList.length > 0) {
         item.fleetOverviewAlert.forEach(e => {
           let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);

@@ -57,25 +57,6 @@ public class MessageParseUtil {
 							return true;
 						}
 
-						/*
-						 * JsonNode corrleation = (JsonNode)
-						 * jsonNodeRec.get("correlations"); if (corrleation !=
-						 * null) {
-						 * 
-						 * String measurmentConfigName =
-						 * corrleation.get("measurementConfigurationName").
-						 * asText(); System.out.println( "filter Trans ID    " +
-						 * measurmentConfigName + " message type ::" +
-						 * messageType); logger.info("filter Trans ID " +
-						 * measurmentConfigName + " message type ::" +
-						 * messageType); if (measurmentConfigName != null &&
-						 * messageType != null &&
-						 * measurmentConfigName.contains(messageType)) { return
-						 * true; }
-						 * 
-						 * }
-						 */
-
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -84,26 +65,6 @@ public class MessageParseUtil {
 				}
 
 				return false;
-				/*
-				 * try { JSONObject jsonObject =
-				 * transformMessages(value.toString());
-				 * 
-				 * Object documentobj = getValueByAttributeKey("Document",
-				 * jsonObject); JSONObject document = (JSONObject) documentobj;
-				 * if (document != null) { String transId = ""; Integer
-				 * intTransId = getValueAsInteger((Double)
-				 * getValueByAttributeKey("TransID", document)); if (intTransId
-				 * != null) { transId = intTransId.toString(); }
-				 * System.out.println("filter Trans ID    " + transId);
-				 * logger.info("filter Trans ID " + transId); return
-				 * messageType.equalsIgnoreCase(transId); }
-				 * 
-				 * } catch (Exception ex) {
-				 * logger.error(" transid filter process failed " +
-				 * ex.getMessage());
-				 * 
-				 * } return false;
-				 */
 
 			}
 		});
@@ -436,6 +397,10 @@ public class MessageParseUtil {
 							+ ex.getMessage());
 
 		}
+		logger.error(
+				"Bosch-INFO Level: Index message after parse ready for publising message is " + indexobj.toString());
+		System.out.println(
+				"Bosch-INFO Level: Index message after parse ready for publising message is " + indexobj.toString());
 		indexobj.setDocument(indexDocument);
 		return indexobj;
 
@@ -443,7 +408,8 @@ public class MessageParseUtil {
 
 	public static Monitor processMonitorBoschMessage(String value, Properties properties,
 			String kafkaProcessingTimeStamp) {
-		logger.info("Monitor Raw Message processing start ::====>" + value.toString());
+		// logger.info("Monitor Raw Message processing start ::====>" +
+		// value.toString());
 		System.out.println("Monitor Raw Message processing start ::====>" + value.toString());
 
 		Monitor monitorObj = new Monitor();
@@ -452,7 +418,7 @@ public class MessageParseUtil {
 			/* json message parsing and store in jsonObject */
 
 			JsonNode jsonNode = transformMessages(value);
-			System.out.println("jsonNode" + jsonNode);
+			// System.out.println("jsonNode" + jsonNode);
 
 			String vin = (String) getValueByAttributeKey("vin", jsonNode);
 
@@ -461,7 +427,7 @@ public class MessageParseUtil {
 
 			if (document != null) {
 				JsonNode gps = (JsonNode) document.get("GPS");
-				System.out.println(" GPS is ==>" + gps);
+
 				JsonNode reasonData = (JsonNode) jsonNode.get("reasonData");
 
 				Double latitude = getValueAsDouble((String) getValueByAttributeKey("latitude", gps));
@@ -504,11 +470,9 @@ public class MessageParseUtil {
 
 				System.out.println("After changed Trans id :" + monitorObj.getTransID() + " , trip id ==>" + tripid);
 
-			//	monitorObj.setEvtDateTime(end);
-
 				Long receivedTimestamp = System.currentTimeMillis();
 				Long storedTimestamp = null;
-				//String evtDateTime = end;
+				// String evtDateTime = end;
 				Long increment = null;
 				String roProfil = null;
 				String tenantID = null;
@@ -517,22 +481,37 @@ public class MessageParseUtil {
 				String jobName = (String) getValueByAttributeKey("jobName", jsonNode);
 
 				Integer messagetype = getValueAsInteger((String) getValueByAttributeKey("MessageType", document));
-				// monitorObj.setMessageType(messagetype);
+
 				Double gpsHdop = 0d;// getValueAsDouble((String)
 									// getValueByAttributeKey(" GPSHdop",
 									// document));
 				monitorDocument.setGpsHdop(gpsHdop);
 				Long packageIndex = getValueAsLong((String) getValueByAttributeKey("packageIndex", jsonNode));
 				String lastReadingTime = (String) getValueByAttributeKey("lastReadingTime", gps);
-				String driverID = (String) getValueByAttributeKey("Driver1identification", document);
-				Boolean driver1CardInserted = getValueAsBoolean(
-						(String) getValueByAttributeKey("Drivercarddriver1", document));
+
+				String driver1Identification = (String) getValueByAttributeKey("Driver1Identification", document);
+
+				if (driver1Identification != null && !driver1Identification.isEmpty()) {
+					monitorDocument.setDriverID(driver1Identification);
+				} else {
+					monitorDocument.setDriverID(DAFCT2Constant.UNKNOWN);
+				}
+
+				Boolean driver1CardInserted = false;
+				String driver1CardInsertStrVal = (String) getValueByAttributeKey("DriverCardDriver1", document);
+				if (driver1CardInsertStrVal != null) {
+					driver1CardInserted = true;
+				}
 				Integer driver1WorkingState = getValueAsInteger(
 						(String) getValueByAttributeKey("Driver1WorkingState", document));
-				String driver2ID = (String) getValueByAttributeKey("Driver2identification", document);
+				String driver2ID = (String) getValueByAttributeKey("Driver2Identification", document);
 
-				Boolean driver2CardInserted = getValueAsBoolean(
-						(String) getValueByAttributeKey("Drivercarddriver2", document));
+				Boolean driver2CardInserted = false;
+				String driver2CardInsertedVal = (String) getValueByAttributeKey("DriverCardDriver2", document);
+
+				if (driver2CardInsertedVal != null) {
+					driver2CardInserted = true;
+				}
 
 				Integer driver2WorkingState = getValueAsInteger(
 						(String) getValueByAttributeKey("Driver2WorkingState", document));
@@ -540,7 +519,7 @@ public class MessageParseUtil {
 				Long vAmbiantAirTemperature = getValueAsLong(
 						(String) getValueByAttributeKey("AmbientAirTemperature", document));
 				monitorDocument.setVAmbiantAirTemperature(vAmbiantAirTemperature);
-				
+
 				Integer vCruiseControl = getValueAsInteger(
 						(String) getValueByAttributeKey("CruiseControlActive", document));
 
@@ -558,7 +537,7 @@ public class MessageParseUtil {
 				Long vEngineSpeed = getValueAsLong((String) getValueByAttributeKey("EngineSpeed", document));
 				Long vEngineTotalHours = getValueAsLong(
 						(String) getValueByAttributeKey("EngineTotalHoursofOperation", document));
-				
+
 				Long vEngineTotalHoursIdle = getValueAsLong(
 						(String) getValueByAttributeKey("EngineTotalIdleHours", document));
 				Long vFuelCumulated = getValueAsLong(
@@ -603,7 +582,8 @@ public class MessageParseUtil {
 				monitorObj.setIncrement(increment);
 				monitorObj.setRoProfil(roProfil);
 				monitorObj.setTenantID(tenantID);
-
+				// String kafkaProcessLongTimeStampVal =
+				// String.valueOf(convertDateStringToTS(kafkaProcessingTimeStamp));
 				monitorObj.setKafkaProcessingTS(kafkaProcessingTimeStamp);
 				monitorObj.setJobName(jobName);
 				monitorObj.setMessageType(messagetype);
@@ -615,40 +595,21 @@ public class MessageParseUtil {
 				monitorObj.setGpsHeading(direction);
 				monitorDocument.setGpsSpeed(gpsSpeed);
 
-				if (driverID != null && !driverID.isEmpty()) {
-					monitorDocument.setDriverID(driverID);
-				}
-
 				monitorDocument.setDriver1CardInserted(driver1CardInserted);
 				if (driver1WorkingState != null) {
 					monitorDocument.setDriver1WorkingState(driver1WorkingState);
 				}
 
-				// else {
-				// // TODO - 3.0 hardcode for testing
-				// driver1WorkingState = 3;
-				// monitorDocument.setDriver1WorkingState(driver1WorkingState);
-				// }
-
-				if (driver2ID != null) {
+				if (driver2ID != null && !driver2ID.isEmpty()) {
 					monitorDocument.setDriver2ID(driver2ID);
+				} else {
+					monitorDocument.setDriver2ID(DAFCT2Constant.UNKNOWN);
 				}
-
-				// else {
-				// driver2ID = "NL-MONITER-TEST-DRIVER";
-				// monitorDocument.setDriver2ID(driver2ID);
-				// }
 
 				monitorDocument.setDriver2CardInserted(driver2CardInserted);
 				if (driver2WorkingState != null) {
 					monitorDocument.setDriver2WorkingState(driver2WorkingState);
 				}
-
-				// else {
-				// // TODO for tetsing
-				// driver2WorkingState = 0;
-				// monitorDocument.setDriver2WorkingState(driver2WorkingState);
-				// }
 
 				monitorDocument.setVCruiseControl(vCruiseControl);
 				monitorDocument.setVDEFTankLevel(vDEFTankLevel);
@@ -674,13 +635,15 @@ public class MessageParseUtil {
 				monitorDocument.setVRetarderTorqueActual(vRetarderTorqueActual);
 				monitorDocument.setVRetarderTorqueMode(vRetarderTorqueMode);
 				monitorDocument.setVServiceBrakeAirPressure1(vServiceBrakeAirPressure1);
-//				Long vServiceBrakeAirPressure2 = getValueAsLong(
-//						(String) getValueByAttributeKey("ServiceBrakeCircuit2AirPressure", jsonNode));
+				// Long vServiceBrakeAirPressure2 = getValueAsLong(
+				// (String)
+				// getValueByAttributeKey("ServiceBrakeCircuit2AirPressure",
+				// jsonNode));
 				monitorDocument.setVServiceBrakeAirPressure2(vserviceBrakeAirPressure2);
 				monitorDocument.setVTachographSpeed(vTachographSpeed);
 				monitorDocument.setVWheelBasedSpeed(vWheelBasedSpeed);
 
-				monitorObj.setDocument(monitorDocument);
+				// monitorObj.setDocument(monitorDocument);
 
 				if (driver2WorkingState != null) {
 					monitorDocument.setDriver2WorkingState((int) Math.round(driver2WorkingState));
@@ -711,10 +674,10 @@ public class MessageParseUtil {
 
 		}
 		monitorObj.setDocument(monitorDocument);
-		// logger.info("Monitor - Before publishing
-		// monitoringObj.toString()
-		// record :: " + monitorObj.toString());
-		System.out.println("Monitor -  before publishing kafka record :: " + monitorObj.toString());
+
+		System.out.println("Bosch-Monitor -  before publishing kafka record :: " + monitorObj.toString());
+		logger.info("Bosch-Monitor -  before publishing kafka record :: " + monitorObj.toString());
+		logger.error("Bosch-INFO Level:Monitor -  before publishing kafka record :: " + monitorObj.toString());
 		return monitorObj;
 
 	}
@@ -726,7 +689,7 @@ public class MessageParseUtil {
 		StatusDocument statusDocument = new StatusDocument();
 
 		try {
-			/* json message parsing and store in jsonObject */
+
 			/* json message parsing and store in jsonObject */
 			JsonNode jsonNode = transformMessages(value);
 
@@ -996,9 +959,10 @@ public class MessageParseUtil {
 
 		statusObj.setDocument(statusDocument);
 
-		logger.info(
-				" Status type message - before publishing monitoringObj.toString() record :: " + statusObj.toString());
+		logger.error("Bosch-INFO Level: Status type message - before publishing monitoringObj.toString() record :: "
+				+ statusObj.toString());
 		System.out.println(" Status type message - before publishing kafka record :: " + statusObj.toString());
+
 		return statusObj;
 	}
 
@@ -1240,16 +1204,13 @@ public class MessageParseUtil {
 			}
 
 		} catch (Exception e) {
-			/// logger.error("issue while transId value parsing " +
-			/// ExceptionUtils.getFullStackTrace(e));
-			// logger.error("issue while transId value parsing " +
-			/// e.getMessage());
-			e.printStackTrace();
+
+			logger.error("issue while transId value parsing " + e.getMessage());
 
 		}
 
 		System.out.println(" tranid value extracing" + transId);
-		// logger.info(" tranid value extracing" + transId);)
+		logger.info(" tranid value extracing" + transId);
 		return transId;
 
 	}
@@ -1325,20 +1286,6 @@ public class MessageParseUtil {
 		}
 	}
 
-	/*
-	 * private static String getVEvtIdByIndexMessageByTripStart(JsonNode
-	 * reasonData) { String vEvtid = null; // Timer Event// Timer Event if
-	 * (reasonData != null) { JsonNode startNode = (JsonNode)
-	 * reasonData.get("start"); if (startNode != null && startNode.get("name")
-	 * != null) { String vEvtidTempValue = startNode.get("name").asText(); if
-	 * (vEvtidTempValue != null) { String[] arrVEvTId =
-	 * vEvtidTempValue.split("_"); vEvtid = arrVEvTId[0]; }
-	 * 
-	 * } }
-	 * 
-	 * return vEvtid; }
-	 */
-
 	private static Integer getVEvtIdByIndexMessageByTripStart(JsonNode reasonData) {
 		Integer vEvtid = null;
 		try {
@@ -1412,95 +1359,6 @@ public class MessageParseUtil {
 		return null;
 	}
 
-	/*
-	 * public static Long[] getSparkMatrixAttributeValue(String string, JsonNode
-	 * innerSparseMatrixJsonNode) { JsonNode jsonAObj =
-	 * innerSparseMatrixJsonNode.get("A");
-	 * System.out.println(" Key ==> Avalue inner ==>" +
-	 * jsonAObj.toPrettyString()); if (jsonAObj != null &&
-	 * jsonAObj.toPrettyString() != null) { String aTextValue =
-	 * jsonAObj.toPrettyString(); aTextValue = aTextValue.substring(1,
-	 * aTextValue.length() - 1); Long[] valueArrLong =
-	 * getLongArrByStringValue(aTextValue);
-	 * System.out.println(" A value is after replacing :" + aTextValue); return
-	 * valueArrLong; } return null;
-	 * 
-	 * }
-	 */
-
-	/*
-	 * public static Long[] getLongArrByStringValue(String value) {
-	 * 
-	 * if (value != null) {
-	 * 
-	 * String[] arr = value.split(","); Long[] longArr = new Long[arr.length];
-	 * for (int i = 0; i < arr.length; i++) { longArr[i] =
-	 * getValueAsLong(arr[i]); } return longArr; }
-	 * 
-	 * return null; }
-	 */
-
-	/*
-	 * public static SpareMatrixAcceleration getSparseMatrixValuesByKey(String
-	 * key, JsonNode document) { SpareMatrixAcceleration matrix = new
-	 * SpareMatrixAcceleration(); if (key != null && document != null) { if
-	 * (document.get(key) != null) { JsonNode innerJsonNode = document.get(key);
-	 * System.out.println(" Key ==> A ==>" + innerJsonNode.toPrettyString()); if
-	 * (innerJsonNode.get("sparseMatrix") != null) { JsonNode
-	 * innerSparseMatrixJsonNode = innerJsonNode.get("sparseMatrix"); Long[]
-	 * aArr = getSparkMatrixAttributeValue("A", innerSparseMatrixJsonNode);
-	 * 
-	 * matrix.setA(aArr); Long[] iaArr = getSparkMatrixAttributeValue("IA",
-	 * innerSparseMatrixJsonNode);
-	 * 
-	 * matrix.setIa(iaArr); Long[] jaArr = getSparkMatrixAttributeValue("JA",
-	 * innerSparseMatrixJsonNode);
-	 * 
-	 * matrix.setJa(jaArr); }
-	 * 
-	 * } } return matrix; }
-	 */
-
-	/*
-	 * public static Distribution getDistributedValuteByKey(String key, JsonNode
-	 * document) { Distribution distribute = new Distribution();
-	 * System.out.println("NdArray jons obj ==>" + document); if (key != null &&
-	 * document != null) { if (document.get(key) != null) { JsonNode
-	 * innerJsonNode = document.get(key);
-	 * System.out.println("NdArray jons obj ==>" + innerJsonNode); if
-	 * (innerJsonNode.get("ndArray") != null) { // JsonNode
-	 * innerSparseMatrixJsonNode = // innerJsonNode.get("ndArray"); Integer[]
-	 * distrArrayInt = getSparkDistributedAttributeValue("ndArray",
-	 * innerJsonNode); System.out.println("ndArray for Distribued ==>" +
-	 * distrArrayInt); distribute.setDistrArrayInt(distrArrayInt); }
-	 * 
-	 * } } return distribute; }
-	 */
-
-	/*
-	 * public static Integer[] getSparkDistributedAttributeValue(String key,
-	 * JsonNode innerJsonNode) { JsonNode jsonAObj = innerJsonNode.get(key);
-	 * 
-	 * if (jsonAObj != null && jsonAObj.toPrettyString() != null) { String
-	 * aTextValue = jsonAObj.toPrettyString(); aTextValue =
-	 * aTextValue.substring(1, aTextValue.length() - 1); Integer[] valueArrLong
-	 * = getIntegerArrByStringValue(aTextValue);
-	 * 
-	 * return valueArrLong; } return null; }
-	 */
-
-	/*
-	 * private static Integer[] getIntegerArrByStringValue(String value) {
-	 * 
-	 * if (value != null) {
-	 * 
-	 * String[] arr = value.split(","); Integer[] longArr = new
-	 * Integer[arr.length]; for (int i = 0; i < arr.length; i++) { longArr[i] =
-	 * getValueAsInteger(arr[i]); } return longArr; }
-	 * 
-	 * return null; }
-	 */
-
 	public static Boolean getValueAsBoolean(String value) {
 		if (value != null && !value.trim().isEmpty()) {
 			return Boolean.parseBoolean(value);
@@ -1509,7 +1367,6 @@ public class MessageParseUtil {
 		return null;
 	}
 
-	// updted fix issue
 	private static SpareMatrixAcceleration getSparseMatrixValuesByKey(String key, JsonNode document) {
 		SpareMatrixAcceleration matrix = new SpareMatrixAcceleration();
 		try {
@@ -1645,8 +1502,7 @@ public class MessageParseUtil {
 					JsonNode jsonNode = MessageParseUtil.transformMessages(message.getValue());
 
 					vid = (String) MessageParseUtil.getValueByAttributeKey("vehicleId", jsonNode);
-					// vin = (String)
-					// MessageParseUtil.getValueByAttributeKey("vin", jsonNode);
+
 					JsonNode document = (JsonNode) jsonNode.get("Document");
 
 					source = (String) MessageParseUtil.getValueByAttributeKey("jobName", jsonNode);
@@ -1714,18 +1570,6 @@ public class MessageParseUtil {
 				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));
 	}
 
-	/*
-	 * private static Long[] getLongArrByStringValue(String value) {
-	 * 
-	 * if (value != null && !value.trim().isEmpty()) {
-	 * 
-	 * String[] arr = value.split(","); if (arr != null && arr.length > 0) {
-	 * Long[] longArr = new Long[arr.length]; for (int i = 0; i < arr.length;
-	 * i++) { longArr[i] = getValueAsLong(arr[i]); } return longArr; } }
-	 * 
-	 * return null; }
-	 */
-
 	private static long convertDateStringToTS(String dateStr) {
 
 		try {
@@ -1735,9 +1579,8 @@ public class MessageParseUtil {
 				return 0;
 			}
 		} catch (Exception e) {
-			// logger.error("Issue while converting Date String to epoch milli :
-			// "+dateStr + " message :"+ stsMsg +" Exception: "+ e.getMessage()
-			// );
+			logger.error(
+					"Issue while converting Date String to epoch milli : " + dateStr + " Exception: " + e.getMessage());
 			return 0;
 		}
 
@@ -1756,17 +1599,23 @@ public class MessageParseUtil {
 					// if (triggerElementsNode != null) {
 					while (triggerElementsNode != null && triggerElementsNode.hasNext()) {
 						JsonNode triggerInnerElementNode = triggerElementsNode.next();
-						// System.out.println(" testing outer name " +
-						// triggerInnerElementNode.get("name").asText());
-						if (triggerInnerElementNode != null && triggerInnerElementNode.get("name").asText() != null) {
-							String vEvtidTempValue = triggerInnerElementNode.get("name").asText();
-							String[] arrVEvTId = vEvtidTempValue.split("_");
-							if (arrVEvTId != null && arrVEvTId.length > 1) {
-								System.out.println("parsing VEVtid is :" + arrVEvTId[0]);
-								vEvtid = Integer.parseInt(arrVEvTId[0]);
-								break;
+						System.out.println(" testing outer name " + triggerInnerElementNode.get("name").asText());
+						JsonNode oneLevelInnerTrgerNode = triggerInnerElementNode.get("triggerElements");
+						Iterator<JsonNode> oneLevelInnerElementsNode = oneLevelInnerTrgerNode.elements();
+						while (oneLevelInnerElementsNode != null && oneLevelInnerElementsNode.hasNext()) {
+							JsonNode oneLevelInnerVEvtIdNode = oneLevelInnerElementsNode.next();
+							if (oneLevelInnerVEvtIdNode != null
+									&& oneLevelInnerVEvtIdNode.get("name").asText() != null) {
+								String vEvtidTempValue = oneLevelInnerVEvtIdNode.get("name").asText();
+								String[] arrVEvTId = vEvtidTempValue.split("_");
+								if (arrVEvTId != null && arrVEvTId.length > 1) {
+									System.out.println("parsing VEVtid is :" + arrVEvTId[0]);
+									vEvtid = Integer.parseInt(arrVEvTId[0]);
+									break;
+								}
 							}
 						}
+
 					}
 
 				}
