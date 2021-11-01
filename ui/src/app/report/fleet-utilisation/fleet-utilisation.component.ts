@@ -195,7 +195,7 @@ barChartOptions: any = {
       },
       scaleLabel: {
         display: true,
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)` 
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })` 
         }} ,{
         id: "y-axis-2",
         position: 'left',
@@ -207,7 +207,7 @@ barChartOptions: any = {
         },
         scaleLabel: {
           display: true,       
-          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
         }
       }
     ],
@@ -263,7 +263,7 @@ distanceLineChartOptions = {
       },
       scaleLabel: {
         display: true, 
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`    
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`    
        }
     },{
       id: "y-axis-2",
@@ -276,7 +276,7 @@ distanceLineChartOptions = {
       },
       scaleLabel: {
         display: true,    
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
       }
     }],    
     xAxes: [{
@@ -1143,7 +1143,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.barChartLabels= this.chartsLabelsdefined;   
     this.barChartData = [
       { 
-        label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (km/day)` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (miles/day)`,
+        label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`,
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
@@ -1151,7 +1151,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         data: this.averageDistanceBarData,	    
         },
         {
-          label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`,
+          label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
           type: 'bar',
           backgroundColor: '#4679CC',
           hoverBackgroundColor: '#4679CC',
@@ -1159,8 +1159,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           data: this.barVarticleData
         },
     ];
-    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`;
-    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
+    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
     this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
@@ -1169,18 +1169,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       { 
         data: this.averageDistanceBarData,
         yAxesID: "y-axis-1",
-        label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(km/day)` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(miles/day)`
+        label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`
       },
       { 
         data: this.barVarticleData,        
         yAxesID: "y-axis-2",
-        label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`,
+        label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
              
           
       },
     ];
-    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (km/day)` : `${this.translationData.lblpervehicle || 'per vehicle'} (miles/day)`;
-    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (km)` : `${this.translationData.lblTotalDistance || 'Total distance'} (miles)`;
+    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
     this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
