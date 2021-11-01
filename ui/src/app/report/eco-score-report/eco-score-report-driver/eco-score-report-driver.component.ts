@@ -1433,10 +1433,12 @@ this.barChartOptionsPerformance = {
     element.score.forEach(score => {
         perObj.push(this.formatValues(element, score.value));
     });
-    let row=worksheet.addRow(perObj);
-    row.eachCell(cell => {
-      cell.border = this.tableBorder;
-    });
+    if(worksheet){
+      let row=worksheet.addRow(perObj);
+      row.eachCell(cell => {
+        cell.border = this.tableBorder;
+      });
+    }
     return perObj;
   }
 
@@ -1444,10 +1446,11 @@ this.barChartOptionsPerformance = {
     var doc = new jsPDF('p', 'mm', 'a4');
 
     let overallPerformanceChart = document.getElementById('charts-overallPerformancePanel');
-    let generalBar = document.getElementById('generalBar');
-    let generalPie = document.getElementById('generalPie');
-    let performanceBar = document.getElementById('performanceBar');
-    let performancePie = document.getElementById('performancePie');
+    let generalBar = document.getElementById('generalChart');
+    // let generalPie = document.getElementById('generalPie');
+    let performanceBar = document.getElementById('performanceChart');
+    // let performancePie = document.getElementById('performancePie');
+    let summaryArea = document.getElementById('summaryCard');
     
     let src;
     let ohref;
@@ -1462,38 +1465,44 @@ this.barChartOptionsPerformance = {
     let performanceBarHref;
     let performancePieHref;
 
-    html2canvas(overallPerformanceChart).then(canvas => {
+    html2canvas(summaryArea).then(canvas => {
       oheight= canvas.height * oWidth/canvas.width;
       //oWidth= canvas.width;
       src = canvas.toDataURL();
       ohref = canvas.toDataURL('image/png');
     });
+    // html2canvas(overallPerformanceChart).then(canvas => {
+    //   oheight= canvas.height * oWidth/canvas.width;
+    //   //oWidth= canvas.width;
+    //   src = canvas.toDataURL();
+    //   ohref = canvas.toDataURL('image/png');
+    // });
     html2canvas(generalBar).then(canvas => {
       generalBarHeight= canvas.height * oWidth/canvas.width;
       //oWidth= canvas.width;
-      src = canvas.toDataURL();
+      src = canvas.toDataURL ();
       generalBarHref = canvas.toDataURL('image/png');
     });
-    html2canvas(generalPie).then(canvas => {
-      generalPieHeight= canvas.height * oWidth/canvas.width;
-      //oWidth= canvas.width;
-      src = canvas.toDataURL();
-      generalPieHref = canvas.toDataURL('image/png');
-    });
+    // html2canvas(generalPie).then(canvas => {
+    //   generalPieHeight= canvas.height * oWidth/canvas.width;
+    //   //oWidth= canvas.width;
+    //   src = canvas.toDataURL();
+    //   generalPieHref = canvas.toDataURL('image/png');
+    // });
     html2canvas(performanceBar).then(canvas => {
       performanceBarHeight= canvas.height * oWidth/canvas.width;
       //oWidth= canvas.width;
       src = canvas.toDataURL();
       performanceBarHref = canvas.toDataURL('image/png');
     });
-    html2canvas(performancePie).then(canvas => {
-      performancePieHeight= canvas.height * oWidth/canvas.width;
-      //oWidth= canvas.width;
-      src = canvas.toDataURL();
-      performancePieHref = canvas.toDataURL('image/png');
-    });
+    // html2canvas(performancePie).then(canvas => {
+    //   performancePieHeight= canvas.height * oWidth/canvas.width;
+    //   //oWidth= canvas.width;
+    //   src = canvas.toDataURL();
+    //   performancePieHref = canvas.toDataURL('image/png');
+    // });
     
-    let DATA = document.getElementById('chart-line');
+    let DATA = document.getElementById('trendLineChart');
     html2canvas( (DATA),
     {scale:2})
     .then(canvas => { 
@@ -1505,7 +1514,7 @@ this.barChartOptionsPerformance = {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Vehicle";
+            var fileTitle = "Eco-Score report - Driver Details";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
   
@@ -1519,9 +1528,61 @@ this.barChartOptionsPerformance = {
          }  
       });
       
+      // doc.addPage();
       doc.addImage(ohref, 'PNG', 10, 40, oWidth, oheight) ;
       doc.addPage();
-      let fileWidth = 175;
+
+      let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
+      let pdfColumns=[];
+      this.columnGeneral.forEach((col, index) => {
+        pdfColumns.push(col.columnId);
+        if(index>1) {
+          perfVinList.push(col.columnId);
+          perfVinList.push(col.columnId);
+        }
+      });
+      let pdfgenObj=[];
+      this.datasetGen.forEach(element =>{
+        let genObj=[];
+          let key=element.key;
+          genObj.push(this.appendUnits(key, this.translationData[key]));
+          element.score.forEach(score => {
+            if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
+              genObj.push(this.formatValues(element, score.value));
+            }
+          });
+          pdfgenObj.push(genObj);
+      });
+      let perfColList=[];
+    this.columnPerformance.forEach((col, index) => {
+      if(index>1){
+        if(index%2==0)
+          perfColList.push(perfVinList[index]+'-'+this.translationData.lblDriver);
+        else
+          perfColList.push(perfVinList[index]+'-'+this.translationData.lblCompany);
+      } else
+          perfColList.push(col.columnId);
+    });
+    let pdfPerfTable=[];
+    this.datasetHierarchical.forEach(element =>{
+      pdfPerfTable.push(this.convertedRowValue(element, null));
+        element.subSingleDriver.forEach(sub => {
+          pdfPerfTable.push(this.convertedRowValue(sub, null));
+          sub.subSingleDriver.forEach(sub1 => {
+            pdfPerfTable.push(this.convertedRowValue(sub1, null));
+          });
+        });
+    });
+    (doc as any).autoTable({
+      head: [pdfColumns],
+      body: pdfgenObj,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    });
+    doc.addPage();
+    let fileWidth = 175;
       let fileHeight = canvas.height * fileWidth / canvas.width;
 
       const FILEURI = canvas.toDataURL('image/png')
@@ -1530,24 +1591,23 @@ this.barChartOptionsPerformance = {
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
       doc.addPage();
 
-      if(generalBarHref) doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
-      if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
+      doc.addImage(generalBarHref, 'PNG', 10, 40, oWidth, generalBarHeight) ;
+      // if(generalPieHref) doc.addImage(generalPieHref, 'PNG', 10, 40, oWidth, generalPieHeight) ;
+      // doc.addPage();
+      doc.addPage('a2','p');
+      (doc as any).autoTable({
+        head: [perfColList],
+        body: pdfPerfTable,
+        theme: 'striped',
+        didDrawCell: data => {
+          //console.log(data.column.index)
+        }
+      });
       doc.addPage();
-
-      if(performanceBarHref) doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
-      if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
-      doc.addPage();
-
-    (doc as any).autoTable({
-      // head: pdfColumns,
-      // body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        //console.log(data.column.index)
-      }
-    });
+      doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
+      // if(performancePieHref) doc.addImage(performancePieHref, 'PNG', 10, 40, oWidth, performancePieHeight) ;
     
-      doc.save('fleetFuelByVehicle.pdf');
+      doc.save('Eco-Score_Report.pdf');
     });
   }
 }
