@@ -56,6 +56,7 @@ namespace net.atos.daf.ct2.alertservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IAlertManager, AlertManager>();
             services.AddTransient<IAlertRepository, AlertRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();

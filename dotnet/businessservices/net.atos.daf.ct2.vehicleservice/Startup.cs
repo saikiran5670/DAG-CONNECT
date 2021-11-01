@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.vehicleservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
-
+            services.AddMemoryCache();
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
