@@ -1429,7 +1429,7 @@ this.barChartOptionsPerformance = {
     let perObj=[];
     let key=element.key;
     perObj.push(this.appendUnits(key, this.translationData[key]));
-    perObj.push(element.targetValue);
+    perObj.push((this.formatValues(element, element.targetValue)).toString());
     element.score.forEach(score => {
         perObj.push(this.formatValues(element, score.value));
     });
@@ -1447,7 +1447,7 @@ this.barChartOptionsPerformance = {
     let generalBar = document.getElementById('generalChart');
     let performanceBar = document.getElementById('performanceChart');
     let summaryArea = document.getElementById('summaryCard');
-    
+
     let src;
     let ohref;
     let oheight;
@@ -1475,7 +1475,7 @@ this.barChartOptionsPerformance = {
       src = canvas.toDataURL();
       performanceBarHref = canvas.toDataURL('image/png');
     });
-    
+
     let trendLineChart = document.getElementById('trendLineChart');
     html2canvas( (trendLineChart),
     {scale:2})
