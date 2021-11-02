@@ -1057,7 +1057,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.barChartData2= [
       { data: this.barData,
-        label:  this.translationData.lblnumberofvehicles || 'Number of Trips',
+        label:  this.translationData.lblNumberOfTrips || 'Number of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }

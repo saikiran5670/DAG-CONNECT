@@ -641,8 +641,22 @@ export class FleetMapService {
     }
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
+  viewSelectedRoutes(_selectedRouteData: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
     this.clearRoutesFromMap();
+    let _selectedRoutes: any = [];
+    if(_selectedRouteData && _selectedRouteData.length > 0){
+      _selectedRoutes = _selectedRouteData.slice();
+      let removeValFromIndex: any = [];
+      _selectedRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+        if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+          removeValFromIndex.push(index);
+        }
+      });
+      for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+        _selectedRoutes.splice(removeValFromIndex[i], 1);
+      }
+    }
+
     if (_herePOI) {
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
     }
@@ -656,14 +670,14 @@ export class FleetMapService {
       this.showGlobalPOI(_globalPOIList, _ui);
     }
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
-      let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
+      //let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
       this.drawIcons(_selectedRoutes, _ui);
       this.makeCluster(_selectedRoutes, _ui);
       let objArr = this.group.getObjects();
-      if (objArr.length > 0) {
+      if (objArr && objArr.length > 0) {
         this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
-          zoom: (_iconCount.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
+          zoom: (objArr.length > 1) ? 0 : 15, // 16665 - zoom added with bounds 
           bounds: this.group.getBoundingBox()
         });
       }
@@ -724,16 +738,15 @@ export class FleetMapService {
             this.drawAlerts(elem.fleetOverviewAlert, _ui);
           }
         }
-        this.hereMap.addObject(this.group);
-        this.hereMap.getViewModel().setLookAtData({
-          //zoom: 15,
-          bounds: this.group.getBoundingBox()
-        });
-        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
-
+        let _objArr = this.group.getObjects();
+        if(_objArr && _objArr.length > 0) {
+          this.hereMap.addObject(this.group);
+          this.hereMap.getViewModel().setLookAtData({
+            //zoom: 15,
+            bounds: this.group.getBoundingBox()
+          });
+        }
       });
-
-
     } else {
       if (_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)) {
         this.hereMap.addObject(this.group);
@@ -1165,7 +1178,18 @@ export class FleetMapService {
 
 
   drawIcons(_selectedRoutes, _ui) {
-    _selectedRoutes.forEach(elem => {
+    let newDataSet = _selectedRoutes.slice();
+    // let removeValFromIndex: any = [];
+    // newDataSet.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+    //   if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+    //     removeValFromIndex.push(index);
+    //   }
+    // });
+    // for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+    //   newDataSet.splice(removeValFromIndex[i], 1);
+    // }
+
+    newDataSet.forEach(elem => {
       this.startAddressPositionLat = elem.startPositionLattitude;
       this.startAddressPositionLong = elem.startPositionLongitude;
       this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
@@ -1189,7 +1213,6 @@ export class FleetMapService {
         }
       }
       else {
-
         let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.vehicleIconMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
         if (_checkValidLatLong) {//16705 
@@ -1197,12 +1220,10 @@ export class FleetMapService {
         }
       }
 
-
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
       let _healthStatus = this.getHealthStatus(elem);
       let _drivingStatus = this.getDrivingStatus(elem, '');
-
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
@@ -1249,14 +1270,13 @@ export class FleetMapService {
         iconBubble.close();
       }, false);
     });
-
-
   }
 
   validateLatLng(lat, lng) {
-    let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
-
-    return pattern.test(lat) && pattern.test(lng);
+    // let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
+    // return pattern.test(lat) && pattern.test(lng);
+    let flag: any = (lat >= -90 && lat <= 90) && (lng >= -180 && lng <= 180);
+    return flag ? true : false;
   }
 
   setIconsOnMap(element, _ui) {
@@ -1524,16 +1544,16 @@ export class FleetMapService {
 
   makeCluster(_selectedRoutes: any, _ui: any) {
     let newRoutes = _selectedRoutes.slice();
-    let removeValFromIndex: any = [];
-    newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
-      if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
-        //  newRoutes.splice(index, 1);
-        removeValFromIndex.push(index);
-      }
-    });
-    for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
-      newRoutes.splice(removeValFromIndex[i], 1);
-    }
+    // let removeValFromIndex: any = [];
+    // newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+    //   if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+    //     //  newRoutes.splice(index, 1);
+    //     removeValFromIndex.push(index);
+    //   }
+    // });
+    // for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+    //   newRoutes.splice(removeValFromIndex[i], 1);
+    // }
 
     // if(newRoutes.length > 9){
     //   this.setInitialCluster(newRoutes, _ui); 
@@ -1795,7 +1815,7 @@ export class FleetMapService {
     let dataPoints = data.map((item) => {
       item.lat = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLatitude : item.latestReceivedPositionLattitude;
       item.lng = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLongitude : item.latestReceivedPositionLongitude;
-      return new H.clustering.DataPoint(item.lat, item.lng);
+      return new H.clustering.DataPoint(item.lat, item.lng, null, item);
     });
     var noiseSvg =
       '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
@@ -1859,19 +1879,22 @@ export class FleetMapService {
             _data.forEachEntry((p) => {
               if (colName == 'Vehicle Name') {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vehicleName + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else if (colName == 'Vin') {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vin + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else {
                 tooltipContent += "<tr>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.registrationNo + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
