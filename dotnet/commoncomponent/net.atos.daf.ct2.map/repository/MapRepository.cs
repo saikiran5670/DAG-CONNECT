@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.map.repository
         {
             try
             {
-
+                if (lookupAddress.Id > 0) return lookupAddress;
                 string query = @"Insert INTO master.geolocationaddress(
 	                                                            longitude, latitude, address, created_at) 
 	                                                            VALUES (@longitude, @latitude, @address,@created_at) RETURNING id,address,longitude, latitude, address, created_at";
