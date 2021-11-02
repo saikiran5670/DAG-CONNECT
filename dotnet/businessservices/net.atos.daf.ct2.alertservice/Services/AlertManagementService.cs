@@ -283,7 +283,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
                 // var vehicleDetailsAccountVisibilty
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
                 List<int> vehicleIds = new List<int>();
                 if (featureIds != null && featureIds.Count() > 0)
                 {
@@ -300,6 +300,13 @@ namespace net.atos.daf.ct2.alertservice.Services
                     //{
                     //    vehicleIds.Add(item.VehicleId);
                     //}
+                    IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+                    = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, featureIds.ToArray());
+                    //append visibile vins
+                    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //remove duplicate vins by key as vin
+                    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    vehicleIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleId).Distinct().ToList();
                 }
                 IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds, vehicleIds);
 
