@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.visibility.entity;
@@ -13,11 +16,13 @@ namespace net.atos.daf.ct2.visibility
     {
         private readonly IVisibilityRepository _visibilityRepository;
         private readonly IVehicleManager _vehicleManager;
+        private readonly IMemoryCache _memoryCache;
 
-        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager)
+        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache)
         {
             _visibilityRepository = visibilityRepository;
             _vehicleManager = vehicleManager;
+            _memoryCache = memoryCache;
         }
 
         public async Task<int> GetReportFeatureId(int reportId)
@@ -27,16 +32,7 @@ namespace net.atos.daf.ct2.visibility
 
         public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleByAccountVisibility(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
-            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
-            //If context switched then find vehicle visibility for the organization
-            if (orgId != contextOrgId)
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
-            }
-            else
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
-            }
+            var resultDict = await GetVisibility(accountId, orgId, contextOrgId);
 
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
@@ -44,18 +40,34 @@ namespace net.atos.daf.ct2.visibility
             return MapVehicleDetails(accountId, contextOrgId, resultDict);
         }
 
-        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId, int adminFeatureId)
+        private async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> GetVisibility(int accountId, int orgId, int contextOrgId)
         {
             Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
+
             //If context switched then find vehicle visibility for the organization
             if (orgId != contextOrgId)
             {
-                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+                // In-Memory cache implementation
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                if (_memoryCache.TryGetValue(string.Format(CacheConstants.ContextOrgVisiblityKey, contextOrgId), out Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> result))
+                    resultDict = result;
+                else
+                {
+                    resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
+                    _memoryCache.Set(string.Format(CacheConstants.ContextOrgVisiblityKey, contextOrgId), resultDict, cacheOptions);
+                }
             }
             else
             {
                 resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             }
+
+            return resultDict;
+        }
+
+        public async Task<IEnumerable<VehicleDetailsAccountVisibilityForOTA>> GetVehicleByAccountVisibilityForOTA(int accountId, int orgId, int contextOrgId, int featureId, int adminFeatureId)
+        {
+            var resultDict = await GetVisibility(accountId, orgId, contextOrgId);
 
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, featureId, contextOrgId);
@@ -76,7 +88,16 @@ namespace net.atos.daf.ct2.visibility
 
             if (reportFeatureId > 0 && vehicles.Count() > 0)
             {
-                var vehiclePackages = await _visibilityRepository.GetSubscribedVehicleByFeature(reportFeatureId, contextOrgId);
+                // In-Memory cache implementation
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                IEnumerable<VehiclePackage> vehiclePackages;
+                if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureKey, reportFeatureId, contextOrgId), out IEnumerable<VehiclePackage> result))
+                    vehiclePackages = result;
+                else
+                {
+                    vehiclePackages = await _visibilityRepository.GetSubscribedVehicleByFeature(reportFeatureId, contextOrgId);
+                    _memoryCache.Set(string.Format(CacheConstants.SubscribedVehicleByFeatureKey, reportFeatureId, contextOrgId), vehiclePackages, cacheOptions);
+                }
 
                 //Filter owned vehicles based on package features
                 //If not found Org packages then filter vehicles based on subscribed vehicles
@@ -89,7 +110,6 @@ namespace net.atos.daf.ct2.visibility
                     }
                     else if (vehiclePackages.Any(e => (e.PackageType == "V" && e.HasOwned == true) || e.PackageType == "N")) // check if any v type and owned subscription available
                     {
-
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").SelectMany(e => e.VehicleIds);
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
 
@@ -118,7 +138,15 @@ namespace net.atos.daf.ct2.visibility
                         //Step2- Take vin type vehicle id vin
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
 
-                        var relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
+                        // In-Memory cache implementation
+                        int[] relationshipVehicleIds;
+                        if (_memoryCache.TryGetValue(string.Format(CacheConstants.RelationshipVehiclesByFeatureKey, reportFeatureId, contextOrgId), out int[] vehicleIds))
+                            relationshipVehicleIds = vehicleIds;
+                        else
+                        {
+                            relationshipVehicleIds = await _visibilityRepository.GetRelationshipVehiclesByFeature(reportFeatureId, contextOrgId);
+                            _memoryCache.Set(string.Format(CacheConstants.RelationshipVehiclesByFeatureKey, reportFeatureId, contextOrgId), relationshipVehicleIds, cacheOptions);
+                        }
 
                         //Fetch vehicles records from visible vehicles list from org+ vin package
                         var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds);
@@ -131,7 +159,6 @@ namespace net.atos.daf.ct2.visibility
                         var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id));//v2, v4
 
                         visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
-
                     }
                     else
                     {
@@ -161,11 +188,21 @@ namespace net.atos.daf.ct2.visibility
         /// <returns></returns>
         private async Task<Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>> FilterVehiclesByfeaturesForAlert(Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict, int[] featureIds, int contextOrgId)
         {
+            Array.Sort(featureIds);
             var vehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
 
             if (vehicles.Count() > 0)
             {
-                var vehiclePackages = await _visibilityRepository.GetSubscribedVehicleByFeatureForAlert(featureIds, contextOrgId);
+                // In-Memory cache implementation
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                IEnumerable<VehiclePackageForAlert> vehiclePackages;
+                if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), out IEnumerable<VehiclePackageForAlert> result))
+                    vehiclePackages = result;
+                else
+                {
+                    vehiclePackages = await _visibilityRepository.GetSubscribedVehicleByFeatureForAlert(featureIds, contextOrgId);
+                    _memoryCache.Set(string.Format(CacheConstants.SubscribedVehicleByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), vehiclePackages, cacheOptions);
+                }
 
                 //Filter owned vehicles based on package features
                 //If not found Org packages then filter vehicles based on subscribed vehicles
@@ -223,7 +260,15 @@ namespace net.atos.daf.ct2.visibility
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == false && e.PackageType == "V").Select(e => e.Vehicle_Id);
 
                         //Step 2 - Take relationship vehicle ids
-                        var relationshipVehicles = await _visibilityRepository.GetRelationshipVehiclesByFeatureForAlert(featureIds, contextOrgId);
+                        // In-Memory cache implementation
+                        IEnumerable<VehicleRelationshipForAlert> relationshipVehicles;
+                        if (_memoryCache.TryGetValue(string.Format(CacheConstants.RelationshipVehiclesByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), out IEnumerable<VehicleRelationshipForAlert> vehicleIds))
+                            relationshipVehicles = vehicleIds;
+                        else
+                        {
+                            relationshipVehicles = await _visibilityRepository.GetRelationshipVehiclesByFeatureForAlert(featureIds, contextOrgId);
+                            _memoryCache.Set(string.Format(CacheConstants.RelationshipVehiclesByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), relationshipVehicles, cacheOptions);
+                        }
                         var relationshipVehicleIds = relationshipVehicles.Select(x => x.Vehicle_Id);
 
                         //Fetch vehicles records to be removed from visible vehicles list
@@ -270,16 +315,7 @@ namespace net.atos.daf.ct2.visibility
 
         public async Task<IEnumerable<VehicleDetailsAccountVisibility>> GetVehicleByAccountVisibilityTemp(int accountId, int orgId, int contextOrgId, int reportFeatureId)
         {
-            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
-            //If context switched then find vehicle visibility for the organization
-            if (orgId != contextOrgId)
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
-            }
-            else
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
-            }
+            var resultDict = await GetVisibility(accountId, orgId, contextOrgId);
 
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
@@ -289,16 +325,7 @@ namespace net.atos.daf.ct2.visibility
 
         public async Task<IEnumerable<VehicleDetailsAccountVisibilityForAlert>> GetVehicleByAccountVisibilityForAlert(int accountId, int orgId, int contextOrgId, int[] featureIds)
         {
-            Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
-            //If context switched then find vehicle visibility for the organization
-            if (orgId != contextOrgId)
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehiclesByOrganization(contextOrgId);
-            }
-            else
-            {
-                resultDict = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
-            }
+            var resultDict = await GetVisibility(accountId, orgId, contextOrgId);
 
             // vehicle filtering based on features
             resultDict = await FilterVehiclesByfeaturesForAlert(resultDict, featureIds, contextOrgId);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.entity;
@@ -14,10 +15,12 @@ namespace net.atos.daf.ct2.vehicle
     public class VehicleManager : IVehicleManager
     {
         readonly IVehicleRepository _vehicleRepository;
+        private readonly IMemoryCache _memoryCache;
 
-        public VehicleManager(IVehicleRepository vehicleRepository)
+        public VehicleManager(IVehicleRepository vehicleRepository, IMemoryCache memoryCache)
         {
             this._vehicleRepository = vehicleRepository;
+            _memoryCache = memoryCache;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)
@@ -500,7 +503,7 @@ namespace net.atos.daf.ct2.vehicle
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId, orgId);
 
                 IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
-                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
+
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -518,6 +521,15 @@ namespace net.atos.daf.ct2.vehicle
                             break;
                         case "D":
                             //Dynamic
+                            vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
+
+                            // In-Memory cache implementation
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
+                                vehiclesOwned = owned;
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
+                                vehiclesVisible = visible;
+
                             switch (vehicleGroup.GroupMethod)
                             {
                                 case "A":
@@ -526,25 +538,40 @@ namespace net.atos.daf.ct2.vehicle
                                     {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
                                     }
                                     else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
                                     else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
                                     if (vehiclesOwned.Count() == 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
                                     if (vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesVisible);
                                     break;
@@ -579,7 +606,6 @@ namespace net.atos.daf.ct2.vehicle
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsByOrganization(orgId);
 
                 IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
-                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -597,6 +623,14 @@ namespace net.atos.daf.ct2.vehicle
                             break;
                         case "D":
                             //Dynamic
+                            vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
+
+                            // In-Memory cache implementation
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
+                                vehiclesOwned = owned;
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
+                                vehiclesVisible = visible;
                             switch (vehicleGroup.GroupMethod)
                             {
                                 case "A":
@@ -605,25 +639,40 @@ namespace net.atos.daf.ct2.vehicle
                                     {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
                                     }
                                     else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
                                     else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
                                     if (vehiclesOwned.Count() == 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
                                     if (vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesVisible);
                                     break;
@@ -659,7 +708,6 @@ namespace net.atos.daf.ct2.vehicle
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsViaGroupIds(vehicleGroupIds);
 
                 IEnumerable<VisibilityVehicle> vehiclesOwned, vehiclesVisible;
-                vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     vehicles = new List<VisibilityVehicle>();
@@ -677,6 +725,14 @@ namespace net.atos.daf.ct2.vehicle
                             break;
                         case "D":
                             //Dynamic
+                            vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
+
+                            // In-Memory cache implementation
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
+                                vehiclesOwned = owned;
+                            if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
+                                vehiclesVisible = visible;
                             switch (vehicleGroup.GroupMethod)
                             {
                                 case "A":
@@ -685,25 +741,40 @@ namespace net.atos.daf.ct2.vehicle
                                     {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
                                     }
                                     else if (vehiclesOwned.Count() == 0 && vehiclesVisible.Count() > 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
                                     else if (vehiclesOwned.Count() > 0 && vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned.Concat(vehiclesVisible));
                                     break;
                                 case "O":
                                     //Owner
                                     if (vehiclesOwned.Count() == 0)
+                                    {
                                         vehiclesOwned = await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), vehiclesOwned, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesOwned);
                                     break;
                                 case "V":
                                     //Visible
                                     if (vehiclesVisible.Count() == 0)
+                                    {
                                         vehiclesVisible = await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId);
+                                        _memoryCache.Set(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), vehiclesVisible, cacheOptions);
+                                    }
 
                                     vehicles.AddRange(vehiclesVisible);
                                     break;

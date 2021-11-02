@@ -545,7 +545,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                                 inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                                 inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                                 left join master.vehicle v on s.vehicle_id = v.id
-                                                where (s.organization_id=@organizationid or s.type  ='N')  and f.id=@featureid 
+                                                where (s.organization_id=@organizationid or s.type ='N') and f.id=@featureid 
                                             ) temp
                                             group by HasOwned,type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
