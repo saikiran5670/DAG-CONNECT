@@ -641,8 +641,22 @@ export class FleetMapService {
     }
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
+  viewSelectedRoutes(_selectedRouteData: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
     this.clearRoutesFromMap();
+    let _selectedRoutes: any = [];
+    if(_selectedRouteData && _selectedRouteData.length > 0){
+      _selectedRoutes = _selectedRouteData.slice();
+      let removeValFromIndex: any = [];
+      _selectedRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+        if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+          removeValFromIndex.push(index);
+        }
+      });
+      for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+        _selectedRoutes.splice(removeValFromIndex[i], 1);
+      }
+    }
+
     if (_herePOI) {
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
     }
@@ -732,12 +746,7 @@ export class FleetMapService {
             bounds: this.group.getBoundingBox()
           });
         }
-        
-        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
-
       });
-
-
     } else {
       if (_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)) {
         this.hereMap.addObject(this.group);
@@ -1169,7 +1178,18 @@ export class FleetMapService {
 
 
   drawIcons(_selectedRoutes, _ui) {
-    _selectedRoutes.forEach(elem => {
+    let newDataSet = _selectedRoutes.slice();
+    // let removeValFromIndex: any = [];
+    // newDataSet.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+    //   if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+    //     removeValFromIndex.push(index);
+    //   }
+    // });
+    // for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+    //   newDataSet.splice(removeValFromIndex[i], 1);
+    // }
+
+    newDataSet.forEach(elem => {
       this.startAddressPositionLat = elem.startPositionLattitude;
       this.startAddressPositionLong = elem.startPositionLongitude;
       this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
@@ -1193,7 +1213,6 @@ export class FleetMapService {
         }
       }
       else {
-
         let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.vehicleIconMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
         if (_checkValidLatLong) {//16705 
@@ -1201,12 +1220,10 @@ export class FleetMapService {
         }
       }
 
-
       // if(_checkValidLatLong) //16705 
       //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
       let _healthStatus = this.getHealthStatus(elem);
       let _drivingStatus = this.getDrivingStatus(elem, '');
-
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
@@ -1253,8 +1270,6 @@ export class FleetMapService {
         iconBubble.close();
       }, false);
     });
-
-
   }
 
   validateLatLng(lat, lng) {
@@ -1529,16 +1544,16 @@ export class FleetMapService {
 
   makeCluster(_selectedRoutes: any, _ui: any) {
     let newRoutes = _selectedRoutes.slice();
-    let removeValFromIndex: any = [];
-    newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
-      if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
-        //  newRoutes.splice(index, 1);
-        removeValFromIndex.push(index);
-      }
-    });
-    for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
-      newRoutes.splice(removeValFromIndex[i], 1);
-    }
+    // let removeValFromIndex: any = [];
+    // newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
+    //   if ((element.vehicleDrivingStatusType == 'N' || element.vehicleDrivingStatusType == 'Never Moved') && element.latestWarningClass == 0 && element.fleetOverviewAlert.length == 0) {
+    //     //  newRoutes.splice(index, 1);
+    //     removeValFromIndex.push(index);
+    //   }
+    // });
+    // for (var i = removeValFromIndex.length - 1; i >= 0; i--) {
+    //   newRoutes.splice(removeValFromIndex[i], 1);
+    // }
 
     // if(newRoutes.length > 9){
     //   this.setInitialCluster(newRoutes, _ui); 
