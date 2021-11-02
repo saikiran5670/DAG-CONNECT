@@ -2,6 +2,7 @@ package net.atos.daf.ct2.common.realtime.dataprocess;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.common.ct2.util.DAFConstants;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetCurrentTripPostgreSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetTripTracingPostgreSink;
@@ -37,6 +39,7 @@ public class IndexDataProcess {
 		AuditETLJobClient auditing = null;
 
 		ParameterTool envParams = null;
+		//Properties properties = new Properties();
 
 		try {
 
@@ -55,6 +58,7 @@ public class IndexDataProcess {
 			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
 
 			env.getConfig().setGlobalJobParameters(envParams);
+			
 
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			//consumerStream.print();
@@ -71,8 +75,11 @@ public class IndexDataProcess {
 			 * 
 			 * consumerStream.addSink(hdfsSink);
 			 */
+			 
+			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
+			
 			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into
-																// HBase Table
+			}											// HBase Table
 
 			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
 			// // Writing into Driver Activity PostgreSQL Table
@@ -97,19 +104,21 @@ public class IndexDataProcess {
 
 			try {
 				// System.out.println("Inside try of audit");
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
-						"Realtime Data Monitoring processing Job Started");
-				// System.out.println("before calling auditTrail in catch");
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT))); auditMap =
+				  createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
+				  "Realtime Data Monitoring processing Job Started"); //
+				  //System.out.println("before calling auditTrail in catch");
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 			} catch (Exception e) {
 
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_IndexDataProcess");
+			//env.execute(" Realtime_IndexDataProcess");
+			env.execute(envParams.get(DafConstants.INDEX_PROCESS));
 
 		} catch (Exception e) {
 
@@ -117,13 +126,14 @@ public class IndexDataProcess {
 			e.printStackTrace();
 
 			try {
-				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
-						"Realtime index data processing Job Failed, reason :: " + e.getMessage());
-				System.out.println("before calling auditTrail in catch");
-				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
+				
+				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
+				  "Realtime index data processing Job Failed, reason :: " + e.getMessage());
+				 // System.out.println("before calling auditTrail in catch");
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 			} catch (Exception ex) {
 
 				log.error("Issue while auditing :: " + ex.getMessage());

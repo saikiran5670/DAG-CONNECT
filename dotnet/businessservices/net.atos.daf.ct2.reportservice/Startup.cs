@@ -54,6 +54,7 @@ namespace net.atos.daf.ct2.reportservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IReportManager, ReportManager>();
             services.AddTransient<IReportRepository, ReportRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();

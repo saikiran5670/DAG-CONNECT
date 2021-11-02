@@ -35,6 +35,7 @@ namespace net.atos.daf.ct2.subscriptionservice
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
         }

@@ -65,7 +65,7 @@ public class MonitorDataProcess {
 		Map<String, String> auditMap = null;
 		AuditETLJobClient auditing = null;
 		Integer valueSeven=7;
-
+		//Properties properties = new Properties();
 		ParameterTool envParams = null;
 
 		try {
@@ -84,17 +84,18 @@ public class MonitorDataProcess {
 
 			DataStream<KafkaRecord<Monitor>> consumerStream =flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			//consumerStream.print();
-			
+			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
-
+			}
 			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
 			
 			DriverProcessing driverProcess= new DriverProcessing();
 			
 			
-			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class).filter(monitor -> monitor.getMessageType().equals(valueSeven) && monitor.getDocument().getDriverID()!=null).returns(Monitor.class);
+			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class)
+					.filter(monitor -> monitor.getMessageType().equals(valueSeven) && monitor.getDocument().getDriverID()!=null).returns(Monitor.class);
 			
-			SingleOutputStreamOperator<Monitor> driverManagementProcessing = driverProcess.driverManagementProcessing(monitorStream, Long.parseLong(envParams.get(DafConstants.DRIVER_MANAGEMENT_TIME_WINDOW_SECONDS)));
+			SingleOutputStreamOperator<Monitor> driverManagementProcessing = driverProcess.driverManagementProcessing(monitorStream, Long.parseLong(envParams.get(DafConstants.DRIVER_MANAGEMENT_COUNT_WINDOW)));
 			
 			driverManagementProcessing.map(monitor -> {
                 log.info("monitor message received after driver calculation processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
@@ -109,6 +110,7 @@ public class MonitorDataProcess {
 			try {
 
 				
+				
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				  
@@ -117,11 +119,13 @@ public class MonitorDataProcess {
 				  
 				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
 				 
+				 
 			} catch (Exception e) {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_MonitorDataProcess");
+			//env.execute("Realtime_MonitorDataProcess");
+			env.execute(envParams.get(DafConstants.MONITOR_PROCESS));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,6 +134,7 @@ public class MonitorDataProcess {
 
 			try {
 				
+				
 				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 				  "Realtime Data Monitoring processing Job Failed, reason :: " +
 				  e.getMessage());
@@ -137,6 +142,7 @@ public class MonitorDataProcess {
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 				 
 			} catch (Exception ex) {
 				log.error("Issue while auditing :: " + ex.getMessage());

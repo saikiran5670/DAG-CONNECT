@@ -124,6 +124,20 @@ stages:
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'release')
 
+  - stage: stage_acc3
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE ACC3'
+        containerRegistry: '{"loginServer":"acraksdvcvcjczm35es.azurecr.io", "id" : "/subscriptions/16d3cc12-0943-4b96-a358-56b562370f39/resourceGroups/daf-lan5-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksdvcvcjczm35es"}'
+        variableGroup: 'ACC03-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'release')
+
   - stage: stage_prd1
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference

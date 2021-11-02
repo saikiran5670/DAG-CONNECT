@@ -103,12 +103,20 @@ export class VehicleDetailsComponent implements OnInit {
        });              
     }); 
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
-      this.categoryList.forEach(element => {
-        if(item.categoryType ==element.value)
-        {         
-         item.categoryType = element.name;
-        }
-       });              
+      // this.categoryList.forEach(element => {
+      //   if(item.categoryType ==element.value)
+      //   {         
+      //    item.categoryType = element.name;
+      //   }
+      //  });      
+      if(this.filterData && this.filterData.alertType && this.filterData.alertType.length > 0){
+        this.filterData.alertType.forEach(element => {
+          if(item.type == element.value){        
+            item.type = this.translationData[element.name]; 
+          //  item.type = element.name;
+          }
+        });
+      }        
     }); 
     this.gridData = this.selectedElementData;
     this.alertLength = this.gridData.fleetOverviewAlert ? this.gridData.fleetOverviewAlert.length : 0;

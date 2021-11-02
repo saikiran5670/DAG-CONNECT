@@ -160,10 +160,11 @@ export class LiveFleetMapComponent implements OnInit {
       this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
       this.tripTraceArray = this.detailsData;
-    this.makeHerePOIList();
-    this.loadUserPOI();
-    this.loadGlobalPOI();
-    this.mapIconData();
+      this.showMap = true;
+      this.makeHerePOIList();
+      this.loadUserPOI();
+      this.loadGlobalPOI();
+      this.mapIconData();
     }, 0);
   }
 
@@ -421,7 +422,7 @@ export class LiveFleetMapComponent implements OnInit {
     }
 
     this.displayGlobalPOIList = [];
-    //if(this.selectedPOI.selected.length > 0){
+    if(this.selectedPOI.selected.length > 0){
     this.selectedGlobalPOI.selected.forEach(item => {
       if (item.poiList && item.poiList.length > 0) {
         item.poiList.forEach(element => {
@@ -441,9 +442,9 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+    this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
-    //}
+    }
   }
 
  // user POI
@@ -457,12 +458,13 @@ export class LiveFleetMapComponent implements OnInit {
         _elem.checked = true;
       });
       this.userPOIList[index].parentChecked = true;
-      // if(this.selectedPOI.selected.length > 0){
-      //   let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
-      //   if(_s.length > 0){
+       if(this.selectedPOI.selected.length > 0){
+         let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
+         if(_s.length > 0){
 
-      //   }
-      // }else{
+         }
+       }
+      //else{
 
       // }
     }else{ // unchecked
@@ -487,7 +489,7 @@ export class LiveFleetMapComponent implements OnInit {
     let _ui = this.fleetMapService.getUI();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
 
-    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+    this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
 
   openClosedUserPOI(index: any) {
@@ -538,7 +540,7 @@ export class LiveFleetMapComponent implements OnInit {
     }
 
     this.displayPOIList = [];
-    //if(this.selectedPOI.selected.length > 0){
+    if(this.selectedPOI.selected.length > 0){
     this.selectedPOI.selected.forEach(item => {
       if (item.poiList && item.poiList.length > 0) {
         item.poiList.forEach(element => {
@@ -558,9 +560,9 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+    this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
-    //}
+    }
   }
 
   ///////////////////////////////
@@ -580,7 +582,7 @@ export class LiveFleetMapComponent implements OnInit {
   onMapRepresentationChange(event: any) {
     this.trackType = event.value;
     let _ui = this.fleetMapService.getUI();
-    //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
   onAdvanceFilterOpen() {
     this.advanceFilterOpen = !this.advanceFilterOpen;

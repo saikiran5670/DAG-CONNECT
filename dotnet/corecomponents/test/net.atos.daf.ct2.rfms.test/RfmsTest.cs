@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.rfms.test
 
             _rfmsRepository = new RfmsRepository(_dataAccess, _dataMartDataAccess);
             var vehicleRepo = new VehicleRepository(_dataAccess, _dataMartDataAccess);
-            var vehicleManager = new VehicleManager(vehicleRepo);
+            var vehicleManager = new VehicleManager(vehicleRepo, memoryCache);
 
             _rfmsManager = new RfmsManager(_rfmsRepository, vehicleManager, memoryCache);
         }

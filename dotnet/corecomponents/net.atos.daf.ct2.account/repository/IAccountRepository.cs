@@ -55,5 +55,7 @@ namespace net.atos.daf.ct2.account
         Task<int> GetDriverRoleId();
         Task<IEnumerable<CountryDetails>> GetCountryDetails(CountryFilter countryFilter);
         Task<bool> CheckIfSystemAccAlreadyHasOrgLinked(int accountId);
+        Task<IEnumerable<AccountMigration>> GetPendingAccountsForCreation();
+        Task<bool> UpdateAccountMigrationState(int accountId, AccountMigrationState state);
     }
 }

@@ -1,5 +1,5 @@
 import { EventEmitter, Input, Output } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataInterchangeService } from '../../../../services/data-interchange.service';
 
 
@@ -30,8 +30,11 @@ todayFlagClicked : boolean = true;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
-constructor(private dataInterchangeService: DataInterchangeService) { }
+constructor(private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) { }
 
+ngAfterViewInit(){
+  this.cdr.detectChanges();
+}
 
   ngOnInit(): void {
     this.vehicleFilterComponentEmitFlag= true;
@@ -68,27 +71,34 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    let _dataObj ={
-      vehicleDetailsFlag : this.isVehicleDetails,
-      data:data
+    let _dataObj = {
+      vehicleDetailsFlag: this.isVehicleDetails,
+      data: data,
+      setFlag: true
     }
-    this.vehicleDetailsInfoEmit.emit(obj);
+    //this.vehicleDetailsInfoEmit.emit(obj);
+    this.vehicleDetailsInfoEmit.emit(_dataObj);
     this.dataInterchangeService.getVehicleData(_dataObj); //change as per selected vehicle
   }
 
   checkCreationForVehicleDetails(item: any){
     this.tabvisibility.emit(false);
     this.isVehicleDetails = item.stepFlag;
-    let obj ={
+    let obj = {
       vehicleDetailsFlag : this.isVehicleDetails,
       todayFlagClicked : this.todayFlagClicked
     }
-    let _dataObj ={
+    let _dataObj = {
       vehicleDetailsFlag : this.isVehicleDetails,
       data:null
     }
    // this.dataInterchangeService.getVehicleData(_dataObj); // when back clicked 
-
+    let _retObj = {
+      vehicleDetailsFlag: this.isVehicleDetails,
+      data: null,
+      setFlag: false
+    }
+    this.vehicleDetailsInfoEmit.emit(_retObj);
     this.vehicleFilterComponentEmit.emit(obj);
   }
 }

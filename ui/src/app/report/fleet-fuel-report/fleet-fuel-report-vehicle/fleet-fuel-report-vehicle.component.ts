@@ -679,13 +679,13 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.setTableInfo();
     if(this.prefUnitFormat == 'dunit_Metric')
     {
-    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0))
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) > Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) > Number(a.convertedFuelConsumption)) ? -1 : 0))
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);
   }
     if(this.prefUnitFormat == 'dunit_Imperial')
     {
-    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption < b.fuelConsumption) ? -1 : ((b.fuelConsumption < a.fuelConsumption) ? 1 : 0))
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) < Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) < Number(a.convertedFuelConsumption)) ? -1 : 0))
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);  
   }
@@ -704,7 +704,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         if (filterData[0].state == 'A') {
           return true;
         } else {
-          return false;
+          return false
         }
       }
     }
@@ -879,7 +879,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       writable : true,enumerable : true, configurable : true
     });
   });
-
     this.dataSource2 = new MatTableDataSource(this.initData);
     setTimeout(() => {
       this.dataSource2.paginator = this.paginator.toArray()[0];
@@ -1054,10 +1053,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           day:  this.chartLabelDateFormat,            
          },             
       }    
-    }];     
+    }];   
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.barChartData2= [
       { data: this.barData,
-        label: 'Number of Trips',
+        label:  this.translationData.lblNumberOfTrips || 'Number of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1171,7 +1171,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
           day:  this.chartLabelDateFormat,            
          },             
       }     
-    }];     
+    }];
+    this.barChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes';     
     this.barChartData6= [
       { data: this.idleDuration,
         label: this.translationData.lblMinutes || 'Minutes',
@@ -1223,7 +1224,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }   
       }]; 
-   
+      this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
@@ -1326,6 +1327,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
            },             
         }     
       }];
+      this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'
     this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }];
   }
   

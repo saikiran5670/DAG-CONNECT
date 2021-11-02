@@ -30,7 +30,7 @@ public class LiveFleetPosition implements Serializable {
 		
 	public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
-		PreparedStatement stmt_insert_livefleet_position;
+		PreparedStatement stmt_insert_livefleet_position= null;;
 		//System.out.println("Inside insert of Trip");
 		boolean result = false;
 	
@@ -43,12 +43,22 @@ public class LiveFleetPosition implements Serializable {
 				
 				stmt_insert_livefleet_position.addBatch();
 				stmt_insert_livefleet_position.executeBatch();
-			}
+			} else {
+				if(connection == null) {
+					logger.error(" Issue in Position Statistics connection is null : " + connection);
+					throw new TechnicalException("Position Statistics connection is null :: ");
+				}
+		} 
 		} catch (SQLException e) {
 			logger.error("Error in Live fleet position insert method" + e.getMessage());
+			logger.error("Error in Live fleet position insert method" + stmt_insert_livefleet_position);
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error in Live fleet position insert method" + e.getMessage());
+			logger.error("Error in Live fleet position insert method" + stmt_insert_livefleet_position);
 			e.printStackTrace();
 		}
-		logger.info("data inserted in Live fleet position " );
+		
 		return result;
 	}
 
@@ -81,6 +91,7 @@ public class LiveFleetPosition implements Serializable {
 
 		} catch (SQLException e) {
 			logger.error("Error in Live fleet position read method" + e.getMessage());
+			
 			e.printStackTrace();
 		} finally {
 

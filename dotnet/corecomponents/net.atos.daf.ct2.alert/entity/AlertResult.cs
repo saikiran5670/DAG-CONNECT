@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int Aleurg_id { get; set; }
         public int Aleurg_alert_id { get; set; }
         public string Aleurg_urgency_level_type { get; set; }
-        public double Aleurg_threshold_value { get; set; }
+        public string Aleurg_threshold_value { get; set; }
         public string Aleurg_unit_type { get; set; }
         public BitArray Aleurg_day_type { get; set; }
         public string Aleurg_period_type { get; set; }
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int Alefil_alert_id { get; set; }
         public int Alefil_alert_urgency_level_id { get; set; }
         public string Alefil_filter_type { get; set; }
-        public double Alefil_threshold_value { get; set; }
+        public string Alefil_threshold_value { get; set; }
         public string Alefil_unit_type { get; set; }
         public string Alefil_landmark_type { get; set; }
         public int Alefil_ref_id { get; set; }

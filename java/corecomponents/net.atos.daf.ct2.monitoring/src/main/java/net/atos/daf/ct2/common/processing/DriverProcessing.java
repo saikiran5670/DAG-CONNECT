@@ -7,10 +7,13 @@ import net.atos.daf.ct2.common.util.Utils;
 import net.atos.daf.ct2.pojo.standard.Index;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import net.atos.daf.ct2.pojo.standard.Monitor;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
+import org.apache.flink.util.Collector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,30 +32,16 @@ public class DriverProcessing implements Serializable {
     private static final Logger logger = LogManager.getLogger(DriverProcessing.class);
 
     public SingleOutputStreamOperator<Monitor> driverManagementProcessing(
-            SingleOutputStreamOperator<Monitor> monitorStream, long driverManagementTmWindow) {
+            SingleOutputStreamOperator<Monitor> monitorStream, long driverManagementCountWindow) {
         return monitorStream
                 .map(monitor -> {
                     monitor.setJobName(UUID.randomUUID().toString());
-                    logger.trace("monitor message received for processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+                    logger.info("monitor message received for processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
                     return monitor;
                 })
-                .assignTimestampsAndWatermarks(
-                        new BoundedOutOfOrdernessTimestampExtractor<Monitor>(Time.milliseconds(0)) {
-                            @Override
-                            public long extractTimestamp(Monitor monitor) {
-                                try {
-                                    return convertDateToMillis(monitor.getEvtDateTime());
-                                } catch (Exception ex) {
-                                    logger.error("Error while converting event time stamp {} {} {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()),ex);
-                                }
-                                return getCurrentTimeInUTC();
-                            }
-                        }
-                )
                 .keyBy(value -> value.getDocument().getDriverID())
-                .window(TumblingEventTimeWindows.of(Time.milliseconds(driverManagementTmWindow)))
-                .allowedLateness(Time.milliseconds(3000))
-                .process(new DriverCalculation());
+                .countWindow(driverManagementCountWindow)
+                .process(new DriverCalculationCountWindow());
     }
 
 }

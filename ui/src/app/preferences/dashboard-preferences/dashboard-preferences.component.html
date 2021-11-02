@@ -9,7 +9,7 @@
                     <mat-panel-title>
                         <span>
                             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
-                                {{ 'Dashboard' }}</span>
+                                {{ translationData.lblDashboard || 'Dashboard'}}</span>
                             <span style='margin-left: 10px; vertical-align: middle;'>
                                 <mat-icon *ngIf='!editDashboardFlag' (click)="editDashboardPreferences()"
                                     style="cursor: pointer; font-size: 20px;">
@@ -42,11 +42,11 @@
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
-                        {{'Target Per Day Per Vehicle'}}
+                        {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
-                        {{'Thereshold Type'}}
+                        {{translationData.lblTheresholdType ||'Thereshold Type'}}
                     </div>
                 </div>
                 <div *ngIf='fleetKPIColumnData && fleetKPIColumnData.length > 0'>
@@ -69,7 +69,7 @@
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
-                                    <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>Ton</span>
+                                    <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>{{translationData.lblTon || 'Ton'}}</span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelconsumption'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lblltr100km ) :
                                         (translationData.lblmpg)}}
@@ -81,13 +81,13 @@
                                         {{prefUnit == 'Metric' ? (translationData.lbl ) : (translationData.lbl)}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
-                                        No negative values allowed
+                                        {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed'}}
                                        </mat-error>
                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
-                                        Max value exceeded
+                                        {{translationData.lblMaxValueExceeded || ' Max value exceeded'}}
                                        </mat-error>
                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('pattern')">
-                                        Value allowed upto 2 decimal places
+                                        {{translationData.lblValueAllowedUpto2DecimalPlaces || 'Value allowed upto 2 decimal places'}}
                                        </mat-error>
                                 </mat-form-field>
                             </div>
@@ -99,7 +99,7 @@
                                     <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValue'">
-                                        <span matSuffix>Hr</span>
+                                        <span matSuffix>{{translationData.lblHr || 'Hr'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                             00:00 min allowed
                                            </mat-error>
@@ -110,7 +110,7 @@
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValuemin'">
-                                        <span matSuffix>Min</span>
+                                        <span matSuffix>{{translationData.lblMin || 'Min'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
                                             00:00 min allowed
                                            </mat-error>
@@ -153,11 +153,11 @@
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
-                        {{'Target Per Day Per Vehicle'}}
+                        {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
-                        {{'Thereshold Type'}}
+                        {{translationData.lblTheresholdType || 'Thereshold Type'}}
                     </div>
                 </div>
                 <div *ngIf='todayLiveVehicleColumnData && todayLiveVehicleColumnData.length > 0'>
@@ -179,7 +179,7 @@
                                     <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
-                                        <span matSuffix>Hr</span>
+                                        <span matSuffix>{{translationData.lblHr || 'Hr'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                             00:00 min allowed
                                            </mat-error>
@@ -191,7 +191,7 @@
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
-                                        <span matSuffix>Min</span>
+                                        <span matSuffix>{{translationData.lblMin || 'Min'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
                                             00:00 min allowed
                                            </mat-error>
@@ -256,11 +256,11 @@
                         </mat-checkbox>
                     </div>
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
-                        {{'Target Per Day Per Vehicle'}}
+                        {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
-                        {{'Chart Type'}}
+                        {{translationData.lblChartType || 'Chart Type'}}
                     </div>
                 </div>
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0'>
@@ -286,23 +286,23 @@
                                     <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
-                                        <span matSuffix>Hr</span>
+                                        <span matSuffix>{{translationData.lblHr || 'Hr'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
-                                            00:00 min allowed
+                                            {{translationData.lbl0000MinAllowed || '00:00 min allowed' }}
                                            </mat-error>
                                            <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
-                                            23:60 max allowed
+                                            {{translationData.lbl2360MaxAllowed || '23:60 max allowed' }}
                                            </mat-error>
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
-                                        <span matSuffix>Min</span>
+                                        <span matSuffix>{{translationData.lblMin || 'Min'}}</span>
                                         <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
-                                            00:00 min allowed
+                                            {{translationData.lbl0000MinAllowed || '00:00 min allowed' }}
                                            </mat-error>
                                            <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('max')">
-                                            23:60 max allowed
+                                            {{translationData.lbl2360MaxAllowed || '23:60 max allowed' }}
                                            </mat-error>
                                     </mat-form-field>
                                 </div>
@@ -315,13 +315,13 @@
                                       <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms) : (translationData.lblmile)}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
-                                        No negative values allowed
+                                       {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed' }}
                                        </mat-error>
                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
-                                        Max value allowed- 10000
+                                        {{translationData.lblMaxValueAllowed10000 || 'Max value allowed- 10000' }}
                                        </mat-error>
                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('pattern')">
-                                        Value allowed upto 2 decimal places
+                                        {{translationData.lblValueAllowedUpto2DecimalPlaces || 'Value allowed upto 2 decimal places' }}
                                        </mat-error>
                                 </mat-form-field>
                             </div>

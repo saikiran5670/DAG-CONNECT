@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [UrgencyLevelCheck(ErrorMessage = "Urgency level is invalid.")]
         public string UrgencyLevelType { get; set; }
 
-        public double ThresholdValue { get; set; }
+        public string ThresholdValue { get; set; }
         [StringLength(1, MinimumLength = 0, ErrorMessage = "Unit type should be 1 character.")]
         //[AlertUnitTypeCheck(ErrorMessage = "Unit Type is invalid")]
         public string UnitType { get; set; }

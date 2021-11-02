@@ -843,7 +843,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
-    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
     console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
@@ -983,9 +983,9 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
             }}
         }
         }else{
-          this.logBookForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+            this.logBookForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       }
-      this.logBookForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
+        this.logBookForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
       this.logBookForm.get('vehicle').setValue("all");
       this.logBookForm.get('vehicleGroup').setValue("all");
@@ -1640,11 +1640,11 @@ let prepare = []
 }
 
   resetFilterValues(){
-    this.logBookForm.get('vehicle').setValue('');
-    this.logBookForm.get('vehicleGroup').setValue('');
-    this.logBookForm.get('alertLevel').setValue('');
-    this.logBookForm.get('alertType').setValue('');
-    this.logBookForm.get('alertCategory').setValue('');
+    this.logBookForm.get('vehicle').setValue('all');
+    this.logBookForm.get('vehicleGroup').setValue('all');
+    this.logBookForm.get('alertLevel').setValue('all');
+    this.logBookForm.get('alertType').setValue('all');
+    this.logBookForm.get('alertCategory').setValue('all');
   }
 
   onAlertLevelChange(event: any){

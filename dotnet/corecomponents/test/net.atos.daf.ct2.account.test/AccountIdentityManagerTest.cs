@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.account.test
             identity.IAccountManager accountManager = new identity.AccountManager(setting);
             identity.IAccountAuthenticator autheticator = new identity.AccountAuthenticator(setting);
             IAccountRepository repo = new AccountRepository(dataAccess);
-            IAccountManager accManager = new AccountManager(repo, auditlog, accountManager, null, null, null);
+            IAccountManager accManager = new AccountManager(repo, auditlog, accountManager, null, null, null, null);
             _accountIdentityManager = new AccountIdentityManager(tokenManager, autheticator, accManager, null, null, null, null, null);
 
         }

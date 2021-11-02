@@ -49,6 +49,7 @@ namespace net.atos.daf.ct2.packageservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IPackageManager, PackageManager>();

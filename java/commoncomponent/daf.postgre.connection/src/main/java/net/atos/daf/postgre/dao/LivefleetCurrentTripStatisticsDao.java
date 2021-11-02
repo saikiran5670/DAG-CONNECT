@@ -9,14 +9,20 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.flink.shaded.curator4.org.apache.curator.shaded.com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.esotericsoftware.minlog.Log;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.TripStatisticsPojo;
+import net.atos.daf.postgre.bo.WarningStatisticsPojo;
 
 public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerFactory.getLogger(LivefleetCurrentTripStatisticsDao.class);
 
 	private Connection connection;
 
@@ -31,7 +37,17 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			+ "driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , distance_until_next_service = ? , latest_received_position_lattitude = ? , "
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
 			+ "modified_at = ? WHERE trip_id = ? ";
-
+	
+	public static final String	READ_LATEST_WARNING_STATUS_AT_TRIP_START = "select vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
+			 + ", latitude, longitude, message_type, trip_id, vin from livefleet.livefleet_warning_statistics where vin = ? ORDER BY id DESC limit 1 ";
+	
+	/*
+	 * public static final String READ_LATEST_WARNING_STATUS_AT_TRIP_START =
+	 * "select distinct on (vin) vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
+	 * +
+	 * ", latitude, longitude, message_type, trip_id, vin from livefleet.livefleet_warning_statistics where vin = ? order by vin, warning_time_stamp desc "
+	 * ;
+	 */
 	
 	public void insert(TripStatisticsPojo row) throws TechnicalException, SQLException {
 		PreparedStatement trip_stats_insert_stmt = null;
@@ -48,6 +64,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				int[] res = trip_stats_insert_stmt.executeBatch();
 
 				System.out.println("NUMBER OF ROWS inserted by INSERT_CURRENT_TRIP query is " + Arrays.toString(res));
+				logger.info("data inserted for trip  ::" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
@@ -436,6 +453,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				int num = trip_stats_update_stmt.executeUpdate();
 
 				System.out.println("NUMBER OF ROWS updated by UPDATE_CURRENT_TRIP is " + num);
+				logger.info("NUMBER OF ROWS updated by UPDATE_for_TRIP is" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
@@ -458,6 +476,81 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 	}
 
+	public WarningStatisticsPojo readWarning(String vin) throws TechnicalException, SQLException {
+
+		PreparedStatement readWarnStatusStmt = null;
+		//ResultSet rs_trip = null;
+		ResultSet rs_warn_vehicle_health_status = null;
+		//CurrentTrip currentTripdata = null;
+		WarningStatisticsPojo warnStatsPojo = null;
+
+		try {
+
+			if (null != vin && null != (connection = getConnection())) {
+
+				readWarnStatusStmt = connection.prepareStatement(READ_LATEST_WARNING_STATUS_AT_TRIP_START, ResultSet.TYPE_SCROLL_SENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
+				readWarnStatusStmt.setString(1, vin);
+
+				//System.out.println("READ_CURRENT_TRIP query : " + readWarnStatusStmt);
+				logger.info("Current Trip query to read warning data"+ readWarnStatusStmt);
+
+				rs_warn_vehicle_health_status = readWarnStatusStmt.executeQuery();
+
+				//System.out.println("rs_warn_vehicle_health_status " + rs_warn_vehicle_health_status);
+
+				while (rs_warn_vehicle_health_status.next()) {
+					
+					warnStatsPojo= new WarningStatisticsPojo();
+
+					if (rs_warn_vehicle_health_status.getString("warning_type").equalsIgnoreCase("A")) {
+						warnStatsPojo.setVehicleHealthStatusType(rs_warn_vehicle_health_status.getString("vehicle_health_status_type"));
+						warnStatsPojo.setWarningClass(rs_warn_vehicle_health_status.getInt("warning_class"));
+						warnStatsPojo.setWarningNumber(rs_warn_vehicle_health_status.getInt("warning_number"));
+						warnStatsPojo.setWarningType(rs_warn_vehicle_health_status.getString("warning_type"));
+						warnStatsPojo.setWarningTimeStamp(rs_warn_vehicle_health_status.getLong("warning_time_stamp"));
+						warnStatsPojo.setLatitude(rs_warn_vehicle_health_status.getDouble("latitude")); 
+						warnStatsPojo.setLongitude(rs_warn_vehicle_health_status.getDouble("longitude"));
+						warnStatsPojo.setMessageType(rs_warn_vehicle_health_status.getInt("message_type"));
+						warnStatsPojo.setTripId(rs_warn_vehicle_health_status.getString("trip_id"));
+						warnStatsPojo.setVin(rs_warn_vehicle_health_status.getString("vin"));
+					}
+				}
+				if(!Objects.isNull(warnStatsPojo))
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + vin + " is "
+						+ warnStatsPojo.toString());
+				else 
+					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + vin + " is NULL");
+
+				rs_warn_vehicle_health_status.close();
+
+			}
+
+		} catch (SQLException e) {
+			//System.out.println("Issue in sql update trip statistics::" + trip_stats_update_stmt);
+			logger.error("Issue in sql read warning from currentTrip" + readWarnStatusStmt);
+			logger.error("Issue in sql read warning from currentTrip" + e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Issue in sql read warning from currentTrip" + readWarnStatusStmt);
+			logger.error("Issue in sql read warning from currentTrip" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+
+			if (null != rs_warn_vehicle_health_status) {
+
+				try {
+					rs_warn_vehicle_health_status.close();
+				} catch (SQLException ignore) {
+					/** ignore any errors here */
+
+				}
+			}
+		}
+
+		return warnStatsPojo;
+	}
+	
 	public Connection getConnection() {
 		return connection;
 	}

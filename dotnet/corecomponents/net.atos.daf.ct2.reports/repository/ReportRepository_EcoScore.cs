@@ -834,7 +834,7 @@ namespace net.atos.daf.ct2.reports.repository
                                   INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
                                   INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
                                   INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D' and r.level <= f.level
                                   INTERSECT
                                   --Subscription Route
                                   SELECT f.id, f.data_attribute_set_id
@@ -1192,7 +1192,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.driver1_id,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -1520,7 +1520,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.driver1_id,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -1813,7 +1813,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.organization_id ,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -2109,7 +2109,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.vin, 
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -2407,7 +2407,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.organization_id ,eco.vin,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                   ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -2899,7 +2899,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.driver1_id,eco.Day,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -3308,7 +3308,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Braking as
                                 (
                                    SELECT eco.vin,eco.Day,
-	                               case when ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <>0 THEN 
+	                               case when ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 THEN 
                                    ( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))/ ((((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) - CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))*100 
 	                               ELSE null END as Braking
                                    FROM ecoscorequery eco
@@ -3394,7 +3394,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@EndTimestamp", request.EndTimestamp);
                 parameters.Add("@VIN", request.VIN);
                 parameters.Add("@DriverId", request.DriverId);
-                parameters.Add("@MinTripDistance", request.MinDistance);
+                parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
                 parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
@@ -3697,7 +3697,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 parameters.Add("@VIN", request.VIN);
                 parameters.Add("@DriverId", request.DriverId);
-                parameters.Add("@MinTripDistance", request.MinDistance);
+                parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
                 parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));

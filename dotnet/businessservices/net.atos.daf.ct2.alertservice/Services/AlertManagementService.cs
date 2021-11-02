@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                 response.Message = "Alert Category data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -279,28 +279,35 @@ namespace net.atos.daf.ct2.alertservice.Services
                 //Alert objalert = new Alert();
                 //objalert.OrganizationId = request.OrganizationId;
                 //objalert.CreatedBy = request.AccountId;
-                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
+                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
                 //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
                 // var vehicleDetailsAccountVisibilty
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
                 List<int> vehicleIds = new List<int>();
-                //if (featureIds != null && featureIds.Count() > 0)
-                //{
-                //foreach (int featureId in featureIds)
-                //{
-                //    IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                //     = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
-                //    //append visibile vins
-                //    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                //    //remove duplicate vins by key as vin
-                //    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                //}
-                //foreach (var item in vehicleDetailsAccountVisibilty)
-                //{
-                //    vehicleIds.Add(item.VehicleId);
-                //}
-                //}
+                if (featureIds != null && featureIds.Count() > 0)
+                {
+                    //foreach (int featureId in featureIds)
+                    //{
+                    //    IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
+                    //     = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                    //    //append visibile vins
+                    //    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //    //remove duplicate vins by key as vin
+                    //    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    //}
+                    //foreach (var item in vehicleDetailsAccountVisibilty)
+                    //{
+                    //    vehicleIds.Add(item.VehicleId);
+                    //}
+                    IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+                    = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, featureIds.ToArray());
+                    //append visibile vins
+                    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //remove duplicate vins by key as vin
+                    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    vehicleIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleId).Distinct().ToList();
+                }
                 IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId, featureIds, vehicleIds);
 
                 AlertListResponse response = new AlertListResponse();
@@ -311,7 +318,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 
                 response.Message = "Alert data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -396,7 +403,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = "Alert notification template data is retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("GetNotificationTemplate method in alert service called.");
+                //_logger.Info("GetNotificationTemplate method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -426,7 +433,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = "Notification Recipient data retrieved";
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get notification recipient method in alert service called.");
+                //_logger.Info("Get notification recipient method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -456,11 +463,20 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
-                //Feature Id is passed as 0 because feature wise filtering is applied seperately below.
-                var vehicleDetailsAccountVisibilty
-                                              = await _visibilityManager
-                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
+                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
+                ////Feature Id is passed as 0 because feature wise filtering is applied seperately below.
+                //var vehicleDetailsAccountVisibilty
+                //                              = await _visibilityManager
+                //                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
+
+                IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+                   = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, featureIds.ToArray());
+                //append visibile vins
+                vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                //remove duplicate vins by key as vin
+                vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
@@ -489,7 +505,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
+                //_logger.Info("Get method in alert service called.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

@@ -184,7 +184,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                                      else fd.DPABrakingScore  end  		  as DPABrakingScore                         
                                                     			  , round(fd.IdlingWithoutPTO,4) 							 				as IdlingWithoutPTO                
                                                     			  , round(fd.IdlingPTO,4) 								 					as IdlingPTO 
-                                                    			  , round(fd.FootBrake,4) 								 					as FootBrake
+                                                    			  , round(fd.FootBrake,2) 								 					as FootBrake
                                                                 ,round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
                                                                 then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
 																      else 0  end),4) as IdlingConsumptionWithPto 
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                                 else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
                                                          , round(fd.IdlingWithoutPTO,4) 							   				as IdlingWithoutPTO                
                                                          , round(fd.IdlingPTO,4) 								 	   				as IdlingPTO 
-                                                         , round(fd.FootBrake,4) 								 	   				as FootBrake
+                                                         , round(fd.FootBrake,2)								 	   				as FootBrake
                                                          , round((case when (fd.tripidleptofuelconsumed is not null and fd.idlingconsumptionwithpto is not null and  fd.idlingconsumptionwithpto >0 )
                                                            then (fd.tripidleptofuelconsumed  / fd.idlingconsumptionwithpto ) * 100
 													       else 0  end),4) as IdlingConsumptionWithPto 
@@ -442,7 +442,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                             as tripcount,
                         sum(etl_gps_distance)                               as totaldistance,
                         sum(idle_duration)                                  as totalidleduration,
-						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance)) as fuelconsumption,                        
+						(SUM(etl_gps_fuel_consumed)/SUM(CASE WHEN etl_gps_distance >0 THEN etl_gps_distance ELSE 1 END)) AS fuelconsumption,                        
                         sum(etl_gps_fuel_consumed)                          as fuelconsumed,
 						sum(co2_emission)                                   as co2emission
                         FROM tripdetail.trip_statistics CT
@@ -470,9 +470,9 @@ namespace net.atos.daf.ct2.reports.repository
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                string str = ex.Message;
                 throw;
             }
         }
@@ -550,17 +550,17 @@ namespace net.atos.daf.ct2.reports.repository
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
 				  , (etl_gps_distance)                                              as veh_message_distance
-				  , (etl_gps_distance)/case when (etl_gps_trip_time) >0 then (etl_gps_trip_time) else 1 end as average_speed
+				  , (etl_gps_distance::numeric)/case when (etl_gps_trip_time::numeric) >0 then (etl_gps_trip_time) else 1 end as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (average_gross_weight_comb)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                             as fuel_consumed
-				  , ((etl_gps_fuel_consumed)/case when (etl_gps_distance) >0 then (etl_gps_distance) else 1 end) as fuel_consumption
+				  , ((etl_gps_fuel_consumed::numeric)/case when (etl_gps_distance::numeric) >0 then (etl_gps_distance) else 1 end) as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
                   , idle_duration as idle_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
 				  , harsh_brake_duration as harsh_brake_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75
@@ -634,7 +634,7 @@ namespace net.atos.daf.ct2.reports.repository
                 , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive                
                 , coalesce(startgeoaddr.address,'') AS StartPosition
                 , coalesce(endgeoaddr.address,'') AS EndPosition
-                , round(fd.FootBrake,4) 	as FootBrake
+                , round(fd.FootBrake,2) 	as FootBrake
                 ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
                  else fd.DPABrakingScore  end  		  as DPABrakingScore 
                 ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
@@ -722,10 +722,10 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (etl_gps_fuel_consumed ::decimal/case when (etl_gps_distance::decimal) >0 then (etl_gps_distance::decimal) else 1 end) as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
                   , idle_duration as idle_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
+				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75
@@ -800,7 +800,7 @@ namespace net.atos.daf.ct2.reports.repository
                   , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
                  , coalesce(startgeoaddr.address,'') AS StartPosition
                  , coalesce(endgeoaddr.address,'') AS EndPosition
-                , round(fd.FootBrake,4) 	as FootBrake
+                , round(fd.FootBrake,2) 	as FootBrake
                 ,case when numoftripswithdpabrakingscore>0 then  round((fd.DPABrakingScore/numoftripswithdpabrakingscore),2)
                  else fd.DPABrakingScore  end  		  as DPABrakingScore 
                 ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)

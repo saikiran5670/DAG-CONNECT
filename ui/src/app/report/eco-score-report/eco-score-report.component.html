@@ -399,7 +399,7 @@
      (vehicleLimitExceeds)='vehicleLimitExceeds($event)' *ngIf="!noSingleDriverData"></app-eco-score-report-driver>
   </div>
   <div *ngIf="compareEcoScore">
-    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [prefUnitFormat]='prefUnitFormat'></app-eco-score-driver-compare>
+    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [prefUnitFormat]='prefUnitFormat' [translationData]="translationData"></app-eco-score-driver-compare>
   </div>
   </form>
 </div>

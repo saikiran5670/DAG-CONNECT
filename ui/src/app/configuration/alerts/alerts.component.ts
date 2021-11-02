@@ -256,7 +256,8 @@ export class AlertsComponent implements OnInit {
     return initdata;
   }
 
-  loadAlertsData(){    
+  loadAlertsData(){  
+    this.initData = [];  
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,

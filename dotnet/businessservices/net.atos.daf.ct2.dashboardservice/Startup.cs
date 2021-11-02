@@ -47,6 +47,7 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IDashBoardManager, DashBoardManager>();

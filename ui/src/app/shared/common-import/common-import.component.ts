@@ -185,7 +185,7 @@ export class CommonImportComponent implements OnInit {
           var workbook = XLSX.read(bstr, { type: "binary" });
           var first_sheet_name = workbook.SheetNames[0];
           var worksheet = workbook.Sheets[first_sheet_name];
-          var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          var arraylist = XLSX.utils.sheet_to_json(worksheet,{ raw: true, header: 0, defval: ""});
           this.filelist = [];
           this.filelist = arraylist;
         }
@@ -393,23 +393,47 @@ export class CommonImportComponent implements OnInit {
 
   getCategoryId(name:string,id:any)
   {
+    let valid=0;
     switch(id){
       case 'C' : for(let i=0; i< this.poiData.length; i++)
                 {
-                  if(this.poiData[i].categoryName == name)
-                  {
+                  if(name != ''){
+                  if(this.poiData[i].categoryName == name){
+                  valid=1;
                     return this.poiData[i].categoryId;
                   }
+                  else{
+                    valid=0;}
+                  }
+                  else{ 
+                    return 0;
+                  }
+                }
+                if(valid == 0)
+                {
+                  return 'invalid';
                 }
                 break;
       case 'S'  : for(let i=0; i< this.poiData.length; i++)
                   {
-                    if(this.poiData[i].subCategoryName == name)
-                    {
-                      return this.poiData[i].subCategoryId;
+                    if(name != ''){
+                    if(this.poiData[i].subCategoryName == name){
+                      valid=1;
+                      return this.poiData[i].subCategoryId;                    
+                    }
+                    else{
+                      valid=0;}
+                    }
+                    else{ 
+                    return 0;
                     }
                   }
+                  if(valid == 0)
+                  {
+                    return 'invalid';
+                  }
                   break;
+      default :  return 0;
     }
   }
 
@@ -857,14 +881,14 @@ export class CommonImportComponent implements OnInit {
     else{
       switch (type) {
         case 'type':
-          // if(value.toLowerCase() != "vin"){
+           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
               if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
               }
             }
-          // }
+          }
           break;
           case 'status':
           if(value.toLowerCase() != "active" ){
@@ -913,6 +937,7 @@ export class CommonImportComponent implements OnInit {
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(type== 'latitude')
     {
+      if(value !== ''){
       if(value < -90 || value > 90){
         obj.status = false;
         obj.reason = 'invalid latitude';
@@ -921,11 +946,17 @@ export class CommonImportComponent implements OnInit {
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
     if(type== 'longitude')
     {
+      if(value !== '' ){
       if(value < -180 || value > 180){
         obj.status = false;
         obj.reason = 'invalid longitude';
@@ -934,6 +965,11 @@ export class CommonImportComponent implements OnInit {
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
@@ -941,7 +977,11 @@ export class CommonImportComponent implements OnInit {
       if(value == 0 || value == '' || !value)
       {
         obj.status = false;
-        obj.reason = 'Category name blank or invalid';
+        obj.reason = 'Category name blank';
+      }
+      else if(value == 'invalid'){
+        obj.status = false;
+        obj.reason = 'Category name invalid';
       }
       else{
         obj.status = true;
@@ -951,15 +991,15 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type == 'subCategoryId'){
-      if(value == 0 || value == '' || !value)
-      {
+       if(value == 'invalid')
+       {
         obj.status = false;
-        obj.reason = ' Sub Category name blank or invalid';
-      }
+        obj.reason = ' Sub Category name invalid';
+       }
       else{
         obj.status = true;
         obj.reason = 'correct data';
-      }
+     }
       return obj;
     }
 
@@ -1083,8 +1123,8 @@ export class CommonImportComponent implements OnInit {
             "categoryName": this.rejectedList[i]["categoryName"],
             "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
-            "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
-            "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
+            "latitude" :this.rejectedList[i]["latitude"] ? parseFloat(this.rejectedList[i]["latitude"]).toFixed(2) :this.rejectedList[i]["latitude"] ,
+            "longitude" :this.rejectedList[i]["longitude"] ? parseFloat(this.rejectedList[i]["longitude"]).toFixed(2) :this.rejectedList[i]["longitude"] ,
             "returnMessage" :this.rejectedList[i]["returnMessage"] ? this.rejectedList[i]["returnMessage"] : "Duplicate POI"
           }
         )

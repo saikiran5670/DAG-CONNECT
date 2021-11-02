@@ -57,6 +57,7 @@ namespace net.atos.daf.ct2.reportschedulerservice
             {
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
+            services.AddMemoryCache();
             services.AddTransient<IReportSchedulerManager, ReportSchedulerManager>();
             services.AddTransient<IReportSchedulerRepository, ReportSchedulerRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();

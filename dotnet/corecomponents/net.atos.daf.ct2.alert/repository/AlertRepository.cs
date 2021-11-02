@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameterurgencylevelref.Add("@urgency_level_type", Convert.ToChar(urgencylevel.UrgencyLevelType));
                 else
                     parameterurgencylevelref.Add("@urgency_level_type", null);
-                parameterurgencylevelref.Add("@threshold_value", urgencylevel.ThresholdValue);
+                parameterurgencylevelref.Add("@threshold_value", decimal.Parse(urgencylevel.ThresholdValue));
                 if (urgencylevel.UnitType != null && urgencylevel.UnitType.Length > 0)
                     parameterurgencylevelref.Add("@unit_type", Convert.ToChar(urgencylevel.UnitType));
                 else
@@ -914,9 +914,9 @@ namespace net.atos.daf.ct2.alert.repository
 					left join master.groupref vgrpref
 					on  grp.id=vgrpref.group_id and grp.object_type='V'	
 					left join master.vehicle veh
-					on vgrpref.ref_id=veh.id 
+					on vgrpref.ref_id=veh.id and veh.id = ANY(@vehicleIds)
                     left join master.vehicle vehs
-					on grp.ref_id=vehs.id and grp.group_type='S'
+					on grp.ref_id=vehs.id and grp.group_type='S' and vehs.id = ANY(@vehicleIds)
                         ";
 
                 //if (accountid > 0 && organizationid > 0)
@@ -927,7 +927,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //}
                 //else if (accountid == 0 && organizationid > 0)
                 //{
-                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums) and (veh.id = ANY(@vehicleIds) or vehs.id = ANY(@vehicleIds))";
+                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D' and ale.type = ANY(@featureEnums)";
                 parameterAlert.Add("@organization_id", organizationid);
                 //}               
 
@@ -1593,7 +1593,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return offlinePushNotification;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

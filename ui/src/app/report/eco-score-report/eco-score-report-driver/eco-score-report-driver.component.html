@@ -1,4 +1,4 @@
-<div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+<div class='areaWidth' fxLayout="column" id="exportArea" fxLayoutGap="3px" fxLayoutAlign="end">
   <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 745px;">
     <mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert
     </mat-icon>
@@ -8,12 +8,13 @@
     <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF  }}</button>
   </mat-menu>
 </div>
+<div id="summaryCard">
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'id="eco-score-report-driver" >
   <mat-expansion-panel [(expanded)]="overallPerformancePanel" class="full-width" fxLayoutGap="10px" [style.overflow]="'auto'">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <div fxLayout="row" fxLayoutAlign='center center'>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName  }}: {{ selectedDriverName }} -{{ translationData.lblOverallPerformance }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName  }}: {{ selectedDriverName }} - {{ translationData.lblOverallPerformance }} </span>
           <span matTooltip="{{ translationData.lblOverallPerformanceInfo}}">
             <mat-icon class='margin-right-10'>info</mat-icon></span>
         </div>
@@ -58,7 +59,7 @@
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
-              </div>  
+              </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
               </div>
@@ -108,7 +109,7 @@
                 </canvas>
               </div>
                <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblBrakingScore  }}</b></span></div>
+                <div class="text-center"><span><b>{{ translationData.lblBrakingscore  }}</b></span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataBrakingScore"
                   [labels]="doughnutChartLabelsBrakingScore"
@@ -121,6 +122,8 @@
             </div>
           </mat-expansion-panel>
           </mat-card>
+          </div>
+          <div id="trendLineChart">
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="trendlinesPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -141,7 +144,7 @@
               <button [disabled]="selectionTabTrend == 'lastmonth' || selectionLimitLastMonth" (click)="updateOptions('lastmonth')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastMonth }}</button>
               <button [disabled]="selectionTabTrend == 'last3month' || selectionLimitLast3Month" (click)="updateOptions('last3month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last3month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast3Months  }}</button>
               <button [disabled]="selectionTabTrend == 'last6month' || selectionLimitLast6Month" (click)="updateOptions('last6month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last6month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast6Month }}</button>
-              <button [disabled]="selectionTabTrend == 'lastYear' || selectionLimitLastYear" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear }}</button>              
+              <button [disabled]="selectionTabTrend == 'lastYear' || selectionLimitLastYear" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear }}</button>
               <div id="wrapper">
                 <div id="chart-line">
                   <apx-chart #trendLineChart
@@ -165,9 +168,10 @@
                   ></apx-chart>
                 </div>
               </div>
-              
+
             </mat-expansion-panel>
           </mat-card>
+          </div>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalTablePanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -184,11 +188,12 @@
                 [columnDefinitions]="columnDefinitionsGen"
                 [gridOptions]="gridOptionsGen"
                 [datasetHierarchical]="datasetGen"
-                (onAngularGridCreated)="angularGridReadyGen($event)"> 
+                (onAngularGridCreated)="angularGridReadyGen($event)">
                 </angular-slickgrid>
               </div>
               <br/>
               <br/>
+          <div id="generalChart">    
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -224,7 +229,7 @@
               <br/>
               <br/>
               <div class="container-fluid chartContainer" id="generalBar" *ngIf="showGeneralBar">
-                <div fxLayout="row" fxLayoutAlign='center'>  
+                <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageGrossWeight  }}</span>
                 </div>
                     <canvas baseChart
@@ -241,9 +246,9 @@
                 <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageGrossWeight  }}</span>
                 </div>
-                <canvas baseChart 
-                [data]="pieChartData" 
-                [labels]="pieChartLabels" 
+                <canvas baseChart
+                [data]="pieChartData"
+                [labels]="pieChartLabels"
                 [chartType]="pieChartType"
                 [options]="pieChartOptions"
                 [plugins]="pieChartPlugins"
@@ -255,6 +260,7 @@
               <br/>
             </mat-expansion-panel>
           </mat-card>
+          </div>
         </mat-expansion-panel>
       </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -273,12 +279,13 @@
                 [columnDefinitions]="columnDefinitions"
                 [gridOptions]="gridOptions"
                 [datasetHierarchical]="datasetHierarchical"
-                (onAngularGridCreated)="angularGridReady($event)"> 
+                (onAngularGridCreated)="angularGridReady($event)">
                 </angular-slickgrid>
               </div>
               <br/>
               <br/>
               <br/>
+              <div id="performanceChart">
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformanceChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -329,9 +336,9 @@
                 <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed  }}</span>
                 </div>
-                <canvas baseChart 
-                [data]="pieChartDataPerformance" 
-                [labels]="pieChartLabelsPerformance" 
+                <canvas baseChart
+                [data]="pieChartDataPerformance"
+                [labels]="pieChartLabelsPerformance"
                 [chartType]="pieChartType"
                 [options]="pieChartOptions"
                 [plugins]="pieChartPlugins"
@@ -340,6 +347,7 @@
               </div>
             </mat-expansion-panel>
           </mat-card>
+          </div>
         </mat-expansion-panel>
       </mat-card>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

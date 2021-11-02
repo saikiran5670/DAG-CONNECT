@@ -1587,7 +1587,7 @@ namespace net.atos.daf.ct2.account
 	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
 	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
  	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%' and r.level <= f.level
 	                    INTERSECT
 	                    --Subscription Route
 	                    SELECT f.id
@@ -1988,6 +1988,41 @@ namespace net.atos.daf.ct2.account
             }
 
             catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<AccountMigration>> GetPendingAccountsForCreation()
+        {
+            try
+            {
+                var query = @"SELECT account_id as AccountId, first_name as FirstName, last_name as LastName, email 
+                              FROM master.accountmigration am
+                              INNER JOIN master.account a ON a.id = am.account_id
+                              WHERE am.state='P'";
+
+                return await _dataAccess.QueryAsync<AccountMigration>(query, null);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateAccountMigrationState(int accountId, AccountMigrationState state)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@account_id", accountId);
+                parameters.Add("@state", (char)state);
+                var query = @"UPDATE master.accountmigration SET state=@state WHERE account_id = @account_id RETURNING id";
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
+                return id > 0;
+            }
+            catch (Exception)
             {
                 throw;
             }

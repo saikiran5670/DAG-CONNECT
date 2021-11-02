@@ -128,7 +128,7 @@
                 <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit }">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit }}">
                   <mat-icon>create</mat-icon>
                 </button>
                 <button *ngIf="!adminAccessType.adminReadOnlyAccess"  class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate }}">

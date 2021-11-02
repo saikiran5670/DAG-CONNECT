@@ -409,15 +409,20 @@ export class LoginComponent implements OnInit {
       });
     }
     else{ //-- skip popup
-      let loginDetailsObj: any = {
+      this.data = {
         organization: organization,
         role: role,
         accountDetail: accountDetails,
         accountPreference: accountPreference
       }
-      localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
-      this.dataInterchangeService.getDataInterface(true);
-      // this.router.navigate(['/dashboard']);
+      
+      this.result ={   
+        organization: organization[0].id,   
+        role: role[0].id,
+        accountDetail: accountDetails,
+        accountPreference: accountPreference
+      }
+      this.checkTermsAndConditions(data, accountDetails, accountPreference);
     }
   }
 
