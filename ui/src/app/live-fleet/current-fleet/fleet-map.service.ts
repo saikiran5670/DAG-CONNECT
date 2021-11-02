@@ -1876,25 +1876,25 @@ export class FleetMapService {
               // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
               tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
             var chkBxId = 0;
-            _data.forEachEntry((p) => {
+            _data.forEachDataPoint((p) => {
               if (colName == 'Vehicle Name') {
                 tooltipContent += "<tr>";
                 //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vehicleName + "</td>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vehicleName + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + (p.a.data ? p.a.data.vehicleName : data[chkBxId].vehicleName) + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else if (colName == 'Vin') {
                 tooltipContent += "<tr>";
                 //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].vin + "</td>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.vin + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + (p.a.data ? p.a.data.vin : data[chkBxId].vin) + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }
               else {
                 tooltipContent += "<tr>";
                 //tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + data[chkBxId].registrationNo + "</td>";
-                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + p.a.data.registrationNo + "</td>";
+                tooltipContent += "<td>" + (chkBxId + 1) + "</td>" + "<td>" + (p.a.data ? p.a.data.registrationNo : data[chkBxId].registrationNo) + "</td>";
                 tooltipContent += "</tr>";
                 chkBxId++;
               }

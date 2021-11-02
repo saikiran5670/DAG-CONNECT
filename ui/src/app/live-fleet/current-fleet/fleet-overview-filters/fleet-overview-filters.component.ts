@@ -25,6 +25,7 @@ export class FleetOverviewFiltersComponent implements OnInit {
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;
+getFleetOverviewDetails : any;
 tabVisibilityStatus: boolean = true;
 drivingStatus : boolean = false;
 selectedIndex: number = 0;
@@ -491,15 +492,13 @@ removeDuplicates(originalArray, prop) {
     this.loadVehicleData();
   }
 
-  onChangHealthStatus(all,id: any) {
+  onChangHealthStatus(all, id: any) {
     if (this.allSelected.selected) {
-      this.allSelected.deselect();     
+      this.allSelected.deselect();
     }
-    if (
-      this.filterVehicleForm.controls.status.value.length ==
-      this.healthList.length
-    )
-    this.allSelected.select();
+    if (this.filterVehicleForm.controls.status.value.length == this.healthList.length) {
+      this.allSelected.select();
+    }
     this.loadVehicleData();
   }
   toggleAllSelectionHealth() {
@@ -575,7 +574,11 @@ removeDuplicates(originalArray, prop) {
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
     //console.log("groupList5", this.groupList);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
+
+    if(this.getFleetOverviewDetails){
+      this.getFleetOverviewDetails.unsubscribe();
+    }
+    this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
     let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
@@ -629,6 +632,8 @@ removeDuplicates(originalArray, prop) {
     this.showLoadingIndicator = false;
           
     }, (error) => {
+      this.vehicleListData = [];
+      this.detailsData = [];
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
