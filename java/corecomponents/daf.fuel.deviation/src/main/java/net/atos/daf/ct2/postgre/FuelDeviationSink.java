@@ -44,8 +44,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 			statement.setDouble(11, TimeFormatter.getInstance().getCurrentUTCTime());
 
 			logger.info("FuelDeviation data for veh: " + rec);
-			statement.addBatch();
-			statement.executeBatch();
+			statement.execute();
 		} catch (Exception e) {
 			logger.error("Issue while inserting data to fuelDeviation table :{} ", e.getMessage());
 			logger.error("Issue while inserting to fuelDeviation record :: {}", statement);
