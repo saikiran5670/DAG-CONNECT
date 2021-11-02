@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.reports.repository
                 if (data?.Count > 0)
                 {
                     List<string> vins = new List<string>();
-                    vins.Add(tripFilters.VIN);
+                    vins.Add(tripFilters.AlertVIN);
                     List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds);
                     if (lstTripAlert.Count() > 0)
                     {

@@ -269,7 +269,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameteralertfilterref.Add("@filter_type", Convert.ToChar(alertfilter.FilterType));
                 else
                     parameteralertfilterref.Add("@filter_type", null);
-                parameteralertfilterref.Add("@threshold_value", alertfilter.ThresholdValue);
+                parameteralertfilterref.Add("@threshold_value", decimal.Parse(alertfilter.ThresholdValue));
                 if (alertfilter.UnitType != null && alertfilter.UnitType.Length > 0)
                     parameteralertfilterref.Add("@unit_type", Convert.ToChar(alertfilter.UnitType));
                 else
