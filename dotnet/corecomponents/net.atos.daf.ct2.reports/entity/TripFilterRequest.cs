@@ -8,5 +8,6 @@ namespace net.atos.daf.ct2.reports.entity
         public long EndDateTime { get; set; }
         public string VIN { get; set; }
         public List<int> FeatureIds { get; set; }
+        public string AlertVIN { get; set; }
     }
 }
