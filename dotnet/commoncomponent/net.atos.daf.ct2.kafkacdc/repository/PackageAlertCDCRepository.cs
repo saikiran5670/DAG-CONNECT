@@ -359,5 +359,41 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<AlertFromPackage>> GetAlertFromPackageConfiguration(int packageId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@packageId", packageId);
+                string query = @"select distinct 
+                                    ale.id as alertid
+                                   ,ale.vehicle_group_id as vehicle_group_id
+                                   ,fea.id as featureid
+								   ,ale.organization_id as organizationid
+                            from master.package pac
+                            inner join master.subscription sub
+                            on sub.package_id = pac.id and sub.state = 'A'
+                            inner join master.featuresetfeature feasetfea
+                            on pac.feature_set_id = feasetfea.feature_set_id
+                            inner join master.feature fea
+                            on feasetfea.feature_id = fea.id and fea.state = 'A' and fea.type = 'F'
+                            inner join translation.enumtranslation enutra
+                            on fea.id = enutra.feature_id and enutra.type = 'T'
+                            inner join master.alert ale
+                            on ale.type = enutra.enum and ale.category= enutra.parent_enum and enutra.type='T' AND ale.state ='A'
+                            where pac.id = @packageId and sub.organization_id in (ale.organization_id)
+                             and sub.state = 'A' and fea.id= enutra.feature_id 
+                             and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>now()::date
+                                else COALESCE(subscription_end_date,0) =0 end
+                            order by 1";
+                IEnumerable<AlertFromPackage> alertDetails = await _dataAccess.QueryAsync<AlertFromPackage>(query, parameter);
+                return alertDetails;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
