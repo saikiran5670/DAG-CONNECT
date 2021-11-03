@@ -9,6 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-user-detail-table',
@@ -20,6 +21,8 @@ export class UserDetailTableComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   closePopup: boolean = true;
   dataSource: any;
+  colsList: any;
+  filterValue: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -33,7 +36,7 @@ export class UserDetailTableComponent implements OnInit {
   ) {
     this.updateDataSource();
   }
-  
+
   updateDataSource() {
     this.dataSource = new MatTableDataSource(this.data.tableData);
     setTimeout(() => {
@@ -46,6 +49,7 @@ export class UserDetailTableComponent implements OnInit {
         });
        }
     });
+    Util.applySearchFilter(this.dataSource, this.colsList ,this.filterValue );
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {

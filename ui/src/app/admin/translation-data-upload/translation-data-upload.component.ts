@@ -10,6 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as FileSaver from 'file-saver';
 import { LanguageSelectionComponent } from './language-selection/language-selection.component';
 import { stringify } from '@angular/compiler/src/util';
+import { Util } from 'src/app/shared/util';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -46,14 +47,15 @@ export class TranslationDataUploadComponent implements OnInit {
   userType: any = '';
   addedCount: number= 0;
   updatedCount: number= 0;
+  filterValue: string;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) {
       this.defaultTranslation();
   }
 
   defaultTranslation(){
     this.translationData = {
-      
+
     }
   }
 
@@ -96,7 +98,7 @@ export class TranslationDataUploadComponent implements OnInit {
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2);
           var day = ("0" + date.getDate()).slice(-2);
-          element.createdAt= `${day}/${month}/${year}`;   
+          element.createdAt= `${day}/${month}/${year}`;
         });
         this.initData = data;
         this.updateGridData(this.initData);
@@ -113,7 +115,7 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    this.initData = tableData; 
+    this.initData = tableData;
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -126,6 +128,7 @@ export class TranslationDataUploadComponent implements OnInit {
         })
       }
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
   compare(a: Number| String, b:Number | String, isAsc: boolean, columnName: any){
     if(columnName == "fileName" || columnName == "description"){
@@ -134,9 +137,9 @@ export class TranslationDataUploadComponent implements OnInit {
     }
     return (a < b ? -1 : 1) * (isAsc ? 1: -1);
 
-  } 
+  }
 
-  uploadTranslationData(){ 
+  uploadTranslationData(){
     this.showLoadingIndicator=true;
     let languageData = [];
     //TODO : Read file, parse into JSON and send to API
@@ -172,8 +175,8 @@ export class TranslationDataUploadComponent implements OnInit {
     }, (error) => {
       this.showLoadingIndicator=false;
     });
-    
-    
+
+
   }
 
   applyFilter(filterValue: string) {
@@ -185,37 +188,37 @@ export class TranslationDataUploadComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.fileUploadedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
 
-  addfile(event)     
-  {    
+  addfile(event)
+  {
     if(event.target.files[0]){
       this.excelEmptyMsg = false;
-      this.file = event.target.files[0];     
-      let fileReader = new FileReader();    
-      fileReader.readAsArrayBuffer(this.file);     
-      fileReader.onload = (e) => {    
-        this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);    
-        var arr = new Array();    
-        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);    
-        var bstr = arr.join("");    
-        var workbook = XLSX.read(bstr, {type:"binary"});    
-        var first_sheet_name = workbook.SheetNames[0];    
-        var worksheet = workbook.Sheets[first_sheet_name];    
-        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+      this.file = event.target.files[0];
+      let fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(this.file);
+      fileReader.onload = (e) => {
+        this.arrayBuffer = fileReader.result;
+        var data = new Uint8Array(this.arrayBuffer);
+        var arr = new Array();
+        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");
+        var workbook = XLSX.read(bstr, {type:"binary"});
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});
         this.filelist = [];
-        this.filelist = arraylist;  
+        this.filelist = arraylist;
         if(this.filelist.length > 0){
           this.excelEmptyMsg = false;
-        } 
+        }
         else{
           this.excelEmptyMsg = true;
-        }        
-      }   
+        }
+      }
     }
   }
 
@@ -299,7 +302,7 @@ export class TranslationDataUploadComponent implements OnInit {
                   languageMap.set(element.name, tempObj);
                 }
                 else{
-                  
+
                   languageMap.set(element.name, this.manipulateObjectForJSONToXLSX(element, count++, response.languagesSelected));
                 }
               }
@@ -342,7 +345,7 @@ export class TranslationDataUploadComponent implements OnInit {
 
   manipulateObjectForXLSXToJSON(langObj: any): any{
     let tempArray = [];
-    
+
     //TODO : manipulate object to convert in required format
     for(let key in langObj){
       if(key != "Labels" && key != "Sr.No."){
