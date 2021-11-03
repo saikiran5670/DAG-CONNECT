@@ -124,6 +124,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
                 List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
+                alertFeatureIds.Add(featureId);
                 //var vehicleDetailsWithAccountVisibility =
                 //                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, featureId);
 
