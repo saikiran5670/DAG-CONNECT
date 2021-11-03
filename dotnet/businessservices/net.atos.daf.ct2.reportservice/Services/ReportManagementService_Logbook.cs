@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                IEnumerable<int> alertFeatureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("alert_feature_ids")).FirstOrDefault()?.Value ?? null);
+                List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
 
                 var enumTranslationList = await _reportManager.GetAlertCategory();
@@ -29,22 +29,27 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
-
-                var vehicleDetailsAccountVisibilty
-                                              = await _visibilityManager
-                                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                alertFeatureIds.Add(featureId);
+                //var vehicleDetailsAccountVisibilty
+                //                              = await _visibilityManager
+                //                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
 
                 //IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList = null;
                 //if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
                 //{
-                var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
+                //var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
                 //}
 
-                if (vehicleDetailsAccountVisibilty.Any() && vehicleAccountVisibiltyAlertList.Any())
+                IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyAlertList = null;
+                if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
                 {
-                    var vinIds = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Union(vehicleDetailsAccountVisibilty.Select(x => x.Vin)).Distinct().ToList();
+                    vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, alertFeatureIds.ToArray());
+                }
+                if (vehicleAccountVisibiltyAlertList.Any())
+                {
+                    var vinIds = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Distinct().ToList();
 
-                    var alertVehicleresult = vehicleAccountVisibiltyAlertList.Where(x => vinIds.Contains(x.Vin));
+                    var alertVehicleresult = vehicleAccountVisibiltyAlertList.Distinct();
 
                     var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
@@ -118,21 +123,22 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
                 var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+                List<int> alertFeatureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Get("alert_feature_ids").Value);
+                alertFeatureIds.Add(featureId);
+                //var vehicleDetailsWithAccountVisibility =
+                //                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, featureId);
 
-                var vehicleDetailsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, featureId);
+                var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, alertFeatureIds.ToArray());
 
-                var vehicleAccountVisibiltyAlertList = await _visibilityManager.GetVehicleByAccountVisibilityTemp(logbookDetailsRequest.AccountId, loggedInOrgId, logbookDetailsRequest.OrganizationId, 0);
-
-                if (vehicleDetailsWithAccountVisibility.Count() == 0 || vehicleAccountVisibiltyAlertList.Count() == 0)
+                if (vehicleAccountVisibiltyAlertList.Count() == 0)
                 {
                     response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, logbookDetailsRequest.AccountId, logbookDetailsRequest.OrganizationId);
                     response.Code = Responsecode.Failed;
                     return response;
                 }
-                var vins = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Union(vehicleDetailsWithAccountVisibility.Select(x => x.Vin)).Distinct().ToList();
+                var vins = vehicleAccountVisibiltyAlertList.Select(x => x.Vin).Distinct().ToList();
 
-                var unionvehicleAccountVisibiltyAlertList = vehicleAccountVisibiltyAlertList.Union(vehicleDetailsWithAccountVisibility).Where(x => vins.Contains(x.Vin));
+                var unionvehicleAccountVisibiltyAlertList = vehicleAccountVisibiltyAlertList.Distinct();
 
                 //IEnumerable<string> vins;
                 if (logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) &&
