@@ -7,7 +7,7 @@ CREATE TABLE if not exists master.accountmigration
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountmigration  
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 	
 Do $$
 begin
