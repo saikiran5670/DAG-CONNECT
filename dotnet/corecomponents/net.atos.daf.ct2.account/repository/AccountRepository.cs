@@ -993,8 +993,8 @@ namespace net.atos.daf.ct2.account
                                                 -- Fetch Owned vehicles from vehicle group type 'G'
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
-                                                WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and om.owner_org_id=@organization_id and lower(os.code)='owner'
+                                                WHERE gr.group_id=vg.id --or gr.group_id=om.vehicle_group_id
+                                                      --and om.owner_org_id=@organization_id and lower(os.code)='owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
@@ -1004,11 +1004,11 @@ namespace net.atos.daf.ct2.account
                                     INNER JOIN master.accessrelationship ar on ar.vehicle_group_id=vg.id and vg.object_type='V' and vg.group_type in('G','D')
                                     INNER JOIN master.group ag on ag.id = ar.account_group_id and ag.organization_id=@organization_id and ag.object_type='A'                             
                                     LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
-							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
-                                    WHERE vg.organization_id=@organization_id and 
-                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
-	                                        else COALESCE(end_date,0) = 0 end
+							        --LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+							        --LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
+                                    WHERE vg.organization_id=@organization_id 
+                                          --and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                      --else COALESCE(end_date,0) = 0 end
                                     ORDER BY vg.id desc 
                                 ) vehiclegroup
 
