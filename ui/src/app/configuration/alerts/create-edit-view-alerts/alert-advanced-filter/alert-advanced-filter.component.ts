@@ -2261,6 +2261,9 @@ private scrollToFuelInvalidControl() {
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     // date = date._d;
+    if((this.actionType == 'edit' || this.actionType == 'duplicate') && type == 'start'){
+      date = date._d;
+    }
     date.setHours(_x);
     date.setMinutes(_y);
     date.setSeconds(type == 'start' ? '00' : '59');
