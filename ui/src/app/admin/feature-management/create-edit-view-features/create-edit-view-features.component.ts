@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { FeatureService } from '../../../services/feature.service'
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-create-edit-view-features',
@@ -19,7 +20,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   @Input() dataAttributeList: any;
   @Input() selectedElementData: any;
   @Output() createViewEditFeatureEmit = new EventEmitter<object>();
-  breadcumMsg: any = '';  
+  breadcumMsg: any = '';
   displayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -40,8 +41,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   featuresSelected = [];
   featuresData : any = [];
   allChildrenIds : any = [];
-  selectedChildrens : any = []; 
+  selectedChildrens : any = [];
   preSelectedValues: any = []
+  filterValue: string;
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
   ngOnInit() {
@@ -60,7 +62,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
-    } 
+    }
     this.loadGridData(this.dataAttributeList);
     this.featuresData = this.dataAttributeList;
   }
@@ -93,7 +95,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.updateDataSource(tableData);
     if(this.actionType == 'edit' ){
       this.selectTableRows();
-    }    
+    }
   }
 
   selectTableRows() {
@@ -117,6 +119,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       //   });
       //  }
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
@@ -124,14 +127,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     if(!(b instanceof Number)) b = b.toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
   toBack(){
     let emitObj = {
       stepFlag: false,
-    }    
-    this.createViewEditFeatureEmit.emit(emitObj);    
+    }
+    this.createViewEditFeatureEmit.emit(emitObj);
   }
-  
+
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -141,8 +144,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onCancel(){
     let emitObj = {
       stepFlag: false,
-    }    
-    this.createViewEditFeatureEmit.emit(emitObj); 
+    }
+    this.createViewEditFeatureEmit.emit(emitObj);
   }
 
   selectionIDs(){
@@ -182,9 +185,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             stepFlag: false,
             successMsg: this.userCreatedMsg,
             tableData: filterTypeData
-          }    
+          }
           this.createViewEditFeatureEmit.emit(emitObj);
-        });       
+        });
       }, (err) => {
         //console.log(err);
         if (err.status == 409) {
@@ -214,7 +217,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         dataAttributeIds: selectedId,
         level: 0,
         featureState: this.selectedStatus === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE'
-        }        
+        }
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
           let filterTypeData = getData.filter(item => item.type == "D");
@@ -223,9 +226,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             stepFlag: false,
             successMsg: this.userCreatedMsg,
             tableData: filterTypeData
-          }    
-          this.createViewEditFeatureEmit.emit(emitObj);        
-        });      
+          }
+          this.createViewEditFeatureEmit.emit(emitObj);
+        });
       }, (err) => {
         //console.log(err);
         if (err.status == 409) {
@@ -244,7 +247,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   masterToggleForDataAttribute() {
-    this.isAllSelectedForDataAttribute() 
+    this.isAllSelectedForDataAttribute()
       ? this.selectionForDataAttribute.clear()
       : this.dataSource.data.forEach((row: any) =>
         this.selectionForDataAttribute.select(row)
@@ -281,7 +284,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onSetTypeChange(event: any){
-    let valueToBoolean = event.value == "true" ? true : false 
+    let valueToBoolean = event.value == "true" ? true : false
     this.selectedSetType = valueToBoolean;
   }
 
@@ -317,7 +320,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //       }
   //       console.log('parent Id is:- ', selectedParentId);
   //       console.log("---selectedChildrens---",this.selectedChildrens)
-  //     } 
+  //     }
   //     //when unchecking(OFF)child toggle
   //       else if(!isChecked) {
   //         const index = this.selectedChildrens.indexOf(row.id);
@@ -355,7 +358,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //   this.featureFormGroup.valid;
   // }
 
-  onChange(event: any, row: any){    
+  onChange(event: any, row: any){
     var selectName = row.name;
     var selectId = row.id;
     var splitName =selectName.slice(0, selectName.indexOf('.'));
@@ -372,20 +375,20 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     else{
     this.initData.forEach( row => {
       if(event.checked){
-      if(row.name == splitName)    
+      if(row.name == splitName)
         this.selectionForDataAttribute.select(row);           }
       else if(!event.checked)
       {
         if(row.name == splitName)
-        { 
+        {
         let searchElement = this.selectionForDataAttribute.selected.filter(element => element.name.startsWith(splitName + '.'));
-       
-          if(searchElement.length){      
-            this.selectionForDataAttribute.select(row);  
-          }         
+
+          if(searchElement.length){
+            this.selectionForDataAttribute.select(row);
+          }
           else{
             this.selectionForDataAttribute.deselect(row);
-          }   
+          }
         }
       }
     });

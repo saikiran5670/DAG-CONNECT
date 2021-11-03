@@ -38,7 +38,7 @@ export class UserManagementComponent implements OnInit {
   translationData: any = {};
   userDataForEdit: any;
   selectedPreference: any;
-  isCreateFlag: boolean; 
+  isCreateFlag: boolean;
   grpTitleVisible : boolean = false;
   userCreatedMsg : any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -51,7 +51,7 @@ export class UserManagementComponent implements OnInit {
   showLoadingIndicator: any;
   privilegeAccess: boolean = true; //-- false
   orgPreference: any = {};
-  actionBtn:any; 
+  actionBtn:any;
   userDetailsType: any = '';
   UserSessionVal: any = [];
   accountRoleId: any;
@@ -71,7 +71,7 @@ export class UserManagementComponent implements OnInit {
   ) {
     // this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
-      this.userDetailsType = params['UserDetails']; 
+      this.userDetailsType = params['UserDetails'];
    });
   }
 
@@ -164,7 +164,7 @@ export class UserManagementComponent implements OnInit {
     this.accountRoleId = parseInt(localStorage.getItem('accountRoleId'));
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
-    else 
+    else
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -180,15 +180,15 @@ export class UserManagementComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.hideloader(); 
-      this.getUserSettingsDropdownValues(); 
-      if(this.userDetailsType != undefined){       
+      this.hideloader();
+      this.getUserSettingsDropdownValues();
+      if(this.userDetailsType != undefined){
         console.log(localStorage.getItem('selectedRowItems'));
         let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
-        this.editViewUser(sessionVal, this.userDetailsType)      
+        this.editViewUser(sessionVal, this.userDetailsType)
       }
       else{
-        this.router.navigate([]);   //16422 - page reloads and api was called multiple times 
+        this.router.navigate([]);   //16422 - page reloads and api was called multiple times
       }
     });
   }
@@ -231,14 +231,14 @@ export class UserManagementComponent implements OnInit {
       title: this.translationData.lblDeleteAccount,
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount,
       cancelText: this.translationData.lblCancel,
-      confirmText: this.translationData.lblDelete 
+      confirmText: this.translationData.lblDelete
     };
     this.OpenDialog(options, 'delete', item);
   }
 
   loadRoles(){
     this.showLoadingIndicator = true;
-    let roleObj = { 
+    let roleObj = {
       Organizationid : this.accountOrganizationId,
       IsGlobal: true
    };
@@ -259,7 +259,7 @@ export class UserManagementComponent implements OnInit {
 
   newUser() {
     this.isCreateFlag = true;
-  //   let roleObj = { 
+  //   let roleObj = {
   //     Organizationid : this.accountOrganizationId,
   //     IsGlobal: true
   //  };
@@ -285,7 +285,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   editViewUser(element: any, type: any) {
-  //  let roleObj = { 
+  //  let roleObj = {
   //     Organizationid : this.accountOrganizationId,
   //     IsGlobal: true
   //  };
@@ -296,12 +296,12 @@ export class UserManagementComponent implements OnInit {
     vehicleGroupId: 0,
     roleId: 0,
     name: ""
-  }      
-  this.UserSessionVal = element; 
+  }
+  this.UserSessionVal = element;
   this.editViewRoleList = element.editDeletAccess ? this.filterRoleList.slice() : this.roleData.slice();
   localStorage.removeItem('selectedRowItems');
-  localStorage.setItem('selectedRowItems', JSON.stringify(this.UserSessionVal));  
-  //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
+  localStorage.setItem('selectedRowItems', JSON.stringify(this.UserSessionVal));
+  //this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
     //this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData.filter(item => item.type == 'G');
@@ -336,14 +336,14 @@ export class UserManagementComponent implements OnInit {
             this.goForword(type);
           });
         }
-    }, (error)=> {});   
+    }, (error)=> {});
    //}, (error)=> {});
   }
 
   goForword(type: any){
     this.editFlag = (type == 'edit') ? true : false;
     this.viewFlag = (type == 'view') ? true : false;
-    this.isCreateFlag = false;   
+    this.isCreateFlag = false;
   }
 
   loadUsersData(){
@@ -362,6 +362,14 @@ export class UserManagementComponent implements OnInit {
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.initData = this.getNewTagData(this.initData);
       this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.roleList.toString().toLowerCase().includes(filter) ||
+          data.firstName.toLowerCase().includes(filter) ||
+          data.emailId.toString().toLowerCase().includes(filter)
+
+        );
+      };
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -415,7 +423,7 @@ export class UserManagementComponent implements OnInit {
       let accGrpTxt: any = '';
       let roleFound: boolean = false;
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';  
+        roleTxt += resp.name + ', ';
         let _s: any = this.filterRoleList2.filter(item => item.roleId == resp.id);
         if(_s.length > 0){ // not found
           roleFound = true;
@@ -437,17 +445,17 @@ export class UserManagementComponent implements OnInit {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
-  
+
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = row.createdAt; 
+      let createdDate = row.createdAt;
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -460,12 +468,12 @@ export class UserManagementComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData,newFalseData); 
+    Array.prototype.push.apply(newTrueData,newFalseData);
     return newTrueData;
   }
 
   OpenDialog(options: any, flag: any, item: any) {
-    // Model for delete  
+    // Model for delete
     this.filterFlag = true;
     let name = `${item.salutation} ${item.firstName} ${item.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
@@ -511,7 +519,7 @@ export class UserManagementComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.userCreatedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -530,7 +538,7 @@ export class UserManagementComponent implements OnInit {
           item.accountGroups.forEach(element => {
             if(element.name.toString().toLowerCase() === val.userGroup) isGroup= true;
           });
-        } 
+        }
       }else {
         isGroup = true;
       }
@@ -539,7 +547,7 @@ export class UserManagementComponent implements OnInit {
           item.roles.forEach(element => {
             if(element.name.toString().toLowerCase() === val.role) isRole = true;
           });
-        } 
+        }
       }else {
         isRole = true;
       }
@@ -582,24 +590,24 @@ export class UserManagementComponent implements OnInit {
 
 exportAsPdf() {
   let DATA = document.getElementById('accountMgmtData');
-    
+
   html2canvas( DATA , { onclone: (document) => {
     this.actionBtn = document.getElementsByClassName('action');
     for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
+      obj.style.visibility = 'hidden';  }
   }})
-  .then(canvas => {       
+  .then(canvas => {
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('AccountMgmt_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 }

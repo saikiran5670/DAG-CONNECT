@@ -52,6 +52,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   customCodeBtnEnable: boolean = true;
   invalidCode: boolean = false;
   roleFeaturesList: any = [];
+  filterValue: string;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -97,7 +98,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
     let reqObj: any = {
       roleLevel: parseInt(this.userLevel)
-    }    
+    }
     this.roleService.getLevelCodes(reqObj).subscribe((codeList: any) => {
       if(codeList){
         this.codeDD = codeList.roleCodeList.slice();
@@ -147,7 +148,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         }
         this.callToProceed();
       }else{
-        this.updateDataSource(this.roleFeaturesList);   
+        this.updateDataSource(this.roleFeaturesList);
       }
       this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblOrganisation || 'Organisation'];
     }, (error) => {
@@ -202,7 +203,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
   updateDataSource(tabelData: any){
     this.dataSource = new MatTableDataSource(tabelData);
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+      this.dataSource.sort = this.sort;
+
   }
 
   changeRoleLevel(_eventVal: any) {
@@ -214,9 +216,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
-    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblAccountRoleManagement ? this.translationData.lblAccountRoleManagement : "Account Role Management"} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblAccountRoleManagement ? this.translationData.lblAccountRoleManagement : "Account Role Management"} /
     ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
   }
 
@@ -272,7 +274,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       this.selectionForFeatures.selected.forEach(feature => {
         featureIds.push(feature.id);
       });
-      
+
       let _code: any = '';
       if(!this.customCodeBtnEnable){ // custom code
         _code = (this.userRoleFormGroup.controls.customCodeValue.value.trim() != '') ? this.userRoleFormGroup.controls.customCodeValue.value.trim() : this.userRoleFormGroup.controls.codeType.value || '';
@@ -311,13 +313,13 @@ export class EditUserRoleDetailsComponent implements OnInit {
     //---------- add high level feature - handle from UI -------------//
     if(this.gridData && this.gridData.length > 0){
       this.gridData[0].featureIds.forEach(_elem => {
-        let _s = this.roleFeaturesList.filter(i => i.id == _elem); 
+        let _s = this.roleFeaturesList.filter(i => i.id == _elem);
         if(_s.length == 0){ // not present
           featureIds.push(_elem);
         }
       });
     }
-    
+
     featureIds = featureIds.filter((el, i, a) => i === a.indexOf(el)); // unique feature id's
     //-----------------------------------------------------//
 
@@ -427,7 +429,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     // if(this.preSelectedValues.length > 0){
     this.selectionForFeatures.selected.forEach(feature => {
       if(!(this.preSelectedValues.includes(feature.id))){
-        
+
         this.preSelectedValues.push(feature.id);
       }
     })
@@ -452,7 +454,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //   // this.selectionForFeatures.selected.forEach(feature => {
   //   //   this.preSelectedValues.push(feature.id);
   //   // })
-  
+
   //   // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
   //   // let AllSelectedChilds=[];
   //   var selectedName = row.name;
@@ -470,8 +472,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //         this.selectedChildrens.push(row.id);
   //         // AllSelectedChilds = [...selectedChildrens, row.id]
   //       }
-        
-        
+
+
   //       this.dataSource.data.forEach((row) => {
   //         if (selectedElementParent) {
   //           if (selectedElementParent == row.name) {
@@ -486,7 +488,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //       }
   //       console.log('parent Id is:- ', selectedParentId);
   //       console.log("---selectedChildrens---",this.selectedChildrens)
-  //     } 
+  //     }
   //     //when unchecking(OFF)child toggle
   //       else if(!isChecked) {
   //         const index = this.selectedChildrens.indexOf(row.id);
@@ -528,7 +530,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //   }
   // }
 
-  onChange(event: any, row: any){    
+  onChange(event: any, row: any){
     var selectName = row.name;
     var selectId = row.id;
     var splitName =selectName.slice(0, selectName.indexOf('.'));
@@ -545,20 +547,20 @@ export class EditUserRoleDetailsComponent implements OnInit {
     else{
     this.dataSource.data.forEach( row => {
       if(event.checked){
-      if(row.name == splitName)    
+      if(row.name == splitName)
         this.selectionForFeatures.select(row);           }
       else if(!event.checked)
       {
         if(row.name == splitName)
-        { 
+        {
         let searchElement = this.selectionForFeatures.selected.filter(element => element.name.startsWith(splitName + '.'));
-       
-          if(searchElement.length){      
-            this.selectionForFeatures.select(row);  
-          }         
+
+          if(searchElement.length){
+            this.selectionForFeatures.select(row);
+          }
           else{
             this.selectionForFeatures.deselect(row);
-          }   
+          }
         }
       }
     });

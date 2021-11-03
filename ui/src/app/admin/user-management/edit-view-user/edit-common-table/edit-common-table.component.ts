@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AccountService } from 'src/app/services/account.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-edit-common-table',
@@ -18,6 +19,8 @@ export class EditCommonTableComponent implements OnInit {
   dataSource: any;
   selectionData = new SelectionModel(true, []);
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  filterValue: string;
+  columns: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -41,6 +44,8 @@ export class EditCommonTableComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+    Util.applySearchFilter(this.dataSource, this.columns ,this.filterValue );
+
     this.selectTableRows();
   }
 
