@@ -150,7 +150,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
 
     this.accountId= parseInt(localStorage.getItem("accountId"));
-    let today = new Date();
+    let fromDate = new Date();
+    let toDate = new Date();
     this.alertAdvancedFilterForm = this._formBuilder.group({
       poiSite: [''],
       distance: [''],
@@ -158,9 +159,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
       duration: [''],
       widthInput: [''],
       fullorCustom: ['A'],
-      fromDate: new FormControl(today),
+      fromDate: new FormControl(fromDate),
       fromTimeRange: ['00:00'],
-      toDate: new FormControl(today.setDate(today.getDate() + 14)),
+      toDate: new FormControl(toDate.setDate(toDate.getDate() + 14)),
       toTimeRange:['23:59']
     })
 
@@ -1120,7 +1121,7 @@ let urgencylevelEndDate = 0;
 if(this.selectedApplyOn == 'C'){
   this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
-  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(new Date(this.alertAdvancedFilterForm.controls.toDate.value), this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
     element["startDate"] =urgencylevelStartDate;
@@ -2259,7 +2260,7 @@ private scrollToFuelInvalidControl() {
   setStartEndDateTime(date: any, timeObj: any, type: any){
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    date = date._d;
+    // date = date._d;
     date.setHours(_x);
     date.setMinutes(_y);
     date.setSeconds(type == 'start' ? '00' : '59');
