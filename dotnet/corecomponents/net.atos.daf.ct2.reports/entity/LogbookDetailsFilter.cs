@@ -14,7 +14,6 @@ namespace net.atos.daf.ct2.reports.entity
         public long Start_Time { get; set; }
         public long End_time { get; set; }
         public int Org_Id { get; set; }
-
-
+        public List<int> FeatureIds { get; set; }
     }
 }
