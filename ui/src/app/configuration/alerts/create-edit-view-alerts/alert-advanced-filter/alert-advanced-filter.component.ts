@@ -202,7 +202,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
     let POIData =this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.landmarkType == "P" || "O" || "C" || "G");
     if(POIData.length > 0){
-    this.poiWidth = POIData[0].thresholdValue;
+    this.poiWidth = parseInt(POIData[0].thresholdValue);
     this.sliderChanged();
     }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
@@ -221,7 +221,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
-        if(element.filterType == 'N' && element.thresholdValue !=0 && element.unitType== 'N')
+        if(element.filterType == 'N' && element.thresholdValue !='0' && element.unitType== 'N')
         {
           this.isOccurenceSelected =true;
           this.alertAdvancedFilterForm.get('occurences').setValue(element.thresholdValue);
@@ -257,7 +257,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           
         }
         if(this.actionType == 'view'){
-          let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != 0));
+          let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != '0'));
           if(arr1.length > 0)
             this.occurenceVal.push(arr1);
           let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
@@ -1149,7 +1149,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": 0,
+            "thresholdValue": "0",
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
@@ -1172,7 +1172,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": this.poiDistance,
+            "thresholdValue": this.poiDistance.toString(),
             "unitType": this.POIEnum,
             "landmarkType": "P",
             "refId": element.id,
@@ -1195,7 +1195,7 @@ else{
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": "N",
-          "thresholdValue": 0,
+          "thresholdValue": "0",
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
@@ -1241,7 +1241,7 @@ else{
       obj = {
         "alertUrgencyLevelId": 0,
         "filterType": "N",
-        "thresholdValue": this.thresholdVal,
+        "thresholdValue": this.thresholdVal.toString(),
         "unitType": "N",
         "landmarkType": "N",
         "refId": 0,
@@ -1278,7 +1278,7 @@ else{
       obj = {
         "alertUrgencyLevelId": 0,
         "filterType": "D",
-        "thresholdValue": this.thresholdVal,
+        "thresholdValue": this.thresholdVal.toString(),
         "unitType": this.durationEnum,
         "landmarkType": "N",
         "refId": 0,
@@ -1302,7 +1302,7 @@ else{
       obj = {
         "alertUrgencyLevelId": 0,
         "filterType": "N",
-        "thresholdValue": this.thresholdVal,
+        "thresholdValue": this.thresholdVal.toString(),
         "unitType": "N",
         "landmarkType": "N",
         "refId": 0,
@@ -1352,7 +1352,7 @@ else{
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": 'N',
-              "thresholdValue": this.thresholdVal,
+              "thresholdValue": this.thresholdVal.toString(),
               "unitType": "N",
               "landmarkType": 'N',
               "refId": 0,
@@ -1380,7 +1380,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": 'N',
-            "thresholdValue": 0,
+            "thresholdValue": "0",
             "unitType": "N",
             "landmarkType": 'N',
             "refId": 0,
@@ -1402,7 +1402,7 @@ else{
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": this.filterType,
-              "thresholdValue": 0,
+              "thresholdValue": "0",
               "unitType": "N",
               "landmarkType": element.type,
               "refId": element.id,
@@ -1429,7 +1429,7 @@ else{
                 let obj = {
                   "alertUrgencyLevelId": 0,
                   "filterType": this.filterType,
-                  "thresholdValue": this.thresholdVal,
+                  "thresholdValue": this.thresholdVal.toString(),
                   "unitType": "N",
                   "landmarkType": element.type,
                   "refId": element.id,
@@ -1455,7 +1455,7 @@ else{
             obj = {
               "alertUrgencyLevelId": 0,
               "filterType": this.filterType,
-              "thresholdValue": this.poiDistance,
+              "thresholdValue": this.poiDistance.toString(),
               "unitType": this.POIEnum,
               "landmarkType": "P",
               "refId": element.id,
@@ -1485,7 +1485,7 @@ else{
               let obj = {
                 "alertUrgencyLevelId": 0,
                 "filterType": this.filterType,
-                "thresholdValue": this.thresholdVal,
+                "thresholdValue": this.thresholdVal.toString(),
                 "unitType": "N",
                 "landmarkType": "P",
                 "refId": element.id,
@@ -1510,7 +1510,7 @@ else{
            let obj = {
              "alertUrgencyLevelId": 0,
              "filterType": this.filterType,
-             "thresholdValue": 0,
+             "thresholdValue": "0",
              "unitType": "N",
              "landmarkType": "G",
              "refId": element.id,
@@ -1537,7 +1537,7 @@ else{
               let obj = {
                 "alertUrgencyLevelId": 0,
                 "filterType": this.filterType,
-                "thresholdValue": this.thresholdVal,
+                "thresholdValue": this.thresholdVal.toString(),
                 "unitType": "N",
                 "landmarkType": "G",
                 "refId": element.id,
@@ -1605,7 +1605,7 @@ else{
         obj = {
         "alertUrgencyLevelId": 0,
         "filterType": "D",
-        "thresholdValue": this.thresholdVal,
+        "thresholdValue": this.thresholdVal.toString(),
         "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
@@ -1650,7 +1650,7 @@ else{
       obj = {
       "alertUrgencyLevelId": 0,
       "filterType": "T",
-      "thresholdValue": this.thresholdVal,
+      "thresholdValue": this.thresholdVal.toString(),
       "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
@@ -1674,7 +1674,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": 'N',
-            "thresholdValue": 0,
+            "thresholdValue": "0",
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
@@ -1703,7 +1703,7 @@ else{
               let obj = {
                 "alertUrgencyLevelId": 0,
                 "filterType": this.filterType,
-                "thresholdValue": this.thresholdVal,
+                "thresholdValue": this.thresholdVal.toString(),
                 "unitType": "N",
                 "landmarkType": element.type,
                 "refId": element.id,
@@ -1730,7 +1730,7 @@ else{
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
-              "thresholdValue": this.poiDistance,
+              "thresholdValue": this.poiDistance.toString(),
               "unitType": this.POIEnum,
               "landmarkType": "P",
               "refId": element.id,
@@ -1765,7 +1765,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
-            "thresholdValue": this.thresholdVal,
+            "thresholdValue": this.thresholdVal.toString(),
             "unitType": this.unitTypeVal,
             "landmarkType": "P",
             "refId": element.id,
@@ -1793,7 +1793,7 @@ else{
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": 0,
+            "thresholdValue": "0",
             "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
@@ -1822,7 +1822,7 @@ else{
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": this.filterType,
-          "thresholdValue": this.thresholdVal,
+          "thresholdValue": this.thresholdVal.toString(),
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
@@ -1893,7 +1893,7 @@ else{
         obj = {
         "alertUrgencyLevelId": 0,
         "filterType": "D",
-        "thresholdValue": this.thresholdVal,
+        "thresholdValue": this.thresholdVal.toString(),
         "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
@@ -1940,7 +1940,7 @@ else{
       obj = {
       "alertUrgencyLevelId": 0,
       "filterType": "T",
-      "thresholdValue": this.thresholdVal,
+      "thresholdValue": this.thresholdVal.toString(),
       "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
@@ -1984,7 +1984,7 @@ else{
     obj = {
     "alertUrgencyLevelId": 0,
     "filterType": "N",
-    "thresholdValue": this.thresholdVal,
+    "thresholdValue": this.thresholdVal.toString(),
     "unitType": "N",
     "landmarkType": 'N',
     "refId": 0,
@@ -2020,7 +2020,7 @@ if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSele
   obj = {
   "alertUrgencyLevelId": 0,
   "filterType": "N",
-  "thresholdValue": this.thresholdVal,
+  "thresholdValue": this.thresholdVal.toString(),
   "unitType": "N",
   "landmarkType": 'N',
   "refId": 0,
@@ -2046,7 +2046,7 @@ if(this.actionType == 'edit'){
       let obj = {
         "alertUrgencyLevelId": 0,
         "filterType": 'N',
-        "thresholdValue": 0,
+        "thresholdValue": "0",
         "unitType": "N",
         "landmarkType": element.type,
         "refId": element.id,
@@ -2075,7 +2075,7 @@ if(this.actionType == 'edit'){
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
-            "thresholdValue": this.thresholdVal,
+            "thresholdValue": this.thresholdVal.toString(),
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
@@ -2102,7 +2102,7 @@ if(this.actionType == 'edit'){
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
-              "thresholdValue":this.poiDistance,
+              "thresholdValue":this.poiDistance.toString(),
               "unitType": this.POIEnum,
               "landmarkType": "P",
               "refId": element.id,
@@ -2116,7 +2116,7 @@ if(this.actionType == 'edit'){
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
-              obj["unitType"] = poiLandmarkRefArr[0].unitType;
+              obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : 'N';
             }
             this.advancedAlertPayload.push(obj);
           // }
@@ -2136,7 +2136,7 @@ if(this.actionType == 'edit'){
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
-            "thresholdValue": this.thresholdVal,
+            "thresholdValue": this.thresholdVal.toString(),
             "unitType": this.unitTypeVal,
             "landmarkType": "P",
             "refId": element.id,
@@ -2164,7 +2164,7 @@ if(this.actionType == 'edit'){
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": "N",
-            "thresholdValue": 0,
+            "thresholdValue": "0",
             "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
@@ -2193,7 +2193,7 @@ if(this.actionType == 'edit'){
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": this.filterType,
-          "thresholdValue": this.thresholdVal,
+          "thresholdValue": this.thresholdVal.toString(),
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
