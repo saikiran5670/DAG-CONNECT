@@ -444,12 +444,14 @@ export class AppComponent {
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
-    let _orgContextStatus = localStorage.getItem("orgContextStatus");
-    if(refresh) {
-        if(_orgContextStatus){
-          this.orgContextType = true;
-        }
-        this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
+    //let _orgContextStatus = localStorage.getItem("orgContextStatus");
+    // if(refresh) {
+    //     if(_orgContextStatus){
+    //       this.orgContextType = true;
+    //     }
+    this.orgContextType = localStorage.getItem("orgContextStatus") == 'true';
+    if(refresh && this.orgContextType) {
+     this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
     } else {
       let featureMenuObj = {
         "accountId": parseInt(localStorage.getItem("accountId")),
