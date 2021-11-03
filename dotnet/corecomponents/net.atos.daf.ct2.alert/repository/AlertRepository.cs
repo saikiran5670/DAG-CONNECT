@@ -747,7 +747,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
                 parameterAlert.Add("@featureEnums", resultFeaturEnum);
-                //parameterAlert.Add("@vehicleIds", vehicleIds);
+                parameterAlert.Add("@vehicleIds", vehicleIds);
                 //parameterAlert.Add("@name", alert.Name);
                 //parameterAlert.Add("@category", alert.Category);
                 //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
