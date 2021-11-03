@@ -7,6 +7,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { Router, NavigationExtras  } from '@angular/router';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-create-edit-user-group',
@@ -37,6 +38,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   isUserGroupExist: boolean = false;
   tableDataList: any;
   showLoadingIndicator: boolean = false;
+  filterValue: string;
 
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService, private router: Router) { }
 
@@ -74,11 +76,11 @@ export class CreateEditUserGroupComponent implements OnInit {
     }
     if( this.breadcumMsg!=''){
       let navigationExtras: NavigationExtras = {
-        queryParams:  {         
-         "UserDetails": this.actionType   
+        queryParams:  {
+         "UserDetails": this.actionType
         }
-      };    
-      this.router.navigate([], navigationExtras);     
+      };
+      this.router.navigate([], navigationExtras);
     }
     this.loadUsersData();
   }
@@ -98,9 +100,9 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
-    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblAccountGroupManagement ? this.translationData.lblAccountGroupManagement : "Account Group Management"} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblAccountGroupManagement ? this.translationData.lblAccountGroupManagement : "Account Group Management"} /
     ${(this.actionType == 'edit') ? (this.translationData.lblEditAccountGroupDetails ? this.translationData.lblEditAccountGroupDetails : 'Edit Account Group Details') : (this.translationData.lblViewAccountGroupDetails ? this.translationData.lblViewAccountGroupDetails : 'View Account Group Details')}`;
   }
 
@@ -175,6 +177,7 @@ export class CreateEditUserGroupComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
        }
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     });
     this.showLoadingIndicator=false;
   }
@@ -222,7 +225,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     let emitObj = {
       stepFlag: false,
       successMsg: ""
-    }  
+    }
     this.backToPage.emit(emitObj);
   }
 
@@ -263,7 +266,7 @@ export class CreateEditUserGroupComponent implements OnInit {
           }
         });
     }
-    else{ // update    
+    else{ // update
       let updateAccGrpObj = {
         id: this.selectedRowData.id,
         name: this.userGroupForm.controls.userGroupName.value,
@@ -276,7 +279,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       const updateAccGrpNameInput = updateAccGrpObj.name.trim().toLowerCase();
       let existingUserGroupName = this.userGroupData.filter(response => (response.accountGroupName).toLowerCase() == updateAccGrpNameInput);
       if (existingUserGroupName.length > 0 && this.userGroupForm.controls.userGroupName.value !== this.selectedRowData.name ) {
-        this.isUserGroupExist = true;       
+        this.isUserGroupExist = true;
         this.duplicateEmailMsg = true;
       }
       else{

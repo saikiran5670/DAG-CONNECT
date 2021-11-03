@@ -16,6 +16,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormControl } from '@angular/forms';
 import { element } from 'protractor';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-subscription-management',
@@ -77,6 +78,7 @@ export class SubscriptionManagementComponent implements OnInit {
   StatusList: any = [];
   showLoadingIndicator: any = true;
   filterData: any = [];
+  filterValue: string;
 
   constructor(
     private httpClient: HttpClient,
@@ -233,7 +235,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
-    this.dataSource = new MatTableDataSource(this.initData);
+    this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -246,6 +248,8 @@ export class SubscriptionManagementComponent implements OnInit {
       }
 
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
