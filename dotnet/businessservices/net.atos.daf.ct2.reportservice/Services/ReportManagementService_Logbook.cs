@@ -180,7 +180,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Start_Time = logbookDetailsRequest.StartTime,
                     End_time = logbookDetailsRequest.EndTime,
                     VIN = vins.ToList(),
-                    Org_Id = logbookDetailsRequest.OrganizationId
+                    Org_Id = logbookDetailsRequest.OrganizationId,
+                    FeatureIds = alertFeatureIds
                 };
 
                 var result = await _reportManager.GetLogbookDetails(logbookFilter);

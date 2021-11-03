@@ -98,8 +98,14 @@ namespace net.atos.daf.ct2.reports.repository
                                 and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))
                                 and ta.category_type <> 'O'
                 				and ta.type <> 'W' ";
-
-
+                parameter.Add("@featureIds", logbookFilter.FeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                if (resultFeaturEnum.Count > 0)
+                {
+                    parameter.Add("@featureEnums", resultFeaturEnum);
+                    queryLogBookPull += " and ta.type = Any(@featureEnums) ";
+                }
                 if (logbookFilter.VIN.Count > 0)
                 {
                     parameter.Add("@vin", logbookFilter.VIN);
