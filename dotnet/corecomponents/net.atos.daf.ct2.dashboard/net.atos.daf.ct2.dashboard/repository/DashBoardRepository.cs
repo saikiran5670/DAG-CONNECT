@@ -138,7 +138,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                 parameter.Add("@featureEnums", resultFeaturEnum);
                 string queryAlert = @"select id, Name, organization_id as org_id 
                                         from master.alert 
-                                        where organization_id = @orgId and type = ANY(@featureEnums) ";
+                                        where state in ('A','I') and organization_id = @orgId and type = ANY(@featureEnums)  ";
                 var result = await _dataAccess.QueryAsync<AlertOrgMap>(queryAlert, parameter);
                 return result.AsList<AlertOrgMap>();
             }
