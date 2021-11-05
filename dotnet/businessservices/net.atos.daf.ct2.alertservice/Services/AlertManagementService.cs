@@ -557,16 +557,17 @@ namespace net.atos.daf.ct2.alertservice.Services
                 OfflinePushNotificationFilter offlinePushNotificationFilter = new OfflinePushNotificationFilter();
                 offlinePushNotificationFilter.AccountId = request.AccountId;
                 offlinePushNotificationFilter.OrganizationId = request.OrganizationId;
+                offlinePushNotificationFilter.Vins = visiblityVehicle;
+                offlinePushNotificationFilter.FeatureIds = featureIds.ToList();
                 OfflinePushNotification offlinePushNotification = new OfflinePushNotification();
                 offlinePushNotification = await _alertManager.GetOfflinePushNotification(offlinePushNotificationFilter);
-
                 //Intersect Vin by visibility
-                var intersectNotVin = (from notiVin in offlinePushNotification.NotificationDisplayProp
-                                       join visiVin in visiblityVehicle on notiVin.Vin equals visiVin
-                                       select notiVin).ToList();
+                //var intersectNotVin = (from notiVin in offlinePushNotification.NotificationDisplayProp
+                //                       join visiVin in visiblityVehicle on notiVin.Vin equals visiVin
+                //                       select notiVin).ToList();
 
-                offlinePushNotification.NotificationDisplayProp = null;
-                offlinePushNotification.NotificationDisplayProp = intersectNotVin;
+                //offlinePushNotification.NotificationDisplayProp = null;
+                //offlinePushNotification.NotificationDisplayProp = intersectNotVin;
                 OfflineNotificationResponse offlineNotificationResponse = new OfflineNotificationResponse();
                 offlineNotificationResponse = _mapper.ToOfflineNotificationResponse(offlinePushNotification);
                 offlineNotificationResponse.Message = offlinePushNotification.NotificationDisplayProp != null ? $" Offline notification data fetched successful" : $" Offline notification data not found";

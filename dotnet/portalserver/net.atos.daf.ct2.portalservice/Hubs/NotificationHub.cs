@@ -273,7 +273,8 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                     visibilityVehicleRequest.FeatureIds.Add(logged_FeatureId.Select(x => x));
                                     AssociatedVehicleResponse associatedVehicleResponse = await _pushNotofocationServiceClient.GetVehicleByAccountVisibilityAsync(visibilityVehicleRequest, headers);
                                     var associatedVin = associatedVehicleResponse.AssociatedVehicle.Select(x => x.Vin).Contains(notificationAlertMessages.Vin.ToString());
-                                    if (associatedVehicleResponse.AssociatedVehicle.Any() && associatedVin)
+                                    var featureEnum = associatedVehicleResponse.FeatureEnum.Select(x => x.FeatureEnumType).Contains(notificationAlertMessages.AlertType.ToString());
+                                    if (associatedVehicleResponse.AssociatedVehicle.Any() && associatedVin && featureEnum)
                                     {
                                         connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                     }
