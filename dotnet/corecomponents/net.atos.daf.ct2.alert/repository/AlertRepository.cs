@@ -1536,7 +1536,7 @@ namespace net.atos.daf.ct2.alert.repository
                                             from master.alert ale
                                             inner join master.group grp
                                             on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by
-                                            where ale.type = ANY(@featureEnums)");
+                                            and ale.type = ANY(@featureEnums)");
                 parameterAlert.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
                 parameterAlert.Add("@featureIds", offlinePushNotificationFilter.FeatureIds);
