@@ -9,9 +9,9 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jdk.internal.org.jline.utils.Log;
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
-import net.atos.daf.postgre.bo.Co2Master;
+
 import net.atos.daf.postgre.bo.LiveFleetPojo;
 import net.atos.daf.postgre.util.DafConstants;
 
