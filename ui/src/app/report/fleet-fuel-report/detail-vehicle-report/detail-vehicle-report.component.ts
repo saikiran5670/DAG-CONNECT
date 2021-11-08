@@ -918,7 +918,7 @@ createEndMarker(){
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     this.hideloader();
-    }, (error)=>{
+    }, (complete)=>{
       this.hideloader();
     });
   }
