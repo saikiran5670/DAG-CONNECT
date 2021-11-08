@@ -659,6 +659,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
   loadfleetFuelDetails(_vinData: any){
+    this.showLoadingIndicator=true;
     // let _startTime = Util.convertDateToUtc(this.startDateValue);
     // let _endTime = Util.convertDateToUtc(this.endDateValue);
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
@@ -689,8 +690,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);  
   }
-
-    })
+    this.hideloader();
+    }, (error)=>{
+      this.hideloader();
+    });
   }
 
   loadsummaryDetails(){
@@ -747,9 +750,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -850,10 +854,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
+    this.showLoadingIndicator=true;
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData= graphData;
       this.showGraph = true;
+      this.hideloader();
+    }, (error)=>{
+      this.hideloader();
     });
   }
   
