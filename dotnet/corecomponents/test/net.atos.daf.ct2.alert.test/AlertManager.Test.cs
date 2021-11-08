@@ -175,7 +175,7 @@ namespace net.atos.daf.ct2.alert.test
                 //Id =,
                 //AlertId =,
                 UrgencyLevelType = "C",
-                ThresholdValue = 2,
+                ThresholdValue = "2",
                 UnitType = "C",
                 DayType = new bool[7] { true, true, true, true, true, true, true },
                 PeriodType = "D",
@@ -205,7 +205,7 @@ namespace net.atos.daf.ct2.alert.test
                 //AlertId =,
                 //AlertUrgencyLevelId =,
                 FilterType = "O",
-                ThresholdValue = 20,
+                ThresholdValue = "20",
                 UnitType = "X",
                 LandmarkType = "P",
                 RefId = 170,
@@ -262,7 +262,12 @@ namespace net.atos.daf.ct2.alert.test
             featureIds.Add(403);
             featureIds.Add(405);
             featureIds.Add(413);
-            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId, featureIds).Result;
+
+            List<int> vehicleIds = new List<int>();
+            vehicleIds.Add(31);
+            vehicleIds.Add(32);
+            vehicleIds.Add(33);
+            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId, featureIds, vehicleIds).Result;
             Assert.IsNotNull(result);
         }
 
@@ -371,7 +376,7 @@ namespace net.atos.daf.ct2.alert.test
                 Id = 14,
                 AlertId = 14,
                 UrgencyLevelType = "C",
-                ThresholdValue = 2,
+                ThresholdValue = "2",
                 UnitType = "C",
                 DayType = new bool[7] { true, true, true, true, true, true, true },
                 PeriodType = "D",
@@ -401,7 +406,7 @@ namespace net.atos.daf.ct2.alert.test
                 AlertId = 14,
                 //AlertUrgencyLevelId =,
                 FilterType = "O",
-                ThresholdValue = 50,
+                ThresholdValue = "50",
                 UnitType = "M",
                 LandmarkType = "G",
                 RefId = 171,

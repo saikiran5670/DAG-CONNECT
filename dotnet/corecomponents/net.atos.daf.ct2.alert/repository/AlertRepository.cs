@@ -269,7 +269,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameteralertfilterref.Add("@filter_type", Convert.ToChar(alertfilter.FilterType));
                 else
                     parameteralertfilterref.Add("@filter_type", null);
-                parameteralertfilterref.Add("@threshold_value", alertfilter.ThresholdValue);
+                parameteralertfilterref.Add("@threshold_value", decimal.Parse(alertfilter.ThresholdValue));
                 if (alertfilter.UnitType != null && alertfilter.UnitType.Length > 0)
                     parameteralertfilterref.Add("@unit_type", Convert.ToChar(alertfilter.UnitType));
                 else
@@ -747,7 +747,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
                 parameterAlert.Add("@featureEnums", resultFeaturEnum);
-                // parameterAlert.Add("@vehicleIds", vehicleIds);
+                parameterAlert.Add("@vehicleIds", vehicleIds);
                 //parameterAlert.Add("@name", alert.Name);
                 //parameterAlert.Add("@category", alert.Category);
                 //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
@@ -914,9 +914,9 @@ namespace net.atos.daf.ct2.alert.repository
 					left join master.groupref vgrpref
 					on  grp.id=vgrpref.group_id and grp.object_type='V'	
 					left join master.vehicle veh
-					on vgrpref.ref_id=veh.id
+					on vgrpref.ref_id=veh.id and veh.id = ANY(@vehicleIds)
                     left join master.vehicle vehs
-					on grp.ref_id=vehs.id and grp.group_type='S' 
+					on grp.ref_id=vehs.id and grp.group_type='S' and vehs.id = ANY(@vehicleIds)
                         ";
 
                 //if (accountid > 0 && organizationid > 0)
@@ -1535,9 +1535,15 @@ namespace net.atos.daf.ct2.alert.repository
                                             ale.id as AlertId
                                             from master.alert ale
                                             inner join master.group grp
-                                            on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by ");
+                                            on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by
+                                            and ale.type = ANY(@featureEnums)");
                 parameterAlert.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
+                parameterAlert.Add("@featureIds", offlinePushNotificationFilter.FeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
+                parameterAlert.Add("@featureEnums", resultFeaturEnum);
+                parameterAlert.Add("@vins", offlinePushNotificationFilter.Vins);
 
                 if (offlinePushNotificationFilter.OrganizationId > 0)
                 {
@@ -1570,7 +1576,9 @@ namespace net.atos.daf.ct2.alert.repository
                                     inner join master.vehicle veh
                                     on triale.vin = veh.vin 
                                     where  triale.alert_generated_time > @alterGeneratedTime
-                                    and triale.alert_id = ANY(@alertIDs)");
+                                    and triale.alert_id = ANY(@alertIDs)
+                                    and triale.type = ANY(@featureEnums)
+                                    and triale.vin =ANY(@vins)");
                 List<NotificationDisplayProp> notificationDisplayProps = (List<NotificationDisplayProp>)await _dataMartdataAccess.QueryAsync<NotificationDisplayProp>(queryStringNoti.ToString(), parameterAlert);
                 List<NotificationDisplayProp> latestTop5Notification = notificationDisplayProps.OrderByDescending(x => x.AlertGeneratedTime).Take(5).ToList();
                 foreach (var item in latestTop5Notification)

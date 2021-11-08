@@ -124,20 +124,31 @@ namespace net.atos.daf.ct2.notificationservice.services
             try
             {
                 var response = new AssociatedVehicleResponse();
-                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
-                List<visibility.entity.VehicleDetailsAccountVisibility> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibility>();
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
                 if (request.FeatureIds != null)
                 {
-                    foreach (int featureId in request.FeatureIds)
-                    {
-                        IEnumerable<visibility.entity.VehicleDetailsAccountVisibility> vehicleAccountVisibiltyList
-                         = await _visibilityManager.GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
-                        //append visibile vins
-                        vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                        //remove duplicate vins by key as vin
-                        vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
-                    }
+                    //foreach (int featureId in request.FeatureIds)
+                    //{
+                    IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+                     = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, request.FeatureIds.ToArray());
+                    //append visibile vins
+                    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //remove duplicate vins by key as vin
+                    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    //}
                 }
+
+                List<string> featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
+
+                if (featureEnum.Any())
+                {
+                    var res = JsonConvert.SerializeObject(featureEnum);
+                    response.FeatureEnum.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FeatureEnum>>(res)
+                        );
+                }
+
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);

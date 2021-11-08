@@ -1388,7 +1388,7 @@ this.barChartOptionsPerformance = {
     perfTableTitle.font = this.titleStyle;
     let perfColList=[];
     this.columnPerformance.forEach((col, index) => {
-      worksheet.columns[index].width = 25;
+      if(worksheet.columns && worksheet.columns[index]) worksheet.columns[index].width = 25;
       if(index>1){
         if(index%2==0)
           perfColList.push(perfVinList[index]+'-'+this.translationData.lblDriver);
@@ -1429,7 +1429,7 @@ this.barChartOptionsPerformance = {
     let perObj=[];
     let key=element.key;
     perObj.push(this.appendUnits(key, this.translationData[key]));
-    perObj.push(element.targetValue);
+    perObj.push((this.formatValues(element, element.targetValue)).toString());
     element.score.forEach(score => {
         perObj.push(this.formatValues(element, score.value));
     });
@@ -1447,7 +1447,15 @@ this.barChartOptionsPerformance = {
     let generalBar = document.getElementById('generalChart');
     let performanceBar = document.getElementById('performanceChart');
     let summaryArea = document.getElementById('summaryCard');
-    
+
+    // let chartKPI = document.getElementById('apexchartschart2');
+    // let innerClass = document.getElementsByClassName('apexcharts-inner');
+    // let yAxis = document.getElementsByClassName('apexcharts-yaxis');
+    // let svg = chartKPI.getElementsByTagName('svg')[0];
+    // svg.removeChild(innerClass[0]);
+    // svg.removeChild(yAxis[1]);
+    // svg.removeChild(yAxis[0]);
+
     let src;
     let ohref;
     let oheight;
@@ -1456,6 +1464,7 @@ this.barChartOptionsPerformance = {
     let performanceBarHeight;
     let generalBarHref;
     let performanceBarHref;
+    // let chartKPIHref;
 
     html2canvas(summaryArea).then(canvas => {
       oheight= canvas.height * oWidth/canvas.width;
@@ -1475,8 +1484,16 @@ this.barChartOptionsPerformance = {
       src = canvas.toDataURL();
       performanceBarHref = canvas.toDataURL('image/png');
     });
-    
+    // html2canvas(chartKPI).then(canvas => {
+    //   performanceBarHeight= canvas.height * oWidth/canvas.width;
+    //   //oWidth= canvas.width;
+    //   src = canvas.toDataURL();
+    //   chartKPIHref = canvas.toDataURL('image/png');
+    // });
+
     let trendLineChart = document.getElementById('trendLineChart');
+    // let chartKPIs = document.getElementsByClassName('apexcharts-legend')[0];
+    // trendLineChart.getElementsByTagName('foreignObject')[0].removeChild(chartKPIs);
     html2canvas( (trendLineChart),
     {scale:2})
     .then(canvas => { 
@@ -1508,6 +1525,7 @@ this.barChartOptionsPerformance = {
 
       const FILEURI = canvas.toDataURL('image/png')
       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+      // doc.addImage(chartKPIHref, 'PNG', 150, 40, fileWidth, fileHeight);
       doc.addPage('a2','p');
 
       let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];

@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.vehicle
         public VehicleManager(IVehicleRepository vehicleRepository, IMemoryCache memoryCache)
         {
             this._vehicleRepository = vehicleRepository;
-            _memoryCache = memoryCache;
+            _memoryCache = memoryCache ?? throw new ArgumentNullException($"Memory cache object is null in { nameof(VehicleManager) }");
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)

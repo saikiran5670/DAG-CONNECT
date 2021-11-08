@@ -262,21 +262,22 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 }
                                 else
                                 {
-                                    //Grpc.Core.Metadata headers = new Grpc.Core.Metadata();
-                                    //var logged_in_orgId = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == this.Context.ConnectionId).Select(clients => clients.ContextOrgId).FirstOrDefault();
-                                    //var logged_FeatureId = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == this.Context.ConnectionId).Select(clients => clients.FeatureIds).FirstOrDefault();
-                                    //headers.Add("logged_in_orgId", Convert.ToString(logged_in_orgId));
+                                    Grpc.Core.Metadata headers = new Grpc.Core.Metadata();
+                                    var logged_in_orgId = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == this.Context.ConnectionId).Select(clients => clients.ContextOrgId).FirstOrDefault();
+                                    var logged_FeatureId = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.HubClientId == this.Context.ConnectionId).Select(clients => clients.FeatureIds).FirstOrDefault();
+                                    headers.Add("logged_in_orgId", Convert.ToString(logged_in_orgId));
                                     //_logger.Info($"\n\rPushNotificationVin - {GetUserSelectedOrgId()} - {JsonConvert.SerializeObject(logged_FeatureId)} -{GetContextOrgId()}");
-                                    //VisibilityVehicleRequest visibilityVehicleRequest = new VisibilityVehicleRequest();
-                                    //visibilityVehicleRequest.AccountId = objAlertVehicleDetails.AlertCreatedAccountId;
-                                    //visibilityVehicleRequest.OrganizationId = objAlertVehicleDetails.OrganizationId;
-                                    //visibilityVehicleRequest.FeatureIds.Add(logged_FeatureId.Select(x => x));
-                                    //AssociatedVehicleResponse associatedVehicleResponse = await _pushNotofocationServiceClient.GetVehicleByAccountVisibilityAsync(visibilityVehicleRequest, headers);
-                                    //var associatedVin = associatedVehicleResponse.AssociatedVehicle.Select(x => x.Vin).Contains(notificationAlertMessages.Vin.ToString());
-                                    //if (associatedVehicleResponse.AssociatedVehicle.Any() && associatedVin)
-                                    //{
-                                    connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
-                                    //}
+                                    VisibilityVehicleRequest visibilityVehicleRequest = new VisibilityVehicleRequest();
+                                    visibilityVehicleRequest.AccountId = objAlertVehicleDetails.AlertCreatedAccountId;
+                                    visibilityVehicleRequest.OrganizationId = objAlertVehicleDetails.OrganizationId;
+                                    visibilityVehicleRequest.FeatureIds.Add(logged_FeatureId.Select(x => x));
+                                    AssociatedVehicleResponse associatedVehicleResponse = await _pushNotofocationServiceClient.GetVehicleByAccountVisibilityAsync(visibilityVehicleRequest, headers);
+                                    var associatedVin = associatedVehicleResponse.AssociatedVehicle.Select(x => x.Vin).Contains(notificationAlertMessages.Vin.ToString());
+                                    var featureEnum = associatedVehicleResponse.FeatureEnum.Select(x => x.FeatureEnumType).Contains(notificationAlertMessages.AlertType.ToString());
+                                    if (associatedVehicleResponse.AssociatedVehicle.Any() && associatedVin && featureEnum)
+                                    {
+                                        connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
+                                    }
                                 }
                                 _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
                                 await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));

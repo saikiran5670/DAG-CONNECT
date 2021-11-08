@@ -138,7 +138,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                 parameter.Add("@featureEnums", resultFeaturEnum);
                 string queryAlert = @"select id, Name, organization_id as org_id 
                                         from master.alert 
-                                        where organization_id = @orgId and type = ANY(@featureEnums) ";
+                                        where state in ('A','I') and organization_id = @orgId and type = ANY(@featureEnums)  ";
                 var result = await _dataAccess.QueryAsync<AlertOrgMap>(queryAlert, parameter);
                 return result.AsList<AlertOrgMap>();
             }
@@ -167,8 +167,12 @@ namespace net.atos.daf.ct2.dashboard.repository
 						,ROUND(SUM(lcts.trip_distance),2) as todaydistance
                         ,SUM(lcts.driving_time) as todaydrivingtime
                         FROM livefleet.livefleet_current_trip_statistics lcts
-                        WHERE lcts.latest_processed_message_time_stamp >= @todaydatetime  --(today 00hr)
+                        WHERE to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date - 0)
 			               AND lcts.vin = Any(@Vins)
+						   AND 
+                            trip_id not in(
+                        select distinct trip_id from livefleet.livefleet_position_statistics
+                          where vin = Any(@Vins) and vehicle_msg_trigger_type_id =5)
 							GROUP BY lcts.vin
                         ), cte_filterTripEndedToday as
                         (
@@ -178,7 +182,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         ,SUM(ts.etl_gps_driving_time) as todaydrivingtime
                         FROM tripdetail.trip_statistics ts
                         WHERE ts.end_time_stamp >= @todaydatetime  --(today 00hr)
-   							AND ts.end_time_stamp <= @tomorrowdatetime --(Tomorrow 00hr) 
+   							AND ts.start_time_stamp >=  @todaydatetime  --(today 00hr)
 							AND ts.vin = Any(@Vins)
 							GROUP BY ts.vin
                         )
@@ -186,7 +190,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 						, 
 						cte_Alert as (
 						select vin, Count(urgency_level_type) as todayalertcount from tripdetail.tripalert  where vin = Any(@Vins)
-							and (created_at >= @todaydatetime and created_at<= @tomorrowdatetime) 
+							and (created_at >= @todaydatetime)
 							and urgency_level_type = 'C' GROUP BY vin
 						)
 						--*/

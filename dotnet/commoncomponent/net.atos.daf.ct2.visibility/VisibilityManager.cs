@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.visibility
         {
             _visibilityRepository = visibilityRepository;
             _vehicleManager = vehicleManager;
-            _memoryCache = memoryCache;
+            _memoryCache = memoryCache ?? throw new ArgumentNullException($"Memory cache object is null in { nameof(VisibilityManager) }");
         }
 
         public async Task<int> GetReportFeatureId(int reportId)

@@ -1817,7 +1817,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@VEHICLE_ID", existingVehicleProperties.VehicleId);
                 existingVehicleProperties.VehicleAxelInformation = new List<VehicleAxelInformation>();
                 existingVehicleProperties.VehicleAxelInformation = (List<VehicleAxelInformation>)await _dataAccess.QueryAsync<VehicleAxelInformation>(queryAxleStatement, parameter);
-
+                if (vehicleproperty?.VehicleAxelInformation?.Count > 0 && existingVehicleProperties?.VehicleAxelInformation?.Count > 0)
+                {
+                    UpdateAxleProperties(existingVehicleProperties.VehicleAxelInformation, vehicleproperty.VehicleAxelInformation);
+                }
                 var queryFuelStatement = @"SELECT ID,
 	                                    VEHICLE_ID as VehicleId,
 	                                    CHASIS_FUEL_TANK_NUMBER as Chassis_Tank_Nr,
@@ -1827,13 +1830,77 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@VEHICLE_ID", existingVehicleProperties.VehicleId);
                 existingVehicleProperties.VehicleFuelTankProperties = new List<VehicleFuelTankProperties>();
                 existingVehicleProperties.VehicleFuelTankProperties = (List<VehicleFuelTankProperties>)await _dataAccess.QueryAsync<VehicleFuelTankProperties>(queryFuelStatement, parameter);
-
+                if (vehicleproperty?.VehicleFuelTankProperties?.Count > 0 && existingVehicleProperties?.VehicleAxelInformation?.Count > 0)
+                {
+                    UpdateFuelTankProperties(existingVehicleProperties.VehicleFuelTankProperties, vehicleproperty.VehicleFuelTankProperties);
+                }
                 return existingVehicleProperties;
             }
             catch (Exception ex)
             {
 
                 throw ex;
+            }
+        }
+
+        private void UpdateFuelTankProperties(List<VehicleFuelTankProperties> vehicleFuelTankProperties, List<VehicleFuelTankProperties> requestProperties)
+        {
+
+
+            foreach (var x in vehicleFuelTankProperties)
+            {
+                var itemRefCode = requestProperties?.FirstOrDefault(d => d.Chassis_Tank_Nr == x.Chassis_Tank_Nr);
+                if (itemRefCode != null)
+                {
+                    x.Chassis_Tank_Volume = itemRefCode.Chassis_Tank_Volume;
+                }
+                else
+                {
+
+                    requestProperties.Add(x);
+                }
+            }
+        }
+
+
+        private void UpdateAxleProperties(List<VehicleAxelInformation> vehicleAxelProperties, List<VehicleAxelInformation> requestProperties)
+        {
+            requestProperties?.Where(w => w.AxelType == AxelType.FrontAxle).ToList().ForEach(i => i.AxelTypeEnum = "F");
+            requestProperties?.Where(w => w.AxelType == AxelType.RearAxle).ToList().ForEach(i => i.AxelTypeEnum = "R");
+            //foreach (var item in requestProperties)
+            //{
+
+
+            //    if (item.AxelType == AxelType.FrontAxle)
+            //    {
+            //        item.AxelTypeEnum = "F";
+            //    }
+            //    if (item.AxelType == AxelType.RearAxle)
+            //    {
+            //        item.AxelTypeEnum = "R";
+            //    }
+            //}
+
+            foreach (var vehicleFrontAxelInfo in vehicleAxelProperties)
+            {
+
+                var frontAxel = requestProperties?.FirstOrDefault(d => d.Position == vehicleFrontAxelInfo.Position && d.AxelTypeEnum == vehicleFrontAxelInfo.AxelTypeEnum);
+                if (frontAxel != null)
+                {
+                    vehicleFrontAxelInfo.AxelType = frontAxel.AxelTypeEnum == "F" ? AxelType.FrontAxle : AxelType.RearAxle;
+                    vehicleFrontAxelInfo.Load = frontAxel.Load;
+                    vehicleFrontAxelInfo.Ratio = frontAxel.Ratio;
+                    vehicleFrontAxelInfo.Type = frontAxel.Type;
+                    vehicleFrontAxelInfo.Position = frontAxel.Position;
+                    vehicleFrontAxelInfo.Springs = frontAxel.Springs;
+                    vehicleFrontAxelInfo.Size = frontAxel.Size;
+                    vehicleFrontAxelInfo.Is_Wheel_Tire_Size_Replaced = frontAxel.Is_Wheel_Tire_Size_Replaced;
+                }
+                else
+                {
+                    vehicleFrontAxelInfo.AxelType = vehicleFrontAxelInfo.AxelTypeEnum == "F" ? AxelType.FrontAxle : AxelType.RearAxle;
+                    requestProperties.Add(vehicleFrontAxelInfo);
+                }
             }
         }
 
