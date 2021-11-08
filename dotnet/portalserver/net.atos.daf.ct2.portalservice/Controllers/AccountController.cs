@@ -1912,7 +1912,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 // check for DAF Admin
                 if (_userDetails.RoleLevel >= 30)
-                    return Unauthorized("Unauthorized access");
+                    return Forbid("Access is forbidden");
 
                 //Add context org id to session
                 _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);

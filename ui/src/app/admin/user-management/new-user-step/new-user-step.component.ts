@@ -368,7 +368,7 @@ export class NewUserStepComponent implements OnInit {
 
   saveAccountRoles(_createStatus: any){
     //---- Role obj----------//
-    this.roleDataSource = new MatTableDataSource(this.roleData);
+    // this.roleDataSource = new MatTableDataSource(this.roleData);
     this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
     let mapRoleData: any = [];
     if(this.mapRoleIds.length > 0){

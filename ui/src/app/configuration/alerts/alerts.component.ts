@@ -31,7 +31,7 @@ export class AlertsComponent implements OnInit {
   titleText: string;
   translationData: any= {};
   localStLanguage: any;
-  dataSource: any; 
+  dataSource: any;
   initData: any = [];
   originalAlertData: any= [];
   rowsData: any;
@@ -41,7 +41,7 @@ export class AlertsComponent implements OnInit {
   accountOrganizationId: any;
   accountId: any;
   accountRoleId: any;
-  EmployeeDataService : any= [];  
+  EmployeeDataService : any= [];
   packageCreatedMsg : any = '';
   titleVisible : boolean = false;
   alertCategoryList: any= [];
@@ -53,9 +53,9 @@ export class AlertsComponent implements OnInit {
   alertTypeListBasedOnPrivilege: any= [];
   vehicleGroupListBasedOnPrivilege: any= [];
   vehicleListBasedOnPrivilege: any= [];
-  stringifiedData: any;  
-  parsedJson: any;  
-  filterValues = {};  
+  stringifiedData: any;
+  parsedJson: any;
+  filterValues = {};
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
   associatedVehicleData: any= [];
@@ -68,13 +68,13 @@ export class AlertsComponent implements OnInit {
   constructor(
     private translationService: TranslationService,
     private accountService: AccountService,
-    private packageService: PackageService, 
+    private packageService: PackageService,
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
     private reportMapService: ReportMapService ) { }
-  
+
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -83,8 +83,8 @@ export class AlertsComponent implements OnInit {
       }
       else{
         this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-      } 
-      
+      }
+
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -97,19 +97,19 @@ export class AlertsComponent implements OnInit {
         menuId: 17 //-- for alerts
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);      
-        this.loadFiltersData();  
-      });  
+        this.processTranslation(data);
+        this.loadFiltersData();
+      });
     }
-    
-  
+
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadFiltersData(){    
-    this.showLoadingIndicator = true;   
+  loadFiltersData(){
+    this.showLoadingIndicator = true;
     this.alertService.getAlertFilterData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
       filterData.forEach(element => {
@@ -132,9 +132,9 @@ export class AlertsComponent implements OnInit {
         value:"I",
         key:'Suspended'
        }
-    ]    
+    ]
     this.loadDataBasedOnPrivileges();
-        
+
     }, (error) => {
 
     })
@@ -171,26 +171,26 @@ export class AlertsComponent implements OnInit {
               "vehicleGroupName" : itemSplit[1]
             }
             this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
-          //  } 
+          //  }
           });
         }
 
         this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
       });
-      
+
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
 
-      this.loadAlertsData();   
+      this.loadAlertsData();
     })
   }
 
 
   removeDuplicates(originalArray, prop) {
     var newArray = [];
-    var lookupObject  = {}; 
+    var lookupObject  = {};
     for(var i in originalArray) {
        lookupObject[originalArray[i][prop]] = originalArray[i];
-    } 
+    }
     for(i in lookupObject) {
         newArray.push(lookupObject[i]);
     }
@@ -204,7 +204,7 @@ export class AlertsComponent implements OnInit {
   onClose(){
     this.grpTitleVisible = false;
   }
- 
+
   onBackToPage(objData){
     this.createViewEditStatus = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
@@ -212,7 +212,7 @@ export class AlertsComponent implements OnInit {
     }
     this.loadAlertsData();
   }
-  
+
   pageSizeUpdated(_event){
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
@@ -249,15 +249,15 @@ export class AlertsComponent implements OnInit {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
 
-  loadAlertsData(){  
-    this.initData = [];  
+  loadAlertsData(){
+    this.initData = [];
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -265,29 +265,29 @@ export class AlertsComponent implements OnInit {
       vehicleGroupGroupId: 0,
       roleId: 0,
       name: ""
-    }    
+    }
     this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let initDataBasedOnPrivilege = data;
-      // this.initData =data; 
+      // this.initData =data;
       initDataBasedOnPrivilege.forEach(item => {
-        let hasPrivilege = (this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0 && (this.vehicleGroupListBasedOnPrivilege.filter(element => element.vehicleGroupId == item.vehicleGroupId).length > 0 || this.vehicleListBasedOnPrivilege.filter(element => element.vehicleId == item.vehicleGroupId).length > 0));    
+        let hasPrivilege = (this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0 && (this.vehicleGroupListBasedOnPrivilege.filter(element => element.vehicleGroupId == item.vehicleGroupId).length > 0 || this.vehicleListBasedOnPrivilege.filter(element => element.vehicleId == item.vehicleGroupId).length > 0));
         if(hasPrivilege){
           this.initData.push(item);
         }
       })
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
-      this.initData.forEach(item => {      
-       
+      this.initData.forEach(item => {
+
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
-      catVal.forEach(obj => { 
+      catVal.forEach(obj => {
         item["category"]=obj.value;
-      });     
+      });
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
-      typeVal.forEach(obj => { 
+      typeVal.forEach(obj => {
         item["type"]=obj.value;
-      });  
-      
+      });
+
       let alertUrgency=({
       alertFilterRefs: [],
       alertId: 42,
@@ -303,68 +303,68 @@ export class AlertsComponent implements OnInit {
       urgencylevelEndDate: 0,
       urgencylevelStartDate: 0
     })
-      // let alertUrgency =({      
+      // let alertUrgency =({
       // thresholdValue: 300,
-      // urgencyLevelType: "A"      
+      // urgencyLevelType: "A"
       // })
 
      // item.alertUrgencyLevelRefs.push(alertUrgency);
       //item.alertUrgencyLevelRefs.push(alertUrgency);
-      
+
       let critical  = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
       let warning   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
       let advisory   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
-     
+
       if(critical.length > 0){
-      critical.forEach(obj => { 
+      critical.forEach(obj => {
       item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
-      writable : true,enumerable : true, configurable : true});    
+      writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
       item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
-      }); 
+      });
       }
       else if(warning.length > 0){
-      warning.forEach(obj => { 
+      warning.forEach(obj => {
       item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
-      writable : true,enumerable : true, configurable : true});  
+      writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
       item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
-    });     
-      }       
+    });
+      }
       else {
-      advisory.forEach(obj => { 
+      advisory.forEach(obj => {
       item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
-      writable : true,enumerable : true, configurable : true});  
+      writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);  
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
-    });   
-      }  
-      if(item.vehicleGroupName!=''){     
+    });
+      }
+      if(item.vehicleGroupName!=''){
         this.vehicleGroupList.push({value:item.vehicleGroupName, key:item.vehicleGroupName});
         this.vehicleGroupList = this.vehicleGroupList.filter((test, index, array) =>
           index === array.findIndex((findTest) =>
           findTest.value === test.value
-          )   
-       ); 
+          )
+       );
       } else {
         item.vehicleGroupName = item.vehicleName;
-      }              
-     }); 
-      this.updateDatasource(this.initData);  
+      }
+     });
+      this.updateDatasource(this.initData);
     }, (error) => {
-    })     
-   this.hideloader();     
+    })
+   this.hideloader();
  }
- 
+
  getConvertedThresholdValues(originalThreshold,unitType){
    let threshold;
    if(unitType == 'H' || unitType == 'T' ||unitType == 'S'){
@@ -379,7 +379,7 @@ export class AlertsComponent implements OnInit {
    else if(unitType == 'P'){
      threshold=originalThreshold;
    }
-  
+
    return threshold;
  }
 
@@ -390,8 +390,8 @@ export class AlertsComponent implements OnInit {
 }
   updateDatasource(data){
     if(data && data.length > 0){
-      this.initData = this.getNewTagData(data); 
-    } 
+      this.initData = this.getNewTagData(data);
+    }
     this.dataSource = new MatTableDataSource(this.initData);
     // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
     //   return (
@@ -418,6 +418,14 @@ export class AlertsComponent implements OnInit {
       //     return this.compare(a1, b1, isAsc);
       //   });
       //  }
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+        data.name.toString().toLowerCase().includes(filter) ||
+        data.category.toString().toLowerCase().includes(filter) ||
+         data.type.toString().toLowerCase().includes(filter) ||
+        data.highThresholdValue.toString().includes(filter)
+      );
+    };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -432,9 +440,9 @@ export class AlertsComponent implements OnInit {
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
 
   // compare(a: any, b: any, isAsc: boolean) {
   //   if(!(a instanceof Number) && isNaN(a)) a = a.toUpperCase();
@@ -446,7 +454,7 @@ export class AlertsComponent implements OnInit {
     let currentDate = new Date().getTime();
     data.forEach(row => {
       if(row.createdAt){
-        let createdDate = parseInt(row.createdAt); 
+        let createdDate = parseInt(row.createdAt);
         let nextDate = createdDate + 86400000;
         if(currentDate >= createdDate && currentDate < nextDate){
           row.newTag = true;
@@ -454,7 +462,7 @@ export class AlertsComponent implements OnInit {
         else{
           row.newTag = false;
         }
-      } 
+      }
       else{
         row.newTag = false;
       }
@@ -462,7 +470,7 @@ export class AlertsComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData);
     return newTrueData;
   }
 
@@ -488,7 +496,7 @@ export class AlertsComponent implements OnInit {
     }
    });
   }
-    
+
   getDeletMsg(alertName: any, isError? :boolean){
     if(!isError){
       if(this.translationData.lblAlertDelete)
@@ -520,13 +528,13 @@ export class AlertsComponent implements OnInit {
     this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
     //this.rowsData.push(row);
     //this.editFlag = true;
-    //this.createStatus = false;    
+    //this.createStatus = false;
   }
 
    successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -534,7 +542,7 @@ export class AlertsComponent implements OnInit {
   errorMsgBlink(errorMsg: any){
     this.errorMsgVisible = true;
     this.displayMessage = errorMsg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.errorMsgVisible = false;
     }, 5000);
   }
@@ -542,7 +550,7 @@ export class AlertsComponent implements OnInit {
   onChangeAlertStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert,
-      message: this.translationData.lblYouwanttoDetails,   
+      message: this.translationData.lblYouwanttoDetails,
       cancelText: this.translationData.lblCancel,
       confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
@@ -554,7 +562,7 @@ export class AlertsComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){ 
+      if(res == true){
        if(rowData.state == 'A'){
           this.alertService.suspendAlert(rowData.id).subscribe((data) => {
             this.loadAlertsData();
@@ -574,14 +582,14 @@ export class AlertsComponent implements OnInit {
         });
 
        }
-        
+
       }else {
         this.loadAlertsData();
       }
     });
   }
 
-  onVehicleGroupClick(data: any) {   
+  onVehicleGroupClick(data: any) {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
     const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles}`;
@@ -589,7 +597,7 @@ export class AlertsComponent implements OnInit {
       groupId: data.vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',
-      organizationId: data.organizationId    
+      organizationId: data.organizationId
       // groupType: data.groupType,
       // functionEnum: data.functionEnum
     }
@@ -609,5 +617,5 @@ export class AlertsComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
-  }   
+  }
 }
