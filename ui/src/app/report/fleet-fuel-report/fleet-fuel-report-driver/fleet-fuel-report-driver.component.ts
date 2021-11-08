@@ -669,6 +669,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    this.showLoadingIndicator=true;
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
    
@@ -679,7 +680,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "LanguageCode": "EN-GB"
     }  
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    // console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -694,7 +695,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
     
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    })
+    this.hideloader();
+    }, (error)=>{
+      this.hideloader();
+    });
   }
 
   loadsummaryDetails(){
@@ -751,9 +755,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -853,10 +858,14 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     } 
+    this.showLoadingIndicator=true;
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
       this.showGraph = true;
+      this.hideloader();
+    }, (error)=>{
+      this.hideloader();
     });    
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;

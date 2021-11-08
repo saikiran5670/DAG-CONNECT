@@ -1159,7 +1159,7 @@ createEndMarker(){
   public ngAfterViewInit() { }
 
   loadfleetFuelDetails(vehicleDetails: any){
-
+    this.showLoadingIndicator=true;
 // let hardCodePayload= {
 //     "startDateTime" : 1525480060000,
 //     "endDateTime" : 1625480060000,
@@ -1183,6 +1183,9 @@ createEndMarker(){
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
+    this.hideloader();
+    }, (complete)=>{
+      this.hideloader();
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
@@ -1208,14 +1211,14 @@ createEndMarker(){
   }
 
   loadWholeTripData(){
-    this.showLoadingIndicator = true;
+    // this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
       this.loadUserPOI();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
       this.loadUserPOI();
@@ -1481,7 +1484,7 @@ createEndMarker(){
        }
     }
     if(_vinData.length > 0){
-      this.showLoadingIndicator = true;
+      // this.showLoadingIndicator = true;
       let searchDataParam = {
         "startDateTime":_startTime,
         "endDateTime":_endTime,
@@ -1490,7 +1493,7 @@ createEndMarker(){
       this.loadfleetFuelDetails(this.vehicleDetails);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
-      this.hideloader();
+      // this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
