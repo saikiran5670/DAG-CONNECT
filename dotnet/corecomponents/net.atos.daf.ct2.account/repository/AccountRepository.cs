@@ -35,9 +35,16 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@type", (char)account.AccountType);
                 parameter.Add("@driver_id", account.DriverId);
                 parameter.Add("@created_at", account.CreatedAt.Value);
+                parameter.Add("@organization_Id", account.Organization_Id);
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id";
+                // For System account, organization preference will be the default preference.
+                string query = account.AccountType == AccountType.PortalAccount
+                    ? @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) 
+                      values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id"
+
+                    : @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) 
+                      values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A', 
+                      (select preference_id from master.organization org where org.id=@organization_Id),null,@created_at) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -56,7 +63,6 @@ namespace net.atos.daf.ct2.account
                     }
                     parameter.Add("@state", "A");
                     parameter.Add("@account_id", account.Id);
-                    parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
