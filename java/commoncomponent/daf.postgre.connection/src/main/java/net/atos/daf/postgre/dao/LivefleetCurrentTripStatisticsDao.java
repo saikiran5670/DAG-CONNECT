@@ -58,20 +58,20 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				trip_stats_insert_stmt = fillStatement(trip_stats_insert_stmt, row);
 
-				System.out.println("INSERT_CURRENT_TRIP query : " + trip_stats_insert_stmt);
+				//System.out.println("INSERT_CURRENT_TRIP query : " + trip_stats_insert_stmt);
 
 				trip_stats_insert_stmt.addBatch();
 				int[] res = trip_stats_insert_stmt.executeBatch();
 
-				System.out.println("NUMBER OF ROWS inserted by INSERT_CURRENT_TRIP query is " + Arrays.toString(res));
+				//System.out.println("NUMBER OF ROWS inserted by INSERT_CURRENT_TRIP query is " + Arrays.toString(res));
 				logger.info("data inserted for trip  ::" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
-			System.out.println("Issue in LivefleetCurrentTripStatisticsDao  " + trip_stats_insert_stmt);
+			//System.out.println("Issue in LivefleetCurrentTripStatisticsDao  " + trip_stats_insert_stmt);
 			e.printStackTrace();
 		} catch (Exception e) {
-			System.out.println("Issue in LivefleetCurrentTripStatisticsDao insertion   " + trip_stats_insert_stmt);
+			//System.out.println("Issue in LivefleetCurrentTripStatisticsDao insertion   " + trip_stats_insert_stmt);
 		}
 	}
 
@@ -365,6 +365,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		ResultSet rs_trip = null;
 
 		CurrentTrip currentTripdata = null;
+		logger.info("read started CurrentTripStatistics tripId -{}  time-{}", tripId , java.time.LocalTime.now());
 
 		try {
 
@@ -374,11 +375,11 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 						ResultSet.CONCUR_UPDATABLE);
 				stmt_read_current_trip.setString(1, tripId);
 
-				System.out.println("READ_CURRENT_TRIP query : " + stmt_read_current_trip);
+				//System.out.println("READ_CURRENT_TRIP query : " + stmt_read_current_trip);
 
 				rs_trip = stmt_read_current_trip.executeQuery();
 
-				System.out.println("rs_trip " + rs_trip);
+				//System.out.println("rs_trip " + rs_trip);
 
 				while (rs_trip.next()) {
 
@@ -403,21 +404,26 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				// }
 				
 				if(!Objects.isNull(currentTripdata))
-					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is "
-						+ currentTripdata.toString());
+					/*
+					 * System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = "
+					 * + tripId + " is " + currentTripdata.toString());
+					 */
+				logger.info("read finished CurrentTripStatistics tripId -{}  time-{}", tripId , java.time.LocalTime.now());
+				
 				else 
-					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is NULL");
+					//System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is NULL");
+				logger.info("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId is null"+ tripId);
 
 				rs_trip.close();
 
 			}
 
 		} catch (SQLException e) {
-			System.out.println("issue in sql read" + stmt_read_current_trip);
+			//System.out.println("issue in sql read" + stmt_read_current_trip);
 			e.printStackTrace();
 
 		} catch (Exception e) {
-			System.out.println("issue in read" + stmt_read_current_trip);
+			//System.out.println("issue in read" + stmt_read_current_trip);
 			e.printStackTrace();
 		} finally {
 
@@ -432,6 +438,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			}
 		}
 
+		
 		return currentTripdata;
 	}
 
@@ -448,20 +455,20 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				trip_stats_update_stmt = fillUpdateStatement(trip_stats_update_stmt, row);
 				trip_stats_update_stmt.setString(15, row.getTripId());
 
-				System.out.println("UPDATE_CURRENT_TRIP query : " + trip_stats_update_stmt);
+				//System.out.println("UPDATE_CURRENT_TRIP query : " + trip_stats_update_stmt);
 
 				int num = trip_stats_update_stmt.executeUpdate();
 
-				System.out.println("NUMBER OF ROWS updated by UPDATE_CURRENT_TRIP is " + num);
+				//System.out.println("NUMBER OF ROWS updated by UPDATE_CURRENT_TRIP is " + num);
 				logger.info("NUMBER OF ROWS updated by UPDATE_for_TRIP is" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
-			System.out.println("Issue in sql update trip statistics::" + trip_stats_update_stmt);
+			//System.out.println("Issue in sql update trip statistics::" + trip_stats_update_stmt);
 			e.printStackTrace();
 		} catch (Exception e) {
 
-			System.out.println("Issue in update trip statistics::" + trip_stats_update_stmt);
+			//System.out.println("Issue in update trip statistics::" + trip_stats_update_stmt);
 			e.printStackTrace();
 		} finally {
 
@@ -487,7 +494,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		try {
 
 			if (null != vin && null != (connection = getConnection())) {
-
+				logger.info("read started CurrentTripStatistics for warning  vin -{}  time-{}", vin , java.time.LocalTime.now());
 				readWarnStatusStmt = connection.prepareStatement(READ_LATEST_WARNING_STATUS_AT_TRIP_START, ResultSet.TYPE_SCROLL_SENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
 				readWarnStatusStmt.setString(1, vin);
@@ -517,10 +524,15 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 					}
 				}
 				if(!Objects.isNull(warnStatsPojo))
-					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + vin + " is "
-						+ warnStatsPojo.toString());
+					/*
+					 * System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = "
+					 * + vin + " is " + warnStatsPojo.toString());
+					 */
+				logger.info("read finished CurrentTripStatistics for warning  vin -{}  time-{}", vin , java.time.LocalTime.now());
+				
 				else 
-					System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + vin + " is NULL");
+					//System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + vin + " is NULL");
+				logger.info("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId is null" +vin);
 
 				rs_warn_vehicle_health_status.close();
 

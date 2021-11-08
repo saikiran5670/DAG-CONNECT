@@ -48,7 +48,8 @@ public class PostgreDataSourceConnection {
 			//System.out.println("serverName--"+ serverNm + "port--" + port + "dataBaseName--" +databaseNm + "UserName--" + userNm + "password--" + password);
 			dSource = new Jdbc3PoolingDataSource();
 			dSource.setUrl(url);
-			System.out.println("URL submitted to DataSource  " + url);
+			//System.out.println("URL submitted to DataSource  " + url);
+			logger.info("URL submitted to DataSource  " + url);
 			dSource.setMaxConnections(DafConstants.MAX_CONNECTIONS);
 			conn = dSource.getConnection();
 		} catch (SQLException e) {
@@ -93,6 +94,7 @@ public class PostgreDataSourceConnection {
 		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
 				+ encodedPassword + DafConstants.POSTGRE_SQL_SSL_MODE;
 		System.out.println("url = " + url);
+		logger.info("URL submitted to DataSource  " + url);
 
 		return url;
 	}
