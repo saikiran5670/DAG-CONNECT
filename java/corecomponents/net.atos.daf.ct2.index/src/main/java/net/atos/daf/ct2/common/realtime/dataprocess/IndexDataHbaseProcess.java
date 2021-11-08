@@ -86,7 +86,7 @@ public class IndexDataHbaseProcess {
 			try {
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 						"Realtime index data processing Job Failed, reason :: " + e.getMessage());
-				System.out.println("before calling auditTrail in catch");
+				//System.out.println("before calling auditTrail in catch");
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				auditing.auditTrialGrpcCall(auditMap);
