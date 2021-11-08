@@ -3461,7 +3461,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  
 		                    THEN (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
 			                    (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
-		                    ELSE 0 END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count
+		                    ELSE 0 END as EcoScore_Total
 	                    FROM ecoscorequery eco
 	                    GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
@@ -3506,7 +3506,7 @@ namespace net.atos.daf.ct2.reports.repository
                     ),
                     PTODuration as 
                     (
-                        SELECT eco.driver1_id, eco.aggregation_type, SUM(eco.pto_duration) as PTODuration_Total, 1 as PTODuration_Count
+                        SELECT eco.driver1_id, eco.aggregation_type, SUM(eco.pto_duration) as PTODuration_Total, COUNT(1) as PTODuration_Count
                         FROM ecoscorequery eco
                         GROUP BY eco.driver1_id, eco.aggregation_type	
                     ),
@@ -3539,7 +3539,7 @@ namespace net.atos.daf.ct2.reports.repository
                     ),
                     HeavyThrottleDuration  as
                     (
-	                    SELECT eco.driver1_id, eco.aggregation_type, (CAST(SUM(eco.heavy_throttle_pedal_duration ) AS DOUBLE PRECISION)) as HeavyThrottleDuration_Total, 1 as HeavyThrottleDuration_Count
+	                    SELECT eco.driver1_id, eco.aggregation_type, (CAST(SUM(eco.heavy_throttle_pedal_duration ) AS DOUBLE PRECISION)) as HeavyThrottleDuration_Total, COUNT(1) as HeavyThrottleDuration_Count
 	                    FROM ecoscorequery eco
 	                    GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
@@ -3554,7 +3554,7 @@ namespace net.atos.daf.ct2.reports.repository
                     ),
                     IdleDuration  as
                     (
-                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION) as IdleDuration_Total, 1 as IdleDuration_Count
+                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION) as IdleDuration_Total, COUNT(1) as IdleDuration_Count
                         FROM ecoscorequery eco
                         GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
@@ -3572,13 +3572,13 @@ namespace net.atos.daf.ct2.reports.repository
                     ),
                     HarshBrakeDuration  as
                     (
-                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration_Total, 1 as HarshBrakeDuration_Count
+                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration_Total, COUNT(1) as HarshBrakeDuration_Count
                         FROM ecoscorequery eco
                         GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
                     BrakeDuration as
                     (
-                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration_Total, 1 as BrakeDuration_Count
+                        SELECT eco.driver1_id, eco.aggregation_type, CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION) as BrakeDuration_Total, COUNT(1) as BrakeDuration_Count
                         FROM ecoscorequery eco
                         GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
@@ -3611,7 +3611,7 @@ namespace net.atos.daf.ct2.reports.repository
                     -- Average Distance per day
                     AverageDistancePerDay_Total, AverageDistancePerDay_Count,
                     -- Eco Score
-                    EcoScore_Total, EcoScore_Count,
+                    EcoScore_Total,
                     -- Fuel Consumption
                     FuelConsumption_Total, FuelConsumption_Count,
                     -- Cruise Control Usage
@@ -3731,7 +3731,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  
 		                    THEN (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
 			                    (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
-		                    ELSE 0 END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count
+		                    ELSE 0 END as EcoScore_Total
 	                    FROM ecoscorequery eco
 	                    GROUP BY eco.driver1_id, eco.aggregation_type
                     ),
@@ -3757,7 +3757,7 @@ namespace net.atos.daf.ct2.reports.repository
                     StartTimestamp,
                     EndTimestamp,                   
                     -- Eco Score
-                    EcoScore_Total, EcoScore_Count,
+                    EcoScore_Total,
                     -- Fuel Consumption
                     FuelConsumption_Total, FuelConsumption_Count,                    
                     -- Braking Score

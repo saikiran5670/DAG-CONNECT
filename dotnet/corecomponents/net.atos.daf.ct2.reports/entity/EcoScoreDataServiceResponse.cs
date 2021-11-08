@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.reports.entity
         public KPI CruiseControlUsage5075kmph { get; set; }
         public KPI CruiseControlUsage75kmph { get; set; }
         public KPI Distance { get; set; }
-        public KPI Ecoscore { get; set; }
+        public double Ecoscore { get; set; }
         public KPI FuelConsumption { get; set; }
         public KPI HarshBrakeDuration { get; set; }
         public KPI HarshBrakePercentage { get; set; }
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.reports.entity
         public long? EndTimestamp { get; set; }
         public KPI AnticipationScore { get; set; }
         public KPI BrakingScore { get; set; }
-        public KPI Ecoscore { get; set; }
+        public double Ecoscore { get; set; }
         public KPI FuelConsumption { get; set; }
     }
 
