@@ -60,6 +60,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
+					//TODO---size of queue--put logger
 					for (Index indexData : synchronizedCopy) {
 						
 						logger.info("inside LiveFleet Sink class :{}");
@@ -80,6 +81,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 							
 							LiveFleetPojo previousRecordInfo = positionDAO.read(vin, tripID);
 							//logger.info("inside LiveFleet Sink class after read :{}");
+							////TODO----log end time along with trip id & vin
 							if (previousRecordInfo != null) {
 								logger.info("inside LiveFleet previousRecordInfo is not null :{}");
 								Double previousMessageTimeStamp = previousRecordInfo.getMessageTimestamp();
@@ -267,8 +269,10 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setVehicleMsgTriggerTypeId(row.getVEvtID());
 
 		try {
+			//TODO---log start time
 			currentPosition.setCreatedDatetime(TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+			//TODO---log end time
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

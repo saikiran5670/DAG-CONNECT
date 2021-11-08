@@ -63,7 +63,7 @@ public class LiveFleetPosition implements Serializable {
 	}
 
 	public LiveFleetPojo read(String vin, String tripId) throws TechnicalException, SQLException {
-
+//TODO----log start time along with trip id & vin
 		PreparedStatement stmtReadLivefleetPosition = null;
 		ResultSet rs_position = null;
 		LiveFleetPojo previousRecordInfo=null;

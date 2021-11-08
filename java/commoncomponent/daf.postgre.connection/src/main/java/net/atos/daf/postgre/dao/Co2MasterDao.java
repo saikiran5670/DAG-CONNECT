@@ -39,6 +39,7 @@ public class Co2MasterDao implements Serializable {
 		PreparedStatement stmt_read_co2_coefficient = null;
 		ResultSet rs_position = null;
 		Co2Master cm= new Co2Master();
+		//put logger 
 
 		try {
 			
