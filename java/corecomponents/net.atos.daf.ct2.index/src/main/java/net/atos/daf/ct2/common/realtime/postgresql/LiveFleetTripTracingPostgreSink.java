@@ -154,7 +154,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 
 	public LiveFleetPojo tripCalculation(Index row, Double drivingTime) {
 		LiveFleetPojo currentPosition = new LiveFleetPojo();
-		System.out.println("Inside Trip Calculation");
+		//System.out.println("Inside Trip Calculation");
 		int varVEvtid = 0;
 		if (row.getVEvtID() != null) {
 			varVEvtid = row.getVEvtID();

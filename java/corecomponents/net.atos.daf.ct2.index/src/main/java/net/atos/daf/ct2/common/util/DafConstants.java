@@ -117,6 +117,11 @@ public static final String INDEX_HBASE_PROCESS="index.hbase.process";
 		public static final String TRIP_INDEX_INSERT_STATEMENT = "INSERT INTO livefleet.index_message_data( trip_id, vin, tachograph_speed, gross_weight_combination"
 				+ ", driver2_id, driver1_id, jobname, increment, distance, event_datetime, event_id, created_at )"
 				+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+		
+		public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+		public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+		public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+		public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
 
 	//SQL Statements for reading latest warning status (at trip start only)
 	//create temporary table for reading latest warning status 
