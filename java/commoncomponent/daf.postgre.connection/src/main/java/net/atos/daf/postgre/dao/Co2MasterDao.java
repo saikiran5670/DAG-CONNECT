@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jdk.internal.org.jline.utils.Log;
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.Co2Master;
 
@@ -39,7 +40,8 @@ public class Co2MasterDao implements Serializable {
 		PreparedStatement stmt_read_co2_coefficient = null;
 		ResultSet rs_position = null;
 		Co2Master cm= new Co2Master();
-
+		//put logger 
+		logger.info("read started for CO2Master{} {}",  vid, System.currentTimeMillis());
 		try {
 			
 			stmt_read_co2_coefficient = connection.prepareStatement(READ_CO2_COEFFICIENT);

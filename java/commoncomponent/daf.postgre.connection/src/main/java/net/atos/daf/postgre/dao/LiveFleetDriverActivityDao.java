@@ -156,8 +156,8 @@ public class LiveFleetDriverActivityDao implements Serializable {
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				stmt_read_driver_activity.setString(1, DriverID);
 				
-				System.out.println("===============READ STATEMENT - DRIVER ACTIVITY DAO==============");
-				System.out.println(stmt_read_driver_activity.toString());
+				//System.out.println("===============READ STATEMENT - DRIVER ACTIVITY DAO==============");
+				//System.out.println(stmt_read_driver_activity.toString());
 
 				rs_driver = stmt_read_driver_activity.executeQuery();
 
@@ -217,7 +217,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 			stmt_insert_driver_activity.setLong(4, DafConstants.DTM_NULL_VAL);
 
 		if (row.getVin() != null) {
-			System.out.println("Vin for Driver Activity--->"+ row.getVin());
+			//System.out.println("Vin for Driver Activity--->"+ row.getVin());
 		stmt_insert_driver_activity.setString(5, row.getVin()); // 5-vin
 		} else {
 			stmt_insert_driver_activity.setString(5, row.getVid());
@@ -285,7 +285,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				stmt_read_driver_activity.setString(1, tripId);
 
-				System.out.println("inside read function of LiveFleet DriverActivity");
+				//System.out.println("inside read function of LiveFleet DriverActivity");
 				rs_driver = stmt_read_driver_activity.executeQuery();
 				while (rs_driver.next()) {
 

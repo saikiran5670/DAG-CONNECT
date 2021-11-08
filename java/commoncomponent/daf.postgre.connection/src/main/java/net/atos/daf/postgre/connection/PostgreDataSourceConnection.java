@@ -43,9 +43,9 @@ public class PostgreDataSourceConnection {
 		Connection conn = null;
 
 		try {
-			System.out.println("Inside getDataSourceConnection");
+			//System.out.println("Inside getDataSourceConnection");
 			String url = createValidUrlToConnectPostgreSql(serverNm, port, databaseNm, userNm, password);
-			System.out.println("serverName--"+ serverNm + "port--" + port + "dataBaseName--" +databaseNm + "UserName--" + userNm + "password--" + password);
+			//System.out.println("serverName--"+ serverNm + "port--" + port + "dataBaseName--" +databaseNm + "UserName--" + userNm + "password--" + password);
 			dSource = new Jdbc3PoolingDataSource();
 			dSource.setUrl(url);
 			System.out.println("URL submitted to DataSource  " + url);
@@ -53,10 +53,12 @@ public class PostgreDataSourceConnection {
 			conn = dSource.getConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("SQL exception found");
+			//System.out.println("SQL exception found");
+			logger.error("SQL exception found");
 			e.printStackTrace();
 		} catch (TechnicalException e) {
-			System.out.println("Technical exception found");
+			//System.out.println("Technical exception found");
+			logger.error("Technical exception found");
 			e.printStackTrace();
 
 			while (DafConstants.RETRY_COUNTER < DafConstants.MAX_RETRIES) {
@@ -69,11 +71,11 @@ public class PostgreDataSourceConnection {
 					DafConstants.RETRY_COUNTER++;
 					logger.error("FAILED - Command failed on retry " + DafConstants.RETRY_COUNTER + " of "
 							+ DafConstants.MAX_RETRIES, e1);
-					System.out.println("FAILED - Command failed on retry "+ DafConstants.RETRY_COUNTER + " of "
-							+ DafConstants.MAX_RETRIES + e1);
+					//System.out.println("FAILED - Command failed on retry "+ DafConstants.RETRY_COUNTER + " of "
+							//+ DafConstants.MAX_RETRIES + e1);
 					if (DafConstants.RETRY_COUNTER >= DafConstants.MAX_RETRIES) {
 						logger.error("Max retries exceeded.");
-						System.out.println("Max retries exceeded.");
+						//System.out.println("Max retries exceeded.");
 						break;
 					}
 
@@ -86,7 +88,7 @@ public class PostgreDataSourceConnection {
 
 	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
 			String password) throws TechnicalException {
-		System.out.println("Inside method of URL creation");
+		//System.out.println("Inside method of URL creation");
 		String encodedPassword = encodeValue(password);
 		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
 				+ encodedPassword + DafConstants.POSTGRE_SQL_SSL_MODE;
@@ -97,7 +99,7 @@ public class PostgreDataSourceConnection {
 
 	private String encodeValue(String value) {
 		try {
-			System.out.println("passord encoding method");
+			//System.out.println("passord encoding method");
 			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex.getCause());
