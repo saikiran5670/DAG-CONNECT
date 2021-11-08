@@ -547,6 +547,11 @@ removeDuplicates(originalArray, prop) {
     {
       this.filterVehicleForm.get("category").setValue(['all']);
     }
+    let levelVal = this.filterVehicleForm.controls.level.value;
+    if(levelVal == 'all')
+    {
+      this.filterVehicleForm.get("level").setValue(['all']);
+    }
     if(!this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
