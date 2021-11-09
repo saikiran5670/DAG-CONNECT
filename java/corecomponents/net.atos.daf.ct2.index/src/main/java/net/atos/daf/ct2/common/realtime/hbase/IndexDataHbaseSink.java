@@ -286,19 +286,19 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTachoVehicleSpeed())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TotalTachoMileage"),
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTotalTachoMileage())));
-			System.out.println("hbase techo values-->");
+			//System.out.println("hbase techo values-->");
 
 			table.put(put);
 			
-			System.out.println("table data added-->");
+			//System.out.println("table data added-->");
 		} catch (ParseException e) {
 			//System.out.println("Index input message--" +value);
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Index input message--" +value);
+			//System.out.println("Index input message--" +value);
 			e.printStackTrace();
 		} catch (Exception e) {
-			System.out.println("Index input message--" +value);
+			//System.out.println("Index input message--" +value);
 		}
 	}
 

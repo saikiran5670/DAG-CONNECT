@@ -94,8 +94,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp)::timestamp)
-                                and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))
+                                and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp/1000)::timestamp)
+                                and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp/1000 )::timestamp))
                                 and ta.category_type <> 'O'
                 				and ta.type <> 'W' ";
                 parameter.Add("@featureIds", logbookFilter.FeatureIds);

@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
                 stopwatchGetVehicleByAccountVisibility.Stop();
-                _logger.Info($"ReportManagementService - GetVehicleByAccountVisibility Time Required: {stopwatchGetVehicleByAccountVisibility.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetVehicleByAccountVisibility Time Required: {stopwatchGetVehicleByAccountVisibility.ElapsedMilliseconds}");
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
                             = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, alertFeatureIds.ToArray());
                         stopwatchGetVehicleByAccountVisibilityForAlert.Stop();
-                        _logger.Info($"ReportManagementService - GetVehicleByAccountVisibilityForAlert Time Required: {stopwatchGetVehicleByAccountVisibilityForAlert.ElapsedMilliseconds}");
+                        _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetVehicleByAccountVisibilityForAlert Time Required: {stopwatchGetVehicleByAccountVisibilityForAlert.ElapsedMilliseconds}");
 
                         //append visibile vins
                         vehicleDetailsAccountVisibiltyForAlert.AddRange(vehicleAccountVisibiltyList);
@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     stopwatchGetLogbookSearchParameter.Start();
                     var tripAlertDataOld = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
                     stopwatchGetLogbookSearchParameter.Stop();
-                    _logger.Info($"ReportManagementService - GetLogbookSearchParameter Time Required: {stopwatchGetLogbookSearchParameter.ElapsedMilliseconds}");
+                    _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetLogbookSearchParameter Time Required: {stopwatchGetLogbookSearchParameter.ElapsedMilliseconds}");
                     List<LogbookTripAlertDetails> tripAlertdData = tripAlertDataOld.ToList();
                     foreach (var element in tripAlertdData)
                     {
@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                        request.RoleId, vehicleDetailsAccountVisibilty, featureId,
                                                                                        ReportConstants.FLEETOVERVIEW_FEATURE_NAME);
                     stopwatchGetVehicleByVisibilityAndFeature.Stop();
-                    _logger.Info($"ReportManagementService - GetVehicleByVisibilityAndFeature Time Required: {stopwatchGetVehicleByVisibilityAndFeature.ElapsedMilliseconds}");
+                    _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetVehicleByVisibilityAndFeature Time Required: {stopwatchGetVehicleByVisibilityAndFeature.ElapsedMilliseconds}");
 
                     res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
                     response.FleetOverviewVGFilterResponse.AddRange(
@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverListResponse>>(resDriverFilter)
                         );
                     stopwatGetDriverList.Stop();
-                    _logger.Info($"ReportManagementService - GetDriverList Time Required: {stopwatGetDriverList.ElapsedMilliseconds}");
+                    _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetDriverList Time Required: {stopwatGetDriverList.ElapsedMilliseconds}");
 
                 }
                 stopwatchGetAlertLevelList.Start();
@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
                     );
                 stopwatchGetAlertLevelList.Stop();
-                _logger.Info($"ReportManagementService - GetAlertLevelList Time Required: {stopwatchGetAlertLevelList.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetAlertLevelList Time Required: {stopwatchGetAlertLevelList.ElapsedMilliseconds}");
 
                 stopwatchGetAlertCategoryList.Start();
                 var alertCategory = await _reportManager.GetAlertCategoryList();
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
                     );
                 stopwatchGetAlertCategoryList.Stop();
-                _logger.Info($"ReportManagementService - GetAlertCategoryList Time Required: {stopwatchGetAlertCategoryList.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetAlertCategoryList Time Required: {stopwatchGetAlertCategoryList.ElapsedMilliseconds}");
 
                 stopwatchGetHealthStatusList.Start();
                 var healthStatus = await _reportManager.GetHealthStatusList();
@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resHealthStatus)
                     );
                 stopwatchGetHealthStatusList.Stop();
-                _logger.Info($"ReportManagementService - GetHealthStatusList Time Required: {stopwatchGetHealthStatusList.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetHealthStatusList Time Required: {stopwatchGetHealthStatusList.ElapsedMilliseconds}");
 
                 stopwatchGetOtherFilter.Start();
                 var otherFilter = await _reportManager.GetOtherFilter();
@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
                     );
                 stopwatchGetOtherFilter.Stop();
-                _logger.Info($"ReportManagementService - GetOtherFilter Time Required: {stopwatchGetOtherFilter.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetOtherFilter Time Required: {stopwatchGetOtherFilter.ElapsedMilliseconds}");
 
                 stopwatchGetAlertTypeList.Start();
                 var alertType = await _reportManager.GetAlertTypeList();
@@ -157,13 +157,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertType)
                     );
                 stopwatchGetAlertTypeList.Stop();
-                _logger.Info($"ReportManagementService - GetAlertTypeList Time Required: {stopwatchGetAlertTypeList.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetAlertTypeList Time Required: {stopwatchGetAlertTypeList.ElapsedMilliseconds}");
 
                 response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
                 response.Code = Responsecode.Success;
 
                 stopwatchTotal.Stop();
-                _logger.Info($"ReportManagementService - GetVehicleByAccountVisibility Time Required: {stopwatchTotal.ElapsedMilliseconds}");
+                _logger.Info($"ReportManagementService - GetFleetOverviewFilter - GetVehicleByAccountVisibility Time Required: {stopwatchTotal.ElapsedMilliseconds}");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -187,7 +187,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                 Stopwatch stopwatchGetFleetOverviewDetails = new Stopwatch();
                 Stopwatch stopwatchGetFleetOverviewDetails_NeverMoved = new Stopwatch();
                 Stopwatch stopwatchGetFleetOverviewDetails_NeverMoved_NoWarnings = new Stopwatch();
-                Stopwatch stopwatGetDriverList = new Stopwatch();
+                //Stopwatch stopwatGetDriverList = new Stopwatch();
+                Stopwatch stopwatGetDriverDetails = new Stopwatch();
+                Stopwatch stopwatGetWarningDetails = new Stopwatch();
                 stopwatchTotal.Start();
 
                 _logger.Info("Get GetFleetOverviewDetails ");
@@ -400,9 +402,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                     //if vehicle have any warning, then return only waarning data 
                     if (result?.Count > 0)
                     {
+                        stopwatGetDriverDetails.Start();
                         List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
                                                                                                  .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
+                        stopwatGetDriverDetails.Stop();
+                        _logger.Info($"ReportManagementService - GetFleetOverviewDetails - GetDriverDetails Time Required: {stopwatGetDriverDetails.ElapsedMilliseconds}");
+
+                        stopwatGetWarningDetails.Start();
                         List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
+                        stopwatGetWarningDetails.Stop();
+                        _logger.Info($"ReportManagementService - GetFleetOverviewDetails - GetWarningDetails Time Required: {stopwatGetWarningDetails.ElapsedMilliseconds}");
+
                         foreach (var fleetOverviewDetails in result)
                         {
                             fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
