@@ -511,9 +511,13 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
-                            if (vehicle != null)
-                                vehicles.Add(vehicle);
+                            //Check if vehicle is already fetched. If yes, then no need of database call
+                            var singleVehicle = resultDict.Values.SelectMany(x => x).Where(x => x.Id == vehicleGroup.RefId).FirstOrDefault();
+
+                            if (singleVehicle == null)
+                                singleVehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId, orgId);
+
+                            vehicles.Add(singleVehicle);
                             break;
                         case "G":
                             //Group
@@ -613,7 +617,7 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId, orgId);
                             if (vehicle != null)
                                 vehicles.Add(vehicle);
                             break;
@@ -715,7 +719,7 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId, orgId);
                             if (vehicle != null)
                                 vehicles.Add(vehicle);
                             break;
