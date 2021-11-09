@@ -48,7 +48,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
    'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
    'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
-   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
+   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
+   'cO2Emmision','idlingConsumptionWithPTO'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
