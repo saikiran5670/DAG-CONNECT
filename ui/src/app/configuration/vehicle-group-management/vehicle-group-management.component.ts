@@ -166,14 +166,19 @@ export class VehicleGroupManagementComponent implements OnInit {
   }
 
   getVehicleList(rowData?: any){
+    this.showLoadingIndicator=true;
     this.vehicleService.getVehicle(this.accountOrganizationId).subscribe((vehList: any) => {
       this.vehicleListData = vehList;
+      this.showLoadingIndicator=false;
       if(this.actionType != 'create'){
+        this.showLoadingIndicator=true;
         this.selectedRowData = rowData;
         this.vehicleService.getVehicleListById(rowData.groupId).subscribe((selectedVehList: any) => {
           this.selectedRowData.selectedVehicleList = selectedVehList;
           this.createViewEditStatus = true;
+          this.showLoadingIndicator=false;
         }, (error) => {
+          this.showLoadingIndicator=false;
           //console.log("error:: ", error);
           if(error.status == 404){
             this.selectedRowData.selectedVehicleList = [];
@@ -184,6 +189,8 @@ export class VehicleGroupManagementComponent implements OnInit {
       else{
         this.createViewEditStatus = true;
       }
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -197,8 +204,12 @@ export class VehicleGroupManagementComponent implements OnInit {
       functionEnum: rowData.functionEnum,
       organizationId: rowData.organizationId
     }
+    this.showLoadingIndicator=true;
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
       this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

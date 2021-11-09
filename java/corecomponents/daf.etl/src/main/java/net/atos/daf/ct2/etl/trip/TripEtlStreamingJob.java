@@ -55,9 +55,11 @@ public class TripEtlStreamingJob {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
+
+//
 			env.getConfig().setGlobalJobParameters(envParams);
-			//final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
 			
 			TripAggregationProcessor tripAggregationNew = new TripAggregationProcessor();
 			
