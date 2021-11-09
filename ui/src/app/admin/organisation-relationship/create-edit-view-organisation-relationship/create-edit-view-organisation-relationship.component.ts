@@ -63,6 +63,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   duplicateRecordMsg: any = '';
   resposne: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  showLoadingIndicator: boolean = false;
 
   ngOnInit(): void {
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
@@ -84,7 +85,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
         let objData = {
           Organization_Id: this.organizationId
         }
-
+        this.showLoadingIndicator=true;
         this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
           if(data)
           {
@@ -94,7 +95,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
             this.loadOrgGridData(orgData);
             this.relationshipList = data.relationShipData;
           }
+          this.showLoadingIndicator=false;
           // this.organisationData = data;
+        }, (error) => {
+          this.showLoadingIndicator=false;
         });
         // (error) => { });
         // this.doneFlag = this.createStatus ? false : true;
@@ -193,7 +197,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       isConfirm : false,
       allow_chain:this.selectedType
     }
-
+    this.showLoadingIndicator=true;
     this.organizationService.createOrgRelationship(objData).subscribe((res : any) => {
       this.resposne = res;
       this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
@@ -205,10 +209,13 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
           successMsg: this.userCreatedMsg,
           tableData: getData
         }
+        this.showLoadingIndicator=false;
         this.backToPage.emit(emitObj);
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
         }, (error) => {
-
+          this.showLoadingIndicator=false;
       if (error.status == 409) {
         let vehicleList: any = '';
         let orgList: any = '';

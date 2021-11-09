@@ -50,6 +50,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   userType: any;
   createButtonClicked: boolean = false;
   backToOrgRel: boolean = false;
+  showLoadingIndicator: boolean = false;
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
   ngAfterViewInit() {}
@@ -72,7 +73,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     let objData = {
       organization_Id: this.organizationId
     }
-
+    this.showLoadingIndicator=true;
     this.organizationService.getLevelcode().subscribe((obj: any)=>{
     this.roleService.getFeatures(objData).subscribe((data) => {
       this.levelList = obj["levels"];
@@ -114,8 +115,13 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
       });
       this.featuresData = data;
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
-    }, (error) => { });
+    }, (error) => { 
+      this.showLoadingIndicator=false;
+     });
 
     this.doneFlag = this.createStatus ? false : true;
     this.breadcumMsg = this.getBreadcum();
