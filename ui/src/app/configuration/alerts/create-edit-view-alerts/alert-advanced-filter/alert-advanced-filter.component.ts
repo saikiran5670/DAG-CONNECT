@@ -41,6 +41,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
   @Input() selectedRowData : any;
   @Input() actionType :any;
   @Input() prefUnitFormat: any;
+  @Input() selectedApplyOn: any;
+  @Input() periodSelectedDateTime : any;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Output() isAdvancedAlertPayload = new EventEmitter<any>();
@@ -79,7 +81,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
-  selectedApplyOn: string = 'A';
+ // selectedApplyOn: string = 'A';
   advancedAlertPayload: any = [];
   filterType: any;
   selectedDistance: any;
@@ -164,9 +166,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toDate: new FormControl(toDate.setDate(toDate.getDate() + 14)),
       toTimeRange:['23:59']
     })
+    
+    
 
-    
-    
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
     if(this.actionType == 'create'){
       this.setUnitsAsPrefData();
@@ -207,19 +209,24 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.sliderChanged();
     }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
-    if(this.selectedApplyOn == 'C'){
-      // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
-      // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].startDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].endDate,'DD/MM/YYYY HH:MM').split(" ");
-      // this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
-      // this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
-      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0],'DD/MM/YYYY'));
-      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0], 'DD/MM/YYYY'));
+   // if(this.selectedApplyOn == 'C'){
+    //   // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+    //   // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+    //   // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].startDate,'DD/MM/YYYY HH:MM').split(" ");
+    //   // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].endDate,'DD/MM/YYYY HH:MM').split(" ");
+     
+    //   // this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
+    //   // this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
+    
+    //     this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+    //     this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+    
+    //   this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0],'DD/MM/YYYY'));
+    //   this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0], 'DD/MM/YYYY'));
 
-      this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
-      this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
-    }
+    //   this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
+    //   this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
+    // }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
         if(element.filterType == 'N' && element.thresholdValue !='0' && element.unitType== 'N')
@@ -1119,14 +1126,26 @@ export class AlertAdvancedFilterComponent implements OnInit {
 let urgencylevelStartDate = 0;
 let urgencylevelEndDate = 0;
 if(this.selectedApplyOn == 'C'){
+  if(this.periodSelectionComponent !=undefined){
   this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(new Date(this.alertAdvancedFilterForm.controls.toDate.value), this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
     element["startDate"] =urgencylevelStartDate;
     element["endDate"] =urgencylevelEndDate;
   });
+  }
+  else{
+    this.alertTimingDetail = [];
+  }
+  // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
+  // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
+  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
+
+
 }
 else{
     this.alertTimingDetail = [];
@@ -1162,7 +1181,8 @@ else{
           obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-          obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+         // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+          obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
           }
         
           this.advancedAlertPayload.push(obj);
@@ -1185,7 +1205,8 @@ else{
           obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-          obj["unitType"] = poiLandmarkRefArr[0].unitType;
+         // obj["unitType"] = poiLandmarkRefArr[0].unitType;
+          obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
           }
           this.advancedAlertPayload.push(obj);
         });
@@ -1208,7 +1229,8 @@ else{
           obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-          obj["unitType"] = groupLandmarkRefArr[0].unitType;
+         // obj["unitType"] = groupLandmarkRefArr[0].unitType;
+          obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
           }
         this.advancedAlertPayload.push(obj);
       });
@@ -1316,7 +1338,10 @@ else{
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
         obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
-        obj["unitType"] = periodRefArr.unitType;
+        obj["unitType"] = periodRefArr ? periodRefArr.unitType : "N";
+        // if(periodRefArr.unitType != undefined){
+        // obj["unitType"] = periodRefArr.unitType;
+        // }
        }
       this.advancedAlertPayload.push(obj);
     }  
@@ -1366,7 +1391,8 @@ else{
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = 'A';
               obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
-              obj["unitType"] = noOfOccuranceRefArr.unitType;
+              //obj["unitType"] = noOfOccuranceRefArr.unitType;
+              obj["unitType"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].unitType : "N";
             }
             this.advancedAlertPayload.push(obj);
           }
@@ -1394,7 +1420,8 @@ else{
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
-            obj["unitType"] = periodRefArr.unitType;
+            //obj["unitType"] = periodRefArr.unitType;
+            obj["unitType"] = periodRefArr ? periodRefArr.unitType : "N";
           }
           this.advancedAlertPayload.push(obj);
         }
@@ -1402,8 +1429,8 @@ else{
           this.geoMarkerArray.forEach(element => {
             let obj = {
               "alertUrgencyLevelId": 0,
-              "filterType": this.filterType,
-              "thresholdValue": "0",
+              "filterType": this.filterType,             
+              "thresholdValue": '0',
               "unitType": "N",
               "landmarkType": element.type,
               "refId": element.id,
@@ -1416,7 +1443,9 @@ else{
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-              obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+              //obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+              obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : "N";
+
             }
             this.advancedAlertPayload.push(obj);
             if (this.filterTypeArray.length != 0) {
@@ -1443,7 +1472,9 @@ else{
                     obj["alertId"] = this.selectedRowData.id;
                     obj["state"] = 'A';
                     obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                    obj["unitType"] = filterTypeRefArr.unitType;
+                   // obj["unitType"] = filterTypeRefArr.unitType;
+                   obj["unitType"]= filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType :  "N";
+
                   }
                 this.advancedAlertPayload.push(obj);
               });
@@ -1469,7 +1500,8 @@ else{
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
-              obj["unitType"] = poiLandmarkRefArr[0].unitType;
+              //obj["unitType"] = poiLandmarkRefArr[0].unitType;
+              obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
 
             // this.advancedAlertPayload.push(obj);
@@ -1499,7 +1531,8 @@ else{
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  obj["unitType"] = filterTypeRefArr.unitType;
+                  //obj["unitType"] = filterTypeRefArr.unitType;
+                  obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : "N";
                 }
               this.advancedAlertPayload.push(obj);
             });
@@ -1524,7 +1557,8 @@ else{
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = element.state == 'Active' ? 'A' : 'I';
             obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-            obj["unitType"] = groupLandmarkRefArr[0].unitType;
+          //  obj["unitType"] = groupLandmarkRefArr[0].unitType;
+          obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
           }
            this.advancedAlertPayload.push(obj);
            if (this.filterTypeArray.length != 0) {
@@ -1551,7 +1585,9 @@ else{
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  obj["unitType"] = filterTypeRefArr.unitType;
+                  //obj["unitType"] = filterTypeRefArr.unitType;
+                  obj["unitType"]  = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : "N";
+
                 }
               this.advancedAlertPayload.push(obj);
             });
@@ -1688,7 +1724,8 @@ else{
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = element.state == 'Active' ? 'A' : 'I';
             obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-            obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+           // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+           obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
           }
           this.advancedAlertPayload.push(obj);
         }
@@ -1717,7 +1754,8 @@ else{
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  obj["unitType"] = filterTypeRefArr.unitType;
+                  //obj["unitType"] = filterTypeRefArr.unitType;
+                  obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
                 }
               this.advancedAlertPayload.push(obj);
             });
@@ -1745,7 +1783,8 @@ else{
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
-              obj["unitType"] = poiLandmarkRefArr[0].unitType;
+              //obj["unitType"] = poiLandmarkRefArr[0].unitType;
+              obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
             this.advancedAlertPayload.push(obj);
           // }
@@ -1779,7 +1818,8 @@ else{
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-            obj["unitType"] = filterTypeRefArr.unitType;
+            //obj["unitType"] = filterTypeRefArr.unitType;
+            obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType :  this.unitTypeVal;
           }
           this.advancedAlertPayload.push(obj);
         });
@@ -1807,7 +1847,8 @@ else{
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
           obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-          obj["unitType"] = groupLandmarkRefArr[0].unitType;
+         // obj["unitType"] = groupLandmarkRefArr[0].unitType;
+         obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
         }
           this.advancedAlertPayload.push(obj);
         }
@@ -1907,7 +1948,8 @@ else{
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
         obj["alertTimingDetails"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
-        obj["unitType"] = durationRefArr[0].enum;
+       // obj["unitType"] = durationRefArr[0].enum;
+       obj["unitType"] = durationRefArr.length > 0 ? durationRefArr[0].enum : this.durationEnum;
       }
       this.advancedAlertPayload.push(obj);
     }
@@ -1954,7 +1996,8 @@ else{
       obj["alertId"] = this.selectedRowData.id;
       obj["state"] = 'A';
       obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
-      obj["unitType"] = distanceRefArr[0].enum;
+      //obj["unitType"] = distanceRefArr[0].enum;
+      obj["unitType"] =  distanceRefArr.length > 0 ? distanceRefArr[0].enum :  this.distanceEnum;
     }
     this.advancedAlertPayload.push(obj);
   }
@@ -1999,7 +2042,8 @@ else{
     obj["alertId"] = this.selectedRowData.id;
     obj["state"] = 'A';
     obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
-    obj["unitType"] = noOfOccuranceRefArr[0].enum;
+   // obj["unitType"] = noOfOccuranceRefArr[0].enum;
+   obj["unitType"] =  noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].enum :  'N';
   }
   this.advancedAlertPayload.push(obj);
 }
@@ -2034,7 +2078,8 @@ if(this.actionType == 'edit'){
   obj["alertId"] = this.selectedRowData.id;
   obj["state"] = 'A';
   obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
-  obj["unitType"] = periodRefArr.unitType;
+ //obj["unitType"] = periodRefArr.unitType;
+ obj["unitType"] =  periodRefArr.length > 0 ? periodRefArr[0].unitType : 'N';
  }   
   this.advancedAlertPayload.push(obj);  
 }
@@ -2060,7 +2105,8 @@ if(this.actionType == 'edit'){
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = element.state == 'Active' ? 'A' : 'I';
         obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-        obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+       // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
+       obj["unitType"] =  geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
       }
       this.advancedAlertPayload.push(obj);
     }
@@ -2089,7 +2135,8 @@ if(this.actionType == 'edit'){
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-            obj["unitType"] = filterTypeRefArr.unitType;
+           // obj["unitType"] = filterTypeRefArr.unitType;
+           obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
           }
           this.advancedAlertPayload.push(obj);
         });
@@ -2118,6 +2165,8 @@ if(this.actionType == 'edit'){
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
               obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : 'N';
+            //  obj["unitType"] = poiLandmarkRefArr[0].unitType;
+            obj["unitType"] =  poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
             this.advancedAlertPayload.push(obj);
           // }
@@ -2150,7 +2199,8 @@ if(this.actionType == 'edit'){
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-            obj["unitType"] = filterTypeRefArr.unitType;
+            //obj["unitType"] = filterTypeRefArr.unitType;
+            obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : this.unitTypeVal;
           }
           this.advancedAlertPayload.push(obj);
         });
@@ -2178,7 +2228,8 @@ if(this.actionType == 'edit'){
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
           obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-          obj["unitType"] = groupLandmarkRefArr[0].unitType;
+          //obj["unitType"] = groupLandmarkRefArr[0].unitType;
+          obj["unitType"] =  groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
         }
           this.advancedAlertPayload.push(obj);
         }
@@ -2207,7 +2258,8 @@ if(this.actionType == 'edit'){
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = 'A';
           obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-          obj["unitType"] = filterTypeRefArr.unitType;
+         // obj["unitType"] = filterTypeRefArr.unitType;
+         obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
         }
         this.advancedAlertPayload.push(obj);
       });
