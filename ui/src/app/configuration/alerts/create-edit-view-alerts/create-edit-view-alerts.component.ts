@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup,FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -25,7 +25,8 @@ import { SimpleChanges } from '@angular/core';
 import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 import { ConfigService } from '@ngx-config/core';
 import { ReplaySubject } from 'rxjs';
-
+import { Util } from 'src/app/shared/util';
+import * as moment from 'moment';
 declare var H: any;
 
 @Component({
@@ -82,6 +83,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   accountRoleId: number;
   userType: string;
   selectedApplyOn: string;
+  selectedApplyOnPeriod: string = 'A';
   criticalLevel: boolean= false;
   warningLevel: boolean= false;
   advisoryLevel: boolean= false;
@@ -127,6 +129,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   periodForm: any;
   alertFilterRefs: any = [];
   ui: any;
+  from: any;
+  to: any;
   isExpandedOpen: boolean = false;
   isExpandedOpenAlert: boolean = true;
   filterDetailsErrorMsg:any= '';
@@ -150,6 +154,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   map_key: any = '';
   singleVehicle = [];
   showLoadingIndicator: boolean = false;
+  periodSelectedDateTime = [];
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -213,7 +218,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else{
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     } 
-    
+    let today = new Date();
+    let nextWeek=  new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+  
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.userType= localStorage.getItem("userType");
@@ -236,7 +243,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
       searchForLevelPOI: [''],
       alertLevelValue:[''],
       searchCorridor:[''],
-      levelType: ['']
+      levelType: [''],
+      fullorCustom: ['A'],
+      fromDate: new FormControl(today),
+      fromTimeRange: ['00:00'],
+      toDate: new FormControl(nextWeek),
+      toTimeRange:['23:59']
     },
     {
       validator: [
@@ -381,6 +393,10 @@ proceedStep(prefData: any, preference: any){
         this.alertCategoryName = this.translationData[this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_category_selected)[0].key];
         this.alertTypeName = this.translationData[this.alertCategoryTypeMasterData.filter(item => (item.enum == this.selectedRowData.type && item.parentEnum == this.alert_category_selected))[0].key];
         this.onChangeAlertType(this.selectedRowData.type);
+        if(this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'){
+          this.from =this.formStartDate(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate),  this.prefTimeFormat, this.prefDateFormat).split(" ");
+          this.to = this.formStartDate(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate),  this.prefTimeFormat, this.prefDateFormat).split(" ");
+        }
         this.convertValuesToPrefUnit();
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
@@ -388,7 +404,49 @@ proceedStep(prefData: any, preference: any){
       this.showLoadingIndicator=false;
     })
   }
-
+  formStartDate(date: any, prefTimeFormat: any, prefDateFormat:any) {
+    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
+    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
+    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
+    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
+    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
+    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if (prefTimeFormat == 12) {
+      if (date.getHours() == 12) {
+        _time = ((date.getHours() == 12 || date.getMinutes() > 0 || date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+      else {
+        _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0 && date.getSeconds() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m}:${s} PM` : `${(date.getHours() == 0) ? 12 : h}:${m}:${s} AM`;
+      }
+    }
+    else {
+      _time = `${h}:${m}:${s}`;
+    }
+    switch (prefDateFormat) {
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default: {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
   updateVehiclesDataSource(tableData: any){
     this.gridComp.updatedTableData(tableData);
     // this.vehiclesDataSource= new MatTableDataSource(tableData);
@@ -1238,7 +1296,32 @@ PoiCheckboxClicked(event: any, row: any) {
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
     this.onChangeAlertType(this.selectedRowData.type);
     this.convertValuesToPrefUnit();
+    this.selectedApplyOnPeriod = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+    if(this.selectedApplyOnPeriod == 'C'){
+      this.from =this.convertToFromTime(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate);
+      this.to = this.convertToFromTime(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate);
+      
+      // this.from = Util.convertUtcToDateFormat(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate), this.prefTimeZone);
+      // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.alertForm.get('fromDate').setValue(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate));
+      this.alertForm.get('toDate').setValue(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate));
+      
+
+      this.alertForm.get('fromTimeRange').setValue(this.from);
+      this.alertForm.get('toTimeRange').setValue(this.to);
+    }
+    this.alertForm.get('fullorCustom').setValue(this.selectedApplyOnPeriod);
+    let editVal:any = {value: this.selectedApplyOnPeriod}
+    this.onApplyPeriodOnChange(editVal);
   }
+ 
+convertToFromTime(milliseconds: any){ 
+  let hours = `0${new Date(milliseconds).getHours()}`.slice(-2);
+  let minutes = `0${new Date(milliseconds).getMinutes()}`.slice(-2);
+  let seconds = `0${new Date(milliseconds).getSeconds()}`.slice(-2);
+  let time:any = `${hours}:${minutes}`
+  return time;
+}
 
   convertValuesToPrefUnit(){
     let threshold;
@@ -1871,23 +1954,71 @@ PoiCheckboxClicked(event: any, row: any) {
         this.isValidityCalender
       }
     }
-    let periodType = 'A';
+    let periodType = 'A';   
+ 
+    if(this.selectedApplyOnPeriod == 'C'){
+     // this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
+      urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertForm.controls.fromDate.value, this.alertForm.controls.fromTimeRange.value, "start"));
+      urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertForm.controls.toDate.value, this.alertForm.controls.toTimeRange.value, "end"));;
+      // this.alertTimingDetail.forEach(element => {
+      //   element["type"] = "F";
+      //   element["startDate"] =urgencylevelStartDate;
+      //   element["endDate"] =urgencylevelEndDate;
+      // });
+    }
+    else{
+       // this.alertTimingDetail = [];
+        urgencylevelStartDate = 0;
+        urgencylevelEndDate = 0;
+      }
+
       if(this.openAdvancedFilter == true){
         let alertAdvancedPayload = this.alertAdvancedComponent.getAdvancedFilterAlertPayload();
         this.alertFilterRefs = [];
         if(alertAdvancedPayload!=undefined){
         this.alertFilterRefs =alertAdvancedPayload["advancedAlertPayload"];
-        urgencylevelStartDate = alertAdvancedPayload["urgencylevelStartDate"];
-        urgencylevelEndDate = alertAdvancedPayload["urgencylevelEndDate"];
+        urgencylevelStartDate =urgencylevelStartDate;
+        urgencylevelEndDate = urgencylevelEndDate;
         }
         if(this.alertFilterRefs.length > 0 ){
           this.alertFilterRefs=  alertAdvancedPayload["advancedAlertPayload"].filter(i=>i!=undefined);
-          if(this.alertFilterRefs.length>0){
-            periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
-          }
+          periodType =this.selectedApplyOnPeriod == 'A' ? 'A' : 'C';     
+          // if(this.alertFilterRefs.length>0){
+          //   periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
+          // }
         }
        
       }
+      else{
+        let alertAdvancedPayload =[];
+        this.alertFilterRefs = [];
+        if(alertAdvancedPayload!=undefined){
+        this.alertFilterRefs =[];
+        urgencylevelStartDate = urgencylevelStartDate;
+        urgencylevelEndDate = urgencylevelEndDate;
+        }   
+        periodType = this.selectedApplyOnPeriod == 'A' ? 'A' : 'C';         
+      }
+ 
+      // if(this.openAdvancedFilter == true){
+      //   let alertAdvancedPayload = this.alertAdvancedComponent.getAdvancedFilterAlertPayload();
+      //   this.alertFilterRefs = [];
+      //   if(alertAdvancedPayload!=undefined){
+      //   this.alertFilterRefs =alertAdvancedPayload["advancedAlertPayload"];
+      //   urgencylevelStartDate = alertAdvancedPayload["urgencylevelStartDate"];
+      //   urgencylevelEndDate = alertAdvancedPayload["urgencylevelEndDate"];
+      //   }
+      //   if(this.alertFilterRefs.length > 0 ){
+      //     this.alertFilterRefs=  alertAdvancedPayload["advancedAlertPayload"].filter(i=>i!=undefined);
+      //     if(this.alertFilterRefs.length>0){
+      //       periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
+      //     }
+      //   }
+       
+      // }
+      // else{
+
+      // }
    if(this.isNotifyEmailValid && this.isAdvancedAlertPayload && this.isEnteringZone && this.isValidityCalender && this.isFiltersDetailsValidate)
    {
     this.isDuplicateAlert= false;
@@ -1897,43 +2028,74 @@ PoiCheckboxClicked(event: any, row: any) {
     // let alertFilterRefs: any= [];
     let alertTimingRefAdvancedAlert= [];
     let urgenyLevelObj= {};
-
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
+      urgenyLevelObj = {
+        "urgencyLevelType": this.alertForm.get('alertLevel').value,
+        "thresholdValue": '0',
+        "unitType": "N",
+        "dayType": [
+          false, false, false, false, false, false, false
+        ],
+        "periodType": periodType,
+        "urgencylevelStartDate": urgencylevelStartDate,
+        "urgencylevelEndDate": urgencylevelEndDate,
+        "alertFilterRefs": this.alertFilterRefs,
+        "alertTimingDetails" : alertTimingRefHoursOfService
+      }
+    }
+    else if(this.actionType == 'edit'){
+      urgenyLevelObj = {
+        "urgencyLevelType": this.alertForm.get('alertLevel').value,
+        "thresholdValue": '0',
+        "unitType": "N",
+        "dayType": [
+          false, false, false, false, false, false, false
+        ],
+        "periodType": periodType,
+        "urgencylevelStartDate": urgencylevelStartDate,
+        "urgencylevelEndDate": urgencylevelEndDate,
+        "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+        "alertId": this.selectedRowData.id,
+        "alertFilterRefs": this.alertFilterRefs,
+        "alertTimingDetails" : alertTimingRefHoursOfService
+      }
+    }
     if((this.alert_category_selected == 'L' && 
         (this.alert_type_selected == 'N' || this.alert_type_selected == 'X' || this.alert_type_selected == 'C' || this.alert_type_selected == 'S')) || 
       this.alert_category_selected == 'R'){
 
-      if(this.actionType == 'create' || this.actionType == 'duplicate'){
-        urgenyLevelObj = {
-          "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": '0',
-          "unitType": "N",
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": periodType,
-          "urgencylevelStartDate": urgencylevelStartDate,
-          "urgencylevelEndDate": urgencylevelEndDate,
-          "alertFilterRefs": this.alertFilterRefs,
-          "alertTimingDetails" : alertTimingRefHoursOfService
-        }
-      }
-      else if(this.actionType == 'edit'){
-        urgenyLevelObj = {
-          "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": '0',
-          "unitType": "N",
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": periodType,
-          "urgencylevelStartDate": urgencylevelStartDate,
-          "urgencylevelEndDate": urgencylevelEndDate,
-          "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
-          "alertId": this.selectedRowData.id,
-          "alertFilterRefs": this.alertFilterRefs,
-          "alertTimingDetails" : alertTimingRefHoursOfService
-        }
-      }
+      // if(this.actionType == 'create' || this.actionType == 'duplicate'){
+      //   urgenyLevelObj = {
+      //     "urgencyLevelType": this.alertForm.get('alertLevel').value,
+      //     "thresholdValue": '0',
+      //     "unitType": "N",
+      //     "dayType": [
+      //       false, false, false, false, false, false, false
+      //     ],
+      //     "periodType": periodType,
+      //     "urgencylevelStartDate": urgencylevelStartDate,
+      //     "urgencylevelEndDate": urgencylevelEndDate,
+      //     "alertFilterRefs": this.alertFilterRefs,
+      //     "alertTimingDetails" : alertTimingRefHoursOfService
+      //   }
+      // }
+      // else if(this.actionType == 'edit'){
+      //   urgenyLevelObj = {
+      //     "urgencyLevelType": this.alertForm.get('alertLevel').value,
+      //     "thresholdValue": '0',
+      //     "unitType": "N",
+      //     "dayType": [
+      //       false, false, false, false, false, false, false
+      //     ],
+      //     "periodType": periodType,
+      //     "urgencylevelStartDate": urgencylevelStartDate,
+      //     "urgencylevelEndDate": urgencylevelEndDate,
+      //     "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+      //     "alertId": this.selectedRowData.id,
+      //     "alertFilterRefs": this.alertFilterRefs,
+      //     "alertTimingDetails" : alertTimingRefHoursOfService
+      //   }
+      // }
       if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours of Service
         alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
         if(this.actionType == 'edit'){
@@ -2396,7 +2558,22 @@ PoiCheckboxClicked(event: any, row: any) {
       return '';
     }
   }
+  // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertForm.controls.fromDate.value, this.alertForm.controls.fromTimeRange.value, "start"));
+  // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertForm.controls.toDate.value, this.alertForm.controls.toTimeRange.value, "end"));;
 
+  onApplyPeriodOnChange(event: any){
+    this.selectedApplyOnPeriod = event.value;
+    this.periodSelectedDateTime=[];
+    if(this.selectedApplyOnPeriod=='C')
+    {
+     this.periodSelectedDateTime=[{
+      'startDate':new Date(this.alertForm.controls.fromDate.value),
+      'fromTime': this.alertForm.controls.fromTimeRange.value,
+      'endDate':new Date(this.alertForm.controls.toDate.value),
+      'toTime':  this.alertForm.controls.toTimeRange.value
+     }]
+    }
+  }
   applyFilterForVehicles(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -2684,5 +2861,15 @@ filterVehicles(search){
    console.log("this.filteredVehicles", this.filteredVehicles);
 }
 
+setStartEndDateTime(date: any, timeObj: any, type: any){
+  let _x = timeObj.split(":")[0];
+  let _y = timeObj.split(":")[1];
+  date = moment(date);
+  let newDate = date._d;
+  newDate.setHours(_x);
+  newDate.setMinutes(_y);
+  newDate.setSeconds(type == 'start' ? '00' : '59');
+  return newDate;
+}
   
 }
