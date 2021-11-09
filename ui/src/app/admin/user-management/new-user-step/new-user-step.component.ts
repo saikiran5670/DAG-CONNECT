@@ -70,6 +70,7 @@ export class NewUserStepComponent implements OnInit {
   orgDefaultFlag: any;
   contextOrgName: any;
   adminAccessType: any = {};
+  showLoadingIndicator: boolean = false;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -302,6 +303,7 @@ export class NewUserStepComponent implements OnInit {
         driverId: ""
       }
 
+      this.showLoadingIndicator=true;
       this.accountService.createAccount(objData).subscribe((res: any) => {
         this.userData = res;
         let preferenceObj = {
@@ -345,11 +347,14 @@ export class NewUserStepComponent implements OnInit {
 
           this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
             if(data){ }
+            this.showLoadingIndicator=false;
           }, (error) => {
+            this.showLoadingIndicator=false;
             this.imageError= "Something went wrong. Please try again!";
-          })
+          });
         }
       }, (error) => {
+        this.showLoadingIndicator=false;
         console.log(error);
         if(error.status == 409){
           if(error.error.account && error.error.account.organizationId != this.accountOrganizationId){
@@ -516,9 +521,13 @@ export class NewUserStepComponent implements OnInit {
     // }
 
     if(mapGrpIds.length > 0){
+      this.showLoadingIndicator=true;
       this.accountService.addAccountGroups(grpObj).subscribe((data: any)=>{
         this.updateTableData(false);
-      }, (error) => {  });
+        this.showLoadingIndicator=false;
+      }, (error) => { 
+        this.showLoadingIndicator=false;
+       });
     }else{
       this.onCancel(true);
     }
@@ -757,6 +766,7 @@ export class NewUserStepComponent implements OnInit {
       accountId: this.linkAccountId, //-- link account id
       organizationId: this.accountOrganizationId
     }
+    this.showLoadingIndicator=true;
     this.accountService.linkAccountToOrganisation(linkObj).subscribe((res) => {
       let infoObj = {
         id: this.linkAccountId,
@@ -782,16 +792,23 @@ export class NewUserStepComponent implements OnInit {
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
           pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
         }
+        this.showLoadingIndicator=false;
         if(this.prefId != 0){
+          this.showLoadingIndicator=true;
           this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
             this.saveAccountRoles(linkStatus);
             //this.linkStatusStepper(linkStatus);
+            this.showLoadingIndicator=false;
+          }, (error) => {
+            this.showLoadingIndicator=false;
           });
         }
         else{ //if prefId == 0
           this.saveAccountRoles(linkStatus);
           //this.linkStatusStepper(linkStatus);
         }
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     });
   }
