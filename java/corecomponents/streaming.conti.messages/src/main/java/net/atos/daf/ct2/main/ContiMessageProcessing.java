@@ -150,7 +150,7 @@ public class ContiMessageProcessing implements Serializable {
 
 		// enable externalized checkpoints which are retained after job
 		// cancellation
-		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+//		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 		logger.info("RESTART_FLAG :: " + properties.getProperty(DAFCT2Constant.RESTART_FLAG));
 		if ("true".equals(properties.getProperty(DAFCT2Constant.RESTART_FLAG))) {
@@ -168,8 +168,6 @@ public class ContiMessageProcessing implements Serializable {
 								TimeUnit.MILLISECONDS) // delay
 				));
 			}
-		} else {
-			env.setRestartStrategy(RestartStrategies.noRestart());
 		}
 
 		logger.info("RestartStrategy ::{}",env.getRestartStrategy());
