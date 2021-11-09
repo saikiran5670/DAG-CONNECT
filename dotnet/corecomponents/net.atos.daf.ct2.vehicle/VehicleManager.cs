@@ -511,6 +511,7 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
+                            //Check if vehicle is already fetched. If yes, then no need of database call
                             var singleVehicle = resultDict.Values.SelectMany(x => x).Where(x => x.Id == vehicleGroup.RefId).FirstOrDefault();
 
                             if (singleVehicle == null)

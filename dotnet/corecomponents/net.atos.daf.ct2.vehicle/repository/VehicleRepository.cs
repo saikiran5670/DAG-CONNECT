@@ -2335,7 +2335,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@id", vehicleId);
                 parameter.Add("@organization_id", organizationId);
 
-                var query = @"select id, vin, name, license_plate_number as RegistrationNo, (veh.organization_id = @organization_id) as hasowned from master.vehicle where id=@id";
+                var query = @"select id, vin, name, license_plate_number as RegistrationNo, (organization_id = @organization_id) as hasowned from master.vehicle where id=@id";
 
                 return await _dataAccess.QueryFirstOrDefaultAsync<VisibilityVehicle>(query, parameter);
             }
