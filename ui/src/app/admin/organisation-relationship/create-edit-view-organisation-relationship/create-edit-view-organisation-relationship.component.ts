@@ -9,6 +9,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { Util } from 'src/app/shared/util';
 
 
 @Component({
@@ -17,7 +18,8 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
   styleUrls: ['./create-edit-view-organisation-relationship.component.less']
 })
 export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
-  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService,private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
+  filterValue: string;
+  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService,private dialogService: ConfirmDialogService, private dialog: MatDialog) {
   }
   OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   // createStatus: boolean = false;
@@ -61,7 +63,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   duplicateRecordMsg: any = '';
   resposne: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
-  
+
   ngOnInit(): void {
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
       relationship: ['', [Validators.required]],
@@ -101,25 +103,29 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   loadVehicleGridData(tableData: any){
     this.dataSourceVehicle = new MatTableDataSource(tableData);
-           setTimeout(()=>{
+    setTimeout(()=>{
             this.dataSourceVehicle.paginator = this.paginator.toArray()[0];
            this.dataSourceVehicle.sort = this.sort.toArray()[0];
           });
+    Util.applySearchFilter(this.dataSourceVehicle, this.vehicleGroupDisplayColumn , this.filterValue );
+
   }
 
   loadOrgGridData(orgData: any){
     this.dataSourceOrg = new MatTableDataSource(orgData);
-           setTimeout(()=>{
+    setTimeout(()=>{
             this.dataSourceOrg.paginator = this.paginator.toArray()[1];
            this.dataSourceOrg.sort = this.sort.toArray()[1];
           });
+    Util.applySearchFilter(this.dataSourceOrg, this.organisationNameDisplayColumn , this.filterValue );
+
   }
 
 
   getBreadcum(){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
   }
-  
+
   onReset(){
     // this.organizationSelected = this.gridData[0].featureIds;
     //   this.organisationFormGroup.patchValue({
@@ -128,7 +134,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
     //     level: this.gridData[0].level,
     //     code: this.gridData[0].code
     //   })
-      
+
       this.dataSourceVehicle.data.forEach(row => {
         if(this.organizationSelected){
           for(let selectedFeature of this.organizationSelected){
@@ -144,7 +150,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       })
   }
 
-  
+
  onInputChange(event: any) {
 
   }
@@ -152,15 +158,15 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   }
   onChange(event:any){
-    let valueToBoolean = event.value == "true" ? true : false 
+    let valueToBoolean = event.value == "true" ? true : false
     this.selectedType = valueToBoolean;
   }
-  
+
   onCancel(){
     let emitObj = {
       stepFlag: false,
       successMsg: this.userCreatedMsg,
-    }    
+    }
     this.backToPage.emit(emitObj);
 
   }
@@ -192,13 +198,13 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       this.resposne = res;
       this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
         var tempdata = getData["orgRelationshipMappingList"];;
-        let name = tempdata.find(x => x.id === res.relationship[0]).relationshipName; 
+        let name = tempdata.find(x => x.id === res.relationship[0]).relationshipName;
         this.userCreatedMsg = this.getUserCreatedMessage(name);
         let emitObj = {
           stepFlag: false,
           successMsg: this.userCreatedMsg,
           tableData: getData
-        }    
+        }
         this.backToPage.emit(emitObj);
       });
         }, (error) => {
@@ -217,7 +223,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
           selectedVehicles.push(row.vehicleGroupID);
           selectedOrgs.push(row.targetOrgId);
         });
-        
+
         let newSelectedVehicles = selectedVehicles.filter((c, index) => {
           return selectedVehicles.indexOf(c) === index;
         });
@@ -250,16 +256,16 @@ if(vehicleList != '' && orgList != ''){
     }
 
     );
-        
-      
+
+
   }
 
   getErrorMsg(vehicleName:any, vinList:any){
     const options = {
       title: this.translationData.lblAlert ,
-      message:  
+      message:
       `Vehicle group '${vehicleName}' is not eligible for creating Organisation Relationship. Vehicle group should only contain owned vehicles of the organisation. Non-eligible vehicles are, ${vinList}`,
-      confirmText: this.translationData.lblOk 
+      confirmText: this.translationData.lblOk
     };
 
     const dialogConfig = new MatDialogConfig();
@@ -268,16 +274,16 @@ if(vehicleList != '' && orgList != ''){
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-    
+
     });
   }
 
   getDuplicateRecordMsg(relnName: any, orgname:any,vehicleName:any){
     const options = {
       title: this.translationData.lblAlert ,
-      message:  
+      message:
       `Vehicle group '${vehicleName}' is already associated with Organisation '${orgname}' under Relationship '${relnName}'.Please choose other entities.`,
-      confirmText: this.translationData.lblOk 
+      confirmText: this.translationData.lblOk
     };
 
     const dialogConfig = new MatDialogConfig();
@@ -286,7 +292,7 @@ if(vehicleList != '' && orgList != ''){
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-    
+
     });
   }
 
@@ -310,7 +316,7 @@ if(vehicleList != '' && orgList != ''){
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSourceVehicle.filter = filterValue;
   }
-  
+
   applyFilterOnOrg(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -339,7 +345,7 @@ if(vehicleList != '' && orgList != ''){
         } row`;
   }
 
-  
+
   //for organisation table
   masterToggleForOrganisation() {
     this.isAllSelectedForOrganisation()

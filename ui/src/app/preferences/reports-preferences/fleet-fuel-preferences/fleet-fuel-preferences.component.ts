@@ -405,6 +405,12 @@ export class FleetFuelPreferencesComponent implements OnInit {
       return 'km/h(%)';
     }
   }
-
+  if(key === "rp_ff_report_driver_vehicledetails_co2emmision"){
+    if(unitObj[0].value == 'Imperial'){
+      return 'gr/km';
+    } else {
+      return 'gr/km';
+    }
+  }
   }
  }
