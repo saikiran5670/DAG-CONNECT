@@ -67,6 +67,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   only10Emails: boolean= false;
   recipientEmailList: any= [];
   status: boolean= true;
+  showLoadingIndicator: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, 
               private reportSchedulerService: ReportSchedulerService,
@@ -663,15 +664,16 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "scheduledReportVehicleRef": scheduledReportVehicleRef,
         "scheduledReportDriverRef": scheduledReportDriverRef
       }
-      
+      this.showLoadingIndicator=true;
       this.reportSchedulerService.createReportScheduler(createObj).subscribe((createdData: any) => {
         if(createdData){
           this.scheduleCreatedMsg = this.getScheduleCreatedUpdatedMessage();
           let emitObj = { actionFlag: false, successMsg: this.scheduleCreatedMsg };
           this.backToPage.emit(emitObj);
          }
+         this.showLoadingIndicator=false;
        }, (error) => {
-        
+        this.showLoadingIndicator=false;
        });
     }else{ //-- update schedule
       if(this.recipientEmailList.length == 0){
@@ -742,14 +744,16 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "scheduledReportVehicleRef": scheduledReportVehicleRef,
         "scheduledReportDriverRef": scheduledReportDriverRef
       }
+      this.showLoadingIndicator=true;
       this.reportSchedulerService.updateReportScheduler(updateObj).subscribe((updatedData: any) => {
         if(updatedData){
           this.scheduleCreatedMsg = this.getScheduleCreatedUpdatedMessage();
           let emitObj = { actionFlag: false, successMsg: this.scheduleCreatedMsg };
           this.backToPage.emit(emitObj);
         }
+        this.showLoadingIndicator=false;
       }, (error) => {
-        
+        this.showLoadingIndicator=false;
       });
     }
   }
