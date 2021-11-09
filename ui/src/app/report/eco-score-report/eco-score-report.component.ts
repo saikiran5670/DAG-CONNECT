@@ -656,6 +656,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       if(this.allDriversSelected){
       this.showLoadingIndicator = true;
         this.reportService.getEcoScoreProfiles(true).subscribe((profiles: any) => {
+          if(profiles){
           this.profileList = profiles.profiles;
           let obj = this.profileList.find(o => o.isDeleteAllowed === false);
           if(obj) this.targetProfileId = obj.profileId;
@@ -680,6 +681,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.hideloader();
           this.tableInfoObj = {};
         });
+      }
         }, (error)=>{
           this.isSearched=true;
           this.hideloader();

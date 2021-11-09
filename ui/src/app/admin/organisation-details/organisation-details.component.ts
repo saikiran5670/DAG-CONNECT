@@ -310,6 +310,7 @@ compareHere(a, b) {
   }
 
   onCreateUpdate() {
+    this.showLoadingIndicator=true;
     let organizationUpdateObj = {
       id: this.organisationData.id,
       vehicle_default_opt_in: this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value : this.vehicleStatusDropdownData[0].id,
@@ -317,10 +318,12 @@ compareHere(a, b) {
     }
 
     this.organizationService.updateOrganization(organizationUpdateObj).subscribe((ogranizationResult: any) =>{
+      this.showLoadingIndicator=false;
       if(ogranizationResult){
         this.createUpdatePreferences();
       }
     }, (error) => {
+      this.showLoadingIndicator=false;
       console.log("Error in updateOrganization API...");
     });
   }
@@ -361,12 +364,16 @@ compareHere(a, b) {
         createdBy: this.accountId,
         pageRefreshTime: this.orgDetailsPreferenceForm.controls.pageRefreshTime.value ? parseInt(this.orgDetailsPreferenceForm.controls.pageRefreshTime.value) : 1,
       }
+      this.showLoadingIndicator=true;
       if(this.preferenceId === 0){ // create pref
         this.organizationService.createPreferences(preferenceUpdateObj).subscribe((preferenceResult: any) =>{
           if (preferenceResult) {
             this.loadOrganisationdata();
             this.successStatus(true);
           }
+          this.showLoadingIndicator=false;
+        }, (error) => {
+          this.showLoadingIndicator=false;
         })
       }
       else{ // update pref
@@ -375,6 +382,9 @@ compareHere(a, b) {
             this.loadOrganisationdata();
             this.successStatus(false);
           }
+          this.showLoadingIndicator=false;
+        }, (error) => {
+          this.showLoadingIndicator=false;
         })
       }
     }
