@@ -102,8 +102,9 @@ public class ContiMessageProcessing implements Serializable {
             properties = configuration();
             contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
 
-            //contiMessageProcessing.flinkConnection();
-            contiMessageProcessing.flinkConnection(properties);
+			if(properties.getProperty("flink.streaming.evn").equalsIgnoreCase("default"))
+				contiMessageProcessing.flinkConnection();
+			else contiMessageProcessing.flinkConnection(properties);
             contiMessageProcessing.processing(properties);
             contiMessageProcessing.startExecution();
 
