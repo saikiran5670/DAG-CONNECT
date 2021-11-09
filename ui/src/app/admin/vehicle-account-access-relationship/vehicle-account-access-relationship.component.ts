@@ -418,10 +418,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       roleId: 0,
       name: ""
     }
+    this.showLoadingIndicator=true;
     this.accountService.getAccountDetails(accountObj).subscribe((accountData: any)=>{
+      this.showLoadingIndicator=false;
       let data: any = [];
       data = this.makeRoleAccountGrpList(accountData);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -454,10 +458,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
     const tableTitle =`${row.name} - ${this.translationData.lblVehicles }`;
+    this.showLoadingIndicator=true;
     this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
+      this.showLoadingIndicator=false;
       let data: any = [];
       data = vehData;
       this.callToCommonTable(data, colsList, colsName, tableTitle);
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

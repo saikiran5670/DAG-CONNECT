@@ -67,7 +67,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     type: 'U',
     name: 'Upper'
   }];
-  
+  showLoadingIndicator: boolean = false;
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
@@ -156,11 +156,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   loadFleetUtilisationPreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.resetColumnData();
       this.initData = [];
     });
@@ -468,13 +471,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         reportId: this.reportId,
         attributes: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr, ...parentDataAttr] //-- merge data
       }
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadFleetUtilisationPreferences();
         this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fleetutilisation")) {
           this.reloadCurrentComponent();
         }
         this.requestSent = false;
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }

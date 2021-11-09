@@ -177,6 +177,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       featureState: this.selectedStatus === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE'
      }
     if(this.actionType == 'create'){
+      this.showLoadingIndicator=true;
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
           let filterTypeData = getData.filter(item => item.type == "D");
@@ -186,9 +187,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             successMsg: this.userCreatedMsg,
             tableData: filterTypeData
           }
+          this.showLoadingIndicator=false;
           this.createViewEditFeatureEmit.emit(emitObj);
+        }, (error) => {
+          this.showLoadingIndicator=false;
         });
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
@@ -218,6 +223,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         level: 0,
         featureState: this.selectedStatus === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE'
         }
+        this.showLoadingIndicator=true;
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
           let filterTypeData = getData.filter(item => item.type == "D");
@@ -227,9 +233,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             successMsg: this.userCreatedMsg,
             tableData: filterTypeData
           }
+          this.showLoadingIndicator=false;
           this.createViewEditFeatureEmit.emit(emitObj);
+        }, (error) => {
+          this.showLoadingIndicator=false;
         });
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;

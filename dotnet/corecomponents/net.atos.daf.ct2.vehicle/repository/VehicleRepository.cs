@@ -2327,19 +2327,16 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle Visibility
 
-        public async Task<VisibilityVehicle> GetVehicleForVisibility(int vehicleId)
+        public async Task<VisibilityVehicle> GetVehicleForVisibility(int vehicleId, int organizationId)
         {
             try
             {
-                var query = @"select id, vin, name, license_plate_number as RegistrationNo, true as hasowned from master.vehicle where ";
                 var parameter = new DynamicParameters();
+                parameter.Add("@id", vehicleId);
+                parameter.Add("@organization_id", organizationId);
 
-                // Vehicle Id 
-                if (vehicleId > 0)
-                {
-                    parameter.Add("@id", vehicleId);
-                    query += " id=@id";
-                }
+                var query = @"select id, vin, name, license_plate_number as RegistrationNo, (organization_id = @organization_id) as hasowned from master.vehicle where id=@id";
+
                 return await _dataAccess.QueryFirstOrDefaultAsync<VisibilityVehicle>(query, parameter);
             }
             catch (Exception)

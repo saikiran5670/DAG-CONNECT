@@ -31,6 +31,7 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     isChecked: false
   }
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -86,11 +87,14 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
   }
 
   loadEcoScoreReportPreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -500,8 +504,9 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: [..._generalArr, ..._generalGraphArr, ..._driverPerformGraphArr, ..._driverPerformArr, ...parentDataAttr] //-- merge data
       }
-
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadEcoScoreReportPreferences();
         this.setEcoScoreFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("ecoscorereport")) {
@@ -509,6 +514,7 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
         }
         this.requestSent = false;
       }, (error) => {
+        this.showLoadingIndicator=false;
         console.log(error)
       });
     }

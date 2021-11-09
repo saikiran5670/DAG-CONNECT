@@ -177,9 +177,13 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   getDataAttributeList(){
+    this.showLoadingIndicator=true;
     this.featureService.getDataAttribute().subscribe((data : any) => {
       this.dataAttributeList = data;
       this.createEditViewFeatureFlag = true;
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
