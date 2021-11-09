@@ -149,6 +149,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   map_key: any = '';
   singleVehicle = [];
+  showLoadingIndicator: boolean = false;
 
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
@@ -254,7 +255,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-
+    this.showLoadingIndicator=true;
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
       if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
         this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -262,6 +263,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
           this.proceedStep(prefData, orgPref);
         }, (error) => { // failed org API
+          this.showLoadingIndicator=false;
           let pref: any = {};
           this.proceedStep(prefData, pref);
         });
@@ -311,7 +313,7 @@ proceedStep(prefData: any, preference: any){
   // this.setPrefFormatDate();
   // this.setDefaultTodayDate();
   // this.getReportPreferences();
-  console.log(this.prefUnitFormat);
+  // console.log(this.prefUnitFormat);
 }
 
   toBack() {
@@ -383,6 +385,7 @@ proceedStep(prefData: any, preference: any){
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
       }
+      this.showLoadingIndicator=false;
     })
   }
 
@@ -2192,14 +2195,16 @@ PoiCheckboxClicked(event: any, row: any) {
           "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
           "alertLandmarkRefs": alertLandmarkRefs
         }
-
+        this.showLoadingIndicator=true;
         this.alertService.createAlert(createAlertObjData).subscribe((data) => {
           if(data){
             this.alertCreatedMsg = this.getAlertCreatedMessage();
             let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
             this.backToPage.emit(emitObj);
           }  
+          this.showLoadingIndicator=false;
         }, (error) => {
+          this.showLoadingIndicator=false;
           if(error.status == 409 && error.error == 'Duplicate alert name')
           {
             this.isDuplicateAlert= true;
@@ -2230,14 +2235,16 @@ PoiCheckboxClicked(event: any, row: any) {
         "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
         "alertLandmarkRefs": alertLandmarkRefs
       }
-
+      this.showLoadingIndicator=true;
       this.alertService.updateAlert(editAlertObjData).subscribe((data) => {
         if(data){
           this.alertCreatedMsg = this.getAlertCreatedMessage();
           let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
           this.backToPage.emit(emitObj);
         }  
+        this.showLoadingIndicator=false;
       }, (error) => {
+        this.showLoadingIndicator=false;
         if(error.status == 409)
           this.isDuplicateAlert= true;
       })
