@@ -94,7 +94,7 @@
             <ng-container matColumnDef="thresholdValue">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold }}</mat-header-cell>
                <mat-cell *matCellDef="let row">
-                  <span>{{row.highThresholdValue}}</span>               
+                  <span>{{row.highThresholdValue}} {{row.UnitTypeVal}}</span>               
                 </mat-cell>  
               </ng-container>
               <ng-container matColumnDef="vehicleGroupName">
