@@ -425,14 +425,17 @@ showConfirmDailog(schedulerData: any) {
       this.showLoadingIndicator = true;
       if(res){ 
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
-          this.hideloader();
+          // this.hideloader();
           let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           this.successMsgBlink(successMsg);
           this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
+            this.hideloader();
             if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
               this.loadVehicleDetailsData(data)
             }
 
+          }, (error) => {
+            this.hideloader();
           })
           
 

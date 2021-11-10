@@ -94,8 +94,9 @@ public class ContiHBaseProcessing implements Serializable {
             properties = configuration();
             contiHBaseProcessing.auditContiJobDetails(properties, "Conti HBase streaming job started");
 
-            //contiHBaseProcessing.flinkConnection();
-            contiHBaseProcessing.flinkConnection(properties);
+			if(properties.getProperty("flink.streaming.evn").equalsIgnoreCase("default"))
+				contiHBaseProcessing.flinkConnection();
+			else contiHBaseProcessing.flinkConnection(properties);
             contiHBaseProcessing.processing(properties);
             contiHBaseProcessing.startExecution();
 

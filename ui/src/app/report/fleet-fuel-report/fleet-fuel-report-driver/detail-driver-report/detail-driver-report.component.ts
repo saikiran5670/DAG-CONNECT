@@ -1279,15 +1279,15 @@ createEndMarker(){
   }
 
   loadWholeTripData(){
-    // this.showLoadingIndicator = true;
+    this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      // this.hideloader();
+      this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
      // this.loadUserPOI();
     //  this.hideloader();
     }, (error)=>{
-      // this.hideloader();
+      this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
      // this.loadUserPOI();
