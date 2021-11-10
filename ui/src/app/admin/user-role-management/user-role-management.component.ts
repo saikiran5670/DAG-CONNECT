@@ -102,9 +102,9 @@ export class UserRoleManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.userType = localStorage.getItem("userType");
-    this.userLevel = parseInt(localStorage.getItem("userLevel"));
+    this.userLevel = parseInt(localStorage.getItem('userLevel'));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.isGlobal = true;
     let translationObj = {
@@ -129,7 +129,7 @@ export class UserRoleManagementComponent implements OnInit {
 
   loadInitData() {
     this.showLoadingIndicator = true;
-     let objData = {
+    let objData = {
         Organizationid : this.organizationId,
         IsGlobal: this.isGlobal
      };
@@ -259,10 +259,12 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   getDeletMsg(roleName: any){
-    if(this.translationData.lblUserRoleDelete)
+    if(this.translationData.lblUserRoleDelete) {
       return this.translationData.lblUserRoleDelete.replace('$', roleName);
-    else
+    }
+    else {
       return ("Account role '$' was successfully deleted").replace('$', roleName);
+    }
   }
 
   successMsgBlink(msg: any){
@@ -281,16 +283,20 @@ export class UserRoleManagementComponent implements OnInit {
 
   getCreateEditMsg(editText: any, name: any){
     if(editText == 'create'){
-      if(this.translationData.lblUserRoleCreatedSuccessfully)
+      if(this.translationData.lblUserRoleCreatedSuccessfully) {
         return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
-      else
-        return ("Account Role '$' Created Successfully").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' Created Successfully').replace('$', name);
+      }
     }
     else if(editText == 'edit'){
-      if(this.translationData.lblUserRoledetailssuccessfullyupdated)
+      if(this.translationData.lblUserRoledetailssuccessfullyupdated) {
         return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
-      else
-        return ("Account Role '$' details successfully updated").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' details successfully updated').replace('$', name);
+      }
     }
   }
 
