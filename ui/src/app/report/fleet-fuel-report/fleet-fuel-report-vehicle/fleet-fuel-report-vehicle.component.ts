@@ -659,6 +659,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
   loadfleetFuelDetails(_vinData: any){
+    this.showLoadingIndicator=true;
     // let _startTime = Util.convertDateToUtc(this.startDateValue);
     // let _endTime = Util.convertDateToUtc(this.endDateValue);
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
@@ -689,8 +690,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);  
   }
-
-    })
+    this.hideloader();
+    }, (error)=>{
+      this.hideloader();
+    });
   }
 
   loadsummaryDetails(){
@@ -747,9 +750,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -850,10 +854,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
+    this.showLoadingIndicator=true;
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData= graphData;
       this.showGraph = true;
+      this.hideloader();
+    }, (error)=>{
+      this.hideloader();
     });
   }
   
@@ -1915,11 +1923,11 @@ setVehicleGroupAndVehiclePreSelection() {
             let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
             let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
             numberOfTrips= this.sumOfColumns('noOfTrips');
-     distanceDone= this.sumOfColumns('distance');
-     idleDuration= this.sumOfColumns('idleDuration');
-     fuelConsumption= this.sumOfColumns('fuelConsumption');
-     fuelconsumed= this.sumOfColumns('fuelconsumed');
-     CO2Emission= this.sumOfColumns('co2emission');
+            distanceDone= this.sumOfColumns('distance');
+            idleDuration= this.sumOfColumns('idleDuration');
+            fuelConsumption= this.sumOfColumns('fuelConsumption');
+            fuelconsumed= this.sumOfColumns('fuelconsumed');
+            CO2Emission= this.sumOfColumns('co2emission');
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
@@ -2531,7 +2539,9 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+         if(element.convertedFuelConsumed100Km !='Infinity'){       
+           sum += parseFloat(element.convertedFuelConsumed100Km);
+         }
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -2561,7 +2571,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.cO2Emission);
+        if(element.cO2Emission !='Infinity'){       
+            sum += parseFloat(element.cO2Emission);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;

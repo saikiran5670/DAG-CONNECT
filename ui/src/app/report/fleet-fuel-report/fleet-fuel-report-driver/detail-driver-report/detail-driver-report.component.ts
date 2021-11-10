@@ -1220,7 +1220,9 @@ createEndMarker(){
  
 
   public ngAfterViewInit() { }
+
   loadfleetFuelDetails(driverDetails: any){
+    this.showLoadingIndicator=true;
     let driverID = 0;
     if(driverDetails.driverID.includes('~*')){
       driverID = driverDetails.driverID.split('~')[0];
@@ -1242,7 +1244,10 @@ createEndMarker(){
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
-    });
+    this.hideloader();
+    }, (complete) => {
+      this.hideloader();
+  });
     let searchDataParam=
     {
       "startDateTime": this.dateDetails.startTime,
@@ -1280,6 +1285,7 @@ createEndMarker(){
       this.wholeTripData = tripData;
       this.filterDateData();
      // this.loadUserPOI();
+    //  this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -1569,7 +1575,7 @@ createEndMarker(){
        }
     }
     if(_vinData.length > 0){
-      this.showLoadingIndicator = true;
+      // this.showLoadingIndicator = true;
       let searchDataParam = {
         "startDateTime":_startTime,
         "endDateTime":_endTime,
@@ -1579,7 +1585,7 @@ createEndMarker(){
       this.loadfleetFuelDetails(this.driverDetails);
       this.setTableInfo();
       // this.updateDataSource(this.FuelData);
-      this.hideloader();
+      // this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
@@ -2608,11 +2614,11 @@ setVehicleGroupAndVehiclePreSelection() {
             let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
             let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
             numberOfTrips= this.sumOfColumns('noOfTrips');
-     distanceDone= this.sumOfColumns('distance');
-     idleDuration= this.sumOfColumns('idleDuration');
-     fuelConsumption= this.sumOfColumns('fuelConsumption');
-     fuelconsumed= this.sumOfColumns('fuelconsumed');
-     CO2Emission= this.sumOfColumns('co2emission');
+            distanceDone= this.sumOfColumns('distance');
+            idleDuration= this.sumOfColumns('idleDuration');
+            fuelConsumption= this.sumOfColumns('fuelConsumption');
+            fuelconsumed= this.sumOfColumns('fuelconsumed');
+            CO2Emission= this.sumOfColumns('co2emission');
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
@@ -2633,11 +2639,11 @@ setVehicleGroupAndVehiclePreSelection() {
         const summary = 'Summary Section';
         const detail = 'Detail Section';
         let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
-    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
-    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
+        let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
+        let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
+        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
+        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+        let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
     
         const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
@@ -3125,7 +3131,9 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+        if(element.convertedFuelConsumed100Km !='Infinity'){
+            sum += parseFloat(element.convertedFuelConsumed100Km);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -3150,7 +3158,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.cO2Emission);
+        if(element.cO2Emission !='Infinity'){
+           sum += parseFloat(element.cO2Emission);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;

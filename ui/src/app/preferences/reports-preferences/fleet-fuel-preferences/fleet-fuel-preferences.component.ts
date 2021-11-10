@@ -31,7 +31,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
   fleetFuelForm = new FormGroup({});
   reportData:any;
   unitId;
-
+  showLoadingIndicator: boolean = false;
   lineBarDD: any = [{
     type: 'L',
     name: 'Line Chart'
@@ -70,7 +70,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
   }
 
   loadFleetFuelPreferences() {
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((res:any) => {
+      this.showLoadingIndicator=false;
       this.reportData = res.userPreferences;
       if (this.tabName == 'Vehicle') {
         this.initData = res['userPreferences']['subReportUserPreferences'].filter((item) => item.name.includes('Vehicle'));
@@ -80,6 +82,8 @@ export class FleetFuelPreferencesComponent implements OnInit {
       console.log("Fleet Fuel Report ", this.initData)
       this.resetColumnData();
       this.preparePrefData(this.initData[0]);
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -405,6 +409,12 @@ export class FleetFuelPreferencesComponent implements OnInit {
       return 'km/h(%)';
     }
   }
-
+  if(key === "rp_ff_report_driver_vehicledetails_co2emmision"){
+    if(unitObj[0].value == 'Imperial'){
+      return 'gr/km';
+    } else {
+      return 'gr/km';
+    }
+  }
   }
  }

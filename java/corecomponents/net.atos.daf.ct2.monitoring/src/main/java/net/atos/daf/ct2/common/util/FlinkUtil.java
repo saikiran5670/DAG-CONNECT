@@ -62,8 +62,6 @@ public class FlinkUtil {
 		                          Time.of(Long.parseLong(envParams.get(DafConstants.RESTART_FAILURE_DELAY)), TimeUnit.MILLISECONDS) // delay
 		                        ));
 				} 
-				}else{
-					env.setRestartStrategy(RestartStrategies.noRestart());
 				}
 				return env;
 			}

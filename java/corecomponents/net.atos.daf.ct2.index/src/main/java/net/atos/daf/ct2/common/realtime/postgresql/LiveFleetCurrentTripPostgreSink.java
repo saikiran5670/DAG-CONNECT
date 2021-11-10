@@ -104,7 +104,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 		// Live Fleet CURRENT TRIP Activity
 		Index row = index.getValue();
-		System.out.println("Invoke Started trip statistic Sink :: " + row);
+		//System.out.println("Invoke Started trip statistic Sink :: " + row);
 		
 
 		try {
@@ -180,8 +180,11 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setVehicle_driving_status_type('S');
 							}
 							
-							System.out.println(
-									" aftr vWheelSpeed and vehicle_driving_status_type calculation, CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
+							/*
+							 * System.out.println(
+							 * " aftr vWheelSpeed and vehicle_driving_status_type calculation, CURRENT TRIP POJO BEFORE UPDATE : "
+							 * + currentTripPojo);
+							 */
 							
 							log.info(
 									" aftr vWheelSpeed and vehicle_driving_status_type calculation, CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
@@ -218,7 +221,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 												.read(indexValue.getDocument().getTripID());
 								}
 								
-								System.out.println("read obj current_trip_start_var :: " + current_trip_start_var);
+								//System.out.println("read obj current_trip_start_var :: " + current_trip_start_var);
 								log.info("read obj current_trip_start_var :: " + current_trip_start_var);
 								if (current_trip_start_var != null) {
 
@@ -231,8 +234,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setStart_position_heading(
 											current_trip_start_var.getStart_position_heading());
 
-									System.out
-											.println(" aftr pos CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
+									//System.out.println(" aftr pos CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 									log.info(" aftr pos CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 									// calculate the driving_time
 									long driving_time = current_trip_start_var.getDriving_time();
@@ -254,7 +256,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									 * currentTripPojo.getStart_time_stamp()) - idleDuration;
 									 */
 									
-									System.out.println("driving_time-->" + driving_time);
+									//System.out.println("driving_time-->" + driving_time);
 									log.info("driving_time-->" + driving_time);
 									currentTripPojo.setDriving_time(driving_time);
 									
@@ -266,17 +268,16 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									}
 									currentTripPojo.setTrip_distance(Long.valueOf(totalTripDistance));
 									log.info("distance covered-->" + totalTripDistance);
-									System.out.println("distance covered-->" + totalTripDistance);
+									//System.out.println("distance covered-->" + totalTripDistance);
 									
 
-									System.out.println("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
+									//System.out.println("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 									log.info("CURRENT TRIP POJO BEFORE UPDATE : " + currentTripPojo);
 									log.info("CURRENT TRIP POJO BEFORE UPDATE for Trip_Id: " + indexValue.getDocument().getTripID());
 
 									currentTripDAO.update(currentTripPojo);
 								} else {
-									System.out.println(
-											"Received other index data before start message ::" + currentTripPojo);
+									//System.out.println("Received other index data before start message ::" + currentTripPojo);
 									log.info(
 											"Received other index data before start message :: {} {}" + currentTripPojo, indexValue.getDocument().getTripID());
 
@@ -325,7 +326,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 										
 										readWarnStatusStmt.setString(1, indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid());
 										
-										System.out.println("READ TABLE STATEMENT PARAMETER METADATA : " + readWarnStatusStmt.getParameterMetaData());
+										//System.out.println("READ TABLE STATEMENT PARAMETER METADATA : " + readWarnStatusStmt.getParameterMetaData());
 										
 									}
 									catch (SQLException e) {
@@ -336,7 +337,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									 log.info("LiveFleetCurrentTripPostgreSink- Trying to read latest warning warning status ...");
 									try {
 									
-										System.out.println("READ TABLE STATEMENT QUERY EXECUTED : " + readWarnStatusStmt);
+										//System.out.println("READ TABLE STATEMENT QUERY EXECUTED : " + readWarnStatusStmt);
 										
 										rs_warn_vehicle_health_status = readWarnStatusStmt.executeQuery();
 										
@@ -358,7 +359,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 										}
 										 
-										 System.out.println("LATEST WARNING STATUS RECEIVED from LIVEFLEET_WARNING_STATUS FOR vin/vid = "
+										// System.out.println("LATEST WARNING STATUS RECEIVED from LIVEFLEET_WARNING_STATUS FOR vin/vid = "
 										 + indexValue.getVin()!=null ? indexValue.getVin() : indexValue.getVid() + " is " + warnStatsPojo.toString());
 										 
 										 rs_warn_vehicle_health_status.close();
@@ -390,7 +391,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									currentTripPojo.setLatest_warning_geolocation_address_id(null);
 									}
 							
-									System.out.println("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
+									//System.out.println("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
 									log.info("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
 						
 									currentTripDAO.insert(currentTripPojo);
@@ -407,7 +408,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("EXCEPTION WHILE PROCESSING Current TRIP STATISTICS DATA = " + row);
+			//System.out.println("EXCEPTION WHILE PROCESSING Current TRIP STATISTICS DATA = " + row);
 			log.info("EXCEPTION WHILE PROCESSING CURRENT TRIP STATISTICS DATA = " + row);
 			e.printStackTrace();
 		}

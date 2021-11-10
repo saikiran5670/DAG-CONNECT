@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.postgre.bo.Co2Master;
 
@@ -19,7 +20,9 @@ public class Co2MasterDao implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	//private static final String READ_CO2_COEFFICIENT = "SELECT fuel_type,coefficient from master.co2coefficient";
-	private static final String READ_CO2_COEFFICIENT = "select v.vin, v.vid, v.fuel_type, c.coefficient from master.vehicle v inner join master.co2coefficient c on v.fuel_type = c.fuel_type WHERE v.vid=? limit 1";
+	//private static final String READ_CO2_COEFFICIENT = "select v.vin, v.vid, v.fuel_type, c.coefficient from master.vehicle v inner join master.co2coefficient c on v.fuel_type = c.fuel_type WHERE v.vid=? limit 1";
+	private static final String READ_CO2_COEFFICIENT = "select c.coefficient from master.vehicle v inner join master.co2coefficient c on v.fuel_type = c.fuel_type WHERE v.vid=? limit 1";
+	
 	private static final Logger logger = LoggerFactory.getLogger(Co2MasterDao.class);
 	
 	private Connection connection;
@@ -39,7 +42,8 @@ public class Co2MasterDao implements Serializable {
 		PreparedStatement stmt_read_co2_coefficient = null;
 		ResultSet rs_position = null;
 		Co2Master cm= new Co2Master();
-
+		//put logger 
+		logger.info("read started for CO2Master{} {}",  vid, java.time.LocalTime.now());
 		try {
 			
 			stmt_read_co2_coefficient = connection.prepareStatement(READ_CO2_COEFFICIENT);

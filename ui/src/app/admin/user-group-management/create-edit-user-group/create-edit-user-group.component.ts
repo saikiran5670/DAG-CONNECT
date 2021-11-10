@@ -132,6 +132,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   loadUsersData() {
+    this.showLoadingIndicator=true;
     let getUserData: any = {
       accountId: 0,
       organizationId: this.OrgId,
@@ -143,6 +144,9 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.accountService.getAccountDetails(getUserData).subscribe((usrlist: any) => {
       let userGridData = this.makeRoleAccountGrpList(usrlist);
       this.loadGridData(userGridData);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -236,6 +240,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       accountList.push({ "accountGroupId": (this.actionType == 'create' ? 0 : this.selectedRowData.id), "accountId": element.id })
     });
     if(this.actionType == 'create'){ // create
+      this.showLoadingIndicator=true;
       let createAccGrpObj = {
           id: 0,
           name: this.userGroupForm.controls.userGroupName.value,
@@ -258,8 +263,12 @@ export class CreateEditUserGroupComponent implements OnInit {
             this.userCreatedMsg = this.getUserCreatedMessage();
             let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
             this.backToPage.emit(emitObj);
-          }, (err) => { });
+            this.showLoadingIndicator=false;
+          }, (err) => {
+            this.showLoadingIndicator=false;
+           });
         }, (err) => {
+          this.showLoadingIndicator=false;
           //console.log(err);
           if (err.status == 409) {
             this.duplicateEmailMsg = true;
@@ -283,6 +292,7 @@ export class CreateEditUserGroupComponent implements OnInit {
         this.duplicateEmailMsg = true;
       }
       else{
+        this.showLoadingIndicator=true;
       this.isUserGroupExist = false;
       this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
         let accountGrpObj: any = {
@@ -297,8 +307,12 @@ export class CreateEditUserGroupComponent implements OnInit {
           this.userCreatedMsg = this.getUserCreatedMessage();
           let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
           this.backToPage.emit(emitObj);
-        }, (err) => { });
+          this.showLoadingIndicator=false;
+        }, (err) => { 
+          this.showLoadingIndicator=false;
+         });
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;

@@ -18,7 +18,7 @@ import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-da
   styleUrls: ['./user-role-management.component.less']
 })
 
-export class UserRoleManagementComponent implements OnInit, AfterViewInit {
+export class UserRoleManagementComponent implements OnInit {
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -99,24 +99,12 @@ export class UserRoleManagementComponent implements OnInit, AfterViewInit {
   //     lblDeleteUserRoleAPIFailedMessage: "Error deleting User Role '$'"
   //   }
   // }
-  ngAfterViewInit() {
-    this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-      return (
-        data.roleName.toString().toLowerCase().includes(filter) ||  data.description.toString().toLowerCase().includes(filter)
-      );
-    };
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.userType = localStorage.getItem("userType");
-    this.userLevel = parseInt(localStorage.getItem("userLevel"));
+    this.userLevel = parseInt(localStorage.getItem('userLevel'));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.isGlobal = true;
     let translationObj = {
@@ -141,7 +129,7 @@ export class UserRoleManagementComponent implements OnInit, AfterViewInit {
 
   loadInitData() {
     this.showLoadingIndicator = true;
-     let objData = {
+    let objData = {
         Organizationid : this.organizationId,
         IsGlobal: this.isGlobal
      };
@@ -151,19 +139,27 @@ export class UserRoleManagementComponent implements OnInit, AfterViewInit {
       let filterData = data.filter(i => i.level >= this.userLevel); // get records >= loged In userlevel
       if(filterData && filterData.length > 0){
         this.initData = this.getNewTagData(filterData);
+      }else{
+        this.initData = filterData;
       }
+      setTimeout(()=>{
+        this.dataSource = new MatTableDataSource(this.initData);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+              return (
+                data.roleName.toString().toLowerCase().includes(filter) ||  data.description.toString().toLowerCase().includes(filter)
+              );
+            };
 
+      });
     }, (error) => {
-      //console.log(error)
+
       this.hideloader();
     });
+
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean) {
-     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-     if(!(b instanceof Number)) b = b.toString().toUpperCase();
-     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-   }
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
@@ -263,10 +259,12 @@ export class UserRoleManagementComponent implements OnInit, AfterViewInit {
   }
 
   getDeletMsg(roleName: any){
-    if(this.translationData.lblUserRoleDelete)
+    if(this.translationData.lblUserRoleDelete) {
       return this.translationData.lblUserRoleDelete.replace('$', roleName);
-    else
+    }
+    else {
       return ("Account role '$' was successfully deleted").replace('$', roleName);
+    }
   }
 
   successMsgBlink(msg: any){
@@ -285,16 +283,20 @@ export class UserRoleManagementComponent implements OnInit, AfterViewInit {
 
   getCreateEditMsg(editText: any, name: any){
     if(editText == 'create'){
-      if(this.translationData.lblUserRoleCreatedSuccessfully)
+      if(this.translationData.lblUserRoleCreatedSuccessfully) {
         return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
-      else
-        return ("Account Role '$' Created Successfully").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' Created Successfully').replace('$', name);
+      }
     }
     else if(editText == 'edit'){
-      if(this.translationData.lblUserRoledetailssuccessfullyupdated)
+      if(this.translationData.lblUserRoledetailssuccessfullyupdated) {
         return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
-      else
-        return ("Account Role '$' details successfully updated").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' details successfully updated').replace('$', name);
+      }
     }
   }
 

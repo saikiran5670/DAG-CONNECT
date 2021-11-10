@@ -48,7 +48,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
    'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
    'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
-   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
+   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
+   'cO2Emmision','idlingConsumptionWithPTO'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -669,6 +670,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    this.showLoadingIndicator=true;
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
    
@@ -679,7 +681,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "LanguageCode": "EN-GB"
     }  
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    // console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -694,7 +696,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
     
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    })
+    this.hideloader();
+    }, (error)=>{
+      this.hideloader();
+    });
   }
 
   loadsummaryDetails(){
@@ -751,9 +756,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -853,10 +859,14 @@ export class FleetFuelReportDriverComponent implements OnInit {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     } 
+    this.showLoadingIndicator=true;
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
       this.showGraph = true;
+      this.hideloader();
+    }, (error)=>{
+      this.hideloader();
     });    
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
@@ -2465,7 +2475,9 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+        if(element.convertedFuelConsumed100Km !='Infinity'){
+           sum += parseFloat(element.convertedFuelConsumed100Km);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -2490,7 +2502,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.cO2Emission);
+        if(element.cO2Emission !='Infinity'){   
+           sum += parseFloat(element.cO2Emission);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
