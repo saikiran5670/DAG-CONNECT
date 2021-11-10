@@ -5,10 +5,7 @@ import java.util.Properties;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.io.jdbc.JDBCInputFormat;
-import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -28,6 +25,7 @@ import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.kafka.FlinkKafkaStatusMsgConsumer;
 import net.atos.daf.ct2.etl.common.postgre.EcoScoreSink;
+import net.atos.daf.ct2.etl.common.postgre.FuelCoefficientSource;
 import net.atos.daf.ct2.etl.common.postgre.TripSink;
 import net.atos.daf.ct2.etl.common.postgre.VehicleFuelTypeLookup;
 import net.atos.daf.ct2.etl.common.processing.TripAggregationProcessor;
@@ -58,7 +56,6 @@ public class TripEtlStreamingJob {
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
 					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
 
-//
 			env.getConfig().setGlobalJobParameters(envParams);
 			
 			TripAggregationProcessor tripAggregationNew = new TripAggregationProcessor();
@@ -89,7 +86,7 @@ public class TripEtlStreamingJob {
 					});//.keyBy(rec -> Objects.nonNull(rec.getVin())? rec.getVin() : rec.getVid());
 			
 							
-			String jdbcUrl = new StringBuilder(envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME))
+			/*String jdbcUrl = new StringBuilder(envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME))
 	                .append(":" + Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)) + "/")
 	                .append(envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME))
 	                .append("?user=" + envParams.get(ETLConstants.MASTER_POSTGRE_USER))
@@ -111,15 +108,17 @@ public class TripEtlStreamingJob {
 	                .finish();
 	        
 
-	      SingleOutputStreamOperator<FuelCoEfficient> dbVehicleStatusStream = 
+	      SingleOutputStreamOperator<FuelCoEfficient> vehFuelStream = 
 	        env.createInput(jdbcInputFormat).map(row -> { FuelCoEfficient fuelCoff = new FuelCoEfficient();
 	        fuelCoff.setFuelCoefficient(Double.valueOf(String.valueOf(row.getField(0))));
-	        fuelCoff.setFuelType(String.valueOf(row.getField(1))); return fuelCoff;  });
-	        
+	        fuelCoff.setFuelType(String.valueOf(row.getField(1))); return fuelCoff;  });*/
+	      
+		SingleOutputStreamOperator<FuelCoEfficient> vehFuelStream = env.addSource(new FuelCoefficientSource()).name("Fuel Coefficient Source");
+		  	
 	  	MapStateDescriptor<String, Double> fuelCoffStreamMapState = new MapStateDescriptor<String, Double>("fuelCoffState",
 				TypeInformation.of(String.class), TypeInformation.of(Double.class));  
 	  	
-	  	BroadcastStream<FuelCoEfficient> fuelCoffBroadcast = dbVehicleStatusStream.broadcast(fuelCoffStreamMapState);
+	  	BroadcastStream<FuelCoEfficient> fuelCoffBroadcast = vehFuelStream.broadcast(fuelCoffStreamMapState);
 	  	
 	  	//Temp fix need to be removed
 	  	SingleOutputStreamOperator<TripStatusData> statusDataStreamWithFuelType =  statusDataStream.filter(rec -> Objects.nonNull(rec.getFuelType()));
