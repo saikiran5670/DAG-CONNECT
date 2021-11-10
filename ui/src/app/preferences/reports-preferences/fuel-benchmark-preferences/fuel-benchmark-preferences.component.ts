@@ -35,6 +35,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   ];
   fuelBenchmarkForm: FormGroup;
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
 
@@ -71,12 +72,15 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   }
 
   loadFuelBenchmarkReportPreferences() {
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.getReportPreferenceResponse = this.initData;    
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
     }, (error) => {
+      this.showLoadingIndicator=false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -205,8 +209,9 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: [...temp_attr, ...parentAttr]
       }
-
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
+        this.showLoadingIndicator=false;
         this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fuelbenchmarking")) {
           this.reloadCurrentComponent();
@@ -215,6 +220,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
         // setTimeout(() => {
         //   window.location.reload();
         // }, 1000);
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }
