@@ -133,7 +133,7 @@ metadata:
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
-  minReplicas: 2
+  minReplicas: 4
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 

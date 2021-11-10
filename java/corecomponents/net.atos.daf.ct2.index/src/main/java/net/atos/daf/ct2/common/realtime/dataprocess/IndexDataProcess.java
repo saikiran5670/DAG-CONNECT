@@ -50,8 +50,9 @@ public class IndexDataProcess {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
-					envParams.get(DafConstants.INDEX_JOB));
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() :
+					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_TRIPJOB));
 
 			log.info("env :: " + env);
 

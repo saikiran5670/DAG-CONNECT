@@ -23,10 +23,13 @@ export class AlertsComponent implements OnInit {
   displayedColumns: string[] = ['highUrgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  highThresholdUnitType: any;
   displayMessage: any;
   createViewEditStatus: boolean = false;
   showLoadingIndicator: any = false;
   actionType: any = '';
+  UnitTypeVal: any;
   selectedRowData: any= [];
   titleText: string;
   translationData: any= {};
@@ -56,9 +59,12 @@ export class AlertsComponent implements OnInit {
   stringifiedData: any;
   parsedJson: any;
   filterValues = {};
+  prefUnit: any;
+  unitId: any;
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
   associatedVehicleData: any= [];
+  generalPreferences: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -84,7 +90,8 @@ export class AlertsComponent implements OnInit {
       else{
         this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       }
-
+      let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
+      this.unitId = accountPreference.unitId;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -100,8 +107,20 @@ export class AlertsComponent implements OnInit {
         this.processTranslation(data);
         this.loadFiltersData();
       });
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { this.generalPreferences = res; this.getUnits() });
     }
 
+    getUnits() {
+      let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
+      if (unitObj && unitObj.length != 0) {
+        this.prefUnit = unitObj[0].value;
+        if (this.prefUnit == 'Imperial') {
+          this.prefUnitFormat = 'dunit_Imperial';
+        } else {
+          this.prefUnitFormat = 'dunit_Metric';
+        }
+      }
+    }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -278,6 +297,71 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
+
+        let unitTypeEnum;
+        switch(item.category +item.type){
+            case 'LH': unitTypeEnum= "H";
+            item.UnitTypeVal =  this.translationData.lblHours;
+            break;
+  
+            case 'LD': 
+            if(this.prefUnitFormat == 'dunit_Metric'){
+              unitTypeEnum= "K"; 
+              item.UnitTypeVal = this.translationData.lblkm;
+             }
+              else{
+              unitTypeEnum= "L";
+              item.UnitTypeVal = this.translationData.lblmile;
+              }
+              break;
+  
+            case 'LU': unitTypeEnum= "H";
+            item.UnitTypeVal =  this.translationData.lblHours;
+             break;
+  
+            case 'LG': 
+            if(this.prefUnitFormat == 'dunit_Metric'){
+              unitTypeEnum= "K";  
+              item.UnitTypeVal = this.translationData.lblkm;}
+              else{
+              unitTypeEnum= "L";
+              item.UnitTypeVal = this.translationData.lblmile;
+              }
+             break;
+  
+            case 'FP': unitTypeEnum= "P";
+            item.UnitTypeVal =  "%"
+            break; 
+  
+            case 'FL': unitTypeEnum= "P";
+            item.UnitTypeVal =  "%"
+            break;
+  
+            case 'FT': unitTypeEnum= "P";
+            item.UnitTypeVal =  "%"
+            break;
+  
+            case 'FI': unitTypeEnum= "S";
+            item.UnitTypeVal = this.translationData.lblSeconds;
+            break;
+  
+            case 'FA': 
+            if(this.prefUnitFormat == 'dunit_Metric'){
+              unitTypeEnum= "A";  
+              item.UnitTypeVal = this.translationData.lblkilometerperhour;
+            }
+              else{
+                unitTypeEnum= "B";
+                item.UnitTypeVal = this.translationData.lblMilesPerHour
+              }
+              break;
+  
+            case 'FF': unitTypeEnum= "P";
+            item.UnitTypeVal =  "%"
+            break;
+  
+            return item.UnitTypeVal;
+          }
 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
