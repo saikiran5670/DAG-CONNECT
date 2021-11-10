@@ -20,6 +20,7 @@ export class VehicleDetailsComponent implements OnInit {
   @Input() levelList: any;
   @Input() categoryList: any;
   @Input() vehInfoPrefData: any;
+  @Input() todayFlagClicked: any;
   vehicleGroups: any;
   vehicleGroupId: any;
   gridData: any = [];
@@ -162,7 +163,13 @@ export class VehicleDetailsComponent implements OnInit {
         this.vehicleGroupId = this.vehicleGroups[i].vehicleGroupId;
       }
     }   
-   this.selectedElementData.vehicleGroupId = this.vehicleGroupId;   
+   this.selectedElementData.vehicleGroupId = this.vehicleGroupId; 
+  //  if(this.selectedElementData.startTimeStamp != 0 && this.selectedElementData.endTimeStamp != 0) {
+    this.selectedElementData.startDate = this.selectedElementData.startTimeStamp;
+    this.selectedElementData.endDate = this.selectedElementData.endTimeStamp;
+  //  }
+   this.selectedElementData.todayFlag = this.todayFlagClicked;
+
     const navigationExtras: NavigationExtras = {
       state: {
         fromVehicleDetails: true,
