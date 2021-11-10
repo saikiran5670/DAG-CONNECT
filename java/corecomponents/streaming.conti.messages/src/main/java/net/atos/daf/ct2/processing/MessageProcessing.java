@@ -11,7 +11,6 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
@@ -19,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
@@ -37,21 +35,49 @@ public class MessageProcessing<U,R, T> {
   
   public void consumeKeyedContiMessage(
 	      DataStream<KafkaRecord<Tuple3<String, String, Object>>> messageDataStream,
-	      String messageType,
-	      String key,
-	      String sinkTopicName,
 	      Properties properties,
-	      Class<T> tClass,
-	      BroadcastStream<KafkaRecord<VehicleStatusSchema>> broadcastStream) {
+	     BroadcastStream<KafkaRecord<VehicleStatusSchema>> broadcastStream) {
 	   
 	   SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiBrdCastStream = messageDataStream
 	        .connect(broadcastStream)
 	        .process(new BroadcastMessageProcessor(properties))
-				.name("Broadcast processing "+key);
+				.name("Broadcast processing ");
 	       // .keyBy(rec -> rec.getKey())
-		
-	   contiBrdCastStream.map(
-	            new MapFunction<KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<T>>() {
+			   
+	   egressContiMessage(
+			   contiBrdCastStream,
+			   properties.getProperty(DAFCT2Constant.MONITOR_TRANSID),
+			   properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME),
+			   properties);
+	   
+	   egressContiMessage(
+			   contiBrdCastStream,
+			     properties.getProperty(DAFCT2Constant.INDEX_TRANSID),
+			     properties.getProperty(DAFCT2Constant.SINK_INDEX_TOPIC_NAME),
+			     properties);
+	   
+	   egressContiMessage(
+			   contiBrdCastStream,
+			   properties.getProperty(DAFCT2Constant.STATUS_TRANSID),
+			     properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME),
+			     properties);
+	  
+	   egressContiRawMessage(
+			   contiBrdCastStream,
+			   properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_TOPIC_NAME),
+			   properties);
+	 
+  }
+	
+  public void egressContiMessage(
+		  SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiStreamToEgress,
+	      String messageType,
+	      String sinkTopicName,
+	      Properties properties) {
+	  
+	  contiStreamToEgress
+	  .filter(rec ->  messageType.equals(rec.getValue().f1))
+	  .map( new MapFunction<KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<T>>() {
 	              /**
 					 * 
 					 */
@@ -61,8 +87,7 @@ public class MessageProcessing<U,R, T> {
 	              public KafkaRecord<T> map(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
 	              // logger.info("KafkaRecord before converting to object : {}", value);
 	                try{
-	                	// T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
-
+	                
 	                     KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 	                     //kafkaRecord.setKey(key);
 	                     kafkaRecord.setKey(value.getKey());
@@ -77,7 +102,7 @@ public class MessageProcessing<U,R, T> {
 	                }
 	            
 	              }
-	            }).name("Map Kafka Record")
+	            }).name("Map Kafka Record " + messageType)
 	        .filter( rec -> Objects.nonNull(rec)).name("Filter Null records")
 	        .keyBy(rec -> rec.getKey())
 	        .addSink(
@@ -86,115 +111,50 @@ public class MessageProcessing<U,R, T> {
 	                new KafkaMessageSerializeSchema<T>(sinkTopicName),
 	                properties,
 	                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name(" Topic : "+sinkTopicName);
+  }
+  
+  public void egressContiRawMessage(
+		  SingleOutputStreamOperator<KafkaRecord<Tuple3<String, String, Object>>> contiRawStreamToEgress,
+	      String sinkTopicName,
+	      Properties properties) {
 	  
 	  if(DAFCT2Constant.ATOS_STANDARD.equals(properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_FORMAT))){
-		 logger.info( "Raw data to egress topic : {}",properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_TOPIC_NAME));
-		 
-		 contiBrdCastStream
-		 .map(new MapFunction<KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<String>>(){
-			 /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			ObjectMapper mapper = new ObjectMapper();
-			@Override
-			public KafkaRecord<String> map(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-				KafkaRecord<String> kafkaRec = new KafkaRecord<>();
-				kafkaRec.setKey(value.getKey());
-				
-				try {
-					kafkaRec.setValue(mapper.writeValueAsString(value.getValue().f2));
-				} catch (JsonProcessingException e) {
-					logger.error("Issue while converting Raw Object to String:{} " ,e.getMessage());
-				}
-				logger.info("Raw Json data structure ::{} ",kafkaRec);
-
-				return kafkaRec;
-			}
+			 logger.info( "Raw data to egress topic : {}",properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_TOPIC_NAME));
 			 
-		 }).filter(rec -> Objects.nonNull(rec.getValue()))
-		 .addSink(
-		            new FlinkKafkaProducer<KafkaRecord<String>>(
-		                sinkTopicName,
-		                new KafkaMessageSerializeSchema<String>(properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_TOPIC_NAME)),
-		                properties,
-		                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name(" Topic : "+properties.getProperty(DAFCT2Constant.EGRESS_RAW_DATA_TOPIC_NAME));
-	  }
+			 contiRawStreamToEgress
+			 .map(new MapFunction<KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<String>>(){
+				 /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+				ObjectMapper mapper = new ObjectMapper();
+				@Override
+				public KafkaRecord<String> map(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
+					KafkaRecord<String> kafkaRec = new KafkaRecord<>();
+					kafkaRec.setKey(value.getKey());
+					
+					try {
+						kafkaRec.setValue(mapper.writeValueAsString(value.getValue().f2));
+					} catch (JsonProcessingException e) {
+						logger.error("Issue while converting Raw Object to String:{} " ,e.getMessage());
+					}
+					logger.info("Raw Json data structure ::{} ",kafkaRec);
+
+					return kafkaRec;
+				}
+				 
+			 }).filter(rec -> Objects.nonNull(rec.getValue()))
+			 .addSink(
+			            new FlinkKafkaProducer<KafkaRecord<String>>(
+			            	sinkTopicName,
+			                new KafkaMessageSerializeSchema<String>(sinkTopicName),
+			                properties,
+			                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name(" Topic : "+sinkTopicName);
+		  }
 
   }
-	  
-  public void contiKeyedMessageForHistorical(
-	      DataStream<KafkaRecord<Tuple3<String, String, Object>>> messageDataStream,
-	      Properties properties,
-		  BroadcastStream<KafkaRecord<R>> broadcastStream,
-		  String msgType,
-		  int parallelismNo) {
-
-		messageDataStream.connect(broadcastStream)
-				.process(new KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<R>, KafkaRecord<String>>() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-					private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor = new BroadcastState<U,R>()
-							.stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
-
-					@Override
-					public void processElement(KafkaRecord<Tuple3<String, String, Object>> inputRec,
-							KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<R>, KafkaRecord<String>>.ReadOnlyContext ctx,
-							Collector<KafkaRecord<String>> out) throws Exception {
-			
-						KafkaRecord<String> historyRec = new KafkaRecord<String>();
-						try {
-							//vid mapped to vin
-							String vin = ctx.getCurrentKey();
-							logger.info("History Record for VID: {}" , vin);
-							
-							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
-							Message<U> keyMessage = new Message<>((U) vin);
-							if(mapBrodcast.contains(keyMessage)){
-								KafkaRecord<R> rKafkaRecord = mapBrodcast.get(keyMessage);
-								VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)rKafkaRecord.getValue();
-								vin = vinStatusRecord.getVin();
-							}
-							
-							historyRec.setKey(inputRec.getKey() + "_" + vin + "_"
-									+ TimeFormatter.getInstance().getCurrentUTCTime());
-							
-							historyRec.setValue(JsonMapper.configuring().writeValueAsString(inputRec.getValue().f2));
-							logger.info("History Record key :: {} ",historyRec.getKey());
-
-						} catch (Exception e) {
-							historyRec.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
-							//historyRec.setValue(JsonMapper.configuring().writeValueAsString(inputRec.getValue().f2));
-						}
-						out.collect(historyRec);
-					}
-					
-					@Override
-					public void processBroadcastElement(KafkaRecord<R> value,
-							KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<R>, KafkaRecord<String>>.Context ctx,
-							Collector<KafkaRecord<String>> out) throws Exception {
-						logger.info("Broadcast updated from history :" + value);
-						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
-					}
-					
-				}).filter(rec -> !rec.getKey().startsWith("UnknownMessage")).returns(new TypeHint<KafkaRecord<String>>() {
-				}.getTypeInfo()).name("Filter "+msgType)
-				//.keyBy(rec -> rec.getKey())
-				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
-						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
-						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
-						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
-						properties.getProperty(DAFCT2Constant.HBASE_MASTER),
-						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
-						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
-						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)))
-				.setParallelism(parallelismNo)
-				.name("Historial Data load : "+msgType);
-	}
   
-  //Duplicate method - Need to remove once code is fine tuned
+ 
   public void contiKeyedMessageForHistorical(
 	      DataStream<KafkaRecord<Tuple3<String, String, Object>>> messageDataStream,
 	      Properties properties,
@@ -262,65 +222,6 @@ public class MessageProcessing<U,R, T> {
 				.name("Historial Data load ");
 	}
   
-  
-  public void contiMessageForHistorical(
-	      DataStream<KafkaRecord<String>> messageDataStream,
-	      Properties properties,
-		  BroadcastStream<KafkaRecord<R>> broadcastStream) {
-
-		messageDataStream.connect(broadcastStream)
-				.process(new BroadcastProcessFunction<KafkaRecord<String>, KafkaRecord<R>, KafkaRecord<String>>() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-					private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor = new BroadcastState<U,R>()
-							.stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
-
-					@Override
-					public void processElement(KafkaRecord<String> value, ReadOnlyContext ctx,
-							Collector<KafkaRecord<String>> out) {
-
-						try {
-							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-							String vid = jsonNodeRec.get("VID").asText();
-							logger.info("History Record for VID: {}" , vid);
-							String vin = vid;
-
-							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
-							Message<U> keyMessage = new Message<>((U) vid);
-							if(mapBrodcast.contains(keyMessage)){
-								KafkaRecord<R> rKafkaRecord = mapBrodcast.get(keyMessage);
-								VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)rKafkaRecord.getValue();
-								vin = vinStatusRecord.getVin();
-							}
-							
-							value.setKey(jsonNodeRec.get("TransID").asText() + "_" + vin + "_"
-									+ TimeFormatter.getInstance().getCurrentUTCTime());
-
-						} catch (Exception e) {
-							value.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
-						}
-						out.collect(value);
-					}
-					@Override
-					public void processBroadcastElement(KafkaRecord<R> value, Context ctx,
-							Collector<KafkaRecord<String>> out) throws Exception {
-						logger.info("Broadcast updated from history :" + value);
-						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
-					}
-				}).setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
-				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
-						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
-						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
-						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
-						properties.getProperty(DAFCT2Constant.HBASE_MASTER),
-						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
-						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
-						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)))
-				.setParallelism(Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_PARALLELISM)))
-				.name("Historial Data");
-	}
-
+ 
 	  
 }

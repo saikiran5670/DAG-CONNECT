@@ -46,6 +46,7 @@ export class DataTableComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    this.updatedTableData(this.tableData);
   }
 
   // exportAsCSV() {
