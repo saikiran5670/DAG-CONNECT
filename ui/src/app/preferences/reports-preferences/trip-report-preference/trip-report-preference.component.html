@@ -166,3 +166,4 @@
     <button [disabled]='reqField || (selectionForTripColumns.selected.length == 0 && tripPrefData.length > 0)' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>	

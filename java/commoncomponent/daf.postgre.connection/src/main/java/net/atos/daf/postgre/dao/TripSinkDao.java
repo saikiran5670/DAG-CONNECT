@@ -31,8 +31,6 @@ public class TripSinkDao implements Serializable {
 			if(Objects.nonNull(dataObject)) {
 
 				tripInsertQry = fillStatement(tripInsertQry, dataObject, connection);
-//				tripInsertQry.addBatch();
-//				tripInsertQry.executeBatch();
 				tripInsertQry.execute();
 			} 
 		} catch (SQLException e) {

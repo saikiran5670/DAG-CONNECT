@@ -130,3 +130,4 @@
     <button [disabled]='reqField || (selectionForLoogbookColumns.selected.length == 0 && logbookPrefData.length > 0)' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>	

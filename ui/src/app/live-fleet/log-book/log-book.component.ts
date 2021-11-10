@@ -799,6 +799,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
           this.initMap();
         }, 0);
       }
+      this.showLoadingIndicator = true; 
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         let newLogbookData = [];
