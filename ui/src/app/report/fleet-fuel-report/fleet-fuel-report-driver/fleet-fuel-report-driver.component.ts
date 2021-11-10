@@ -2475,7 +2475,9 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+        if(element.convertedFuelConsumed100Km !='Infinity'){
+           sum += parseFloat(element.convertedFuelConsumed100Km);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -2500,7 +2502,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.cO2Emission);
+        if(element.cO2Emission !='Infinity'){   
+           sum += parseFloat(element.cO2Emission);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;

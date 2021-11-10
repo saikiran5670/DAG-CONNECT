@@ -2512,496 +2512,496 @@ setVehicleGroupAndVehiclePreSelection() {
   summaryNewObj: any;
 
   getAllSummaryData(){ 
-          if(this.initData.length > 0){
-            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
-            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
-            numberOfTrips= this.sumOfColumns('noOfTrips');
-            distanceDone= this.sumOfColumns('distance');
-            idleDuration= this.sumOfColumns('idleDuration');
-            fuelConsumption= this.sumOfColumns('fuelConsumption');
-            fuelconsumed= this.sumOfColumns('fuelconsumed');
-            CO2Emission= this.sumOfColumns('co2emission');
-          // numbeOfVehicles = this.initData.length;   
-            
-          this.summaryNewObj = [
-           ['Fleet Fuel Vehicle Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
-             fuelconsumed, idleDuration, fuelConsumption,CO2Emission
-          ]
-          ];        
-         }
-       }
+      if(this.initData.length > 0){
+        let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+        let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+        numberOfTrips= this.sumOfColumns('noOfTrips');
+        distanceDone= this.sumOfColumns('distance');
+        idleDuration= this.sumOfColumns('idleDuration');
+        fuelConsumption= this.sumOfColumns('fuelConsumption');
+        fuelconsumed= this.sumOfColumns('fuelconsumed');
+        CO2Emission= this.sumOfColumns('co2emission');
+      // numbeOfVehicles = this.initData.length;   
+        
+      this.summaryNewObj = [
+        ['Fleet Fuel Vehicle Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+          fuelconsumed, idleDuration, fuelConsumption,CO2Emission
+        ]
+       ];        
+     }
+  }
          
-       exportAsExcelFile() {
-        this.getAllSummaryData();
-        const title = 'Fleet Fuel Vehicle Trip Report';
-        const summary = 'Summary Section';
-        const detail = 'Detail Section';
-        let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
+  exportAsExcelFile() {
+    this.getAllSummaryData();
+    const title = 'Fleet Fuel Vehicle Trip Report';
+    const summary = 'Summary Section';
+    const detail = 'Detail Section';
+    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
     let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
     let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
     
-        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
-        'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
-        'Cruise Control Distance 50-75('+unitValkmh+')(%)','Cruise Control Distance>75('+unitValkmh+')(%)','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination(Ton)', 'AverageTrafficClassification',
-        'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore'];
-        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+ unitValkg1+')'];
-        const summaryData= this.summaryNewObj;
-        //Create workbook and worksheet
-        let workbook = new Workbook();
-        let worksheet = workbook.addWorksheet('Fleet Fuel Vehicle Trip Report');
-        //Add Row and formatting
-        let titleRow = worksheet.addRow([title]);
-        worksheet.addRow([]);
-        titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-  
-        worksheet.addRow([]);
-        let subTitleRow = worksheet.addRow([summary]);
-        let summaryRow = worksheet.addRow(summaryHeader);
-        summaryData.forEach(element => {
-          worksheet.addRow(element);
-        });
-        worksheet.addRow([]);
-        summaryRow.eachCell((cell, number) => {
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFFF00' },
-            bgColor: { argb: 'FF0000FF' }
-          }
-          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-        })
-        worksheet.addRow([]);
-        let subTitleDetailRow = worksheet.addRow([detail]);
-        let headerRow = worksheet.addRow(header);
-        headerRow.eachCell((cell, number) => {
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFFF00' },
-            bgColor: { argb: 'FF0000FF' }
-          }
-          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-        })    
-        this.initData.forEach(item => {
-          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
-            item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
-            item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
-            item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore]);
-        });
-  
-    //  exportAsExcelFile(){
-    //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
-        worksheet.mergeCells('A1:D2');
-        subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-        subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-        for (var i = 0; i < header.length; i++) {
-          worksheet.columns[i].width = 20;
-        }
-        for (var j = 0; j < summaryHeader.length; j++) {
-          worksheet.columns[j].width = 20;
-        }
-        worksheet.addRow([]);
-        workbook.xlsx.writeBuffer().then((data) => {
-          let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-          fs.saveAs(blob, 'Fleet_Fuel_Vehicle_Trip.xlsx');
-        })    
-    }
+    const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','Start Position', 'End Position',
+    'Fuel Consumed('+unitValuekm+')', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
+    'Cruise Control Distance 50-75('+unitValkmh+')(%)','Cruise Control Distance>75('+unitValkmh+')(%)','Heavy Throttle Duration(%)','Harsh Brake Duration(%)', 'Gross Weight Combination(Ton)', 'Average Traffic Classification',
+    'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC non active('+unitVal100km+')','Idling Consumption','DPA Score','Idling with PTO (hh:mm:ss) score','Idling with PTO(%)','Idling without PTO (hh:mm:ss)','Idling with PTO(%)','Foot Brake','CO2 emmision gr/km','Idling Consumption With PTO ('+unitVal100km+')'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+ unitValkg1+')'];
+    const summaryData= this.summaryNewObj;
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Fleet Fuel Vehicle Trip Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
 
-  exportAsPDFFile(){
-   
-    var doc = new jsPDF('p', 'mm', 'a4');
- // let pdfColumns = [this.displayedColumns];
- let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
- let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
- let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
- let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
- let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || ' mpg');
- let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound ||  'pound');
- 
- let pdfColumns = [];
- let pdfColumnHeads=[];
- this.displayedColumns.forEach(element => {
-   switch(element){
-     case 'driverName' :{
-       pdfColumnHeads.push('Driver Name');
-       break;
-     }
-     case 'driverID' :{
-       pdfColumnHeads.push('Driver ID');
-       break;
-     }
-     case 'vehicleName' :{
-       pdfColumnHeads.push('Vehicle Name');
-       break;
-     }
-     case 'vin' :{
-       pdfColumnHeads.push('VIN');
-       break;
-     }
-     case 'vehicleRegistrationNo' :{
-       pdfColumnHeads.push('Vehicle Registration No');
-       break;
-     }
-     case 'startDate' :{
-       pdfColumnHeads.push('Start Date');
-       break;
-     }
-     case 'endDate' :{
-       pdfColumnHeads.push('End Date');
-       break;
-     }
-     case 'distance' :{
-       pdfColumnHeads.push('Distance('+distance+')');
-       break;
-     }
-     case 'averageDistancePerDay' :{
-       pdfColumnHeads.push('Average Distance('+distance+')');
-       break;
-     }
-     case 'averageSpeed' :{
-       pdfColumnHeads.push('Average Speed('+speed+')');
-       break;
-     }
-     case 'maxSpeed' :{
-       pdfColumnHeads.push('Max Speed('+speed+')');
-       break;
-     }
-     case 'startPosition' :{
-       pdfColumnHeads.push('Start Position');
-       break;
-     }
-     case 'endPosition' :{
-       pdfColumnHeads.push('End Position');
-       break;
-     }
-     case 'averageGrossWeightComb' :{
-       pdfColumnHeads.push('Average Gross Weight Comb('+ton+')');
-       break;
-     }
-     case 'fuelConsumed' :{
-       pdfColumnHeads.push('Fuel Consumed('+fuel+')');
-       break;
-     }
-     case 'fuelConsumption' :{
-       pdfColumnHeads.push('Fuel Consumption('+fuelCons+')');
-       break;
-     }
-     case 'cO2Emission' :{
-       pdfColumnHeads.push('CO2 Emission('+ton+')');
-       break;
-     }
-     case 'idleDuration' :{
-       pdfColumnHeads.push('Idle Duration%');
-       break;
-     }
-     case 'ptoDuration' :{
-       pdfColumnHeads.push('PTO Duration%');
-       break;
-     }
-     case 'harshBrakeDuration' :{
-       pdfColumnHeads.push('Harsh Brake Duration%');
-       break;
-     }
-     case 'heavyThrottleDuration' :{
-       pdfColumnHeads.push('Heavy Throttle Duration%');
-       break;
-     }
-     case 'cruiseControlDistance3050' :{
-       pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')');
-       break;
-     }
-     case 'cruiseControlDistance5075' :{
-       pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')');
-       break;
-     }
-     case 'cruiseControlDistance75' :{
-       pdfColumnHeads.push('Cruise Control Distance 75('+speed+')');
-       break;
-     }
-     case 'averageTrafficClassification' :{
-       pdfColumnHeads.push('Average Traffic Classification');
-       break;
-     }
-     case 'ccFuelConsumption' :{
-       pdfColumnHeads.push('Cc Fuel Consumption('+fuelCons+')');
-       break;
-     }
-     case 'fuelconsumptionCCnonactive' :{
-       pdfColumnHeads.push('Fuel Consumption CC non active('+fuelCons+')');
-       break;
-     }
-     case 'idlingConsumption' :{
-       pdfColumnHeads.push('Idling Consumption');
-       break;
-     }
-     case 'dpaScore' :{
-       pdfColumnHeads.push('DPA Score');
-       break;
-     }
-     case 'dpaAnticipationScore' :{
-       pdfColumnHeads.push('DPA Anticipation Score%');
-       break;
-     }
-     case 'dpaBrakingScore' :{
-       pdfColumnHeads.push('DPA Braking Score%');
-       break;
-     }
-     case 'idlingPTOScore' :{
-       pdfColumnHeads.push('Idling PTO Score (hh:mm:ss) ');
-       break;
-     }
-     case 'idlingPTO' :{
-       pdfColumnHeads.push('Idling PTO %');
-       break;
-     }
-     case 'idlingWithoutPTOpercent' :{
-       pdfColumnHeads.push('Idling Without PTO % ');
-       break;
-     }
-     case 'footBrake' :{
-       pdfColumnHeads.push('Foot Brake');
-       break;
-     }
-     case 'cO2Emmision' :{
-       pdfColumnHeads.push('CO2 Emmision gr/km');
-       break;
-     }
-     case 'averageTrafficClassificationValue' :{
-       pdfColumnHeads.push('Average Traffic Classification Value');
-       break;
-     }
-     case 'idlingConsumptionValue' :{
-       pdfColumnHeads.push('Idling Consumption Value('+idlingPTO+')');
-       break;
-     }
-   }
- })
- pdfColumns.push(pdfColumnHeads);  
-  let prepare = []
-    this.displayData.forEach(e=>{
-      var tempObj =[];
-      this.displayedColumns.forEach(element => {
-        switch(element){
-          case 'driverName' :{
-            tempObj.push(e.driverName);
-            break;
+    worksheet.addRow([]);
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);
+    summaryData.forEach(element => {
+      worksheet.addRow(element);
+    });
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    worksheet.addRow([]);
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })    
+    this.initData.forEach(item => {
+      worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
+        item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+        item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
+        item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
+        item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore,item.convertedIdlingPTOScore,
+        item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,item.footBrake,item.cO2Emmision,item.convertedIdlingConsumptionWithPto]);
+    });
+
+    // exportAsExcelFile(){
+    // this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
+    worksheet.mergeCells('A1:D2');
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {
+      worksheet.columns[i].width = 20;
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {
+      worksheet.columns[j].width = 20;
+    }
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Fleet_Fuel_Vehicle_Trip.xlsx');
+    })    
+  }
+
+  exportAsPDFFile(){   
+  var doc = new jsPDF('p', 'mm', 'a4');
+  // let pdfColumns = [this.displayedColumns];
+  let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+  let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
+  let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
+  let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
+  let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || ' mpg');
+  let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound ||  'pound');
+  
+  let pdfColumns = [];
+  let pdfColumnHeads=[];
+  this.displayedColumns.forEach(element => {
+    switch(element){
+      case 'driverName' :{
+        pdfColumnHeads.push('Driver Name');
+        break;
+      }
+      case 'driverID' :{
+        pdfColumnHeads.push('Driver ID');
+        break;
+      }
+      case 'vehicleName' :{
+        pdfColumnHeads.push('Vehicle Name');
+        break;
+      }
+      case 'vin' :{
+        pdfColumnHeads.push('VIN');
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        pdfColumnHeads.push('Vehicle Registration No');
+        break;
+      }
+      case 'startDate' :{
+        pdfColumnHeads.push('Start Date');
+        break;
+      }
+      case 'endDate' :{
+        pdfColumnHeads.push('End Date');
+        break;
+      }
+      case 'distance' :{
+        pdfColumnHeads.push('Distance('+distance+')');
+        break;
+      }
+      case 'averageDistancePerDay' :{
+        pdfColumnHeads.push('Average Distance('+distance+')');
+        break;
+      }
+      case 'averageSpeed' :{
+        pdfColumnHeads.push('Average Speed('+speed+')');
+        break;
+      }
+      case 'maxSpeed' :{
+        pdfColumnHeads.push('Max Speed('+speed+')');
+        break;
+      }
+      case 'startPosition' :{
+        pdfColumnHeads.push('Start Position');
+        break;
+      }
+      case 'endPosition' :{
+        pdfColumnHeads.push('End Position');
+        break;
+      }
+      case 'averageGrossWeightComb' :{
+        pdfColumnHeads.push('Average Gross Weight Comb('+ton+')');
+        break;
+      }
+      case 'fuelConsumed' :{
+        pdfColumnHeads.push('Fuel Consumed('+fuel+')');
+        break;
+      }
+      case 'fuelConsumption' :{
+        pdfColumnHeads.push('Fuel Consumption('+fuelCons+')');
+        break;
+      }
+      case 'cO2Emission' :{
+        pdfColumnHeads.push('CO2 Emission('+ton+')');
+        break;
+      }
+      case 'idleDuration' :{
+        pdfColumnHeads.push('Idle Duration%');
+        break;
+      }
+      case 'ptoDuration' :{
+        pdfColumnHeads.push('PTO Duration%');
+        break;
+      }
+      case 'harshBrakeDuration' :{
+        pdfColumnHeads.push('Harsh Brake Duration%');
+        break;
+      }
+      case 'heavyThrottleDuration' :{
+        pdfColumnHeads.push('Heavy Throttle Duration%');
+        break;
+      }
+      case 'cruiseControlDistance3050' :{
+        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')');
+        break;
+      }
+      case 'cruiseControlDistance5075' :{
+        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')');
+        break;
+      }
+      case 'cruiseControlDistance75' :{
+        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')');
+        break;
+      }
+      case 'averageTrafficClassification' :{
+        pdfColumnHeads.push('Average Traffic Classification');
+        break;
+      }
+      case 'ccFuelConsumption' :{
+        pdfColumnHeads.push('Cc Fuel Consumption('+fuelCons+')');
+        break;
+      }
+      case 'fuelconsumptionCCnonactive' :{
+        pdfColumnHeads.push('Fuel Consumption CC non active('+fuelCons+')');
+        break;
+      }
+      case 'idlingConsumption' :{
+        pdfColumnHeads.push('Idling Consumption');
+        break;
+      }
+      case 'dpaScore' :{
+        pdfColumnHeads.push('DPA Score');
+        break;
+      }
+      case 'dpaAnticipationScore' :{
+        pdfColumnHeads.push('DPA Anticipation Score%');
+        break;
+      }
+      case 'dpaBrakingScore' :{
+        pdfColumnHeads.push('DPA Braking Score%');
+        break;
+      }
+      case 'idlingPTOScore' :{
+        pdfColumnHeads.push('Idling PTO Score (hh:mm:ss) ');
+        break;
+      }
+      case 'idlingPTO' :{
+        pdfColumnHeads.push('Idling PTO %');
+        break;
+      }
+      case 'idlingWithoutPTOpercent' :{
+        pdfColumnHeads.push('Idling Without PTO % ');
+        break;
+      }
+      case 'footBrake' :{
+        pdfColumnHeads.push('Foot Brake');
+        break;
+      }
+      case 'cO2Emmision' :{
+        pdfColumnHeads.push('CO2 Emmision gr/km');
+        break;
+      }
+      case 'averageTrafficClassificationValue' :{
+        pdfColumnHeads.push('Average Traffic Classification Value');
+        break;
+      }
+      case 'idlingConsumptionValue' :{
+        pdfColumnHeads.push('Idling Consumption Value('+idlingPTO+')');
+        break;
+      }
+    }
+  })
+  pdfColumns.push(pdfColumnHeads);  
+    let prepare = []
+      this.displayData.forEach(e=>{
+        var tempObj =[];
+        this.displayedColumns.forEach(element => {
+          switch(element){
+            case 'driverName' :{
+              tempObj.push(e.driverName);
+              break;
+            }
+            case 'driverID' :{
+              tempObj.push(e.driverID);
+              break;
+            }
+            case 'vehicleName' :{
+              tempObj.push(e.vehicleName);
+              break;
+            }
+            case 'vin' :{
+              tempObj.push(e.vin);
+              break;
+            }
+            case 'vehicleRegistrationNo' :{
+              tempObj.push(e.vehicleRegistrationNo);
+              break;
+            }
+            case 'startDate' :{
+              tempObj.push(e.convertedStartTime);
+              break;
+            }
+            case 'endDate' :{
+              tempObj.push(e.convertedEndTime);
+              break;
+            }
+            case 'distance' :{
+              tempObj.push(e.convertedDistance);
+              break;
+            }
+            case 'averageDistancePerDay' :{
+              tempObj.push(e.convertedAverageDistance);
+              break;
+            }
+            case 'averageSpeed' :{
+              tempObj.push(e.convertedAverageSpeed);
+              break;
+            }
+            case 'maxSpeed' :{
+              tempObj.push(e.convertedMaxSpeed);
+              break;
+            }
+            case 'startPosition' :{
+              tempObj.push(e.startPosition);
+              break;
+            }
+            case 'endPosition' :{
+              tempObj.push(e.endPosition);
+              break;
+            }
+            case 'averageGrossWeightComb' :{
+              tempObj.push(e.convertedAverageGrossWeightComb);
+              break;
+            }
+            case 'fuelConsumed' :{
+              tempObj.push(e.convertedFuelConsumed100Km);
+              break;
+            }
+            case 'fuelConsumption' :{
+              tempObj.push(e.convertedFuelConsumption);
+              break;
+            }
+            case 'cO2Emission' :{
+              tempObj.push(e.cO2Emission);
+              break;
+            }
+            case 'idleDuration' :{
+              tempObj.push(e.idleDurationPercentage);
+              break;
+            }
+            case 'ptoDuration' :{
+              tempObj.push(e.ptoDuration.toFixed(2));
+              break;
+            }
+            case 'harshBrakeDuration' :{
+              tempObj.push(e.harshBrakeDuration);
+              break;
+            }
+            case 'heavyThrottleDuration' :{
+              tempObj.push(e.heavyThrottleDuration);
+              break;
+            }
+            case 'cruiseControlDistance3050' :{
+              tempObj.push(e.cruiseControlDistance3050);
+              break;
+            }
+            case 'cruiseControlDistance5075' :{
+              tempObj.push(e.cruiseControlDistance5075);
+              break;
+            }
+            case 'cruiseControlDistance75' :{
+              tempObj.push(e.cruiseControlDistance75);
+              break;
+            }
+            case 'averageTrafficClassification' :{
+              tempObj.push(e.averageTrafficClassificationValue);
+              break;
+            }
+            case 'ccFuelConsumption' :{
+              tempObj.push(e.ccFuelConsumption);
+              break;
+            }
+            case 'fuelconsumptionCCnonactive' :{
+              tempObj.push(e.convertedFuelConsumptionCCNonActive);
+              break;
+            }
+            case 'idlingConsumption' :{
+              tempObj.push(e.idlingConsumptionValue);
+              break;
+            }
+            case 'dpaScore' :{
+              tempObj.push(e.dpaScore);
+              break;
+            }
+            case 'dpaAnticipationScore' :{
+              tempObj.push(e.dpaAnticipationScore);
+              break;
+            }
+            case 'dpaBrakingScore' :{
+              tempObj.push(e.dpaBrakingScore);
+              break;
+            }
+            case 'idlingPTOScore' :{
+              tempObj.push(e.idlingPTOScore);
+              break;
+            }
+            case 'idlingPTO' :{
+              tempObj.push(e.idlingPTO);
+              break;
+            }
+            case 'idlingWithoutPTOpercent' :{
+              tempObj.push(e.idlingWithoutPTOpercent);
+              break;
+            }
+            case 'footBrake' :{
+              tempObj.push(e.footBrake);
+              break;
+            }
+            case 'cO2Emmision' :{
+              tempObj.push(e.cO2Emmision);
+              break;
+            }
+            case 'averageTrafficClassificationValue' :{
+              tempObj.push(e.averageTrafficClassificationValue);
+              break;
+            }
+            case 'idlingConsumptionValue' :{
+              tempObj.push(e.idlingConsumptionValue);
+              break;
+            }
           }
-          case 'driverID' :{
-            tempObj.push(e.driverID);
-            break;
-          }
-          case 'vehicleName' :{
-            tempObj.push(e.vehicleName);
-            break;
-          }
-          case 'vin' :{
-            tempObj.push(e.vin);
-            break;
-          }
-          case 'vehicleRegistrationNo' :{
-            tempObj.push(e.vehicleRegistrationNo);
-            break;
-          }
-          case 'startDate' :{
-            tempObj.push(e.convertedStartTime);
-            break;
-          }
-          case 'endDate' :{
-            tempObj.push(e.convertedEndTime);
-            break;
-          }
-          case 'distance' :{
-            tempObj.push(e.convertedDistance);
-            break;
-          }
-          case 'averageDistancePerDay' :{
-            tempObj.push(e.convertedAverageDistance);
-            break;
-          }
-          case 'averageSpeed' :{
-            tempObj.push(e.convertedAverageSpeed);
-            break;
-          }
-          case 'maxSpeed' :{
-            tempObj.push(e.convertedMaxSpeed);
-            break;
-          }
-          case 'startPosition' :{
-            tempObj.push(e.startPosition);
-            break;
-          }
-          case 'endPosition' :{
-            tempObj.push(e.endPosition);
-            break;
-          }
-          case 'averageGrossWeightComb' :{
-            tempObj.push(e.convertedAverageGrossWeightComb);
-            break;
-          }
-          case 'fuelConsumed' :{
-            tempObj.push(e.convertedFuelConsumed100Km);
-            break;
-          }
-          case 'fuelConsumption' :{
-            tempObj.push(e.convertedFuelConsumption);
-            break;
-          }
-          case 'cO2Emission' :{
-            tempObj.push(e.cO2Emission);
-            break;
-          }
-          case 'idleDuration' :{
-            tempObj.push(e.idleDurationPercentage);
-            break;
-          }
-          case 'ptoDuration' :{
-            tempObj.push(e.ptoDuration.toFixed(2));
-            break;
-          }
-          case 'harshBrakeDuration' :{
-            tempObj.push(e.harshBrakeDuration);
-            break;
-          }
-          case 'heavyThrottleDuration' :{
-            tempObj.push(e.heavyThrottleDuration);
-            break;
-          }
-          case 'cruiseControlDistance3050' :{
-            tempObj.push(e.cruiseControlDistance3050);
-            break;
-          }
-          case 'cruiseControlDistance5075' :{
-            tempObj.push(e.cruiseControlDistance5075);
-            break;
-          }
-          case 'cruiseControlDistance75' :{
-            tempObj.push(e.cruiseControlDistance75);
-            break;
-          }
-          case 'averageTrafficClassification' :{
-            tempObj.push(e.averageTrafficClassificationValue);
-            break;
-          }
-          case 'ccFuelConsumption' :{
-            tempObj.push(e.ccFuelConsumption);
-            break;
-          }
-          case 'fuelconsumptionCCnonactive' :{
-            tempObj.push(e.convertedFuelConsumptionCCNonActive);
-            break;
-          }
-          case 'idlingConsumption' :{
-            tempObj.push(e.idlingConsumptionValue);
-            break;
-          }
-          case 'dpaScore' :{
-            tempObj.push(e.dpaScore);
-            break;
-          }
-          case 'dpaAnticipationScore' :{
-            tempObj.push(e.dpaAnticipationScore);
-            break;
-          }
-          case 'dpaBrakingScore' :{
-            tempObj.push(e.dpaBrakingScore);
-            break;
-          }
-          case 'idlingPTOScore' :{
-            tempObj.push(e.idlingPTOScore);
-            break;
-          }
-          case 'idlingPTO' :{
-            tempObj.push(e.idlingPTO);
-            break;
-          }
-          case 'idlingWithoutPTOpercent' :{
-            tempObj.push(e.idlingWithoutPTOpercent);
-            break;
-          }
-          case 'footBrake' :{
-            tempObj.push(e.footBrake);
-            break;
-          }
-          case 'cO2Emmision' :{
-            tempObj.push(e.cO2Emmision);
-            break;
-          }
-          case 'averageTrafficClassificationValue' :{
-            tempObj.push(e.averageTrafficClassificationValue);
-            break;
-          }
-          case 'idlingConsumptionValue' :{
-            tempObj.push(e.idlingConsumptionValue);
-            break;
-          }
+        })
+
+        prepare.push(tempObj);    
+      });
+      
+      let displayHeader = document.getElementById("chartHeader");
+      if(this.isChartsOpen){
+      displayHeader.style.display ="block";
+      }
+      else{
+        displayHeader.style.display = "none";
+      }
+      
+      let DATA = document.getElementById('charts');
+      html2canvas( DATA)
+      .then(canvas => {  
+        (doc as any).autoTable({
+          styles: {
+              cellPadding: 0.5,
+              fontSize: 12
+          },       
+          didDrawPage: function(data) {     
+              // Header
+              doc.setFontSize(14);
+              var fileTitle = "Fleet Fuel Report by Vehicle Details";
+              var img = "/assets/logo.png";
+              doc.addImage(img, 'JPEG',10,10,0,0);
+    
+              var img = "/assets/logo_daf.png"; 
+              doc.text(fileTitle, 14, 35);
+              doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+          },
+          margin: {
+              bottom: 20, 
+              top:30 
+          }  
+        });
+
+          let fileWidth = 170;
+          let fileHeight = canvas.height * fileWidth / canvas.width;
+          
+          const FILEURI = canvas.toDataURL('image/png')
+          // let PDF = new jsPDF('p', 'mm', 'a4');
+          let position = 0;
+          doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+          doc.addPage('a0','p');
+
+        (doc as any).autoTable({
+        head: pdfColumns,
+        body: prepare,
+        theme: 'striped',
+        didDrawCell: data => {
+          //console.log(data.column.index)
         }
       })
 
-      prepare.push(tempObj);    
-    });
-    
-    let displayHeader = document.getElementById("chartHeader");
-    if(this.isChartsOpen){
-    displayHeader.style.display ="block";
-    }
-    else{
-      displayHeader.style.display = "none";
-    }
-    
-    let DATA = document.getElementById('charts');
-    html2canvas( DATA)
-    .then(canvas => {  
-      (doc as any).autoTable({
-        styles: {
-            cellPadding: 0.5,
-            fontSize: 12
-        },       
-        didDrawPage: function(data) {     
-            // Header
-            doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Vehicle Details";
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
-  
-            var img = "/assets/logo_daf.png"; 
-            doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
-        },
-        margin: {
-            bottom: 20, 
-            top:30 
-        }  
-      });
-
-        let fileWidth = 170;
-        let fileHeight = canvas.height * fileWidth / canvas.width;
+      doc.save('fleetFuelByVehicleDetails.pdf');
         
-        const FILEURI = canvas.toDataURL('image/png')
-        // let PDF = new jsPDF('p', 'mm', 'a4');
-        let position = 0;
-        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage('a0','p');
-
-      (doc as any).autoTable({
-      head: pdfColumns,
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        //console.log(data.column.index)
-      }
-    })
-
-    doc.save('fleetFuelByVehicleDetails.pdf');
-       
-    }); 
-    
-    displayHeader.style.display ="block";
-  }
+      }); 
+      
+      displayHeader.style.display ="block";
+    }
 
  
 
@@ -3022,8 +3022,10 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
     case 'fuelconsumed': { 
-      let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+      let s = this.displayData.forEach(element => {   
+        if(element.convertedFuelConsumed100Km !='Infinity'){   
+          sum += parseFloat(element.convertedFuelConsumed100Km); 
+        }       
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -3048,14 +3050,18 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumption);
+        if(element.convertedFuelConsumption !='Infinity'){
+          sum += parseFloat(element.convertedFuelConsumption);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.cO2Emission);
+        if(element.cO2Emission !='Infinity'){
+           sum += parseFloat(element.cO2Emission);
+        }
       });
       sum= sum.toFixed(2)*1;
       break;
