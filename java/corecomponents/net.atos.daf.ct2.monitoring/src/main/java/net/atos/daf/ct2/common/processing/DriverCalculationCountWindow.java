@@ -41,7 +41,9 @@ public class DriverCalculationCountWindow extends ProcessWindowFunction<Monitor,
             getStartEndTime(monitorList)
                     .forEach(lst -> collector.collect(lst));
         } catch (Exception e) {
-            logger.error("Error while processing monitor data for drive time error {}, {}", e.getCause().getMessage(), String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+        	logger.error("Error in Processing Monitor data for drive time error"+ e.getMessage());
+        	e.printStackTrace();
+            //logger.error("Error while processing monitor data for drive time error {}, {}", e.getCause().getMessage(), String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
         }
     }
 
