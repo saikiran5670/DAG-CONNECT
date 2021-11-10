@@ -30,8 +30,6 @@ public class LiveFleetTripIndexDao implements Serializable {
 
 				tripIndexQry = fillStatement(tripIndexQry, indexTripData);
 				//logger.info("LiveFleetTripIndexDao indexTripData:: "+indexTripData);
-				//tripIndexQry.addBatch();
-				//tripIndexQry.executeBatch();
 				tripIndexQry.execute();
 			} 
 		} catch (SQLException e) {

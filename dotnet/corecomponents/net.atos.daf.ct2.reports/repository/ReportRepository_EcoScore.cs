@@ -1048,7 +1048,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageDistancePerDay as 
                                 (
-                                    select eco.driver1_id, (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.driver1_id, SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE 'UTC') AS TEXT)) as AverageDistancePerDay
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1376,7 +1376,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageDistancePerDay as 
                                 (
-                                    select eco.driver1_id, (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.driver1_id, SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE 'UTC') AS TEXT)) as AverageDistancePerDay
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1669,7 +1669,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageDistancePerDay as 
                                 (
-                                    select eco.organization_id , (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.organization_id , SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE 'UTC') AS TEXT)) as AverageDistancePerDay
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1964,7 +1964,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageDistancePerDay as 
                                 ( 
-                                    select eco.vin,  (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.vin, SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE 'UTC') AS TEXT)) as AverageDistancePerDay
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2262,7 +2262,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageDistancePerDay as 
                                 (
-                                    select eco.organization_id ,eco.vin,  (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.organization_id ,eco.vin, SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE 'UTC') AS TEXT)) as AverageDistancePerDay
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -3397,7 +3397,8 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
-                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationCode));
+                parameters.Add("@Organization_id", request.OrganizationId);
 
                 string query =
                     @"WITH 
@@ -3418,6 +3419,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN                          --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId              --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
+                        AND dr.organization_id = @Organization_id
                     ),
                     GeneralQuery as 
                     (
@@ -3451,9 +3453,9 @@ namespace net.atos.daf.ct2.reports.repository
                     ),
                     AverageDistancePerDay as 
                     (
-	                    select eco.driver1_id, eco.aggregation_type, (SUM(eco.trip_distance) / CEIL(CAST(MAX(end_time) - MIN(start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay_Total, CEIL(CAST(MAX(end_time) - MIN(start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24)) as AverageDistancePerDay_Count
+	                    select eco.driver1_id, CAST(SUM(eco.trip_distance::numeric)/COUNT(DISTINCT CAST(date_trunc('DAY', to_timestamp(eco.end_time/1000) AT TIME ZONE @UserPrefTimeZone) AS TEXT)) AS DOUBLE PRECISION) as AverageDistancePerDay_Total, CAST(1 AS DOUBLE PRECISION) as AverageDistancePerDay_Count
 	                    FROM ecoscorequery eco
-	                    GROUP BY eco.driver1_id, eco.aggregation_type
+	                    GROUP BY eco.driver1_id
                     ),
                     EcoScore as
                     (
@@ -3655,8 +3657,8 @@ namespace net.atos.daf.ct2.reports.repository
                     Left join Distance dis on dis.driver1_id = avrg.driver1_id and dis.aggregation_type = avrg.aggregation_type
                     Left join NumberOfTrips notrp on notrp.driver1_id = dis.driver1_id and notrp.aggregation_type = dis.aggregation_type
                     Left join numberofvehicles noveh on noveh.driver1_id = notrp.driver1_id and noveh.aggregation_type = notrp.aggregation_type
-                    Left join AverageDistancePerDay avgdperday on avgdperday.driver1_id = noveh.driver1_id and avgdperday.aggregation_type = noveh.aggregation_type
-                    Left join EcoScore ecos on ecos.driver1_id = avgdperday.driver1_id and ecos.aggregation_type = avgdperday.aggregation_type
+                    Left join AverageDistancePerDay avgdperday on avgdperday.driver1_id = noveh.driver1_id
+                    Left join EcoScore ecos on ecos.driver1_id = avgdperday.driver1_id and ecos.aggregation_type = noveh.aggregation_type
                     Left join FuelConsumption f on f.driver1_id = ecos.driver1_id and f.aggregation_type = ecos.aggregation_type
                     Left join CruiseControlUsage crus  on crus.driver1_id = f.driver1_id and crus.aggregation_type = f.aggregation_type
                     Left join CruiseControlUsage30 crusa  on crusa.driver1_id = crus.driver1_id  and crusa.aggregation_type = crus.aggregation_type
@@ -3700,7 +3702,8 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance * 1000);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
-                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationCode));
+                parameters.Add("@Organization_id", request.OrganizationId);
 
                 string query =
                     @"WITH 
@@ -3718,6 +3721,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN                              --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId                  --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
+                        AND dr.organization_id = @Organization_id
                     ),
                     GeneralQuery as 
                     (

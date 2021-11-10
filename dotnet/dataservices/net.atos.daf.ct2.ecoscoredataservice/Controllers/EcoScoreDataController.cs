@@ -63,9 +63,10 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 }
 
                 var result = await ValidateParameters(request, minDistance);
-                if (result is NoContentResult)
+                if (result is OkObjectResult)
                 {
-                    var response = await _reportManager.GetKPIInfo(MapRequest(request, minDistance));
+                    var orgId = (int)(result as ObjectResult).Value;
+                    var response = await _reportManager.GetKPIInfo(MapRequest(request, minDistance, orgId));
 
                     return Ok(response);
                 }
@@ -98,9 +99,10 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 }
 
                 var result = await ValidateParameters(request, minDistance);
-                if (result is NoContentResult)
+                if (result is OkObjectResult)
                 {
-                    var response = await _reportManager.GetChartInfo(MapRequest(request, minDistance));
+                    var orgId = (int)(result as ObjectResult).Value;
+                    var response = await _reportManager.GetChartInfo(MapRequest(request, minDistance, orgId));
 
                     return Ok(response);
                 }
@@ -148,7 +150,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
             }
 
-            return NoContent();
+            return new OkObjectResult(org.Id);
         }
 
         private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string errorCode, string parameter)
@@ -161,13 +163,14 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             });
         }
 
-        private EcoScoreDataServiceRequest MapRequest(EcoScoreRequest request, int? minDistance)
+        private EcoScoreDataServiceRequest MapRequest(EcoScoreRequest request, int? minDistance, int orgId)
         {
             return new EcoScoreDataServiceRequest
             {
                 AccountEmail = request.Account,
                 DriverId = request.DriverId,
-                OrganizationId = request.OrganizationId,
+                OrganizationCode = request.OrganizationId,
+                OrganizationId = orgId,
                 VIN = request.VIN,
                 AggregationType = Enum.Parse<AggregateType>(request.AggregationType, true),
                 StartTimestamp = request.StartTimestamp.Value,

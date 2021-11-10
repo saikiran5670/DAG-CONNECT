@@ -48,8 +48,6 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 		statement.setLong(13, rec.getModifiedAt());
 
 		logger.info("mileage data for veh "+rec);
-		//statement.addBatch();
-		//statement.executeBatch();
 		statement.execute();
 	}
 
