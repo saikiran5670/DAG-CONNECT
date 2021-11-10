@@ -111,9 +111,9 @@ public class FlinkUtil {
 					RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), //no of restart attempts
 							Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
 						);			
-		}else{
+		}/*else{
 			env.setRestartStrategy(RestartStrategies.noRestart());
-		}
+		}*/
 		return env;
 	}
 
