@@ -1157,6 +1157,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   loadSingleDriverDetails(){
+    this.showLoadingIndicator=true;
     this.selectedDriverData = {
       startDate: this.fromDisplayDate,
       endDate: this.toDisplayDate,
