@@ -51,7 +51,8 @@ public class FlinkUtil {
 		
 		// enable externalized checkpoints which are retained after job  cancellation
 		
-		//env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+		if("true".equals(envParams.get(FuelDeviationConstants.RETAIN_ON_CANCELLATION)))
+			env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 
 		if("true".equals(envParams.get(FuelDeviationConstants.RESTART_FLAG))){
