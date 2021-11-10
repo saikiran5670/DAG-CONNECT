@@ -40,7 +40,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   associationTypeLocal: any = 1;
   associationData: any = [];
   filterValue: any;
-
+  showLoadingIndicator: boolean = false;
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private vehicleService: VehicleService) { }
 
   ngOnInit() {
@@ -192,18 +192,23 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
       organizationId: this.accountOrganizationId
     }
 
+    this.showLoadingIndicator=true;
     if(this.associationTypeLocal == 1){ //-- for vehicle
       if(this.actionType == 'create'){ //-- create
         this.accountService.createVehicleAccessRelationship(payloadObj).subscribe((createResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
       else{ //-- update
         this.accountService.updateVehicleAccessRelationship(payloadObj).subscribe((updateResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
@@ -212,18 +217,26 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
       if(this.actionType == 'create'){ //-- create
         this.accountService.createAccountAccessRelationship(payloadObj).subscribe((createResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
       else{ //-- update
         this.accountService.updateAccountAccessRelationship(payloadObj).subscribe((updateResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
     }
+  }
+
+  hideloader(){
+    this.showLoadingIndicator=false;
   }
 
   getAccessRelationList(curObj: any){

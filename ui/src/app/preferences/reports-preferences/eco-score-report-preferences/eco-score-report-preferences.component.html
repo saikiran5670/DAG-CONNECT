@@ -321,3 +321,4 @@
         [disabled]='selectionForGeneralColumns.selected.length == 0 || selectionForGeneralGraphColumns.selected.length == 0 || (driverPerformanceColumnData.length > 0 && !driverPerformanceColumnData[0].isChecked && !driverPerformanceColumnData[1].isChecked && !driverPerformanceColumnData[2].isChecked && !driverPerformanceColumnData[3].isChecked) || selectionForDriverPerformanceGraphColumns.selected.length == 0'
         class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>	

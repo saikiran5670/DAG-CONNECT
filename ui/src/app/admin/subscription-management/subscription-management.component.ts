@@ -294,9 +294,13 @@ export class SubscriptionManagementComponent implements OnInit {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
     const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
+    this.showLoadingIndicator=true;
     this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

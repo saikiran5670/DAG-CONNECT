@@ -35,6 +35,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   duplicateVehicleCheck: boolean = false;
   existingGroupList:any =[];
   filterValue: string;
+  showLoadingIndicator: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
@@ -191,9 +192,12 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
         vehicles: vehicleList
       }
+      this.showLoadingIndicator=true;
       this.vehicleService.createVehicleGroup(createVehGrpObj).subscribe((createVehData: any) => {
         this.getVehicleGroupData();
+        this.showLoadingIndicator=false;
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
@@ -215,9 +219,12 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
         vehicles: vehicleList
       }
+      this.showLoadingIndicator=true;
       this.vehicleService.updateVehicleGroup(updateVehGrpObj).subscribe((updateVehData: any) => {
         this.getVehicleGroupData();
+        this.showLoadingIndicator=false;
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;

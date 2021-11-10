@@ -27,6 +27,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   selectionForDriver = new SelectionModel(true, []);
   selectionForChart = new SelectionModel(true, []);
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
   constructor(private reportService: ReportService, private router: Router) { }
 
   ngOnInit(){ 
@@ -70,11 +71,14 @@ export class DriverTimePreferencesComponent implements OnInit {
   }
 
   loadDriveTimePreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.initData = [];
     });
   }
@@ -297,14 +301,17 @@ export class DriverTimePreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: [..._allDriverArr, ..._chartArr, ..._specificDriverArr, ..._parentDataAttr] //-- merge data
       }
-
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadDriveTimePreferences();
         this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("drivetimemanagement")) {
           this.reloadCurrentComponent();
         }
         this.requestSent = false;
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }
