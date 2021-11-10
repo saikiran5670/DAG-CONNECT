@@ -149,14 +149,14 @@ namespace net.atos.daf.ct2.visibility
                         }
 
                         //Fetch vehicles records from visible vehicles list from org+ vin package
-                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds);
+                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds).ToList();
 
                         //Fetch vehicles records from visible vehicles list from Vin package
-                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds);
+                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds).ToList();
 
                         //Step3- Union and assigned to visible  vehicle
-                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id)).ToList();//v2, v4
 
                         visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
                     }
@@ -272,17 +272,17 @@ namespace net.atos.daf.ct2.visibility
                         var relationshipVehicleIds = relationshipVehicles.Select(x => x.Vehicle_Id);
 
                         //Fetch vehicles records to be removed from visible vehicles list
-                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds);
+                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds).ToList();
 
                         //Step 3 - Take VIN type vehicle ids
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").Select(e => e.Vehicle_Id).ToList();
 
                         //Fetch vehicles records to be removed from visible vehicles list from Vin package
-                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds);
+                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds).ToList();
 
                         //Step 4 - Union and assigned to visible vehicles
-                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id)).ToList();//v2, v4
                         visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
 
                         //Step 5 - Assign subscribed features to visible vehicles
