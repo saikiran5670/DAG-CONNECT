@@ -3,6 +3,7 @@ package net.atos.daf.ct2.main;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.postgre.VehicleStatusSource;
 import net.atos.daf.ct2.processing.ConsumeSourceStream;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -50,7 +51,7 @@ public class ContiMessageProcessingTest {
             properties = configuration();
             contiMessageProcessing.flinkConnection(properties);
 
-            ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
+           /* ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
             DataStream<KafkaRecord<String>> kafkaRecordDataStream = consumeSrcStream.consumeSourceInputStream(
                     streamExecutionEnvironment, SINK_INDEX_TOPIC_NAME, properties);
 
@@ -62,9 +63,12 @@ public class ContiMessageProcessingTest {
                     return super.getTypeInfo();
                 }
             }));
-            kafkaRecordDataStream.print();
+            kafkaRecordDataStream.print();*/
 
-            streamExecutionEnvironment.execute("ContiMessageProcessingTest");
+            streamExecutionEnvironment.addSource(new VehicleStatusSource(properties))
+                            .print();
+
+            streamExecutionEnvironment.execute("ContiMessageProcessing");
 
         }catch (Exception ex){
             ex.printStackTrace();

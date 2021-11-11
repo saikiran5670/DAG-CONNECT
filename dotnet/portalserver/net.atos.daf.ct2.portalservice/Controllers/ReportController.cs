@@ -233,6 +233,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("getvisibility")]
+        public async Task<IActionResult> GetVisibility([FromQuery] int featureId, string type)
+        {
+            try
+            {
+                var organizationId = GetContextOrgId();
+                var featureIds = GetMappedFeatureIdByStartWithName("Alerts.");
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("type", type);
+                var response = await _reportServiceClient
+                                            .GetVisibilityAsync
+                                            (
+                                              new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = organizationId },
+                                              headers
+                                            );
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                // check for fk violation
+                _logger.Error(null, ex);
+                if (ex.Message.Contains(_socketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         #endregion
 
         #region - Trip Report Table Details
