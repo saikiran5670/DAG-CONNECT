@@ -2069,8 +2069,8 @@ export class ReportMapService {
         break;
       }
     }
-    // return distance.toFixed(2); 
-    return distance;
+    return distance.toFixed(2); 
+    //return distance;
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){

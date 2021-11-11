@@ -146,6 +146,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     ObjRole.FeatureIds.Add(item);
                 }
+                ObjRole.Level = roleMaster.Level;
+                ObjRole.Code = roleMaster.Code;
                 var role = await _roleclient.UpdateAsync(ObjRole);
                 //auditlog.AddLogs(DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in Role manager", roleMaster.RoleId, 0, JsonConvert.SerializeObject(roleMaster));
                 _logger.Info(role.Message + "Role Master Updated");
@@ -251,6 +253,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
                 return Ok(roleList);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.ToString());
+            }
+        }
+
+
+        [HttpGet]
+        [Route("getcodes")]
+        public async Task<IActionResult> GetCodes(int roleLevel)
+        {
+            try
+            {
+                RoleCodeFilterRequest obj = new RoleCodeFilterRequest();
+                obj.RoleLevel = roleLevel;
+                //obj.OrganizationId = organizationId == null ? 0 : Convert.ToInt32(organizationId);
+                var role = await _roleclient.GetCodesAsync(obj);
+                return Ok(role);
             }
             catch (Exception ex)
             {

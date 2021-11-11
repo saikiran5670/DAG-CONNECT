@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.reports.repository
     {
         //vin,trip_id,level,alert_generated_time,alert type,alert from datamart of 90 days and in(vinid)
 
-        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins, List<int> featureIds)
         {
 
 
@@ -20,7 +20,13 @@ namespace net.atos.daf.ct2.reports.repository
             //  public string AlertGeolocationAddress { get; set; }
 
             var parameter = new DynamicParameters();
+            var parameterAlert = new DynamicParameters();
+            parameterAlert.Add("@featureIds", featureIds);
+            var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+            List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
+
             parameter.Add("@vins", vins);
+            parameter.Add("@features", resultFeaturEnum);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
             string query = @"select distinct id, tripalert.vin as Vin
@@ -42,6 +48,7 @@ namespace net.atos.daf.ct2.reports.repository
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
+                             and tripalert.type = ANY(@features)
                              and tripalert.category_type <> 'O'
                              and tripalert.type <> 'W'
                            and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
@@ -73,14 +80,16 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.urgency_level_type as AlertLevel,
                                 extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
-                                ts.start_time_stamp as TripStartTime,
-                                ts.end_time_stamp as TripEndTime,
+                                case when (ts.id is not null ) then ts.start_time_stamp when (ts.id is null and tr.id is not null ) then tr.start_time_stamp end  as TripStartTime,
+                                case when (ts.id is not null ) then ts.end_time_stamp when (ts.id is null and tr.id is not null ) then tr.end_time_stamp end as TripEndTime,
                                 ts.vehicle_health_status_type as VehicleHealthStatusType,
                                 alertgeoadd.id as AlertGeolocationAddressId,
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
                                 left join livefleet.livefleet_current_trip_statistics ts
-                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id 
+                                on ta.vin = ts.vin and ta.trip_id=ts.trip_id
+                                left join tripdetail.trip_statistics tr 
+                                on  ta.vin = tr.vin  and tr.trip_id=ta.trip_id
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)

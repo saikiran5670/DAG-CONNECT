@@ -51,8 +51,23 @@ public class DTCWarningMasterDao implements Serializable {
 				break;
 			}
 
+		} catch (SQLException e) {
+			logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: " + e.getMessage());
+			logger.error("Issue while reading DTCWarningMasterDao value for trip statistics job :: ",stmtReadDTCWarning);
+			// throw e;
 		} catch (Exception e) {
-
+			logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: " + e.getMessage());
+			logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: ",stmtReadDTCWarning);
+			// throw e;
+		} finally {
+			if (null != rsPosition) {
+				try {
+					rsPosition.close();
+				} catch (Exception e) {
+					logger.error("Issue while closing DTCWarningMasterDao resultset :: " + e.getMessage());
+					// throw e;
+				}
+			}
 		}
 		return warning;
 	}

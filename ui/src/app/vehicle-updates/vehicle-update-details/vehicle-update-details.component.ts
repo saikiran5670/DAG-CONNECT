@@ -48,7 +48,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   scheduledTime: any;
   scheduledDate: any;
   prefTimeFormat: any = 12; //-- coming from pref setting
-  prefDateFormat: any = ''; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   schedulerData: any ={
     campaignName: "",
@@ -68,6 +68,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @ViewChild(MdePopoverTrigger) trigger: MdePopoverTrigger;
   @Input('mdePopoverPositionX') positionX;
+  @Input() prefDefaultTimeFormat: any;
+  @Input() prefDefaultDateFormat: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ReleaseNoteComponent>;
@@ -81,8 +83,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   titleVisible : boolean = false;
   displayMessage : any = '';
   formattedDate: any;
+  adminRight:boolean;
+  
  
-
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private otaSoftwareService: OtaSoftwareUpdateService, private organizationService: OrganizationService) {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -107,7 +110,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       date: [''],
       time: ['']
     });
-    this.breadcumMsg = this.getBreadcum();
+    this.breadcumMsg = this.getBreadcum();    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
@@ -251,24 +254,24 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
-    console.log(this.selectedVehicleUpdateDetails, 'this.selectedVehicleUpdateDetails');
     this.showLoadingIndicator = true;
     if (selectedVehicleUpdateDetailsData) {
+      var todaysDate = moment();
+      todaysDate = Util.convertUtcToDateFormat(todaysDate,this.dateFormats.display.dateInput, this.prefTimeZone);
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
-        var todaysDate = moment();
-        if (element.endDate) {
-          element.endDate = moment(parseInt(element.endDate)).format(this.dateFormats.display.dateInput);
-         if(moment(element.endDate).isBefore(todaysDate['_d'])){
-            this.campaignOverFlag = true;
+        if (element.endDate) {        
+          element.endDate = Util.convertUtcToDateFormat(element.endDate,this.dateFormats.display.dateInput, this.prefTimeZone);
+         if(moment(element.endDate).isBefore(todaysDate)){
+            element.campaignOverFlag = true;
          }
         } else {
-          this.campaignOverFlag = false;
+          element.campaignOverFlag = false;
           element.endDate = '-';
         }
         if (element.scheduleDateTime) {
           element.scheduleDateTime = new Date( element.scheduleDateTime);
-          console.log(this.prefTimeFormat, this.prefDateFormat, 'this.prefTimeFormat, this.prefDateFormat');
-          element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefTimeFormat, this.prefDateFormat);
+         // console.log('Default:',this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
+          element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
         } else {
           element.scheduleDateTime = '-';
         }
@@ -276,6 +279,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       });
       this.initData = selectedVehicleUpdateDetailsData.campaigns;
       this.selectedVin = this.selectedVehicleUpdateDetails.vin;
+      this.adminRight = this.selectedVehicleUpdateDetails.isAdminRight;
       this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;
       this.updateDataSource(this.initData);
     }

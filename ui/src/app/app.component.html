@@ -96,7 +96,7 @@
                     class='font-size-0-9'>
                     <span matTooltip='{{ userFullName }}' class='userName text-truncate'>{{ userFullName }}</span>
                     <span class='display-flex align-items-center'>
-                        <span class='userRole' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole
+                        <span matTooltip='{{ userRole }}' class='userRole text-truncate' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole
                             }}</span>
                         <span
                             *ngIf="(roleDropdown.length > 0 && organizationDropdown.length > 1) || (roleDropdown.length > 1 && organizationDropdown.length > 0)">
@@ -105,7 +105,7 @@
                         </span>
                     </span>
                     <span class='display-flex align-items-center'>
-                        <span class='userRole'
+                        <span matTooltip='{{ userOrg }}' class='userRole text-truncate'
                             *ngIf="organizationDropdown != null && organizationDropdown.length > 0">{{ userOrg }}</span>
                         <span *ngIf="roleDropdown.length == 0 && organizationDropdown.length > 1">
                             <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{

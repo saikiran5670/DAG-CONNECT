@@ -83,7 +83,7 @@ public class DafConstants {
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
 	public static final String INDEX_TRIPJOB = "IndexTripJob";
-
+	public static final String INDEX_TRIP_STREAMING_JOB_NAME = "index.trip.streaming.job.name";
 	// queries
 	public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 	public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
@@ -97,9 +97,14 @@ public class DafConstants {
 	public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
 	
 	
+	
 public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
 
 public static final String Index="I";
+
+public static final String STORE_HISTORICAL_DATA="store.historical.data";
+public static final String INDEX_PROCESS="index.process";
+public static final String INDEX_HBASE_PROCESS="index.hbase.process";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
@@ -115,15 +120,25 @@ public static final String Index="I";
 
 	//SQL Statements for reading latest warning status (at trip start only)
 	//create temporary table for reading latest warning status 
-	public static final String CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START = 
-		"drop table if exists livefleet.temp_latest_warning_status; "
-		+ "create table livefleet.temp_latest_warning_status ( vehicle_health_status_type character(1), warning_class integer, warning_number integer, warning_type character(1)"
-		+ ", warning_time_stamp bigint, latitude double precision, longitude double precision, message_type integer, trip_id character varying(45), vin character varying(17)"
-		+ " ) ";
-	public static final String INSERT_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START = "insert into livefleet.temp_latest_warning_status (vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
-			+ ", latitude, longitude, message_type, trip_id, vin) select distinct on (vin) vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
-			+ ", latitude, longitude, message_type, trip_id, vin from livefleet.livefleet_warning_statistics where vin = ? order by vin, warning_time_stamp desc ";
-	public static final String READ_LATEST_ACTIVE_WARNING_STATUS_AT_TRIP_START = 
-	"select * from livefleet.temp_latest_warning_status where vin = ? and warning_type = 'A'";
+	/*
+	 * public static final String CREATE_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START =
+	 * "drop table if exists livefleet.temp_latest_warning_status; " +
+	 * "create table livefleet.temp_latest_warning_status ( vehicle_health_status_type character(1), warning_class integer, warning_number integer, warning_type character(1)"
+	 * +
+	 * ", warning_time_stamp bigint, latitude double precision, longitude double precision, message_type integer, trip_id character varying(45), vin character varying(17)"
+	 * + " ) "; public static final String
+	 * INSERT_TABLE_LATEST_WARNING_STATUS_AT_TRIP_START =
+	 * "insert into livefleet.temp_latest_warning_status (vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
+	 * +
+	 * ", latitude, longitude, message_type, trip_id, vin) select distinct on (vin) vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
+	 * +
+	 * ", latitude, longitude, message_type, trip_id, vin from livefleet.livefleet_warning_statistics where vin = ? order by vin, warning_time_stamp desc "
+	 * ; public static final String READ_LATEST_ACTIVE_WARNING_STATUS_AT_TRIP_START
+	 * =
+	 * "select * from livefleet.temp_latest_warning_status where vin = ? and warning_type = 'A'"
+	 * ;
+	 */
+	 public static final String	READ_LATEST_WARNING_STATUS_AT_TRIP_START = "select distinct on (vin) vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
+	 + ", latitude, longitude, message_type, trip_id, vin from livefleet.livefleet_warning_statistics where vin = ? order by vin, warning_time_stamp desc ";
 
 }

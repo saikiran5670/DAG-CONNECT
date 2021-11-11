@@ -68,12 +68,40 @@ namespace net.atos.daf.ct2.dashboardservice
         {
             try
             {
-                int contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgid").Value);
-                List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(contextOrgId);
+                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
 
+                List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Get("report_feature_ids").Value);
+
+                List<dashboard.entity.AlertOrgMap> alerts = await _dashBoardManager.GetAlertNameOrgList(contextOrgId, featureIds);
+
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
+                List<string> vehicleVins = new List<string>();
+                if (featureIds != null && featureIds.Count() > 0)
+                {
+                    IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+                        = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, contextOrgId, featureIds.ToArray());
+                    //append visibile vins
+                    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //remove duplicate vins by key as vin
+                    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                    foreach (var item in vehicleDetailsAccountVisibilty)
+                    {
+                        vehicleVins.Add(item.Vin);
+                    }
+                }
+                if (vehicleVins.Count() == 0 || alerts.Count() == 0)
+                {
+                    return await Task.FromResult(new Alert24HoursResponse
+                    {
+                        Code = Responsecode.Failed,
+                        Message = DashboardConstants.NORESULTFOUND_MSG
+                    });
+                }
                 Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
                 {
-                    VINs = request.VINs.ToList<string>(),
+                    VINs = vehicleVins,
                     AlertIds = alerts.Select(x => x.Id).Distinct().ToList()
                 };
 

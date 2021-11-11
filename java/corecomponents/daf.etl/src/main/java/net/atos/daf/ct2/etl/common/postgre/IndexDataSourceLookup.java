@@ -60,6 +60,7 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 			tripIdxDao = new ReadIndexDataDao();
 			tripIdxDao.setConnection(connection);
 			tripIndexStmt = connection.prepareStatement(ETLQueries.TRIP_INDEX_READ_STATEMENT);
+			logger.info("In IndexDataSourceLookup prepared statement done :{} ", tripIndexStmt);
 			
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -174,12 +175,13 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 		
 		stsData.setVTachographSpeed(Double.valueOf(maxSpeed));
 		
-		if(0 != stsData.getTripCalDist())
+		/*if(0 != stsData.getTripCalDist())
 			stsData.setTripCalAvgGrossWtComb(calAvgGrossWtSum/stsData.getTripCalDist());
 		else
-			stsData.setTripCalAvgGrossWtComb(0.0);
+			stsData.setTripCalAvgGrossWtComb(0.0);*/
 		
-		
+		stsData.setTripCalAvgGrossWtComb(calAvgGrossWtSum);
+				
 		stsData.setVGrossWtSum(vGrossWtSum);
 		stsData.setNumberOfIndexMessage(grossWtRec);
 		stsData.setVGrossWtCmbCount(calVDistDiff);

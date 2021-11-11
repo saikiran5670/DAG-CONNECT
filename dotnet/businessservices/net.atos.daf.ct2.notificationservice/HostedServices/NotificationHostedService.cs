@@ -177,7 +177,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                                                             : item.ValueAtAlertTime == 0 ? "NA" : item.ValueAtAlertTime.ToString() + " " + item.ThresholdValueUnitType
                                                            ),
                                 AlertCategory = alertCategoryValue,
-                                VehicleGroup = item.Vehicle_group_vehicle_name,
+                                VehicleGroup = item.Vehiclegroup == "S" ? "NA" : item.Vehicle_group_vehicle_name,
+                                VehicleName = item.Vehiclename,
                                 AlertDateTime = alertGenTime
                             }
                         },
@@ -283,7 +284,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.AlertTypeKey);
             string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.UrgencyTypeKey);
             string smsDescription = string.IsNullOrEmpty(notificationHistorySMS.SMS) ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Length <= 50 ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Substring(0, 50);
-            string vehicleGroup = string.IsNullOrEmpty(notificationHistorySMS.Vehicle_group_vehicle_name) ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Length <= 17 ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Substring(0, 17);
+            string vehicleGroup = notificationHistorySMS.Vehiclegroup == "S" ? "NA" : string.IsNullOrEmpty(notificationHistorySMS.Vehicle_group_vehicle_name) ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Length <= 17 ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Substring(0, 17);
+            string vehicleName = string.IsNullOrEmpty(notificationHistorySMS.Vehiclename) ? notificationHistorySMS.Vehiclename : notificationHistorySMS.Vehiclename.Length <= 17 ? notificationHistorySMS.Vehiclename : notificationHistorySMS.Vehiclename.Substring(0, 17);
             string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistorySMS.AlertGeneratedTime, "UTC", null);
             if (notificationHistorySMS.ThresholdUnitEnum == "H" || notificationHistorySMS.ThresholdUnitEnum == "T")
             {
@@ -315,6 +317,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             sbSMSText.AppendFormat(",AV:{0}", valueAtAlertTime);
             sbSMSText.AppendFormat(",{0}", alertCategoryValue);
             sbSMSText.AppendFormat(",VG:{0}", vehicleGroup);
+            sbSMSText.AppendFormat(",VH:{0}", vehicleName);
             sbSMSText.AppendFormat(",UL:{0}", urgencyTypeValue);
             sbSMSText.AppendFormat(",T:{0}", alertGenTime);
             sbSMSText.AppendFormat(",{0}", smsDescription);
@@ -329,7 +332,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.AlertTypeKey);
             string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.UrgencyTypeKey);
             string wsDescription = notificationHistoryWS.WsText;
-            string vehicleGroup = notificationHistoryWS.Vehicle_group_vehicle_name;
+            string vehicleGroup = notificationHistoryWS.Vehiclegroup == "S" ? "NA" : notificationHistoryWS.Vehicle_group_vehicle_name;
+            string vehicleName = notificationHistoryWS.Vehiclename;
             string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistoryWS.AlertGeneratedTime, "UTC", null);
             if (notificationHistoryWS.ThresholdUnitEnum == "H" || notificationHistoryWS.ThresholdUnitEnum == "T")
             {
@@ -361,6 +365,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             sbWSText.AppendFormat(",Alert Vvalue at time:{0}", valueAtAlertTime);
             sbWSText.AppendFormat(",{0}", alertCategoryValue);
             sbWSText.AppendFormat(",Vehicle Group:{0}", vehicleGroup);
+            sbWSText.AppendFormat(",Vehicle Name:{0}", vehicleName);
             sbWSText.AppendFormat(",Urgency Level:{0}", urgencyTypeValue);
             sbWSText.AppendFormat(",DateTime:{0}", alertGenTime);
             sbWSText.AppendFormat(",{0}", wsDescription);

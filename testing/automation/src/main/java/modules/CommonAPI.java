@@ -2,6 +2,7 @@ package modules;
 
 import static executionEngine.DriverScript.TestStep;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -170,6 +171,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.update;
+	    //	CommonAPI.postRequest_withAuth(url,module,request,"performancetesting@ct2.net", "123456");
 	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
 	    	}	
 	    public static void KeyHandover() throws Exception {
@@ -179,6 +181,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String module = Constants.customer_data;
 	    	String request = Constants.keyhandover;
 	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Rash@1234567");
+	    	//CommonAPI.postRequest_withAuth(url,module,request,"performancetesting@ct2.net", "123456");
 	    	}
 	    public static void Vehicle_Data() throws Exception {
 	    	Log.info("Updating Vehicle data");
@@ -1267,4 +1270,67 @@ public static void postRequest(JSONObject updateData, String url) {
 		 DriverScript.bResult=false;
 	 	}
  }
+// -----------------------------------Update Alert message function --------------------------
+public static void AlertMessageFileUpdate() {
+	try{
+		String localDir = System.getProperty("user.dir");
+		String path =localDir + Constants.Json_Path;    		
+		
+		String fileName = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps); //"DAF_4A.json";//
+		String Keyname = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps); //"VIdleDuration";//
+		String Value = ExcelSheet.getCellData(TestStep, Constants.Col_Parm2, Constants.Sheet_TestSteps); //"1556";//
+		String ConKey = ExcelSheet.getCellData(TestStep, Constants.Col_Parm3, Constants.Sheet_TestSteps); //"TransID";
+		String ConValue = ExcelSheet.getCellData(TestStep, Constants.Col_Parm4, Constants.Sheet_TestSteps); //"03130";
+		
+		System.out.println(path + fileName);
+		
+		
+		String temp = "";
+		
+		ArrayList<JSONObject> json= new ArrayList<JSONObject>();
+		JSONObject object;
+		String filenames = path + fileName;
+		
+		String Line = null;
+		FileReader fileReader = new FileReader(filenames);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		while((Line = bufferedReader.readLine())!= null ){
+			object  = (JSONObject) new JSONParser().parse(Line);
+			json.add(object);
+		}
+		bufferedReader.close();
+		int count = json.size();
+		for(int i=0 ; i< count; i++){   
+			JSONObject jsonObject = json.get(i);
+			System.out.println("jsonObject " + i + ": " + jsonObject);			
+
+	    	for (Object key : jsonObject.keySet()) {
+				System.out.println(ConKey);
+				System.out.println(jsonObject.get(ConKey).toString());
+				System.out.println(ConValue);
+				System.out.println(key);
+	            if (key.equals(ConKey) && jsonObject.get(ConKey).toString().equalsIgnoreCase(ConValue))
+	            {
+	            	JSONObject updated_jsonObject =replacekeyInJSONObject(jsonObject,Keyname,Value);
+			    	System.out.println("Updated jsonObject " + i + ": " + updated_jsonObject.toString());
+			    	json.set(i, updated_jsonObject);
+	            }	
+	            
+	        }	
+	    	JSONObject njsonObject = json.get(i);
+	    	temp = temp + njsonObject.toJSONString();
+	    	temp = temp + "\n";
+		}
+		try (FileWriter file = new FileWriter(path +fileName)) {
+            //We can write any JSONArray or JSONObject instance to the file
+            file.write(temp); 
+            
+            file.flush();
+        }
+       
+	}catch(Exception e){
+	//Handle errors for Class.forName
+	e.printStackTrace();
+	}
+	}
 }

@@ -28,25 +28,18 @@ public class TripSinkDao implements Serializable {
 
 	public void insert(Trip dataObject, PreparedStatement tripInsertQry) throws TechnicalException {
 		try {
-			if(null != dataObject && null != (connection = getConnection())) {
+			if(Objects.nonNull(dataObject)) {
 
 				tripInsertQry = fillStatement(tripInsertQry, dataObject, connection);
 //				tripInsertQry.addBatch();
 //				tripInsertQry.executeBatch();
-				//logger.info("tripInsertQry :: "+tripInsertQry);
-				//logger.info("dataObject :: "+dataObject);
 				tripInsertQry.execute();
-				
-			} else {
-				if(connection == null) {
-					logger.error(" Issue trip connection is null : " + connection);
-					throw new TechnicalException("Trip Datamart connection is null :: ");
-				}
-			}
+			} 
 		} catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to tripStatistic table : " + e.getMessage());
 			e.printStackTrace();
 			logger.error("Issue while inserting trip record :: " + tripInsertQry);
+			//throw an error to abort the Job
 			
 		} catch (Exception e) {
 			logger.error("Issue while inserting data to tripStatistic table : " + e.getMessage());

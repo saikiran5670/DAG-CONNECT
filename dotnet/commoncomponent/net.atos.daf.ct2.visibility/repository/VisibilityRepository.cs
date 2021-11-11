@@ -537,14 +537,15 @@ namespace net.atos.daf.ct2.visibility.repository
                 var queryStatement = @"select type as Packagetype,coalesce(HasOwned,true) as HasOwned, array_agg(distinct coalesce(vehicle_id, 0)) as VehicleIds
                                             from
                                             (
-                                                select p.type, s.vehicle_id, s.organization_id=v.organization_id as HasOwned
+                                                select p.type, s.vehicle_id, case when s.organization_id=v.organization_id 
+	                                                then true else false end as HasOwned
                                                 from master.subscription s
-                                                inner join master.package p on p.id=s.package_id
+                                                inner join master.package p on p.id=s.package_id and p.state='A' AND s.state = 'A'
                                                 inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
                                                 inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
                                                 inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                                 left join master.vehicle v on s.vehicle_id = v.id
-                                                where s.organization_id=@organizationid and f.id=@featureid and p.type In ('V','O') AND s.state = 'A'
+                                                where (s.organization_id=@organizationid or s.type ='N') and f.id=@featureid 
                                             ) temp
                                             group by HasOwned,type";
                 var result = await _dataAccess.QueryAsync<VehiclePackage>(queryStatement, parameter);
@@ -613,6 +614,92 @@ namespace net.atos.daf.ct2.visibility.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehiclePackageForAlert>> GetSubscribedVehicleByFeatureForAlert(int[] featureIds, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureids", featureIds);
+                parameter.Add("@organizationid", organizationId);
+
+                var queryStatement = @"select type as Packagetype,coalesce(HasOwned,true) as HasOwned, vehicle_id, array_agg(distinct coalesce(feature_id, 0)) as FeatureIds
+                                        from
+                                        (
+	                                        select p.type, s.vehicle_id, f.id as feature_id, case when s.organization_id=v.organization_id 
+		                                        then true else false end as HasOwned
+	                                        from master.subscription s
+	                                        inner join master.package p on p.id=s.package_id and p.state='A' and s.state = 'A' and (s.organization_id= @organizationid or s.type ='N')
+	                                        inner join master.featureset fset on fset.id=p.feature_set_id AND fset.state = 'A'
+	                                        inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
+	                                        inner join master.feature f on f.id=ff.feature_id AND f.state = 'A' and f.id = ANY(@featureids) 
+	                                        left join master.vehicle v on s.vehicle_id = v.id
+                                        ) temp
+                                        group by HasOwned,type,vehicle_id";
+                return await _dataAccess.QueryAsync<VehiclePackageForAlert>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<VehicleRelationshipForAlert>> GetRelationshipVehiclesByFeatureForAlert(int[] featureIds, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureids", featureIds);
+                parameter.Add("@organizationid", organizationId);
+
+                var queryStatement =
+                    @"with cte_org_rels as 
+                        (
+	                        select distinct orm.owner_org_id, orm.vehicle_group_id, grp.group_type, array_agg(f.id) as FeatureIds
+	                        from master.orgrelationshipmapping orm
+	                        inner join master.orgrelationship ors on orm.relationship_id = ors.id and orm.target_org_id=@organizationid and lower(ors.code) not in ('owner','oem')
+	                        inner join master.group grp on orm.vehicle_group_id = grp.id and grp.organization_id = orm.owner_org_id
+	                        inner join master.featureset fset on fset.id=ors.feature_set_id
+	                        inner join master.featuresetfeature ff on ff.feature_set_id=fset.id
+	                        inner join master.feature f on f.id=ff.feature_id
+	                        where f.id= any(@featureids) and 
+		                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+		                        else COALESCE(end_date,0) = 0 end
+	                        group by orm.owner_org_id, orm.vehicle_group_id, grp.group_type
+                        ),
+                        cte_g_vehicles as
+                        (
+	                        select rels.owner_org_id, gref.ref_id as vehicle_id, array_agg(rels.FeatureIds) as FeatureIdsG
+	                        from master.group grp
+	                        inner join master.groupref gref on grp.id = gref.group_id and grp.object_type = 'V' and grp.group_type = 'G'
+	                        inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type
+	                        group by rels.owner_org_id, gref.ref_id
+                        ),
+                        cte_d_vehicles as
+                        (
+	                        select rels.owner_org_id, v.id as vehicle_id, array_agg(rels.FeatureIds) as FeatureIdsD
+	                        from master.group grp
+	                        inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type and grp.group_type = 'D'
+	                        inner join master.vehicle v on v.organization_id = rels.owner_org_id
+	                        group by rels.owner_org_id, v.id
+                        )
+                        select vehicle_id, array_agg(FeatureIds) as FeatureIds
+                        from
+                        (
+	                        select owner_org_id, vehicle_id, unnest(FeatureIdsG) as FeatureIds from cte_g_vehicles
+	                        UNION
+	                        select owner_org_id, vehicle_id, unnest(FeatureIdsD) as FeatureIds from cte_d_vehicles
+                        ) veh
+                        group by veh.owner_org_id, veh.vehicle_id";
+
+                return await _dataAccess.QueryAsync<VehicleRelationshipForAlert>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeatureTemp>> GetSubscribedVehicleByAlertFeature(List<int> featureId, int organizationId)
         {
             try
@@ -629,7 +716,7 @@ namespace net.atos.daf.ct2.visibility.repository
                                     inner join master.feature f on f.id=ff.feature_id AND f.state = 'A'
                                     left join translation.enumtranslation e
                                     on f.id = e.feature_id and e.type='T'
-                                    where s.organization_id=@organizationid and f.id= ANY(@featureid) AND s.state = 'A'";
+                                    where s.organization_id=@organizationid AND f.id= ANY(@featureid) AND s.state = 'A'";
                 var result = await _dataAccess.QueryAsync<VehicleDetailsVisibiltyAndFeatureTemp>(queryStatement, parameter);
 
                 return result;

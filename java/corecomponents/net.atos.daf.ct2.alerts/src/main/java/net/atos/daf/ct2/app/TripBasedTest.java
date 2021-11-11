@@ -85,7 +85,7 @@ public class TripBasedTest implements Serializable {
          */
         Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
             put("functions", Arrays.asList(
-                    enteringZoneFun
+                    exitCorridorFun
             ));
         }};
         /**
@@ -102,8 +102,8 @@ public class TripBasedTest implements Serializable {
                         propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class)
-                .filter(index -> index.getVid() != null && index.getVin() != null)
-                .filter(index ->index.getVin().equalsIgnoreCase("TEST_CDC_VIN"))
+                .filter(index -> index.getVid() != null && index.getVin() != null
+                        && index.getVin().equalsIgnoreCase("XLR0998HGFFT75550"))
                 .returns(Index.class)
                 .map(idx -> {
                     idx.setJobName(UUID.randomUUID().toString());
@@ -115,9 +115,10 @@ public class TripBasedTest implements Serializable {
          * Entering and exiting zone
          */
         KeyedStream<Index, String> geofenceEnteringZoneStream = indexStringStream.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
-
+//
         IndexMessageAlertService.processIndexKeyStream(geofenceEnteringZoneStream,
                 env,propertiesParamTool,geofenceFunConfigMap);
+        indexStringStream.print();
         env.execute("TripBasedTest");
 
 

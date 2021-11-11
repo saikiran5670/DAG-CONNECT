@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.account.entity;
@@ -2032,5 +2033,26 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
         #endregion
+
+        public override async Task<AccountMigrationResponse> CreateMigratedUsersInKeyCloak(Empty request, ServerCallContext context)
+        {
+            try
+            {
+                var migrationResponse = new AccountMigrationResponse();
+                var response = await _accountmanager.CreateMigratedUsersInKeyCloak();
+
+                migrationResponse.Message = response.Message;
+                migrationResponse.FailedAccountIds.AddRange(response.FailedAccountIds);
+                return await Task.FromResult(migrationResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AccountMigrationResponse
+                {
+                    Message = "Account migration failed due to - " + ex.Message
+                });
+            }
+        }
     }
 }

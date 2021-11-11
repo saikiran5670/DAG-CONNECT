@@ -262,6 +262,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 
             }
 
+            reportFleetOverview.AlertType = new List<FilterProperty>();
+            foreach (var item in fleetOverviewFilterResponse.ATFilterResponse)
+            {
+                FilterProperty alertType = new FilterProperty();
+                alertType.Name = item.Name;
+                alertType.Value = item.Value;
+                reportFleetOverview.AlertType.Add(alertType);
+            }
             return reportFleetOverview;
 
 

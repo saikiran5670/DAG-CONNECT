@@ -16,6 +16,7 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
 using Newtonsoft.Json;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
@@ -32,9 +33,10 @@ namespace net.atos.daf.ct2.account
         private readonly IConfiguration _configuration;
         private readonly ITranslationManager _translationManager;
         private readonly IDriverManager _driverManager;
+        readonly IVehicleManager _vehicleManager;
 
         public AccountManager(IAccountRepository Repository, IAuditTraillib Auditlog, Identity.IAccountManager Identity,
-                              IConfiguration Configuration, ITranslationManager TranslationManager, IDriverManager driverManager)
+                              IConfiguration Configuration, IVehicleManager vehicleManager, ITranslationManager TranslationManager, IDriverManager driverManager)
         {
             this._repository = Repository;
             this._auditlog = Auditlog;
@@ -44,6 +46,53 @@ namespace net.atos.daf.ct2.account
             Configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
             this._translationManager = TranslationManager;
             _driverManager = driverManager;
+            _vehicleManager = vehicleManager;
+        }
+
+        public async Task<AccountMigrationResponse> CreateMigratedUsersInKeyCloak()
+        {
+            List<int> failedAccountIds = new List<int>();
+
+            try
+            {
+                //Fetch eligible accounts from account migration table with state "P" for creation
+                var eligibleAccounts = await _repository.GetPendingAccountsForCreation();
+                foreach (var account in eligibleAccounts)
+                {
+                    IdentityEntity.Identity identityEntity = new IdentityEntity.Identity
+                    {
+                        UserName = account.Email,
+                        EmailId = account.Email,
+                        FirstName = account.FirstName,
+                        LastName = account.LastName
+                    };
+                    var identityResult = await _identity.CreateUser(identityEntity);
+
+                    var state = identityResult.StatusCode == HttpStatusCode.Created
+                        ? AccountMigrationState.Completed
+                        : AccountMigrationState.Failed;
+                    await _repository.UpdateAccountMigrationState(account.AccountId, state);
+
+                    if (state == AccountMigrationState.Failed)
+                    {
+                        await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager",
+                            AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED,
+                            $"Account migration for { account.Email }", account.AccountId, account.AccountId,
+                            JsonConvert.SerializeObject(identityResult.Result));
+                        failedAccountIds.Add(account.AccountId);
+                    }
+                }
+
+                return new AccountMigrationResponse
+                {
+                    Message = $"Migrated users count - { eligibleAccounts.Count() - failedAccountIds.Count }. Failed users count - { failedAccountIds.Count }",
+                    FailedAccountIds = failedAccountIds.ToArray()
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<Account> Create(Account account)
@@ -115,6 +164,7 @@ namespace net.atos.daf.ct2.account
             }
             return account;
         }
+
         public async Task<Account> Update(Account account)
         {
             // create user in identity
@@ -512,7 +562,9 @@ namespace net.atos.daf.ct2.account
 
         public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(MenuFeatureRquest request)
         {
-            return await _repository.GetMenuFeaturesList(request);
+            var result = await _vehicleManager.GetVisibilityVehicles(request.AccountId, request.ContextOrgId);
+            var visibleVehiclesIds = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(e => e.Id).ToArray();
+            return await _repository.GetMenuFeaturesList(request, visibleVehiclesIds);
         }
 
         public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)

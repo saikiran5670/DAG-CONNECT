@@ -70,9 +70,9 @@ namespace net.atos.daf.ct2.dashboard
             List<Alert24Hours> alert24hours = await _dashboardRepository.GetLastAlert24Hours(alert24HoursFilter);
             return alert24hours;
         }
-        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId)
+        public async Task<List<AlertOrgMap>> GetAlertNameOrgList(int organizationId, List<int> featureIds)
         {
-            List<AlertOrgMap> alerts = await _dashboardRepository.GetAlertNameOrgList(organizationId);
+            List<AlertOrgMap> alerts = await _dashboardRepository.GetAlertNameOrgList(organizationId, featureIds);
             return alerts;
         }
         public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)

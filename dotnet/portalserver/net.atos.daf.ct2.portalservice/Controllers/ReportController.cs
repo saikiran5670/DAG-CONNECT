@@ -17,6 +17,7 @@ using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
 using net.atos.daf.ct2.vehicleservice;
+using Alert = net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -248,7 +249,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
 
                 _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
-                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                request.AccountId = _userDetails.AccountId;
+                request.OrganizationId = GetContextOrgId();
+                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request, headers);
 
                 data.TripData.Select(x =>
                 {
@@ -934,6 +942,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var alertFeatureIds = GetMappedFeatureIdByStartWithName(ReportConstants.FLEETOVERVIEW_ALERT_FEATURE_STARTWITH);
                 // Fetch Feature Id of the report for visibility
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
 
@@ -946,6 +956,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("alert_feature_ids", JsonConvert.SerializeObject(alertFeatureIds));
 
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest, headers);
 
@@ -987,7 +998,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             try
-            {
+            {  // Fetch Feature Ids of the alert for visibility
+                var alertFeatureIds = GetMappedFeatureIdByStartWithName(ReportConstants.FLEETOVERVIEW_ALERT_FEATURE_STARTWITH);
                 // Fetch Feature Id of the report for visibility
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
 
@@ -1013,6 +1025,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("alert_feature_ids", JsonConvert.SerializeObject(alertFeatureIds));
 
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest, headers);
                 if (response == null)
@@ -1467,6 +1480,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var alertFeatureIds = GetMappedFeatureIdByStartWithName(ReportConstants.FLEETOVERVIEW_ALERT_FEATURE_STARTWITH);
+
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
                 var logBookFilterRequest = new LogbookFilterIdRequest();
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
@@ -1479,6 +1495,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("alert_feature_ids", JsonConvert.SerializeObject(alertFeatureIds));
 
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest, headers);
 
@@ -1511,6 +1528,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var alertFeatureIds = GetMappedFeatureIdByStartWithName(ReportConstants.FLEETOVERVIEW_ALERT_FEATURE_STARTWITH);
                 var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
 
                 LogbookDetailsRequest logbookDetailsRequest = new LogbookDetailsRequest
@@ -1536,6 +1555,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
+                headers.Add("alert_feature_ids", JsonConvert.SerializeObject(alertFeatureIds));
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest, headers);
                 if (response == null)

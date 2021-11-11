@@ -256,7 +256,8 @@ export class AlertsComponent implements OnInit {
     return initdata;
   }
 
-  loadAlertsData(){    
+  loadAlertsData(){  
+    this.initData = [];  
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -372,9 +373,13 @@ export class AlertsComponent implements OnInit {
    else if(unitType == 'K' || unitType == 'L'){
     threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
     }
-  else if(unitType == 'A' || unitType == 'B'){
+   else if(unitType == 'A' || unitType == 'B'){
     threshold =this.reportMapService.getConvertedSpeed(originalThreshold,unitType);
    }
+   else if(unitType == 'P'){
+     threshold=originalThreshold;
+   }
+  
    return threshold;
  }
 

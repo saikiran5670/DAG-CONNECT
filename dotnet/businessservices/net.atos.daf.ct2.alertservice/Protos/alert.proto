@@ -115,7 +115,7 @@ message AlertFilterRefRequest
 	int32 AlertId=2;
 	int32 AlertUrgencyLevelId=3;
 	string FilterType=4;
-	double ThresholdValue=5;
+	string ThresholdValue=5;
 	string UnitType=6;
 	string LandmarkType=7;
 	int32 RefId=8;
@@ -148,7 +148,7 @@ message AlertUrgencyLevelRefRequest
 	int32 Id=1;
 	int32 AlertId=2;
 	string UrgencyLevelType=3;
-	double ThresholdValue=4;
+	string ThresholdValue=4;
 	string UnitType=5;
 	repeated bool DayType=6;
 	string PeriodType=7;

@@ -165,7 +165,7 @@ public class TripEtlStreamingJob {
 						FlinkKafkaProducer.Semantic.AT_LEAST_ONCE)).name("Egress Data");
 			}
 				
-			env.execute("Trip Streaming ETL Job");
+			env.execute(envParams.get(ETLConstants.ETL_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 
@@ -565,7 +565,13 @@ public class TripEtlStreamingJob {
 				tripData.setTripCalC02Emission(tripAggrData.getTripCalC02Emission());
 				tripData.setTripCalFuelConsumption(tripAggrData.getTripCalFuelConsumption());
 				tripData.setVTachographSpeed(tripAggrData.getVTachographSpeed());
-				tripData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb());
+				//tripData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb());
+				
+				if(Objects.nonNull(tripAggrData.getTripCalDist()) && 0 != tripAggrData.getTripCalDist())
+					tripData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb()/tripAggrData.getTripCalDist());
+				else
+					tripData.setTripCalAvgGrossWtComb(0.0);
+				
 				tripData.setTripCalPtoDuration(tripAggrData.getTripCalPtoDuration());
 				tripData.setTripCalHarshBrakeDuration(tripAggrData.getTripCalHarshBrakeDuration());
 				tripData.setTripCalHeavyThrottleDuration(tripAggrData.getTripCalHeavyThrottleDuration());
@@ -675,7 +681,13 @@ public class TripEtlStreamingJob {
 				ecoScoreData.setVTripDPAAnticipationCount(tripAggrData.getVTripDPAAnticipationCount());
 				ecoScoreData.setVSumTripDPABrakingScore(tripAggrData.getVSumTripDPABrakingScore());
 				ecoScoreData.setVSumTripDPAAnticipationScore(tripAggrData.getVSumTripDPAAnticipationScore());
-				ecoScoreData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb());
+				//ecoScoreData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb());
+				
+				if(Objects.nonNull(tripAggrData.getTripCalDist()) && 0 != tripAggrData.getTripCalDist())
+					ecoScoreData.setTripCalAvgGrossWtComb(tripAggrData.getTripCalAvgGrossWtComb()/tripAggrData.getTripCalDist());
+				else
+					ecoScoreData.setTripCalAvgGrossWtComb(0.0);
+				
 				ecoScoreData.setTripCalUsedFuel(tripAggrData.getTripCalUsedFuel());
 				ecoScoreData.setVPTODuration(tripAggrData.getVPTODuration());
 				ecoScoreData.setVIdleDuration(tripAggrData.getVIdleDuration());
@@ -684,7 +696,7 @@ public class TripEtlStreamingJob {
 				ecoScoreData.setTripCalCrsCntrlDist25To50(tripAggrData.getTripCalCrsCntrlDist25To50());
 				ecoScoreData.setTripCalCrsCntrlDist50To75(tripAggrData.getTripCalCrsCntrlDist50To75());
 				ecoScoreData.setTripCalCrsCntrlDistAbv75(tripAggrData.getTripCalCrsCntrlDistAbv75());
-				ecoScoreData.setTachoVGrossWtCmbSum(tripAggrData.getVGrossWtSum());
+				ecoScoreData.setTachoVGrossWtCmbSum(tripAggrData.getTripCalAvgGrossWtComb());
 				ecoScoreData.setVHarshBrakeDuration(tripAggrData.getVHarshBrakeDuration());
 				ecoScoreData.setVBrakeDuration(tripAggrData.getVBrakeDuration());
 				ecoScoreData.setTripProcessingTS(tripAggrData.getTripProcessingTS());

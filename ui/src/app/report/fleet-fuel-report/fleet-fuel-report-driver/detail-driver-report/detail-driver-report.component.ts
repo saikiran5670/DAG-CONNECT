@@ -58,6 +58,7 @@ export class DetailDriverReportComponent implements OnInit {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   graphData: any;
   idleDuration: any =[];
+  fuelConsumptionSummary: any;
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -1240,6 +1241,7 @@ createEndMarker(){
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
+    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     });
     let searchDataParam=
     {
@@ -1681,7 +1683,7 @@ createEndMarker(){
        vehicleName:this.driverDetails.vehicleName,
        vin : this.driverDetails.vin,
        plateNo :this.driverDetails.vehicleRegistrationNo,
-       driverName : this.driverDetails.driverName,
+       driverName : this.driverDetails.unknownDriver ? 'Unknown' : this.driverDetails.driverName,
        driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID 
 
      }     
@@ -2615,7 +2617,7 @@ setVehicleGroupAndVehiclePreSelection() {
             
           this.summaryNewObj = [
            ['Fleet Fuel Driver Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.driverName, this.tableInfoObj.driverID, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
           ];        
@@ -2641,7 +2643,7 @@ setVehicleGroupAndVehiclePreSelection() {
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
         'Cruise Control Distance 50-75('+unitValkmh+')(%)','Cruise Control Distance>75('+unitValkmh+')(%)','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination(Ton)', 'AverageTrafficClassification',
         'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore'];
-        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name','Driver Name','Driver ID', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
         const summaryData= this.summaryNewObj;
         //Create workbook and worksheet
         let workbook = new Workbook();

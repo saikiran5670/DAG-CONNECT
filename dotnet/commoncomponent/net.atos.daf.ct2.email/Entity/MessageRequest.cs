@@ -40,6 +40,7 @@ namespace net.atos.daf.ct2.email.Entity
         public string ActualThresholdValue { get; set; }
         public string AlertCategory { get; set; }
         public string VehicleGroup { get; set; }
+        public string VehicleName { get; set; }
         public string AlertDateTime { get; set; }
         public string DafEmailId { get; set; }
     }

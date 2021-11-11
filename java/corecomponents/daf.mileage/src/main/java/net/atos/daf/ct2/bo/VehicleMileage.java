@@ -16,7 +16,7 @@ public class VehicleMileage implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long evtDateTime;
-	private String tripId;
+	//private String tripId;
 	private Long odoMileage;
 	private Long odoDistance;
 	private String vin;

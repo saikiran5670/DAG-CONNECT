@@ -348,6 +348,10 @@ namespace net.atos.daf.ct2.group
 	                        CASE WHEN COALESCE(end_date,0) !=0 THEN to_timestamp(COALESCE(end_date)/1000)::date>now()::date
 	                        ELSE COALESCE(end_date,0) = 0 END";
 
+                string queryOEM = @"select veh.id
+                                    from master.vehicle veh
+                                    WHERE veh.oem_organisation_id=@OrganizationId";
+
                 switch (functionEnum)
                 {
                     case FunctionEnum.OwnedVehicles:
@@ -358,6 +362,9 @@ namespace net.atos.daf.ct2.group
                         break;
                     case FunctionEnum.All:
                         selectStatement = $"{ queryOwned } { queryUnion } { queryVisible }";
+                        break;
+                    case FunctionEnum.OEM:
+                        selectStatement = queryOEM;
                         break;
                     default:
                         break;

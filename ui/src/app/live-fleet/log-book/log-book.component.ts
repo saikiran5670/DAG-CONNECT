@@ -306,6 +306,10 @@ ngOnDestroy(){
              },0);
             this.setDefaultTodayDate();
           }
+          if(this._state && this._state.fromVehicleDetails){
+            this.selectionTimeRange('today');
+            // this.setDefaultTodayDate();
+          }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true; 
@@ -582,6 +586,13 @@ ngOnDestroy(){
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
 
+  if(this._state && this._state.fromVehicleDetails){
+    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+    this.logBookForm.get('vehicle').setValue(this._state.data.vin); 
+     
+  }
+
   if(this.showBack && this.selectionTab == 'today'){
   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
     this.logBookForm.get('alertCategory').setValue("L");
@@ -763,8 +774,8 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
             newLogbookData.push(element);
           }
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
-          element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
-          element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
+          element.tripStartTime = (element.tripStartTime != 0) ? Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone) : '-';
+          element.tripEndTime = (element.tripEndTime != 0) ? Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone) : '-';
           // let filterData = this.wholeLogBookData["enumTranslation"];
          
           let filterData = this.wholeLogBookData["enumTranslation"];
@@ -832,10 +843,10 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
-    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
     console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
-    vehName = vehCount[0].vehicleName;
+    vehName = vehCount[0].vin;
      
     }
 
@@ -972,9 +983,9 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
             }}
         }
         }else{
-          this.logBookForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+            this.logBookForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       }
-      this.logBookForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
+        this.logBookForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
       this.logBookForm.get('vehicle').setValue("all");
       this.logBookForm.get('vehicleGroup').setValue("all");
@@ -982,6 +993,11 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.logBookForm.get('alertType').setValue("all");
       this.logBookForm.get('alertCategory').setValue("all");
       
+    }
+    if(this._state && this._state.fromVehicleDetails){
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+      this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+      this.logBookForm.get('vehicle').setValue(this._state.data.vin);   
     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){
@@ -1217,7 +1233,9 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       }
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })
-    this.initData.forEach(item => {     
+    this.initData.forEach(item => {
+      item.tripStartTime = (item.tripStartTime != 0) ? item.tripStartTime : '-';
+      item.tripEndTime = (item.tripEndTime != 0) ? item.tripEndTime : '-';
       worksheet.addRow([item.alertLevel, item.alertGeneratedTime, item.vehicleRegNo, item.alertType, item.alertName, 
         item.alertCategory, item.tripStartTime, item.tripEndTime, item.vehicleName,
         item.vin, item.occurrence, item.thresholdValue]);   
@@ -1273,8 +1291,8 @@ let prepare = []
     tempObj.push(e.alertType);
     tempObj.push(e.alertName);
     tempObj.push(e.alertCategory);
-    tempObj.push(e.tripStartTime);
-    tempObj.push(e.tripEndTime);
+    (e.tripStartTime != 0) ? tempObj.push(e.tripStartTime) : tempObj.push('-');
+    (e.tripEndTime != 0) ? tempObj.push(e.tripEndTime) : tempObj.push('-');
     tempObj.push(e.vehicleName);
     tempObj.push(e.vin);
     tempObj.push(e.occurrence);
@@ -1622,11 +1640,11 @@ let prepare = []
 }
 
   resetFilterValues(){
-    this.logBookForm.get('vehicle').setValue('');
-    this.logBookForm.get('vehicleGroup').setValue('');
-    this.logBookForm.get('alertLevel').setValue('');
-    this.logBookForm.get('alertType').setValue('');
-    this.logBookForm.get('alertCategory').setValue('');
+    this.logBookForm.get('vehicle').setValue('all');
+    this.logBookForm.get('vehicleGroup').setValue('all');
+    this.logBookForm.get('alertLevel').setValue('all');
+    this.logBookForm.get('alertType').setValue('all');
+    this.logBookForm.get('alertCategory').setValue('all');
   }
 
   onAlertLevelChange(event: any){

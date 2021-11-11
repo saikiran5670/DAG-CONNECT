@@ -55,7 +55,7 @@ export class CommonImportComponent implements OnInit {
   filetypeError : boolean = false;
   fileIcon = 'assets/images/icons/microsoftExcel/excel_icon.svg';
 
-  constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
+  constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog,
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
 
   ngOnInit(): void {
@@ -129,10 +129,10 @@ export class CommonImportComponent implements OnInit {
       let row = worksheet.addRow(d);
     });
 
-    //let csvData = XLSX.utils.sheet_to_csv(data);  
-    // const csvFile: Blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });  
-    // FileSaver.saveAs(csvFile, this.templateFileName);  
-   
+    //let csvData = XLSX.utils.sheet_to_csv(data);
+    // const csvFile: Blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    // FileSaver.saveAs(csvFile, this.templateFileName);
+
     if(this.importFileComponent === 'poi'){
       this.templateFileName = 'poiData.xlsx';
       workbook.xlsx.writeBuffer().then((data) => {
@@ -152,7 +152,7 @@ export class CommonImportComponent implements OnInit {
       });
     }
 
-    
+
   }
 
 
@@ -165,7 +165,7 @@ export class CommonImportComponent implements OnInit {
     return false;
   }
 
-  addfile(event: any){ 
+  addfile(event: any){
     this.filetypeError = false;
     if (this.fileExtension === '.csv' || this.fileExtension === '.xlsx') {
       this.excelEmptyMsg = false;
@@ -185,7 +185,7 @@ export class CommonImportComponent implements OnInit {
           var workbook = XLSX.read(bstr, { type: "binary" });
           var first_sheet_name = workbook.SheetNames[0];
           var worksheet = workbook.Sheets[first_sheet_name];
-          var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          var arraylist = XLSX.utils.sheet_to_json(worksheet,{ raw: true, header: 0, defval: ""});
           this.filelist = [];
           this.filelist = arraylist;
         }
@@ -268,7 +268,7 @@ export class CommonImportComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
           case 'code':{
-            let objData: any = this.codeValidation(value,'code'); 
+            let objData: any = this.codeValidation(value,'code');
             codeFlag = objData.status;
             if(!codeFlag){
               item.returnMessage = objData.reason;
@@ -284,7 +284,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'features':{
-            let objData: any = this.featureValidation(value); 
+            let objData: any = this.featureValidation(value);
             featureFlag = objData.status;
             if(!featureFlag){
               item.returnMessage = objData.reason;
@@ -293,7 +293,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
             case 'name':{
-              let objData: any = this.nameValidation(value,50,'packagename');  
+              let objData: any = this.nameValidation(value,50,'packagename');
               nameFlag = objData.status;
               if(!nameFlag){
                 item.returnMessage = objData.reason;
@@ -301,18 +301,18 @@ export class CommonImportComponent implements OnInit {
               break;
             }
             case 'type':{
-              let objData: any = this.typeValidation(value,'type');  
+              let objData: any = this.typeValidation(value,'type');
               typeFlag = objData.status;
               if(!typeFlag){
                 item.returnMessage = objData.reason;
               }
               else{
-                item.type = value === "VIN" ? "V" : "O";
+                item.type = value === "Org+VIN" ? "V" :(value === "VIN" ? "N" : "O");
               }
               break;
             }
             case 'description':{
-              let objData: any = this.descValidation(value);  
+              let objData: any = this.descValidation(value);
               descFlag = objData.status;
               if(!descFlag){
                 item.returnMessage = objData.reason;
@@ -320,7 +320,7 @@ export class CommonImportComponent implements OnInit {
               break;
             }
             case 'state':{
-              let objData: any = this.typeValidation(value,'status');  
+              let objData: any = this.typeValidation(value,'status');
               stateFlag = objData.status;
               if(!stateFlag){
                 item.returnMessage = objData.reason;
@@ -331,7 +331,7 @@ export class CommonImportComponent implements OnInit {
               break;
             }
             case 'status':{
-              let objData: any = this.typeValidation(value,'status');  
+              let objData: any = this.typeValidation(value,'status');
               statFlag = objData.status;
               if(!statFlag){
                 item.returnMessage = objData.reason;
@@ -345,7 +345,7 @@ export class CommonImportComponent implements OnInit {
             break;
         }
       }
-      
+
     if(statFlag && codeFlag && descFlag && nameFlag && typeFlag && featureFlag && stateFlag){
       validData.push(item);
     }
@@ -354,10 +354,10 @@ export class CommonImportComponent implements OnInit {
     }
     });
     this.callImportAPI(validData,invalidData,removableInput)
-  
+
     //console.log(validData , invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
-   
+
   }
 
   callImportAPI(validData,invalidData,removableInput){
@@ -393,24 +393,48 @@ export class CommonImportComponent implements OnInit {
 
   getCategoryId(name:string,id:any)
   {
+    let valid=0;
     switch(id){
       case 'C' : for(let i=0; i< this.poiData.length; i++)
                 {
-                  if(this.poiData[i].categoryName == name)
-                  {
+                  if(name != ''){
+                  if(this.poiData[i].categoryName == name){
+                  valid=1;
                     return this.poiData[i].categoryId;
                   }
+                  else{
+                    valid=0;}
+                  }
+                  else{ 
+                    return 0;
+                  }
+                }
+                if(valid == 0)
+                {
+                  return 'invalid';
                 }
                 break;
       case 'S'  : for(let i=0; i< this.poiData.length; i++)
                   {
-                    if(this.poiData[i].subCategoryName == name)
-                    {
-                      return this.poiData[i].subCategoryId;
+                    if(name != ''){
+                    if(this.poiData[i].subCategoryName == name){
+                      valid=1;
+                      return this.poiData[i].subCategoryId;                    
+                    }
+                    else{
+                      valid=0;}
+                    }
+                    else{ 
+                    return 0;
                     }
                   }
+                  if(valid == 0)
+                  {
+                    return 'invalid';
+                  }
                   break;
-    }   
+      default :  return 0;
+    }
   }
 
   // POI import functions
@@ -433,10 +457,10 @@ export class CommonImportComponent implements OnInit {
             "longitude": this.filelist[i]["Longitude"],
             "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
             "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]       
+            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
         }
       )
-    } 
+    }
     this.validatePOIData(packagesToImport,removableInput);
   }
 
@@ -448,7 +472,7 @@ export class CommonImportComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
           case 'organizationId':{
-            let objData: any = this.basicValidation(value,'organizationId'); 
+            let objData: any = this.basicValidation(value,'organizationId');
             orgFlag = objData.status;
             if(!orgFlag){
               item.returnMessage = objData.reason;
@@ -456,7 +480,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'categoryId':{
-            let objData: any = this.basicValidation(value,'categoryId'); 
+            let objData: any = this.basicValidation(value,'categoryId');
             categoryFlag = objData.status;
             if(!categoryFlag){
               item.returnMessage = objData.reason;
@@ -464,7 +488,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'subCategoryId':{
-            let objData: any = this.basicValidation(value,'subCategoryId'); 
+            let objData: any = this.basicValidation(value,'subCategoryId');
             subcategoryFlag = objData.status;
             if(!subcategoryFlag){
               item.returnMessage = objData.reason;
@@ -472,7 +496,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'name':{
-            let objData: any = this.basicValidation(value,'name'); 
+            let objData: any = this.basicValidation(value,'name');
             nameFlag = objData.status;
             if(!nameFlag){
               item.returnMessage = objData.reason;
@@ -488,7 +512,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'latitude':{
-            let objData: any = this.basicValidation(value,'latitude'); 
+            let objData: any = this.basicValidation(value,'latitude');
             latitudeFlag = objData.status;
             if(!latitudeFlag){
               item.returnMessage = objData.reason;
@@ -496,7 +520,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'longitude':{
-            let objData: any = this.basicValidation(value,'longitude'); 
+            let objData: any = this.basicValidation(value,'longitude');
             longitudeFlag = objData.status;
             if(!longitudeFlag){
               item.returnMessage = objData.reason;
@@ -514,12 +538,12 @@ export class CommonImportComponent implements OnInit {
       invalidData.push(item);
     }
     });
-       
-    this.callPOIImportAPI(validData,invalidData,removableInput)  
+
+    this.callPOIImportAPI(validData,invalidData,removableInput)
     //console.log(validData , invalidData)
     //return { validDriverList: validData, invalidDriverList: invalidData };
   }
- 
+
   callPOIImportAPI(validData,invalidData,removableInput){
     this.rejectedList = invalidData;
     this.rejectedCount = invalidData.length;
@@ -534,7 +558,7 @@ export class CommonImportComponent implements OnInit {
           }
           if(resultData["poiDuplicateList"].length >0){
             this.rejectedList.push(...resultData["poiDuplicateList"]);
-            this.rejectedCount =  this.rejectedList.length;  
+            this.rejectedCount =  this.rejectedList.length;
           }
         },
         (err)=>{
@@ -542,7 +566,7 @@ export class CommonImportComponent implements OnInit {
           this.showImportStatus = true;
 
           if(err.status === 409){
-           
+
           }
         })
     }
@@ -550,7 +574,7 @@ export class CommonImportComponent implements OnInit {
       removableInput.clear();
       this.showImportStatus = true;
     }
-    // this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => { 
+    // this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => {
     //   this.poiInitdata = data;
     //   // this.userCreatedMsg = this.getUserCreatedMessage();
     //   // let emitObj = {
@@ -569,7 +593,7 @@ export class CommonImportComponent implements OnInit {
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
     let organizedGPXData = [];
-    
+
     let nodesArray = [];
     if(gpxInfo.length){
       for(let i = 0; i < gpxInfo.length ; i++){
@@ -655,9 +679,9 @@ export class CommonImportComponent implements OnInit {
           "nodes": nodesArray
         })
     }
-   
+
       this.filelist = organizedGPXData;
-      
+
   }
 
 
@@ -671,7 +695,7 @@ export class CommonImportComponent implements OnInit {
         switch (key) {
           case 'type':{
             _geofenceType = value;
-            let objData: any = this.basicValidation(value,'type'); 
+            let objData: any = this.basicValidation(value,'type');
             typeFlag = objData.status;
             if(!typeFlag){
               item.message = objData.reason;
@@ -679,7 +703,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
             case 'name':{
-            let objData: any = this.basicValidation(value,'Geofence Name'); 
+            let objData: any = this.basicValidation(value,'Geofence Name');
             nameFlag = objData.status;
             if(!nameFlag){
               item.message = objData.reason;
@@ -687,7 +711,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'latitude':{
-            let objData: any = this.basicValidation(value,'latitude'); 
+            let objData: any = this.basicValidation(value,'latitude');
             latFlag = objData.status;
             if(!latFlag){
               item.message = objData.reason;
@@ -695,7 +719,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'longitude':{
-            let objData: any = this.basicValidation(value,'longitude'); 
+            let objData: any = this.basicValidation(value,'longitude');
             longFlag = objData.status;
             if(!longFlag){
               item.message = objData.reason;
@@ -703,7 +727,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'distance':{
-            let objData: any = this.distanceValidation(value,_geofenceType,'distance'); 
+            let objData: any = this.distanceValidation(value,_geofenceType,'distance');
             distanceFlag = objData.status;
             if(!distanceFlag){
               item.message = objData.reason;
@@ -711,7 +735,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'nodes':{
-            let objData: any = this.nodeValidation(value,_geofenceType,'nodes'); 
+            let objData: any = this.nodeValidation(value,_geofenceType,'nodes');
             nodeFlag = objData.status;
             if(!nodeFlag){
               item.message = objData.reason;
@@ -731,9 +755,9 @@ export class CommonImportComponent implements OnInit {
     });
 
     this.callImportGeofenceAPI(validData,invalidData,removableInput)
-  
+
   //   this.geofenceService.importGeofence(this.filelist).subscribe((resultData)=>{
-  //    // this.validateImportData = 
+  //    // this.validateImportData =
 
   // })
 
@@ -752,7 +776,7 @@ export class CommonImportComponent implements OnInit {
           if(resultData["failureResult"].length >0){
             this.updateDuplicateErrorMsg(resultData["failureResult"]);
             this.rejectedList.push(...resultData["failureResult"]);
-            this.rejectedCount =  this.rejectedList.length;  
+            this.rejectedCount =  this.rejectedList.length;
           }
         },
         (err)=>{
@@ -760,7 +784,7 @@ export class CommonImportComponent implements OnInit {
           this.showImportStatus = true;
 
           if(err.status === 409){
-           
+
           }
         })
     }
@@ -769,7 +793,7 @@ export class CommonImportComponent implements OnInit {
       this.showImportStatus = true;
     }
   }
-  
+
   updateDuplicateErrorMsg(_failureList){
 
   }
@@ -793,28 +817,28 @@ export class CommonImportComponent implements OnInit {
     }
     if(value.length > 20){
       obj.status = false;
-      obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, 20) 
+      obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, 20)
       return obj;
     }
     return obj;
   }
 
- 
+
   nameValidation(value: any, maxLength: any, type: any){
     let obj: any = { status: true, reason: 'correct data'};
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-   
-    if(!value || value == '' || value.trim().length == 0){ 
+
+    if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = this.importTranslationData.input2mandatoryReason;
-      return obj; 
+      return obj;
     }
     else{
 
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, maxLength) 
+        obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, maxLength)
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
@@ -846,22 +870,23 @@ export class CommonImportComponent implements OnInit {
 
   typeValidation(value: any, type:any){
     let obj: any = { status: true, reason: 'correct data'};
-    if(!value || value == '' || value.trim().length == 0){ 
+    if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       if(type === 'type')
       obj.reason = this.importTranslationData.packageTypeMandateReason;
       if(type === 'status')
       obj.reason = this.importTranslationData.packageStatusMandateReason;
-      return obj; 
+      return obj;
     }
     else{
       switch (type) {
         case 'type':
-          if(value.toLowerCase() != "vin"){
+           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
+              if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
-
+              }
             }
           }
           break;
@@ -876,7 +901,7 @@ export class CommonImportComponent implements OnInit {
         default:
           break;
       }
-      return obj; 
+      return obj;
     }
 
   }
@@ -884,7 +909,7 @@ export class CommonImportComponent implements OnInit {
   featureValidation(value: any){
     let obj: any = { status: true, reason: 'correct data',featureArray : []};
     let featureArray = [];
-    if(!value || value == '' || value.trim().length == 0){ 
+    if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = this.importTranslationData.featureemptyReason;
       obj.featureArray = [];
@@ -892,7 +917,7 @@ export class CommonImportComponent implements OnInit {
     else{
       featureArray = value.split(",");
       for(var i in featureArray){
-        if(featureArray[i] === null || featureArray[i] === undefined || featureArray[i].trim() === ''){ 
+        if(featureArray[i] === null || featureArray[i] === undefined || featureArray[i].trim() === ''){
           obj.status = false;
           obj.reason =  this.importTranslationData.featureinvalidReason;
         }
@@ -912,6 +937,7 @@ export class CommonImportComponent implements OnInit {
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(type== 'latitude')
     {
+      if(value !== ''){
       if(value < -90 || value > 90){
         obj.status = false;
         obj.reason = 'invalid latitude';
@@ -920,19 +946,30 @@ export class CommonImportComponent implements OnInit {
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
     if(type== 'longitude')
     {
+      if(value !== '' ){
       if(value < -180 || value > 180){
         obj.status = false;
-        obj.reason = 'invalid longitude';    
+        obj.reason = 'invalid longitude';
       }
       else{
         obj.status = true;
         obj.reason = 'correct data';
       }
+    }
+    else{
+      obj.status = false;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+    }
       return obj;
     }
 
@@ -940,8 +977,12 @@ export class CommonImportComponent implements OnInit {
       if(value == 0 || value == '' || !value)
       {
         obj.status = false;
-        obj.reason = 'Category name blank or invalid';    
-      } 
+        obj.reason = 'Category name blank';
+      }
+      else if(value == 'invalid'){
+        obj.status = false;
+        obj.reason = 'Category name invalid';
+      }
       else{
         obj.status = true;
         obj.reason = 'correct data';
@@ -950,18 +991,18 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type == 'subCategoryId'){
-      if(value == 0 || value == '' || !value)
-      {
+       if(value == 'invalid')
+       {
         obj.status = false;
-        obj.reason = ' Sub Category name blank or invalid';    
-      } 
+        obj.reason = ' Sub Category name invalid';
+       }
       else{
         obj.status = true;
         obj.reason = 'correct data';
-      }
+     }
       return obj;
     }
-  
+
     if(!value || value == ''){
       obj.status = false;
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
@@ -999,9 +1040,9 @@ export class CommonImportComponent implements OnInit {
   distanceValidation(value,_geofenceType,type){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-    
+
       if(_geofenceType === 'C' && type === 'distance'){
-        
+
         if(value == ''){
           obj.status = false;
           obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
@@ -1013,7 +1054,7 @@ export class CommonImportComponent implements OnInit {
           return obj;
         }
       }
-      
+
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
         obj.reason = this.importTranslationData.specialCharNotAllowedReason;
@@ -1026,7 +1067,7 @@ export class CommonImportComponent implements OnInit {
   nodeValidation(value,_geofenceType,type){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-    
+
     if(_geofenceType === 'O' && type === 'nodes'){
       if((!value || value == '') && value.length < 1){
         obj.status = false;
@@ -1041,7 +1082,7 @@ export class CommonImportComponent implements OnInit {
   getValidateMsg(type: any, typeTrans: any, maxLength?: any){
     if(typeTrans){
       if(maxLength){
-        typeTrans = typeTrans.replace('$', type); 
+        typeTrans = typeTrans.replace('$', type);
         return typeTrans.replace('#', maxLength)
       }
       else{
@@ -1053,7 +1094,7 @@ export class CommonImportComponent implements OnInit {
   getUpdatedMessage(type:any,typeTrans:any){
     if(typeTrans){
       return typeTrans.replace('$', type);
-      
+
     }
   }
 
@@ -1082,8 +1123,8 @@ export class CommonImportComponent implements OnInit {
             "categoryName": this.rejectedList[i]["categoryName"],
             "subCategoryName" : this.rejectedList[i]["subCategoryName"],
             "poiName" :this.rejectedList[i]["name"],
-            "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
-            "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
+            "latitude" :this.rejectedList[i]["latitude"] ? parseFloat(this.rejectedList[i]["latitude"]).toFixed(2) :this.rejectedList[i]["latitude"] ,
+            "longitude" :this.rejectedList[i]["longitude"] ? parseFloat(this.rejectedList[i]["longitude"]).toFixed(2) :this.rejectedList[i]["longitude"] ,
             "returnMessage" :this.rejectedList[i]["returnMessage"] ? this.rejectedList[i]["returnMessage"] : "Duplicate POI"
           }
         )
@@ -1107,13 +1148,13 @@ export class CommonImportComponent implements OnInit {
     this.displayPopup(populateRejectedList);
   }
 
- 
+
   displayPopup(populateRejectedList){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {};
-   
+
     dialogConfig.data = {
       tableData: populateRejectedList,
       colsList: this.tableColumnList,

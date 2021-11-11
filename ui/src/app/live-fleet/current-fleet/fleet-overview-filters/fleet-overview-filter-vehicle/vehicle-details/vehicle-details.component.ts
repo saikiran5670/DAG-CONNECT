@@ -14,11 +14,14 @@ import { TranslationService } from 'src/app/services/translation.service';
 })
 export class VehicleDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
+  @Input() filterData: any; 
   @Input() selectedElementData: any;
   @Input() translationData: any = {};
   @Input() levelList: any;
   @Input() categoryList: any;
   @Input() vehInfoPrefData: any;
+  vehicleGroups: any;
+  vehicleGroupId: any;
   gridData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
@@ -100,12 +103,20 @@ export class VehicleDetailsComponent implements OnInit {
        });              
     }); 
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
-      this.categoryList.forEach(element => {
-        if(item.categoryType ==element.value)
-        {         
-         item.categoryType = element.name;
-        }
-       });              
+      // this.categoryList.forEach(element => {
+      //   if(item.categoryType ==element.value)
+      //   {         
+      //    item.categoryType = element.name;
+      //   }
+      //  });      
+      if(this.filterData && this.filterData.alertType && this.filterData.alertType.length > 0){
+        this.filterData.alertType.forEach(element => {
+          if(item.type == element.value){        
+            item.type = this.translationData[element.name]; 
+          //  item.type = element.name;
+          }
+        });
+      }        
     }); 
     this.gridData = this.selectedElementData;
     this.alertLength = this.gridData.fleetOverviewAlert ? this.gridData.fleetOverviewAlert.length : 0;
@@ -143,6 +154,15 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   gotoLogBook(){
+    this.vehicleGroups =this.filterData.vehicleGroups;   
+    for(let i=0; i< this.vehicleGroups.length; i++)
+    {
+      if(this.vehicleGroups[i].vin == this.selectedElementData.vin)
+      {
+        this.vehicleGroupId = this.vehicleGroups[i].vehicleGroupId;
+      }
+    }   
+   this.selectedElementData.vehicleGroupId = this.vehicleGroupId;   
     const navigationExtras: NavigationExtras = {
       state: {
         fromVehicleDetails: true,

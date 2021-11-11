@@ -42,6 +42,7 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { CommonFilterComponent } from './common-filter/common-filter.component';
 import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
+import { SafeStylePipe } from './pipes/safe-style.pipe';
 import { CustomPaginationComponent } from './custom-pagination/custom-pagination.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
@@ -52,7 +53,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -139,6 +140,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     MaterialFileInputModule,
     CommonFilterComponent,
     RemoveDuplicatesPipe,
+    SafeStylePipe,
     SpinnerComponent,
     CommonImportComponent,
     CommonMapComponent,

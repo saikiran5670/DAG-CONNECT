@@ -25,13 +25,13 @@ public class PostgreDataSourceConnection {
 
 	public static PostgreDataSourceConnection getInstance() {
 		if (instance == null) {
-			System.out.println("Instance is null");
+			//System.out.println("Instance is null");
 			synchronized (PostgreDataSourceConnection.class) {
 				if (instance == null) {
-					System.out.println("inside synchronized block & instance is null");
+					logger.info("inside synchronized block & instance is null");
 					// if instance is null, initialize
 					instance = new PostgreDataSourceConnection();
-					System.out.println("Instance created");
+					logger.info("Instance created");
 				}
 			}
 		}

@@ -138,9 +138,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isEnteringZone: boolean= true;
   isValidityCalender: boolean= true;
   isFiltersDetailsValidate: boolean= true;
-  criticalThreshold: any;
-  warningThreshold: any;
-  advisoryThreshold: any;
+  criticalThreshold: any ='';
+  warningThreshold: any ='';
+  advisoryThreshold: any ='';
   localStLanguage: any;
   accountPrefObj: any;
   prefTimeFormat: any; //-- coming from pref setting
@@ -796,22 +796,23 @@ proceedStep(prefData: any, preference: any){
         this.vehicleListForTable.push(element);
       });
 
+      //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles
-      if(featuresData[0].subscriptionType != 'O'){  
-        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
-          let isDuplicateVehicle= false;
-          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-                isDuplicateVehicle= true;
-                break;
-            }
-          }
-          if(!isDuplicateVehicle){
-            element["subcriptionStatus"] = false;
-            this.vehicleListForTable.push(element);
-          }
-        });
-      }
+      // if(featuresData[0].subscriptionType != 'O'){  
+      //   this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+      //     let isDuplicateVehicle= false;
+      //     for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+      //       if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+      //           isDuplicateVehicle= true;
+      //           break;
+      //       }
+      //     }
+      //     if(!isDuplicateVehicle){
+      //       element["subcriptionStatus"] = false;
+      //       this.vehicleListForTable.push(element);
+      //     }
+      //   });
+      // }
       this.updateVehiclesDataSource(this.vehicleListForTable);
     }
   }
@@ -1259,7 +1260,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 else{
                   this.unitTypeEnum= "L";
                 }
-              threshold = this.reportMapService.getConvertedDistance(element.thresholdValue,this.unitTypeEnum);
+              threshold = this.reportMapService.getDistance(element.thresholdValue,this.prefUnitFormat);
               if(element.urgencyLevelType == 'C'){
                 this.alertForm.get('criticalLevelThreshold').setValue(threshold);
               }
@@ -1281,6 +1282,19 @@ PoiCheckboxClicked(event: any, row: any) {
               }
               else{
                 this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
+
+            if(this.alert_category_selected+this.alert_type_selected == 'FL' || this.alert_category_selected+this.alert_type_selected == 'FT' ||
+            this.alert_category_selected+this.alert_type_selected == 'FP' || this.alert_category_selected+this.alert_type_selected == 'FF'){
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
               }
             }
         
@@ -1476,6 +1490,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.corridorGridData = data;
       this.updateCorridorDatasource(this.corridorGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.loadCorridorSelectedData(this.corridorGridData);
+      }
     }, (error) => {
       
     });
@@ -1497,7 +1514,7 @@ PoiCheckboxClicked(event: any, row: any) {
       this.displayedColumnsCorridor= ['corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
       this.updateCorridorDatasource(tableData);
     }
-    else if(this.actionType == 'edit'){
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.selectCorridorTableRows();
     }
   }
@@ -1525,8 +1542,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.poiDataSource.paginator = this.paginator.toArray()[1];
-      this.poiDataSource.sort = this.sort.toArray()[1];
+      this.poiDataSource.paginator = this.paginator.toArray()[0];
+      this.poiDataSource.sort = this.sort.toArray()[0];
     });
   }
 
@@ -1540,8 +1557,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.geofenceDataSource.paginator = this.paginator.toArray()[2];
-      this.geofenceDataSource.sort = this.sort.toArray()[2];
+      this.geofenceDataSource.paginator = this.paginator.toArray()[1];
+      this.geofenceDataSource.sort = this.sort.toArray()[1];
       // this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
       //   const isAsc = sort.direction === 'asc';
       //   return data.sort((a: any, b: any) => {
@@ -1589,8 +1606,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.groupDataSource.paginator = this.paginator.toArray()[3];
-      this.groupDataSource.sort = this.sort.toArray()[3];
+      this.groupDataSource.paginator = this.paginator.toArray()[2];
+      this.groupDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -1606,8 +1623,8 @@ PoiCheckboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.corridorDataSource.paginator = this.paginator.toArray()[1];
-      this.corridorDataSource.sort = this.sort.toArray()[1];
+      this.corridorDataSource.paginator = this.paginator.toArray()[0];
+      this.corridorDataSource.sort = this.sort.toArray()[0];
     });
   }
 
@@ -1754,7 +1771,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
-      this.criticalThreshold = this.alertForm.get('criticalLevelThreshold').value;
+      this.criticalThreshold =Number(this.alertForm.get('criticalLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
@@ -1766,7 +1783,7 @@ PoiCheckboxClicked(event: any, row: any) {
           }
     }
     if(this.isWarningLevelSelected){
-      this.warningThreshold = this.alertForm.get('warningLevelThreshold').value;
+      this.warningThreshold = Number(this.alertForm.get('warningLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
@@ -1778,7 +1795,7 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
     if(this.isAdvisoryLevelSelected){
-      this.advisoryThreshold = this.alertForm.get('advisoryLevelThreshold').value;
+      this.advisoryThreshold =Number(this.alertForm.get('advisoryLevelThreshold').value);
       if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
@@ -1786,7 +1803,7 @@ PoiCheckboxClicked(event: any, row: any) {
         this.advisoryThreshold =this.reportMapService.getConvertedDistanceToMeter(this.advisoryThreshold, this.unitTypeEnum);
         }
       else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
-        this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
+       this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
       }
     }
   }
@@ -1885,7 +1902,7 @@ PoiCheckboxClicked(event: any, row: any) {
       if(this.actionType == 'create' || this.actionType == 'duplicate'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": 0,
+          "thresholdValue": '0',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -1900,7 +1917,7 @@ PoiCheckboxClicked(event: any, row: any) {
       else if(this.actionType == 'edit'){
         urgenyLevelObj = {
           "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": 0,
+          "thresholdValue": '0',
           "unitType": "N",
           "dayType": [
             false, false, false, false, false, false, false
@@ -2046,11 +2063,11 @@ PoiCheckboxClicked(event: any, row: any) {
     }
     else{
       if(this.isCriticalLevelSelected){
-        let criticalUrgenyLevelObj= {};
+        let criticalUrgenyLevelObj= {};      
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
-          criticalUrgenyLevelObj = {
+           criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": this.criticalThreshold,
+            "thresholdValue": this.criticalThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2064,9 +2081,9 @@ PoiCheckboxClicked(event: any, row: any) {
         }
         else if(this.actionType == 'edit'){
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'C'); 
-          criticalUrgenyLevelObj = {
+            criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": this.criticalThreshold,
+            "thresholdValue": this.criticalThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2087,7 +2104,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": this.warningThreshold,
+            "thresholdValue": this.warningThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2103,7 +2120,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'W'); 
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": this.warningThreshold,
+            "thresholdValue": this.warningThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2124,7 +2141,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": this.advisoryThreshold,
+            "thresholdValue": this.advisoryThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2140,7 +2157,7 @@ PoiCheckboxClicked(event: any, row: any) {
           let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'A');
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": this.advisoryThreshold,
+            "thresholdValue": this.advisoryThreshold.toString(),
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -2325,15 +2342,15 @@ PoiCheckboxClicked(event: any, row: any) {
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
         }
         else if((this.isWarningLevelSelected && (this.alertForm.get('warningLevelThreshold').value == '')) ||
-        ((this.isWarningLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value)) 
+        ((this.isWarningLevelSelected && this.isCriticalLevelSelected) && Number(this.alertForm.get('warningLevelThreshold').value) >= Number(this.alertForm.get('criticalLevelThreshold').value))) 
         {
          // this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
           this.filterDetailsErrorMsg ='Warning value should be less than critical value';
         }
         else if((this.isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '')) ||
-        ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value ) ||
-        ((this.isAdvisoryLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))
+        ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('warningLevelThreshold').value )) ||
+        ((this.isAdvisoryLevelSelected && this.isCriticalLevelSelected) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('criticalLevelThreshold').value )))
         {
          // this.alertForm.get('advisoryLevelThreshold').setValue(''); 
         invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
@@ -2577,23 +2594,43 @@ PoiCheckboxClicked(event: any, row: any) {
 keyPressNumbers(event) {    
   // var limit = parseInt(event.currentTarget.maxLength);
   // var max = parseInt(event.currentTarget.max);
-  var min = parseInt(event.currentTarget.min);
-  var exclude = /Backspace|Enter/;  
-  var value = Number.parseFloat(event.target.value + '' + event.key);
-  var parts = event.target.value.split('.');
-  if (parts.length == 2 && parts[1].length >= 2) event.preventDefault();
-  if(event.key=='-' || value < min) event.preventDefault();
-    return true;   
+  // var min = parseInt(event.currentTarget.min);
+  // var exclude = /Backspace|Enter/;  
+  // var value = Number.parseFloat(event.target.value + '' + event.key);
+  // var parts = event.target.value.split('.');
+  // if (parts.length == 2 && parts[1].length >= 2){
+  //    event.preventDefault();
+  // }
+  // if(event.key=='-' || value < min) {
+  //   event.preventDefault();
+  // }
+
+  let charCode = (event.which) ? event.which : event.keyCode;
+  let number = event.target.value.split('.');
+  if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
+  }
+  //just one dot
+  if(number.length>1 && charCode == 46){
+       return false;
+  }
+  var caratPos = event.target.selectionStart;
+  var dotPos = event.target.value.indexOf(".");
+  if( caratPos > dotPos && dotPos>-1 && (number[1].length > 1)){
+      return false;
+  }
+    return true;     
 }
 
 onKey(event: any) { // without type info
   // let values += event.target.value + ' | ';
+ //  console.log('Key Up',event);
 }
 
 onChange($event){
-this.criticalThreshold = this.alertForm.controls.criticalLevelThreshold.value;
-this.warningThreshold = this.alertForm.controls.warningLevelThreshold.value;
-this.advisoryThreshold = this.alertForm.controls.advisoryLevelThreshold.value;
+this.criticalThreshold =Number(this.alertForm.controls.criticalLevelThreshold.value);
+this.warningThreshold = Number(this.alertForm.controls.warningLevelThreshold.value);
+this.advisoryThreshold =Number(this.alertForm.controls.advisoryLevelThreshold.value);
 }
 
 ngOnChanges(changes: SimpleChanges) {

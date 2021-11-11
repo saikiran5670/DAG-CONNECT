@@ -64,51 +64,28 @@
             </mat-option>
         </mat-select>  
       </mat-form-field>             
-        </div>  
-        <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-          <mat-label style='display: flex; place-content: space-between;'>
-              {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
-          </mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-          <mat-select placeholder="Select or search details"
-          (selectionChange)="onVehicleChange('softwareStatus', $event)" formControlName="softStatus">
-          <mat-option>
-              <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search software status' }}" #softStatus>
-                  <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>
-              </ngx-mat-select-search>
-          </mat-option>   
-          <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>            
-          <mat-option *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value">
-              &nbsp;{{ soft.value }}
-          </mat-option>
-      </mat-select>  
-    </mat-form-field>             
-      </div>
-         
-            <!-- <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        </div>         
+            <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width" >
-                <mat-select placeholder="Select or search details"  #select  multiple formControlName="softStatus">
-                <mat-option>
+                <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="Select or search details"  #select  multiple formControlName="softStatus">
+                <mat-option value=''>
                     <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search software status' }}" #softStatus>
                         <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                 </mat-option>   
-                -- <mat-option #allSelected (click)="toggleAllSelectionHealth()" [value]="0">{{ translationData.lblAll || 'All' }}</mat-option>             --
-                
-                <mat-checkbox value='all' [(ngModel)]="allSelected"
+                <mat-checkbox value='all' [(ngModel)]="allSelected" style="padding-left: 16px;"
                                   [ngModelOptions]="{standalone: true}"
-                                  (change)="toggleAllSelection()">Select All</mat-checkbox>
-         
-                <mat-option (click)="optionClick('softwareStatus', $event)" 
-                *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value">
+                                  (change)="toggleAllSelection()">Select All</mat-checkbox>         
+                <mat-option
+                *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value.toLowerCase()">
                     &nbsp;{{ soft.value }}
                 </mat-option>
             </mat-select>  
           </mat-form-field>             
-            </div>                      -->
+            </div>                     
           </div>        
         </form>       
          <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
@@ -180,6 +157,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
     <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData'
-    [actionType]='actionType'   [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
-    (backToPage)='onBackToPage($event)'></app-vehicle-update-details>
+    [actionType]='actionType'  [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
+    (backToPage)='onBackToPage($event)' [prefDefaultTimeFormat]='prefTimeFormat' [prefDefaultDateFormat]='prefDateFormat' ></app-vehicle-update-details>
   </div> 

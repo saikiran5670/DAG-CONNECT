@@ -216,6 +216,7 @@ public class CacheService implements Serializable {
                         .circleLatitude(row.getField(16) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(16))))
                         .circleLongitude(row.getField(17) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(17))))
                         .circleRadius(row.getField(18) == null? 0.0 : Double.valueOf(String.valueOf(row.getField(18))))
+                        .width(row.getField(19) == null ? 0 : Integer.valueOf(String.valueOf(row.getField(19))))
                         .timestamp(System.currentTimeMillis())
                         .build()
                 ).returns(AlertUrgencyLevelRefSchema.class)

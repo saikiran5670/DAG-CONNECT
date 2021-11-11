@@ -264,6 +264,28 @@ public class ContiMessageProcessing implements Serializable {
                 streamExecutionEnvironment, SOURCE_TOPIC_NAME, properties)
         		//.rebalance()
         		//.keyBy(inputRec -> Objects.nonNull(inputRec.getKey()) ? inputRec.getKey() : "UNKNOWN")
+        		.keyBy(new KeySelector<KafkaRecord<String>, String>(){
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getKey(KafkaRecord<String> value) throws Exception {
+						String vid = DAFCT2Constant.UNKNOWN;
+						try {
+							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							JsonNode jsonVid = jsonNodeRec.get("VID");
+							if (Objects.nonNull(jsonVid))
+								vid = jsonVid.asText();
+						} catch (Exception e) {
+							logger.error("Issue in getKey functionality of Conti message: {}, received message: {}",e.getMessage(), (String) value.getValue());
+						}
+						return vid;
+					}
+        			
+        		})
         .map(new MapFunction<KafkaRecord<String>, KafkaRecord<Tuple3<String, String, Object>>>(){
 
 			/**
