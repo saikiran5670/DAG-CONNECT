@@ -88,6 +88,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 var accountRequest = _mapper.ToAccount(request);
                 accountRequest.OrganizationId = GetContextOrgId();
+                accountRequest.OwnerEmail = _userDetails.AccountEmailId;
 
                 accountResponse = await _accountClient.CreateAsync(accountRequest);
                 AccountResponse response = new AccountResponse();
