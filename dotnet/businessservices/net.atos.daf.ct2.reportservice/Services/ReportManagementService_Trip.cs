@@ -62,6 +62,43 @@ namespace net.atos.daf.ct2.reportservice.Services
                 return await Task.FromResult(response);
             }
         }
+
+        public override async Task<MockVehicleListAndDetailsResponse> GetVisibility(VehicleListRequest request, ServerCallContext context)
+        {
+            var response = new MockVehicleListAndDetailsResponse();
+            try
+            {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+                var type = context.RequestHeaders.Get("type").Value;
+                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
+
+                if (type == "R")
+                {
+                    var vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+                    var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                        );
+                }
+                else
+                {
+                    var vehicleDeatilsWithAccountVisibilityAlert = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, featureIds.ToArray());
+                    var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibilityAlert);
+                    response.VehicleDetailsWithAccountVisibiltyForAlertList.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibiltyForAlert>>(res)
+                        );
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                return await Task.FromResult(response);
+            }
+        }
         #endregion
 
         #region Trip Report Table Details
