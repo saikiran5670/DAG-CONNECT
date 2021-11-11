@@ -154,6 +154,7 @@ public class MileageStreamingJob {
 				}
 			}
 
+			logger.info("vMileageObj ::{} ",vMileageObj);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized status object to trip mileage object :: " + e);
 			logger.error("Issue while processing mileage record :: " + stsMsg);
@@ -167,8 +168,7 @@ public class MileageStreamingJob {
 			new MileageAuditService().auditTrail(properties.get(MileageConstants.GRPC_SERVER),
 					properties.get(MileageConstants.GRPC_PORT), MileageConstants.MILEAGE_JOB_NAME, message);
 		} catch (MileageAuditServiceException e) {
-			logger.info("Mileage Streaming Job :: ", e.getMessage());
-			System.out.println("Mileage STreaming Job :: " + e);
+			logger.error("Issue in Mileage Streaming Job :: ", e.getMessage());
 		}
 
 	}

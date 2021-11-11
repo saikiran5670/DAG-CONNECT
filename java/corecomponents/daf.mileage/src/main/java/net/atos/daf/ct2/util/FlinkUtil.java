@@ -57,7 +57,6 @@ public class FlinkUtil {
 		// env.getCheckpointConfig().setsetCheckpointStorage("hdfs:///my/checkpoint/dir");
 
 		// enable only in QA and Prod
-		System.out.println("RESTART_FLAG :: "+envParams.get(MileageConstants.RESTART_FLAG));
 		if("true".equals(envParams.get(MileageConstants.RESTART_FLAG))){
 			if("true".equals(envParams.get(MileageConstants.FIXED_RESTART_FLAG))){
 				env.setRestartStrategy(
