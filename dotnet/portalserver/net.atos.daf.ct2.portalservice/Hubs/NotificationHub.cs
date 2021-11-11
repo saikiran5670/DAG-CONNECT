@@ -208,8 +208,10 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     BrokerList = _kafkaConfiguration.EH_FQDN,
                     ConnString = _kafkaConfiguration.EH_CONNECTION_STRING,
                     Topic = _kafkaConfiguration.EH_NAME,
-                    Cacertlocation = _kafkaConfiguration.CA_CERT_LOCATION,
-                    Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
+                    Cacertlocation = _kafkaConfiguration.CA_CERT_LOCATION
+                    //Do not uncomment this line, Consumer is to be mapped dynamically based on pod name & consumer name mapping 
+                    // This property has been initialized oin constructor
+                    //Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
                 };
                 int alertId = 0;
                 while (true)
