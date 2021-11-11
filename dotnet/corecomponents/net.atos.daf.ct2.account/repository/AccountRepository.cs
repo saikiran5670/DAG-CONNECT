@@ -36,15 +36,16 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@driver_id", account.DriverId);
                 parameter.Add("@created_at", account.CreatedAt.Value);
                 parameter.Add("@organization_Id", account.Organization_Id);
+                parameter.Add("@owner_email", account.OwnerEmail.ToLower());
 
                 // For System account, organization preference will be the default preference.
                 string query = account.AccountType == AccountType.PortalAccount
                     ? @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) 
                       values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id"
 
-                    : @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) 
+                    : @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at,owner_email) 
                       values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A', 
-                      (select preference_id from master.organization org where org.id=@organization_Id),null,@created_at) RETURNING id";
+                      (select preference_id from master.organization org where org.id=@organization_Id),null,@created_at,@owner_email) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -292,7 +293,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@email", emailId.ToLower());
-                var query = @"select id, email, salutation, first_name, last_name, driver_id from master.account where lower(email) = @email and state='A'";
+                var query = @"select id, email,owner_email,type, salutation, first_name, last_name, driver_id from master.account where lower(email) = @email and state='A'";
 
                 dynamic result = await _dataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
 
@@ -310,7 +311,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@accountId", accountId);
-                var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
+                var query = @"select id, email,owner_email,type, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
 
                 dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
@@ -686,8 +687,15 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@noOfDays", noOfDays);
 
-                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
-                return await _dataAccess.QueryAsync<Account>(query, parameter);
+                var query = @"Select acc.id as Id, acc.email as email, acc.owner_email as owner_email,acc.type, acc.salutation as salutation, acc.first_name as first_name, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
+
+                var result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                List<Account> accounts = new List<Account>();
+                foreach (var item in result)
+                {
+                    accounts.Add(MapAccount(item));
+                }
+                return accounts;
             }
             catch (Exception)
             {
@@ -1665,6 +1673,8 @@ namespace net.atos.daf.ct2.account
             account.FirstName = record.first_name;
             account.LastName = record.last_name;
             account.DriverId = record.driver_id;
+            account.OwnerEmail = record.owner_email;
+            account.AccountType = (AccountType)Convert.ToChar(record.type);
             return account;
         }
         private Account Map(dynamic record)
