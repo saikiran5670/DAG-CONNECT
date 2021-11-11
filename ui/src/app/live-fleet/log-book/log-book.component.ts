@@ -620,10 +620,14 @@ ngOnDestroy(){
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
 
-  if(this._state && this._state.fromVehicleDetails && this.vehicleGrpDD.length != 0){
-    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+  if(this._state && this._state.fromVehicleDetails){
+    if(this._state.data.vehicleGroupId != 0) {
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    } else{
+      this.logBookForm.get('vehicleGroup').setValue('all');
+    }
     this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-    this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+    // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
   }
 
   if(this.showBack && this.selectionTab == 'today'){
@@ -1028,10 +1032,14 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.logBookForm.get('alertCategory').setValue("all");
       
     }
-    if(this._state && this._state.fromVehicleDetails && this.vehicleGrpDD.length != 0){
-      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    if(this._state && this._state.fromVehicleDetails){
+      if(this._state.data.vehicleGroupId != 0) {
+        this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+      } else{
+        this.logBookForm.get('vehicleGroup').setValue('all');
+      }
       this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-      this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+      // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){
@@ -1093,9 +1101,11 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       if(vehicleData &&  vehicleData.length > 0){
       vehicleData.forEach(element => {
         if(this._state && this._state.fromAlertsNotifications && element.vin == this._state.data[0].vin){
-
           this.logBookForm.get('vehicle').setValue(element.vin);
-      }
+        }
+        if(this._state && this._state.fromVehicleDetails && element.vin == this._state.data.vin){
+          this.logBookForm.get('vehicle').setValue(element.vin);
+        }
       });
     }
     }
