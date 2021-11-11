@@ -1855,10 +1855,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
-                  "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "Before SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                  _userDetails.ToString(), _userDetails);
+                //await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                //  "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                //  "Before SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                //  _userDetails.ToString(), _userDetails);
 
                 if (request.AccountId == _userDetails.AccountId)
                 {
@@ -1870,11 +1870,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     int level = await _privilegeChecker.GetLevelByRoleId(request.OrgId, request.RoleId);
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.AccountRoleLevelKey, level);
 
-                    _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
-                    await _auditHelper.AddLogs(DateTime.Now, "Account Component",
-                      "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                      "After SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                      _userDetails.ToString(), _userDetails);
+                    //_userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
+                    //await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                    //  "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    //  "After SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                    //  _userDetails.ToString(), _userDetails);
 
                     return Ok();
                 }
@@ -1964,12 +1964,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("getsessioninfo")]
-        public async Task<IActionResult> GetSessionInfo()
+        public IActionResult GetSessionInfo()
         {
-            await _auditHelper.AddLogs(DateTime.Now, "Account Component",
-                                          "Account controller", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                          "GetSessionInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          _userDetails.ToString(), _userDetails);
+            //await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+            //                              "Account controller", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+            //                              "GetSessionInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+            //                              _userDetails.ToString(), _userDetails);
             return Ok(_userDetails);
         }
 
