@@ -90,8 +90,8 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	public DriverActivityPojo driverActivityCalculation( net.atos.daf.ct2.common.models.Monitor row, boolean driverIdentification) {
 
 		DriverActivityPojo driverActivity = new DriverActivityPojo();
-		System.out.println("inside calculation");
-		 logger.info("inside driver calculation ");
+		//System.out.println("inside calculation");
+		// logger.info("inside driver calculation ");
 
 		driverActivity.setTripId(row.getDocument().getTripID());
 		driverActivity.setVid(row.getVid());
@@ -126,7 +126,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		driverActivity.setEndTime(row.getEndTime());
 		
 		driverActivity.setDuration(row.getDuration()); // it will be null when record creates.
-		System.out.println("duration--" + row.getDuration());
+		//System.out.println("duration--" + row.getDuration());
 
 		driverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		driverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
