@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.tools.sjavac.Log;
+
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.util.DafConstants;
@@ -351,7 +351,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 		logger.info("inside Inside Trip Calculation in end :{}");
 		//System.out.println("data inserted");
 		} catch(Exception e) {
-			Log.error("error in trip calculation" + e.getMessage());
+			logger.error("error in trip calculation" + e.getMessage());
 			e.printStackTrace();
 		}
 		return currentPosition;
