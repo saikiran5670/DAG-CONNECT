@@ -579,7 +579,8 @@ ngOnDestroy(){
   setDefaultTodayDate() {
 
     if (this._state && this._state.fromVehicleDetails) {
-      if (this._state.data.todayFlag) {
+      this.loadWholeTripData();
+      if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -619,16 +620,6 @@ ngOnDestroy(){
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
-
-  if(this._state && this._state.fromVehicleDetails){
-    if(this._state.data.vehicleGroupId != 0) {
-      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
-    } else{
-      this.logBookForm.get('vehicleGroup').setValue('all');
-    }
-    this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-    // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
-  }
 
   if(this.showBack && this.selectionTab == 'today'){
   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
@@ -1038,7 +1029,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       } else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
-      this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+      // this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
       // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
     }
     if(this.showBack && this.selectionTab == 'today'){
@@ -1630,7 +1621,7 @@ let prepare = []
         console.log("vehicleDD 5", this.vehicleDD);
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
-     }
+     }     
      this.setVehicleGroupAndVehiclePreSelection();
      if(this.showBack){
        this.onSearch();
@@ -1667,6 +1658,19 @@ let prepare = []
     
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
+    
+     if(this._state && this._state.fromVehicleDetails){
+      if(this._state.data.vehicleGroupId != 0) {
+         this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+         this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+       } else{
+         this.logBookForm.get('vehicleGroup').setValue('all');
+         this.logBookForm.get('vehicle').setValue('all');
+       }
+      //  this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
+       // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+     }
+   
  }
 
  getUnique(arr, comp) {

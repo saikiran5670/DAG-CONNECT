@@ -65,10 +65,12 @@ implements Serializable {
 						indexData.setNumSeq(drivingTime); // here we are using this field to store drive time
 						
 						//Distance Calculation
+						if(indexData.getVDist()!=null) {
 						Long distanceCovered= indexData.getVDist()- pData.getOdometerValue() + pData.getTripDistance();
 						indexData.setVCumulatedFuel(distanceCovered);  // here we are using this field to store distance
 						pData.setTripDistance(distanceCovered.intValue());
 						pData.setOdometerValue(indexData.getVDist());
+						}
 						
 						// Index positionDetail= crateIndexObject(indexData, drivingTime);
 						System.out.println("data ready for insert");
