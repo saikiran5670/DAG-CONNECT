@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.common.ct2.util.DAFConstants;
+import net.atos.daf.ct2.common.processing.CurrentTripStatisticsProcessing;
+import net.atos.daf.ct2.common.processing.LivefleetPositionProcessing;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetCurrentTripPostgreSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetTripTracingPostgreSink;
@@ -24,6 +27,7 @@ import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.postgre.bo.LiveFleetPojo;
 
 public class IndexDataProcess {
 	public static void main(String[] args) throws Exception {
@@ -39,7 +43,7 @@ public class IndexDataProcess {
 		AuditETLJobClient auditing = null;
 
 		ParameterTool envParams = null;
-		//Properties properties = new Properties();
+		
 
 		try {
 
@@ -79,27 +83,28 @@ public class IndexDataProcess {
 			 
 			if("true".equals(envParams.get(DafConstants.STORE_HISTORICAL_DATA))){
 			
-			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into
-			}											// HBase Table
+			 consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
+			}						
 
-			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
-			// // Writing into Driver Activity PostgreSQL Table
+			SingleOutputStreamOperator<Index> SingleConsumerStream = consumerStream.map(rec -> rec.getValue()).returns(Index.class);
 			
-			KeyedStream<KafkaRecord<Index>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
 			
-
-			//consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
-																			// into
-																			// Current
-																			// Trip
-																			// PostgreSQL
-																			// Table
-
+			CurrentTripStatisticsProcessing currentTripProcessing= new CurrentTripStatisticsProcessing();
+			SingleOutputStreamOperator<Index> currentTripDataProcessingStream = currentTripProcessing.currentTripDataProcessing(SingleConsumerStream,Long.parseLong(envParams.get(DafConstants.INDEX_COUNT_WINDOW)));
+			
+			
+			 
+			LivefleetPositionProcessing positionProcessing= new LivefleetPositionProcessing();
+			
+			SingleOutputStreamOperator<Index> liveFleetPositionStream = positionProcessing.liveFleetPosition(SingleConsumerStream, Long.parseLong(envParams.get(DafConstants.INDEX_COUNT_WINDOW)));
+			
+			//KeyedStream<KafkaRecord<Index>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
+			//consumerKeyedStream.addSink(new LiveFleetCurrentTripPostgreSink()); 
 			//consumerStream.addSink(new LiveFleetTripTracingPostgreSink());
 			
-			consumerKeyedStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing into current trip table
-			
-			consumerKeyedStream.addSink(new LiveFleetTripTracingPostgreSink());
+			liveFleetPositionStream.addSink(new LiveFleetTripTracingPostgreSink());
+			// Writing into current trip table
+			currentTripDataProcessingStream.addSink(new LiveFleetCurrentTripPostgreSink());
 
 			log.info("after addsink");
 
@@ -133,7 +138,7 @@ public class IndexDataProcess {
 				 // System.out.println("before calling auditTrail in catch");
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); 
 				 
 			} catch (Exception ex) {
 

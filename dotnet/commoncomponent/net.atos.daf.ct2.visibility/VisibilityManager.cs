@@ -113,8 +113,8 @@ namespace net.atos.daf.ct2.visibility
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").SelectMany(e => e.VehicleIds);
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
 
-                        var visibleVehiclesFromVR = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id)).ToList();//v2, v4
                         ownedVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
 
                         //Step1- take subscribed vehicle id org+vin
@@ -223,16 +223,16 @@ namespace net.atos.daf.ct2.visibility
                     {
                         //Step 1 - Take subscribed vehicle id org+vin
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").Select(e => e.Vehicle_Id);
-                        var ownedVehiclesFromV = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id));//v1, v2, v3
+                        var ownedVehiclesFromV = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
 
                         //Step 2 - Take vin type vehicle id vin
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").Select(e => e.Vehicle_Id);
-                        var ownedVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        var ownedVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id)).ToList();//v2, v4
 
                         //Step 3 - Union and assigned to owned vehicle
-                        var ownedVehiclesFromNV = ownedVehiclesFromV.Union(ownedVehiclesFromN, new ObjectComparer());
+                        var ownedVehiclesFromNV = ownedVehiclesFromV.Union(ownedVehiclesFromN, new ObjectComparer()).ToList();
 
-                        ownedVehicles = ownedVehicles.Union(ownedVehiclesFromNV, new ObjectComparer());
+                        ownedVehicles = ownedVehicles.Union(ownedVehiclesFromNV, new ObjectComparer()).ToList();
 
                         //Step 4 - Assign subscribed features to owned vehicles
                         foreach (var vehicle in ownedVehicles)

@@ -54,6 +54,7 @@ namespace net.atos.daf.ct2.accountservice
                 else
                 {
                     account.AccountType = AccountComponent.ENUM.AccountType.SystemAccount;
+                    account.OwnerEmail = request.OwnerEmail;
                 }
             }
             else

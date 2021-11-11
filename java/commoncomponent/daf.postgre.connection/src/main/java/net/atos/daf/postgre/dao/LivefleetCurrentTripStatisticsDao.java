@@ -33,9 +33,15 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			+ "start_geolocation_address_id , latest_processed_message_time_stamp , vehicle_health_status_type , latest_warning_class , latest_warning_number , latest_warning_type , latest_warning_timestamp , "
 			+ "latest_warning_position_latitude , latest_warning_position_longitude , latest_warning_geolocation_address_id , created_at , modified_at ) "
 			+ "VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?  )";
-	private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET end_time_stamp = ? , driver1_id = ? , trip_distance = ? , "
+	/*private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET end_time_stamp = ? , driver1_id = ? , trip_distance = ? , "
 			+ "driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , distance_until_next_service = ? , latest_received_position_lattitude = ? , "
 			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_geolocation_address_id = ? , latest_processed_message_time_stamp = ? , "
+			+ "modified_at = ? WHERE trip_id = ? "; */
+	
+	
+	private static final String UPDATE_CURRENT_TRIP = "UPDATE livefleet.livefleet_current_trip_statistics  SET end_time_stamp = ? , trip_distance = ? , "
+			+ "driving_time = ? , fuel_consumption = ? , vehicle_driving_status_type = ? , odometer_val = ? , latest_received_position_lattitude = ? , "
+			+ "latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , "
 			+ "modified_at = ? WHERE trip_id = ? ";
 	
 	public static final String	READ_LATEST_WARNING_STATUS_AT_TRIP_START = "select vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp"
@@ -65,12 +71,16 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 				//System.out.println("NUMBER OF ROWS inserted by INSERT_CURRENT_TRIP query is " + Arrays.toString(res));
 				logger.info("data inserted for trip  ::" + row.getTripId());
+				//System.out.println("data inserted for trip  ::" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
+			logger.error("sql exception, inside catch LiveFleetCurrentTripStatisticsDao insert" + e.getMessage());
 			//System.out.println("Issue in LivefleetCurrentTripStatisticsDao  " + trip_stats_insert_stmt);
 			e.printStackTrace();
 		} catch (Exception e) {
+			logger.error(" Error inside catch LiveFleetCurrentTripStatisticsDao update" + e.getMessage());
+			e.printStackTrace();
 			//System.out.println("Issue in LivefleetCurrentTripStatisticsDao insertion   " + trip_stats_insert_stmt);
 		}
 	}
@@ -83,66 +93,71 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		else
 			stmt_update_existing_trip.setLong(1, 0);
 
-		if (tripStatistics.getDriver1ID() != null)
-			stmt_update_existing_trip.setString(2, tripStatistics.getDriver1ID());
-		else
-			stmt_update_existing_trip.setString(2, "");
+		/*
+		 * if (tripStatistics.getDriver1ID() != null)
+		 * stmt_update_existing_trip.setString(2, tripStatistics.getDriver1ID()); else
+		 * stmt_update_existing_trip.setString(2, "");
+		 */
 
 		if (tripStatistics.getTrip_distance() != null)
-			stmt_update_existing_trip.setLong(3, tripStatistics.getTrip_distance());
+			stmt_update_existing_trip.setLong(2, tripStatistics.getTrip_distance());
+		else
+			stmt_update_existing_trip.setLong(2, 0);
+
+		if (tripStatistics.getDriving_time() != null)
+			stmt_update_existing_trip.setLong(3, tripStatistics.getDriving_time());
 		else
 			stmt_update_existing_trip.setLong(3, 0);
 
-		if (tripStatistics.getDriving_time() != null)
-			stmt_update_existing_trip.setLong(4, tripStatistics.getDriving_time());
+		if (tripStatistics.getFuel_consumption() != null)
+			stmt_update_existing_trip.setLong(4, tripStatistics.getFuel_consumption());
 		else
 			stmt_update_existing_trip.setLong(4, 0);
 
-		if (tripStatistics.getFuel_consumption() != null)
-			stmt_update_existing_trip.setLong(5, tripStatistics.getFuel_consumption());
-		else
-			stmt_update_existing_trip.setLong(5, 0);
-
 		if (tripStatistics.getVehicle_driving_status_type() != null)
-			stmt_update_existing_trip.setString(6, String.valueOf(tripStatistics.getVehicle_driving_status_type()));
+			stmt_update_existing_trip.setString(5, String.valueOf(tripStatistics.getVehicle_driving_status_type()));
 		else 
-			stmt_update_existing_trip.setString(6, String.valueOf(Character.valueOf(' ')));
+			stmt_update_existing_trip.setString(5, String.valueOf(Character.valueOf(' ')));
 		 
 
 		if (tripStatistics.getOdometer_val() != null)
-			stmt_update_existing_trip.setLong(7, tripStatistics.getOdometer_val());
+			stmt_update_existing_trip.setLong(6, tripStatistics.getOdometer_val());
 		else
-			stmt_update_existing_trip.setLong(7, 0);
+			stmt_update_existing_trip.setLong(6, 0);
 
-		if (tripStatistics.getDistance_until_next_service() != null)
-			stmt_update_existing_trip.setLong(8, tripStatistics.getDistance_until_next_service());
-		else
-			stmt_update_existing_trip.setLong(8, 0);
+		/*
+		 * if (tripStatistics.getDistance_until_next_service() != null)
+		 * stmt_update_existing_trip.setLong(8,
+		 * tripStatistics.getDistance_until_next_service()); else
+		 * stmt_update_existing_trip.setLong(8, 0);
+		 */
 
 		if (tripStatistics.getLast_received_position_lattitude() != null)
-			stmt_update_existing_trip.setDouble(9, tripStatistics.getLast_received_position_lattitude());
+			stmt_update_existing_trip.setDouble(7, tripStatistics.getLast_received_position_lattitude());
 		else
-			stmt_update_existing_trip.setDouble(9, 255);
+			stmt_update_existing_trip.setDouble(7, 255);
 
 		if (tripStatistics.getLast_received_position_longitude() != null)
-			stmt_update_existing_trip.setDouble(10, tripStatistics.getLast_received_position_longitude());
+			stmt_update_existing_trip.setDouble(8, tripStatistics.getLast_received_position_longitude());
 		else
-			stmt_update_existing_trip.setDouble(10, 255);
+			stmt_update_existing_trip.setDouble(8, 255);
 
 		if (tripStatistics.getLast_received_position_heading() != null)
-			stmt_update_existing_trip.setDouble(11, tripStatistics.getLast_received_position_heading());
+			stmt_update_existing_trip.setDouble(9, tripStatistics.getLast_received_position_heading());
 		else
-			stmt_update_existing_trip.setDouble(11, 0);
+			stmt_update_existing_trip.setDouble(9, 0);
 
-		if (tripStatistics.getLast_geolocation_address_id() != null)
-			stmt_update_existing_trip.setLong(12, tripStatistics.getLast_geolocation_address_id());
-		else
-			stmt_update_existing_trip.setLong(12, 0);
+		/*
+		 * if (tripStatistics.getLast_geolocation_address_id() != null)
+		 * stmt_update_existing_trip.setLong(12,
+		 * tripStatistics.getLast_geolocation_address_id()); else
+		 * stmt_update_existing_trip.setLong(12, 0);
+		 */
 
 		if (tripStatistics.getLast_processed_message_timestamp() != null)
-			stmt_update_existing_trip.setLong(13, tripStatistics.getLast_processed_message_timestamp());
+			stmt_update_existing_trip.setLong(10, tripStatistics.getLast_processed_message_timestamp());
 		else
-			stmt_update_existing_trip.setLong(13, 0);
+			stmt_update_existing_trip.setLong(10, 0);
 
 		/*
 		 * if (tripStatistics.getVehicle_health_status_type() != null)
@@ -196,9 +211,10 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		 */
 
 		if (tripStatistics.getModified_at() != null)
-			stmt_update_existing_trip.setLong(14, tripStatistics.getModified_at());
+			stmt_update_existing_trip.setLong(11, tripStatistics.getModified_at());
 		else
-			stmt_update_existing_trip.setLong(14, 0);
+			stmt_update_existing_trip.setLong(11, 0);
+		System.out.println("finish update fill");
 
 		return stmt_update_existing_trip;
 	}
@@ -447,27 +463,28 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		PreparedStatement trip_stats_update_stmt = null;
 
 		try {
-
+			//System.out.println("inside try");
 			if (null != row && null != (connection = getConnection())) {
 
 				trip_stats_update_stmt = connection.prepareStatement(UPDATE_CURRENT_TRIP,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				trip_stats_update_stmt = fillUpdateStatement(trip_stats_update_stmt, row);
-				trip_stats_update_stmt.setString(15, row.getTripId());
+				trip_stats_update_stmt.setString(12, row.getTripId());
 
 				//System.out.println("UPDATE_CURRENT_TRIP query : " + trip_stats_update_stmt);
 
 				int num = trip_stats_update_stmt.executeUpdate();
 
 				//System.out.println("NUMBER OF ROWS updated by UPDATE_CURRENT_TRIP is " + num);
-				logger.info("NUMBER OF ROWS updated by UPDATE_for_TRIP is" + row.getTripId());
+				logger.info("Row updated in CurrentTripStatistics for TripId is" + row.getTripId());
 
 			}
 		} catch (SQLException e) {
 			//System.out.println("Issue in sql update trip statistics::" + trip_stats_update_stmt);
+			logger.error("sql exception inside catch LiveFleetCurrentTripStatisticsDao update" + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-
+			logger.error("error inside catch LiveFleetCurrentTripStatisticsDao update" + e.getMessage());
 			//System.out.println("Issue in update trip statistics::" + trip_stats_update_stmt);
 			e.printStackTrace();
 		} finally {

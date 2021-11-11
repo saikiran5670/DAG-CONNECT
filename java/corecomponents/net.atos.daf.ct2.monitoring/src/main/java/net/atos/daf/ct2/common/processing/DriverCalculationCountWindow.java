@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class DriverCalculationCountWindow extends ProcessWindowFunction<Monitor,
     private static final Logger logger = LogManager.getLogger(DriverCalculationCountWindow.class);
     private MapState<String, TwoMinuteRulePojo> driverPreviousRecord;
     // private static final long restBuffer = 2000;   //120000 -> milli 2 minutes, 2000 milli -> 2 second
-    private static final long restBuffer = 2000;
+    private static final long restBuffer = 12000;
     @Override
     public void process(String s, ProcessWindowFunction<Monitor, Monitor, String, GlobalWindow>.Context context, Iterable<Monitor> values, Collector<Monitor> collector) throws Exception {
         Monitor monitor = new Monitor();
@@ -36,12 +37,25 @@ public class DriverCalculationCountWindow extends ProcessWindowFunction<Monitor,
             List<Monitor> monitorList = new ArrayList();
             values.forEach(monitorList::add);
             //sort on received timestamp
-            monitorList.sort(Comparator.comparing(Monitor::getReceivedTimestamp));
+            //monitorList.sort(Comparator.comparing(Monitor::getReceivedTimestamp));
+            
+            
+            Comparator<Monitor> eventTimeComparator = Comparator.comparing(
+            		Monitor::getEvtDateTime, (m1, m2) -> {
+            			Long recieveDateTime1	=	convertDateToMillis(m1);
+            			Long recieveDateTime2	=	convertDateToMillis(m2);
+            			
+                  return recieveDateTime1.compareTo(recieveDateTime2);
+              });
+            
+           monitorList.sort(eventTimeComparator);
 
             getStartEndTime(monitorList)
                     .forEach(lst -> collector.collect(lst));
         } catch (Exception e) {
-            logger.error("Error while processing monitor data for drive time error {}, {}", e.getCause().getMessage(), String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
+        	logger.error("Error in Processing Monitor data for drive time error"+ e.getMessage());
+        	e.printStackTrace();
+            //logger.error("Error while processing monitor data for drive time error {}, {}", e.getCause().getMessage(), String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
         }
     }
 
