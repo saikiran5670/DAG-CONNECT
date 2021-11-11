@@ -122,6 +122,9 @@ public static final String INDEX_HBASE_PROCESS="index.hbase.process";
 		public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
 		public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
 		public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+		
+		public static final String INCOMING_MESSAGE_UUID = "message uuid : %s";
+		public static final String INDEX_COUNT_WINDOW = "index.count.window";
 
 	//SQL Statements for reading latest warning status (at trip start only)
 	//create temporary table for reading latest warning status 
