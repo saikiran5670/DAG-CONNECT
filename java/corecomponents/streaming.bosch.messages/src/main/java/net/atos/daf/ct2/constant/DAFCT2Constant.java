@@ -80,4 +80,22 @@ public class DAFCT2Constant {
 	public static final String MONITORKEY = "MONITORKEY";
 	public static final String STATUSKEY = "STATUSKEY";
 	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	public static final String RAW_MSG_SINK_TOPIC_NAME = "sink.bosch.raw.topic.name";
+	public static final String AUTO_OFFSET_RESET_CONFIG = "auto.offset.reset";
+	public static final String BOSCH_JOB_NAME = "BOSCH_JOB_NAME"; //"Bosch Streaming"
+	 //source kafka config value
+	public static final String SOURCE_AUTO_OFFSET_RESET_CONFIG_VAL = "source.auto.offset.reset";
+	public static final String SOURCE_CLIENT_ID_CONFIG_VAL = "source.client.id";
+	public static final String SOURCE_GROUP_ID_CONFIG_VAL = "source.group.id";
+	public static final String SOURCE_REQUEST_TIMEOUT_MS_CONFIG_VAL = "source.request.timeout.ms";
+	public static final String SOURCE_BOOTSTRAP_SERVERS_CONFIG_VAL = "source.bootstrap.servers";
+	public static final String SOURCE_SECURITY_PROTOCOL_CONFIG_VAL = "source.security.protocol";
+	public static final String SOURCE_SASL_MECHANISM_CONFIG_VAL = "source.sasl.mechanism";
+	public static final String SOURCE_SASL_JAAS_CONFIG_VAL = "source.sasl.jaas.config";
+	//source kafka key config
+	public static final String SOURCE_SECURITY_PROTOCOL_CONFIG = "security.protocol";
+	public static final String SOURCE_SASL_MECHANISM_CONFIG = "sasl.mechanism";
+	public static final String SOURCE_SASL_JAAS_CONFIG = "sasl.jaas.config";
+	public static final String SINK_HBASE_STORE = "sink.hbase.store";
+	
 }
