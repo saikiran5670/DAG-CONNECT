@@ -181,7 +181,7 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.latest_warning_timestamp,
                     lcts.latest_warning_position_latitude,
                     lcts.latest_warning_position_longitude,
-                    RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
+                    RANK() Over ( Partition By lcts.vin,lcts.trip_id Order by  lcts.start_time_stamp desc ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
                     and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date - @days)
@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.reports.repository
                     ,CTE_Unique_latest_trip as (
                     select 
                     *,
-                    ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
+                    ROW_NUMBER() OVER( PARTITION BY Vin,trip_id ORDER BY Id desc) AS row_num 
                     from CTE_Trips_By_Vin 
                     where Veh_trip_rank =1 
                     )
