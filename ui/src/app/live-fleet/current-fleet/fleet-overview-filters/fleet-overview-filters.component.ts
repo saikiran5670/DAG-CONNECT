@@ -86,7 +86,7 @@ ngAfterViewInit(){
 }
 
   ngOnInit(): void {
-    
+
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     // let translationObj = {
@@ -140,6 +140,7 @@ ngAfterViewInit(){
     this.todayFlagClicked = true;
     if(this.selectedIndex == 0){
       this.getFilterData();
+      this.loadVehicleData();
       }
       if(this.selectedIndex == 1){
       this.getDriverData();
@@ -165,13 +166,12 @@ ngAfterViewInit(){
           this.finalDriverList = this.driverList;
           this.finalDriverList.sort(this.compareName);
           this.resetDriverSearchFilter();
-          
+
           this.loadDriverData();
       }   
       else{
-        this.loadDriverData(); 
+        // this.loadDriverData(); 
         this.detailsData.forEach(element => {
-  
           let currentDate = new Date().getTime();
             let createdDate = parseInt(element.latestProcessedMessageTimeStamp); 
             let nextDate = createdDate + 86400000;
@@ -182,7 +182,7 @@ ngAfterViewInit(){
             }
             this.driverList = this.removeDuplicates(this.driverList, "driverId");            
           })
-          this.loadDriverData();
+          // this.loadDriverData();
       }
 
     })
@@ -251,7 +251,7 @@ ngAfterViewInit(){
         val = [{driver : 'all', data : data}];
       }
       this.messageService.sendMessage(val);
-      this.messageService.sendMessage("refreshTimer");
+      // this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
       data.forEach(item => {
         if(this.filterData && this.filterData.healthStatus){
@@ -300,8 +300,8 @@ ngAfterViewInit(){
 getFilterData(){
   this.showLoadingIndicator = true;
   this.reportService.getFilterDetails().subscribe((data: any) => {
-    this.filterData = data;
-    this.groupList = [];
+  this.filterData = data;
+  this.groupList = [];
     this.categoryList = [];
     this.levelList = [];
     this.healthList = [];
@@ -312,7 +312,7 @@ getFilterData(){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item);
         ////console.log("groupList1", this.groupList);
-        
+
       });
         this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
         //console.log("groupList4", this.groupList);
@@ -361,12 +361,12 @@ getFilterData(){
               }
             });
           }                  
-        }); 
+        });        
       this.vehicleListData = this.detailsData;      
-      this.loadVehicleData();
+      // this.loadVehicleData();
     }
     if(this.todayFlagClicked  && this.selectedIndex == 0){
-      this.loadVehicleData(); 
+      // this.loadVehicleData(); 
       this.detailsData.forEach(element => {
 
         let currentDate = new Date().getTime();
@@ -424,7 +424,7 @@ getFilterData(){
         this.vehicleListData = this.detailsData;
     }
   })
-} 
+}
 
 
 removeDuplicates(originalArray, prop) {
@@ -523,7 +523,7 @@ removeDuplicates(originalArray, prop) {
     this.loadDriverData();
   }
   
-  loadVehicleData(){  
+  loadVehicleData(){ 
     this.noRecordFlag = true;
     this.showLoadingIndicator=true;
     this.initData =this.detailsData;
@@ -588,7 +588,7 @@ removeDuplicates(originalArray, prop) {
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
     this.messageService.sendMessage(val);
-    this.messageService.sendMessage("refreshTimer");
+    // this.messageService.sendMessage("refreshTimer");
     this.drawIcons(data);
     data.forEach(item => {
       if(this.filterData && this.filterData.healthStatus){
@@ -637,6 +637,7 @@ removeDuplicates(originalArray, prop) {
     this.showLoadingIndicator = false;
           
     }, (error) => {
+      this.getFleetOverviewDetails.unsubscribe();
       this.vehicleListData = [];
       this.detailsData = [];
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
@@ -670,8 +671,8 @@ removeDuplicates(originalArray, prop) {
   if(this.selectedIndex == 1){
     this.loadDriverData();
   }else {
-    this.getFilterData();
-    this.loadVehicleData();
+    //this.getFilterData();
+      this.loadVehicleData();  
   }
   // this.driverFlagClicked = true;
 }
@@ -679,9 +680,9 @@ removeDuplicates(originalArray, prop) {
 checkCreationForDriver(item:any){
   this.driverFlagClicked = item.driverFlagClicked;
   // this.todayFlagClicked  = true;
-  this.getDriverData();
+  // this.getDriverData();
   // this.loadVehicleData();
-  this.loadDriverData();
+  // this.loadDriverData();
 }
 
 
