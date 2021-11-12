@@ -190,7 +190,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 			e.printStackTrace();
 		}
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
-		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
+		//currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 
 		if (varGPSLongi == 255.0) {

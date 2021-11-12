@@ -43,18 +43,20 @@ implements Serializable {
 					pData.setOdometerValue(indexData.getVDist());
 					pData.setDrivingTime(0L);
 					pData.setTripDistance(0);
+					pData.setTripId(indexData.getDocument().getTripID());
 					
 					tripPreviousRecord1.put(key, pData);
 				} else {
 					if (Objects.nonNull(tripPreviousRecord1)) {
 						// add Logger
 
-						/*if (!pData.getTripId().equals(indexData.getDocument().getTripID())) {
-							pData.setStarDate(convertDateToMillis(indexData.getEvtDateTime()));
-							pData.setDriveTime(0);
-							pData.setTripId(indexData.getDocument().getTripID());
-							previousDriverRecord.put(key, pData);
-						} else {*/
+						if (!pData.getTripId().equals(indexData.getDocument().getTripID())) {
+							pData.setTripDistance(0);
+							pData.setOdometerValue(indexData.getVDist());
+							pData.setDrivingTime(0L);
+							pData.setTripDistance(0);
+							tripPreviousRecord1.put(key, pData);
+						} else {
 
 						//Driving Time Calculation
 						Long currentEvtDateTime = convertDateToMillis(indexData.getEvtDateTime());
@@ -77,7 +79,7 @@ implements Serializable {
 						logger.info("data is processed to insert" + indexData.toString());
 						}
 
-					//}
+					}
 
 				}
 				out.collect(indexData);

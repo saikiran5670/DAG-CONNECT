@@ -13,5 +13,6 @@ public class TripPreviosData {
 	private Integer tripDistance;
 	private Long drivingTime;
 	private Long odometerValue;
+	private String tripId;
 
 }
