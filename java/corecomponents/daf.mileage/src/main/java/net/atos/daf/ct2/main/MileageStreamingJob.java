@@ -67,7 +67,7 @@ public class MileageStreamingJob {
 									return eventTm;
 								}
 							}))
-					//.keyBy( stsRec -> stsRec.getValue().getVin() )
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
 						/**
 						 * 

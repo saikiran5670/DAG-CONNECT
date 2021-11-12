@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@driver_id", account.DriverId);
                 parameter.Add("@created_at", account.CreatedAt.Value);
                 parameter.Add("@organization_Id", account.Organization_Id);
-                parameter.Add("@owner_email", account.OwnerEmail.ToLower());
+                parameter.Add("@owner_email", account.OwnerEmail?.ToLower());
 
                 // For System account, organization preference will be the default preference.
                 string query = account.AccountType == AccountType.PortalAccount

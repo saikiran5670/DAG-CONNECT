@@ -27,6 +27,7 @@ import { ConfigService } from '@ngx-config/core';
 import { ReplaySubject } from 'rxjs';
 import { Util } from 'src/app/shared/util';
 import * as moment from 'moment';
+import { MapFunctionsService } from '../../landmarks/manage-corridor/map-functions.service';
 declare var H: any;
 
 @Component({
@@ -202,7 +203,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private reportMapService: ReportMapService,
               private translationService: TranslationService,
               private organizationService: OrganizationService,
-              private _configService: ConfigService ) 
+              private _configService: ConfigService,
+              private mapFunctions: MapFunctionsService ) 
   {
     this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
@@ -302,6 +304,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.sliderChanged();
       }
     }
+}
+
+public ngAfterViewInit() {
+  
 }
   
 proceedStep(prefData: any, preference: any){
@@ -890,22 +896,28 @@ proceedStep(prefData: any, preference: any){
   }
 
   loadMap() {
-    let defaultLayers = this.platform.createDefaultLayers();
-    setTimeout(() => {
-      this.map = new H.Map(
-        this.mapElement.nativeElement,
-        defaultLayers.vector.normal.map,
-        {
-          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-          zoom: 4,
-          pixelRatio: window.devicePixelRatio || 1
-        }
-      );
-      window.addEventListener('resize', () => this.map.getViewPort().resize());
-      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-      this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
-    }, 1000);
-    
+    if(this.alert_type_selected == 'C'){
+      setTimeout(() => {
+        this.mapFunctions.initMap(this.mapElement);
+        }, 0);
+    }
+    else{
+      let defaultLayers = this.platform.createDefaultLayers();
+      setTimeout(() => {
+        this.map = new H.Map(
+          this.mapElement.nativeElement,
+          defaultLayers.vector.normal.map,
+          {
+            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+            zoom: 4,
+            pixelRatio: window.devicePixelRatio || 1
+          }
+        );
+        window.addEventListener('resize', () => this.map.getViewPort().resize());
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+      }, 1000);
+    }
 }
 
 PoiCheckboxClicked(event: any, row: any) {
@@ -1218,6 +1230,7 @@ PoiCheckboxClicked(event: any, row: any) {
     }  
 
     corridorCheckboxClicked(event, row){
+      this.mapFunctions.clearRoutesFromMap();
       if(event.checked){ //-- add new marker
         this.markerArray.push(row);
       }else{ //-- remove existing marker
@@ -1225,7 +1238,8 @@ PoiCheckboxClicked(event: any, row: any) {
         let arr = this.markerArray.filter(item => item.id != row.id);
         this.markerArray = arr;
         }
-        this.addPolylineToMap();
+        // this.addPolylineToMap();
+        this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
     }
   
     addPolylineToMap(){
