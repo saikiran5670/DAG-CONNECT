@@ -23,6 +23,7 @@ export class UserDetailTableComponent implements OnInit {
   dataSource: any;
   colsList: any;
   filterValue: any;
+  colValues: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -34,10 +35,11 @@ export class UserDetailTableComponent implements OnInit {
     },
     private mdDialogRef: MatDialogRef<UserDetailTableComponent>
   ) {
-    this.updateDataSource();
+    this.updateDataSource(this.data.tableData);
+
   }
 
-  updateDataSource() {
+  updateDataSource(tabel: any) {
     this.dataSource = new MatTableDataSource(this.data.tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -47,9 +49,11 @@ export class UserDetailTableComponent implements OnInit {
         return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc);
         });
+
        }
+
     });
-    Util.applySearchFilter(this.dataSource, this.colsList ,this.filterValue );
+    Util.applySearchFilter(this.dataSource, this.data.colsList ,this.filterValue );
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
