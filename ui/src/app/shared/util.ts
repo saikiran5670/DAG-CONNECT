@@ -402,10 +402,13 @@ public static applySearchFilter(filterData:any, columns:any, filterValue:string)
    for(let col of columns) {
   if(data[col]) {
     if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
-     return data;
+      console.log("in 1" + data[col]);
+      return data;
+
     }
 
     if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
+      console.log("in 2" + data[col]);
       return data;
     }
   }
@@ -415,6 +418,7 @@ public static applySearchFilter(filterData:any, columns:any, filterValue:string)
   }
 
 }
+
 
 }
 
