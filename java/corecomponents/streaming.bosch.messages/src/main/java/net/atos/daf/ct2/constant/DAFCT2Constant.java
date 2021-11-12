@@ -2,8 +2,7 @@ package net.atos.daf.ct2.constant;
 
 public class DAFCT2Constant {
 
-    
-	public static final String GRPC_SERVER = "grpc.server";
+    public static final String GRPC_SERVER = "grpc.server";
     public static final String GRPC_PORT = "grpc.port";
     public static final String JOB_NAME = "BoschstreamingJob";
 

@@ -24,7 +24,6 @@ import net.atos.daf.ct2.util.MessageParseUtil;
 
 public class BoschMessageProcessing {
 
-	
 	private static final Logger log = LogManager.getLogger(BoschMessageProcessing.class);
 	public static String FILE_PATH;
 	private StreamExecutionEnvironment streamExecutionEnvironment;
