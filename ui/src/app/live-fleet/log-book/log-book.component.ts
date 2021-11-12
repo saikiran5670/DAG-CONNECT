@@ -531,7 +531,7 @@ ngOnDestroy(){
           this.startTimeDisplay = `${this.selectedStartTime}:00`; 
           this.endTimeDisplay = `${this.selectedEndTime}:59`;
         }
-      }
+      }//(this._state.data.startDate != 0 && this._state.data.endDate != 0)
     }else {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
@@ -581,6 +581,17 @@ ngOnDestroy(){
     if (this._state && this._state.fromVehicleDetails) {
       this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
+        if(this.prefTimeFormat == 24){
+          this.startTimeDisplay = '00:00:00';
+          this.endTimeDisplay = '23:59:59';
+          this.selectedStartTime = "00:00";
+          this.selectedEndTime = "23:59";
+        } else{
+          this.startTimeDisplay = '12:00 AM';
+          this.endTimeDisplay = '11:59 PM';
+          this.selectedStartTime = "12:00 AM";
+          this.selectedEndTime = "11:59 PM";
+        }
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -1025,13 +1036,14 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     }
     if(this._state && this._state.fromVehicleDetails){
       if(this._state.data.vehicleGroupId != 0) {
-        this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
-      } else{
-        this.logBookForm.get('vehicleGroup').setValue('all');
-      }
-      // this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-      // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
-    }
+        this.onVehicleGroupChange(this._state.data.vehicleGroupId);
+         this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+         this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+       } else{
+         this.logBookForm.get('vehicleGroup').setValue('all');
+         this.logBookForm.get('vehicle').setValue('all');
+       }
+     }
     if(this.showBack && this.selectionTab == 'today'){
     if(this._state.fromDashboard == true && this._state.logisticFlag == true){
       this.logBookForm.get('alertCategory').setValue("L");
@@ -1661,6 +1673,7 @@ let prepare = []
     
      if(this._state && this._state.fromVehicleDetails){
       if(this._state.data.vehicleGroupId != 0) {
+        this.onVehicleGroupChange(this._state.data.vehicleGroupId);
          this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
          this.logBookForm.get('vehicle').setValue(this._state.data.vin);
        } else{
@@ -1668,7 +1681,7 @@ let prepare = []
          this.logBookForm.get('vehicle').setValue('all');
        }
       //  this.onVehicleGroupChange(this._state.data.vehicleGroupId); 
-       // this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+      //  this.logBookForm.get('vehicle').setValue(this._state.data.vin);
      }
    
  }
