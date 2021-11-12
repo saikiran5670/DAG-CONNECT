@@ -70,6 +70,7 @@ public class FuelDeviationJob {
 									return eventTm;
 								}
 							}))
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Index>, FuelDeviationData>() {
 						/**
 						 * 
