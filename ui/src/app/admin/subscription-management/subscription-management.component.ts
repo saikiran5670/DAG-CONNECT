@@ -241,10 +241,9 @@ export class SubscriptionManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = function(data, filter: any){
-           let val = JSON.parse(filter);
-           return data.packageCode.toString().includes(filter) ||
+           return data.packageCode.toString().toLowerCase().includes(filter) ||
                data.subscriptionId.toLowerCase().includes(filter) ||
-               data.name.toLowerCase().includes(filter) ||
+               data.name.toLowerCase().toLowerCase().includes(filter) ||
                data.type.toLowerCase().includes(filter) ||
                data.state.toLowerCase().includes(filter)  ||
                data.count.toString().includes(filter) ||
@@ -260,7 +259,6 @@ export class SubscriptionManagementComponent implements OnInit {
       }
 
     });
-
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
@@ -302,7 +300,7 @@ export class SubscriptionManagementComponent implements OnInit {
     }
 
 
-  onVehicleClick(rowData: any){
+  onVehicleClick(rowData: any){``
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
     const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
@@ -323,7 +321,7 @@ export class SubscriptionManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: colsList,
+      colsList: this.vehicleDiaplayColumns,
       colsName:colsName,
       tableTitle: tableTitle
     }
@@ -391,7 +389,7 @@ export class SubscriptionManagementComponent implements OnInit {
     this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
-      this.updatedTableData(this.initData);
+      // this.updatedTableData(this.initData);
     });
   }
 

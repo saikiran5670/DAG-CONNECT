@@ -45,7 +45,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   organizationList: any = [];
   startDateList: any = [];
   adminAccessType: any = {};
-  viewRelationshipName: any; 
+  viewRelationshipName: any;
   allTypes: any = [
     {
       name: 'Active'
@@ -67,9 +67,9 @@ export class OrganisationRelationshipComponent implements OnInit {
     search: ''
   };
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
-      this.viewRelationshipName = params["name"]; 
+      this.viewRelationshipName = params["name"];
    });
   }
   ngOnInit(): void {
@@ -142,9 +142,9 @@ export class OrganisationRelationshipComponent implements OnInit {
             if(data)
             {
               if(this.viewRelationshipName!=undefined)
-               {     
+               {
                   this.successMsgBlink(this.getEditSuccessMsg('Update', this.viewRelationshipName));
-                  this.router.navigate(['/admin/organisationrelationshipmanagement']);                 
+                  this.router.navigate(['/admin/organisationrelationshipmanagement']);
                 }
                 this.relationshipList = newdata["relationShipData"];
                 this.organizationList = newdata["organizationData"];
@@ -162,7 +162,7 @@ export class OrganisationRelationshipComponent implements OnInit {
                               (val.relation === '' || data.orgRelationId.toString() === val.relation.toString() ) &&
                               (val.org === '' || data.targetOrgId.toString() === val.org.toString() ) &&
                               (val.vehicleGrp === '' || data.vehicleGroupID.toString() === val.vehicleGrp.toString() ) &&
-                              ((data.relationshipName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 || 
+                              ((data.relationshipName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 data.vehicleGroupName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 data.organizationName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
@@ -177,8 +177,8 @@ export class OrganisationRelationshipComponent implements OnInit {
             }
             );
           }
-          ); 
-    
+          );
+
   }
   getEditSuccessMsg(editText: any, name: any){
     if(editText == 'Update'){
@@ -186,7 +186,7 @@ export class OrganisationRelationshipComponent implements OnInit {
         return this.translationData.lblRelationshipdetailssuccessfullyupdated.replace('$', this.viewRelationshipName);
       else
         return ("Relationship '$' details successfully updated").replace('$', this.viewRelationshipName);
-    } 
+    }
   }
   setDate(date : any){​​​​​​​​
     if (date === 0) {​​​​​​​​
@@ -204,32 +204,32 @@ export class OrganisationRelationshipComponent implements OnInit {
       exportAsCSV(){
         this.matTableExporter.exportTable('csv', {fileName:'OrganisationRelationship_Data', sheet: 'sheet_name'});
       }
-    
+
       exportAsPdf() {
         let DATA = document.getElementById('organisationRelationData');
-          
+
         html2canvas(DATA).then(canvas => {
-            
+
             let fileWidth = 208;
             let fileHeight = canvas.height * fileWidth / canvas.width;
-            
+
             const FILEURI = canvas.toDataURL('image/png')
             let PDF = new jsPDF('p', 'mm', 'a4');
             let position = 0;
             PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-            
+
             PDF.save('OrganisationRelationship_Data.pdf');
             PDF.output('dataurlnewwindow');
-        });     
+        });
       }
 
   defaultTranslation () {
     this.translationData.lblClickToDeactivate = this.translationData.lblClickToDeactivate;
     this.translationData.lblClickToActivate = this.translationData.lblClickToActivate;
-    
+
   }
 
-  processTranslation(transData: any){   
+  processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.defaultTranslation();
 
@@ -242,8 +242,8 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); 
-    filterValue = filterValue.toLowerCase(); 
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
     this.dataSource.filter = filterValue;
   }
 
@@ -254,7 +254,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.relationShipId === filter;
-    }; this.dataSource.filter = filterValue; 
+    }; this.dataSource.filter = filterValue;
       }
   }
 
@@ -265,7 +265,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.vehicleGroupID === filter;
-    };  
+    };
     this.dataSource.filter = filterValue;
     }
   }
@@ -277,7 +277,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.targetOrgId === filter;
-    };  
+    };
     this.dataSource.filter = filterValue;
     }
   }
@@ -305,7 +305,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       }
     }
 
-    };  
+    };
     this.dataSource.filter = filterValue;
     }
   }
@@ -326,7 +326,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       title: this.translationData.lblDeleteRelationship,
       message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
       cancelText: this.translationData.lblNo ,
-      confirmText: this.translationData.lblYes 
+      confirmText: this.translationData.lblYes
     };
     let name = rowData.relationshipName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -334,7 +334,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     if (res) {
        {
         this.organizationService
-        .deleteOrgRelationship(selectedOptions) 
+        .deleteOrgRelationship(selectedOptions)
         .subscribe((d) => {
           this.selectedOrgRelations.clear();
           this.successMsgBlink(this.getDeletMsg(name));
@@ -346,7 +346,7 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   }
 
- 
+
 
   hideloader() {
     // Setting display of spinner
@@ -374,17 +374,17 @@ export class OrganisationRelationshipComponent implements OnInit {
       status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };
-   
+
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){ 
+      if(res == true){
         let objData = {
           "orgRelationID": rowData.id,
-          "allowChaining": !rowData.allowChain 
+          "allowChaining": !rowData.allowChain
         }
         this.organizationService.updateAllowChain(objData).subscribe((data) => {
           this.loadInitData();
@@ -392,21 +392,21 @@ export class OrganisationRelationshipComponent implements OnInit {
       }
     });
   }
-    
+
   }
 
   deleteOrgRelationship(){
     let relList: any = '';
     let relId = this.selectedOrgRelations.selected.map(item=>item.id);
-    // let relId = 
-    // { 
+    // let relId =
+    // {
     //   id: this.selectedOrgRelations.selected.map(item=>item.id)
     // }
     const options = {
       title: this.translationData.lblDelete ,
       message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
       cancelText: this.translationData.lblNo ,
-      confirmText: this.translationData.lblYes 
+      confirmText: this.translationData.lblYes
     };
     //let name = this.selectedOrgRelations.selected[0].relationshipName;
     let name = this.selectedOrgRelations.selected.forEach(item => {
@@ -440,7 +440,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -485,7 +485,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
+      let createdDate = parseInt(row.createdAt);
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -497,7 +497,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData);
     return newTrueData;
   }
 
