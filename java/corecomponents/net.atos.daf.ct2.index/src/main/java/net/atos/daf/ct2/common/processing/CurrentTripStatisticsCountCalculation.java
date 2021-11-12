@@ -43,18 +43,20 @@ implements Serializable {
 					pData.setOdometerValue(indexData.getVDist());
 					pData.setDrivingTime(0L);
 					pData.setTripDistance(0);
+					pData.setTripId(indexData.getDocument().getTripID());
 					
 					tripPreviousRecord1.put(key, pData);
 				} else {
 					if (Objects.nonNull(tripPreviousRecord1)) {
 						// add Logger
 
-						/*if (!pData.getTripId().equals(indexData.getDocument().getTripID())) {
-							pData.setStarDate(convertDateToMillis(indexData.getEvtDateTime()));
-							pData.setDriveTime(0);
-							pData.setTripId(indexData.getDocument().getTripID());
-							previousDriverRecord.put(key, pData);
-						} else {*/
+						if (!pData.getTripId().equals(indexData.getDocument().getTripID())) {
+							pData.setTripDistance(0);
+							pData.setOdometerValue(indexData.getVDist());
+							pData.setDrivingTime(0L);
+							pData.setTripDistance(0);
+							tripPreviousRecord1.put(key, pData);
+						} else {
 
 						//Driving Time Calculation
 						Long currentEvtDateTime = convertDateToMillis(indexData.getEvtDateTime());
@@ -65,17 +67,19 @@ implements Serializable {
 						indexData.setNumSeq(drivingTime); // here we are using this field to store drive time
 						
 						//Distance Calculation
+						if(indexData.getVDist()!=null) {
 						Long distanceCovered= indexData.getVDist()- pData.getOdometerValue() + pData.getTripDistance();
 						indexData.setVCumulatedFuel(distanceCovered);  // here we are using this field to store distance
 						pData.setTripDistance(distanceCovered.intValue());
 						pData.setOdometerValue(indexData.getVDist());
+						}
 						
 						// Index positionDetail= crateIndexObject(indexData, drivingTime);
 						System.out.println("data ready for insert");
 						logger.info("data is processed to insert" + indexData.toString());
 						}
 
-					//}
+					}
 
 				}
 				out.collect(indexData);

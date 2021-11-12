@@ -22,8 +22,7 @@ public class ProducerStringSerializationSchema implements KafkaSerializationSche
 
     @Override
     public ProducerRecord<byte[], byte[]> serialize(KafkaRecord<String> element, Long timestamp) {
-    	//System.out.println("Pushing data to to TCU topic :: "+element.getValue());
-        return new ProducerRecord<byte[], byte[]>(topic, element.getValue().getBytes(StandardCharsets.UTF_8));
+    	return new ProducerRecord<byte[], byte[]>(topic, element.getValue().getBytes(StandardCharsets.UTF_8));
     }
 
 }

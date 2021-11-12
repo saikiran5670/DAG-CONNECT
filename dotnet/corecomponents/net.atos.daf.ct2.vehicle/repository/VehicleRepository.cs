@@ -1836,10 +1836,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return existingVehicleProperties;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw ex;
+                throw;
             }
         }
 

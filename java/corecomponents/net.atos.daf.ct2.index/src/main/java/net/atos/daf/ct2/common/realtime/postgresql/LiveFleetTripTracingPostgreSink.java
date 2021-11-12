@@ -9,6 +9,9 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
+
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.standard.Index;
@@ -163,12 +166,14 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 
 	public LiveFleetPojo tripCalculation(Index row) {
 		LiveFleetPojo currentPosition = new LiveFleetPojo();
-		//System.out.println("Inside Trip Calculation");
-		int varVEvtid = 0;
-		if (row.getVEvtID() != null) {
-			varVEvtid = row.getVEvtID();
-		}
-
+		System.out.println("Inside Trip Calculation");
+		/*
+		 * int varVEvtid = 0; if (row.getVEvtID() != null) { varVEvtid =
+		 * row.getVEvtID(); }
+		 */
+		
+		try {
+			cmData = cmDAO.read(row.getVid());
 		double varGPSLongi = 0;
 		if (row.getGpsLongitude() != null) {
 			varGPSLongi = row.getGpsLongitude();
@@ -185,7 +190,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 			e.printStackTrace();
 		}
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
-		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
+		//currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 
 		if (varGPSLongi == 255.0) {
@@ -344,8 +349,11 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 
 		//System.out.println("Inside Trip Calculation in end");
 		logger.info("inside Inside Trip Calculation in end :{}");
-		System.out.println("data inserted");
-
+		//System.out.println("data inserted");
+		} catch(Exception e) {
+			logger.error("error in trip calculation" + e.getMessage());
+			e.printStackTrace();
+		}
 		return currentPosition;
 
 	}

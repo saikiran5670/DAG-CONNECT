@@ -259,6 +259,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       filter: "",
       menuId: 6 //-- for Trip Report
     }
+    this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');

@@ -47,7 +47,8 @@ public class TripIndexStreamingJob {
 
 			SingleOutputStreamOperator<IndexTripData> indexTripData = flinkKafkaConsumer
 					.connectToKafkaTopic(envParams, env)
-					.rebalance()
+					//.rebalance()
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Index>, IndexTripData>() {
 						/**
 						 * 
