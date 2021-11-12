@@ -40,7 +40,7 @@
     <div fxLayout="column" fxLayoutAlign="space-between">
         <mat-label>{{ translationData.lblAlertLevel }} </mat-label>
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
-            <mat-select [disabled]="vehicleListData.length == 0" placeholder="Alert Level" multiple [(ngModel)]="selection3" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
+            <mat-select [disabled]="vehicleListData.length == 0 || levelList.length ==0" placeholder="Alert Level" multiple [(ngModel)]="selection3" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
                 <mat-option value="all">{{translationData.lblAll }}</mat-option>
                 <mat-option *ngFor="let item of levelList" [value]="item.value">
                     {{item.name}}
@@ -51,7 +51,7 @@
     <div fxLayout="column" fxLayoutAlign="space-between" >
         <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
-            <mat-select [disabled]="vehicleListData.length == 0" placeholder="Alert Category" multiple [(ngModel)]="selection1" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
+            <mat-select [disabled]="vehicleListData.length == 0 || categoryList.length ==0" placeholder="Alert Category" multiple [(ngModel)]="selection1" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
                 <mat-option value="all">{{translationData.lblAll }}</mat-option>
                 <mat-option *ngFor="let item of categoryList" [value]="item.value">
                     <span *ngIf = "item.value != 0">{{item.name}}</span>
