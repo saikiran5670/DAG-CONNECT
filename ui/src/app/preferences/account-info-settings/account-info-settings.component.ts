@@ -235,6 +235,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
       //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
+     // preferenceId = 0;
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
           this.accountPreferenceData = resp;
@@ -421,7 +422,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   onGeneralSettingsUpdate(){
     if(this.brandLogoError == ''){
       if(!this.brandLogoFileValidated){
-        this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
+        this.uploadLogo = this.accountPreferenceData?.["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData?.["iconByte"]);
       }
       this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
       let objData: any = {
@@ -436,7 +437,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
         vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
         landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
-        iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
+        iconId: this.uploadLogo != '' ? this.accountPreferenceData?.iconId : 0,
         iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
         createdBy: this.accountId
         //driverId: ""

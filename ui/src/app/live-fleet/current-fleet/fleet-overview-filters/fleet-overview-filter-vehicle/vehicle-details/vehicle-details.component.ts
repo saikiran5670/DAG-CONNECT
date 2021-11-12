@@ -166,7 +166,8 @@ export class VehicleDetailsComponent implements OnInit {
    this.selectedElementData.vehicleGroupId = this.vehicleGroupId; 
   //  if(this.selectedElementData.startTimeStamp != 0 && this.selectedElementData.endTimeStamp != 0) {
     this.selectedElementData.startDate = this.selectedElementData.startTimeStamp;
-    this.selectedElementData.endDate = this.selectedElementData.endTimeStamp;
+    // this.selectedElementData.endDate = this.selectedElementData.endTimeStamp;
+    this.selectedElementData.endDate = this.selectedElementData.latestProcessedMessageTimeStamp;
   //  }
    this.selectedElementData.todayFlag = this.todayFlagClicked;
 
