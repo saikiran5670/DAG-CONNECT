@@ -32,9 +32,9 @@ public class WarningStatisticsDao implements Serializable {
 
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ? WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
 
-	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select warning_type, warning_time_stamp from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
+	private static final String REPAITM_MAINTENANCE_WARNING_READ = "select warning_type from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
 
-	private static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class,	warning_number from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
+	private static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class,	warning_number, vin from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
 	private static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id = ANY (?)";
 
 	/*
@@ -450,6 +450,7 @@ public class WarningStatisticsDao implements Serializable {
 					warningType = rs_position.getString("warning_type");
 					if (warningType.equals("A")) {
 						lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
+						
 					}
 				}
 
@@ -490,7 +491,7 @@ public class WarningStatisticsDao implements Serializable {
 		try {
 
 			if (null != messageType && null != (connection = getConnection())) {
-				logger.info("Warning class read list for active messages started --vin-{}  time {}",  vin, java.time.LocalTime.now());
+				logger.info("Warning class read list for active messages started --vin {}  time {}",  vin, java.time.LocalTime.now());
 				stmt_read_warning_statistics = connection.prepareStatement(LIVEFLEET_WARNING_READLIST);
 
 				stmt_read_warning_statistics.setString(1, vin);
@@ -510,7 +511,7 @@ public class WarningStatisticsDao implements Serializable {
 					// rs_position.getInt(0)
 
 					// lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
-					logger.info("Warning class reading list finished for active messages  --vin-{}  time {}, listSize {}",  vin, java.time.LocalTime.now(), warningActiveList.size());
+					logger.info("Warning class reading list finished for active messages  --vin {} , time {}, listSize {}",  vin, java.time.LocalTime.now(), warningActiveList.size());
 					
 				}
 
