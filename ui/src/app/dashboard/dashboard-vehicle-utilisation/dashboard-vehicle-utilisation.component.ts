@@ -792,7 +792,7 @@ if(this.prefTimeFormat == 12){
                   },
                   scaleLabel: {
                    display: true,
-                   labelString: "Date",
+                   labelString: this.translationData.lblDate || "Date",
                   },
                  },
               ] 
@@ -841,7 +841,7 @@ if(this.prefTimeFormat == 12){
             },
             scaleLabel: {
              display: true,
-             labelString: "Date",
+             labelString:  this.translationData.lblDate || "Date",
             },
           },
         ]
@@ -883,7 +883,7 @@ if(this.prefTimeFormat == 12){
           },
           scaleLabel: {
             display: true,
-            labelString: 'Vehicles'    
+            labelString: this.translationData.lblVehicles ||'Vehicles'    
           }
         }],
         xAxes: [{
@@ -901,13 +901,13 @@ if(this.prefTimeFormat == 12){
           },
           scaleLabel: {
            display: true,
-           labelString: "Date",
+           labelString:  this.translationData.lblDate || "Date",
           },     
       }]      
   }
   this.lineChartLabels2= this.calenderDate;
     this.lineChartData2= [
-      { data: this.vehiclecount, label: 'Vehicles',
+      { data: this.vehiclecount, label: this.translationData.lblVehicles ||'Vehicles',
         lineTension: 0, 
         pointBorderColor: "orange", 
       pointBackgroundColor: "white", 
@@ -940,7 +940,7 @@ if(this.prefTimeFormat == 12){
         },
         scaleLabel: {
           display: true,
-          labelString: 'Vehicles'    
+          labelString: this.translationData.lblVehicles ||'Vehicles'   
         }
         }
       ],
@@ -962,13 +962,13 @@ if(this.prefTimeFormat == 12){
         },
         scaleLabel: {
          display: true,
-         labelString: "Date",
+         labelString: this.translationData.lblDate || "Date",
         },            
     }]
    }
     this.barChartLabels2= this.calenderDate;
     this.barChartData2= [
-      { data: this.vehiclecount, label: 'Vehicles' , backgroundColor: '#7BC5EC',
+      { data: this.vehiclecount, label: this.translationData.lblVehicles ||'Vehicles'  , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
   }

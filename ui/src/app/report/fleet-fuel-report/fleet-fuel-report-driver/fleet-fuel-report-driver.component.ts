@@ -1443,6 +1443,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
            },             
         }     
     }] 
+    this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'
     this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }];
   }
   

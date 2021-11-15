@@ -1265,6 +1265,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
          },             
       }    
     }];   
+    this.fuelDecLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelDecreaseEvents || 'Values(Fuel Decrease Events)';
     this.fuelDecLineChartData = [
       { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents },
     ];
@@ -1282,6 +1283,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
          },             
       }    
     }];   
+    this.fuelIncBarChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelIncreaseEvents || 'Values(Fuel Increase Events)';
     this.fuelIncBarChartData = [
       {
         label: this.translationData.lblFuelIncreaseEvents ,
@@ -1305,7 +1307,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           day:  this.chartLabelDateFormat,            
          },             
       }    
-    }];   
+    }]; 
+    this.fuelDecBarChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelDecreaseEvents || 'Values(Fuel Decrease Events)';  
     this.fuelDecBarChartData = [
       {
         label: this.translationData.lblFuelDecreaseEvents ,
