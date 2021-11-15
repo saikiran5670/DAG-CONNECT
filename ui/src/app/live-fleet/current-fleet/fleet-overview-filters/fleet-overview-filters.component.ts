@@ -733,24 +733,27 @@ removeDuplicates(originalArray, prop) {
   if(data){
   data.forEach(item => {
     let sortedAlertData;
-    if(data && item.fleetOverviewAlert.length > 0){
-      sortedAlertData = data.fleetOverviewAlert.sort((x,y) =>x.time - y.time);
+    if(item.fleetOverviewAlert && item.fleetOverviewAlert.length > 0){
+      sortedAlertData = item.fleetOverviewAlert.sort((x,y) =>y.time - x.time);
+      
    
     if(this.filterData && this.filterData.alertCategory && sortedAlertData){
           this.filterData["alertCategory"].forEach(e => {         
-            if (sortedAlertData.alertCategory == e.value) {
-              let catName = this.translationData[sortedAlertData.categoryType];
-              this.categoryList.push({'name':catName, 'value': e.categoryType});          
+            if (sortedAlertData[0]['categoryType'] == e.value) {
+              let catName = this.translationData[e.name];
+              this.categoryList.push({'name':catName, 'value': e.value});          
             }
           });
+          this.categoryList = this.removeDuplicates(this.categoryList,"value");
     } 
     if(this.filterData && this.filterData.alertLevel && sortedAlertData){
       this.filterData["alertLevel"].forEach(e => {         
-        if (sortedAlertData.alertLevel == e.value) {
-          let levelName = this.translationData[sortedAlertData.level];
-          this.levelList.push({'name':levelName, 'value': e.level});          
+        if (sortedAlertData[0]['level'] == e.value) {
+          let levelName = this.translationData[e.name];
+          this.levelList.push({'name':levelName, 'value': e.value});          
         }
       });
+      this.levelList= this.removeDuplicates(this.levelList,"value");
     }
 }
 
@@ -762,6 +765,7 @@ if(this.filterData && this.filterData.healthStatus){
         this.healthList.push({'name':statusName, 'value': e.value});          
       }
     });
+    this.healthList= this.removeDuplicates(this.healthList,"value");
   }
   if(this.filterData && this.filterData.otherFilter){
     this.filterData["otherFilter"].forEach(element => {
@@ -771,17 +775,18 @@ if(this.filterData && this.filterData.healthStatus){
         this.otherList.push({'name':statusName, 'value': element.value});
       }
     });
+    this.otherList = this.removeDuplicates(this.otherList,"value");
   }
-  if (this.categoryList.length > 0) {
-    item.fleetOverviewAlert.forEach(e => {
-      let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
-      if (alertCategory.length > 0) {
-        newAlertCat.push(...alertCategory);
-      }
-    });
-  }
+  // if (this.categoryList.length > 0) {
+  //   item.fleetOverviewAlert.forEach(e => {
+  //     let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
+  //     if (alertCategory.length > 0) {
+  //       newAlertCat.push(...alertCategory);
+  //     }
+  //   });
+  // }
 });
-this.categoryList = this.removeDuplicates(newAlertCat, "value");
+// this.categoryList = this.removeDuplicates(newAlertCat, "value");
  }
 }
 
@@ -794,7 +799,7 @@ this.categoryList = this.removeDuplicates(newAlertCat, "value");
  checkCreationForVehicle(item: any){
   this.vehicleListData =[];
   this.fleetMapService.clearRoutesFromMap();
-
+  
   this.todayFlagClicked = item.todayFlagClicked;
   this.getFilterData();
   this.isVehicleDetails  = item.vehicleDetailsFlag;
