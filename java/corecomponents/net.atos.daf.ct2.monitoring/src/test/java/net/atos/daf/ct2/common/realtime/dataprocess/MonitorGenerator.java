@@ -18,6 +18,7 @@ import static net.atos.daf.ct2.common.util.Utils.convertMillisecondToDateTime;
 public class MonitorGenerator implements SourceFunction<Monitor> {
 
     volatile boolean isRunning = true;
+    private static final Logger log = LoggerFactory.getLogger(MonitorGenerator.class);
 
     @Override
     public void run(SourceContext sourceContext) throws Exception {
@@ -49,7 +50,7 @@ public class MonitorGenerator implements SourceFunction<Monitor> {
             // 6.3 hours 22680000  -> critical
             mdx.setEvtDateTime(convertMillisecondToDateTime(currentTimeMillis));
             sourceContext.collect(mdx);
-            System.out.println("DATA SEND :: "+Utils.writeValueAsString(mdx));
+            log.debug("DATA SEND :: {}",Utils.writeValueAsString(mdx));
             counter += 1L;
             // Sleep for 1 second -> 1000 , 1 minute -> 60000
             Thread.sleep(1000);

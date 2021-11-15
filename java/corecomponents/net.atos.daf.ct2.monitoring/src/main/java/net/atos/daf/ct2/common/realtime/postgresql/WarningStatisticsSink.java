@@ -27,7 +27,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 	private static final long serialVersionUID = 1L;
 
-	Logger logger = LoggerFactory.getLogger(WarningStatisticsSink.class);
+	private static final Logger logger = LoggerFactory.getLogger(WarningStatisticsSink.class);
 	Connection connection = null;
 
 	private List<Monitor> queue;
@@ -39,8 +39,6 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
-
-		// log.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		warningDao = new WarningStatisticsDao();
@@ -54,7 +52,6 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 
 			warningDao.setConnection(connection);
-			// System.out.println("warning connection created");
 
 		} catch (Exception e) {
 
@@ -98,10 +95,6 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							} else {
 								vin = row.getVid();
 							}
-							//Long lastestProcessedMessageTimeStamp = warningDao.read(row.getMessageType(), vin);
-							// System.out.println("lastestProcessedMessageTimeStamp value --" +
-							// lastestProcessedMessageTimeStamp);
-
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() != 63) {
 
 								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
@@ -109,41 +102,13 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
 
 								warningDao.warning_insert(warningDetail);
-								logger.info("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
-								// System.out.println("warning message 10 Inserted");
+								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
 								warningDao.warningUpdateMessageTenCommonTrip(warningDetail);
-								// System.out.println("warning updated for message 10 in another table");
-								logger.info("Warning records inserted to warning table :: ");
-								logger.info("Warning records updated in current trip table:: ", warningDetail);
+								logger.info("Warning records inserted to warning table :: {}",warningDetail);
+								logger.debug("Warning records updated in current trip table:: ", warningDetail);
 							}
 
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() == 63) {
-
-							/*	List<Warning> warningList = row.getDocument().getWarningObject().getWarningList();
-
-								for (Warning warning : warningList) {
-
-									boolean warningStatus = warningDao.readRepairMaintenamce(row.getMessageType(),
-											vin, warning.getWarningClass(), warning.getWarningNumber());
-									if (warningStatus) {
-										// System.out.println("warning not present in warning table");
-
-										WarningStatisticsPojo warningNewRowDetail = WarningStatisticsCalculation(row,
-												messageTen, warning.getWarningClass(),
-												warning.getWarningNumber());
-										warningDao.warning_insert(warningNewRowDetail);
-										logger.info("warning inserted in warning table for VEvtId--63 :{)",
-												warningNewRowDetail);
-										// System.out.println("warning message 10 Inserted for evtId-63");
-										warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
-										// System.out.println("warning updated for message 10 in another table for
-										// evtId-63");
-										logger.info("Warning records updated in current trip table:: ",
-												warningNewRowDetail);
-
-									}
-
-								}*/
 								
 								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
@@ -170,7 +135,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 												messageTen, warning63.getWarningClass(),
 												warning63.getWarningNumber());
 										warningDao.warning_insert(warningRowToInsert);
-										logger.info("warning inserted in warning table for VEvtId--63 :{)",
+										logger.info("warning inserted in warning table for VEvtId--63 :{}",
 												warningRowToInsert);
 									}
 									warningInDB=false;
@@ -185,8 +150,8 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								List<Integer> toDeactivate= new ArrayList<>();
 								
 								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
-								logger.info("activeWarnings list size " + activeWarnings.size());
-								logger.info("warningList63 list size "  + warningList63.size());
+								logger.debug("activeWarnings list size " + activeWarnings.size());
+								logger.debug("warningList63 list size "  + warningList63.size());
 								for(WarningStatisticsPojo activeWarning :activeWarnings) {
 
 
@@ -211,32 +176,26 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										 warningPresent=false; 
 									
 								} }
-								logger.info("toDeactivate list size " + toDeactivate.size());
+								logger.debug("toDeactivate list size " + toDeactivate.size());
 								
 								warningDao.DeactivatWarningUpdate(toDeactivate);
-								logger.info("update done-sink class ");
+								logger.debug("update done-sink class ");
 							}
 
 						}
 					}
 				}
 			} catch (Exception e) {
-				logger.error("Error in Warning statistics Invoke method" + e.getMessage());
-				e.printStackTrace();
+				logger.error("Error in Warning statistics Invoke method {}" , e.getMessage());
 			}
 
 		}
-		// System.out.println("Invoke Finish Warning");
 	}
 
 	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber) {
 
 		WarningStatisticsPojo warningDetail = new WarningStatisticsPojo();
-		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 		if (messageType == 10) {
-
-			// System.out.println("Inside warning calculation type 10");
-
 			warningDetail.setTripId(null);
 			warningDetail.setVin(row.getVin());
 			warningDetail.setVid(row.getVid());
@@ -244,12 +203,8 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
 						.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error while parsing date time {}",e.getMessage());
 			}
-
-			// warningDetail.setWarningClass(row.getDocument().getVWarningClass());
-			// warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
 
 			warningDetail.setWarningClass(warningClass);
 			warningDetail.setWarningNumber(warningNumber);
@@ -332,12 +287,6 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			} else {
 				warningDetail.setMessageType(null);
 			}
-
-			// warningDetail.setModifiedAt(null);
-
-			// System.out.println("in vehicle warning class message 10---" + row.getVin());
-			// System.out.println("warning calculation Finished message 10");
-
 			logger.info("warning calculation finished {}", warningDetail);
 
 		}
@@ -354,7 +303,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		logger.info("In close() of Warning :: ");
 
 		if (connection != null) {
-			logger.info("Releasing connection from Warning job");
+			logger.debug("Releasing connection from Warning job");
 			connection.close();
 		}
 

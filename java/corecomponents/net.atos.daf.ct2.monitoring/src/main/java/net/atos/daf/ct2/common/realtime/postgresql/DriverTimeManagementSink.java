@@ -50,7 +50,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		
 		 int pId = getRuntimeContext().getIndexOfThisSubtask();
-		 logger.info("PID value {}",  pId);
+		 logger.debug("PID value {}",  pId);
 
 		driverDAO = new LiveFleetDriverActivityDao();
 		try {
@@ -74,7 +74,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	
 	public void invoke(Monitor monitor) throws Exception {
 		 net.atos.daf.ct2.common.models.Monitor monitorChild=(net.atos.daf.ct2.common.models.Monitor)monitor;
-		 logger.info("inside invoke of driver Management ");
+		 logger.debug("inside invoke of driver Management ");
 		 
 		DriverActivityPojo DriverDetailsD1 = driverActivityCalculation(monitorChild, true);
 		driverDAO.driver_insert(DriverDetailsD1);
@@ -90,9 +90,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	public DriverActivityPojo driverActivityCalculation( net.atos.daf.ct2.common.models.Monitor row, boolean driverIdentification) {
 
 		DriverActivityPojo driverActivity = new DriverActivityPojo();
-		//System.out.println("inside calculation");
-		// logger.info("inside driver calculation ");
-
 		driverActivity.setTripId(row.getDocument().getTripID());
 		driverActivity.setVid(row.getVid());
 		driverActivity.setActivityDate(row.getStartTime());
@@ -126,7 +123,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		driverActivity.setEndTime(row.getEndTime());
 		
 		driverActivity.setDuration(row.getDuration()); // it will be null when record creates.
-		//System.out.println("duration--" + row.getDuration());
+
 
 		driverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		driverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
@@ -135,7 +132,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 											// creates.
 		driverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		driverActivity.setVin(row.getVin());
-		//System.out.println("in driver activity sink class---" + row.getVin());
 		return driverActivity;
 
 	}
@@ -147,11 +143,11 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		logger.info("In close() of DriverActivity :: ");
 
 		if (connection != null) {
-			logger.info("Releasing connection from DriverActivity job");
+			logger.debug("Releasing connection from DriverActivity job");
 			connection.close();
 		}
 		if (masterConnection != null) {
-			logger.info("Releasing connection from DriverActivity job");
+			logger.debug("Releasing connection from DriverActivity job");
 			masterConnection.close();
 		}
 
